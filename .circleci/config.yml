@@ -16,8 +16,6 @@ jobs:
   code-quality-client:
     executor: node-executor
 
-    parallelism: 2
-
     working_directory: ~/project/client
 
     steps:
@@ -44,8 +42,6 @@ jobs:
   compile-client:
     executor: node-executor
 
-    parallelism: 2
-
     working_directory: ~/repo/client
     
     steps:
@@ -70,8 +66,6 @@ jobs:
   test-client:
     executor: node-executor
     
-    parallelism: 2
-
     working_directory: ~/repo/client
     
     steps:
@@ -96,8 +90,6 @@ jobs:
   code-quality-server:
     executor: node-executor
     
-    parallelism: 2
-
     working_directory: ~/repo/server
 
     steps:
@@ -124,8 +116,6 @@ jobs:
   compile-server:
     executor: node-executor
     
-    parallelism: 2
-
     working_directory: ~/repo/server
     
     steps:
@@ -150,8 +140,6 @@ jobs:
   test-server:
     executor: node-executor
     
-    parallelism: 2
-
     working_directory: ~/repo/server
     
     steps:
@@ -176,8 +164,6 @@ jobs:
   code-quality-java:
     executor: maven-executor
     
-    parallelism: 2
-
     working_directory: ~/repo
 
     steps:
@@ -201,8 +187,6 @@ jobs:
   test-java:
     executor: maven-executor
     
-    parallelism: 2
-
     working_directory: ~/repo
 
     steps:
