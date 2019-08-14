@@ -43,10 +43,11 @@ jobs:
   compile-client:
     executor: node-executor
 
-    working_directory: ~/repo/client
+    working_directory: ~/project/client
     
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       # Download and cache dependencies
       - restore_cache:
@@ -67,10 +68,11 @@ jobs:
   test-client:
     executor: node-executor
     
-    working_directory: ~/repo/client
+    working_directory: ~/project/client
     
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       # Download and cache dependencies
       - restore_cache:
@@ -91,10 +93,11 @@ jobs:
   code-quality-server:
     executor: node-executor
     
-    working_directory: ~/repo/server
+    working_directory: ~/project/server
 
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       # Download and cache dependencies
       - restore_cache:
@@ -117,10 +120,11 @@ jobs:
   compile-server:
     executor: node-executor
     
-    working_directory: ~/repo/server
+    working_directory: ~/project/server
     
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       # Download and cache dependencies
       - restore_cache:
@@ -141,10 +145,11 @@ jobs:
   test-server:
     executor: node-executor
     
-    working_directory: ~/repo/server
+    working_directory: ~/project/server
     
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       # Download and cache dependencies
       - restore_cache:
@@ -165,10 +170,11 @@ jobs:
   code-quality-java:
     executor: maven-executor
     
-    working_directory: ~/repo
+    working_directory: ~/project
 
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       - restore_cache:
           keys:
@@ -188,10 +194,11 @@ jobs:
   test-java:
     executor: maven-executor
     
-    working_directory: ~/repo
+    working_directory: ~/project
 
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       - restore_cache:
           keys:
