@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "build:watch": "tsc -w",
     "prestart": "yarn build",
     "start": "nodemon .",
     "test": "echo \"Error: no test specified\" && exit 0",

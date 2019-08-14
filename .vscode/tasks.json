@@ -28,6 +28,32 @@
         "showReuseMessage": false,
         "clear": false
       }
+    },
+    {
+      "type": "npm",
+      "script": "build:watch",
+      "path": "server/",
+      "label": "Start server compilation",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom", // This is not needed but, required by the problemMatcher Object
+        "pattern": {
+          "regexp": "^$" // This is not needed but, required by the problemMatcher Object
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting compilation in watch mode...", // Signals the begin of the Task
+          "endsPattern": "Watching for file changes." // Signals that now the initialization of the task is complete
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false
+      }
     }
   ]
 }
