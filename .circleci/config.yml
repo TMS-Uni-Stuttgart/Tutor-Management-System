@@ -13,7 +13,7 @@ executors:
       - image: circleci/openjdk:11.0.2
 
 jobs:
-  code-quality:client:
+  code-quality-client:
     executor: node-executor
 
     working_directory: ~/repo/client
@@ -39,7 +39,7 @@ jobs:
 
       - run: yarn eslint:check
 
-  compile:client:
+  compile-client:
     executor: node-executor
 
     working_directory: ~/repo/client
@@ -63,7 +63,7 @@ jobs:
 
       - run: yarn ts:check
 
-  test:client:
+  test-client:
     executor: node-executor
 
     working_directory: ~/repo/client
@@ -87,7 +87,7 @@ jobs:
 
       - run: yarn test
   
-  code-qualitiy:server:
+  code-qualitiy-server:
     executor: node-executor
 
     working_directory: ~/repo/server
@@ -113,7 +113,7 @@ jobs:
 
       - run: yarn eslint:check
 
-  compile:server:
+  compile-server:
     executor: node-executor
 
     working_directory: ~/repo/server
@@ -137,7 +137,7 @@ jobs:
 
       - run: yarn ts:check
 
-  test:server:
+  test-server:
     executor: node-executor
 
     working_directory: ~/repo/server
@@ -161,7 +161,7 @@ jobs:
 
       - run: yarn test
 
-  code-quality:java:
+  code-quality-java:
     executor: maven-executor
 
     working_directory: ~/repo
@@ -184,7 +184,7 @@ jobs:
       
       - run: mvn --batch-mode --errors --fail-at-end formatter:validate
 
-  test:java:
+  test-java:
     executor: maven-executor
 
     working_directory: ~/repo
@@ -215,26 +215,26 @@ workflows:
   version: 2
   check_and_test:
     jobs:
-      - code-quality:client
-      - code-quality:server
-      - code-quality:java
+      - code-quality-client
+      - code-quality-server
+      - code-quality-java
   
-      - compile:client:
+      - compile-client:
           requires:
-            - code-quality:client
+            - code-quality-client
       
-      - compile:server:
+      - compile-server:
           requires:
-            - code-quality:server
+            - code-quality-server
 
-      - test:client:
+      - test-client:
           requires:
-            - compile:client
+            - compile-client
 
-      - test:server:
+      - test-server:
           requires:
-            - compile:server
+            - compile-server
       
-      - test:java:
+      - test-java:
           requires:
-           - code-quality:java
+           - code-quality-java
