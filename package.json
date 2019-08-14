@@ -3,7 +3,8 @@
   "workspaces": [
     "client",
     "server",
-    "scripts"
+    "scripts",
+    "shared"
   ],
   "devDependencies": {
     "@types/node": "^12.7.1",
