@@ -39,7 +39,7 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
   const theme = useTheme();
 
   function getScheinPassedStatsOfAllStudents() {
-    let data: [string, number, number][] = [];
+    const data: [string, number, number][] = [];
 
     Object.entries(summaries).forEach(([slot, summaries]) => {
       let passed = 0;
@@ -52,7 +52,7 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
         }
       });
 
-      let percentage = (passed / (passed + notPassed)) * 100;
+      const percentage = (passed / (passed + notPassed)) * 100;
 
       data.push([slot, percentage, 100 - percentage]);
     });

@@ -53,7 +53,7 @@ function Dashboard(): JSX.Element {
 
       const sortedTutorials = userData.tutorials.sort((a, b) => a.slot - b.slot);
 
-      for (let loggedInTutorial of sortedTutorials) {
+      for (const loggedInTutorial of sortedTutorials) {
         const tutorial = await getTutorial(loggedInTutorial.id);
         const studentInfos = await getScheinCriteriaSummariesOfAllStudentsOfTutorial(
           loggedInTutorial.id

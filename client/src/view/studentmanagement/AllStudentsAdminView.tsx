@@ -56,13 +56,13 @@ function getShortenedMatrNo(
   students: StudentWithFetchedTeam[]
 ): string {
   const otherStudents = students.filter(s => s.id !== student.id);
-  let lengthOfNo = student.matriculationNo.length;
+  const lengthOfNo = student.matriculationNo.length;
 
   for (let iteration = 1; iteration < lengthOfNo; iteration++) {
     const shortStudent = student.matriculationNo.substr(lengthOfNo - iteration, iteration);
     let isOkay = true;
 
-    for (let otherStudent of otherStudents) {
+    for (const otherStudent of otherStudents) {
       const shortOtherStudent = otherStudent.matriculationNo.substr(
         lengthOfNo - iteration,
         iteration
@@ -113,7 +113,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
   function printOverviewSheet() {
     const studentDataToPrint: { matriculationNo: string; schein: string }[] = [];
 
-    for (let student of students) {
+    for (const student of students) {
       studentDataToPrint.push({
         matriculationNo: getShortenedMatrNo(student, students),
         schein: summaries[student.id].passed ? 'Bestanden' : 'Nicht bestanden',
@@ -268,7 +268,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
     setCreatingCSVFile(true);
     const dataArray: Row[] = [];
 
-    for (let {
+    for (const {
       id,
       lastname,
       firstname,
@@ -292,18 +292,18 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
           .toString(),
       };
 
-      for (let sheet of sheets) {
+      for (const sheet of sheets) {
         const maxPoints = getPointsOfEntityAsString(sheet);
         const sheetResult = getPointsOfStudentOfSheet(points, sheet);
         data[`sheet-${sheet.sheetNo}`] = `${sheetResult}/${maxPoints}`;
       }
 
-      for (let date of Object.values(attendance).map(at => at.date)) {
-        let attendanceOfDate: Attendance = attendance[parseDateToMapKey(new Date(date))];
+      for (const date of Object.values(attendance).map(at => at.date)) {
+        const attendanceOfDate: Attendance = attendance[parseDateToMapKey(new Date(date))];
         data[`date-${format(new Date(date), 'yyyy-MM-dd')}`] = attendanceOfDate.state || '';
       }
 
-      for (let exam of exams) {
+      for (const exam of exams) {
         const scheinExamResult = getSumOfPointsOfStudentInScheinExam(scheinExamResults, exam.id);
         data[`exam-${exam.scheinExamNo}`] = scheinExamResult.toString();
       }

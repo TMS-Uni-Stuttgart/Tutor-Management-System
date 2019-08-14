@@ -50,8 +50,8 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     const isNoInUse = sheets.find(t => t.sheetNo === sheetNo) !== undefined;
 
     function getIndexOfExerciseWithSameExNo(): number | undefined {
-      for (let exercise of exercises) {
-        let ex = exercises.find(t => t !== exercise && t.exNo === exercise.exNo);
+      for (const exercise of exercises) {
+        const ex = exercises.find(t => t !== exercise && t.exNo === exercise.exNo);
 
         if (ex !== undefined) {
           return exercises.indexOf(ex);
@@ -61,7 +61,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
       return undefined;
     }
 
-    let idx = getIndexOfExerciseWithSameExNo();
+    const idx = getIndexOfExerciseWithSameExNo();
 
     if (idx !== undefined) {
       setFieldError(

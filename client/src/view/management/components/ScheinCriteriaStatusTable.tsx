@@ -83,7 +83,7 @@ function InfosContent({ status }: InfoContentProps): JSX.Element | null {
   const classes = useStyles();
   const { t } = useTranslation('scheincriteria');
 
-  let infos = Object.values(status.infos);
+  const infos = Object.values(status.infos);
 
   if (infos.length === 0) {
     return null;

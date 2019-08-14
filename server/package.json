@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server implementation of the TMS",
+  "main": "build/server.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "prestart": "yarn build",
+    "start": "nodemon .",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "eslint:check": "eslint \"src/**/*.ts?(x)\"",
+    "eslint:fix": "eslint --fix \"src/**/*.ts?(x)\"",
+    "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
+    "ts:check": "tsc --project . --noEmit",
+    "ts:check:watch": "tsc --project . --noEmit -w"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.6.9"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/mongoose": "^5.5.12"
+  }
+}

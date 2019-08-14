@@ -1,6 +1,9 @@
 # vscode
 *.code-workspace
 
+# Node
+**/node_modules
+
 /bin/
 /target/
 !.mvn/wrapper/maven-wrapper.jar

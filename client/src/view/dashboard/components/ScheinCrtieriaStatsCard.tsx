@@ -114,7 +114,7 @@ function ScheinCriteriaStatsCard({
     const counts: [number, number][] = [];
     filterSummaries(critId).forEach(item => {
       Object.values(item.infos).forEach(info => {
-        let element = info.no;
+        const element = info.no;
         const achieved = info.achieved;
 
         counts.push([element, achieved]);

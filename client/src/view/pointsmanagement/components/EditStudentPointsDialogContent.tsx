@@ -71,10 +71,10 @@ function getInitialValues(
 ): EditStudentPointsFormState {
   const values: EditStudentPointsFormState = {};
 
-  for (let student of team.students) {
+  for (const student of team.students) {
     values[student.id] = {};
 
-    for (let ex of exercises) {
+    for (const ex of exercises) {
       const identifier = getExercisePointsIdentifier(sheet, ex);
 
       if (student.points[identifier] !== undefined) {

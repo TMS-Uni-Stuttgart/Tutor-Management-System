@@ -46,6 +46,17 @@
       "name": "Launch Chrome",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/client/src"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch NodeJS server",
+      "runtimeExecutable": "nodemon",
+      "program": "${workspaceFolder}/server/build/server.js",
+      "restart": true,
+      "preLaunchTask": "Start server compilation",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ],
   "inputs": [

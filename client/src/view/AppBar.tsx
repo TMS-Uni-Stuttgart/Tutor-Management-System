@@ -46,7 +46,7 @@ interface Props {
 type PropType = Props & WithSnackbarProps & RouteComponentProps;
 
 function getTitleFromLocation(location: Location): string {
-  let title: string | undefined = titleText.get(location.pathname);
+  const title: string | undefined = titleText.get(location.pathname);
 
   if (title) {
     return title;

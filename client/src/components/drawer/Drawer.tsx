@@ -60,7 +60,7 @@ function filterRoutes(userRoles: Role[]) {
   const substituteRoutes: RouteType[] = [];
   const managementRoutes: RouteType[] = [];
 
-  for (var route of ROUTES) {
+  for (const route of ROUTES) {
     if (!route.isInDrawer) {
       continue;
     }
