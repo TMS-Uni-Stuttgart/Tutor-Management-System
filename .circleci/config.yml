@@ -16,10 +16,11 @@ jobs:
   code-quality-client:
     executor: node-executor
 
-    working_directory: /client
+    working_directory: ~/project/client
 
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
 
       # Download and cache dependencies
       - restore_cache:
