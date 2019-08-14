@@ -28,7 +28,7 @@ const EXERCISE_COUNT_PER_EXAM = {
   max: 10,
 };
 
-let MATR_NO: string[] = [];
+const MATR_NO: string[] = [];
 
 for (let i = 1000000; i <= 9999999; i++) {
   MATR_NO.push(i.toString().padStart(7, '0'));
@@ -183,7 +183,7 @@ async function initDB() {
   const tutorials: Tutorial[] = await createTutorials(TUTORIAL_COUNT);
   const studentPromises: Promise<Student[]>[] = [];
 
-  for (let tutorial of tutorials) {
+  for (const tutorial of tutorials) {
     addTutorToTutorial(tutorial);
 
     studentPromises.push(addStudentsToTutorial(tutorial));

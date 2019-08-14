@@ -145,7 +145,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
 
     let response: Tutorial | undefined = undefined;
 
-    for (let [tutor, dates] of Object.entries(datesOfSubstitutes)) {
+    for (const [tutor, dates] of Object.entries(datesOfSubstitutes)) {
       response = await setSubstituteTutor(tutorial.id, {
         tutorId: tutor,
         dates: dates.map(d => new Date(d).toISOString()),

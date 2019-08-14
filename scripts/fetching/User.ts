@@ -24,7 +24,7 @@ export async function getUsersAndFetchTutorials(): Promise<UserWithFetchedTutori
   const users = await getUsers();
   const promises: Promise<UserWithFetchedTutorials>[] = [];
 
-  for (let user of users) {
+  for (const user of users) {
     promises.push(getTutorialsOfUser(user.id).then(tutorials => ({ ...user, tutorials })));
   }
 

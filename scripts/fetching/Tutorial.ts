@@ -30,7 +30,7 @@ export async function getAllTutorialsAndFetchTutor(): Promise<TutorialWithFetche
   const tutorials = await getAllTutorials();
   const promises: Promise<TutorialWithFetchedTutor>[] = [];
 
-  for (let tutorial of tutorials) {
+  for (const tutorial of tutorials) {
     promises.push(getTutorOfTutorial(tutorial.id).then(tutor => ({ ...tutorial, tutor })));
   }
 
@@ -41,7 +41,7 @@ export async function getAllTutorialsAndFetchStudents(): Promise<TutorialWithFet
   const tutorials = await getAllTutorialsAndFetchTutor();
   const promises: Promise<TutorialWithFetchedStudents>[] = [];
 
-  for (let tutorial of tutorials) {
+  for (const tutorial of tutorials) {
     promises.push(getStudentsOfTutorial(tutorial.id).then(students => ({ ...tutorial, students })));
   }
 
@@ -54,7 +54,7 @@ export async function getAllTutorialsAndFetchCorrectors(): Promise<
   const tutorials = await getAllTutorialsAndFetchTutor();
   const promises: Promise<TutorialWithFetchedCorrectors>[] = [];
 
-  for (let tutorial of tutorials) {
+  for (const tutorial of tutorials) {
     promises.push(
       getCorrectorsOfTutorial(tutorial.id).then(correctors => ({ ...tutorial, correctors }))
     );
@@ -100,17 +100,17 @@ export async function getTutorialAndFetchCorrectors(
 
 export async function createTutorial(tutorialInformation: TutorialDTO): Promise<Tutorial> {
   // try {
-    const response = await axios.post<Tutorial>('tutorial', tutorialInformation, {
-      // transformResponse: transformTutorialResponse,
-    });
-    
-    if (response.status === 201) {
-      return response.data;
-    }
-    
-    return Promise.reject(`Wrong response code (${response.status}).`);
+  const response = await axios.post<Tutorial>('tutorial', tutorialInformation, {
+    // transformResponse: transformTutorialResponse,
+  });
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
   // } catch {
-    // return Promise.reject(`Could not parse response.`);
+  // return Promise.reject(`Could not parse response.`);
   // }
 }
 

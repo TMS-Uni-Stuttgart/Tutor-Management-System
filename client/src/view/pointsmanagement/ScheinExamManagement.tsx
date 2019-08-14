@@ -60,8 +60,8 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     const isNoInUse = exams.find(t => t.scheinExamNo === values.scheinExamNo) !== undefined;
 
     function getIndexOfExerciseWithSameExNo(): number | undefined {
-      for (let exercise of values.exercises) {
-        let ex = values.exercises.find(t => t !== exercise && t.exNo === exercise.exNo);
+      for (const exercise of values.exercises) {
+        const ex = values.exercises.find(t => t !== exercise && t.exNo === exercise.exNo);
 
         if (ex !== undefined) {
           return values.exercises.indexOf(ex);
@@ -71,7 +71,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       return undefined;
     }
 
-    let idx = getIndexOfExerciseWithSameExNo();
+    const idx = getIndexOfExerciseWithSameExNo();
 
     if (idx !== undefined) {
       setFieldError(

@@ -141,7 +141,7 @@ export async function fetchTeamOfStudent(student: Student): Promise<StudentWithF
 export async function fetchTeamsOfStudents(students: Student[]): Promise<StudentWithFetchedTeam[]> {
   const promises: Promise<StudentWithFetchedTeam>[] = [];
 
-  for (let student of students) {
+  for (const student of students) {
     promises.push(getTeamOfStudent(student.id).then(team => ({ ...student, team })));
   }
 

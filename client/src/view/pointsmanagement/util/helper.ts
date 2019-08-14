@@ -21,7 +21,7 @@ export function getInitialValues(
 ): PointRowFormState {
   const state: PointRowFormState = {};
 
-  for (let exercise of entityWithExercises.exercises) {
+  for (const exercise of entityWithExercises.exercises) {
     const pts = points[getExercisePointsIdentifier(entityWithExercises, exercise)] || 0;
     state[getExerciseIdentifier(exercise)] = pts;
   }

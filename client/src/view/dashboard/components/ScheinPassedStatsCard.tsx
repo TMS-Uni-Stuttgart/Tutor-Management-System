@@ -43,17 +43,17 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
   const theme = useTheme();
 
   function getScheinPassedStats() {
-    let heading = ['Status', 'Studenten'];
+    const heading = ['Status', 'Studenten'];
     let passedValue = 0;
     let notPassedValue = 0;
-    let data: (string | number)[][] = [];
+    const data: (string | number)[][] = [];
 
     Object.values(value.studentInfos).forEach(item => {
       item.passed ? (passedValue += 1) : (notPassedValue += 1);
     });
 
-    let passed = ['Bestanden', passedValue];
-    let notPassed = ['Nicht bestanden', notPassedValue];
+    const passed = ['Bestanden', passedValue];
+    const notPassed = ['Nicht bestanden', notPassedValue];
 
     data.push(heading, passed, notPassed);
     return data;
