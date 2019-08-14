@@ -2,19 +2,21 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  node-executor:
     docker:
-      # specify the version you desire here
       - image: circleci/node:10.16.2
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
+  maven-executor:
+    docker:
+      - image: circleci/openjdk:11.0.2
 
-    working_directory: ~/repo
+jobs:
+  code-quality:client:
+    executor: node-executor
+
+    working_directory: ~/repo/client
 
     steps:
       - checkout
@@ -22,16 +24,217 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - node-client-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - node-client-
 
       - run: yarn install
 
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: node-client-{{ checksum "package.json" }}
 
-      # run tests!
-      # - run: yarn test
+      - run: yarn prettier:check
+
+      - run: yarn eslint:check
+
+  compile:client:
+    executor: node-executor
+
+    working_directory: ~/repo/client
+    
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - node-client-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - node-client-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-client-{{ checksum "package.json" }}
+
+      - run: yarn ts:check
+
+  test:client:
+    executor: node-executor
+
+    working_directory: ~/repo/client
+    
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - node-client-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - node-client-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-client-{{ checksum "package.json" }}
+
+      - run: yarn test
+  
+  code-qualitiy:server:
+    executor: node-executor
+
+    working_directory: ~/repo/server
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - node-server-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - node-server-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-server-{{ checksum "package.json" }}
+
+      - run: yarn prettier:check
+
+      - run: yarn eslint:check
+
+  compile:server:
+    executor: node-executor
+
+    working_directory: ~/repo/server
+    
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - node-server-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - node-server-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-server-{{ checksum "package.json" }}
+
+      - run: yarn ts:check
+
+  test:server:
+    executor: node-executor
+
+    working_directory: ~/repo/server
+    
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - node-server-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - node-server-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-server-{{ checksum "package.json" }}
+
+      - run: yarn test
+
+  code-quality:java:
+    executor: maven-executor
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - java-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - java-
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: java-{{ checksum "pom.xml" }}
+      
+      - run: mvn --batch-mode --errors --fail-at-end formatter:validate
+
+  test:java:
+    executor: maven-executor
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - java-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - java-
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: java-{{ checksum "pom.xml" }}
+      
+      - run: mvn --batch-mode --errors --fail-at-end test
+
+      - store_test_results: # uploads the test metadata from the `target/surefire-reports` directory so that it can show up in the CircleCI dashboard. 
+      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: target/surefire-reports
+
+workflows:
+  version: 2
+  check_and_test:
+    jobs:
+      - code-quality:client
+      - code-quality:server
+      - code-quality:java
+  
+      - compile:client:
+          requires:
+            - code-quality:client
+      
+      - compile:server:
+          requires:
+            - code-quality:server
+
+      - test:client:
+          requires:
+            - compile:client
+
+      - test:server:
+          requires:
+            - compile:server
+      
+      - test:java:
+          requires:
+           - code-quality:java
