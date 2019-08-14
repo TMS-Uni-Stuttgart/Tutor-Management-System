@@ -1,24 +1,62 @@
+import bodyParser from 'body-parser';
 import express from 'express';
+import session from 'express-session';
 import mongoose from 'mongoose';
+import passport from 'passport';
+import uuid from 'uuid/v4';
+import databaseConfig from './config/database';
+import initPassport from './config/passport';
+import authenticationRouter from './routes/authentication';
+import userService from './services/UserService';
 
-const app = express();
-mongoose
-  .connect('mongodb://localhost:27017/tms', {
-    useNewUrlParser: true,
-    // auth: { user: 'root', password: 'example' },
-  })
-  .catch(err => {
-    console.error(`[${err.name}] Connection to MongoDB database failed.`);
-  });
+mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
+  console.group('Error stack:');
+  console.error(err);
+  console.groupEnd();
+
+  console.error('Connection to MongoDB database failed.');
+});
 
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error: '));
-db.once('open', () => {
-  console.log('Connected to MongoDB database.');
+db.once('open', async () => {
+  console.log('Connection to MongoDB database established.');
+
+  try {
+    await userService.getUserWithUsername('admin');
+  } catch (err) {
+    console.log('Initializing new admin user because there is none..');
+    await userService.initAdmin();
+    console.log('Admin initializied.');
+  }
 });
 
-app.get('/test', (req, res) => {
-  res.send('This is an awesome NodeJS server responding.');
-});
+const app = express();
 
-app.listen(8080);
+initPassport(passport);
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.use(
+  session({
+    genid: () => {
+      return uuid();
+    },
+    secret: 'keyboard cat',
+    resave: false,
+    // Is ued to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
+    rolling: true,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      maxAge: 30 * 60 * 1000,
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/', authenticationRouter);
+
+app.listen(8080, () => console.log('Server started on port 8080.'));
