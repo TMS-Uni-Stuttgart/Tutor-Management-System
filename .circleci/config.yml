@@ -16,7 +16,7 @@ jobs:
   code-quality-client:
     executor: node-executor
 
-    working_directory: ~/project/client
+    working_directory: /client
 
     steps:
       - checkout
