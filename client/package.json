@@ -5,19 +5,15 @@
   "main": "src/index.tsx",
   "proxy": "http://localhost:8080",
   "scripts": {
-    "prestart": "npm i",
     "start": "react-scripts start",
-    "start:noi": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "ts:lint": "eslint \"src/**/*.ts?(x)\"",
-    "ts:fix": "eslint --fix \"src/**/*.ts?(x)\"",
+    "eslint:check": "eslint \"src/**/*.ts?(x)\"",
+    "eslint:fix": "eslint --fix \"src/**/*.ts?(x)\"",
+    "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
     "ts:check": "tsc --project . --noEmit",
-    "ts:check:watch": "tsc --project . --noEmit -w",
-    "docker:create": "docker run -d -p 3306:3306 -p 33060:33060 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin --name=mysql-server mysql:latest",
-    "docker:start": "docker start mysql-server",
-    "start:all": "npm run docker:start && npm start"
+    "ts:check:watch": "tsc --project . --noEmit -w"
   },
   "browserslist": [
     ">0.2%",
