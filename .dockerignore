@@ -1,0 +1,7 @@
+# Ignore git stuff
+.git*
+
+# Ignore all your language-specific build folders
+**/build/
+**/node_modules/
+target/

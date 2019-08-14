@@ -1,0 +1,38 @@
+version: "3"
+services:
+  mysql-server:
+    image: mysql:latest
+    container_name: mysql-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=springuser
+      - MYSQL_PASSWORD=ThePassword
+      - MYSQL_DATABASE=db_example
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    networks:
+      - tms_db
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db_config/config:/etc/mysql/conf.d
+      - ./db_config/certs:/etc/mysql/ssl
+
+  tms-server:
+    depends_on:
+      - mysql-server
+    image: tutor-management-system
+    env_file:
+      - tms_env_values.env
+    ports:
+      - "8443:8443"
+    networks:
+      - tms_db
+    volumes:
+      - ./keystore.p12:/tms/keystore.p12
+
+volumes:
+  db-data:
+
+networks:
+  tms_db:

@@ -1,0 +1,29 @@
+{
+  // This setting is relativ to the PROJECT_ROOT!
+  "java.format.settings.url": "java_style_google.xml",
+  "java.format.settings.profile": "GoogleStyle",
+  "todo-tree.excludeGlobs": ["node_modules/**", "mvnw"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.test.config": [
+    {
+      "env": {
+        "TMS_DB_ENCRYPTION_KEY": "MySuperSecretKey",
+        "TMS_SERVER_INITIAL_ADMIN_PASSWORD": "admin"
+      },
+      "name": "config-ef4f8f"
+    }
+  ],
+  "java.test.defaultConfig": "config-ef4f8f"
+}

@@ -1,0 +1,35 @@
+version: "3"
+services:
+  mysql-server:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=springuser
+      - MYSQL_PASSWORD=ThePassword
+      - MYSQL_DATABASE=db_example
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./config:/etc/mysql/conf.d
+      - ./certs:/etc/mysql/ssl
+    networks:
+      - tms_db
+  phpmyadmin:
+    depends_on:
+      - mysql-server
+    image: phpmyadmin/phpmyadmin:edge-4.8
+    #environment:
+    # - PMA_HOST=127.0.0.1
+    ports:
+      - "8888:80"
+    networks:
+      - tms_db
+    volumes:
+      - ./phpmyadmin_conf:/etc/phpmyadmin
+volumes:
+  db-data:
+
+networks: 
+  tms_db:
