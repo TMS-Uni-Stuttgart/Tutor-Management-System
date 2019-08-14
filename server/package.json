@@ -9,7 +9,12 @@
     "build": "tsc",
     "prestart": "yarn build",
     "start": "nodemon .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "eslint:check": "eslint \"src/**/*.ts?(x)\"",
+    "eslint:fix": "eslint --fix \"src/**/*.ts?(x)\"",
+    "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
+    "ts:check": "tsc --project . --noEmit",
+    "ts:check:watch": "tsc --project . --noEmit -w"
   },
   "dependencies": {
     "express": "^4.17.1"
