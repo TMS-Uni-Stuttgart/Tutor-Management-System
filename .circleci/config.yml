@@ -81,8 +81,7 @@ jobs:
     working_directory: ~/project
 
     steps:
-      - checkout:
-          path: ~/project
+      - checkout
 
       - restore_cache:
           keys:
