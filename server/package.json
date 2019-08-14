@@ -18,18 +18,22 @@
     "ts:check:watch": "tsc --project . --noEmit -w"
   },
   "dependencies": {
-    "@types/passport": "^1.0.0",
-    "@types/passport-local": "^1.0.33",
     "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "express-session": "^1.16.2",
     "mongoose": "^5.6.9",
     "passport": "^0.4.0",
-    "passport-local": "^1.0.0"
+    "passport-http": "^0.3.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.0",
+    "@types/express-session": "^1.15.13",
     "@types/mongoose": "^5.5.12",
+    "@types/passport": "^1.0.0",
+    "@types/passport-http": "^0.3.8",
     "shared": "1.0.0"
   }
 }

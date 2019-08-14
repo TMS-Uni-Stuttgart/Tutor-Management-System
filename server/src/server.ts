@@ -1,10 +1,13 @@
+import bodyParser from 'body-parser';
 import express from 'express';
+import session from 'express-session';
 import mongoose from 'mongoose';
 import passport from 'passport';
+import uuid from 'uuid/v4';
 import databaseConfig from './config/database';
 import initPassport from './config/passport';
-import authenticationRouter from './routes/authentication';
 import userService from './services/UserService';
+import authenticationRouter from './routes/authentication';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
@@ -30,6 +33,23 @@ db.once('open', async () => {
 const app = express();
 
 initPassport(passport);
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.use(
+  session({
+    genid: () => {
+      return uuid();
+    },
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());

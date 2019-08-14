@@ -1,4 +1,4 @@
-import { Strategy as LocalStrategy } from 'passport-local';
+import { BasicStrategy } from 'passport-http';
 import { PassportStatic } from 'passport';
 import { User } from 'shared/typings/ServerResponse';
 import bcrypt from 'bcrypt';
@@ -6,7 +6,7 @@ import userService from '../services/UserService';
 
 export default function initPassport(passport: PassportStatic) {
   passport.use(
-    new LocalStrategy(async (username, password, done) => {
+    new BasicStrategy(async (username, password, done) => {
       try {
         const user = await userService.getUserWithUsername(username);
         const isCorrectPassword = await bcrypt.compare(password, user.password);
