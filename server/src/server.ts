@@ -6,8 +6,8 @@ import passport from 'passport';
 import uuid from 'uuid/v4';
 import databaseConfig from './config/database';
 import initPassport from './config/passport';
-import userService from './services/UserService';
 import authenticationRouter from './routes/authentication';
+import userService from './services/UserService';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
@@ -44,9 +44,12 @@ app.use(
     },
     secret: 'keyboard cat',
     resave: false,
+    // Is ued to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
+    rolling: true,
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
+      maxAge: 30 * 60 * 1000,
     },
   })
 );
