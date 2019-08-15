@@ -1,49 +1,40 @@
 import bcrypt from 'bcrypt';
-import UserDocument, { UserModel } from '../model/UserDocument';
-import uuid = require('uuid/v4');
 import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, User } from 'shared/dist/model/User';
+import UserModel, { UserDocument, UserCredentials } from '../model/UserDocument';
+import uuid = require('uuid/v4');
 
 class UserService {
-  public async initAdmin() {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const password = await bcrypt.hash('admin', salt);
-      const admin: CreateUserDTO = {
-        firstname: 'admin',
-        lastname: 'admin',
-        roles: [Role.ADMIN],
-        tutorials: [],
-        username: 'admin',
-        password,
-      };
-      const adminDocument = new UserDocument({ ...admin });
+  public async getAllUsers(): Promise<User[]> {
+    const userDocuments: UserDocument[] = await UserModel.find();
+    const users: User[] = [];
 
-      adminDocument.save();
-    } catch (err) {
-      throw err;
+    for (const doc of userDocuments) {
+      users.push(await this.getUserOrReject(doc));
     }
+
+    return users;
   }
 
-  public async getUserWithId(id: string): Promise<UserModel> {
-    const user: UserModel | null = await UserDocument.findById(id);
+  public async getUserWithId(id: string): Promise<User> {
+    const user: UserDocument | null = await UserModel.findById(id);
 
     return this.getUserOrReject(user);
   }
 
-  public async getUserWithUsername(username: string): Promise<UserModel | null> {
-    const user: UserModel | null = await UserDocument.findOne({ username });
+  public async getUserCredentialsWithUsername(username: string): Promise<UserCredentials> {
+    const user: UserDocument | null = await UserModel.findOne({ username });
 
-    return this.getUserOrReject(user);
-  }
-
-  private async getUserOrReject(user: UserModel | null): Promise<UserModel> {
-    return user || Promise.reject('User not found.');
-  }
-
-  private async convertDocumentToUser(user: UserModel | null): Promise<User> {
     if (!user) {
-      return Promise.reject('User not found');
+      return Promise.reject('User not found.');
+    }
+
+    return { _id: user._id, username: user.username, password: user.password };
+  }
+
+  private async getUserOrReject(user: UserDocument | null): Promise<User> {
+    if (!user) {
+      return Promise.reject('User not found.');
     }
 
     const { firstname, lastname, roles, tutorials, temporaryPassword, username, _id } = user;
@@ -57,6 +48,26 @@ class UserService {
       tutorials,
       temporaryPassword,
     };
+  }
+
+  public async initAdmin() {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash('admin', salt);
+      const admin: CreateUserDTO = {
+        firstname: 'admin',
+        lastname: 'admin',
+        roles: [Role.ADMIN],
+        tutorials: [],
+        username: 'admin',
+        password,
+      };
+      const adminDocument = new UserModel({ ...admin });
+
+      adminDocument.save();
+    } catch (err) {
+      throw err;
+    }
   }
 }
 

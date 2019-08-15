@@ -1,11 +1,17 @@
-import { model, Model, Schema, Document } from 'mongoose';
-import { CreateMongooseModel } from './TypeHelpers';
+import { model, Model, Schema } from 'mongoose';
 import { User } from 'shared/dist/model/User';
+import { CreateMongooseModel as CreateMongooseDocument } from './TypeHelpers';
 import uuid = require('uuid/v4');
 
-export type UserModel = CreateMongooseModel<User & { password: string }>;
+export interface UserCredentials {
+  _id: string;
+  username: string;
+  password: string;
+}
 
-const UserSchema: Schema<UserModel> = new Schema({
+export type UserDocument = CreateMongooseDocument<User & { password: string }>;
+
+const UserSchema: Schema<UserDocument> = new Schema({
   _id: { type: String, default: uuid },
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
@@ -16,6 +22,6 @@ const UserSchema: Schema<UserModel> = new Schema({
   password: { type: String, required: true },
 });
 
-const UserDocument: Model<UserModel> = model<UserModel>('User', UserSchema);
+const UserModel: Model<UserDocument> = model<UserDocument>('User', UserSchema);
 
-export default UserDocument;
+export default UserModel;
