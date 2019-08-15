@@ -6,7 +6,7 @@ import { User } from 'shared/dist/model/User';
 const userRouter = Router();
 
 userRouter.get('/', isAuthenticated, async (req, res) => {
-  const allUsers: User[] = [];
+  const allUsers: User[] = await userService.getAllUsers();
 
   res.json(allUsers);
 });
