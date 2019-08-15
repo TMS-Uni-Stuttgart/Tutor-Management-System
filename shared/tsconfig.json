@@ -15,7 +15,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "composite": true,
-    "declaration": true
+    "declaration": true,
+    "declarationMap": true
   },
   "include": ["src/**/*"]
 }

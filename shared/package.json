@@ -1,5 +1,8 @@
 {
   "name": "shared",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "typegoose": "^5.9.0"
+  }
 }

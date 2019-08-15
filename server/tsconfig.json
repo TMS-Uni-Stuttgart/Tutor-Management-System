@@ -10,9 +10,7 @@
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
-    },
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    }
   },
   "references": [{ "path": "../shared" }],
   "include": ["src/**/*"]
