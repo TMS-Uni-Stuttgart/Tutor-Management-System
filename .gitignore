@@ -3,6 +3,7 @@
 
 # Node
 **/node_modules
+**/*.tsbuildinfo
 
 /bin/
 /target/
