@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { isAuthenticated } from '../middleware/AccessControl';
 import userService from '../services/UserService';
-import { User } from '../model/UserDocument';
+import { User } from 'shared/dist/model/User';
 
 const userRouter = Router();
 

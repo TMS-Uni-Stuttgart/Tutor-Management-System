@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { PassportStatic } from 'passport';
 import { BasicStrategy } from 'passport-http';
-import { User } from 'shared/dist/typings/ServerResponse';
+import { UserModel } from '../model/UserDocument';
 import userService from '../services/UserService';
 
 export default function initPassport(passport: PassportStatic) {
@@ -23,8 +23,8 @@ export default function initPassport(passport: PassportStatic) {
   );
 
   passport.serializeUser((user, done) => {
-    if (typeof user === 'object' && (user as User)._id !== undefined) {
-      done(null, (user as User)._id);
+    if (typeof user === 'object' && (user as UserModel)._id !== undefined) {
+      done(null, (user as UserModel)._id);
     } else {
       done(null, false);
     }

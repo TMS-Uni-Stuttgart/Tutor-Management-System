@@ -1,18 +1,9 @@
-import { model, Model, Schema } from 'mongoose';
-import { NamedElement } from './Common';
-import { Role } from './Role';
+import { model, Model, Schema, Document } from 'mongoose';
 import { CreateMongooseModel } from './TypeHelpers';
+import { User } from 'shared/dist/model/User';
 import uuid = require('uuid/v4');
 
-export interface User extends NamedElement {
-  roles: Role[];
-  temporaryPassword: string;
-  tutorials: string[];
-  username: string;
-  password: string;
-}
-
-export type UserModel = CreateMongooseModel<User>;
+export type UserModel = CreateMongooseModel<User & { password: string }>;
 
 const UserSchema: Schema<UserModel> = new Schema({
   _id: { type: String, default: uuid },

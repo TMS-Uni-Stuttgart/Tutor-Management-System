@@ -125,6 +125,22 @@
         "version": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8",
         "signature": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8"
       },
+      "e:/workspace/tutor-management-system/shared/src/model/common.ts": {
+        "version": "33b12d2342fc8dcca70dba6ffbbbfb7bfbdd83a58c5b42c2c0e304432d5a4160",
+        "signature": "973180ab399a9d627b79a9e4eeda4fa72c6db6dab5c204fd257be01b15b7fe0b"
+      },
+      "e:/workspace/tutor-management-system/shared/src/model/role.ts": {
+        "version": "108a40bd1fc1b79c70aeea7c7f21e60965bb1e1c8f63dfca0d871a8a26611f9c",
+        "signature": "a0781ef1e9c1ea72e88f135092e5ff5654ede0028fadd076c2457825eb104285"
+      },
+      "e:/workspace/tutor-management-system/shared/src/model/tutorial.ts": {
+        "version": "3bf7894f98afa090b9507cb0d40f356ad9b7b95de0cb0e22e8402e721cd5544c",
+        "signature": "41b45902a532795bf25a901366f0613d4e2aee1e52892ea521a46644107344c9"
+      },
+      "e:/workspace/tutor-management-system/shared/src/model/user.ts": {
+        "version": "8f0a4e50709d4ecc7d4740811b630ff45786f7885010e10810b9a9b237dd1093",
+        "signature": "e4beebd2b63a133f1387da3268e39658438eb80b73c3634b6ecd68193a2e8230"
+      },
       "e:/workspace/tutor-management-system/shared/src/typings/serverresponse.ts": {
         "version": "480bc54047f941a75a7624cce4a88fbc7e7d7daa1e3830793e0d3c5025fce98d",
         "signature": "216d25075cc48dc8b50378e8792f2a7c4a5b10b8f688babef5bbaa1911dc00e1"
@@ -626,6 +642,7 @@
       "composite": true,
       "declaration": true,
       "declarationMap": true,
+      "watch": true,
       "configFilePath": "E:/Workspace/Tutor-Management-System/shared/tsconfig.json"
     },
     "referencedMap": {
@@ -750,6 +767,26 @@
         "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.esnext.bigint.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/shared/src/model/common.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/shared/src/model/role.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/shared/src/model/tutorial.ts": [
+        "e:/workspace/tutor-management-system/shared/src/model/common.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/shared/src/model/user.ts": [
+        "e:/workspace/tutor-management-system/shared/src/model/common.ts",
+        "e:/workspace/tutor-management-system/shared/src/model/role.ts",
+        "e:/workspace/tutor-management-system/shared/src/model/tutorial.ts",
         "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
         "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
       ],
@@ -1569,6 +1606,138 @@
       ]
     },
     "exportedModulesMap": {
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es6.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es5.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2016.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.dom.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.dom.iterable.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.webworker.importscripts.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.scripthost.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.core.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.collection.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.generator.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.iterable.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.promise.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.proxy.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.reflect.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.symbol.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2016.array.include.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.object.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.string.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.intl.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.intl.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.promise.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.regexp.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.esnext.intl.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.esnext.bigint.d.ts": [
+        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
+        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "e:/workspace/tutor-management-system/shared/src/model/tutorial.ts": [
+        "e:/workspace/tutor-management-system/shared/src/model/common.ts"
+      ],
+      "e:/workspace/tutor-management-system/shared/src/model/user.ts": [
+        "e:/workspace/tutor-management-system/shared/src/model/common.ts",
+        "e:/workspace/tutor-management-system/shared/src/model/tutorial.ts",
+        "e:/workspace/tutor-management-system/shared/src/model/role.ts"
+      ],
       "e:/workspace/tutor-management-system/node_modules/@babel/types/lib/index.d.ts": [
         "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
         "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
@@ -2378,130 +2547,6 @@
       "e:/workspace/tutor-management-system/node_modules/@types/yup/index.d.ts": [
         "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
         "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es6.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es5.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2016.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.dom.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.dom.iterable.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.webworker.importscripts.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.scripthost.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.core.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.collection.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.generator.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.iterable.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.promise.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.proxy.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.reflect.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.symbol.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2016.array.include.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.object.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.string.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.intl.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.intl.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.promise.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.regexp.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.esnext.intl.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.esnext.bigint.d.ts": [
-        "e:/workspace/tutor-management-system/node_modules/@types/node/util.d.ts",
-        "e:/workspace/tutor-management-system/node_modules/@types/node/ts3.2/util.d.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -2536,6 +2581,9 @@
       "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.es2018.regexp.d.ts",
       "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "e:/workspace/tutor-management-system/node_modules/typescript/lib/lib.esnext.bigint.d.ts",
+      "e:/workspace/tutor-management-system/shared/src/model/common.ts",
+      "e:/workspace/tutor-management-system/shared/src/model/role.ts",
+      "e:/workspace/tutor-management-system/shared/src/model/tutorial.ts",
       "e:/workspace/tutor-management-system/shared/src/typings/serverresponse.ts",
       "e:/workspace/tutor-management-system/node_modules/@babel/types/lib/index.d.ts",
       "e:/workspace/tutor-management-system/node_modules/@types/babel__generator/index.d.ts",
@@ -2655,7 +2703,8 @@
       "e:/workspace/tutor-management-system/node_modules/@types/uuid/interfaces.d.ts",
       "e:/workspace/tutor-management-system/node_modules/@types/uuid/index.d.ts",
       "e:/workspace/tutor-management-system/node_modules/@types/yargs/index.d.ts",
-      "e:/workspace/tutor-management-system/node_modules/@types/yup/index.d.ts"
+      "e:/workspace/tutor-management-system/node_modules/@types/yup/index.d.ts",
+      "e:/workspace/tutor-management-system/shared/src/model/user.ts"
     ]
   },
   "version": "3.5.3"

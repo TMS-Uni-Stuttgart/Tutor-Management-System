@@ -1,19 +1,18 @@
 import bcrypt from 'bcrypt';
-import UserDocument, { User, UserModel } from '../model/UserDocument';
+import UserDocument, { UserModel } from '../model/UserDocument';
 import uuid = require('uuid/v4');
-import { Role } from '../model/Role';
+import { Role } from 'shared/dist/model/Role';
+import { CreateUserDTO, User } from 'shared/dist/model/User';
 
 class UserService {
   public async initAdmin() {
     try {
       const salt = await bcrypt.genSalt(10);
       const password = await bcrypt.hash('admin', salt);
-      const admin: User = {
-        id: uuid(),
+      const admin: CreateUserDTO = {
         firstname: 'admin',
         lastname: 'admin',
         roles: [Role.ADMIN],
-        temporaryPassword: '',
         tutorials: [],
         username: 'admin',
         password,
@@ -26,16 +25,20 @@ class UserService {
     }
   }
 
-  public async getUserWithId(id: string): Promise<User> {
+  public async getUserWithId(id: string): Promise<UserModel> {
     const user: UserModel | null = await UserDocument.findById(id);
 
-    return this.convertDocumentToUser(user);
+    return this.getUserOrReject(user);
   }
 
-  public async getUserWithUsername(username: string): Promise<User> {
+  public async getUserWithUsername(username: string): Promise<UserModel | null> {
     const user: UserModel | null = await UserDocument.findOne({ username });
 
-    return this.convertDocumentToUser(user);
+    return this.getUserOrReject(user);
+  }
+
+  private async getUserOrReject(user: UserModel | null): Promise<UserModel> {
+    return user || Promise.reject('User not found.');
   }
 
   private async convertDocumentToUser(user: UserModel | null): Promise<User> {
@@ -43,21 +46,11 @@ class UserService {
       return Promise.reject('User not found');
     }
 
-    const {
-      firstname,
-      lastname,
-      roles,
-      tutorials,
-      temporaryPassword,
-      username,
-      password,
-      _id,
-    } = user;
+    const { firstname, lastname, roles, tutorials, temporaryPassword, username, _id } = user;
 
     return {
       id: _id,
       username,
-      password,
       firstname,
       lastname,
       roles,
