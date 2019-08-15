@@ -16,6 +16,7 @@ authenticationRouter.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+
 authenticationRouter.get('/authrequired', isAuthenticated, (req, res) => {
   res.send('you hit the authentication endpoint\n');
 });

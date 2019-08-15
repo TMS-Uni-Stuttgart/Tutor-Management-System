@@ -6,14 +6,16 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "build",
+    "outDir": "dist",
+    "rootDir": "src/",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
     },
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "composite": true,
+    "declaration": true
   },
-  "references": [{ "path": "../shared" }],
   "include": ["src/**/*"]
 }

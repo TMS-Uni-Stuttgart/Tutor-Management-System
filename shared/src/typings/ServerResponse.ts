@@ -17,7 +17,7 @@ export interface Exercise {
 }
 
 export interface HasId {
-  id: string;
+  _id: string;
 }
 
 export interface LoggedInUser extends NamedElement {

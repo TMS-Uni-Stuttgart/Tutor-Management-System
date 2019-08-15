@@ -1,5 +1,5 @@
-import UserDocument, { User } from '../model/UserDocument';
 import bcrypt from 'bcrypt';
+import UserDocument, { User } from 'shared/dist/model/UserDocument';
 
 class UserService {
   public async initAdmin() {
@@ -26,6 +26,8 @@ class UserService {
 
   public async getUserWithUsername(username: string): Promise<User> {
     const user: User | null = await UserDocument.findOne({ username });
+    console.log(user);
+    console.log(user._id);
 
     return user || Promise.reject('User not found');
   }
