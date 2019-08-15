@@ -1,33 +1,30 @@
-import { Typegoose, prop } from 'typegoose';
-import { OmitTypegoose } from './TypeHelpers';
+import { model, Model, Schema } from 'mongoose';
+import { NamedElement } from './Common';
 import { Role } from './Role';
+import { CreateMongooseModel } from './TypeHelpers';
+import uuid = require('uuid/v4');
 
-class UserModel extends Typegoose {
-  @prop()
-  firstname: string;
-
-  @prop()
-  lastname: string;
-
-  @prop()
+export interface User extends NamedElement {
   roles: Role[];
-
-  @prop()
   temporaryPassword: string;
-
-  @prop()
   tutorials: string[];
-
-  @prop()
   username: string;
-
-  @prop()
   password: string;
 }
 
-const UserDocument = new UserModel().getModelForClass(UserModel);
+export type UserModel = CreateMongooseModel<User>;
 
-// const UserDocument = mongoose.model<User>('User', UserSchema);
+const UserSchema: Schema<UserModel> = new Schema({
+  _id: { type: String, default: uuid },
+  firstname: { type: String, required: true },
+  lastname: { type: String, required: true },
+  roles: { type: [String], required: true },
+  temporaryPassword: String,
+  tutorials: { type: [String], required: true },
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+});
 
-export type User = OmitTypegoose<UserModel>;
+const UserDocument: Model<UserModel> = model<UserModel>('User', UserSchema);
+
 export default UserDocument;

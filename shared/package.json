@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "typegoose": "^5.9.0"
+    "mongoose": "^5.6.9"
   }
 }

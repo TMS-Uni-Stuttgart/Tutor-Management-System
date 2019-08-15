@@ -10805,11 +10805,6 @@ redent@^2.0.0:
     indent-string "^3.0.0"
     strip-indent "^2.0.0"
 
-reflect-metadata@^0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
-  integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
-
 regenerate-unicode-properties@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-8.1.0.tgz#ef51e0f0ea4ad424b77bf7cb41f3e015c70a3f0e"
@@ -12292,13 +12287,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-typegoose@^5.9.0:
-  version "5.9.0"
-  resolved "https://registry.yarnpkg.com/typegoose/-/typegoose-5.9.0.tgz#e4b2cdfe4cffe6c2a54be4133a3d67fcda4d6a32"
-  integrity sha512-oczsIaQeT24rxbFfWIq/qyrCFYt1wLG5lgu9GLgeF0X9y07C8l/f2uk1+wDLVroz9j3SlK9jpz6j00kSFogzMg==
-  dependencies:
-    reflect-metadata "^0.1.13"
 
 typescript@^3.2.2, typescript@^3.5.3:
   version "3.5.3"

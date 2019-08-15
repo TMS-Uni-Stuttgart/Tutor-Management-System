@@ -1,3 +1,3 @@
-import { Typegoose } from 'typegoose';
+import { Document } from 'mongoose';
 
-export type OmitTypegoose<T> = Omit<T, keyof Typegoose> & { readonly _id: string };
+export type CreateMongooseModel<T> = Omit<Document, 'id'> & Partial<T>;

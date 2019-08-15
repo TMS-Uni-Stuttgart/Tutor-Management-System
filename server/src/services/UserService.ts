@@ -1,35 +1,69 @@
 import bcrypt from 'bcrypt';
-import UserDocument, { User } from 'shared/dist/model/UserDocument';
+import UserDocument, { User, UserModel } from 'shared/dist/model/UserDocument';
+import uuid = require('uuid/v4');
+import { Role } from 'shared/dist/model/Role';
 
 class UserService {
   public async initAdmin() {
     try {
       const salt = await bcrypt.genSalt(10);
       const password = await bcrypt.hash('admin', salt);
-
-      const admin = new UserDocument({
+      const admin: User = {
+        id: uuid(),
+        firstname: 'admin',
+        lastname: 'admin',
+        roles: [Role.ADMIN],
+        temporaryPassword: '',
+        tutorials: [],
         username: 'admin',
         password,
-      });
+      };
+      const adminDocument = new UserDocument({ ...admin });
 
-      return admin.save();
+      adminDocument.save();
     } catch (err) {
       throw err;
     }
   }
 
   public async getUserWithId(id: string): Promise<User> {
-    const user: User | null = await UserDocument.findById(id);
+    const user: UserModel | null = await UserDocument.findById(id);
 
-    return user || Promise.reject('User not found');
+    return this.convertDocumentToUser(user);
   }
 
   public async getUserWithUsername(username: string): Promise<User> {
-    const user: User | null = await UserDocument.findOne({ username });
-    console.log(user);
-    console.log(user._id);
+    const user: UserModel | null = await UserDocument.findOne({ username });
 
-    return user || Promise.reject('User not found');
+    return this.convertDocumentToUser(user);
+  }
+
+  private async convertDocumentToUser(user: UserModel | null): Promise<User> {
+    if (!user) {
+      return Promise.reject('User not found');
+    }
+
+    const {
+      firstname,
+      lastname,
+      roles,
+      tutorials,
+      temporaryPassword,
+      username,
+      password,
+      _id,
+    } = user;
+
+    return {
+      id: _id,
+      username,
+      password,
+      firstname,
+      lastname,
+      roles,
+      tutorials,
+      temporaryPassword,
+    };
   }
 }
 
