@@ -1,14 +1,13 @@
 import bcrypt from 'bcrypt';
 import { PassportStatic } from 'passport';
 import { BasicStrategy } from 'passport-http';
-import { UserModel } from '../model/UserDocument';
 import userService from '../services/UserService';
 
 export default function initPassport(passport: PassportStatic) {
   passport.use(
     new BasicStrategy(async (username, password, done) => {
       try {
-        const user = await userService.getUserWithUsername(username);
+        const user = await userService.getUserCredentialsWithUsername(username);
         const isCorrectPassword = await bcrypt.compare(password, user.password);
 
         if (isCorrectPassword) {
@@ -22,9 +21,9 @@ export default function initPassport(passport: PassportStatic) {
     })
   );
 
-  passport.serializeUser((user, done) => {
-    if (typeof user === 'object' && (user as UserModel)._id !== undefined) {
-      done(null, (user as UserModel)._id);
+  passport.serializeUser((user: unknown, done) => {
+    if (typeof user === 'object' && '_id' in user) {
+      done(null, (user as any)._id);
     } else {
       done(null, false);
     }

@@ -22,7 +22,7 @@ const db = mongoose.connection;
 db.once('open', async () => {
   console.log('Connection to MongoDB database established.');
 
-  userService.getUserWithUsername('admin').catch(async () => {
+  userService.getUserCredentialsWithUsername('admin').catch(async () => {
     console.log('Initializing new admin user because there is none..');
     await userService.initAdmin();
     console.log('Admin initializied.');
