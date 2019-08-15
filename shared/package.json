@@ -1,8 +1,5 @@
 {
   "name": "shared",
   "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "mongoose": "^5.6.9"
-  }
+  "private": true
 }

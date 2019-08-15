@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
-import UserDocument, { User, UserModel } from 'shared/dist/model/UserDocument';
+import UserDocument, { User, UserModel } from '../model/UserDocument';
 import uuid = require('uuid/v4');
-import { Role } from 'shared/dist/model/Role';
+import { Role } from '../model/Role';
 
 class UserService {
   public async initAdmin() {
