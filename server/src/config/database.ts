@@ -2,11 +2,13 @@ import { ConnectionOptions } from 'mongoose';
 
 interface DatabaseConfig {
   databaseURL: string;
+  secret: string;
   config: ConnectionOptions;
 }
 
 const config: DatabaseConfig = {
   databaseURL: 'mongodb://localhost:27017/tms',
+  secret: 'keyboard cat',
   config: {
     useNewUrlParser: true,
     // This is needed bc the docker-compose file

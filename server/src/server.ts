@@ -9,6 +9,12 @@ import initPassport from './config/passport';
 import authenticationRouter from './routes/authentication';
 import userService from './services/UserService';
 import userRouter from './routes/user';
+import ConnectMongo, {
+  MongoUrlOptions,
+  MongooseConnectionOptions,
+  NativeMongoOptions,
+  NativeMongoPromiseOptions,
+} from 'connect-mongo';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
@@ -19,6 +25,18 @@ mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err =>
 });
 
 const db = mongoose.connection;
+const app = express();
+const BASE_API_PATH = '/api';
+const MongoStore = ConnectMongo(session);
+const mongoStoreOptions: { secret: string } & (
+  | MongoUrlOptions
+  | MongooseConnectionOptions
+  | NativeMongoOptions
+  | NativeMongoPromiseOptions) = {
+  mongooseConnection: mongoose.connection,
+  secret: databaseConfig.secret,
+};
+
 db.once('open', async () => {
   console.log('Connection to MongoDB database established.');
 
@@ -28,9 +46,6 @@ db.once('open', async () => {
     console.log('Admin initializied.');
   });
 });
-
-const app = express();
-const BASE_API_PATH = '/api';
 
 initPassport(passport);
 
@@ -42,7 +57,8 @@ app.use(
     genid: () => {
       return uuid();
     },
-    secret: 'keyboard cat',
+    secret: databaseConfig.secret,
+    store: new MongoStore(mongoStoreOptions),
     resave: false,
     // Is used to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
     rolling: true,
