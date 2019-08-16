@@ -2,12 +2,13 @@ import bcrypt from 'bcrypt';
 import { PassportStatic } from 'passport';
 import { BasicStrategy } from 'passport-http';
 import userService from '../services/UserService';
+import { UserCredentials } from '../model/UserDocument';
 
 export default function initPassport(passport: PassportStatic) {
   passport.use(
     new BasicStrategy(async (username, password, done) => {
       try {
-        const user = await userService.getUserCredentialsWithUsername(username);
+        const user: UserCredentials = await userService.getUserCredentialsWithUsername(username);
         const isCorrectPassword = await bcrypt.compare(password, user.password);
 
         if (isCorrectPassword) {
