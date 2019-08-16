@@ -27,6 +27,7 @@ module.exports = {
       'error',
       { functions: false, classes: true, variables: true, typedefs: true },
     ],
+    '@typescript-eslint/no-parameter-properties': ['error', { allows: ['readonly'] }],
     'react/display-name': 'off',
     'react/jsx-no-duplicate-props': ['warn', { ignoreCase: false }],
     'prettier/prettier': 'warn',

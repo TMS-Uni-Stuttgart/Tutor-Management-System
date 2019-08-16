@@ -26,7 +26,7 @@ export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorial
   @prop({ default: '' })
   temporaryPassword: string;
 
-  @arrayProp({ required: true, itemsRef: TutorialSchema,  })
+  @arrayProp({ required: true, itemsRef: TutorialSchema })
   tutorials: Ref<TutorialDocument>[];
 
   @prop({ required: true })
