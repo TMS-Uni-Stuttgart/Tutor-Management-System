@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { Role } from '../model/Role';
-import { CreateUserDTO } from '../model/User';
+import { CreateUserDTO, UserDTO } from '../model/User';
 
 interface ValidationErrorExtract {
   path: string;
@@ -12,6 +12,13 @@ export type ValidationErrors = ValidationErrorExtract[];
 interface ValidationErrorsWrapper {
   errors: ValidationErrors;
 }
+
+const UserDTOSchema = Yup.object().shape<UserDTO>({
+  firstname: Yup.string().required(),
+  lastname: Yup.string().required(),
+  roles: Yup.array<Role>(),
+  tutorials: Yup.array().of(Yup.string()),
+});
 
 const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
   firstname: Yup.string().required(),
@@ -25,8 +32,21 @@ const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
 export function validateAgainstCreateUserDTO(
   obj: any
 ): Yup.Shape<object, CreateUserDTO> | ValidationErrorsWrapper {
+  return validateSchema(CreateUserDTOSchema, obj);
+}
+
+export function validateAgainstUserDTO(
+  obj: any
+): Yup.Shape<object, UserDTO> | ValidationErrorsWrapper {
+  return validateSchema(UserDTOSchema, obj);
+}
+
+function validateSchema<T extends object>(
+  schema: Yup.Schema<T>,
+  obj: any
+): Yup.Shape<object, T> | ValidationErrorsWrapper {
   try {
-    const result: Yup.Shape<object, CreateUserDTO> = CreateUserDTOSchema.validateSync(obj, {
+    const result: Yup.Shape<object, T> = schema.validateSync(obj, {
       abortEarly: false,
     });
     return result;

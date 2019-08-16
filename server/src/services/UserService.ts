@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt';
 import { Role } from 'shared/dist/model/Role';
-import { CreateUserDTO, LoggedInUser, User } from 'shared/dist/model/User';
-import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
+import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
 import { CollectionName } from '../model/CollectionName';
+import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import TutorialModel from '../model/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../model/UserDocument';
-import uuid from 'uuid/v4';
+import { DocumentNotFoundError } from '../routes/user';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -25,6 +25,25 @@ class UserService {
     const createdUser = await UserModel.create({ ...dto, password });
 
     return this.getUserOrReject(createdUser);
+  }
+
+  public async updateUser(id: string, dto: UserDTO): Promise<User> {
+    // TODO: Implement me
+    const user: UserDocument = await this.getUserDocumentWithId(id);
+
+    // TODO: Remove user from tutorial(s) -- needed with references??
+    // TODO: Readd user to new tutorial(s) -- needed with references??
+
+    await user.updateOne({ ...dto });
+    const updatedUser = await this.getUserDocumentWithId(id);
+
+    return this.getUserOrReject(updatedUser);
+  }
+
+  public async deleteUser(id: string): Promise<void> {
+    const user: UserDocument = await this.getUserDocumentWithId(id);
+
+    user.remove();
   }
 
   public async getUserWithId(id: string): Promise<User> {
@@ -60,7 +79,7 @@ class UserService {
     );
 
     if (!user) {
-      return Promise.reject('User document not found.');
+      return this.rejectUserNotFound();
     }
 
     return user;
@@ -68,7 +87,7 @@ class UserService {
 
   private async getUserOrReject(user: UserDocument | null): Promise<User> {
     if (!user) {
-      return Promise.reject('User not found.');
+      return this.rejectUserNotFound();
     }
 
     const { _id, firstname, lastname, roles, tutorials, temporaryPassword, username } = user;
@@ -82,6 +101,10 @@ class UserService {
       tutorials: tutorials.map(t => ('_id' in t ? t._id : t.toString())),
       temporaryPassword,
     };
+  }
+
+  private async rejectUserNotFound(): Promise<any> {
+    throw new DocumentNotFoundError('User not found.');
   }
 
   public async initAdmin() {
