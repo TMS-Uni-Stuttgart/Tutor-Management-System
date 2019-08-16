@@ -1,5 +1,5 @@
-import { ValidationErrors } from 'shared/dist/validators/User';
 import { Response } from 'express';
+import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 
 export interface StatusErrorMessages {
   [status: number]: string;
