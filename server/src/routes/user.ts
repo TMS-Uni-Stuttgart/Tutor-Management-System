@@ -1,12 +1,18 @@
-import { Router, Response } from 'express';
+import { Router } from 'express';
 import { Role } from 'shared/dist/model/Role';
-import { User, CreateUserDTO, UserDTO } from 'shared/dist/model/User';
+import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
 import {
   validateAgainstCreateUserDTO,
-  ValidationErrors,
   validateAgainstUserDTO,
+  ValidationErrors,
 } from 'shared/dist/validators/User';
 import { checkRoleAccess } from '../middleware/AccessControl';
+import {
+  ErrorResponse,
+  handleError,
+  StatusErrorMessages,
+  ValidationErrorResponse,
+} from '../model/Errors';
 import userService from '../services/UserService';
 
 function isValidCreateUserDTO(obj: any, errors: ValidationErrors): obj is CreateUserDTO {
@@ -29,28 +35,6 @@ function isValidUserDTO(obj: any, errors: ValidationErrors): obj is UserDTO {
   }
 
   return true;
-}
-
-export class DocumentNotFoundError {
-  constructor(readonly message: string) {}
-}
-
-class ErrorResponse {
-  constructor(readonly status: number, readonly message: string) {}
-}
-
-class ValidationErrorResponse extends ErrorResponse {
-  constructor(readonly message: string, readonly errors: ValidationErrors) {
-    super(400, message);
-  }
-}
-
-function handleError(err: any, res: Response) {
-  if (err instanceof DocumentNotFoundError) {
-    return res.status(404).send(new ErrorResponse(404, 'User with that ID was not found.'));
-  }
-
-  return res.status(500).send(new ErrorResponse(500, err.message || 'Internal server error.'));
 }
 
 const userRouter = Router();

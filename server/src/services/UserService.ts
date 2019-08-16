@@ -5,7 +5,7 @@ import { CollectionName } from '../model/CollectionName';
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import TutorialModel from '../model/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../model/UserDocument';
-import { DocumentNotFoundError } from '../routes/user';
+import { DocumentNotFoundError } from '../model/Errors';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -28,7 +28,6 @@ class UserService {
   }
 
   public async updateUser(id: string, dto: UserDTO): Promise<User> {
-    // TODO: Implement me
     const user: UserDocument = await this.getUserDocumentWithId(id);
 
     // TODO: Remove user from tutorial(s) -- needed with references??
@@ -104,7 +103,7 @@ class UserService {
   }
 
   private async rejectUserNotFound(): Promise<any> {
-    throw new DocumentNotFoundError('User not found.');
+    throw new DocumentNotFoundError('User with that ID was not found.');
   }
 
   public async initAdmin() {
