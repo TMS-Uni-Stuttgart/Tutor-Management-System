@@ -1,8 +1,8 @@
 import { Model, Schema } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { arrayProp, prop, Typegoose } from 'typegoose';
-import { CollectionName } from './CollectionName';
-import { CreateMongooseModel } from './TypeHelpers';
+import { CollectionName } from '../CollectionName';
+import { CreateMongooseModel } from '../TypeHelpers';
 
 export class TutorialSchema extends Typegoose implements Omit<Tutorial, 'id'> {
   // TODO: References

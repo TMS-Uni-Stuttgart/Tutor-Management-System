@@ -2,9 +2,9 @@ import { Model } from 'mongoose';
 import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
 import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
-import { CollectionName } from './CollectionName';
+import { CollectionName } from '../CollectionName';
 import { TutorialDocument, TutorialSchema } from './TutorialDocument';
-import { CreateMongooseModel as CreateMongooseDocument } from './TypeHelpers';
+import { CreateMongooseModel as CreateMongooseDocument } from '../TypeHelpers';
 
 export class UserCredentials {
   constructor(readonly _id: string, readonly username: string, readonly password: string) {}

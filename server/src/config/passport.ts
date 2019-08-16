@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { PassportStatic } from 'passport';
 import { BasicStrategy } from 'passport-http';
 import userService from '../services/UserService';
-import { UserCredentials } from '../model/UserDocument';
+import { UserCredentials } from '../model/documents/UserDocument';
 
 export default function initPassport(passport: PassportStatic) {
   passport.use(

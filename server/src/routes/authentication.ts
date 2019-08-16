@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport = require('passport');
 import { isAuthenticated } from '../middleware/AccessControl';
-import { UserCredentials } from '../model/UserDocument';
+import { UserCredentials } from '../model/documents/UserDocument';
 import userService from '../services/UserService';
 
 const authenticationRouter = Router();

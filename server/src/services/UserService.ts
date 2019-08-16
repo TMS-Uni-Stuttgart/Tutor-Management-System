@@ -3,8 +3,8 @@ import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
 import { CollectionName } from '../model/CollectionName';
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
-import TutorialModel from '../model/TutorialDocument';
-import UserModel, { UserCredentials, UserDocument } from '../model/UserDocument';
+import TutorialModel from '../model/documents/TutorialDocument';
+import UserModel, { UserCredentials, UserDocument } from '../model/documents/UserDocument';
 import { DocumentNotFoundError } from '../model/Errors';
 
 class UserService {

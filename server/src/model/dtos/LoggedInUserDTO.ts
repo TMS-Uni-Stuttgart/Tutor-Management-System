@@ -1,8 +1,8 @@
 import { Role } from 'shared/dist/model/Role';
 import { LoggedInUserSubstituteTutorial, LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
 import { LoggedInUser } from 'shared/dist/model/User';
-import { TutorialDocument } from '../TutorialDocument';
-import { UserDocument } from '../UserDocument';
+import { TutorialDocument } from '../documents/TutorialDocument';
+import { UserDocument } from '../documents/UserDocument';
 
 export class LoggedInUserTutorialDTO implements LoggedInUserTutorial {
   readonly id: string;
