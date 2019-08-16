@@ -1,5 +1,14 @@
 import { HasId } from './Common';
 
+export interface TutorialDTO {
+  correctorIds: string[];
+  dates: string[];
+  endTime: string;
+  slot: number;
+  startTime: string;
+  tutorId?: string | null;
+}
+
 export interface Tutorial extends HasId {
   slot: number;
   tutor?: string;
