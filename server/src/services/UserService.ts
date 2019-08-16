@@ -89,7 +89,18 @@ class UserService {
         password,
       };
 
-      const tutorialDocument = new TutorialModel({ slot: 1 });
+      const tutorialDocument = new TutorialModel({
+        slot: 1,
+        tutor: '',
+        dates: [],
+        startTime: new Date(Date.now()),
+        endTime: new Date(Date.now()),
+        students: [],
+        correctors: [],
+        teams: [],
+        substitutes: {},
+      });
+
       const adminDocument = new UserModel({ ...admin, tutorials: [tutorialDocument] });
 
       tutorialDocument.save();
