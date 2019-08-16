@@ -6,6 +6,7 @@ import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import TutorialModel from '../model/documents/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../model/documents/UserDocument';
 import { DocumentNotFoundError } from '../model/Errors';
+import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -46,9 +47,7 @@ class UserService {
   }
 
   public async getUserWithId(id: string): Promise<User> {
-    const user: UserDocument | null = await UserModel.findById(id).populate(
-      CollectionName.TUTORIAL
-    );
+    const user: UserDocument | null = await this.getUserDocumentWithId(id);
 
     return this.getUserOrReject(user);
   }
@@ -97,13 +96,13 @@ class UserService {
       firstname,
       lastname,
       roles,
-      tutorials: tutorials.map(t => ('_id' in t ? t._id : t.toString())),
+      tutorials: tutorials.map(getIdOfDocumentRef),
       temporaryPassword,
     };
   }
 
   private async rejectUserNotFound(): Promise<any> {
-    throw new DocumentNotFoundError('User with that ID was not found.');
+    return Promise.reject(new DocumentNotFoundError('User with that ID was not found.'));
   }
 
   public async initAdmin() {
