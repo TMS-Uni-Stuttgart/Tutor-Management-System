@@ -25,6 +25,7 @@
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
     "shared": "1.0.0",
+    "typegoose": "^5.9.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt';
 import { Role } from 'shared/dist/model/Role';
-import { CreateUserDTO, User, LoggedInUser } from 'shared/dist/model/User';
-import UserModel, { UserDocument, UserCredentials } from '../model/UserDocument';
-import uuid = require('uuid/v4');
+import { CreateUserDTO, LoggedInUser, User } from 'shared/dist/model/User';
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
+import { CollectionName } from '../model/CollectionName';
 import TutorialModel from '../model/TutorialDocument';
-import { SchemaName, getCollectionNameOfSchema } from '../model/SchemaName';
+import UserModel, { UserCredentials, UserDocument } from '../model/UserDocument';
+import uuid from 'uuid/v4';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -21,7 +21,7 @@ class UserService {
 
   public async getUserWithId(id: string): Promise<User> {
     const user: UserDocument | null = await UserModel.findById(id).populate(
-      getCollectionNameOfSchema(SchemaName.TUTORIAL)
+      CollectionName.TUTORIAL
     );
 
     return this.getUserOrReject(user);
@@ -48,7 +48,7 @@ class UserService {
 
   private async getUserDocumentWithId(id: string): Promise<UserDocument> {
     const user: UserDocument | null = await UserModel.findById(id).populate(
-      getCollectionNameOfSchema(SchemaName.TUTORIAL)
+      CollectionName.TUTORIAL
     );
 
     if (!user) {
@@ -71,7 +71,7 @@ class UserService {
       firstname,
       lastname,
       roles,
-      tutorials: tutorials.map(t => t.id),
+      tutorials: tutorials.map(t => ('_id' in t ? t._id : t.toString())),
       temporaryPassword,
     };
   }
@@ -89,9 +89,9 @@ class UserService {
         password,
       };
 
-      const tutorialDocument = new TutorialModel({
+      const tutorialDocument = await TutorialModel.create({
         slot: 1,
-        tutor: '',
+        tutor: undefined,
         dates: [],
         startTime: new Date(Date.now()),
         endTime: new Date(Date.now()),
@@ -101,10 +101,7 @@ class UserService {
         substitutes: {},
       });
 
-      const adminDocument = new UserModel({ ...admin, tutorials: [tutorialDocument] });
-
-      tutorialDocument.save();
-      adminDocument.save();
+      return UserModel.create({ ...admin, tutorials: [tutorialDocument] });
     } catch (err) {
       throw err;
     }

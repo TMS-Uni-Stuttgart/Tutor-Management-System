@@ -1,33 +1,44 @@
-import { CreateMongooseModel } from './TypeHelpers';
+import { Model, Schema } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import { Schema, model, Model } from 'mongoose';
-import uuid from 'uuid/v4';
-import { SchemaName } from './SchemaName';
+import { arrayProp, prop, Typegoose } from 'typegoose';
+import { CollectionName } from './CollectionName';
+import { CreateMongooseModel } from './TypeHelpers';
 
-interface InternalTutorial extends Omit<Tutorial, 'substitutes'> {
-  substitutes: Map<string, string>;
+export class TutorialSchema extends Typegoose implements Omit<Tutorial, 'id'> {
+  // TODO: References
+  @prop({ required: true })
+  slot: number;
+
+  @prop()
+  tutor?: string;
+
+  @arrayProp({ required: true, items: Schema.Types.Date })
+  dates: Date[];
+
+  @prop({ required: true })
+  startTime: Date;
+
+  @prop({ required: true })
+  endTime: Date;
+
+  @arrayProp({ required: true, items: String })
+  students: string[];
+
+  @arrayProp({ required: true, items: String })
+  teams: string[];
+
+  @arrayProp({ required: true, items: String })
+  correctors: string[];
+
+  @prop({ default: {} })
+  substitutes: { [index: string]: string };
 }
 
-export type TutorialDocument = CreateMongooseModel<Tutorial>;
+export type TutorialDocument = CreateMongooseModel<TutorialSchema>;
 
-const TutorialSchema: Schema<TutorialDocument> = new Schema<TutorialDocument>({
-  _id: { type: String, default: uuid },
-  slot: { type: Number, required: true },
-  tutor: { type: Schema.Types.String, ref: SchemaName.USER },
-  dates: { type: [Schema.Types.Date], required: true },
-  startTime: { type: Schema.Types.Date, required: true },
-  endTime: { type: Schema.Types.Date, required: true },
-
-  // TODO: References
-  students: { type: [String], required: true },
-  correctors: { type: [String], required: true },
-  teams: { type: [String], required: true },
-  substitutes: { type: Schema.Types.Mixed, default: {} },
-});
-
-const TutorialModel: Model<TutorialDocument> = model<TutorialDocument>(
-  SchemaName.TUTORIAL,
-  TutorialSchema
+const TutorialModel: Model<TutorialDocument> = new TutorialSchema().getModelForClass(
+  TutorialSchema,
+  { schemaOptions: { collection: CollectionName.TUTORIAL } }
 );
 
 export default TutorialModel;

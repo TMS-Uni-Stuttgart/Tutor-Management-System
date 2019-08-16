@@ -44,7 +44,7 @@ app.use(
     },
     secret: 'keyboard cat',
     resave: false,
-    // Is ued to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
+    // Is used to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
     rolling: true,
     saveUninitialized: true,
     cookie: {

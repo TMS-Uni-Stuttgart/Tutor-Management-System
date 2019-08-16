@@ -1,32 +1,42 @@
-import { model, Model, Schema } from 'mongoose';
+import { Model } from 'mongoose';
+import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
-import uuid from 'uuid/v4';
-import { SchemaName } from './SchemaName';
+import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
+import { CollectionName } from './CollectionName';
+import { TutorialDocument, TutorialSchema } from './TutorialDocument';
 import { CreateMongooseModel as CreateMongooseDocument } from './TypeHelpers';
-import { Tutorial } from 'shared/dist/model/Tutorial';
 
 export class UserCredentials {
   constructor(readonly _id: string, readonly username: string, readonly password: string) {}
 }
 
-interface InternalUser extends Omit<User, 'tutorials'> {
-  tutorials: Tutorial[];
+export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorials'> {
+  @prop({ required: true })
+  firstname: string;
+
+  @prop({ required: true })
+  lastname: string;
+
+  @arrayProp({ required: true, items: String })
+  roles: Role[];
+
+  @prop({ required: true })
+  username: string;
+
+  @prop({ default: '' })
+  temporaryPassword: string;
+
+  @arrayProp({ required: true, itemsRef: TutorialSchema,  })
+  tutorials: Ref<TutorialDocument>[];
+
+  @prop({ required: true })
   password: string;
 }
 
-export type UserDocument = CreateMongooseDocument<InternalUser>;
+export type UserDocument = CreateMongooseDocument<UserSchema>;
 
-const UserSchema: Schema<UserDocument> = new Schema({
-  _id: { type: String, default: uuid },
-  firstname: { type: String, required: true },
-  lastname: { type: String, required: true },
-  roles: { type: [String], required: true },
-  temporaryPassword: String,
-  tutorials: [{ type: Schema.Types.String, ref: SchemaName.TUTORIAL }],
-  username: { type: String, required: true },
-  password: { type: String, required: true },
+const UserModel: Model<UserDocument> = new UserSchema().getModelForClass(UserSchema, {
+  schemaOptions: { collection: CollectionName.USER },
 });
-
-const UserModel: Model<UserDocument> = model<UserDocument>(SchemaName.USER, UserSchema);
 
 export default UserModel;
