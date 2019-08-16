@@ -19,6 +19,14 @@ class UserService {
     return users;
   }
 
+  public async createUser({ password: passwordFromDTO, ...dto }: CreateUserDTO): Promise<User> {
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(passwordFromDTO, salt);
+    const createdUser = await UserModel.create({ ...dto, password });
+
+    return this.getUserOrReject(createdUser);
+  }
+
   public async getUserWithId(id: string): Promise<User> {
     const user: UserDocument | null = await UserModel.findById(id).populate(
       CollectionName.TUTORIAL
@@ -78,17 +86,6 @@ class UserService {
 
   public async initAdmin() {
     try {
-      const salt = await bcrypt.genSalt(10);
-      const password = await bcrypt.hash('admin', salt);
-      const admin: CreateUserDTO = {
-        firstname: 'admin',
-        lastname: 'admin',
-        roles: [Role.ADMIN],
-        tutorials: [],
-        username: 'admin',
-        password,
-      };
-
       const tutorialDocument = await TutorialModel.create({
         slot: 1,
         tutor: undefined,
@@ -101,7 +98,16 @@ class UserService {
         substitutes: {},
       });
 
-      return UserModel.create({ ...admin, tutorials: [tutorialDocument] });
+      const admin: CreateUserDTO = {
+        firstname: 'admin',
+        lastname: 'admin',
+        roles: [Role.ADMIN],
+        tutorials: [tutorialDocument._id],
+        username: 'admin',
+        password: 'admin',
+      };
+
+      return this.createUser(admin);
     } catch (err) {
       throw err;
     }
