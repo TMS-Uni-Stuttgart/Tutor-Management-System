@@ -1,17 +1,25 @@
 import { Router } from 'express';
 import passport = require('passport');
 import { isAuthenticated } from '../middleware/AccessControl';
+import { UserCredentials } from '../model/UserDocument';
+import userService from '../services/UserService';
 
 const authenticationRouter = Router();
 
 authenticationRouter.post('/login', (req, res, next) => {
   passport.authenticate('basic', { session: true }, (err, user, info) => {
-    req.login(user, err => {
+    req.login(user, async err => {
       if (err || !user) {
         return res.status(401).send();
       }
 
-      return res.send('You were authenticated & logged in!\n');
+      if (!(user instanceof UserCredentials)) {
+        return res.status(401).send();
+      }
+
+      const loggedInUser = await userService.getLoggedInUserInformation(user);
+
+      return res.json(loggedInUser);
     });
   })(req, res, next);
 });

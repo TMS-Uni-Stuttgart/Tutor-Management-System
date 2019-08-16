@@ -1,8 +1,11 @@
 import bcrypt from 'bcrypt';
 import { Role } from 'shared/dist/model/Role';
-import { CreateUserDTO, User } from 'shared/dist/model/User';
+import { CreateUserDTO, User, LoggedInUser } from 'shared/dist/model/User';
 import UserModel, { UserDocument, UserCredentials } from '../model/UserDocument';
 import uuid = require('uuid/v4');
+import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
+import TutorialModel from '../model/TutorialDocument';
+import { SchemaName, getCollectionNameOfSchema } from '../model/SchemaName';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -17,7 +20,9 @@ class UserService {
   }
 
   public async getUserWithId(id: string): Promise<User> {
-    const user: UserDocument | null = await UserModel.findById(id);
+    const user: UserDocument | null = await UserModel.findById(id).populate(
+      getCollectionNameOfSchema(SchemaName.TUTORIAL)
+    );
 
     return this.getUserOrReject(user);
   }
@@ -29,7 +34,28 @@ class UserService {
       return Promise.reject('User not found.');
     }
 
-    return { _id: user._id, username: user.username, password: user.password };
+    return new UserCredentials(user._id, user.username, user.password);
+  }
+
+  public async getLoggedInUserInformation({ _id }: UserCredentials): Promise<LoggedInUser> {
+    const user: UserDocument = await this.getUserDocumentWithId(_id);
+
+    // TODO: Add substitute Tutorials
+    // TODO: Add corrector tutorials
+
+    return new LoggedInUserDTO(user, []);
+  }
+
+  private async getUserDocumentWithId(id: string): Promise<UserDocument> {
+    const user: UserDocument | null = await UserModel.findById(id).populate(
+      getCollectionNameOfSchema(SchemaName.TUTORIAL)
+    );
+
+    if (!user) {
+      return Promise.reject('User document not found.');
+    }
+
+    return user;
   }
 
   private async getUserOrReject(user: UserDocument | null): Promise<User> {
@@ -37,7 +63,7 @@ class UserService {
       return Promise.reject('User not found.');
     }
 
-    const { firstname, lastname, roles, tutorials, temporaryPassword, username, _id } = user;
+    const { _id, firstname, lastname, roles, tutorials, temporaryPassword, username } = user;
 
     return {
       id: _id,
@@ -45,7 +71,7 @@ class UserService {
       firstname,
       lastname,
       roles,
-      tutorials,
+      tutorials: tutorials.map(t => t.id),
       temporaryPassword,
     };
   }
@@ -62,8 +88,11 @@ class UserService {
         username: 'admin',
         password,
       };
-      const adminDocument = new UserModel({ ...admin });
 
+      const tutorialDocument = new TutorialModel({ slot: 1 });
+      const adminDocument = new UserModel({ ...admin, tutorials: [tutorialDocument] });
+
+      tutorialDocument.save();
       adminDocument.save();
     } catch (err) {
       throw err;
