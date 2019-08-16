@@ -1,16 +1,18 @@
 import { Model, Schema } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import { arrayProp, prop, Typegoose } from 'typegoose';
+import { arrayProp, prop, Typegoose, Ref } from 'typegoose';
 import { CollectionName } from '../CollectionName';
 import { CreateMongooseModel } from '../TypeHelpers';
+import { UserDocument, UserSchema } from './UserDocument';
 
-export class TutorialSchema extends Typegoose implements Omit<Tutorial, 'id'> {
+export class TutorialSchema extends Typegoose
+  implements Omit<Tutorial, 'id' | 'tutor' | 'correctors'> {
   // TODO: References
   @prop({ required: true })
   slot: number;
 
-  @prop()
-  tutor?: string;
+  @prop({ ref: UserSchema })
+  tutor?: Ref<UserDocument>;
 
   @arrayProp({ required: true, items: Schema.Types.Date })
   dates: Date[];
@@ -27,8 +29,8 @@ export class TutorialSchema extends Typegoose implements Omit<Tutorial, 'id'> {
   @arrayProp({ required: true, items: String })
   teams: string[];
 
-  @arrayProp({ required: true, items: String })
-  correctors: string[];
+  @arrayProp({ required: true, itemsRef: UserSchema })
+  correctors: Ref<UserDocument>[];
 
   @prop({ default: {} })
   substitutes: { [index: string]: string };
