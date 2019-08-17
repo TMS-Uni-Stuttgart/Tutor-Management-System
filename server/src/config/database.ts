@@ -6,7 +6,7 @@ interface DatabaseConfig {
   config: ConnectionOptions;
 }
 
-const config: DatabaseConfig = {
+const databaseConfig: DatabaseConfig = {
   databaseURL: 'mongodb://localhost:27017/tms',
   secret: 'keyboard cat',
   config: {
@@ -21,4 +21,4 @@ const config: DatabaseConfig = {
   },
 };
 
-export default config;
+export default databaseConfig;

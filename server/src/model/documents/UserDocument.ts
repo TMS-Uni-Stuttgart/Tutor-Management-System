@@ -1,15 +1,29 @@
+import bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
+import encrypt from 'mongoose-encryption';
 import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
-import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
+import { arrayProp, plugin, pre, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
-import { TutorialDocument, TutorialSchema } from './TutorialDocument';
 import { CreateMongooseModel as CreateMongooseDocument } from '../TypeHelpers';
+import { TutorialDocument, TutorialSchema } from './TutorialDocument';
+import databaseConfig from '../../config/database';
 
 export class UserCredentials {
   constructor(readonly _id: string, readonly username: string, readonly password: string) {}
 }
 
+@pre<UserDocument>('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(this.password, salt);
+
+  this.password = hashedPassword;
+  next();
+})
 @plugin(encrypt, {
   secret: databaseConfig.secret,
   encryptedFields: ['firstname', 'lastname', 'temporaryPassword', 'password'],

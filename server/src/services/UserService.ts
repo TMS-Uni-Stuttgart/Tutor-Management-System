@@ -1,12 +1,11 @@
-import bcrypt from 'bcrypt';
 import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
+import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import { CollectionName } from '../model/CollectionName';
-import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import TutorialModel from '../model/documents/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../model/documents/UserDocument';
+import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../model/Errors';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -20,10 +19,8 @@ class UserService {
     return users;
   }
 
-  public async createUser({ password: passwordFromDTO, ...dto }: CreateUserDTO): Promise<User> {
-    const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash(passwordFromDTO, salt);
-    const createdUser = await UserModel.create({ ...dto, password });
+  public async createUser(dto: CreateUserDTO): Promise<User> {
+    const createdUser = await UserModel.create({ ...dto });
 
     return this.getUserOrReject(createdUser);
   }
