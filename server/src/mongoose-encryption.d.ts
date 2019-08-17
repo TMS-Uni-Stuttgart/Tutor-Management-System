@@ -1,3 +1,1 @@
-declare module 'mongoose-encryption' {
-
-}
+declare module 'mongoose-encryption' {}
