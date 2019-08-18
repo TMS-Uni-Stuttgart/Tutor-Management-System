@@ -84,7 +84,7 @@
           "\t\tthrow new Error('[$1Service] -- Not implemented yet.')",
         "\t}",
         "",
-        "\tpublic async delete$1(id: string): Promise<void> {",
+        "\tpublic async delete$1(id: string): Promise<$1Document> {",
           "\t\tthrow new Error('[$1Service] -- Not implemented yet.')",
         "\t}",
         "",
