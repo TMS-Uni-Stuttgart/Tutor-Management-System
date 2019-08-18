@@ -1,10 +1,13 @@
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
+import { getIdOfDocumentRef, isDocument as isCompleteDocument } from '../helpers/documentHelpers';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
 import { DocumentNotFoundError, BadRequestError } from '../model/Errors';
 import userService from './UserService';
 import { UserDocument } from '../model/documents/UserDocument';
 import { CollectionName } from '../model/CollectionName';
+import { Ref } from 'typegoose';
+import { ObjectID } from 'bson';
+import { Document } from 'mongoose';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -63,14 +66,28 @@ class TutorialService {
     throw new Error('Not implemented yet.');
   }
 
-  public async deleteTutorial(id: string): Promise<void> {
+  public async deleteTutorial(id: string): Promise<TutorialDocument> {
     const tutorial: TutorialDocument = await this.getTutorialDocumentWithID(id);
 
     if (tutorial.students && tutorial.students.length > 0) {
       return Promise.reject(new BadRequestError('A tutorial with students cannot be deleted.'));
     }
 
-    tutorial.remove();
+    if (tutorial.tutor) {
+      const tutor = isCompleteDocument(tutorial.tutor)
+        ? tutorial.tutor
+        : await userService.getUserDocumentWithId(tutorial.tutor.toString());
+
+      const tutorials = tutor.tutorials.map(getIdOfDocumentRef);
+      const promises = tutorials
+        .filter(t => t !== tutorial._id.toString())
+        .map(id => this.getTutorialDocumentWithID(id));
+
+      tutor.tutorials = await Promise.all(promises);
+      await tutor.save();
+    }
+
+    return tutorial.remove();
   }
 
   private async getTutorialOrReject(document: TutorialDocument | null): Promise<Tutorial> {
