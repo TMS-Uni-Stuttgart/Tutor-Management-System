@@ -7,6 +7,7 @@ import UserModel, { UserCredentials, UserDocument } from '../model/documents/Use
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../model/Errors';
 import tutorialService from './TutorialService';
+import { Document } from 'mongoose';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -49,10 +50,12 @@ class UserService {
     return this.getUserOrReject(updatedUser);
   }
 
-  public async deleteUser(id: string): Promise<void> {
+  public async deleteUser(id: string): Promise<UserDocument> {
     const user: UserDocument = await this.getUserDocumentWithId(id);
 
-    user.remove();
+    // TODO: Remove user from all it's tutorials.
+
+    return user.remove();
   }
 
   public async getUserWithId(id: string): Promise<User> {
