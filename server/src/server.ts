@@ -1,4 +1,10 @@
 import bodyParser from 'body-parser';
+import ConnectMongo, {
+  MongooseConnectionOptions,
+  MongoUrlOptions,
+  NativeMongoOptions,
+  NativeMongoPromiseOptions,
+} from 'connect-mongo';
 import express from 'express';
 import session from 'express-session';
 import mongoose from 'mongoose';
@@ -7,14 +13,9 @@ import uuid from 'uuid/v4';
 import databaseConfig from './config/database';
 import initPassport from './config/passport';
 import authenticationRouter from './routes/authentication';
-import userService from './services/UserService';
+import tutorialRouter from './routes/tutorial';
 import userRouter from './routes/user';
-import ConnectMongo, {
-  MongoUrlOptions,
-  MongooseConnectionOptions,
-  NativeMongoOptions,
-  NativeMongoPromiseOptions,
-} from 'connect-mongo';
+import userService from './services/UserService';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
@@ -75,5 +76,6 @@ app.use(passport.session());
 
 app.use(BASE_API_PATH, authenticationRouter);
 app.use(`${BASE_API_PATH}/user`, userRouter);
+app.use(`${BASE_API_PATH}/tutorial`, tutorialRouter);
 
 app.listen(8080, () => console.log('Server started on port 8080.'));

@@ -1,7 +1,10 @@
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
-import { DocumentNotFoundError } from '../model/Errors';
+import { DocumentNotFoundError, BadRequestError } from '../model/Errors';
+import userService from './UserService';
+import { UserDocument } from '../model/documents/UserDocument';
+import { CollectionName } from '../model/CollectionName';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -16,9 +19,17 @@ class TutorialService {
   }
 
   public async createTutorial(dto: TutorialDTO): Promise<Tutorial> {
-    // TODO: Set tutor document -- Needed if we have the ID?
+    const tutor: UserDocument | undefined = dto.tutorId
+      ? await userService.getUserDocumentWithId(dto.tutorId)
+      : undefined;
+    const createdTutorial = await TutorialModel.create({ ...dto, tutor });
+
+    if (tutor) {
+      tutor.tutorials = [...tutor.tutorials, createdTutorial];
+      await tutor.save();
+    }
+
     // TODO: Check correctors
-    const createdTutorial = await TutorialModel.create({ ...dto });
 
     return this.getTutorialOrReject(createdTutorial);
   }
@@ -31,7 +42,9 @@ class TutorialService {
   }
 
   public async getTutorialDocumentWithID(id: string): Promise<TutorialDocument> {
-    const tutorial: TutorialDocument | null = await TutorialModel.findById(id);
+    const tutorial: TutorialDocument | null = await TutorialModel.findById(id).populate(
+      CollectionName.USER
+    );
 
     if (!tutorial) {
       this.rejectTutorialNotFound();
@@ -43,17 +56,21 @@ class TutorialService {
   public async updateTutorial(id: string, dto: TutorialDTO): Promise<Tutorial> {
     // TODO: Implement me
 
-    // TODO: Set tutor document -- Needed if we have the ID?
+    // TODO: Adjust tutors' documents so they know that their tutorial(s) might have changed.
+
     // TODO: Change / Check correctors.
 
     throw new Error('Not implemented yet.');
   }
 
   public async deleteTutorial(id: string): Promise<void> {
-    // TODO: Implement me
+    const tutorial: TutorialDocument = await this.getTutorialDocumentWithID(id);
 
-    // TODO: Tutorials with students should not be deletabel (create issue to adjust FRONTEND aswell!)
-    throw new Error('Not implemented yet.');
+    if (tutorial.students && tutorial.students.length > 0) {
+      return Promise.reject(new BadRequestError('A tutorial with students cannot be deleted.'));
+    }
+
+    tutorial.remove();
   }
 
   private async getTutorialOrReject(document: TutorialDocument | null): Promise<Tutorial> {
