@@ -11,7 +11,7 @@ export class TutorialSchema extends Typegoose
   @prop({ required: true })
   slot: number;
 
-  @prop({ ref: { name: UserSchema } })
+  @prop({ ref: { name: 'UserSchema' } })
   tutor?: Ref<UserDocument>;
 
   @arrayProp({ required: true, items: Schema.Types.Date })
@@ -29,7 +29,7 @@ export class TutorialSchema extends Typegoose
   @arrayProp({ required: true, items: String })
   teams: string[];
 
-  @arrayProp({ required: true, itemsRef: { name: UserSchema } })
+  @arrayProp({ required: true, itemsRef: { name: 'UserSchema' } })
   correctors: Ref<UserDocument>[];
 
   @prop({ default: {} })
