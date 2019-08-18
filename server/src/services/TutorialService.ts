@@ -1,13 +1,10 @@
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { getIdOfDocumentRef, isDocument as isCompleteDocument } from '../helpers/documentHelpers';
-import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
-import { DocumentNotFoundError, BadRequestError } from '../model/Errors';
-import userService from './UserService';
-import { UserDocument } from '../model/documents/UserDocument';
 import { CollectionName } from '../model/CollectionName';
-import { Ref } from 'typegoose';
-import { ObjectID } from 'bson';
-import { Document } from 'mongoose';
+import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
+import { UserDocument } from '../model/documents/UserDocument';
+import { BadRequestError, DocumentNotFoundError } from '../model/Errors';
+import userService from './UserService';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
