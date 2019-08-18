@@ -73,7 +73,7 @@ userRouter.patch('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
     const id = req.params.id;
     const user = await userService.updateUser(id, dto);
 
-    return res.status(201).json(user);
+    return res.status(200).json(user);
   } catch (err) {
     handleError(err, res);
   }
