@@ -85,8 +85,8 @@ userRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
     await userService.deleteUser(id);
 
     res.status(204).send();
-  } catch {
-    res.status(404).send(new ErrorResponse(404, 'User with that ID was not found.'));
+  } catch (err) {
+    handleError(err, res);
   }
 });
 
