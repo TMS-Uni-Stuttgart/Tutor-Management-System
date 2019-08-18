@@ -7,7 +7,7 @@ const TutorialDTOSchema = Yup.object().shape<TutorialDTO>({
   slot: Yup.number().required(),
   tutorId: Yup.string().notRequired(),
   correctorIds: Yup.array<string>(),
-  dates: Yup.array<string>(),
+  dates: Yup.array<string>().required(),
   endTime: Yup.string().required(),
   startTime: Yup.string().required(),
 });
