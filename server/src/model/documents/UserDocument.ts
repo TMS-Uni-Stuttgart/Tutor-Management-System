@@ -13,6 +13,10 @@ export class UserCredentials {
   constructor(readonly _id: string, readonly username: string, readonly password: string) {}
 }
 
+// @plugin(encrypt, {
+//   secret: databaseConfig.secret,
+//   encryptedFields: ['firstname', 'lastname', 'temporaryPassword', 'password'],
+// })
 @pre<UserDocument>('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
@@ -23,10 +27,6 @@ export class UserCredentials {
 
   this.password = hashedPassword;
   next();
-})
-@plugin(encrypt, {
-  secret: databaseConfig.secret,
-  encryptedFields: ['firstname', 'lastname', 'temporaryPassword', 'password'],
 })
 export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorials'> {
   @prop({ required: true })
