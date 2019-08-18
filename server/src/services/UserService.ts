@@ -2,10 +2,11 @@ import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import { CollectionName } from '../model/CollectionName';
-import TutorialModel from '../model/documents/TutorialDocument';
+import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../model/documents/UserDocument';
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../model/Errors';
+import tutorialService from './TutorialService';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -20,7 +21,18 @@ class UserService {
   }
 
   public async createUser(dto: CreateUserDTO): Promise<User> {
-    const createdUser = await UserModel.create({ ...dto });
+    const promises: Promise<TutorialDocument>[] = [];
+    dto.tutorials.forEach(id => {
+      promises.push(tutorialService.getTutorialDocumentWithID(id));
+    });
+
+    const tutorials = await Promise.all(promises);
+    const createdUser = await UserModel.create({ ...dto, tutorials: dto.tutorials });
+
+    for (const doc of tutorials) {
+      doc.tutor = createdUser;
+      await doc.save();
+    }
 
     return this.getUserOrReject(createdUser);
   }
@@ -28,8 +40,8 @@ class UserService {
   public async updateUser(id: string, dto: UserDTO): Promise<User> {
     const user: UserDocument = await this.getUserDocumentWithId(id);
 
-    // TODO: Remove user from tutorial(s) -- needed with references??
-    // TODO: Readd user to new tutorial(s) -- needed with references??
+    // TODO: Remove user from tutorial(s)
+    // TODO: Readd user to new tutorial(s)
 
     await user.updateOne({ ...dto });
     const updatedUser = await this.getUserDocumentWithId(id);
@@ -68,7 +80,7 @@ class UserService {
     return new LoggedInUserDTO(user, []);
   }
 
-  private async getUserDocumentWithId(id: string): Promise<UserDocument> {
+  public async getUserDocumentWithId(id: string): Promise<UserDocument> {
     const user: UserDocument | null = await UserModel.findById(id).populate(
       CollectionName.TUTORIAL
     );
