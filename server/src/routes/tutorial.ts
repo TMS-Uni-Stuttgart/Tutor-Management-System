@@ -43,7 +43,31 @@ tutorialRouter.post('/', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   }
 });
 
-// TODO: Add /:id@GET & @PATCH
+// TODO: Add access of Tutor to the tutorial.
+tutorialRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+  const tutorial = await tutorialService.getTutorialWithID(id);
+
+  res.json(tutorial);
+});
+
+tutorialRouter.patch('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+  const dto = req.body;
+  const errors: ValidationErrors = [];
+
+  if (!isValidTutorialDTO(dto, errors)) {
+    return res.status(400).send(new ValidationErrorResponse('Not a vliad TutorialDTO', errors));
+  }
+
+  try {
+    const tutorial = await tutorialService.updateTutorial(id, dto);
+
+    return res.send(200).json(tutorial);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
 
 tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   try {
