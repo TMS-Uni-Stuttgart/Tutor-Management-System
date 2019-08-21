@@ -1,4 +1,5 @@
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
+import { Ref } from 'typegoose';
 import { getIdOfDocumentRef, isDocument as isCompleteDocument } from '../helpers/documentHelpers';
 import { CollectionName } from '../model/CollectionName';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
@@ -36,7 +37,6 @@ class TutorialService {
 
   public async getTutorialWithID(id: string): Promise<Tutorial> {
     const tutorial = await this.getTutorialDocumentWithID(id);
-    // TODO: Populate REF fields
 
     return this.getTutorialOrReject(tutorial);
   }
@@ -53,14 +53,37 @@ class TutorialService {
     return tutorial;
   }
 
-  public async updateTutorial(id: string, dto: TutorialDTO): Promise<Tutorial> {
-    // TODO: Implement me
+  public async updateTutorial(
+    id: string,
+    { slot, dates, startTime, endTime, tutorId, correctorIds }: TutorialDTO
+  ): Promise<Tutorial> {
+    const tutorial = await this.getTutorialDocumentWithID(id);
 
-    // TODO: Adjust tutors' documents so they know that their tutorial(s) might have changed.
+    if (tutorial.tutor) {
+      const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
+
+      if (tutor._id !== tutorId) {
+        tutor.tutorials = await this.filterTutorials(tutor.tutorials, t => t !== id);
+
+        await tutor.save();
+      }
+    }
+
+    tutorial.slot = slot;
+    tutorial.startTime = new Date(startTime);
+    tutorial.endTime = new Date(endTime);
+    tutorial.dates = dates.map(date => new Date(date));
 
     // TODO: Change / Check correctors.
 
-    throw new Error('Not implemented yet.');
+    if (tutorId) {
+      const nextTutor = await userService.getUserDocumentWithId(tutorId);
+
+      nextTutor.tutorials = [...nextTutor.tutorials, tutorial];
+      await nextTutor.save();
+    }
+
+    return this.getTutorialOrReject(await tutorial.save());
   }
 
   public async deleteTutorial(id: string): Promise<TutorialDocument> {
@@ -71,16 +94,13 @@ class TutorialService {
     }
 
     if (tutorial.tutor) {
-      const tutor = isCompleteDocument(tutorial.tutor)
-        ? tutorial.tutor
-        : await userService.getUserDocumentWithId(tutorial.tutor.toString());
+      const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
 
-      const tutorials = tutor.tutorials.map(getIdOfDocumentRef);
-      const promises = tutorials
-        .filter(t => t !== tutorial._id.toString())
-        .map(id => this.getTutorialDocumentWithID(id));
+      tutor.tutorials = await this.filterTutorials(
+        tutor.tutorials,
+        t => t !== tutorial._id.toString()
+      );
 
-      tutor.tutorials = await Promise.all(promises);
       await tutor.save();
     }
 
@@ -121,6 +141,24 @@ class TutorialService {
 
   private async rejectTutorialNotFound(): Promise<any> {
     return Promise.reject(new DocumentNotFoundError('User with that ID was not found.'));
+  }
+
+  private async getTutorDocumentOfTutorial(tutor: Ref<UserDocument>): Promise<UserDocument> {
+    return isCompleteDocument(tutor)
+      ? tutor
+      : await userService.getUserDocumentWithId(tutor.toString());
+  }
+
+  private async filterTutorials(
+    tutorials: Ref<TutorialDocument>[],
+    filterFunc: (id: string) => boolean
+  ): Promise<TutorialDocument[]> {
+    const promises = tutorials
+      .map(getIdOfDocumentRef)
+      .filter(filterFunc)
+      .map(id => this.getTutorialDocumentWithID(id));
+
+    return Promise.all(promises);
   }
 }
 
