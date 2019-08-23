@@ -37,7 +37,7 @@ tutorialRouter.post('/', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   try {
     const tutorial = await tutorialService.createTutorial(dto);
 
-    return res.status(201).json(tutorial);
+    return res.json(tutorial);
   } catch (err) {
     handleError(err, res);
   }
@@ -48,7 +48,7 @@ tutorialRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   const id = req.params.id;
   const tutorial = await tutorialService.getTutorialWithID(id);
 
-  res.json(tutorial);
+  return res.json(tutorial);
 });
 
 tutorialRouter.patch('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
@@ -63,7 +63,7 @@ tutorialRouter.patch('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =>
   try {
     const tutorial = await tutorialService.updateTutorial(id, dto);
 
-    return res.send(200).json(tutorial);
+    return res.json(tutorial);
   } catch (err) {
     handleError(err, res);
   }
