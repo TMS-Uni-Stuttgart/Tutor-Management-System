@@ -1,13 +1,14 @@
 import { Model, Schema } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import { arrayProp, prop, Typegoose, Ref } from 'typegoose';
+import { arrayProp, mapProp, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
 import { CreateMongooseModel } from '../TypeHelpers';
-import { UserDocument, UserSchema } from './UserDocument';
+import { StudentDocument } from './StudentDocument';
+import { TeamDocument } from './TeamDocument';
+import { UserDocument } from './UserDocument';
 
 export class TutorialSchema extends Typegoose
-  implements Omit<Tutorial, 'id' | 'tutor' | 'correctors'> {
-  // TODO: References
+  implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams'> {
   @prop({ required: true })
   slot: number;
 
@@ -23,16 +24,16 @@ export class TutorialSchema extends Typegoose
   @prop({ required: true })
   endTime: Date;
 
-  @arrayProp({ required: true, items: String })
-  students: string[];
+  @arrayProp({ required: true, itemsRef: { name: 'StudentSchema' } })
+  students: Ref<StudentDocument>[];
 
-  @arrayProp({ required: true, items: String })
-  teams: string[];
+  @arrayProp({ required: true, itemsRef: { name: 'TeamSchema' } })
+  teams: Ref<TeamDocument>[];
 
   @arrayProp({ required: true, itemsRef: { name: 'UserSchema' } })
   correctors: Ref<UserDocument>[];
 
-  @prop({ default: {} })
+  @mapProp({ of: String, default: {} })
   substitutes: { [index: string]: string };
 }
 

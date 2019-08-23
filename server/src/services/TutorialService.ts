@@ -133,8 +133,8 @@ class TutorialService {
       correctors: correctors.map(getIdOfDocumentRef),
       startTime,
       endTime,
-      students,
-      teams,
+      students: students.map(getIdOfDocumentRef),
+      teams: teams.map(getIdOfDocumentRef),
       substitutes,
     };
   }
