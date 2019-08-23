@@ -2,6 +2,12 @@
   "name": "shared",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "eslint:check": "eslint \"src/**/*.ts?(x)\"",
+    "eslint:fix": "eslint --fix \"src/**/*.ts?(x)\"",
+    "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
+    "ts:check": "tsc -b --force && tsc --project . --noEmit"
+  },
   "dependencies": {
     "yup": "^0.27.0"
   },
