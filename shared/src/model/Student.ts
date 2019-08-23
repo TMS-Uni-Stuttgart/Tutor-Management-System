@@ -12,3 +12,13 @@ export interface Student extends NamedElement {
   team?: string;
   tutorial: string;
 }
+
+export interface StudentDTO {
+  courseOfStudies: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  matriculationNo: string;
+  team?: string | null;
+  tutorial: string;
+}
