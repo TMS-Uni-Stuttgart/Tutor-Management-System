@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { PassportStatic } from 'passport';
 import { BasicStrategy } from 'passport-http';
 import userService from '../services/UserService';

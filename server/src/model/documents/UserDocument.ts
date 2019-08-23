@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import encrypt from 'mongoose-encryption';
 import { Role } from 'shared/dist/model/Role';
