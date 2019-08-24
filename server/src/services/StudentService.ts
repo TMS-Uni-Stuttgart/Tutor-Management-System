@@ -1,7 +1,8 @@
-import { DocumentNotFoundError } from '../model/Errors';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import { Student, StudentDTO } from 'shared/dist/model/Student';
+import { getIdOfDocumentRef } from '../helpers/documentHelpers';
+import { CollectionName } from '../model/CollectionName';
 import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
+import { DocumentNotFoundError } from '../model/Errors';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -16,15 +17,34 @@ class StudentService {
   }
 
   public async createStudent(dto: StudentDTO): Promise<Student> {
-    throw new Error('[StudentService] -- Not implemented yet.');
+    const createdStudent = await StudentModel.create({ ...dto });
+
+    // TODO: Adjust tutorial
+    // TODO: Check team
+
+    return this.getStudentOrReject(createdStudent);
   }
 
   public async updateStudent(id: string, dto: StudentDTO): Promise<Student> {
-    throw new Error('[StudentService] -- Not implemented yet.');
+    const student = await this.getStudentDocumentWithId(id);
+
+    // TODO: Check team
+    // TODO: Adjust tutorial (adjust points if neccessary)
+
+    const updatedStudent = await student.updateOne({ ...dto });
+
+    console.log(updatedStudent);
+
+    return this.getStudentOrReject(updatedStudent);
   }
 
   public async deleteStudent(id: string): Promise<StudentDocument> {
-    throw new Error('[StudentService] -- Not implemented yet.');
+    const student: StudentDocument = await this.getStudentDocumentWithId(id);
+
+    // TODO: Adjust team
+    // TODO: Adjust tutorial
+
+    return student.remove();
   }
 
   public async getStudentWithId(id: string): Promise<Student> {
@@ -34,7 +54,15 @@ class StudentService {
   }
 
   private async getStudentDocumentWithId(id: string): Promise<StudentDocument> {
-    throw new Error('[StudentService] -- Not implemented yet.');
+    const student: StudentDocument | null = await StudentModel.findById(id).populate(
+      CollectionName.TEAM
+    );
+
+    if (!student) {
+      return this.rejectStudentNotFound();
+    }
+
+    return student;
   }
 
   private async getStudentOrReject(student: StudentDocument | null): Promise<Student> {
@@ -65,7 +93,7 @@ class StudentService {
       email,
       courseOfStudies,
       tutorial: getIdOfDocumentRef(tutorial),
-      team: getIdOfDocumentRef(team),
+      team: team ? getIdOfDocumentRef(team) : undefined,
       attendance,
       points,
       presentationPoints,
