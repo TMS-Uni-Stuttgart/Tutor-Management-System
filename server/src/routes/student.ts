@@ -21,7 +21,7 @@ function isValidStudentDTO(obj: any, errors: ValidationErrors): obj is StudentDT
 const studentRouter = Router();
 
 // TODO: Add access of Tutor to it's students (all paths!).
-studentRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+studentRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
   const students: Student[] = await studentService.getAllStudents();
 
   return res.json(students);

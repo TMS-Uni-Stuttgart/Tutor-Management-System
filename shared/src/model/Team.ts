@@ -7,3 +7,8 @@ export interface Team extends HasId {
   teamNo: number;
   tutorial: string;
 }
+
+export interface TeamDTO {
+  students: string[];
+  teamNo: number;
+}
