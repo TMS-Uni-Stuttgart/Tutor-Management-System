@@ -1,11 +1,18 @@
 import { DocumentNotFoundError } from '../model/Errors';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import { Student, StudentDTO } from 'shared/dist/model/Student';
-import { StudentDocument } from '../model/documents/StudentDocument';
+import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
-    throw new Error('[StudentService] -- Not implemented yet.');
+    const studentDocs: StudentDocument[] = await StudentModel.find();
+    const students: Student[] = [];
+
+    for (const doc of studentDocs) {
+      students.push(await this.getStudentOrReject(doc));
+    }
+
+    return students;
   }
 
   public async createStudent(dto: StudentDTO): Promise<Student> {
@@ -31,7 +38,39 @@ class StudentService {
   }
 
   private async getStudentOrReject(student: StudentDocument | null): Promise<Student> {
-    throw new Error('[StudentService] -- Not implemented yet.');
+    if (!student) {
+      return this.rejectStudentNotFound();
+    }
+
+    const {
+      _id,
+      firstname,
+      lastname,
+      matriculationNo,
+      email,
+      courseOfStudies,
+      tutorial,
+      team,
+      attendance,
+      points,
+      presentationPoints,
+      scheinExamResults,
+    } = student;
+
+    return {
+      id: _id,
+      firstname,
+      lastname,
+      matriculationNo,
+      email,
+      courseOfStudies,
+      tutorial: getIdOfDocumentRef(tutorial),
+      team: getIdOfDocumentRef(team),
+      attendance,
+      points,
+      presentationPoints,
+      scheinExamResults,
+    };
   }
 
   private async rejectStudentNotFound(): Promise<any> {
