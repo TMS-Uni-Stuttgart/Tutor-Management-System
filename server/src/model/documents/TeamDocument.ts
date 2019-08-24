@@ -8,16 +8,16 @@ import { TutorialDocument } from './TutorialDocument';
 
 export class TeamSchema extends Typegoose implements Omit<Team, 'id' | 'tutorial' | 'students'> {
   @prop({ required: true })
-  teamNo: number;
+  teamNo!: number;
 
   @prop({ required: true, ref: { name: 'TutorialSchema' } })
-  tutorial: Ref<TutorialDocument>;
+  tutorial!: Ref<TutorialDocument>;
 
   @arrayProp({ required: true, itemsRef: { name: 'StudentSchema' } })
-  students: Ref<StudentDocument>[];
+  students!: Ref<StudentDocument>[];
 
   @mapProp({ of: Number, default: {} })
-  points: { [index: string]: number };
+  points!: { [index: string]: number };
 }
 
 export type TeamDocument = CreateMongooseModel<TeamSchema>;

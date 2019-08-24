@@ -10,31 +10,31 @@ import { UserDocument } from './UserDocument';
 export class TutorialSchema extends Typegoose
   implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams'> {
   @prop({ required: true })
-  slot: number;
+  slot!: number;
 
   @prop({ ref: { name: 'UserSchema' } })
   tutor?: Ref<UserDocument>;
 
   @arrayProp({ required: true, items: Schema.Types.Date })
-  dates: Date[];
+  dates!: Date[];
 
   @prop({ required: true })
-  startTime: Date;
+  startTime!: Date;
 
   @prop({ required: true })
-  endTime: Date;
+  endTime!: Date;
 
   @arrayProp({ required: true, itemsRef: { name: 'StudentSchema' } })
-  students: Ref<StudentDocument>[];
+  students!: Ref<StudentDocument>[];
 
   @arrayProp({ required: true, itemsRef: { name: 'TeamSchema' } })
-  teams: Ref<TeamDocument>[];
+  teams!: Ref<TeamDocument>[];
 
   @arrayProp({ required: true, itemsRef: { name: 'UserSchema' } })
-  correctors: Ref<UserDocument>[];
+  correctors!: Ref<UserDocument>[];
 
   @mapProp({ of: String, default: {} })
-  substitutes: { [index: string]: string };
+  substitutes!: { [index: string]: string };
 }
 
 export type TutorialDocument = CreateMongooseModel<TutorialSchema>;

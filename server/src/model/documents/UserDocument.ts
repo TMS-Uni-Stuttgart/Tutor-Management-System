@@ -30,25 +30,25 @@ export class UserCredentials {
 })
 export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorials'> {
   @prop({ required: true })
-  firstname: string;
+  firstname!: string;
 
   @prop({ required: true })
-  lastname: string;
+  lastname!: string;
 
   @arrayProp({ required: true, items: String })
-  roles: Role[];
+  roles!: Role[];
 
   @prop({ required: true })
-  username: string;
+  username!: string;
 
   @prop({ default: '' })
-  temporaryPassword: string;
+  temporaryPassword!: string;
 
   @arrayProp({ required: true, itemsRef: { name: 'TutorialSchema' } })
-  tutorials: Ref<TutorialDocument>[];
+  tutorials!: Ref<TutorialDocument>[];
 
   @prop({ required: true })
-  password: string;
+  password!: string;
 }
 
 export type UserDocument = CreateMongooseDocument<UserSchema>;

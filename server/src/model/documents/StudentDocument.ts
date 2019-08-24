@@ -11,16 +11,16 @@ import { TeamDocument } from './TeamDocument';
 export class StudentSchema extends Typegoose
   implements Omit<Student, 'id' | 'tutorial' | 'team' | 'courseOfStudies' | 'email'> {
   @prop({ required: true, ref: { name: 'TutorialSchema' } })
-  tutorial: Ref<TutorialDocument>;
+  tutorial!: Ref<TutorialDocument>;
 
   @prop({ required: true })
-  firstname: string;
+  firstname!: string;
 
   @prop({ required: true })
-  lastname: string;
+  lastname!: string;
 
   @prop({ required: true })
-  matriculationNo: string;
+  matriculationNo!: string;
 
   @prop()
   email?: string;
@@ -32,16 +32,16 @@ export class StudentSchema extends Typegoose
   team?: Ref<TeamDocument>;
 
   @mapProp({ of: AttendanceSchema })
-  attendance: { [index: string]: Attendance };
+  attendance!: { [index: string]: Attendance };
 
   @mapProp({ of: Number, default: {} })
-  points: { [index: string]: number };
+  points!: { [index: string]: number };
 
   @mapProp({ of: Number, default: {} })
-  presentationPoints: { [index: string]: number };
+  presentationPoints!: { [index: string]: number };
 
   @mapProp({ of: Number, default: {} })
-  scheinExamResults: { [index: string]: number };
+  scheinExamResults!: { [index: string]: number };
 }
 
 export type StudentDocument = CreateMongooseModel<StudentSchema>;

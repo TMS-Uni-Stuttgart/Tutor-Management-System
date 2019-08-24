@@ -4,10 +4,10 @@ import { CreateMongooseModel } from '../TypeHelpers';
 
 export class AttendanceSchema extends Typegoose implements Omit<Attendance, 'id'> {
   @prop({ unique: true })
-  _id: AttendanceId;
+  _id!: AttendanceId;
 
   @prop({ required: true })
-  date: Date;
+  date!: Date;
 
   @prop()
   note?: string;
