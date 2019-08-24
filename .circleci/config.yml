@@ -139,4 +139,5 @@ workflows:
     jobs:
       - client
       - server
+      - shared
       - java
