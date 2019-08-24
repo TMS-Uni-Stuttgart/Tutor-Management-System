@@ -26,7 +26,7 @@ class TutorialService {
     const createdTutorial = await TutorialModel.create({ ...dto, tutor });
 
     if (tutor) {
-      tutor.tutorials = [...tutor.tutorials, createdTutorial];
+      tutor.tutorials = [...(tutor.tutorials || []), createdTutorial];
       await tutor.save();
     }
 
@@ -43,11 +43,13 @@ class TutorialService {
 
   public async getTutorialDocumentWithID(id: string): Promise<TutorialDocument> {
     const tutorial: TutorialDocument | null = await TutorialModel.findById(id).populate(
-      CollectionName.USER
+      CollectionName.USER,
+      CollectionName.STUDENT,
+      CollectionName.TEAM
     );
 
     if (!tutorial) {
-      this.rejectTutorialNotFound();
+      return this.rejectTutorialNotFound();
     }
 
     return tutorial;
