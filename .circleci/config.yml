@@ -75,6 +75,35 @@ jobs:
 
       - run: yarn test
 
+  shared:
+    executor: node-executor
+
+    working_directory: ~/project/shared
+
+    steps:
+      - checkout:
+          path: ~/project
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - node-shared-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - node-shared-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-shared-{{ checksum "package.json" }}
+
+      - run: yarn prettier:check
+
+      - run: yarn eslint:check
+
+      - run: yarn ts:check
+
   java:
     executor: maven-executor
 

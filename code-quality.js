@@ -1,6 +1,6 @@
-var exec = require('child_process').execSync;
+const exec = require('child_process').execSync;
 
-var options = {
+const options = {
   encoding: 'utf8',
 };
 
@@ -21,3 +21,9 @@ console.log(exec('cd server && yarn ts:check', options));
 
 console.log('Running "yarn ts:fix" in server folder...');
 console.log(exec('cd server && yarn eslint:fix', options));
+
+console.log('Running "yarn ts:check" in shared folder...');
+console.log(exec('cd shared && yarn ts:check', options));
+
+console.log('Running "yarn ts:fix" in shared folder...');
+console.log(exec('cd shared && yarn eslint:fix', options));
