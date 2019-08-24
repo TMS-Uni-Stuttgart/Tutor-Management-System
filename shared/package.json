@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "tsc -b",
+    "build:watch": "tsc -b -w",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
     "eslint:fix": "eslint --fix \"src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
