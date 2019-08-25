@@ -75,7 +75,7 @@ class UserService {
 
   public async getLoggedInUserInformation({ _id }: UserCredentials): Promise<LoggedInUser> {
     const userDoc: UserDocument = await this.getUserDocumentWithId(_id);
-    const user: UserDocument = (await userDoc.populate('tutorials').execPopulate()) as UserDocument;
+    const user: UserDocument = await userDoc.populate('tutorials').execPopulate();
 
     // TODO: Add substitute Tutorials
     // TODO: Add corrector tutorials

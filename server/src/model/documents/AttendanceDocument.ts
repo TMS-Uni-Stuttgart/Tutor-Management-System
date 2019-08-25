@@ -1,10 +1,11 @@
-import { Attendance, AttendanceState, AttendanceId } from 'shared/dist/model/Attendance';
+import { Document } from 'mongoose';
+import { Attendance, AttendanceState } from 'shared/dist/model/Attendance';
 import { prop, Typegoose } from 'typegoose';
-import { CreateMongooseModel } from '../TypeHelpers';
 
 export class AttendanceSchema extends Typegoose implements Omit<Attendance, 'id'> {
-  @prop({ unique: true })
-  _id!: AttendanceId;
+  // TODO: Is the special ID really needed due to the fact that we now have documents which we can save as embedded documents?
+  // @prop({ unique: true })
+  // _id!: AttendanceId;
 
   @prop({ required: true })
   date!: Date;
@@ -16,7 +17,7 @@ export class AttendanceSchema extends Typegoose implements Omit<Attendance, 'id'
   state?: AttendanceState;
 }
 
-export type AttendanceDocument = CreateMongooseModel<AttendanceSchema>;
+export interface AttendanceDocument extends AttendanceSchema, Document {}
 
 // const AttendanceModel: Model<AttendanceDocument> = new AttendanceSchema().getModelForClass(
 //   AttendanceSchema,

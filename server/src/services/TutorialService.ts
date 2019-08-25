@@ -1,11 +1,11 @@
+import { Document } from 'mongoose';
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { Ref } from 'typegoose';
-import { getIdOfDocumentRef, isDocument as isCompleteDocument } from '../helpers/documentHelpers';
+import { getIdOfDocumentRef, isDocument } from '../helpers/documentHelpers';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
 import { UserDocument } from '../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../model/Errors';
 import userService from './UserService';
-import { Document } from 'mongoose';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -56,9 +56,7 @@ class TutorialService {
     { slot, dates, startTime, endTime, tutorId, correctorIds }: TutorialDTO
   ): Promise<Tutorial> {
     const doc: TutorialDocument = await this.getTutorialDocumentWithID(id);
-    const tutorial: TutorialDocument = (await doc
-      .populate('tutor')
-      .execPopulate()) as TutorialDocument;
+    const tutorial: TutorialDocument = await doc.populate('tutor').execPopulate();
 
     if (tutorial.tutor) {
       const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
@@ -84,7 +82,7 @@ class TutorialService {
       await nextTutor.save();
     }
 
-    return this.getTutorialOrReject((await tutorial.save()) as TutorialDocument);
+    return this.getTutorialOrReject(await tutorial.save());
   }
 
   public async deleteTutorial(id: string): Promise<Document> {
@@ -145,9 +143,7 @@ class TutorialService {
   }
 
   private async getTutorDocumentOfTutorial(tutor: Ref<UserDocument>): Promise<UserDocument> {
-    return isCompleteDocument(tutor)
-      ? tutor
-      : await userService.getUserDocumentWithId(tutor.toString());
+    return isDocument(tutor) ? tutor : await userService.getUserDocumentWithId(tutor.toString());
   }
 
   private async filterTutorials(

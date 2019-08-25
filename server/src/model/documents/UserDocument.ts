@@ -1,13 +1,10 @@
 import bcrypt from 'bcryptjs';
-import { Model } from 'mongoose';
-import encrypt from 'mongoose-encryption';
+import { Document, Model } from 'mongoose';
 import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
-import { arrayProp, plugin, pre, prop, Ref, Typegoose } from 'typegoose';
+import { arrayProp, pre, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
-import { CreateMongooseModel as CreateMongooseDocument } from '../TypeHelpers';
-import { TutorialDocument, TutorialSchema } from './TutorialDocument';
-import databaseConfig from '../../config/database';
+import { TutorialDocument } from './TutorialDocument';
 
 export class UserCredentials {
   constructor(readonly _id: string, readonly username: string, readonly password: string) {}
@@ -51,7 +48,7 @@ export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorial
   password!: string;
 }
 
-export type UserDocument = CreateMongooseDocument<UserSchema>;
+export interface UserDocument extends UserSchema, Document {}
 
 const UserModel: Model<UserDocument> = new UserSchema().getModelForClass(UserSchema, {
   schemaOptions: { collection: CollectionName.USER },

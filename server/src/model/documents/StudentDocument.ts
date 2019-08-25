@@ -1,12 +1,11 @@
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { Attendance } from 'shared/dist/model/Attendance';
 import { Student } from 'shared/dist/model/Student';
 import { mapProp, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
-import { CreateMongooseModel } from '../TypeHelpers';
 import { AttendanceSchema } from './AttendanceDocument';
-import { TutorialDocument } from './TutorialDocument';
 import { TeamDocument } from './TeamDocument';
+import { TutorialDocument } from './TutorialDocument';
 
 export class StudentSchema extends Typegoose
   implements Omit<Student, 'id' | 'tutorial' | 'team' | 'courseOfStudies' | 'email'> {
@@ -44,7 +43,7 @@ export class StudentSchema extends Typegoose
   scheinExamResults!: { [index: string]: number };
 }
 
-export type StudentDocument = CreateMongooseModel<StudentSchema>;
+export interface StudentDocument extends StudentSchema, Document {}
 
 const StudentModel: Model<StudentDocument> = new StudentSchema().getModelForClass(StudentSchema, {
   schemaOptions: { collection: CollectionName.STUDENT },

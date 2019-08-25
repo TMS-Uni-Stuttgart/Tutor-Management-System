@@ -44,7 +44,7 @@
     "prefix": "mongoose document",
     "description": "boilerplate code for a document used in mongoose",
     "body": [
-      "import { Model } from 'mongoose';",
+      "import { Model, Document } from 'mongoose';",
       "import { arrayProp, prop, Ref, Typegoose } from 'typegoose';",
       "import { CollectionName } from '../CollectionName';",
       "import { CreateMongooseModel } from '../TypeHelpers';",
@@ -53,7 +53,7 @@
         "\t$0",
       "}",
       "",
-      "export type $1Document = CreateMongooseModel<$1Schema>;",
+      "export interface $1Document extends $1Schema, Document {}",
       "",
       "const $1Model: Model<$1Document> = new $1Schema().getModelForClass(",
         "\t$1Schema,",

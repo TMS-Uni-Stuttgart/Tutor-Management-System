@@ -1,7 +1,6 @@
-import { Model } from 'mongoose';
+import { Model, Document } from 'mongoose';
 import { arrayProp, prop, Ref, Typegoose, mapProp } from 'typegoose';
 import { CollectionName } from '../CollectionName';
-import { CreateMongooseModel } from '../TypeHelpers';
 import { Team } from 'shared/dist/model/Team';
 import { StudentDocument } from './StudentDocument';
 import { TutorialDocument } from './TutorialDocument';
@@ -20,7 +19,7 @@ export class TeamSchema extends Typegoose implements Omit<Team, 'id' | 'tutorial
   points!: { [index: string]: number };
 }
 
-export type TeamDocument = CreateMongooseModel<TeamSchema>;
+export interface TeamDocument extends TeamSchema, Document {}
 
 const TeamModel: Model<TeamDocument> = new TeamSchema().getModelForClass(TeamSchema, {
   schemaOptions: { collection: CollectionName.TEAM },

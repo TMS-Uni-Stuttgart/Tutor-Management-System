@@ -1,8 +1,7 @@
-import { Model, Schema } from 'mongoose';
+import { Document, Model, Schema } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { arrayProp, mapProp, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
-import { CreateMongooseModel } from '../TypeHelpers';
 import { StudentDocument } from './StudentDocument';
 import { TeamDocument } from './TeamDocument';
 import { UserDocument } from './UserDocument';
@@ -37,7 +36,7 @@ export class TutorialSchema extends Typegoose
   substitutes!: { [index: string]: string };
 }
 
-export type TutorialDocument = CreateMongooseModel<TutorialSchema>;
+export interface TutorialDocument extends TutorialSchema, Document {}
 
 const TutorialModel: Model<TutorialDocument> = new TutorialSchema().getModelForClass(
   TutorialSchema,
