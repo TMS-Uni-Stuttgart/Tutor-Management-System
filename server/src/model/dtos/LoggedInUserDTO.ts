@@ -44,12 +44,11 @@ export class LoggedInUserDTO implements LoggedInUser {
     this.roles = roles;
     this.hasTemporaryPassword = !!temporaryPassword;
     this.substituteTutorials = substituteTutorials;
-    this.tutorials = tutorials.map(t => {
-      if ('_id' in t) {
-        return new LoggedInUserTutorialDTO(t);
-      }
 
-      return null;
-    });
+    this.tutorials = tutorials
+      .filter(t => '_id' in t)
+      .map(t => {
+        return new LoggedInUserTutorialDTO(t as TutorialDocument);
+      });
   }
 }

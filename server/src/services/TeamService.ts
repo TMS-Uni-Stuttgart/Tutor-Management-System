@@ -2,7 +2,7 @@ import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
-import { TeamDocument } from '../model/documents/TeamDocument';
+import TeamModel, { TeamDocument } from '../model/documents/TeamDocument';
 import { DocumentNotFoundError } from '../model/Errors';
 
 class TeamService {
@@ -29,13 +29,13 @@ class TeamService {
   }
 
   private async getTeamDocumentWithId(id: string): Promise<TeamDocument> {
-    const student: StudentDocument | null = await StudentModel.findById(id);
+    const team: TeamDocument | null = await TeamModel.findById(id);
 
-    if (!student) {
+    if (!team) {
       return this.rejectTeamNotFound();
     }
 
-    return student;
+    return team;
   }
 
   private async getTeamOrReject(team: TeamDocument | null): Promise<Team> {

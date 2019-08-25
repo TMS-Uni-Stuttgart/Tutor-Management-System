@@ -2,6 +2,7 @@ import { Student, StudentDTO } from 'shared/dist/model/Student';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
 import { DocumentNotFoundError } from '../model/Errors';
+import { Document } from 'mongoose';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -37,7 +38,7 @@ class StudentService {
     return this.getStudentOrReject(updatedStudent);
   }
 
-  public async deleteStudent(id: string): Promise<StudentDocument> {
+  public async deleteStudent(id: string): Promise<Document> {
     const student: StudentDocument = await this.getStudentDocumentWithId(id);
 
     // TODO: Adjust team

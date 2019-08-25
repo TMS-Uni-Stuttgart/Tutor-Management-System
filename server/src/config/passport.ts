@@ -23,7 +23,7 @@ export default function initPassport(passport: PassportStatic) {
   );
 
   passport.serializeUser((user: unknown, done) => {
-    if (typeof user === 'object' && '_id' in user) {
+    if (typeof user === 'object' && !!user && '_id' in user) {
       done(null, (user as any)._id);
     } else {
       done(null, false);

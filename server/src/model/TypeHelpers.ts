@@ -1,3 +1,3 @@
 import { Document } from 'mongoose';
 
-export type CreateMongooseModel<T> = Omit<Document, 'id'> & Partial<T> & { _id: string };
+export type CreateMongooseModel<T> = Omit<Document, 'id'> & T & { _id: string };

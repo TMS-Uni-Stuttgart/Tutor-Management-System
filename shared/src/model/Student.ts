@@ -3,8 +3,8 @@ import { Attendance } from './Attendance';
 
 export interface Student extends NamedElement {
   attendance: { [index: string]: Attendance };
-  courseOfStudies: string;
-  email: string;
+  courseOfStudies?: string;
+  email?: string;
   matriculationNo: string;
   points: { [index: string]: number };
   presentationPoints: { [index: string]: number };

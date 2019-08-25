@@ -5,6 +5,7 @@ import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocu
 import { UserDocument } from '../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../model/Errors';
 import userService from './UserService';
+import { Document } from 'mongoose';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -55,7 +56,9 @@ class TutorialService {
     { slot, dates, startTime, endTime, tutorId, correctorIds }: TutorialDTO
   ): Promise<Tutorial> {
     const doc: TutorialDocument = await this.getTutorialDocumentWithID(id);
-    const tutorial: TutorialDocument = await doc.populate('tutor').execPopulate();
+    const tutorial: TutorialDocument = (await doc
+      .populate('tutor')
+      .execPopulate()) as TutorialDocument;
 
     if (tutorial.tutor) {
       const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
@@ -81,10 +84,10 @@ class TutorialService {
       await nextTutor.save();
     }
 
-    return this.getTutorialOrReject(await tutorial.save());
+    return this.getTutorialOrReject((await tutorial.save()) as TutorialDocument);
   }
 
-  public async deleteTutorial(id: string): Promise<TutorialDocument> {
+  public async deleteTutorial(id: string): Promise<Document> {
     const tutorial: TutorialDocument = await this.getTutorialDocumentWithID(id);
 
     if (tutorial.students && tutorial.students.length > 0) {
