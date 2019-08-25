@@ -1,7 +1,6 @@
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
 import TeamModel, { TeamDocument } from '../model/documents/TeamDocument';
 import { DocumentNotFoundError } from '../model/Errors';
 
