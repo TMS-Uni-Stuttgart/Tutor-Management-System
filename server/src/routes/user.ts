@@ -4,7 +4,7 @@ import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
 import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
 import { checkRoleAccess } from '../middleware/AccessControl';
-import { ErrorResponse, handleError, ValidationErrorResponse } from '../model/Errors';
+import { handleError, ValidationErrorResponse } from '../model/Errors';
 import userService from '../services/UserService';
 
 function isValidCreateUserDTO(obj: any, errors: ValidationErrors): obj is CreateUserDTO {

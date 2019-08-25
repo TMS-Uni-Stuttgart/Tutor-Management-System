@@ -13,10 +13,10 @@ import uuid from 'uuid/v4';
 import databaseConfig from './config/database';
 import initPassport from './config/passport';
 import authenticationRouter from './routes/authentication';
+import studentRouter from './routes/student';
 import tutorialRouter from './routes/tutorial';
 import userRouter from './routes/user';
 import userService from './services/UserService';
-import studentRouter from './routes/student';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
