@@ -1,6 +1,5 @@
 import { Student, StudentDTO } from 'shared/dist/model/Student';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import { CollectionName } from '../model/CollectionName';
 import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
 import { DocumentNotFoundError } from '../model/Errors';
 
@@ -54,9 +53,7 @@ class StudentService {
   }
 
   private async getStudentDocumentWithId(id: string): Promise<StudentDocument> {
-    const student: StudentDocument | null = await StudentModel.findById(id).populate(
-      CollectionName.TEAM
-    );
+    const student: StudentDocument | null = await StudentModel.findById(id);
 
     if (!student) {
       return this.rejectStudentNotFound();

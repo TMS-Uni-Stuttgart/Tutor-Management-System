@@ -1,13 +1,11 @@
 import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import { CollectionName } from '../model/CollectionName';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../model/documents/UserDocument';
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../model/Errors';
 import tutorialService from './TutorialService';
-import { Document } from 'mongoose';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -42,7 +40,7 @@ class UserService {
     const user: UserDocument = await this.getUserDocumentWithId(id);
 
     // TODO: Remove user from tutorial(s)
-    // TODO: Readd user to new tutorial(s)
+    // TODO: Re-add user to new tutorial(s)
 
     await user.updateOne({ ...dto });
     const updatedUser = await this.getUserDocumentWithId(id);
@@ -75,7 +73,8 @@ class UserService {
   }
 
   public async getLoggedInUserInformation({ _id }: UserCredentials): Promise<LoggedInUser> {
-    const user: UserDocument = await this.getUserDocumentWithId(_id);
+    const userDoc: UserDocument = await this.getUserDocumentWithId(_id);
+    const user: UserDocument = await userDoc.populate('tutorials').execPopulate();
 
     // TODO: Add substitute Tutorials
     // TODO: Add corrector tutorials
@@ -84,9 +83,7 @@ class UserService {
   }
 
   public async getUserDocumentWithId(id: string): Promise<UserDocument> {
-    const user: UserDocument | null = await UserModel.findById(id).populate(
-      CollectionName.TUTORIAL
-    );
+    const user: UserDocument | null = await UserModel.findById(id);
 
     if (!user) {
       return this.rejectUserNotFound();

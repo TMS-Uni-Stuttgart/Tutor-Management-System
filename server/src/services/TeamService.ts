@@ -1,11 +1,9 @@
-import { DocumentNotFoundError } from '../model/Errors';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import { Team, TeamDTO } from 'shared/dist/model/Team';
-import { TeamDocument } from '../model/documents/TeamDocument';
-import studentService from './StudentService';
 import { Student } from 'shared/dist/model/Student';
+import { Team, TeamDTO } from 'shared/dist/model/Team';
+import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
-import { CollectionName } from '../model/CollectionName';
+import { TeamDocument } from '../model/documents/TeamDocument';
+import { DocumentNotFoundError } from '../model/Errors';
 
 class TeamService {
   public async getAllTeams(): Promise<Team[]> {
@@ -31,10 +29,7 @@ class TeamService {
   }
 
   private async getTeamDocumentWithId(id: string): Promise<TeamDocument> {
-    const student: StudentDocument | null = await StudentModel.findById(id).populate(
-      CollectionName.TUTORIAL,
-      CollectionName.STUDENT
-    );
+    const student: StudentDocument | null = await StudentModel.findById(id);
 
     if (!student) {
       return this.rejectTeamNotFound();

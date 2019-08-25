@@ -1,7 +1,6 @@
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { Ref } from 'typegoose';
 import { getIdOfDocumentRef, isDocument as isCompleteDocument } from '../helpers/documentHelpers';
-import { CollectionName } from '../model/CollectionName';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
 import { UserDocument } from '../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../model/Errors';
@@ -42,11 +41,7 @@ class TutorialService {
   }
 
   public async getTutorialDocumentWithID(id: string): Promise<TutorialDocument> {
-    const tutorial: TutorialDocument | null = await TutorialModel.findById(id).populate(
-      CollectionName.USER,
-      CollectionName.STUDENT,
-      CollectionName.TEAM
-    );
+    const tutorial: TutorialDocument | null = await TutorialModel.findById(id);
 
     if (!tutorial) {
       return this.rejectTutorialNotFound();
@@ -59,7 +54,8 @@ class TutorialService {
     id: string,
     { slot, dates, startTime, endTime, tutorId, correctorIds }: TutorialDTO
   ): Promise<Tutorial> {
-    const tutorial = await this.getTutorialDocumentWithID(id);
+    const doc: TutorialDocument = await this.getTutorialDocumentWithID(id);
+    const tutorial: TutorialDocument = await doc.populate('tutor').execPopulate();
 
     if (tutorial.tutor) {
       const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
