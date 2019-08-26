@@ -1,9 +1,9 @@
-import { Document, Model, Schema } from 'mongoose';
+import { Document, Model, Schema, Types } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { arrayProp, mapProp, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
 import { StudentDocument } from './StudentDocument';
-import { TeamDocument } from './TeamDocument';
+import { TeamDocument, TeamSchema } from './TeamDocument';
 import { UserDocument } from './UserDocument';
 
 export class TutorialSchema extends Typegoose
@@ -26,8 +26,8 @@ export class TutorialSchema extends Typegoose
   @arrayProp({ required: true, itemsRef: { name: 'StudentSchema' } })
   students!: Ref<StudentDocument>[];
 
-  @arrayProp({ required: true, itemsRef: { name: 'TeamSchema' } })
-  teams!: Ref<TeamDocument>[];
+  @arrayProp({ required: true, items: TeamSchema })
+  teams!: Types.Array<TeamDocument>;
 
   @arrayProp({ required: true, itemsRef: { name: 'UserSchema' } })
   correctors!: Ref<UserDocument>[];

@@ -1,7 +1,6 @@
-import { Model, Document } from 'mongoose';
-import { arrayProp, prop, Ref, Typegoose, mapProp } from 'typegoose';
-import { CollectionName } from '../CollectionName';
+import { Document } from 'mongoose';
 import { Team } from 'shared/dist/model/Team';
+import { arrayProp, mapProp, prop, Ref, Typegoose } from 'typegoose';
 import { StudentDocument } from './StudentDocument';
 import { TutorialDocument } from './TutorialDocument';
 
@@ -20,9 +19,3 @@ export class TeamSchema extends Typegoose implements Omit<Team, 'id' | 'tutorial
 }
 
 export interface TeamDocument extends TeamSchema, Document {}
-
-const TeamModel: Model<TeamDocument> = new TeamSchema().getModelForClass(TeamSchema, {
-  schemaOptions: { collection: CollectionName.TEAM },
-});
-
-export default TeamModel;
