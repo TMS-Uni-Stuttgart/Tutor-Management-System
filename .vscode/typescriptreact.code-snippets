@@ -126,7 +126,7 @@
         "\tthrow new Error('Not implemented yet');",
       "}",
       "",
-      "const ${1:Type}Router = Router();",
+      "const ${1:type}Router = Router();",
       "",
       "$1Router.get('/', ...checkRoleAccess(Role.ADMIN), async (req, res) => {",
         "\t$0",
