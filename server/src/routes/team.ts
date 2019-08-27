@@ -45,4 +45,20 @@ teamRouter.post(
   }
 );
 
+teamRouter.get(
+  '/tutorial/:tutorialId/team/:teamId',
+  ...checkRoleAccess(Role.ADMIN),
+  async (req, res) => {
+    try {
+      const tutorialId = req.params.tutorialId;
+      const teamId = req.params.teamId;
+      const team = teamService.getTeamWithId(tutorialId, teamId);
+
+      return res.json(team);
+    } catch (err) {
+      handleError(err, res);
+    }
+  }
+);
+
 export default teamRouter;
