@@ -63,7 +63,7 @@ class StudentService {
     return student;
   }
 
-  private async getStudentOrReject(student: StudentDocument | null): Promise<Student> {
+  public async getStudentOrReject(student: StudentDocument | null): Promise<Student> {
     if (!student) {
       return this.rejectStudentNotFound();
     }

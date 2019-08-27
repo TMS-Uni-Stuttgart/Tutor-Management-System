@@ -6,6 +6,8 @@ import { DocumentNotFoundError } from '../model/Errors';
 import { TutorialDocument } from '../model/documents/TutorialDocument';
 import tutorialService from './TutorialService';
 import { Typegoose } from 'typegoose';
+import studentService from './StudentService';
+import { isDocument } from 'typegoose/lib/utils';
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
@@ -62,7 +64,17 @@ class TeamService {
   }
 
   private async getTeamDocumentWithId(tutorialId: string, id: string): Promise<TeamDocument> {
-    throw new Error('[TeamService] -- Not implemented yet.');
+    const tutorial = await tutorialService.getTutorialDocumentWithID(tutorialId);
+    const idx = tutorial.teams.findIndex(doc => doc._id.toString() === id);
+
+    if (idx < 0) {
+      return this.rejectTeamNotFound();
+    }
+
+    // TODO: Test if population works or if an additional 'populatedTutorial' variable is needed.
+    await tutorial.populate(`teams.${idx}.students`).execPopulate();
+
+    return tutorial.teams[idx];
   }
 
   private async getTeamOrReject(team: TeamDocument | null): Promise<Team> {
@@ -72,14 +84,20 @@ class TeamService {
 
     const { _id, teamNo, tutorial, students: studentDocs, points } = team;
 
-    // TODO: Convert students to Student[]
-    const students: Student[] = [];
+    // TODO: Test if conversion works.
+    const students: Promise<Student>[] = [];
+
+    for (const doc of studentDocs) {
+      if (isDocument(doc)) {
+        students.push(studentService.getStudentOrReject(doc));
+      }
+    }
 
     return {
       id: _id,
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
-      students,
+      students: await Promise.all(students),
       points,
     };
   }
