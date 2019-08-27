@@ -8,7 +8,3 @@ export function getIdOfDocumentRef<T extends { _id: ObjectID }>(doc: Ref<T>): st
 
   return doc.toString();
 }
-
-export function isDocument<T extends { _id: ObjectID }>(doc: Ref<T>): doc is T {
-  return !(doc instanceof ObjectID);
-}
