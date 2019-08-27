@@ -3,9 +3,10 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
 import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
-import { checkRoleAccess } from '../middleware/AccessControl';
-import { handleError, ValidationErrorResponse } from '../model/Errors';
+import { checkRoleAccess } from './middleware/AccessControl';
+import { handleError } from '../model/Errors';
 import userService from '../services/UserService';
+import { validateRequestBody } from './middleware/Validation';
 
 function isValidCreateUserDTO(obj: any, errors: ValidationErrors): obj is CreateUserDTO {
   const result = validateAgainstCreateUserDTO(obj);
@@ -37,22 +38,22 @@ userRouter.get('/', ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]), async (_, r
   res.json(allUsers);
 });
 
-userRouter.post('/', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const dto = req.body;
-  const errors: ValidationErrors = [];
+userRouter.post(
+  '/',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(isValidCreateUserDTO, 'Not a valid CreateUserDTO.'),
+  async (req, res) => {
+    const dto = req.body;
 
-  if (!isValidCreateUserDTO(dto, errors)) {
-    return res.status(400).send(new ValidationErrorResponse('Not a valid CreateUserDTO.', errors));
+    try {
+      const user = await userService.createUser(dto);
+
+      return res.status(201).json(user);
+    } catch (err) {
+      handleError(err, res);
+    }
   }
-
-  try {
-    const user = await userService.createUser(dto);
-
-    return res.status(201).json(user);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
+);
 
 userRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   const id: string = req.params.id;
@@ -61,23 +62,23 @@ userRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   res.send(user);
 });
 
-userRouter.patch('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const dto = req.body;
-  const errors: ValidationErrors = [];
+userRouter.patch(
+  '/:id',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(isValidUserDTO, 'Not a valid UserDTO.'),
+  async (req, res) => {
+    const dto = req.body;
 
-  if (!isValidUserDTO(dto, errors)) {
-    return res.status(400).send(new ValidationErrorResponse('Not a valid CreateUserDTO.', errors));
+    try {
+      const id = req.params.id;
+      const user = await userService.updateUser(id, dto);
+
+      return res.status(200).json(user);
+    } catch (err) {
+      handleError(err, res);
+    }
   }
-
-  try {
-    const id = req.params.id;
-    const user = await userService.updateUser(id, dto);
-
-    return res.status(200).json(user);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
+);
 
 userRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   try {

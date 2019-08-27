@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
+import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { validateAgainstTutorialDTO } from 'shared/dist/validators/Tutorial';
-import { checkRoleAccess } from '../middleware/AccessControl';
-import { TutorialDTO, Tutorial } from 'shared/dist/model/Tutorial';
+import { checkRoleAccess } from './middleware/AccessControl';
+import { handleError } from '../model/Errors';
 import tutorialService from '../services/TutorialService';
-import { ValidationErrorResponse, handleError } from '../model/Errors';
+import { validateRequestBody } from './middleware/Validation';
 
 function isValidTutorialDTO(obj: any, errors: ValidationErrors): obj is TutorialDTO {
   const result = validateAgainstTutorialDTO(obj);
@@ -26,22 +27,22 @@ tutorialRouter.get('/', ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]), async (
   return res.json(tutorials);
 });
 
-tutorialRouter.post('/', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const dto = req.body;
-  const errors: ValidationErrors = [];
+tutorialRouter.post(
+  '/',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(isValidTutorialDTO, 'Not a valid TutorialDTO.'),
+  async (req, res) => {
+    const dto = req.body;
 
-  if (!isValidTutorialDTO(dto, errors)) {
-    return res.status(400).send(new ValidationErrorResponse('Not a valid TutorialDTO', errors));
+    try {
+      const tutorial = await tutorialService.createTutorial(dto);
+
+      return res.json(tutorial);
+    } catch (err) {
+      handleError(err, res);
+    }
   }
-
-  try {
-    const tutorial = await tutorialService.createTutorial(dto);
-
-    return res.json(tutorial);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
+);
 
 // TODO: Add access of Tutor to the tutorial.
 tutorialRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
@@ -51,23 +52,23 @@ tutorialRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   return res.json(tutorial);
 });
 
-tutorialRouter.patch('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id = req.params.id;
-  const dto = req.body;
-  const errors: ValidationErrors = [];
+tutorialRouter.patch(
+  '/:id',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(isValidTutorialDTO, 'Not a valid TutorialDTO.'),
+  async (req, res) => {
+    const id = req.params.id;
+    const dto = req.body;
 
-  if (!isValidTutorialDTO(dto, errors)) {
-    return res.status(400).send(new ValidationErrorResponse('Not a vliad TutorialDTO', errors));
+    try {
+      const tutorial = await tutorialService.updateTutorial(id, dto);
+
+      return res.json(tutorial);
+    } catch (err) {
+      handleError(err, res);
+    }
   }
-
-  try {
-    const tutorial = await tutorialService.updateTutorial(id, dto);
-
-    return res.json(tutorial);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
+);
 
 tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   try {
