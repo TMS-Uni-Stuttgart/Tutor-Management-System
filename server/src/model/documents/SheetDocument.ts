@@ -1,4 +1,4 @@
-import { Document, Model, Types } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { arrayProp, prop, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
