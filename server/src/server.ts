@@ -81,7 +81,6 @@ app.use(BASE_API_PATH, authenticationRouter);
 app.use(`${BASE_API_PATH}/user`, userRouter);
 app.use(`${BASE_API_PATH}/tutorial`, tutorialRouter);
 app.use(`${BASE_API_PATH}/student`, studentRouter);
-app.use(`${BASE_API_PATH}`, teamRouter);
 app.use(`${BASE_API_PATH}/sheet`, sheetRouter);
 
 

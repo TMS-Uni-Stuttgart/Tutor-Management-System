@@ -7,6 +7,7 @@ import { checkRoleAccess } from './middleware/AccessControl';
 import { handleError } from '../model/Errors';
 import tutorialService from '../services/TutorialService';
 import { validateRequestBody } from './middleware/Validation';
+import teamRouter from './team';
 
 function isValidTutorialDTO(obj: any, errors: ValidationErrors): obj is TutorialDTO {
   const result = validateAgainstTutorialDTO(obj);
@@ -80,5 +81,7 @@ tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =
     handleError(err, res);
   }
 });
+
+tutorialRouter.use('/', teamRouter);
 
 export default tutorialRouter;
