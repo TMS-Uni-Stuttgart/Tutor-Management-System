@@ -1,12 +1,11 @@
-import { Document } from 'mongoose';
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { Ref } from 'typegoose';
+import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
 import { UserDocument } from '../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../model/Errors';
 import userService from './UserService';
-import { isDocument } from 'typegoose/lib/utils';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -86,7 +85,7 @@ class TutorialService {
     return this.getTutorialOrReject(await tutorial.save());
   }
 
-  public async deleteTutorial(id: string): Promise<Document> {
+  public async deleteTutorial(id: string): Promise<Tutorial> {
     const tutorial: TutorialDocument = await this.getTutorialDocumentWithID(id);
 
     if (tutorial.students && tutorial.students.length > 0) {
@@ -104,7 +103,7 @@ class TutorialService {
       await tutor.save();
     }
 
-    return tutorial.remove();
+    return this.getTutorialOrReject(await tutorial.remove());
   }
 
   private async getTutorialOrReject(document: TutorialDocument | null): Promise<Tutorial> {

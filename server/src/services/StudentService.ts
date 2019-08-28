@@ -2,7 +2,6 @@ import { Student, StudentDTO } from 'shared/dist/model/Student';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
 import { DocumentNotFoundError } from '../model/Errors';
-import { Document } from 'mongoose';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -33,18 +32,16 @@ class StudentService {
 
     const updatedStudent = await student.updateOne({ ...dto });
 
-    console.log(updatedStudent);
-
     return this.getStudentOrReject(updatedStudent);
   }
 
-  public async deleteStudent(id: string): Promise<Document> {
+  public async deleteStudent(id: string): Promise<Student> {
     const student: StudentDocument = await this.getStudentDocumentWithId(id);
 
     // TODO: Adjust team
     // TODO: Adjust tutorial
 
-    return student.remove();
+    return this.getStudentOrReject(await student.remove());
   }
 
   public async getStudentWithId(id: string): Promise<Student> {
