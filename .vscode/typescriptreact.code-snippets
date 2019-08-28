@@ -47,7 +47,6 @@
       "import { Model, Document } from 'mongoose';",
       "import { arrayProp, prop, Ref, Typegoose } from 'typegoose';",
       "import { CollectionName } from '../CollectionName';",
-      "import { CreateMongooseModel } from '../TypeHelpers';",
       "",
       "export class ${1:Type}Schema extends Typegoose implements Omit<$1, 'id'> {",
         "\t$0",
