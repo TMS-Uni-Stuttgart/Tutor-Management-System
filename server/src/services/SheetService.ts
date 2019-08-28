@@ -1,5 +1,8 @@
 import { Exercise, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
-import ExerciseModel, { ExerciseDocument } from '../model/documents/ExerciseDocument';
+import ExerciseModel, {
+  ExerciseDocument,
+  convertDocumentToExercise,
+} from '../model/documents/ExerciseDocument';
 import SheetModel, { SheetDocument } from '../model/documents/SheetDocument';
 import { DocumentNotFoundError } from '../model/Errors';
 
@@ -78,14 +81,8 @@ class SheetService {
       id: _id,
       sheetNo,
       bonusSheet,
-      exercises: exercises.map(this.convertToExercise),
+      exercises: exercises.map(convertDocumentToExercise),
     };
-  }
-
-  private convertToExercise(doc: ExerciseDocument): Exercise {
-    const { exNo, bonus, maxPoints } = doc;
-
-    return { exNo, bonus, maxPoints };
   }
 
   private async rejectSheetNotFound(): Promise<any> {
