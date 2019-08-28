@@ -84,11 +84,15 @@ teamRouter.delete(
   '/tutorial/:tutorialId/team/:teamId',
   ...checkRoleAccess(Role.ADMIN),
   async (req, res) => {
-    const tutorialId = req.params.tutorialId;
-    const teamId = req.params.teamId;
-    const team = await teamService.deleteTeam(tutorialId, teamId);
+    try {
+      const tutorialId = req.params.tutorialId;
+      const teamId = req.params.teamId;
+      await teamService.deleteTeam(tutorialId, teamId);
 
-    
+      res.status(204).send();
+    } catch (err) {
+      handleError(err, res);
+    }
   }
 );
 
