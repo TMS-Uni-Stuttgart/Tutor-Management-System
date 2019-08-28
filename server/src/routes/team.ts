@@ -52,12 +52,43 @@ teamRouter.get(
     try {
       const tutorialId = req.params.tutorialId;
       const teamId = req.params.teamId;
-      const team = teamService.getTeamWithId(tutorialId, teamId);
+      const team = await teamService.getTeamWithId(tutorialId, teamId);
 
       return res.json(team);
     } catch (err) {
       handleError(err, res);
     }
+  }
+);
+
+teamRouter.patch(
+  '/tutorial/:tutorialId/team/:teamId',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(isValidTeamDTO, 'Not a valid TeamDTO.'),
+  async (req, res) => {
+    try {
+      const tutorialId = req.params.tutorialId;
+      const teamId = req.params.teamId;
+      const dto = req.body;
+
+      const team = await teamService.updateTeam(tutorialId, teamId, dto);
+
+      return res.json(team);
+    } catch (err) {
+      handleError(err, res);
+    }
+  }
+);
+
+teamRouter.delete(
+  '/tutorial/:tutorialId/team/:teamId',
+  ...checkRoleAccess(Role.ADMIN),
+  async (req, res) => {
+    const tutorialId = req.params.tutorialId;
+    const teamId = req.params.teamId;
+    const team = await teamService.deleteTeam(tutorialId, teamId);
+
+    
   }
 );
 

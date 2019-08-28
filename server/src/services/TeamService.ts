@@ -1,13 +1,13 @@
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
+import { Typegoose } from 'typegoose';
+import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import { TeamDocument, TeamSchema } from '../model/documents/TeamDocument';
-import { DocumentNotFoundError } from '../model/Errors';
 import { TutorialDocument } from '../model/documents/TutorialDocument';
-import tutorialService from './TutorialService';
-import { Typegoose } from 'typegoose';
+import { DocumentNotFoundError } from '../model/Errors';
 import studentService from './StudentService';
-import { isDocument } from 'typegoose/lib/utils';
+import tutorialService from './TutorialService';
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
@@ -44,17 +44,28 @@ class TeamService {
     return this.getTeamOrReject(createdTeam);
   }
 
-  public async updateTeam(tutorialId: string, teamId: string, dto: TeamDTO): Promise<Team> {
-    throw new Error('[TeamService] -- Not implemented yet.');
-  }
-
-  public async deleteTeam(tutorialId: string, teamId: string): Promise<TeamDocument> {
+  public async updateTeam(
+    tutorialId: string,
+    teamId: string,
+    { teamNo, students }: TeamDTO
+  ): Promise<Team> {
     const team: TeamDocument = await this.getTeamDocumentWithId(tutorialId, teamId);
 
     // TODO: Adjust students
     // TODO: Adjust tutorial
 
-    return team.remove();
+    team.teamNo = teamNo;
+
+    return this.getTeamOrReject(await team.save());
+  }
+
+  public async deleteTeam(tutorialId: string, teamId: string): Promise<Team> {
+    const team: TeamDocument = await this.getTeamDocumentWithId(tutorialId, teamId);
+
+    // TODO: Adjust students
+    // TODO: Adjust tutorial
+
+    return this.getTeamOrReject(await team.remove());
   }
 
   public async getTeamWithId(tutorialId: string, id: string): Promise<Team> {
