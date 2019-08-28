@@ -119,7 +119,7 @@
       "import { Router } from 'express';",
       "import { ValidationErrors } from 'shared/dist/model/errors/Errors';",
       "import { Role } from 'shared/dist/model/Role';",
-      "import { checkRoleAccess } from '../middleware/AccessControl';",
+      "import { checkRoleAccess } from './middleware/AccessControl';",
       "",
       "function isValid${1/(.*)/${1:/capitalize}/}DTO(obj: any, errors: ValidationErrors): obj is ${1/(.*)/${1:/capitalize}/}DTO {",
         "\tthrow new Error('Not implemented yet');",
