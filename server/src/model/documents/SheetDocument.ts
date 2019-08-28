@@ -12,7 +12,7 @@ export class SheetSchema extends Typegoose implements Omit<Sheet, 'id'> {
   bonusSheet!: boolean;
 
   @arrayProp({ required: true, items: ExerciseSchema })
-  exercises!: Types.Array<ExerciseDocument>;
+  exercises!: ExerciseDocument[];
 }
 
 export interface SheetDocument extends SheetSchema, Document {}
