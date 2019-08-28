@@ -3,4 +3,5 @@ export enum CollectionName {
   TUTORIAL = 'tutorials',
   STUDENT = 'students',
   TEAM = 'teams',
+  SHEET = 'sheets',
 }
