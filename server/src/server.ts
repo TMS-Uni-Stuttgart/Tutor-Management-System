@@ -18,6 +18,7 @@ import studentRouter from './routes/student';
 import tutorialRouter from './routes/tutorial';
 import userRouter from './routes/user';
 import userService from './services/UserService';
+import scheinexamRouter from './routes/scheinexam';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
@@ -81,5 +82,6 @@ app.use(`${BASE_API_PATH}/user`, userRouter);
 app.use(`${BASE_API_PATH}/tutorial`, tutorialRouter);
 app.use(`${BASE_API_PATH}/student`, studentRouter);
 app.use(`${BASE_API_PATH}/sheet`, sheetRouter);
+app.use(`${BASE_API_PATH}/scheinexam`, scheinexamRouter);
 
 app.listen(8080, () => console.log('Server started on port 8080.'));
