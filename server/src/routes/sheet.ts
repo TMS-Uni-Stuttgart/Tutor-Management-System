@@ -44,10 +44,14 @@ sheetRouter.post(
 );
 
 sheetRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id = req.params.id;
-  const sheet = await sheetService.getSheetWithId(id);
+  try {
+    const id = req.params.id;
+    const sheet = await sheetService.getSheetWithId(id);
 
-  return res.json(sheet);
+    return res.json(sheet);
+  } catch (err) {
+    handleError(err, res);
+  }
 });
 
 sheetRouter.patch(
