@@ -1,7 +1,8 @@
-import { Exercise, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
-import ExerciseModel, {
-  ExerciseDocument,
+import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
+import {
   convertDocumentToExercise,
+  ExerciseDocument,
+  generateExerciseDocumentsFromDTOs,
 } from '../model/documents/ExerciseDocument';
 import SheetModel, { SheetDocument } from '../model/documents/SheetDocument';
 import { DocumentNotFoundError } from '../model/Errors';
@@ -19,11 +20,7 @@ class SheetService {
   }
 
   public async createSheet({ sheetNo, exercises: exDTOs, bonusSheet }: SheetDTO): Promise<Sheet> {
-    const exercises: ExerciseDocument[] = [];
-
-    exDTOs.forEach(({ exNo, bonus, maxPoints }) =>
-      exercises.push(new ExerciseModel({ exNo, maxPoints, bonus: bonusSheet || bonus }))
-    );
+    const exercises: ExerciseDocument[] = generateExerciseDocumentsFromDTOs(exDTOs, bonusSheet);
 
     const createdSheet = await SheetModel.create({ sheetNo, bonusSheet, exercises });
 
@@ -35,11 +32,7 @@ class SheetService {
     { sheetNo, exercises: exDTOs, bonusSheet }: SheetDTO
   ): Promise<Sheet> {
     const sheet: SheetDocument = await this.getSheetDocumentWithId(id);
-    const exercises: ExerciseDocument[] = [];
-
-    exDTOs.forEach(({ exNo, bonus, maxPoints }) =>
-      exercises.push(new ExerciseModel({ exNo, maxPoints, bonus: bonusSheet || bonus }))
-    );
+    const exercises: ExerciseDocument[] = generateExerciseDocumentsFromDTOs(exDTOs, bonusSheet);
 
     sheet.sheetNo = sheetNo;
     sheet.bonusSheet = bonusSheet;
