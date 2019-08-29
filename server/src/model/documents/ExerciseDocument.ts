@@ -37,5 +37,3 @@ export function generateExerciseDocumentsFromDTOs(
 
   return exercises;
 }
-
-export default ExerciseModel;
