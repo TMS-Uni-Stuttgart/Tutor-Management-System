@@ -1,15 +1,13 @@
 import { Role } from 'shared/dist/model/Role';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
+import { isDocument } from 'typegoose';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../model/documents/UserDocument';
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../model/Errors';
 import tutorialService from './TutorialService';
-import userRouter from '../routes/user';
-import { isDocument } from 'typegoose';
-import { Tutorial } from 'shared/dist/model/Tutorial';
-import { ObjectID } from 'bson';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -54,8 +52,15 @@ class UserService {
 
   public async deleteUser(id: string): Promise<User> {
     const user: UserDocument = await this.getUserDocumentWithId(id);
+    await user.populate('tutorials').execPopulate();
 
-    // TODO: Remove user from all it's tutorials.
+    for (const doc of user.tutorials) {
+      const tutorial = isDocument(doc)
+        ? doc
+        : await tutorialService.getTutorialDocumentWithID(doc.toString());
+
+      await this.removeTutorialFromUser(user, tutorial, { saveUser: false });
+    }
 
     return this.getUserOrReject(await user.remove());
   }
