@@ -3,6 +3,7 @@ import { PassportStatic } from 'passport';
 import { BasicStrategy } from 'passport-http';
 import userService from '../services/UserService';
 import { UserCredentials } from '../model/documents/UserDocument';
+import { AuthenticationError } from '../model/Errors';
 
 export default function initPassport(passport: PassportStatic) {
   passport.use(
@@ -35,7 +36,14 @@ export default function initPassport(passport: PassportStatic) {
       userService
         .getUserWithId(id)
         .then(user => done(null, user))
-        .catch(err => done(err, null));
+        .catch(() =>
+          done(
+            new AuthenticationError(
+              'Could not find a user with the given ID. This could be due to an old cookie. Destorying the old session, now. Please try to login again.'
+            ),
+            null
+          )
+        );
     } else {
       done(null, false);
     }

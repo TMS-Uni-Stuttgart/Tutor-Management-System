@@ -1,8 +1,12 @@
-import { Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 
 export interface StatusErrorMessages {
   [status: number]: string;
+}
+
+export class AuthenticationError {
+  constructor(readonly message: string) {}
 }
 
 export class DocumentNotFoundError {
@@ -23,7 +27,18 @@ export class ValidationErrorResponse extends ErrorResponse {
   }
 }
 
-export function handleError(err: any, res: Response) {
+export function handleError(err: any, req: Request, res: Response, next: NextFunction) {
+  if (!err) {
+    return next();
+  }
+
+  if (err instanceof AuthenticationError) {
+    req.logout();
+    return res
+      .status(401)
+      .send(new ErrorResponse(401, err.message || 'Error during authentication encountered.'));
+  }
+
   if (err instanceof DocumentNotFoundError) {
     return res.status(404).send(new ErrorResponse(404, err.message || 'Element was not found.'));
   }
