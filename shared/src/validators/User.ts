@@ -3,14 +3,13 @@ import { ValidationErrorsWrapper } from '../model/errors/Errors';
 import { Role } from '../model/Role';
 import { CreateUserDTO, UserDTO } from '../model/User';
 import { validateSchema } from './helper';
+import { TutorialIdListSchema } from './Tutorial';
 
 const UserDTOSchema = Yup.object().shape<UserDTO>({
   firstname: Yup.string().required(),
   lastname: Yup.string().required(),
   roles: Yup.array<Role>().required(),
-  tutorials: Yup.array()
-    .required()
-    .of(Yup.string()),
+  tutorials: TutorialIdListSchema,
 });
 
 const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
@@ -19,9 +18,7 @@ const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
   username: Yup.string().required(),
   password: Yup.string().required(),
   roles: Yup.array<Role>().required(),
-  tutorials: Yup.array()
-    .required()
-    .of(Yup.string()),
+  tutorials: TutorialIdListSchema,
 });
 
 export function validateAgainstCreateUserDTO(

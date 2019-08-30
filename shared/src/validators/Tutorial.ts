@@ -12,7 +12,7 @@ const TutorialDTOSchema = Yup.object().shape<TutorialDTO>({
   startTime: Yup.string().required(),
 });
 
-const TutorialIdListSchema = Yup.array().of(Yup.string().matches(/^[a-f\d]{24}$/i));
+export const TutorialIdListSchema = Yup.array().of(Yup.string().matches(/^[a-f\d]{24}$/i));
 
 export function validateAgainstTutorialDTO(
   obj: any
