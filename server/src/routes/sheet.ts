@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { checkRoleAccess } from './middleware/AccessControl';
@@ -32,26 +32,18 @@ sheetRouter.post(
   ...checkRoleAccess(Role.ADMIN),
   validateRequestBody(isValidSheetDTO, 'Not a valid SheetDTO.'),
   async (req, res) => {
-    try {
-      const dto = req.body;
-      const sheet = await sheetService.createSheet(dto);
+    const dto = req.body;
+    const sheet = await sheetService.createSheet(dto);
 
-      return res.json(sheet);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(sheet);
   }
 );
 
 sheetRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id = req.params.id;
-    const sheet = await sheetService.getSheetWithId(id);
+  const id = req.params.id;
+  const sheet = await sheetService.getSheetWithId(id);
 
-    return res.json(sheet);
-  } catch (err) {
-    handleError(err, res);
-  }
+  return res.json(sheet);
 });
 
 sheetRouter.patch(
@@ -59,27 +51,19 @@ sheetRouter.patch(
   ...checkRoleAccess(Role.ADMIN),
   validateRequestBody(isValidSheetDTO, 'Not a valid SheetDTO.'),
   async (req, res) => {
-    try {
-      const id = req.params.id;
-      const dto = req.body;
-      const sheet = await sheetService.updateSheet(id, dto);
+    const id = req.params.id;
+    const dto = req.body;
+    const sheet = await sheetService.updateSheet(id, dto);
 
-      return res.json(sheet);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(sheet);
   }
 );
 
 sheetRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id = req.params.id;
-    await sheetService.deleteSheet(id);
+  const id = req.params.id;
+  await sheetService.deleteSheet(id);
 
-    return res.status(204).send();
-  } catch (err) {
-    handleError(err, res);
-  }
+  return res.status(204).send();
 });
 
 export default sheetRouter;

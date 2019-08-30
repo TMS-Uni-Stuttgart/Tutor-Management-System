@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
@@ -56,14 +56,9 @@ userRouter.post(
   validateRequestBody(isValidCreateUserDTO, 'Not a valid CreateUserDTO.'),
   async (req, res) => {
     const dto = req.body;
+    const user = await userService.createUser(dto);
 
-    try {
-      const user = await userService.createUser(dto);
-
-      return res.status(201).json(user);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.status(201).json(user);
   }
 );
 
@@ -80,38 +75,25 @@ userRouter.patch(
   validateRequestBody(isValidUserDTO, 'Not a valid UserDTO.'),
   async (req, res) => {
     const dto = req.body;
+    const id = req.params.id;
+    const user = await userService.updateUser(id, dto);
 
-    try {
-      const id = req.params.id;
-      const user = await userService.updateUser(id, dto);
-
-      return res.status(200).json(user);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.status(200).json(user);
   }
 );
 
 userRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id: string = req.params.id;
-    await userService.deleteUser(id);
+  const id: string = req.params.id;
+  await userService.deleteUser(id);
 
-    res.status(204).send();
-  } catch (err) {
-    handleError(err, res);
-  }
+  res.status(204).send();
 });
 
 userRouter.get('/:id/tutorial', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id: string = req.params.id;
-    const tutorials = await userService.getTutorialsOfUser(id);
+  const id: string = req.params.id;
+  const tutorials = await userService.getTutorialsOfUser(id);
 
-    return res.json(tutorials);
-  } catch (err) {
-    handleError(err, res);
-  }
+  return res.json(tutorials);
 });
 
 userRouter.put(
@@ -122,18 +104,12 @@ userRouter.put(
     'Request body is not a list of valid Tutorial IDs.'
   ),
   async (req, res) => {
-    try {
-      const id: string = req.params.id;
-      const tutorials = req.body;
+    const id: string = req.params.id;
+    const tutorials = req.body;
 
-      // TODO: Validate body.
+    await userService.setTutorialsOfUser(id, tutorials);
 
-      await userService.setTutorialsOfUser(id, tutorials);
-
-      return res.status(204).send();
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.status(204).send();
   }
 );
 

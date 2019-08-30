@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
@@ -34,14 +34,9 @@ tutorialRouter.post(
   validateRequestBody(isValidTutorialDTO, 'Not a valid TutorialDTO.'),
   async (req, res) => {
     const dto = req.body;
+    const tutorial = await tutorialService.createTutorial(dto);
 
-    try {
-      const tutorial = await tutorialService.createTutorial(dto);
-
-      return res.json(tutorial);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(tutorial);
   }
 );
 
@@ -60,26 +55,17 @@ tutorialRouter.patch(
   async (req, res) => {
     const id = req.params.id;
     const dto = req.body;
+    const tutorial = await tutorialService.updateTutorial(id, dto);
 
-    try {
-      const tutorial = await tutorialService.updateTutorial(id, dto);
-
-      return res.json(tutorial);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(tutorial);
   }
 );
 
 tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id: string = req.params.id;
-    await tutorialService.deleteTutorial(id);
+  const id: string = req.params.id;
+  await tutorialService.deleteTutorial(id);
 
-    res.status(204).send();
-  } catch (err) {
-    handleError(err, res);
-  }
+  res.status(204).send();
 });
 
 tutorialRouter.use('/', teamRouter);

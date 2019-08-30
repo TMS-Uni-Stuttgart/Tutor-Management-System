@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { Student, StudentDTO } from 'shared/dist/model/Student';
@@ -34,14 +34,9 @@ studentRouter.post(
   validateRequestBody(isValidStudentDTO, 'Not a valid StudentDTO.'),
   async (req, res) => {
     const dto = req.body;
+    const student = await studentService.createStudent(dto);
 
-    try {
-      const student = await studentService.createStudent(dto);
-
-      return res.json(student);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(student);
   }
 );
 
@@ -59,26 +54,17 @@ studentRouter.patch(
   async (req, res) => {
     const id = req.params.id;
     const dto = req.body;
+    const student = await studentService.updateStudent(id, dto);
 
-    try {
-      const student = await studentService.updateStudent(id, dto);
-
-      return res.json(student);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(student);
   }
 );
 
 studentRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id = req.params.id;
-    await studentRouter.delete(id);
+  const id = req.params.id;
+  await studentRouter.delete(id);
 
-    res.status(204).send();
-  } catch (err) {
-    handleError(err, res);
-  }
+  res.status(204).send();
 });
 
 export default studentRouter;

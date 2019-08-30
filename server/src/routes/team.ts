@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { TeamDTO } from 'shared/dist/model/Team';
@@ -34,27 +34,18 @@ teamRouter.post(
   async (req, res) => {
     const dto = req.body;
     const tutorialId = req.params.tutorialId;
-
-    try {
       const team = await teamService.createTeam(tutorialId, dto);
 
       return res.json(team);
-    } catch (err) {
-      handleError(err, res);
-    }
   }
 );
 
 teamRouter.get('/:tutorialId/team/:teamId', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
     const tutorialId = req.params.tutorialId;
     const teamId = req.params.teamId;
     const team = await teamService.getTeamWithId(tutorialId, teamId);
 
     return res.json(team);
-  } catch (err) {
-    handleError(err, res);
-  }
 });
 
 teamRouter.patch(
@@ -62,7 +53,6 @@ teamRouter.patch(
   ...checkRoleAccess(Role.ADMIN),
   validateRequestBody(isValidTeamDTO, 'Not a valid TeamDTO.'),
   async (req, res) => {
-    try {
       const tutorialId = req.params.tutorialId;
       const teamId = req.params.teamId;
       const dto = req.body;
@@ -70,22 +60,15 @@ teamRouter.patch(
       const team = await teamService.updateTeam(tutorialId, teamId, dto);
 
       return res.json(team);
-    } catch (err) {
-      handleError(err, res);
-    }
   }
 );
 
 teamRouter.delete('/:tutorialId/team/:teamId', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
     const tutorialId = req.params.tutorialId;
     const teamId = req.params.teamId;
     await teamService.deleteTeam(tutorialId, teamId);
 
     res.status(204).send();
-  } catch (err) {
-    handleError(err, res);
-  }
 });
 
 export default teamRouter;

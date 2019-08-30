@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { checkRoleAccess } from './middleware/AccessControl';
@@ -32,26 +32,18 @@ scheinexamRouter.post(
   ...checkRoleAccess(Role.ADMIN),
   validateRequestBody(isValidScheinexamDTO, 'Not a valid ScheinexamDTO.'),
   async (req, res) => {
-    try {
-      const dto = req.body;
-      const exam = await scheinexamService.createScheinExam(dto);
+    const dto = req.body;
+    const exam = await scheinexamService.createScheinExam(dto);
 
-      return res.json(exam);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(exam);
   }
 );
 
 scheinexamRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id = req.params.id;
-    const exam = await scheinexamService.getScheinExamWithId(id);
+  const id = req.params.id;
+  const exam = await scheinexamService.getScheinExamWithId(id);
 
-    return res.json(exam);
-  } catch (err) {
-    handleError(err, res);
-  }
+  return res.json(exam);
 });
 
 scheinexamRouter.patch(
@@ -59,27 +51,19 @@ scheinexamRouter.patch(
   ...checkRoleAccess(Role.ADMIN),
   validateRequestBody(isValidScheinexamDTO, 'Not a valid ScheinexamDTO.'),
   async (req, res) => {
-    try {
-      const id = req.params.id;
-      const dto = req.body;
-      const exam = await scheinexamService.updateScheinExam(id, dto);
+    const id = req.params.id;
+    const dto = req.body;
+    const exam = await scheinexamService.updateScheinExam(id, dto);
 
-      return res.json(exam);
-    } catch (err) {
-      handleError(err, res);
-    }
+    return res.json(exam);
   }
 );
 
 scheinexamRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  try {
-    const id = req.params.id;
-    await scheinexamService.deleteScheinExam(id);
+  const id = req.params.id;
+  await scheinexamService.deleteScheinExam(id);
 
-    return res.status(204).send();
-  } catch (err) {
-    handleError(err, res);
-  }
+  return res.status(204).send();
 });
 
 export default scheinexamRouter;

@@ -116,7 +116,7 @@
     "prefix": "express router",
     "description": "boilerplate code for an express router file",
     "body": [
-      "import { Router } from 'express';",
+      "import Router from 'express-promise-router';",
       "import { ValidationErrors } from 'shared/dist/model/errors/Errors';",
       "import { Role } from 'shared/dist/model/Role';",
       "import { checkRoleAccess } from './middleware/AccessControl';",
