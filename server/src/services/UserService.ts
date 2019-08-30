@@ -6,6 +6,10 @@ import UserModel, { UserCredentials, UserDocument } from '../model/documents/Use
 import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../model/Errors';
 import tutorialService from './TutorialService';
+import userRouter from '../routes/user';
+import { isDocument } from 'typegoose';
+import { Tutorial } from 'shared/dist/model/Tutorial';
+import { ObjectID } from 'bson';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -26,7 +30,7 @@ class UserService {
     });
 
     const tutorials = await Promise.all(promises);
-    const createdUser = await UserModel.create({ ...dto, tutorials: dto.tutorials });
+    const createdUser = await UserModel.create({ ...dto, tutorials });
 
     for (const doc of tutorials) {
       doc.tutor = createdUser;
@@ -54,6 +58,48 @@ class UserService {
     // TODO: Remove user from all it's tutorials.
 
     return this.getUserOrReject(await user.remove());
+  }
+
+  public async getTutorialsOfUser(id: string): Promise<Tutorial[]> {
+    const user: UserDocument = await this.getUserDocumentWithId(id);
+    const tutorials: Promise<Tutorial>[] = [];
+
+    await user.populate('tutorials').execPopulate();
+
+    for (const doc of user.tutorials) {
+      if (isDocument(doc)) {
+        tutorials.push(tutorialService.getTutorialOrReject(doc));
+      }
+    }
+
+    return await Promise.all(tutorials);
+  }
+
+  public async setTutorialsOfUser(id: string, tutorialIds: string[]): Promise<void> {
+    const user = await this.getUserDocumentWithId(id);
+    await user.populate('tutorials').execPopulate();
+
+    for (const tutorial of user.tutorials) {
+      if (!isDocument(tutorial)) {
+        throw new Error(
+          'UserService::setTutorialsOfUser -- Given Tutorial is NOT a document. It should be a document to be adjustable.'
+        );
+      }
+
+      await this.removeTutorialFromUser(user, tutorial, { saveUser: false });
+    }
+
+    // If the user is not saved here than the added tutorials will just be merged with the old ones. With this save the "empty" tutorial list is saved to the DB.
+    await user.save();
+
+    for (const id of tutorialIds) {
+      const tutorial = await tutorialService.getTutorialDocumentWithID(id);
+
+      await this.addTutorialToUser(user, tutorial, { saveUser: false });
+    }
+
+    await user.save();
+    return;
   }
 
   public async getUserWithId(id: string): Promise<User> {
@@ -90,6 +136,70 @@ class UserService {
     }
 
     return user;
+  }
+
+  /**
+   * Adds the given TutorialDocument to the given UserDocument.
+   *
+   * This will also adjust the TutorialDocument to have the given UserDocument as 'Tutor'.
+   *
+   * By default this will __not__ save the UserDocument after adding a TutorialDocument. To do so provide the `saveUser` option with a truthy value.
+   *
+   * @param user UserDocument to add the tutorial to
+   * @param tutorial TutorialDocument to add
+   * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
+   */
+  public async addTutorialToUser(
+    user: UserDocument,
+    tutorial: TutorialDocument,
+    { saveUser }: { saveUser?: boolean } = {}
+  ): Promise<void> {
+    tutorial.tutor = user;
+    user.tutorials.push(tutorial);
+
+    if (saveUser) {
+      await Promise.all([tutorial.save(), user.save()]);
+    } else {
+      await tutorial.save();
+    }
+
+    return;
+  }
+
+  /**
+   * Removes the given TutorialDocument from the given UserDocument.
+   *
+   * This will also adjust the TutorialDocument to not have a 'Tutor' anymore.
+   *
+   * By default this will __not__ save the UserDocument after removing the TutorialDocument. To do so provide the `saveUser` option with a truthy value.
+   *
+   * @param user UserDocument to remove the TutorialDocument from.
+   * @param tutorial TutorialDocument to remove.
+   * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
+   */
+  public async removeTutorialFromUser(
+    user: UserDocument,
+    tutorial: TutorialDocument,
+    { saveUser }: { saveUser?: boolean } = {}
+  ): Promise<void> {
+    const tutorialId: string = (isDocument(tutorial) ? tutorial._id : tutorial).toString();
+    tutorial.tutor = undefined;
+
+    user.tutorials = user.tutorials.filter(tut => {
+      const isRemovedTutorial: boolean = isDocument(tut)
+        ? tut._id.toString() === tutorialId
+        : tut.toString() === tutorialId;
+
+      return !isRemovedTutorial;
+    });
+
+    if (saveUser) {
+      await Promise.all([tutorial.save(), user.save()]);
+    } else {
+      await tutorial.save();
+    }
+
+    return;
   }
 
   private async getUserOrReject(user: UserDocument | null): Promise<User> {
