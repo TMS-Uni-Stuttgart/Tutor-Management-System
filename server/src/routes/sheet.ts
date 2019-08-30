@@ -1,12 +1,11 @@
 import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { SheetDTO, Sheet } from 'shared/dist/model/Sheet';
+import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 import { validateAgainstSheetDTO } from 'shared/dist/validators/Sheet';
 import sheetService from '../services/SheetService';
+import { checkRoleAccess } from './middleware/AccessControl';
 import { validateRequestBody } from './middleware/Validation';
-import { handleError } from '../model/Errors';
 
 function isValidSheetDTO(obj: any, errors: ValidationErrors): obj is SheetDTO {
   const result = validateAgainstSheetDTO(obj);

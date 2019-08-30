@@ -1,12 +1,11 @@
 import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { ScheinExamDTO, ScheinExam } from 'shared/dist/model/Scheinexam';
-import scheinexamService from '../services/ScheinexamService';
+import { ScheinExam, ScheinExamDTO } from 'shared/dist/model/Scheinexam';
 import { validateAgainstScheinexamDTO } from 'shared/dist/validators/Scheinexam';
+import scheinexamService from '../services/ScheinexamService';
+import { checkRoleAccess } from './middleware/AccessControl';
 import { validateRequestBody } from './middleware/Validation';
-import { handleError } from '../model/Errors';
 
 function isValidScheinexamDTO(obj: any, errors: ValidationErrors): obj is ScheinExamDTO {
   const result = validateAgainstScheinexamDTO(obj);

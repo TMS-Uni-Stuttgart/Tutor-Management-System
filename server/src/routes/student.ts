@@ -3,9 +3,8 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { Student, StudentDTO } from 'shared/dist/model/Student';
 import { validateAgainstStudentDTO } from 'shared/dist/validators/Student';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { handleError } from '../model/Errors';
 import studentService from '../services/StudentService';
+import { checkRoleAccess } from './middleware/AccessControl';
 import { validateRequestBody } from './middleware/Validation';
 
 function isValidStudentDTO(obj: any, errors: ValidationErrors): obj is StudentDTO {

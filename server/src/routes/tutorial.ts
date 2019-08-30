@@ -3,9 +3,8 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { validateAgainstTutorialDTO } from 'shared/dist/validators/Tutorial';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { handleError } from '../model/Errors';
 import tutorialService from '../services/TutorialService';
+import { checkRoleAccess } from './middleware/AccessControl';
 import { validateRequestBody } from './middleware/Validation';
 import teamRouter from './team';
 

@@ -2,11 +2,10 @@ import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
-import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
 import { validateAgainstTutorialIdList } from 'shared/dist/validators/Tutorial';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { handleError } from '../model/Errors';
+import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
 import userService from '../services/UserService';
+import { checkRoleAccess } from './middleware/AccessControl';
 import { validateRequestBody } from './middleware/Validation';
 
 function isValidCreateUserDTO(obj: any, errors: ValidationErrors): obj is CreateUserDTO {
