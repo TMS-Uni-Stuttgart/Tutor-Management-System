@@ -106,7 +106,7 @@ class TutorialService {
     return this.getTutorialOrReject(await tutorial.remove());
   }
 
-  private async getTutorialOrReject(document: TutorialDocument | null): Promise<Tutorial> {
+  public async getTutorialOrReject(document: TutorialDocument | null): Promise<Tutorial> {
     if (!document) {
       return this.rejectTutorialNotFound();
     }
