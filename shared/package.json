@@ -6,7 +6,7 @@
     "build": "tsc -b",
     "build:watch": "tsc -b -w",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
-    "eslint:fix": "eslint --fix \"src/**/*.ts?(x)\"",
+    "format": "eslint --fix \"src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
     "ts:check": "tsc -b --force && tsc --project . --noEmit"
   },
