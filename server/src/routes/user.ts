@@ -3,6 +3,7 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
 import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
+import { validateAgainstTutorialIdList } from 'shared/dist/validators/Tutorial';
 import { checkRoleAccess } from './middleware/AccessControl';
 import { handleError } from '../model/Errors';
 import userService from '../services/UserService';
@@ -10,6 +11,17 @@ import { validateRequestBody } from './middleware/Validation';
 
 function isValidCreateUserDTO(obj: any, errors: ValidationErrors): obj is CreateUserDTO {
   const result = validateAgainstCreateUserDTO(obj);
+
+  if ('errors' in result) {
+    errors.push(...result['errors']);
+    return false;
+  }
+
+  return true;
+}
+
+function isValidListOfTutorialIds(obj: any, errors: ValidationErrors): obj is string[] {
+  const result = validateAgainstTutorialIdList(obj);
 
   if ('errors' in result) {
     errors.push(...result['errors']);
@@ -90,5 +102,39 @@ userRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
     handleError(err, res);
   }
 });
+
+userRouter.get('/:id/tutorial', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  try {
+    const id: string = req.params.id;
+    const tutorials = await userService.getTutorialsOfUser(id);
+
+    return res.json(tutorials);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
+
+userRouter.put(
+  '/:id/tutorial',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(
+    isValidListOfTutorialIds,
+    'Request body is not a list of valid Tutorial IDs.'
+  ),
+  async (req, res) => {
+    try {
+      const id: string = req.params.id;
+      const tutorials = req.body;
+
+      // TODO: Validate body.
+
+      await userService.setTutorialsOfUser(id, tutorials);
+
+      return res.status(204).send();
+    } catch (err) {
+      handleError(err, res);
+    }
+  }
+);
 
 export default userRouter;
