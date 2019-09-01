@@ -1,6 +1,6 @@
 import { ConnectionOptions } from 'mongoose';
 
-interface DatabaseConfig {
+export interface DatabaseConfig {
   databaseURL: string;
   secret: string;
   config: ConnectionOptions;
