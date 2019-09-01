@@ -61,7 +61,7 @@ studentRouter.patch(
 
 studentRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   const id = req.params.id;
-  await studentRouter.delete(id);
+  await studentService.deleteStudent(id);
 
   res.status(204).send();
 });
