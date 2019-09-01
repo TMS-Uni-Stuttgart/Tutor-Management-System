@@ -8,6 +8,7 @@ import UserModel, { UserCredentials, UserDocument } from '../../model/documents/
 import { LoggedInUserDTO } from '../../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import _ from 'lodash';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -64,13 +65,34 @@ class UserService {
     return this.getUserOrReject(createdUser);
   }
 
-  public async updateUser(id: string, dto: UserDTO): Promise<User> {
+  public async updateUser(id: string, { tutorials, ...dto }: UserDTO): Promise<User> {
     const user: UserDocument = await this.getUserDocumentWithId(id);
 
-    // TODO: Remove user from tutorial(s)
-    // TODO: Re-add user to new tutorial(s)
+    const tutorialsToRemoveUserFrom: string[] = _.difference(
+      user.tutorials.map(getIdOfDocumentRef),
+      tutorials
+    );
 
-    await user.updateOne({ ...dto });
+    const tutorialsToAddUserTo: string[] = _.difference(
+      tutorials,
+      user.tutorials.map(getIdOfDocumentRef)
+    );
+
+    for (const id of tutorialsToRemoveUserFrom) {
+      const tutorial = await tutorialService.getTutorialDocumentWithID(id);
+
+      await this.removeTutorialFromUser(user, tutorial, { saveUser: false });
+    }
+
+    for (const id of tutorialsToAddUserTo) {
+      const tutorial = await tutorialService.getTutorialDocumentWithID(id);
+
+      await this.addTutorialToUser(user, tutorial, { saveUser: false });
+    }
+
+    const tutorialsToSave = user.tutorials.map(getIdOfDocumentRef);
+
+    await user.updateOne({ ...dto, tutorials: tutorialsToSave });
     const updatedUser = await this.getUserDocumentWithId(id);
 
     return this.getUserOrReject(updatedUser);
@@ -164,9 +186,9 @@ class UserService {
   /**
    * Adds the given TutorialDocument to the given UserDocument.
    *
-   * This will also adjust the TutorialDocument to have the given UserDocument as 'Tutor'.
+   * This will also adjust the TutorialDocument to have the given UserDocument as 'Tutor'. If the TutorialDocument has already a 'Tutor' this 'Tutor' will be replaced and it's document will be adjusted accordingly. This 'old Tutor' will get saved afterwards regardless of the `saveUser` option.
    *
-   * By default this will __not__ save the UserDocument after adding a TutorialDocument. To do so provide the `saveUser` option with a truthy value.
+   * By default this function will __not__ save the UserDocument of the new 'Tutor' after adding the TutorialDocument. To do so provide the `saveUser` option with a truthy value.
    *
    * @param user UserDocument to add the tutorial to
    * @param tutorial TutorialDocument to add
@@ -176,17 +198,21 @@ class UserService {
     user: UserDocument,
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
-  ): Promise<void> {
+  ) {
+    if (tutorial.tutor) {
+      const oldTutor = await this.getUserDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
+
+      await this.removeTutorialFromUser(oldTutor, tutorial, { saveUser: true });
+    }
+
     tutorial.tutor = user;
-    user.tutorials.push(tutorial);
+    user.tutorials.push(tutorial._id);
 
     if (saveUser) {
       await Promise.all([tutorial.save(), user.save()]);
     } else {
       await tutorial.save();
     }
-
-    return;
   }
 
   /**
