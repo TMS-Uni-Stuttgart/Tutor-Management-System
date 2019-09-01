@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { PassportStatic } from 'passport';
 import { BasicStrategy } from 'passport-http';
-import userService from '../services/UserService';
+import userService from '../services/user-service/UserService.class';
 import { UserCredentials } from '../model/documents/UserDocument';
 import { AuthenticationError } from '../model/Errors';
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { UserCredentials } from '../model/documents/UserDocument';
-import userService from '../services/UserService';
+import userService from '../services/user-service/UserService.class';
 import passport = require('passport');
 
 const authenticationRouter = Router();

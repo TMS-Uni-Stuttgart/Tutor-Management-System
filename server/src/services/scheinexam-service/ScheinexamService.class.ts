@@ -3,9 +3,9 @@ import {
   convertDocumentToExercise,
   ExerciseDocument,
   generateExerciseDocumentsFromDTOs,
-} from '../model/documents/ExerciseDocument';
-import ScheinexamModel, { ScheinexamDocument } from '../model/documents/ScheinexamDocument';
-import { DocumentNotFoundError } from '../model/Errors';
+} from '../../model/documents/ExerciseDocument';
+import ScheinexamModel, { ScheinexamDocument } from '../../model/documents/ScheinexamDocument';
+import { DocumentNotFoundError } from '../../model/Errors';
 
 class ScheinExamService {
   public async getAllScheinExams(): Promise<ScheinExam[]> {

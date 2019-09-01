@@ -3,9 +3,9 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { TeamDTO } from 'shared/dist/model/Team';
 import { validateAgainstTeamDTO } from 'shared/dist/validators/Team';
-import teamService from '../services/TeamService';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { validateRequestBody } from './middleware/Validation';
+import teamService from './TeamService.class';
+import { checkRoleAccess } from '../../middleware/AccessControl';
+import { validateRequestBody } from '../../middleware/Validation';
 
 function isValidTeamDTO(obj: any, errors: ValidationErrors): obj is TeamDTO {
   const result = validateAgainstTeamDTO(obj);

@@ -14,12 +14,12 @@ import databaseConfig from './config/database';
 import initPassport from './config/passport';
 import { handleError } from './model/Errors';
 import authenticationRouter from './routes/authentication';
-import scheinexamRouter from './routes/scheinexam';
-import sheetRouter from './routes/sheet';
-import studentRouter from './routes/student';
-import tutorialRouter from './routes/tutorial';
-import userRouter from './routes/user';
-import userService from './services/UserService';
+import scheinexamRouter from './services/scheinexam-service/ScheinexamService.routes';
+import sheetRouter from './services/sheet-service/SheetService.routes';
+import studentRouter from './services/student-service/StudentService.routes';
+import tutorialRouter from './services/tutorial-service/TutorialService.routes';
+import userRouter from './services/user-service/UserService.routes';
+import userService from './services/user-service/UserService.class';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');

@@ -1,7 +1,7 @@
 import { Student, StudentDTO } from 'shared/dist/model/Student';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import StudentModel, { StudentDocument } from '../model/documents/StudentDocument';
-import { DocumentNotFoundError } from '../model/Errors';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import StudentModel, { StudentDocument } from '../../model/documents/StudentDocument';
+import { DocumentNotFoundError } from '../../model/Errors';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {

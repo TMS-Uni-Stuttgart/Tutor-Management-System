@@ -1,6 +1,6 @@
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { RequestHandler } from 'express';
-import { ValidationErrorResponse } from '../../model/Errors';
+import { ValidationErrorResponse } from '../model/Errors';
 
 /**
  * Validates the request body of the given request with the given function.

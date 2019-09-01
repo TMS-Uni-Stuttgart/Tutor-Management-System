@@ -3,9 +3,9 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { ScheinExam, ScheinExamDTO } from 'shared/dist/model/Scheinexam';
 import { validateAgainstScheinexamDTO } from 'shared/dist/validators/Scheinexam';
-import scheinexamService from '../services/ScheinexamService';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { validateRequestBody } from './middleware/Validation';
+import scheinexamService from './ScheinexamService.class';
+import { checkRoleAccess } from '../../middleware/AccessControl';
+import { validateRequestBody } from '../../middleware/Validation';
 
 function isValidScheinexamDTO(obj: any, errors: ValidationErrors): obj is ScheinExamDTO {
   const result = validateAgainstScheinexamDTO(obj);

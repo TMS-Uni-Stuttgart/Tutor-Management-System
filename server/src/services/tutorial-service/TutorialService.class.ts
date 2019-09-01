@@ -1,11 +1,11 @@
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { Ref } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
-import { UserDocument } from '../model/documents/UserDocument';
-import { BadRequestError, DocumentNotFoundError } from '../model/Errors';
-import userService from './UserService';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import TutorialModel, { TutorialDocument } from '../../model/documents/TutorialDocument';
+import { UserDocument } from '../../model/documents/UserDocument';
+import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
+import userService from '../user-service/UserService.class';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {

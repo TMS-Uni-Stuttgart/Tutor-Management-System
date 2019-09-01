@@ -2,12 +2,12 @@ import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { Typegoose } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import { TeamDocument, TeamSchema } from '../model/documents/TeamDocument';
-import { TutorialDocument } from '../model/documents/TutorialDocument';
-import { DocumentNotFoundError } from '../model/Errors';
-import studentService from './StudentService';
-import tutorialService from './TutorialService';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
+import { TutorialDocument } from '../../model/documents/TutorialDocument';
+import { DocumentNotFoundError } from '../../model/Errors';
+import studentService from '../student-service/StudentService.class';
+import tutorialService from '../tutorial-service/TutorialService.class';
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {

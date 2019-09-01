@@ -3,9 +3,9 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 import { validateAgainstSheetDTO } from 'shared/dist/validators/Sheet';
-import sheetService from '../services/SheetService';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { validateRequestBody } from './middleware/Validation';
+import sheetService from './SheetService.class';
+import { checkRoleAccess } from '../../middleware/AccessControl';
+import { validateRequestBody } from '../../middleware/Validation';
 
 function isValidSheetDTO(obj: any, errors: ValidationErrors): obj is SheetDTO {
   const result = validateAgainstSheetDTO(obj);

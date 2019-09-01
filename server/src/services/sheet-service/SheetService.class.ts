@@ -3,9 +3,9 @@ import {
   convertDocumentToExercise,
   ExerciseDocument,
   generateExerciseDocumentsFromDTOs,
-} from '../model/documents/ExerciseDocument';
-import SheetModel, { SheetDocument } from '../model/documents/SheetDocument';
-import { DocumentNotFoundError } from '../model/Errors';
+} from '../../model/documents/ExerciseDocument';
+import SheetModel, { SheetDocument } from '../../model/documents/SheetDocument';
+import { DocumentNotFoundError } from '../../model/Errors';
 
 class SheetService {
   public async getAllSheets(): Promise<Sheet[]> {

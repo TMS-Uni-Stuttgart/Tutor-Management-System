@@ -3,10 +3,10 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { validateAgainstTutorialDTO } from 'shared/dist/validators/Tutorial';
-import tutorialService from '../services/TutorialService';
-import { checkRoleAccess } from './middleware/AccessControl';
-import { validateRequestBody } from './middleware/Validation';
-import teamRouter from './team';
+import tutorialService from './TutorialService.class';
+import { checkRoleAccess } from '../../middleware/AccessControl';
+import { validateRequestBody } from '../../middleware/Validation';
+import teamRouter from '../team-service/TeamService.routes';
 
 function isValidTutorialDTO(obj: any, errors: ValidationErrors): obj is TutorialDTO {
   const result = validateAgainstTutorialDTO(obj);

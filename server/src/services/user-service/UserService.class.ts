@@ -2,12 +2,12 @@ import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
 import { isDocument } from 'typegoose';
-import { getIdOfDocumentRef } from '../helpers/documentHelpers';
-import TutorialModel, { TutorialDocument } from '../model/documents/TutorialDocument';
-import UserModel, { UserCredentials, UserDocument } from '../model/documents/UserDocument';
-import { LoggedInUserDTO } from '../model/dtos/LoggedInUserDTO';
-import { DocumentNotFoundError } from '../model/Errors';
-import tutorialService from './TutorialService';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import TutorialModel, { TutorialDocument } from '../../model/documents/TutorialDocument';
+import UserModel, { UserCredentials, UserDocument } from '../../model/documents/UserDocument';
+import { LoggedInUserDTO } from '../../model/dtos/LoggedInUserDTO';
+import { DocumentNotFoundError } from '../../model/Errors';
+import tutorialService from '../tutorial-service/TutorialService.class';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
