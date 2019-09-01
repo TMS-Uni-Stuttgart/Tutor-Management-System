@@ -10,7 +10,7 @@ import session from 'express-session';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import uuid from 'uuid/v4';
-import databaseConfig from './config/database';
+// import databaseConfig from './config/database';
 import initPassport from './config/passport';
 import { handleError } from './model/Errors';
 import authenticationRouter from './routes/authentication';
@@ -20,6 +20,10 @@ import studentRouter from './services/student-service/StudentService.routes';
 import tutorialRouter from './services/tutorial-service/TutorialService.routes';
 import userRouter from './services/user-service/UserService.routes';
 import userService from './services/user-service/UserService.class';
+import config from 'config';
+import { DatabaseConfig } from './config/database';
+
+const databaseConfig: DatabaseConfig = config.get('database');
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
