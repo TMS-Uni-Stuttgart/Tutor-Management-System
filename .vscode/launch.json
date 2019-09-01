@@ -48,15 +48,28 @@
       "webRoot": "${workspaceFolder}/client/src"
     },
     {
+      "name": "Launch NodeJS server",
       "type": "node",
       "request": "launch",
-      "name": "Launch NodeJS server",
+      "cwd": "${workspaceRoot}/server",
+      "runtimeExecutable": "${cwd}/node_modules/.bin/ts-node-dev",
+      "restart": true,
+      "args": ["src/server.ts"],
+      "runtimeArgs": ["--nolazy"],
+      "protocol": "inspector",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch NodeJS server (nodemon)",
       "runtimeExecutable": "nodemon",
       "program": "${workspaceFolder}/server/build/server.js",
       "restart": true,
       "preLaunchTask": "Start server compilation",
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
     }
   ],
   "inputs": [

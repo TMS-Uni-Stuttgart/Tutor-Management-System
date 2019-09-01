@@ -39,6 +39,7 @@
     "@types/express-session": "^1.15.13",
     "@types/mongoose": "^5.5.12",
     "@types/passport": "^1.0.0",
-    "@types/passport-http": "^0.3.8"
+    "@types/passport-http": "^0.3.8",
+    "ts-node-dev": "^1.0.0-pre.42"
   }
 }
