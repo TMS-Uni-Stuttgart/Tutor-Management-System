@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
@@ -8,7 +9,6 @@ import UserModel, { UserCredentials, UserDocument } from '../../model/documents/
 import { LoggedInUserDTO } from '../../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import _ from 'lodash';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
