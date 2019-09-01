@@ -233,13 +233,7 @@ class UserService {
     const tutorialId: string = (isDocument(tutorial) ? tutorial._id : tutorial).toString();
     tutorial.tutor = undefined;
 
-    user.tutorials = user.tutorials.filter(tut => {
-      const isRemovedTutorial: boolean = isDocument(tut)
-        ? tut._id.toString() === tutorialId
-        : tut.toString() === tutorialId;
-
-      return !isRemovedTutorial;
-    });
+    user.tutorials = user.tutorials.filter(tut => tutorialId !== getIdOfDocumentRef(tut));
 
     if (saveUser) {
       await Promise.all([tutorial.save(), user.save()]);
