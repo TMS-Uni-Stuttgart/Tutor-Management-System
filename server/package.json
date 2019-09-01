@@ -8,8 +8,7 @@
   "scripts": {
     "build": "tsc -b",
     "build:watch": "tsc -b -w",
-    "prestart": "yarn build",
-    "start": "nodemon .",
+    "start": "ts-node-dev . --no-lazy",
     "test": "echo \"Error: no test specified\" && exit 0",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
     "format": "eslint --fix \"src/**/*.ts?(x)\"",
