@@ -7,6 +7,7 @@ import tutorialService from './TutorialService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamRouter from '../team-service/TeamService.routes';
+import { Student } from 'shared/dist/model/Student';
 
 function isValidTutorialDTO(obj: any, errors: ValidationErrors): obj is TutorialDTO {
   const result = validateAgainstTutorialDTO(obj);
@@ -65,6 +66,13 @@ tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =
   await tutorialService.deleteTutorial(id);
 
   res.status(204).send();
+});
+
+tutorialRouter.get('/:id/student', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id: string = req.params.id;
+  const students: Student[] = await tutorialService.getStudentsOfTutorial(id);
+
+  res.json(students);
 });
 
 tutorialRouter.use('/', teamRouter);

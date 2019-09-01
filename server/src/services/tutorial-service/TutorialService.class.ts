@@ -6,6 +6,9 @@ import TutorialModel, { TutorialDocument } from '../../model/documents/TutorialD
 import { UserDocument } from '../../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import userService from '../user-service/UserService.class';
+import { Student } from 'shared/dist/model/Student';
+import studentService from '../student-service/StudentService.class';
+import { StudentDocument } from '../../model/documents/StudentDocument';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -21,7 +24,7 @@ class TutorialService {
 
   public async createTutorial(dto: TutorialDTO): Promise<Tutorial> {
     const tutor: UserDocument | undefined = dto.tutorId
-      ? await userService.getUserDocumentWithId(dto.tutorId)
+      ? await userService.getDocumentWithId(dto.tutorId)
       : undefined;
     const createdTutorial = await TutorialModel.create({ ...dto, tutor });
 
@@ -36,12 +39,12 @@ class TutorialService {
   }
 
   public async getTutorialWithID(id: string): Promise<Tutorial> {
-    const tutorial = await this.getTutorialDocumentWithID(id);
+    const tutorial = await this.getDocumentWithID(id);
 
     return this.getTutorialOrReject(tutorial);
   }
 
-  public async getTutorialDocumentWithID(id: string): Promise<TutorialDocument> {
+  public async getDocumentWithID(id: string): Promise<TutorialDocument> {
     const tutorial: TutorialDocument | null = await TutorialModel.findById(id);
 
     if (!tutorial) {
@@ -55,7 +58,7 @@ class TutorialService {
     id: string,
     { slot, dates, startTime, endTime, tutorId, correctorIds }: TutorialDTO
   ): Promise<Tutorial> {
-    const doc: TutorialDocument = await this.getTutorialDocumentWithID(id);
+    const doc: TutorialDocument = await this.getDocumentWithID(id);
     const tutorial: TutorialDocument = await doc.populate('tutor').execPopulate();
 
     if (tutorial.tutor) {
@@ -76,7 +79,7 @@ class TutorialService {
     // TODO: Change / Check correctors.
 
     if (tutorId) {
-      const nextTutor = await userService.getUserDocumentWithId(tutorId);
+      const nextTutor = await userService.getDocumentWithId(tutorId);
 
       nextTutor.tutorials = [...nextTutor.tutorials, tutorial];
       await nextTutor.save();
@@ -86,7 +89,7 @@ class TutorialService {
   }
 
   public async deleteTutorial(id: string): Promise<Tutorial> {
-    const tutorial: TutorialDocument = await this.getTutorialDocumentWithID(id);
+    const tutorial: TutorialDocument = await this.getDocumentWithID(id);
 
     if (tutorial.students && tutorial.students.length > 0) {
       return Promise.reject(new BadRequestError('A tutorial with students cannot be deleted.'));
@@ -104,6 +107,15 @@ class TutorialService {
     }
 
     return this.getTutorialOrReject(await tutorial.remove());
+  }
+
+  public async getStudentsOfTutorial(id: string): Promise<Student[]> {
+    const tutorial = await this.getDocumentWithID(id);
+
+    await tutorial.populate('students').execPopulate();
+    const students: StudentDocument[] = tutorial.students as StudentDocument[];
+
+    return Promise.all(students.map(studentService.getStudentOrReject));
   }
 
   public async getTutorialOrReject(document: TutorialDocument | null): Promise<Tutorial> {
@@ -139,11 +151,11 @@ class TutorialService {
   }
 
   private async rejectTutorialNotFound(): Promise<any> {
-    return Promise.reject(new DocumentNotFoundError('User with that ID was not found.'));
+    return Promise.reject(new DocumentNotFoundError('Tutorial with that ID was not found.'));
   }
 
   private async getTutorDocumentOfTutorial(tutor: Ref<UserDocument>): Promise<UserDocument> {
-    return isDocument(tutor) ? tutor : await userService.getUserDocumentWithId(tutor.toString());
+    return isDocument(tutor) ? tutor : await userService.getDocumentWithId(tutor.toString());
   }
 
   private async filterTutorials(
@@ -153,7 +165,7 @@ class TutorialService {
     const promises = tutorials
       .map(getIdOfDocumentRef)
       .filter(filterFunc)
-      .map(id => this.getTutorialDocumentWithID(id));
+      .map(id => this.getDocumentWithID(id));
 
     return Promise.all(promises);
   }
