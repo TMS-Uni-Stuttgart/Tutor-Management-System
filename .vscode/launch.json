@@ -57,7 +57,8 @@
       "args": ["src/server.ts"],
       "runtimeArgs": ["--nolazy"],
       "protocol": "inspector",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "sourceMaps": true
     },
     {
       "type": "node",
