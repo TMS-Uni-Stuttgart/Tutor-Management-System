@@ -152,7 +152,6 @@ class UserService {
     }
 
     await user.save();
-    return;
   }
 
   public async getLoggedInUserInformation({ _id }: UserCredentials): Promise<LoggedInUser> {
@@ -247,8 +246,6 @@ class UserService {
     } else {
       await tutorial.save();
     }
-
-    return;
   }
 
   private async getUserOrReject(user: UserDocument | null): Promise<User> {
