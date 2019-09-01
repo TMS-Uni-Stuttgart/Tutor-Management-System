@@ -11,7 +11,7 @@ import tutorialService from '../tutorial-service/TutorialService.class';
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
-    const { teams: teamDocs }: TutorialDocument = await tutorialService.getTutorialDocumentWithID(
+    const { teams: teamDocs }: TutorialDocument = await tutorialService.getDocumentWithID(
       tutorialId
     );
 
@@ -25,7 +25,7 @@ class TeamService {
   }
 
   public async createTeam(tutorialId: string, { teamNo, students }: TeamDTO): Promise<Team> {
-    const tutorial = await tutorialService.getTutorialDocumentWithID(tutorialId);
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
 
     // TODO: Adjust student
     // TODO: Adjust tutorial
@@ -49,7 +49,7 @@ class TeamService {
     teamId: string,
     { teamNo, students }: TeamDTO
   ): Promise<Team> {
-    const team: TeamDocument = await this.getTeamDocumentWithId(tutorialId, teamId);
+    const team: TeamDocument = await this.getDocumentWithId(tutorialId, teamId);
 
     // TODO: Adjust students
     // TODO: Adjust tutorial
@@ -60,7 +60,7 @@ class TeamService {
   }
 
   public async deleteTeam(tutorialId: string, teamId: string): Promise<Team> {
-    const team: TeamDocument = await this.getTeamDocumentWithId(tutorialId, teamId);
+    const team: TeamDocument = await this.getDocumentWithId(tutorialId, teamId);
 
     // TODO: Adjust students
     // TODO: Adjust tutorial
@@ -69,13 +69,13 @@ class TeamService {
   }
 
   public async getTeamWithId(tutorialId: string, id: string): Promise<Team> {
-    const team: TeamDocument | null = await this.getTeamDocumentWithId(tutorialId, id);
+    const team: TeamDocument | null = await this.getDocumentWithId(tutorialId, id);
 
     return this.getTeamOrReject(team);
   }
 
-  private async getTeamDocumentWithId(tutorialId: string, id: string): Promise<TeamDocument> {
-    const tutorial = await tutorialService.getTutorialDocumentWithID(tutorialId);
+  private async getDocumentWithId(tutorialId: string, id: string): Promise<TeamDocument> {
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
     const idx = tutorial.teams.findIndex(doc => doc._id.toString() === id);
 
     if (idx < 0) {

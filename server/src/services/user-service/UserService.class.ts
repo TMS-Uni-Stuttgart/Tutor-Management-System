@@ -22,7 +22,7 @@ class UserService {
     return users;
   }
 
-  public async getUserDocumentWithId(id: string): Promise<UserDocument> {
+  public async getDocumentWithId(id: string): Promise<UserDocument> {
     const user: UserDocument | null = await UserModel.findById(id);
 
     if (!user) {
@@ -33,7 +33,7 @@ class UserService {
   }
 
   public async getUserWithId(id: string): Promise<User> {
-    const user: UserDocument | null = await this.getUserDocumentWithId(id);
+    const user: UserDocument | null = await this.getDocumentWithId(id);
 
     return this.getUserOrReject(user);
   }
@@ -51,7 +51,7 @@ class UserService {
   public async createUser(dto: CreateUserDTO): Promise<User> {
     const promises: Promise<TutorialDocument>[] = [];
     dto.tutorials.forEach(id => {
-      promises.push(tutorialService.getTutorialDocumentWithID(id));
+      promises.push(tutorialService.getDocumentWithID(id));
     });
 
     const tutorials = await Promise.all(promises);
@@ -66,7 +66,7 @@ class UserService {
   }
 
   public async updateUser(id: string, { tutorials, ...dto }: UserDTO): Promise<User> {
-    const user: UserDocument = await this.getUserDocumentWithId(id);
+    const user: UserDocument = await this.getDocumentWithId(id);
 
     const tutorialsToRemoveUserFrom: string[] = _.difference(
       user.tutorials.map(getIdOfDocumentRef),
@@ -79,13 +79,13 @@ class UserService {
     );
 
     for (const id of tutorialsToRemoveUserFrom) {
-      const tutorial = await tutorialService.getTutorialDocumentWithID(id);
+      const tutorial = await tutorialService.getDocumentWithID(id);
 
       await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
     }
 
     for (const id of tutorialsToAddUserTo) {
-      const tutorial = await tutorialService.getTutorialDocumentWithID(id);
+      const tutorial = await tutorialService.getDocumentWithID(id);
 
       await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
     }
@@ -93,28 +93,28 @@ class UserService {
     const tutorialsToSave = user.tutorials.map(getIdOfDocumentRef);
 
     await user.updateOne({ ...dto, tutorials: tutorialsToSave });
-    const updatedUser = await this.getUserDocumentWithId(id);
+    const updatedUser = await this.getDocumentWithId(id);
 
     return this.getUserOrReject(updatedUser);
   }
 
   public async deleteUser(id: string): Promise<User> {
-    const user: UserDocument = await this.getUserDocumentWithId(id);
+    const user: UserDocument = await this.getDocumentWithId(id);
     await user.populate('tutorials').execPopulate();
 
     for (const doc of user.tutorials) {
       const tutorial = isDocument(doc)
         ? doc
-        : await tutorialService.getTutorialDocumentWithID(doc.toString());
+        : await tutorialService.getDocumentWithID(doc.toString());
 
-      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
+      await this.removeUserAsTutorFromTutorial(user, tutorial);
     }
 
     return this.getUserOrReject(await user.remove());
   }
 
   public async getTutorialsOfUser(id: string): Promise<Tutorial[]> {
-    const user: UserDocument = await this.getUserDocumentWithId(id);
+    const user: UserDocument = await this.getDocumentWithId(id);
     const tutorials: Promise<Tutorial>[] = [];
 
     await user.populate('tutorials').execPopulate();
@@ -129,7 +129,7 @@ class UserService {
   }
 
   public async setTutorialsOfUser(id: string, tutorialIds: string[]) {
-    const user = await this.getUserDocumentWithId(id);
+    const user = await this.getDocumentWithId(id);
     await user.populate('tutorials').execPopulate();
 
     for (const tutorial of user.tutorials) {
@@ -146,7 +146,7 @@ class UserService {
     await user.save();
 
     for (const id of tutorialIds) {
-      const tutorial = await tutorialService.getTutorialDocumentWithID(id);
+      const tutorial = await tutorialService.getDocumentWithID(id);
 
       await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
     }
@@ -155,7 +155,7 @@ class UserService {
   }
 
   public async getLoggedInUserInformation({ _id }: UserCredentials): Promise<LoggedInUser> {
-    const userDoc: UserDocument = await this.getUserDocumentWithId(_id);
+    const userDoc: UserDocument = await this.getDocumentWithId(_id);
     const user: UserDocument = await userDoc.populate('tutorials').execPopulate();
 
     // TODO: Add substitute Tutorials
@@ -165,7 +165,7 @@ class UserService {
   }
 
   public async setPasswordOfUser(id: string, newPassword: string) {
-    const user = await this.getUserDocumentWithId(id);
+    const user = await this.getDocumentWithId(id);
 
     user.password = newPassword;
     user.temporaryPassword = '';
@@ -174,7 +174,7 @@ class UserService {
   }
 
   public async setTemporaryPasswordOfUser(id: string, newTempPassword: string) {
-    const user = await this.getUserDocumentWithId(id);
+    const user = await this.getDocumentWithId(id);
 
     user.password = newTempPassword;
     user.temporaryPassword = undefined;
@@ -199,7 +199,7 @@ class UserService {
     { saveUser }: { saveUser?: boolean } = {}
   ) {
     if (tutorial.tutor) {
-      const oldTutor = await this.getUserDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
+      const oldTutor = await this.getDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
 
       await this.removeUserAsTutorFromTutorial(oldTutor, tutorial, { saveUser: true });
     }
@@ -230,7 +230,7 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ): Promise<void> {
-    const tutorialId: string = (isDocument(tutorial) ? tutorial._id : tutorial).toString();
+    const tutorialId: string = tutorial._id;
     tutorial.tutor = undefined;
 
     user.tutorials = user.tutorials.filter(tut => tutorialId !== getIdOfDocumentRef(tut));

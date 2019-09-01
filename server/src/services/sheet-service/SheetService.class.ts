@@ -31,7 +31,7 @@ class SheetService {
     id: string,
     { sheetNo, exercises: exDTOs, bonusSheet }: SheetDTO
   ): Promise<Sheet> {
-    const sheet: SheetDocument = await this.getSheetDocumentWithId(id);
+    const sheet: SheetDocument = await this.getDocumentWithId(id);
     const exercises: ExerciseDocument[] = generateExerciseDocumentsFromDTOs(exDTOs, bonusSheet);
 
     sheet.sheetNo = sheetNo;
@@ -42,18 +42,18 @@ class SheetService {
   }
 
   public async deleteSheet(id: string): Promise<Sheet> {
-    const sheet: SheetDocument = await this.getSheetDocumentWithId(id);
+    const sheet: SheetDocument = await this.getDocumentWithId(id);
 
     return this.getSheetOrReject(await sheet.remove());
   }
 
   public async getSheetWithId(id: string): Promise<Sheet> {
-    const sheet: SheetDocument | null = await this.getSheetDocumentWithId(id);
+    const sheet: SheetDocument | null = await this.getDocumentWithId(id);
 
     return this.getSheetOrReject(sheet);
   }
 
-  private async getSheetDocumentWithId(id: string): Promise<SheetDocument> {
+  private async getDocumentWithId(id: string): Promise<SheetDocument> {
     const sheet: SheetDocument | null = await SheetModel.findById(id);
 
     if (!sheet) {

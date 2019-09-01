@@ -41,7 +41,7 @@ class ScheinExamService {
     id: string,
     { scheinExamNo, date, exercises: exDTOs, percentageNeeded }: ScheinExamDTO
   ): Promise<ScheinExam> {
-    const exam = await this.getScheinExamDocumentWithId(id);
+    const exam = await this.getDocumentWithId(id);
     const exercises: ExerciseDocument[] = generateExerciseDocumentsFromDTOs(exDTOs);
 
     exam.scheinExamNo = scheinExamNo;
@@ -53,18 +53,18 @@ class ScheinExamService {
   }
 
   public async deleteScheinExam(id: string): Promise<ScheinExam> {
-    const exam = await this.getScheinExamDocumentWithId(id);
+    const exam = await this.getDocumentWithId(id);
 
     return this.getScheinExamOrReject(await exam.remove());
   }
 
   public async getScheinExamWithId(id: string): Promise<ScheinExam> {
-    const scheinexam: ScheinexamDocument | null = await this.getScheinExamDocumentWithId(id);
+    const scheinexam: ScheinexamDocument | null = await this.getDocumentWithId(id);
 
     return this.getScheinExamOrReject(scheinexam);
   }
 
-  private async getScheinExamDocumentWithId(id: string): Promise<ScheinexamDocument> {
+  private async getDocumentWithId(id: string): Promise<ScheinexamDocument> {
     const exam: ScheinexamDocument | null = await ScheinexamModel.findById(id);
 
     if (!exam) {
