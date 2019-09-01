@@ -7,6 +7,7 @@ import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dis
 import userService from './UserService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
+import { BadRequestError } from '../../model/Errors';
 
 function isValidCreateUserDTO(obj: any, errors: ValidationErrors): obj is CreateUserDTO {
   const result = validateAgainstCreateUserDTO(obj);
@@ -111,5 +112,32 @@ userRouter.put(
     return res.status(204).send();
   }
 );
+
+// TODO: Allow user to edit own password & temp password!
+userRouter.post('/:id/password', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+  const { password } = req.body;
+
+  if (!password) {
+    throw new BadRequestError('Request body does not contain a password.');
+  }
+
+  await userService.setPasswordOfUser(id, password);
+
+  res.status(204).send();
+});
+
+userRouter.post('/:id/temporaryPassword', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+  const { password } = req.body;
+
+  if (!password) {
+    throw new BadRequestError('Request body does not contain a password.');
+  }
+
+  await userService.setTemporaryPasswordOfUser(id, password);
+
+  res.status(204).send();
+});
 
 export default userRouter;

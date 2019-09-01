@@ -21,6 +21,32 @@ class UserService {
     return users;
   }
 
+  public async getUserDocumentWithId(id: string): Promise<UserDocument> {
+    const user: UserDocument | null = await UserModel.findById(id);
+
+    if (!user) {
+      return this.rejectUserNotFound();
+    }
+
+    return user;
+  }
+
+  public async getUserWithId(id: string): Promise<User> {
+    const user: UserDocument | null = await this.getUserDocumentWithId(id);
+
+    return this.getUserOrReject(user);
+  }
+
+  public async getUserCredentialsWithUsername(username: string): Promise<UserCredentials> {
+    const user: UserDocument | null = await UserModel.findOne({ username });
+
+    if (!user) {
+      return Promise.reject('User not found.');
+    }
+
+    return new UserCredentials(user._id, user.username, user.password);
+  }
+
   public async createUser(dto: CreateUserDTO): Promise<User> {
     const promises: Promise<TutorialDocument>[] = [];
     dto.tutorials.forEach(id => {
@@ -80,7 +106,7 @@ class UserService {
     return await Promise.all(tutorials);
   }
 
-  public async setTutorialsOfUser(id: string, tutorialIds: string[]): Promise<void> {
+  public async setTutorialsOfUser(id: string, tutorialIds: string[]) {
     const user = await this.getUserDocumentWithId(id);
     await user.populate('tutorials').execPopulate();
 
@@ -107,22 +133,6 @@ class UserService {
     return;
   }
 
-  public async getUserWithId(id: string): Promise<User> {
-    const user: UserDocument | null = await this.getUserDocumentWithId(id);
-
-    return this.getUserOrReject(user);
-  }
-
-  public async getUserCredentialsWithUsername(username: string): Promise<UserCredentials> {
-    const user: UserDocument | null = await UserModel.findOne({ username });
-
-    if (!user) {
-      return Promise.reject('User not found.');
-    }
-
-    return new UserCredentials(user._id, user.username, user.password);
-  }
-
   public async getLoggedInUserInformation({ _id }: UserCredentials): Promise<LoggedInUser> {
     const userDoc: UserDocument = await this.getUserDocumentWithId(_id);
     const user: UserDocument = await userDoc.populate('tutorials').execPopulate();
@@ -133,14 +143,22 @@ class UserService {
     return new LoggedInUserDTO(user, []);
   }
 
-  public async getUserDocumentWithId(id: string): Promise<UserDocument> {
-    const user: UserDocument | null = await UserModel.findById(id);
+  public async setPasswordOfUser(id: string, newPassword: string) {
+    const user = await this.getUserDocumentWithId(id);
 
-    if (!user) {
-      return this.rejectUserNotFound();
-    }
+    user.password = newPassword;
+    user.temporaryPassword = '';
 
-    return user;
+    user.save();
+  }
+
+  public async setTemporaryPasswordOfUser(id: string, newTempPassword: string) {
+    const user = await this.getUserDocumentWithId(id);
+
+    user.password = newTempPassword;
+    user.temporaryPassword = undefined;
+
+    user.save();
   }
 
   /**
