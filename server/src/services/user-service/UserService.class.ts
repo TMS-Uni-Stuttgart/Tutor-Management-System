@@ -81,13 +81,13 @@ class UserService {
     for (const id of tutorialsToRemoveUserFrom) {
       const tutorial = await tutorialService.getTutorialDocumentWithID(id);
 
-      await this.removeTutorialFromUser(user, tutorial, { saveUser: false });
+      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
     }
 
     for (const id of tutorialsToAddUserTo) {
       const tutorial = await tutorialService.getTutorialDocumentWithID(id);
 
-      await this.addTutorialToUser(user, tutorial, { saveUser: false });
+      await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
     }
 
     const tutorialsToSave = user.tutorials.map(getIdOfDocumentRef);
@@ -107,7 +107,7 @@ class UserService {
         ? doc
         : await tutorialService.getTutorialDocumentWithID(doc.toString());
 
-      await this.removeTutorialFromUser(user, tutorial, { saveUser: false });
+      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
     }
 
     return this.getUserOrReject(await user.remove());
@@ -139,7 +139,7 @@ class UserService {
         );
       }
 
-      await this.removeTutorialFromUser(user, tutorial, { saveUser: false });
+      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
     }
 
     // If the user is not saved here than the added tutorials will just be merged with the old ones. With this save the "empty" tutorial list is saved to the DB.
@@ -148,7 +148,7 @@ class UserService {
     for (const id of tutorialIds) {
       const tutorial = await tutorialService.getTutorialDocumentWithID(id);
 
-      await this.addTutorialToUser(user, tutorial, { saveUser: false });
+      await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
     }
 
     await user.save();
@@ -184,7 +184,7 @@ class UserService {
   }
 
   /**
-   * Adds the given TutorialDocument to the given UserDocument.
+   * Adds the given UserDocument to the TutorialDocument and vice versa.
    *
    * This will also adjust the TutorialDocument to have the given UserDocument as 'Tutor'. If the TutorialDocument has already a 'Tutor' this 'Tutor' will be replaced and it's document will be adjusted accordingly. This 'old Tutor' will get saved afterwards regardless of the `saveUser` option.
    *
@@ -194,7 +194,7 @@ class UserService {
    * @param tutorial TutorialDocument to add
    * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
    */
-  public async addTutorialToUser(
+  public async makeUserTutorOfTutorial(
     user: UserDocument,
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
@@ -202,7 +202,7 @@ class UserService {
     if (tutorial.tutor) {
       const oldTutor = await this.getUserDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
 
-      await this.removeTutorialFromUser(oldTutor, tutorial, { saveUser: true });
+      await this.removeUserAsTutorFromTutorial(oldTutor, tutorial, { saveUser: true });
     }
 
     tutorial.tutor = user;
@@ -216,7 +216,7 @@ class UserService {
   }
 
   /**
-   * Removes the given TutorialDocument from the given UserDocument.
+   * Removes the given UserDocument from the TutorialDocument and vice versa.
    *
    * This will also adjust the TutorialDocument to not have a 'Tutor' anymore.
    *
@@ -226,7 +226,7 @@ class UserService {
    * @param tutorial TutorialDocument to remove.
    * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
    */
-  public async removeTutorialFromUser(
+  public async removeUserAsTutorFromTutorial(
     user: UserDocument,
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
