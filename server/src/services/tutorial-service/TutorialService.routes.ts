@@ -1,13 +1,14 @@
 import Router from 'express-promise-router';
 import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
+import { Tutorial, TutorialDTO, SubstituteDTO } from 'shared/dist/model/Tutorial';
 import { validateAgainstTutorialDTO } from 'shared/dist/validators/Tutorial';
 import tutorialService from './TutorialService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamRouter from '../team-service/TeamService.routes';
 import { Student } from 'shared/dist/model/Student';
+import { User } from 'shared/dist/model/User';
 
 function isValidTutorialDTO(obj: any, errors: ValidationErrors): obj is TutorialDTO {
   const result = validateAgainstTutorialDTO(obj);
@@ -73,6 +74,23 @@ tutorialRouter.get('/:id/student', ...checkRoleAccess(Role.ADMIN), async (req, r
   const students: Student[] = await tutorialService.getStudentsOfTutorial(id);
 
   res.json(students);
+});
+
+tutorialRouter.get('/:id/substitute', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id: string = req.params.id;
+  const substitutes: Map<Date, User> = await tutorialService.getSubstitutesOfTutorial(id);
+
+  res.json(substitutes);
+});
+
+tutorialRouter.post('/:id/substitute', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id: string = req.params.id;
+  const dto: SubstituteDTO = req.body;
+
+  // TODO: Validation!
+  const tutorial = await tutorialService.addSubstituteToTutorial(id, dto);
+
+  res.json(tutorial);
 });
 
 tutorialRouter.use('/', teamRouter);
