@@ -33,7 +33,7 @@ export class TutorialSchema extends Typegoose
   correctors!: Ref<UserDocument>[];
 
   @mapProp({ of: String, default: {} })
-  substitutes!: Map<string, string>;
+  substitutes?: Map<string, string>;
 }
 
 export interface TutorialDocument extends TutorialSchema, Document {}

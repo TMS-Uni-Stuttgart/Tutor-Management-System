@@ -2,15 +2,19 @@ import _ from 'lodash';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
-import { Ref } from 'typegoose';
+import { Ref, Typegoose } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { StudentDocument } from '../../model/documents/StudentDocument';
-import TutorialModel, { TutorialDocument } from '../../model/documents/TutorialDocument';
+import TutorialModel, {
+  TutorialDocument,
+  TutorialSchema,
+} from '../../model/documents/TutorialDocument';
 import { UserDocument } from '../../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import studentService from '../student-service/StudentService.class';
 import userService from '../user-service/UserService.class';
+import { Types } from 'mongoose';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -24,11 +28,29 @@ class TutorialService {
     return tutorials;
   }
 
-  public async createTutorial(dto: TutorialDTO): Promise<Tutorial> {
+  public async createTutorial({
+    dates,
+    endTime,
+    startTime,
+    correctorIds,
+    ...dto
+  }: TutorialDTO): Promise<Tutorial> {
     const tutor: UserDocument | undefined = dto.tutorId
       ? await userService.getDocumentWithId(dto.tutorId)
       : undefined;
-    const createdTutorial = await TutorialModel.create({ ...dto, tutor });
+
+    const tutorial: Omit<TutorialSchema, keyof Typegoose> = {
+      ...dto,
+      tutor,
+      dates: dates.map(d => new Date(d)),
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
+      students: [],
+      teams: new Types.Array(),
+      correctors: [],
+    };
+
+    const createdTutorial = await TutorialModel.create(tutorial);
 
     if (tutor) {
       tutor.tutorials = [...(tutor.tutorials || []), createdTutorial];
@@ -124,6 +146,10 @@ class TutorialService {
     const tutorial = await this.getDocumentWithID(id);
     const substitutesByDate: Map<Date, User> = new Map();
 
+    if (!tutorial.substitutes) {
+      return substitutesByDate;
+    }
+
     for (const [key, subst] of tutorial.substitutes) {
       const date = new Date(key);
       const substitute: User = await userService.getUserWithId(subst);
@@ -140,6 +166,10 @@ class TutorialService {
 
     const newDates: Date[] = substDTO.dates.map(d => new Date(d));
     const previousDates: Date[] = [];
+
+    if (!tutorial.substitutes) {
+      tutorial.substitutes = new Map();
+    }
 
     for (const [key, substId] of tutorial.substitutes) {
       if (substId === substDTO.tutorId) {
@@ -177,16 +207,18 @@ class TutorialService {
     } = document;
 
     const parsedSubstitutes: Tutorial['substitutes'] = {};
-    substitutes.forEach((substId, key) => (parsedSubstitutes[key] = substId));
+    if (substitutes) {
+      substitutes.forEach((substId, key) => (parsedSubstitutes[key] = substId));
+    }
 
     return {
       id: _id,
       slot,
       tutor: tutor ? getIdOfDocumentRef(tutor) : undefined,
-      dates,
+      dates: dates.map(d => new Date(d)),
       correctors: correctors.map(getIdOfDocumentRef),
-      startTime,
-      endTime,
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
       students: students.map(getIdOfDocumentRef),
       teams: teams.map(getIdOfDocumentRef),
       substitutes: parsedSubstitutes,
