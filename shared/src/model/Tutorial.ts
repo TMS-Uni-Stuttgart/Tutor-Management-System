@@ -21,6 +21,11 @@ export interface Tutorial extends HasId {
   substitutes: { [index: string]: string };
 }
 
+export interface SubstituteDTO {
+  dates: string[];
+  tutorId: string;
+}
+
 export interface LoggedInUserTutorial extends HasId {
   slot: number;
 }
