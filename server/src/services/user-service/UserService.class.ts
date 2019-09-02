@@ -266,17 +266,15 @@ class UserService {
 
   public async initAdmin() {
     try {
-      const tutorialDocument = await TutorialModel.create({
+      const tutorial = await tutorialService.createTutorial({
         slot: 1,
-        tutor: undefined,
+        tutorId: undefined,
         dates: [],
-        startTime: new Date(Date.now()),
-        endTime: new Date(Date.now()),
-        students: [],
-        correctors: [],
-        teams: [],
-        substitutes: {},
+        startTime: new Date(Date.now()).toISOString(),
+        endTime: new Date(Date.now()).toISOString(),
+        correctorIds: [],
       });
+      const tutorialDocument = await tutorialService.getDocumentWithID(tutorial.id);
 
       const admin: CreateUserDTO = {
         firstname: 'admin',
