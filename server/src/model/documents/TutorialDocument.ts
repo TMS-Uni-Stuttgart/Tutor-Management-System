@@ -7,7 +7,7 @@ import { TeamDocument, TeamSchema } from './TeamDocument';
 import { UserDocument } from './UserDocument';
 
 export class TutorialSchema extends Typegoose
-  implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams'> {
+  implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams' | 'substitutes'> {
   @prop({ required: true })
   slot!: number;
 
@@ -33,7 +33,7 @@ export class TutorialSchema extends Typegoose
   correctors!: Ref<UserDocument>[];
 
   @mapProp({ of: String, default: {} })
-  substitutes!: { [index: string]: string };
+  substitutes!: Map<string, string>;
 }
 
 export interface TutorialDocument extends TutorialSchema, Document {}
