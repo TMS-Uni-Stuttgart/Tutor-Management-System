@@ -5,8 +5,9 @@ export enum AttendanceState {
 }
 
 export interface Attendance {
+  // TODO: Needed?
+  // id: AttendanceId;
   date: Date;
-  id: AttendanceId;
   note?: string;
   state?: AttendanceState;
 }
@@ -14,4 +15,10 @@ export interface Attendance {
 export interface AttendanceId {
   date: Date;
   studentId: string;
+}
+
+export interface AttendanceDTO {
+  date: string;
+  note?: string;
+  state?: AttendanceState;
 }
