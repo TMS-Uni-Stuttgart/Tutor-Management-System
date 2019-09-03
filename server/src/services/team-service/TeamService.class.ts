@@ -1,8 +1,10 @@
+import _ from 'lodash';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { Typegoose } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
@@ -24,22 +26,32 @@ class TeamService {
     return teams;
   }
 
-  public async createTeam(tutorialId: string, { teamNo, students }: TeamDTO): Promise<Team> {
+  public async createTeam(
+    tutorialId: string,
+    { teamNo, students: studentIds }: TeamDTO
+  ): Promise<Team> {
     const tutorial = await tutorialService.getDocumentWithID(tutorialId);
+    const students: StudentDocument[] = await Promise.all(
+      studentIds.map(stud => studentService.getDocumentWithId(stud))
+    );
 
-    // TODO: Adjust student
-    // TODO: Adjust tutorial
     const team: Omit<TeamSchema, keyof Typegoose> = {
       tutorial,
-      students: [],
+      students,
       points: {},
-      teamNo: teamNo,
+      teamNo,
     };
     tutorial.teams.push(team);
 
     await tutorial.save();
 
     const createdTeam = tutorial.teams[tutorial.teams.length - 1];
+
+    for (const student of students) {
+      await this.makeStudentMemberOfTeam(student, createdTeam.id.toString(), {
+        saveStudent: true,
+      });
+    }
 
     return this.getTeamOrReject(createdTeam);
   }
@@ -49,34 +61,65 @@ class TeamService {
     teamId: string,
     { teamNo, students }: TeamDTO
   ): Promise<Team> {
-    const team: TeamDocument = await this.getDocumentWithId(tutorialId, teamId);
+    const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
     // TODO: Adjust students
+    const studentsToRemove: StudentDocument[] = await Promise.all(
+      _.difference(team.students.map(getIdOfDocumentRef), students).map(stud =>
+        studentService.getDocumentWithId(stud)
+      )
+    );
+    const studentsToAdd: StudentDocument[] = await Promise.all(
+      _.difference(students, team.students.map(getIdOfDocumentRef)).map(stud =>
+        studentService.getDocumentWithId(stud)
+      )
+    );
+
+    for (const student of studentsToRemove) {
+      await this.removeStudentAsMemberFromTeam(student, { saveStudent: true });
+    }
+
+    for (const student of studentsToAdd) {
+      await this.makeStudentMemberOfTeam(student, team.id, { saveStudent: true });
+    }
+
     // TODO: Adjust tutorial
 
     team.teamNo = teamNo;
 
-    return this.getTeamOrReject(await team.save());
+    await tutorial.save();
+
+    return this.getTeamOrReject(team);
   }
 
   public async deleteTeam(tutorialId: string, teamId: string): Promise<Team> {
-    const team: TeamDocument = await this.getDocumentWithId(tutorialId, teamId);
+    const [team] = await this.getDocumentWithId(tutorialId, teamId);
 
     // TODO: Adjust students
+    for (const student of team.students) {
+      const doc: StudentDocument = isDocument(student)
+        ? student
+        : await studentService.getDocumentWithId(student.toString());
+
+      await this.removeStudentAsMemberFromTeam(doc, { saveStudent: true });
+    }
     // TODO: Adjust tutorial
 
     return this.getTeamOrReject(await team.remove());
   }
 
   public async getTeamWithId(tutorialId: string, id: string): Promise<Team> {
-    const team: TeamDocument | null = await this.getDocumentWithId(tutorialId, id);
+    const [team] = await this.getDocumentWithId(tutorialId, id);
 
     return this.getTeamOrReject(team);
   }
 
-  private async getDocumentWithId(tutorialId: string, id: string): Promise<TeamDocument> {
+  public async getDocumentWithId(
+    tutorialId: string,
+    id: string
+  ): Promise<[TeamDocument, TutorialDocument]> {
     const tutorial = await tutorialService.getDocumentWithID(tutorialId);
-    const idx = tutorial.teams.findIndex(doc => doc._id.toString() === id);
+    const idx = tutorial.teams.findIndex(doc => doc.id === id);
 
     if (idx < 0) {
       return this.rejectTeamNotFound();
@@ -85,7 +128,75 @@ class TeamService {
     // TODO: Test if population works or if an additional 'populatedTutorial' variable is needed.
     await tutorial.populate(`teams.${idx}.students`).execPopulate();
 
-    return tutorial.teams[idx];
+    return [tutorial.teams[idx], tutorial];
+  }
+
+  public async makeStudentMemberOfTeam(
+    student: StudentDocument,
+    teamId: string,
+    { saveStudent }: { saveStudent?: boolean } = {}
+  ) {
+    const [newTeam, tutorial] = await this.getDocumentWithId(
+      getIdOfDocumentRef(student.tutorial),
+      teamId
+    );
+
+    if (this.isStudentMemberOfTeam(student, newTeam)) {
+      return;
+    }
+
+    if (student.team) {
+      await this.removeStudentAsMemberFromTeam(student, { saveStudent: false });
+    }
+
+    newTeam.students.push(student);
+    student.team = newTeam;
+
+    if (saveStudent) {
+      await Promise.all([tutorial.save(), student.save()]);
+    } else {
+      await tutorial.save();
+    }
+  }
+
+  public async removeStudentAsMemberFromTeam(
+    student: StudentDocument,
+    { saveStudent }: { saveStudent?: boolean } = {}
+  ) {
+    if (!student.team) {
+      return;
+    }
+
+    const [oldTeam, tutorial] = await this.getDocumentWithId(
+      getIdOfDocumentRef(student.tutorial),
+      getIdOfDocumentRef(student.team)
+    );
+
+    oldTeam.students = oldTeam.students.filter(
+      stud => getIdOfDocumentRef(stud) !== student.id
+    );
+    student.team = undefined;
+
+    if (saveStudent) {
+      await Promise.all([tutorial.save(), student.save()]);
+    } else {
+      await tutorial.save();
+    }
+
+    // TODO: Delete team if empty?! Maybe better UX: Add "delete all empty team"-Button to frontend. This will prevent "unintentional" deletions.
+    // if (oldTeam.students.length === 0) {
+    //   await this.deleteTeam(getIdOfDocumentRef(oldTeam.tutorial), oldTeam.id);
+    // }
+  }
+
+  private isStudentMemberOfTeam(student: StudentDocument, team: TeamDocument): boolean {
+    for (const doc of team.students) {
+      if (getIdOfDocumentRef(doc) === student.id) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private async getTeamOrReject(team: TeamDocument | null): Promise<Team> {
@@ -96,19 +207,23 @@ class TeamService {
     const { _id, teamNo, tutorial, students: studentDocs, points } = team;
 
     // TODO: Test if conversion works.
-    const students: Promise<Student>[] = [];
+    const studentPromises: Promise<Student>[] = [];
 
     for (const doc of studentDocs) {
       if (isDocument(doc)) {
-        students.push(studentService.getStudentOrReject(doc));
+        studentPromises.push(studentService.getStudentOrReject(doc));
+      } else {
+        studentPromises.push(studentService.getStudentWithId(doc.toString()));
       }
     }
+
+    const students = await Promise.all(studentPromises);
 
     return {
       id: _id,
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
-      students: await Promise.all(students),
+      students,
       points,
     };
   }
