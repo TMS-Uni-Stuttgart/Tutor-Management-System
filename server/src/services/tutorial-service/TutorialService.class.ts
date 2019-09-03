@@ -139,7 +139,7 @@ class TutorialService {
     await tutorial.populate('students').execPopulate();
     const students: StudentDocument[] = tutorial.students as StudentDocument[];
 
-    return Promise.all(students.map(studentService.getStudentOrReject));
+    return Promise.all(students.map(stud => studentService.getStudentOrReject(stud)));
   }
 
   public async getSubstitutesOfTutorial(id: string): Promise<Map<Date, User>> {
