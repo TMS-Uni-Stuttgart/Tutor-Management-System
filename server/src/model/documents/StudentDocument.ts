@@ -1,14 +1,14 @@
 import { Document, Model } from 'mongoose';
-import { Attendance } from 'shared/dist/model/Attendance';
 import { Student } from 'shared/dist/model/Student';
 import { mapProp, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
-import { AttendanceSchema } from './AttendanceDocument';
+import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
 
 export class StudentSchema extends Typegoose
-  implements Omit<Student, 'id' | 'tutorial' | 'team' | 'courseOfStudies' | 'email'> {
+  implements
+    Omit<Student, 'id' | 'tutorial' | 'team' | 'courseOfStudies' | 'email' | 'attendance'> {
   @prop({ required: true, ref: { name: 'TutorialSchema' } })
   tutorial!: Ref<TutorialDocument>;
 
@@ -31,8 +31,9 @@ export class StudentSchema extends Typegoose
   team?: Ref<TeamDocument>;
 
   @mapProp({ of: AttendanceSchema })
-  attendance!: { [index: string]: Attendance };
+  attendance?: Map<string, AttendanceDocument>;
 
+  // TODO: Make real Maps out of these.
   @mapProp({ of: Number, default: {} })
   points!: { [index: string]: number };
 
