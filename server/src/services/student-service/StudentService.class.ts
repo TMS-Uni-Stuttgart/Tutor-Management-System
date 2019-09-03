@@ -22,8 +22,7 @@ class StudentService {
     const tutorial = await tutorialService.getDocumentWithID(dto.tutorial);
     const createdStudent = await StudentModel.create({ ...dto, tutorial });
 
-    tutorial.students.push(createdStudent);
-    await tutorial.save();
+    this.makeStudentAttendeeOfTutorial(createdStudent, tutorial.id, { saveStudent: false });
 
     // TODO: Check team
 
@@ -125,7 +124,7 @@ class StudentService {
    * @param tutorialId ID of the tutorial to add the student to
    * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
    */
-  public async addStudentToTutorial(
+  public async makeStudentAttendeeOfTutorial(
     student: StudentDocument,
     tutorialId: string,
     { saveStudent }: { saveStudent?: boolean } = {}
