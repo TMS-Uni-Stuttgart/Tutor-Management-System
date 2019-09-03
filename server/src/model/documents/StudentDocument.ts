@@ -18,6 +18,7 @@ export class StudentSchema extends Typegoose
       | 'attendance'
       | 'points'
       | 'presentationPoints'
+      | 'scheinExamResults'
     > {
   @prop({ required: true, ref: { name: 'TutorialSchema' } })
   tutorial!: Ref<TutorialDocument>;
@@ -50,8 +51,8 @@ export class StudentSchema extends Typegoose
   presentationPoints?: Types.Map<number>;
 
   // TODO: Make real Maps out of these.
-  @mapProp({ of: Number, default: {} })
-  scheinExamResults!: { [index: string]: number };
+  @mapProp({ of: Number })
+  scheinExamResults?: Types.Map<number>;
 }
 
 export interface StudentDocument extends StudentSchema, Document {}

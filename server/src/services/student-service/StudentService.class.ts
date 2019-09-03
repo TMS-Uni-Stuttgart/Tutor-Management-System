@@ -14,6 +14,13 @@ import { DocumentNotFoundError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import scheinexamService from '../scheinexam-service/ScheinexamService.class';
+import { ExerciseDocument } from '../../model/documents/ExerciseDocument';
+
+interface HasExerciseDocuments {
+  id: string;
+  exercises: ExerciseDocument[];
+}
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -95,7 +102,7 @@ class StudentService {
     return this.getAttendanceFromDocument(attendanceDocument);
   }
 
-  public async setPoints(id: string, { id: sheetId, exercises }: UpdatePointsDTO) {
+  public async setPoints(id: string, { id: sheetId, exercises: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
     const sheet = await sheetService.getDocumentWithId(sheetId);
 
@@ -103,14 +110,20 @@ class StudentService {
       student.points = new Types.Map();
     }
 
-    for (const [exNo, points] of Object.entries(exercises)) {
-      const exercise = sheet.exercises.find(ex => ex.exNo.toString() === exNo);
+    this.adjustPoints(student.points, sheet, pointsGained);
 
-      if (exercise) {
-        const pointId = new PointId(sheetId, exercise.exNo);
-        student.points.set(pointId.toString(), points);
-      }
+    await student.save();
+  }
+
+  public async setExamResults(id: string, { id: examId, exercises: pointsGained }: UpdatePointsDTO) {
+    const student = await this.getDocumentWithId(id);
+    const exam = await scheinexamService.getDocumentWithId(examId);
+
+    if (!student.scheinExamResults) {
+      student.scheinExamResults = new Types.Map();
     }
+
+    this.adjustPoints(student.scheinExamResults, exam, pointsGained);
 
     await student.save();
   }
@@ -189,7 +202,7 @@ class StudentService {
       presentationPoints: presentationPoints
         ? presentationPoints.toObject({ flattenMaps: true })
         : {},
-      scheinExamResults,
+      scheinExamResults: scheinExamResults ? scheinExamResults.toObject({ flattenMaps: true }) : {},
     };
   }
 
@@ -275,6 +288,12 @@ class StudentService {
     }
   }
 
+  /**
+   *  Returns if the given student is an attendee in the given Tutorial.
+   *
+   * @param student Student to check.
+   * @param tutorial Tutorial to check.
+   */
   private isStudentAttendeeOfTutorial(
     student: StudentDocument,
     tutorial: TutorialDocument
@@ -286,6 +305,30 @@ class StudentService {
     }
 
     return false;
+  }
+
+  /**
+   * Adjusts the points in the `pointsMap` according to the gained points.
+   *
+   * The points in the `pointsMap` will be updated in regards to the given `gainedPoints`. Points will be mapped using a `PointId` as key and the achieved points as value. If there were points saved for this combination of sheet / exam and exercise number the old points will be overridden.
+   *
+   * @param pointsMap Map containing the points.
+   * @param exerciseContainer Contains the exercises for example the corresponding sheet or schein exam.
+   * @param pointsGained Object containing the achieved points with the exercise numbers as keys.
+   */
+  private adjustPoints(
+    pointsMap: Types.Map<number>,
+    { id, exercises }: HasExerciseDocuments,
+    pointsGained: { [exNo: string]: number }
+  ) {
+    for (const [exNo, points] of Object.entries(pointsGained)) {
+      const exercise = exercises.find(ex => ex.exNo.toString() === exNo);
+
+      if (exercise) {
+        const pointId = new PointId(id, exercise.exNo);
+        pointsMap.set(pointId.toString(), points);
+      }
+    }
   }
 
   private getAttendanceFromDocument(attendanceDocument: AttendanceDocument): Attendance {

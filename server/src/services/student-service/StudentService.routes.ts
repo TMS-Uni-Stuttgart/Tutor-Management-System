@@ -89,6 +89,20 @@ studentRouter.put(
 );
 
 studentRouter.put(
+  '/:id/examresult',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO.'),
+  async (req, res) => {
+    const id = req.params.id;
+    const dto = req.body;
+
+    await studentService.setExamResults(id, dto);
+
+    res.status(204).send();
+  }
+);
+
+studentRouter.put(
   '/:id/presentation',
   ...checkRoleAccess(Role.ADMIN),
   validateRequestBody(validateAgainstPresentationPointsDTO, 'Not a valid PresentationPointsDTO.'),

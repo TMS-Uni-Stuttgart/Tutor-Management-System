@@ -64,7 +64,7 @@ class ScheinExamService {
     return this.getScheinExamOrReject(scheinexam);
   }
 
-  private async getDocumentWithId(id: string): Promise<ScheinexamDocument> {
+  public async getDocumentWithId(id: string): Promise<ScheinexamDocument> {
     const exam: ScheinexamDocument | null = await ScheinexamModel.findById(id);
 
     if (!exam) {
