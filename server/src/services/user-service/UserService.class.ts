@@ -45,7 +45,7 @@ class UserService {
       return Promise.reject('User not found.');
     }
 
-    return new UserCredentials(user._id, user.username, user.password);
+    return new UserCredentials(user.id, user.username, user.password);
   }
 
   public async createUser(dto: CreateUserDTO): Promise<User> {
@@ -205,7 +205,7 @@ class UserService {
     }
 
     tutorial.tutor = user;
-    user.tutorials.push(tutorial._id);
+    user.tutorials.push(tutorial);
 
     if (saveUser) {
       await Promise.all([tutorial.save(), user.save()]);
@@ -230,7 +230,7 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ): Promise<void> {
-    const tutorialId: string = tutorial._id;
+    const tutorialId: string = tutorial.id;
     tutorial.tutor = undefined;
 
     user.tutorials = user.tutorials.filter(tut => tutorialId !== getIdOfDocumentRef(tut));
@@ -280,7 +280,7 @@ class UserService {
         firstname: 'admin',
         lastname: 'admin',
         roles: [Role.ADMIN],
-        tutorials: [tutorialDocument._id],
+        tutorials: [tutorialDocument.id],
         username: 'admin',
         password: 'admin',
       };

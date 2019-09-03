@@ -1,1 +1,5 @@
-declare module 'mongoose-encryption' {}
+declare module 'mongoose' {
+  interface MongooseDocument extends MongooseDocumentOptionals {
+    id: string;
+  }
+}

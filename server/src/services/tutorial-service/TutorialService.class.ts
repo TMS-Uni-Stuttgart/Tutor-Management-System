@@ -88,7 +88,7 @@ class TutorialService {
     if (tutorial.tutor) {
       const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
 
-      if (tutor._id !== tutorId) {
+      if (tutor.id !== tutorId) {
         tutor.tutorials = await this.filterTutorials(tutor.tutorials, t => t !== id);
 
         await tutor.save();
@@ -122,10 +122,7 @@ class TutorialService {
     if (tutorial.tutor) {
       const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
 
-      tutor.tutorials = await this.filterTutorials(
-        tutor.tutorials,
-        t => t !== tutorial._id.toString()
-      );
+      tutor.tutorials = await this.filterTutorials(tutor.tutorials, t => t !== tutorial.id);
 
       await tutor.save();
     }
@@ -182,7 +179,7 @@ class TutorialService {
     }
 
     for (const date of _.difference(newDates, previousDates)) {
-      tutorial.substitutes.set(date.toDateString(), substitute._id);
+      tutorial.substitutes.set(date.toDateString(), substitute.id);
     }
 
     return this.getTutorialOrReject(await tutorial.save());
