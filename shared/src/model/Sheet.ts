@@ -29,3 +29,11 @@ export interface UpdatePointsDTO {
   exercises: { [index: string]: number };
   id: string;
 }
+
+export class PointId {
+  constructor(readonly sheetId: string, readonly exerciseNo: number) {}
+
+  public toString(): string {
+    return `ID::${this.sheetId}--Ex::${this.exerciseNo}`;
+  }
+}
