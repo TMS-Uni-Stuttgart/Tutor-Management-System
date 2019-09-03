@@ -24,3 +24,8 @@ export interface ExerciseDTO {
   exNo: number;
   maxPoints: number;
 }
+
+export interface UpdatePointsDTO {
+  exercises: { [index: string]: number };
+  id: string;
+}
