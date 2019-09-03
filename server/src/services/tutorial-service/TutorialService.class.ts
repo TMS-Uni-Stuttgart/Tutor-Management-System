@@ -168,7 +168,7 @@ class TutorialService {
     const previousDates: Date[] = [];
 
     if (!tutorial.substitutes) {
-      tutorial.substitutes = new Map();
+      tutorial.substitutes = new Types.Map();
     }
 
     for (const [key, substId] of tutorial.substitutes) {
