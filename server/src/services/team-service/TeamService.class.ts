@@ -10,6 +10,7 @@ import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import { Types } from 'mongoose';
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
@@ -63,7 +64,6 @@ class TeamService {
   ): Promise<Team> {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
-    // TODO: Adjust students
     const studentsToRemove: StudentDocument[] = await Promise.all(
       _.difference(team.students.map(getIdOfDocumentRef), students).map(stud =>
         studentService.getDocumentWithId(stud)
@@ -83,8 +83,6 @@ class TeamService {
       await this.makeStudentMemberOfTeam(student, team.id, { saveStudent: true });
     }
 
-    // TODO: Adjust tutorial
-
     team.teamNo = teamNo;
 
     await tutorial.save();
@@ -92,10 +90,9 @@ class TeamService {
     return this.getTeamOrReject(team);
   }
 
-  public async deleteTeam(tutorialId: string, teamId: string): Promise<Team> {
-    const [team] = await this.getDocumentWithId(tutorialId, teamId);
+  public async deleteTeam(tutorialId: string, teamId: string) {
+    const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
-    // TODO: Adjust students
     for (const student of team.students) {
       const doc: StudentDocument = isDocument(student)
         ? student
@@ -103,9 +100,10 @@ class TeamService {
 
       await this.removeStudentAsMemberFromTeam(doc, { saveStudent: true });
     }
-    // TODO: Adjust tutorial
 
-    return this.getTeamOrReject(await team.remove());
+    tutorial.teams.pull({ _id: team.id });
+
+    await tutorial.save();
   }
 
   public async getTeamWithId(tutorialId: string, id: string): Promise<Team> {
