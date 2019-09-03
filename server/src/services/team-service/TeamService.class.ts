@@ -123,7 +123,6 @@ class TeamService {
       return this.rejectTeamNotFound();
     }
 
-    // TODO: Test if population works or if an additional 'populatedTutorial' variable is needed.
     await tutorial.populate(`teams.${idx}.students`).execPopulate();
 
     return [tutorial.teams[idx], tutorial];
@@ -201,8 +200,6 @@ class TeamService {
     }
 
     const { _id, teamNo, tutorial, students: studentDocs, points } = team;
-
-    // TODO: Test if conversion works.
     const studentPromises: Promise<Student>[] = [];
 
     for (const doc of studentDocs) {
