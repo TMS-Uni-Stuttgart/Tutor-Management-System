@@ -12,6 +12,7 @@ import StudentModel, { StudentDocument } from '../../model/documents/StudentDocu
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
+import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 
 class StudentService {
@@ -32,7 +33,9 @@ class StudentService {
 
     this.makeStudentAttendeeOfTutorial(createdStudent, tutorial.id, { saveStudent: false });
 
-    // TODO: Check team
+    if (dto.team) {
+      await teamService.makeStudentMemberOfTeam(createdStudent, dto.team, { saveStudent: true });
+    }
 
     return this.getStudentOrReject(createdStudent);
   }
@@ -40,15 +43,25 @@ class StudentService {
   public async updateStudent(id: string, { tutorial, ...dto }: StudentDTO): Promise<Student> {
     const student = await this.getDocumentWithId(id);
 
-    // TODO: Check team
+    if (dto.team) {
+      await teamService.makeStudentMemberOfTeam(student, dto.team, { saveStudent: false });
+    } else {
+      await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
+    }
 
     if (getIdOfDocumentRef(student.tutorial) !== tutorial) {
       await this.moveStudentToBeAttendeeOfNewTutorial(student, tutorial);
     }
 
-    const updatedStudent = await student.updateOne({ ...dto, tutorial: student.tutorial });
+    await student.updateOne({
+      ...dto,
+      tutorial: student.tutorial,
+      team: student.team,
+    });
 
-    return this.getStudentOrReject(updatedStudent);
+    // const updatedStudent = await this.getDocumentWithId(student.id);
+
+    return this.getStudentOrReject(student);
   }
 
   public async deleteStudent(id: string): Promise<Student> {
@@ -57,10 +70,12 @@ class StudentService {
       getIdOfDocumentRef(student.tutorial)
     );
 
-    // TODO: Adjust team
+    if (student.team) {
+      await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
+    }
 
     tutorial.students = tutorial.students.filter(
-      stud => getIdOfDocumentRef(stud) !== student._id.toString()
+      stud => getIdOfDocumentRef(stud) !== student.id
     );
     await tutorial.save();
 
@@ -198,11 +213,11 @@ class StudentService {
     tutorialId: string,
     { saveStudent }: { saveStudent?: boolean } = {}
   ): Promise<void> {
-    if (tutorialId === getIdOfDocumentRef(student.tutorial)) {
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
+
+    if (this.isStudentAttendeeOfTutorial(student, tutorial)) {
       return;
     }
-
-    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
 
     student.tutorial = tutorial;
     tutorial.students.push(student);
@@ -235,15 +250,16 @@ class StudentService {
     { saveStudent }: { saveStudent?: boolean } = {}
   ): Promise<void> {
     const newTutorial = await tutorialService.getDocumentWithID(newTutorialId);
+
+    if (this.isStudentAttendeeOfTutorial(student, newTutorial)) {
+      return;
+    }
+
     const oldTutorial = isDocument(student.tutorial)
       ? student.tutorial
       : await tutorialService.getDocumentWithID(student.tutorial.toString());
 
-    if (newTutorialId === oldTutorial._id.toString()) {
-      return;
-    }
-
-    const studentId: string = student._id.toString();
+    const studentId: string = student.id;
 
     oldTutorial.students = oldTutorial.students.filter(
       stud => studentId !== getIdOfDocumentRef(stud)
@@ -259,6 +275,19 @@ class StudentService {
     } else {
       await Promise.all([oldTutorial.save(), newTutorial.save()]);
     }
+  }
+
+  private isStudentAttendeeOfTutorial(
+    student: StudentDocument,
+    tutorial: TutorialDocument
+  ): boolean {
+    for (const doc of tutorial.students) {
+      if (getIdOfDocumentRef(doc) === student.id) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private getAttendanceFromDocument(attendanceDocument: AttendanceDocument): Attendance {
