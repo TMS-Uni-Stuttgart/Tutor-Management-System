@@ -22,5 +22,8 @@
     "eslint-plugin-react": "^7.14.3",
     "prettier": "^1.18.2",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "date-fns": "^2.0.1"
   }
 }
