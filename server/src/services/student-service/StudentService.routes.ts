@@ -3,12 +3,25 @@ import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
 import { Student, StudentDTO } from 'shared/dist/model/Student';
 import { validateAgainstStudentDTO } from 'shared/dist/validators/Student';
+import { validateAgainstAttendanceDTO } from 'shared/dist/validators/Attendance';
 import studentService from './StudentService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
+import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 
 function isValidStudentDTO(obj: any, errors: ValidationErrors): obj is StudentDTO {
   const result = validateAgainstStudentDTO(obj);
+
+  if ('errors' in result) {
+    errors.push(...result['errors']);
+    return false;
+  }
+
+  return true;
+}
+
+function isValidAttendanceDTO(obj: any, errors: ValidationErrors): obj is AttendanceDTO {
+  const result = validateAgainstAttendanceDTO(obj);
 
   if ('errors' in result) {
     errors.push(...result['errors']);
@@ -65,5 +78,19 @@ studentRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =>
 
   res.status(204).send();
 });
+
+studentRouter.put(
+  '/:id/attendance',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(isValidAttendanceDTO, 'Not a valid StudentDTO.'),
+  async (req, res) => {
+    const id = req.params.id;
+    const dto = req.body;
+
+    const attendance: Attendance = await studentService.setAttendance(id, dto);
+
+    res.json(attendance);
+  }
+);
 
 export default studentRouter;

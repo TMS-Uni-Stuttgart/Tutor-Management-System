@@ -1,10 +1,15 @@
+import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { Student, StudentDTO } from 'shared/dist/model/Student';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import {
+  generateAttendanceDocumentFromDTO,
+  AttendanceDocument,
+} from '../../model/documents/AttendanceDocument';
 import StudentModel, { StudentDocument } from '../../model/documents/StudentDocument';
+import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { TutorialDocument } from '../../model/documents/TutorialDocument';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -59,6 +64,21 @@ class StudentService {
     return this.getStudentOrReject(await student.remove());
   }
 
+  public async setAttendance(id: string, attendanceDTO: AttendanceDTO): Promise<Attendance> {
+    const student = await this.getDocumentWithId(id);
+    const attendanceDocument = generateAttendanceDocumentFromDTO(attendanceDTO);
+
+    if (!student.attendance) {
+      student.attendance = new Map();
+    }
+
+    student.attendance.set(attendanceDocument.date.toDateString(), attendanceDocument);
+
+    await student.save();
+
+    return this.getAttendanceFromDocument(attendanceDocument);
+  }
+
   public async getStudentWithId(id: string): Promise<Student> {
     const student: StudentDocument | null = await this.getDocumentWithId(id);
 
@@ -95,6 +115,14 @@ class StudentService {
       scheinExamResults,
     } = student;
 
+    const parsedAttendances: Student['attendance'] = {};
+
+    if (attendance) {
+      attendance.forEach(
+        (att, key) => (parsedAttendances[key] = this.getAttendanceFromDocument(att))
+      );
+    }
+
     return {
       id: _id,
       firstname,
@@ -104,7 +132,7 @@ class StudentService {
       courseOfStudies,
       tutorial: getIdOfDocumentRef(tutorial),
       team: team ? getIdOfDocumentRef(team) : undefined,
-      attendance,
+      attendance: parsedAttendances,
       points,
       presentationPoints,
       scheinExamResults,
@@ -190,6 +218,14 @@ class StudentService {
     } else {
       await Promise.all([oldTutorial.save(), newTutorial.save()]);
     }
+  }
+
+  private getAttendanceFromDocument(attendanceDocument: AttendanceDocument): Attendance {
+    return {
+      date: attendanceDocument.date,
+      state: attendanceDocument.state,
+      note: attendanceDocument.note,
+    };
   }
 
   private async rejectStudentNotFound(): Promise<any> {
