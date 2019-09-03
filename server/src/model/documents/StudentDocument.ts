@@ -1,11 +1,10 @@
-import { Document, Model } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 import { Student } from 'shared/dist/model/Student';
 import { mapProp, prop, Ref, Typegoose } from 'typegoose';
 import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
-import { PointId } from 'shared/dist/model/Sheet';
 
 export class StudentSchema extends Typegoose
   implements
@@ -42,13 +41,13 @@ export class StudentSchema extends Typegoose
   team?: Ref<TeamDocument>;
 
   @mapProp({ of: AttendanceSchema })
-  attendance?: Map<string, AttendanceDocument>;
+  attendance?: Types.Map<AttendanceDocument>;
 
   @mapProp({ of: Number })
-  points?: Map<PointId, number>;
+  points?: Types.Map<number>;
 
   @mapProp({ of: Number })
-  presentationPoints?: Map<string, number>;
+  presentationPoints?: Types.Map<number>;
 
   // TODO: Make real Maps out of these.
   @mapProp({ of: Number, default: {} })

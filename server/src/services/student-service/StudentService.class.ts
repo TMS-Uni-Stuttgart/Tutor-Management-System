@@ -1,4 +1,6 @@
+import { Types } from 'mongoose';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
+import { PointId, UpdatePointsDTO } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
@@ -9,9 +11,8 @@ import {
 import StudentModel, { StudentDocument } from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
-import tutorialService from '../tutorial-service/TutorialService.class';
-import { UpdatePointsDTO, PointId } from 'shared/dist/model/Sheet';
 import sheetService from '../sheet-service/SheetService.class';
+import tutorialService from '../tutorial-service/TutorialService.class';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -71,7 +72,7 @@ class StudentService {
     const attendanceDocument = generateAttendanceDocumentFromDTO(attendanceDTO);
 
     if (!student.attendance) {
-      student.attendance = new Map();
+      student.attendance = new Types.Map();
     }
 
     student.attendance.set(attendanceDocument.date.toDateString(), attendanceDocument);
@@ -86,15 +87,15 @@ class StudentService {
     const sheet = await sheetService.getDocumentWithId(sheetId);
 
     if (!student.points) {
-      student.points = new Map();
+      student.points = new Types.Map();
     }
 
-    for (const [exId, points] of Object.entries(exercises)) {
-      const exercise = sheet.exercises.find(ex => ex._id.toString() === exId);
+    for (const [exNo, points] of Object.entries(exercises)) {
+      const exercise = sheet.exercises.find(ex => ex.exNo.toString() === exNo);
 
       if (exercise) {
         const pointId = new PointId(sheetId, exercise.exNo);
-        student.points.set(pointId, points);
+        student.points.set(pointId.toString(), points);
       }
     }
 
@@ -106,7 +107,7 @@ class StudentService {
 
     // TODO: Check if sheet exists.
     if (!student.presentationPoints) {
-      student.presentationPoints = new Map();
+      student.presentationPoints = new Types.Map();
     }
 
     student.presentationPoints.set(sheetId, points);
@@ -151,23 +152,11 @@ class StudentService {
     } = student;
 
     const parsedAttendances: Student['attendance'] = {};
-    const parsedPoints: Student['points'] = {};
-    const parsedPresentations: Student['presentationPoints'] = {};
 
     if (attendance) {
-      attendance.forEach(
-        (att, key) => (parsedAttendances[key] = this.getAttendanceFromDocument(att))
-      );
-    }
-
-    if (points) {
-      points.forEach((points, id) => {
-        parsedPoints[id.toString()] = points;
-      });
-    }
-
-    if (presentationPoints) {
-      presentationPoints.forEach((points, key) => (parsedPresentations[key] = points));
+      for (const [key, att] of attendance) {
+        parsedAttendances[key] = this.getAttendanceFromDocument(att);
+      }
     }
 
     return {
@@ -180,8 +169,10 @@ class StudentService {
       tutorial: getIdOfDocumentRef(tutorial),
       team: team ? getIdOfDocumentRef(team) : undefined,
       attendance: parsedAttendances,
-      points: parsedPoints,
-      presentationPoints: parsedPresentations,
+      points: points ? points.toObject({ flattenMaps: true }) : {},
+      presentationPoints: presentationPoints
+        ? presentationPoints.toObject({ flattenMaps: true })
+        : {},
       scheinExamResults,
     };
   }
