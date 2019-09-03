@@ -105,7 +105,10 @@ class StudentService {
   public async setPresentationPoints(id: string, { sheetId, points }: PresentationPointsDTO) {
     const student = await this.getDocumentWithId(id);
 
-    // TODO: Check if sheet exists.
+    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+      return sheetService.rejectSheetNotFound();
+    }
+
     if (!student.presentationPoints) {
       student.presentationPoints = new Types.Map();
     }

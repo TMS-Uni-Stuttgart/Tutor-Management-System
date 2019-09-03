@@ -63,6 +63,12 @@ class SheetService {
     return sheet;
   }
 
+  public async doesSheetWithIdExist(id: string): Promise<boolean> {
+    const sheet: SheetDocument | null = await SheetModel.findById(id);
+
+    return !!sheet;
+  }
+
   private async getSheetOrReject(sheet: SheetDocument | null): Promise<Sheet> {
     if (!sheet) {
       return this.rejectSheetNotFound();
@@ -78,7 +84,7 @@ class SheetService {
     };
   }
 
-  private async rejectSheetNotFound(): Promise<any> {
+  public async rejectSheetNotFound(): Promise<any> {
     return Promise.reject(new DocumentNotFoundError('Sheet with that ID was not found.'));
   }
 }
