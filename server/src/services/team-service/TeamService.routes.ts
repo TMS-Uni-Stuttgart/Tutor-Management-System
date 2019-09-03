@@ -1,22 +1,9 @@
 import Router from 'express-promise-router';
-import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { TeamDTO } from 'shared/dist/model/Team';
 import { validateAgainstTeamDTO } from 'shared/dist/validators/Team';
-import teamService from './TeamService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
-
-function isValidTeamDTO(obj: any, errors: ValidationErrors): obj is TeamDTO {
-  const result = validateAgainstTeamDTO(obj);
-
-  if ('errors' in result) {
-    errors.push(...result['errors']);
-    return false;
-  }
-
-  return true;
-}
+import teamService from './TeamService.class';
 
 const teamRouter = Router();
 
@@ -29,7 +16,7 @@ teamRouter.get('/:tutorialId/team', ...checkRoleAccess(Role.ADMIN), async (req, 
 teamRouter.post(
   '/:tutorialId/team',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidTeamDTO, 'Not a valid TeamDTO.'),
+  validateRequestBody(validateAgainstTeamDTO, 'Not a valid TeamDTO.'),
   async (req, res) => {
     const dto = req.body;
     const tutorialId = req.params.tutorialId;
@@ -50,7 +37,7 @@ teamRouter.get('/:tutorialId/team/:teamId', ...checkRoleAccess(Role.ADMIN), asyn
 teamRouter.patch(
   '/:tutorialId/team/:teamId',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidTeamDTO, 'Not a valid TeamDTO.'),
+  validateRequestBody(validateAgainstTeamDTO, 'Not a valid TeamDTO.'),
   async (req, res) => {
     const tutorialId = req.params.tutorialId;
     const teamId = req.params.teamId;

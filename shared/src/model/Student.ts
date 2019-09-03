@@ -22,3 +22,8 @@ export interface StudentDTO {
   team?: string | null;
   tutorial: string;
 }
+
+export interface PresentationPointsDTO {
+  points: number;
+  sheetId: string;
+}

@@ -12,6 +12,7 @@ const TutorialDTOSchema = Yup.object().shape<TutorialDTO>({
   startTime: Yup.string().required(),
 });
 
+// TODO: Abstract inner schema and use where ever an ID is used!
 export const TutorialIdListSchema = Yup.array().of(Yup.string().matches(/^[a-f\d]{24}$/i));
 
 export function validateAgainstTutorialDTO(

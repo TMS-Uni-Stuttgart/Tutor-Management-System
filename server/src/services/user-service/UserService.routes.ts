@@ -1,46 +1,12 @@
 import Router from 'express-promise-router';
-import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
+import { User } from 'shared/dist/model/User';
 import { validateAgainstTutorialIdList } from 'shared/dist/validators/Tutorial';
 import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
-import userService from './UserService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import { BadRequestError } from '../../model/Errors';
-
-function isValidCreateUserDTO(obj: any, errors: ValidationErrors): obj is CreateUserDTO {
-  const result = validateAgainstCreateUserDTO(obj);
-
-  if ('errors' in result) {
-    errors.push(...result['errors']);
-    return false;
-  }
-
-  return true;
-}
-
-function isValidListOfTutorialIds(obj: any, errors: ValidationErrors): obj is string[] {
-  const result = validateAgainstTutorialIdList(obj);
-
-  if ('errors' in result) {
-    errors.push(...result['errors']);
-    return false;
-  }
-
-  return true;
-}
-
-function isValidUserDTO(obj: any, errors: ValidationErrors): obj is UserDTO {
-  const result = validateAgainstUserDTO(obj);
-
-  if ('errors' in result) {
-    errors.push(...result['errors']);
-    return false;
-  }
-
-  return true;
-}
+import userService from './UserService.class';
 
 const userRouter = Router();
 
@@ -53,7 +19,7 @@ userRouter.get('/', ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]), async (_, r
 userRouter.post(
   '/',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidCreateUserDTO, 'Not a valid CreateUserDTO.'),
+  validateRequestBody(validateAgainstCreateUserDTO, 'Not a valid CreateUserDTO.'),
   async (req, res) => {
     const dto = req.body;
     const user = await userService.createUser(dto);
@@ -72,7 +38,7 @@ userRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
 userRouter.patch(
   '/:id',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidUserDTO, 'Not a valid UserDTO.'),
+  validateRequestBody(validateAgainstUserDTO, 'Not a valid UserDTO.'),
   async (req, res) => {
     const dto = req.body;
     const id = req.params.id;
@@ -100,7 +66,7 @@ userRouter.put(
   '/:id/tutorial',
   ...checkRoleAccess(Role.ADMIN),
   validateRequestBody(
-    isValidListOfTutorialIds,
+    validateAgainstTutorialIdList,
     'Request body is not a list of valid Tutorial IDs.'
   ),
   async (req, res) => {

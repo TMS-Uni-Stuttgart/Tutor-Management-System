@@ -3,8 +3,6 @@ export interface ValidationErrorExtract {
   message: string;
 }
 
-export type ValidationErrors = ValidationErrorExtract[];
-
 export interface ValidationErrorsWrapper {
-  errors: ValidationErrors;
+  errors: ValidationErrorExtract[];
 }

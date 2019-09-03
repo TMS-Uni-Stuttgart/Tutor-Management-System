@@ -1,25 +1,13 @@
 import Router from 'express-promise-router';
-import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { Tutorial, TutorialDTO, SubstituteDTO } from 'shared/dist/model/Tutorial';
+import { Student } from 'shared/dist/model/Student';
+import { SubstituteDTO, Tutorial } from 'shared/dist/model/Tutorial';
+import { User } from 'shared/dist/model/User';
 import { validateAgainstTutorialDTO } from 'shared/dist/validators/Tutorial';
-import tutorialService from './TutorialService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamRouter from '../team-service/TeamService.routes';
-import { Student } from 'shared/dist/model/Student';
-import { User } from 'shared/dist/model/User';
-
-function isValidTutorialDTO(obj: any, errors: ValidationErrors): obj is TutorialDTO {
-  const result = validateAgainstTutorialDTO(obj);
-
-  if ('errors' in result) {
-    errors.push(...result['errors']);
-    return false;
-  }
-
-  return true;
-}
+import tutorialService from './TutorialService.class';
 
 const tutorialRouter = Router();
 
@@ -32,7 +20,7 @@ tutorialRouter.get('/', ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]), async (
 tutorialRouter.post(
   '/',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidTutorialDTO, 'Not a valid TutorialDTO.'),
+  validateRequestBody(validateAgainstTutorialDTO, 'Not a valid TutorialDTO.'),
   async (req, res) => {
     const dto = req.body;
     const tutorial = await tutorialService.createTutorial(dto);
@@ -52,7 +40,7 @@ tutorialRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
 tutorialRouter.patch(
   '/:id',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidTutorialDTO, 'Not a valid TutorialDTO.'),
+  validateRequestBody(validateAgainstTutorialDTO, 'Not a valid TutorialDTO.'),
   async (req, res) => {
     const id = req.params.id;
     const dto = req.body;

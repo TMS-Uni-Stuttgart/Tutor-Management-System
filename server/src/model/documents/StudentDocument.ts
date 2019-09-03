@@ -8,7 +8,10 @@ import { TutorialDocument } from './TutorialDocument';
 
 export class StudentSchema extends Typegoose
   implements
-    Omit<Student, 'id' | 'tutorial' | 'team' | 'courseOfStudies' | 'email' | 'attendance'> {
+    Omit<
+      Student,
+      'id' | 'tutorial' | 'team' | 'courseOfStudies' | 'email' | 'attendance' | 'presentationPoints'
+    > {
   @prop({ required: true, ref: { name: 'TutorialSchema' } })
   tutorial!: Ref<TutorialDocument>;
 
@@ -37,8 +40,8 @@ export class StudentSchema extends Typegoose
   @mapProp({ of: Number, default: {} })
   points!: { [index: string]: number };
 
-  @mapProp({ of: Number, default: {} })
-  presentationPoints!: { [index: string]: number };
+  @mapProp({ of: Number })
+  presentationPoints?: Map<string, number>;
 
   @mapProp({ of: Number, default: {} })
   scheinExamResults!: { [index: string]: number };

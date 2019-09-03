@@ -1,22 +1,10 @@
 import Router from 'express-promise-router';
-import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { ScheinExam, ScheinExamDTO } from 'shared/dist/model/Scheinexam';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { validateAgainstScheinexamDTO } from 'shared/dist/validators/Scheinexam';
-import scheinexamService from './ScheinexamService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
-
-function isValidScheinexamDTO(obj: any, errors: ValidationErrors): obj is ScheinExamDTO {
-  const result = validateAgainstScheinexamDTO(obj);
-
-  if ('errors' in result) {
-    errors.push(...result['errors']);
-    return false;
-  }
-
-  return true;
-}
+import scheinexamService from './ScheinexamService.class';
 
 const scheinexamRouter = Router();
 
@@ -29,7 +17,7 @@ scheinexamRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
 scheinexamRouter.post(
   '/',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidScheinexamDTO, 'Not a valid ScheinexamDTO.'),
+  validateRequestBody(validateAgainstScheinexamDTO, 'Not a valid ScheinexamDTO.'),
   async (req, res) => {
     const dto = req.body;
     const exam = await scheinexamService.createScheinExam(dto);
@@ -48,7 +36,7 @@ scheinexamRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =>
 scheinexamRouter.patch(
   '/:id',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidScheinexamDTO, 'Not a valid ScheinexamDTO.'),
+  validateRequestBody(validateAgainstScheinexamDTO, 'Not a valid ScheinexamDTO.'),
   async (req, res) => {
     const id = req.params.id;
     const dto = req.body;

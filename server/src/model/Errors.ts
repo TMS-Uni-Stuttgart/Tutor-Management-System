@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { ValidationErrors } from 'shared/dist/model/errors/Errors';
+import { ValidationErrorExtract } from 'shared/dist/model/errors/Errors';
 
 export interface StatusErrorMessages {
   [status: number]: string;
@@ -22,7 +22,7 @@ export class ErrorResponse {
 }
 
 export class ValidationErrorResponse extends ErrorResponse {
-  constructor(readonly message: string, readonly errors: ValidationErrors) {
+  constructor(readonly message: string, readonly errors: ValidationErrorExtract[]) {
     super(400, message);
   }
 }

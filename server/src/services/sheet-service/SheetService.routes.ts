@@ -1,22 +1,10 @@
 import Router from 'express-promise-router';
-import { ValidationErrors } from 'shared/dist/model/errors/Errors';
 import { Role } from 'shared/dist/model/Role';
-import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
+import { Sheet } from 'shared/dist/model/Sheet';
 import { validateAgainstSheetDTO } from 'shared/dist/validators/Sheet';
-import sheetService from './SheetService.class';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
-
-function isValidSheetDTO(obj: any, errors: ValidationErrors): obj is SheetDTO {
-  const result = validateAgainstSheetDTO(obj);
-
-  if ('errors' in result) {
-    errors.push(...result['errors']);
-    return false;
-  }
-
-  return true;
-}
+import sheetService from './SheetService.class';
 
 const sheetRouter = Router();
 
@@ -29,7 +17,7 @@ sheetRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
 sheetRouter.post(
   '/',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidSheetDTO, 'Not a valid SheetDTO.'),
+  validateRequestBody(validateAgainstSheetDTO, 'Not a valid SheetDTO.'),
   async (req, res) => {
     const dto = req.body;
     const sheet = await sheetService.createSheet(dto);
@@ -48,7 +36,7 @@ sheetRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
 sheetRouter.patch(
   '/:id',
   ...checkRoleAccess(Role.ADMIN),
-  validateRequestBody(isValidSheetDTO, 'Not a valid SheetDTO.'),
+  validateRequestBody(validateAgainstSheetDTO, 'Not a valid SheetDTO.'),
   async (req, res) => {
     const id = req.params.id;
     const dto = req.body;
