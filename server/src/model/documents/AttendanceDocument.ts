@@ -4,10 +4,6 @@ import { prop, Typegoose } from 'typegoose';
 import { startOfDay } from 'date-fns';
 
 export class AttendanceSchema extends Typegoose implements Omit<Attendance, 'id'> {
-  // TODO: Is the special ID really needed due to the fact that we now have documents which we can save as embedded documents?
-  // @prop({ unique: true })
-  // _id!: AttendanceId;
-
   @prop({ required: true })
   date!: Date;
 

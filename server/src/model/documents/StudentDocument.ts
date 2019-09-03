@@ -50,7 +50,6 @@ export class StudentSchema extends Typegoose
   @mapProp({ of: Number })
   presentationPoints?: Types.Map<number>;
 
-  // TODO: Make real Maps out of these.
   @mapProp({ of: Number })
   scheinExamResults?: Types.Map<number>;
 }
