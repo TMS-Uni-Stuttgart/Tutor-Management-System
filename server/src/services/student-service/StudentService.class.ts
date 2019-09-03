@@ -1,10 +1,10 @@
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { Student, StudentDTO } from 'shared/dist/model/Student';
+import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import {
-  generateAttendanceDocumentFromDTO,
   AttendanceDocument,
+  generateAttendanceDocumentFromDTO,
 } from '../../model/documents/AttendanceDocument';
 import StudentModel, { StudentDocument } from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
@@ -79,6 +79,19 @@ class StudentService {
     return this.getAttendanceFromDocument(attendanceDocument);
   }
 
+  public async setPresentationPoints(id: string, { sheetId, points }: PresentationPointsDTO) {
+    const student = await this.getDocumentWithId(id);
+
+    // TODO: Check if sheet exists.
+    if (!student.presentationPoints) {
+      student.presentationPoints = new Map();
+    }
+
+    student.presentationPoints.set(sheetId, points);
+
+    await student.save();
+  }
+
   public async getStudentWithId(id: string): Promise<Student> {
     const student: StudentDocument | null = await this.getDocumentWithId(id);
 
@@ -116,11 +129,16 @@ class StudentService {
     } = student;
 
     const parsedAttendances: Student['attendance'] = {};
+    const parsedPresentations: Student['presentationPoints'] = {};
 
     if (attendance) {
       attendance.forEach(
         (att, key) => (parsedAttendances[key] = this.getAttendanceFromDocument(att))
       );
+    }
+
+    if (presentationPoints) {
+      presentationPoints.forEach((points, key) => (parsedPresentations[key] = points));
     }
 
     return {
@@ -134,7 +152,7 @@ class StudentService {
       team: team ? getIdOfDocumentRef(team) : undefined,
       attendance: parsedAttendances,
       points,
-      presentationPoints,
+      presentationPoints: parsedPresentations,
       scheinExamResults,
     };
   }
