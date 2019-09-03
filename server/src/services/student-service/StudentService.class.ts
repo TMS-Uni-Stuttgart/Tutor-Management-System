@@ -115,7 +115,10 @@ class StudentService {
     await student.save();
   }
 
-  public async setExamResults(id: string, { id: examId, exercises: pointsGained }: UpdatePointsDTO) {
+  public async setExamResults(
+    id: string,
+    { id: examId, exercises: pointsGained }: UpdatePointsDTO
+  ) {
     const student = await this.getDocumentWithId(id);
     const exam = await scheinexamService.getDocumentWithId(examId);
 
