@@ -74,9 +74,7 @@ class StudentService {
       await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
 
-    tutorial.students = tutorial.students.filter(
-      stud => getIdOfDocumentRef(stud) !== student.id
-    );
+    tutorial.students = tutorial.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
     await tutorial.save();
 
     return this.getStudentOrReject(await student.remove());

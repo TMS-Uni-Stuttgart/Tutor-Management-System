@@ -172,9 +172,7 @@ class TeamService {
       getIdOfDocumentRef(student.team)
     );
 
-    oldTeam.students = oldTeam.students.filter(
-      stud => getIdOfDocumentRef(stud) !== student.id
-    );
+    oldTeam.students = oldTeam.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
     student.team = undefined;
 
     if (saveStudent) {
