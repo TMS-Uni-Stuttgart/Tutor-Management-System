@@ -5,12 +5,20 @@ import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
+import { PointId } from 'shared/dist/model/Sheet';
 
 export class StudentSchema extends Typegoose
   implements
     Omit<
       Student,
-      'id' | 'tutorial' | 'team' | 'courseOfStudies' | 'email' | 'attendance' | 'presentationPoints'
+      | 'id'
+      | 'tutorial'
+      | 'team'
+      | 'courseOfStudies'
+      | 'email'
+      | 'attendance'
+      | 'points'
+      | 'presentationPoints'
     > {
   @prop({ required: true, ref: { name: 'TutorialSchema' } })
   tutorial!: Ref<TutorialDocument>;
@@ -36,13 +44,13 @@ export class StudentSchema extends Typegoose
   @mapProp({ of: AttendanceSchema })
   attendance?: Map<string, AttendanceDocument>;
 
-  // TODO: Make real Maps out of these.
-  @mapProp({ of: Number, default: {} })
-  points!: { [index: string]: number };
+  @mapProp({ of: Number })
+  points?: Map<PointId, number>;
 
   @mapProp({ of: Number })
   presentationPoints?: Map<string, number>;
 
+  // TODO: Make real Maps out of these.
   @mapProp({ of: Number, default: {} })
   scheinExamResults!: { [index: string]: number };
 }

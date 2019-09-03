@@ -10,6 +10,7 @@ import {
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import studentService from './StudentService.class';
+import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
 
 const studentRouter = Router();
 
@@ -70,6 +71,20 @@ studentRouter.put(
     const attendance: Attendance = await studentService.setAttendance(id, dto);
 
     res.json(attendance);
+  }
+);
+
+studentRouter.put(
+  '/:id/points', // TODO: Rename to /point
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO.'),
+  async (req, res) => {
+    const id = req.params.id;
+    const dto = req.body;
+
+    await studentService.setPoints(id, dto);
+
+    res.status(204).send();
   }
 );
 

@@ -53,7 +53,7 @@ class SheetService {
     return this.getSheetOrReject(sheet);
   }
 
-  private async getDocumentWithId(id: string): Promise<SheetDocument> {
+  public async getDocumentWithId(id: string): Promise<SheetDocument> {
     const sheet: SheetDocument | null = await SheetModel.findById(id);
 
     if (!sheet) {

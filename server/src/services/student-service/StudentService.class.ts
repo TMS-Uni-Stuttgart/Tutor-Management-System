@@ -10,6 +10,8 @@ import StudentModel, { StudentDocument } from '../../model/documents/StudentDocu
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import { UpdatePointsDTO, PointId } from 'shared/dist/model/Sheet';
+import sheetService from '../sheet-service/SheetService.class';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -79,6 +81,26 @@ class StudentService {
     return this.getAttendanceFromDocument(attendanceDocument);
   }
 
+  public async setPoints(id: string, { id: sheetId, exercises }: UpdatePointsDTO) {
+    const student = await this.getDocumentWithId(id);
+    const sheet = await sheetService.getDocumentWithId(sheetId);
+
+    if (!student.points) {
+      student.points = new Map();
+    }
+
+    for (const [exId, points] of Object.entries(exercises)) {
+      const exercise = sheet.exercises.find(ex => ex._id.toString() === exId);
+
+      if (exercise) {
+        const pointId = new PointId(sheetId, exercise.exNo);
+        student.points.set(pointId, points);
+      }
+    }
+
+    await student.save();
+  }
+
   public async setPresentationPoints(id: string, { sheetId, points }: PresentationPointsDTO) {
     const student = await this.getDocumentWithId(id);
 
@@ -129,12 +151,19 @@ class StudentService {
     } = student;
 
     const parsedAttendances: Student['attendance'] = {};
+    const parsedPoints: Student['points'] = {};
     const parsedPresentations: Student['presentationPoints'] = {};
 
     if (attendance) {
       attendance.forEach(
         (att, key) => (parsedAttendances[key] = this.getAttendanceFromDocument(att))
       );
+    }
+
+    if (points) {
+      points.forEach((points, id) => {
+        parsedPoints[id.toString()] = points;
+      });
     }
 
     if (presentationPoints) {
@@ -151,7 +180,7 @@ class StudentService {
       tutorial: getIdOfDocumentRef(tutorial),
       team: team ? getIdOfDocumentRef(team) : undefined,
       attendance: parsedAttendances,
-      points,
+      points: parsedPoints,
       presentationPoints: parsedPresentations,
       scheinExamResults,
     };
