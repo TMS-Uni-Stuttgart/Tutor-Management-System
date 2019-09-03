@@ -1,12 +1,15 @@
 import _ from 'lodash';
 import { Role } from 'shared/dist/model/Role';
-import { Tutorial } from 'shared/dist/model/Tutorial';
+import { Tutorial, LoggedInUserSubstituteTutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
 import { isDocument } from 'typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import UserModel, { UserCredentials, UserDocument } from '../../model/documents/UserDocument';
-import { LoggedInUserDTO } from '../../model/dtos/LoggedInUserDTO';
+import {
+  LoggedInUserDTO,
+  LoggedInUserSubstituteTutorialDTO,
+} from '../../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
 
@@ -155,13 +158,30 @@ class UserService {
   }
 
   public async getLoggedInUserInformation({ _id }: UserCredentials): Promise<LoggedInUser> {
-    const userDoc: UserDocument = await this.getDocumentWithId(_id);
-    const user: UserDocument = await userDoc.populate('tutorials').execPopulate();
+    const user: UserDocument = await this.getDocumentWithId(_id);
+    await user.populate('tutorials').execPopulate();
 
-    // TODO: Add substitute Tutorials
+    const substituteTutorials: Map<Tutorial, Date[]> = new Map();
+    const tutorials = await tutorialService.getAllTutorials();
+
+    tutorials.forEach(tutorial => {
+      Object.entries(tutorial.substitutes)
+        .filter(([_, tutorId]) => tutorId === user.id)
+        .map(([date]) => new Date(date))
+        .forEach(date => {
+          const prevDates: Date[] = substituteTutorials.get(tutorial) || [];
+          substituteTutorials.set(tutorial, [...prevDates, date]);
+        });
+    });
+
+    const substitutes: LoggedInUserSubstituteTutorialDTO[] = [];
+    substituteTutorials.forEach((dates, tutorial) =>
+      substitutes.push(new LoggedInUserSubstituteTutorialDTO(tutorial, dates))
+    );
+
     // TODO: Add corrector tutorials
 
-    return new LoggedInUserDTO(user, []);
+    return new LoggedInUserDTO(user, substitutes);
   }
 
   public async setPasswordOfUser(id: string, newPassword: string) {

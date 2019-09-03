@@ -8,8 +8,8 @@ export class LoggedInUserTutorialDTO implements LoggedInUserTutorial {
   readonly id: string;
   readonly slot: number;
 
-  constructor({ _id, slot }: TutorialDocument) {
-    this.id = _id;
+  constructor({ id, slot }: Pick<TutorialDocument, 'id' | 'slot'>) {
+    this.id = id;
     this.slot = slot;
   }
 }
@@ -18,7 +18,7 @@ export class LoggedInUserSubstituteTutorialDTO extends LoggedInUserTutorialDTO
   implements LoggedInUserSubstituteTutorial {
   readonly dates: Date[];
 
-  constructor(tutorial: TutorialDocument, dates: Date[]) {
+  constructor(tutorial: Pick<TutorialDocument, 'id' | 'slot'>, dates: Date[]) {
     super(tutorial);
 
     this.dates = dates;
