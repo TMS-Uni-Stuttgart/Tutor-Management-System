@@ -36,7 +36,8 @@ export class LoggedInUserDTO implements LoggedInUser {
 
   constructor(
     { _id, firstname, lastname, roles, temporaryPassword, tutorials }: UserDocument,
-    substituteTutorials: LoggedInUserSubstituteTutorialDTO[]
+    substituteTutorials: LoggedInUserSubstituteTutorialDTO[],
+    correctedTutorials: LoggedInUserTutorialDTO[]
   ) {
     this.id = _id;
     this.firstname = firstname;
@@ -50,5 +51,7 @@ export class LoggedInUserDTO implements LoggedInUser {
       .map(t => {
         return new LoggedInUserTutorialDTO(t as TutorialDocument);
       });
+
+    this.tutorials.push(...correctedTutorials);
   }
 }

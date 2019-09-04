@@ -9,6 +9,7 @@ import UserModel, { UserCredentials, UserDocument } from '../../model/documents/
 import {
   LoggedInUserDTO,
   LoggedInUserSubstituteTutorialDTO,
+  LoggedInUserTutorialDTO,
 } from '../../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
@@ -162,7 +163,12 @@ class UserService {
     await user.populate('tutorials').execPopulate();
 
     const substituteTutorials: Map<Tutorial, Date[]> = new Map();
+    const substitutes: LoggedInUserSubstituteTutorialDTO[] = [];
     const tutorials = await tutorialService.getAllTutorials();
+
+    const correctedTutorials: LoggedInUserTutorialDTO[] = tutorials
+      .filter(tut => tut.correctors.findIndex(correctorId => correctorId === user.id) !== -1)
+      .map(tut => new LoggedInUserTutorialDTO(tut));
 
     tutorials.forEach(tutorial => {
       Object.entries(tutorial.substitutes)
@@ -174,14 +180,13 @@ class UserService {
         });
     });
 
-    const substitutes: LoggedInUserSubstituteTutorialDTO[] = [];
     substituteTutorials.forEach((dates, tutorial) =>
       substitutes.push(new LoggedInUserSubstituteTutorialDTO(tutorial, dates))
     );
 
     // TODO: Add corrector tutorials
 
-    return new LoggedInUserDTO(user, substitutes);
+    return new LoggedInUserDTO(user, substitutes, correctedTutorials);
   }
 
   public async setPasswordOfUser(id: string, newPassword: string) {
