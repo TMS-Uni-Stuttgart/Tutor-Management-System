@@ -4,23 +4,15 @@ import { PointId, UpdatePointsDTO } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import {
-  AttendanceDocument,
-  generateAttendanceDocumentFromDTO,
-} from '../../model/documents/AttendanceDocument';
+import { AttendanceDocument, generateAttendanceDocumentFromDTO } from '../../model/documents/AttendanceDocument';
 import StudentModel, { StudentDocument } from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
+import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import scheinexamService from '../scheinexam-service/ScheinexamService.class';
-import { ExerciseDocument } from '../../model/documents/ExerciseDocument';
-
-interface HasExerciseDocuments {
-  id: string;
-  exercises: ExerciseDocument[];
-}
+import { adjustPoints } from '../../helpers/pointsHelpers';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -110,7 +102,7 @@ class StudentService {
       student.points = new Types.Map();
     }
 
-    this.adjustPoints(student.points, sheet, pointsGained);
+    adjustPoints(student.points, sheet, pointsGained);
 
     await student.save();
   }
@@ -126,7 +118,7 @@ class StudentService {
       student.scheinExamResults = new Types.Map();
     }
 
-    this.adjustPoints(student.scheinExamResults, exam, pointsGained);
+    adjustPoints(student.scheinExamResults, exam, pointsGained);
 
     await student.save();
   }
@@ -319,20 +311,20 @@ class StudentService {
    * @param exerciseContainer Contains the exercises for example the corresponding sheet or schein exam.
    * @param pointsGained Object containing the achieved points with the exercise numbers as keys.
    */
-  private adjustPoints(
-    pointsMap: Types.Map<number>,
-    { id, exercises }: HasExerciseDocuments,
-    pointsGained: { [exNo: string]: number }
-  ) {
-    for (const [exNo, points] of Object.entries(pointsGained)) {
-      const exercise = exercises.find(ex => ex.exNo.toString() === exNo);
+  // private adjustPoints(
+  //   pointsMap: Types.Map<number>,
+  //   { id, exercises }: HasExerciseDocuments,
+  //   pointsGained: { [exNo: string]: number }
+  // ) {
+  //   for (const [exNo, points] of Object.entries(pointsGained)) {
+  //     const exercise = exercises.find(ex => ex.exNo.toString() === exNo);
 
-      if (exercise) {
-        const pointId = new PointId(id, exercise.exNo);
-        pointsMap.set(pointId.toString(), points);
-      }
-    }
-  }
+  //     if (exercise) {
+  //       const pointId = new PointId(id, exercise.exNo);
+  //       pointsMap.set(pointId.toString(), points);
+  //     }
+  //   }
+  // }
 
   private getAttendanceFromDocument(attendanceDocument: AttendanceDocument): Attendance {
     return {
