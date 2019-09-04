@@ -39,6 +39,10 @@ class TutorialService {
       ? await userService.getDocumentWithId(dto.tutorId)
       : undefined;
 
+    const correctors: UserDocument[] = await Promise.all(
+      correctorIds.map(corr => userService.getDocumentWithId(corr))
+    );
+
     const tutorial: Omit<TutorialSchema, keyof Typegoose> = {
       ...dto,
       tutor,
@@ -47,7 +51,7 @@ class TutorialService {
       endTime: new Date(endTime),
       students: [],
       teams: new Types.Array(),
-      correctors: [],
+      correctors,
     };
 
     const createdTutorial = await TutorialModel.create(tutorial);
@@ -56,8 +60,6 @@ class TutorialService {
       tutor.tutorials = [...(tutor.tutorials || []), createdTutorial];
       await tutor.save();
     }
-
-    // TODO: Check correctors
 
     return this.getTutorialOrReject(createdTutorial);
   }
@@ -84,6 +86,9 @@ class TutorialService {
   ): Promise<Tutorial> {
     const doc: TutorialDocument = await this.getDocumentWithID(id);
     const tutorial: TutorialDocument = await doc.populate('tutor').execPopulate();
+    const correctors: UserDocument[] = await Promise.all(
+      correctorIds.map(corr => userService.getDocumentWithId(corr))
+    );
 
     if (tutorial.tutor) {
       const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
@@ -99,6 +104,7 @@ class TutorialService {
     tutorial.startTime = new Date(startTime);
     tutorial.endTime = new Date(endTime);
     tutorial.dates = dates.map(date => new Date(date));
+    tutorial.correctors = correctors;
 
     // TODO: Change / Check correctors.
 

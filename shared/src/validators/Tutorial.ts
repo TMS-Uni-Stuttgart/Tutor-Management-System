@@ -6,7 +6,10 @@ import { validateSchema } from './helper';
 const TutorialDTOSchema = Yup.object().shape<TutorialDTO>({
   slot: Yup.number().required(),
   tutorId: Yup.string().notRequired(),
-  correctorIds: Yup.array<string>(),
+  correctorIds: Yup.array<string>().test({
+    message: 'correctorIds must be present and be an array,',
+    test: obj => obj && Array.isArray(obj),
+  }),
   dates: Yup.array<string>().required(),
   endTime: Yup.string().required(),
   startTime: Yup.string().required(),
