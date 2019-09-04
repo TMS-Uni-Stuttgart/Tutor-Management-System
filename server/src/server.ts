@@ -22,6 +22,8 @@ import userRouter from './services/user-service/UserService.routes';
 import userService from './services/user-service/UserService.class';
 import config from 'config';
 import { DatabaseConfig } from './config/database';
+import { initScheincriteriaBlueprints } from './model/scheincriteria/scheincriterias';
+import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
 
 const databaseConfig: DatabaseConfig = config.get('database');
 
@@ -88,6 +90,7 @@ app.use(`${BASE_API_PATH}/tutorial`, tutorialRouter);
 app.use(`${BASE_API_PATH}/student`, studentRouter);
 app.use(`${BASE_API_PATH}/sheet`, sheetRouter);
 app.use(`${BASE_API_PATH}/scheinexam`, scheinexamRouter);
+app.use(`${BASE_API_PATH}/scheincriteria`, scheincriteriaRouter);
 
 app.use(handleError);
 
