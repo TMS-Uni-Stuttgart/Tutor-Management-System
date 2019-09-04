@@ -11,6 +11,9 @@ import { DocumentNotFoundError } from '../../model/Errors';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import { Types } from 'mongoose';
+import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { adjustPoints } from '../../helpers/pointsHelpers';
+import sheetService from '../sheet-service/SheetService.class';
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
@@ -39,7 +42,7 @@ class TeamService {
     const team: Omit<TeamSchema, keyof Typegoose> = {
       tutorial,
       students,
-      points: {},
+      points: new Types.Map(),
       teamNo,
     };
     tutorial.teams.push(team);
@@ -102,6 +105,23 @@ class TeamService {
     }
 
     tutorial.teams.pull({ _id: team.id });
+
+    await tutorial.save();
+  }
+
+  public async setPoints(
+    tutorialId: string,
+    teamId: string,
+    { id: sheetId, exercises: pointsGained }: UpdatePointsDTO
+  ) {
+    const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+    const sheet = await sheetService.getDocumentWithId(sheetId);
+
+    if (!team.points) {
+      team.points = new Types.Map();
+    }
+
+    adjustPoints(team.points, sheet, pointsGained);
 
     await tutorial.save();
   }
@@ -217,7 +237,7 @@ class TeamService {
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
       students,
-      points,
+      points: points ? points.toObject({ flattenMaps: true }) : {},
     };
   }
 

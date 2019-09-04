@@ -4,6 +4,7 @@ import { validateAgainstTeamDTO } from 'shared/dist/validators/Team';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamService from './TeamService.class';
+import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
 
 const teamRouter = Router();
 
@@ -56,5 +57,20 @@ teamRouter.delete('/:tutorialId/team/:teamId', ...checkRoleAccess(Role.ADMIN), a
 
   res.status(204).send();
 });
+
+teamRouter.put(
+  '/:tutorialId/team/:teamId/points', // TODO: Renam to /point
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO'),
+  async (req, res) => {
+    const tutorialId = req.params.tutorialId;
+    const teamId = req.params.teamId;
+    const dto = req.body;
+
+    await teamService.setPoints(tutorialId, teamId, dto);
+
+    res.status(204).send();
+  }
+);
 
 export default teamRouter;
