@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { Role } from 'shared/dist/model/Role';
-import { Tutorial, LoggedInUserSubstituteTutorial } from 'shared/dist/model/Tutorial';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
 import { isDocument } from 'typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';

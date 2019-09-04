@@ -1,10 +1,14 @@
 import { Types } from 'mongoose';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { PointId, UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import { AttendanceDocument, generateAttendanceDocumentFromDTO } from '../../model/documents/AttendanceDocument';
+import { adjustPoints } from '../../helpers/pointsHelpers';
+import {
+  AttendanceDocument,
+  generateAttendanceDocumentFromDTO,
+} from '../../model/documents/AttendanceDocument';
 import StudentModel, { StudentDocument } from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
@@ -12,7 +16,6 @@ import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { adjustPoints } from '../../helpers/pointsHelpers';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
