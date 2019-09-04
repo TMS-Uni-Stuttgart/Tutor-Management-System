@@ -118,7 +118,7 @@
     "body": [
       "import Router from 'express-promise-router';",
       "import { Role } from 'shared/dist/model/Role';",
-      "import { checkRoleAccess } from './middleware/AccessControl';",
+      "import { checkRoleAccess } from '../../middleware/AccessControl';",
       "",
       "const ${1:type}Router = Router();",
       "",
