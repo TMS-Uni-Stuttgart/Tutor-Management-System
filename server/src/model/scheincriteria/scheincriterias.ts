@@ -1,15 +1,14 @@
 import * as fs from 'fs';
 
-export interface Scheincriteria {
-  readonly identifier: string;
-}
-
 export function initScheincriteriaBlueprints() {
-  console.log(__dirname);
+  console.group('Scanning for schein criterias...');
+
   fs.readdirSync(__dirname + '/criterias')
     .filter(file => file.match(/\.(js|ts)$/) !== null)
     .forEach(file => {
-      console.log(file);
       require('./criterias/' + file);
     });
+
+  console.groupEnd();
+  console.log('Scanning for schein criterias finished.');
 }

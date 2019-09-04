@@ -1,22 +1,43 @@
-import { Role } from 'shared/dist/model/Role';
-import { Student } from 'shared/dist/model/Student';
+import scheincriteriaService, {
+  ScheincriteriaMetadataKey,
+} from '../../services/scheincriteria-service/ScheincriteriaService.class';
 
-function ScheinCriteriaClass(): ClassDecorator {
-  return target => {
-    console.log(`========================`);
-    console.log(`Class name: ${target.name}`);
-    console.log(Reflect.getMetadataKeys(target));
-    console.log(`========================\n`);
+interface ScheincriteriaNumberOptions {
+  min?: number;
+  max?: number;
+}
+
+export function ScheincriteriaIgnore(): PropertyDecorator {
+  return (target, propertyKey) => {
+    scheincriteriaService.addMetadata(getMetadataKey(target, propertyKey), { type: 'ignore' });
   };
 }
 
-function ScheinCriteria(): PropertyDecorator {
+export function ScheincriteriaNumber({
+  min,
+  max,
+}: ScheincriteriaNumberOptions = {}): PropertyDecorator {
   return (target, propertyKey) => {
-    console.log(`========================`);
-    const type = Reflect.getMetadata('design:type', target, propertyKey);
+    scheincriteriaService.addMetadata(getMetadataKey(target, propertyKey), {
+      type: 'number',
+      min: min !== undefined ? min : Number.MIN_SAFE_INTEGER,
+      max: max !== undefined ? max : Number.MAX_SAFE_INTEGER,
+    });
+  };
+}
 
-    console.log(`Property of ${target.constructor.name}:`);
-    console.log(`${String(propertyKey)}: ${type.name}`);
+export function ScheincriteriaPercentage(): PropertyDecorator {
+  return (target, propertyKey) => {
+    scheincriteriaService.addMetadata(getMetadataKey(target, propertyKey), { type: 'percentage' });
+  };
+}
+
+export function ScheincriteriaPossiblePercentage(toggledBy: string): PropertyDecorator {
+  return (target, propertyKey) => {
+    scheincriteriaService.addMetadata(getMetadataKey(target, propertyKey), {
+      type: 'possible-percentage',
+      toggledBy,
+    });
   };
 }
 
@@ -30,23 +51,14 @@ function ScheinCriteriaEnum(enumObject: any): PropertyDecorator {
   };
 }
 
-@ScheinCriteriaClass()
-export class DerpClass {
-  @ScheinCriteria()
-  private name!: string;
+function getMetadataKey(
+  obj: Record<string, any>,
+  propertyKey: string | symbol
+): ScheincriteriaMetadataKey {
+  const propertyName: string = String(propertyKey);
 
-  @ScheinCriteria()
-  private age!: number;
-
-  @ScheinCriteria()
-  private isTrue!: boolean;
-
-  @ScheinCriteriaEnum(Role)
-  private someEnum!: Role;
-
-  @ScheinCriteria()
-  private anObject!: object;
-
-  @ScheinCriteria()
-  private aCustomObject!: Student;
+  return {
+    className: obj.constructor.name,
+    propertyName,
+  };
 }

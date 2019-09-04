@@ -22,7 +22,6 @@ import userRouter from './services/user-service/UserService.routes';
 import userService from './services/user-service/UserService.class';
 import config from 'config';
 import { DatabaseConfig } from './config/database';
-import { initScheincriteriaBlueprints } from './model/scheincriteria/scheincriterias';
 import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
 
 const databaseConfig: DatabaseConfig = config.get('database');

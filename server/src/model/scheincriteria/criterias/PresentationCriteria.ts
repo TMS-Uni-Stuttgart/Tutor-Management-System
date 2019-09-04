@@ -1,11 +1,14 @@
-import { Scheincriteria } from '../scheincriterias';
-import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import scheincriteriaService, {
+  Scheincriteria,
+} from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import { ScheincriteriaNumber } from '../scheincriteriaDecorators';
 
-export class PresentationCriteria implements Scheincriteria {
-  readonly identifier = 'presentation';
+export class PresentationCriteria extends Scheincriteria {
+  @ScheincriteriaNumber({ min: 0 })
   readonly presentationNeeded: number;
 
   constructor(presentationNeeded: number) {
+    super('presentation');
     this.presentationNeeded = presentationNeeded;
   }
 
