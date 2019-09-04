@@ -64,6 +64,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch NodeJS server (nodemon)",
+      "cwd": "${workspaceRoot}/server",
       "runtimeExecutable": "nodemon",
       "program": "${workspaceFolder}/server/build/server.js",
       "restart": true,
