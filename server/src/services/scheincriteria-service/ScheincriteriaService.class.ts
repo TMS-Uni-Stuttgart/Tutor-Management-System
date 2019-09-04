@@ -1,48 +1,9 @@
-import { StudentDocument } from '../../model/documents/StudentDocument';
-
-export abstract class Scheincriteria {
-  readonly identifier: string;
-
-  constructor(identifier: string) {
-    this.identifier = identifier;
-  }
-
-  abstract isPassed(student: StudentDocument): boolean;
-}
+import { Scheincriteria, ScheincriteriaMetadata } from '../../model/scheincriteria/scheincriterias';
 
 export interface ScheincriteriaMetadataKey {
   className: string;
   propertyName: string;
 }
-
-interface ScheincriteriaBaseMetadata {
-  type: string;
-}
-
-interface ScheincriteriaIgnoreMetadata extends ScheincriteriaBaseMetadata {
-  type: 'ignore';
-}
-
-interface ScheincriteriaNumberMetadata extends ScheincriteriaBaseMetadata {
-  type: 'number';
-  min: number;
-  max: number;
-}
-
-interface ScheincriteriaPercentageMetadata extends ScheincriteriaBaseMetadata {
-  type: 'percentage';
-}
-
-interface ScheincriteriaPossiblePercentageMetadata extends ScheincriteriaBaseMetadata {
-  type: 'possible-percentage';
-  toggledBy: string;
-}
-
-type ScheincriteriaMetadata =
-  | ScheincriteriaNumberMetadata
-  | ScheincriteriaIgnoreMetadata
-  | ScheincriteriaPercentageMetadata
-  | ScheincriteriaPossiblePercentageMetadata;
 
 export class ScheincriteriaService {
   private criteriaMetadata: Map<string, ScheincriteriaMetadata>;
