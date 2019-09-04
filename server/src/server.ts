@@ -13,7 +13,7 @@ import uuid from 'uuid/v4';
 // import databaseConfig from './config/database';
 import initPassport from './config/passport';
 import { handleError } from './model/Errors';
-import authenticationRouter from './routes/authentication';
+import authenticationRouter from './services/user-service/authentication.routes';
 import scheinexamRouter from './services/scheinexam-service/ScheinexamService.routes';
 import sheetRouter from './services/sheet-service/SheetService.routes';
 import studentRouter from './services/student-service/StudentService.routes';
