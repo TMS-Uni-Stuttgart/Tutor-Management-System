@@ -5,6 +5,7 @@ import scheincriteriaService, {
 interface ScheincriteriaNumberOptions {
   min?: number;
   max?: number;
+  numberType?: 'int' | 'float';
 }
 
 export function ScheincriteriaIgnore(): PropertyDecorator {
@@ -16,10 +17,11 @@ export function ScheincriteriaIgnore(): PropertyDecorator {
 export function ScheincriteriaNumber({
   min,
   max,
+  numberType,
 }: ScheincriteriaNumberOptions = {}): PropertyDecorator {
   return (target, propertyKey) => {
     scheincriteriaService.addMetadata(getMetadataKey(target, propertyKey), {
-      type: 'number',
+      type: numberType === 'float' ? 'float' : 'int',
       min: min !== undefined ? min : Number.MIN_SAFE_INTEGER,
       max: max !== undefined ? max : Number.MAX_SAFE_INTEGER,
     });
