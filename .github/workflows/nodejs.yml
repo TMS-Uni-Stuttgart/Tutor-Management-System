@@ -23,9 +23,8 @@ jobs:
       env:
         CI: true
     - name: Check code quality on server
-      with:
-        entrypoint: /server/
-       run: |
+      working-directory: /server/
+      run: |
         yarn prettier:check
         yarn eslint:check
         yarn ts:check
