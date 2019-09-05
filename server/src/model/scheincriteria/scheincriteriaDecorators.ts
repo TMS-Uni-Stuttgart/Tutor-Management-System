@@ -1,6 +1,5 @@
-import scheincriteriaService, {
-  ScheincriteriaMetadataKey,
-} from '../../services/scheincriteria-service/ScheincriteriaService.class';
+import scheincriteriaService from '../../services/scheincriteria-service/ScheincriteriaService.class';
+import { ScheincriteriaMetadataKey } from './ScheincriteriaMetadata';
 
 interface ScheincriteriaNumberOptions {
   min?: number;
@@ -43,13 +42,16 @@ export function ScheincriteriaPossiblePercentage(toggledBy: string): PropertyDec
   };
 }
 
-function ScheinCriteriaEnum(enumObject: any): PropertyDecorator {
+export function ScheincriteriaEnum(enumObject: any): PropertyDecorator {
   return (target, propertyKey) => {
-    console.log(`========================`);
-    // Reflect.defineMetadata('design:type', { name: 'derpy derp' }, target, propertyKey);
-    // const Type = Reflect.getMetadata('design:type', target, propertyKey);
-    console.log(`${String(propertyKey)}: Enum`);
-    console.log(`Enum values: [${Object.values(enumObject)}]`);
+    const enumEntries: string[] = Object.values<string | number>(enumObject).filter<string>(
+      isString
+    );
+
+    scheincriteriaService.addMetadata(getMetadataKey(target, propertyKey), {
+      type: 'enum',
+      enumEntries,
+    });
   };
 }
 
@@ -63,4 +65,8 @@ function getMetadataKey(
     className: obj.constructor.name,
     propertyName,
   };
+}
+
+function isString(val: any): val is string {
+  return typeof val === 'string';
 }

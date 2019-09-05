@@ -1,7 +1,7 @@
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { Scheincriteria } from '../scheincriterias';
+import { Scheincriteria } from '../Scheincriteria';
 import { StudentDocument } from '../../documents/StudentDocument';
-import { ScheincriteriaPercentage } from '../scheincriteriaDecorators';
+import { ScheincriteriaPercentage } from '../ScheincriteriaDecorators';
 
 export class ScheinexamCriteria extends Scheincriteria {
   readonly passAllExamsIndividually: boolean;
@@ -10,7 +10,7 @@ export class ScheinexamCriteria extends Scheincriteria {
   readonly percentageOfAllPointsNeeded: number;
 
   constructor(passAllExamsIndividually: boolean, percentageOfAllPointsNeeded: number) {
-    super('');
+    super('exam');
 
     this.passAllExamsIndividually = passAllExamsIndividually;
     this.percentageOfAllPointsNeeded = percentageOfAllPointsNeeded;

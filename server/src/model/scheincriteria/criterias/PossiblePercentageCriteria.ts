@@ -1,5 +1,5 @@
-import { ScheincriteriaPossiblePercentage } from '../scheincriteriaDecorators';
-import { Scheincriteria } from '../scheincriterias';
+import { ScheincriteriaPossiblePercentage } from '../ScheincriteriaDecorators';
+import { Scheincriteria } from '../Scheincriteria';
 
 export abstract class PossiblePercentageCriteria extends Scheincriteria {
   readonly percentage: boolean;

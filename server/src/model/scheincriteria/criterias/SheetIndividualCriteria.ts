@@ -1,5 +1,5 @@
 import { StudentDocument } from '../../documents/StudentDocument';
-import { ScheincriteriaPossiblePercentage } from '../scheincriteriaDecorators';
+import { ScheincriteriaPossiblePercentage } from '../ScheincriteriaDecorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 
