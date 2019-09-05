@@ -31,7 +31,6 @@ jobs:
         yarn prettier:check
         yarn eslint:check
         yarn ts:check
-        yarn test
       env:
         CI: true
     - name: Check code quality on server
@@ -40,7 +39,6 @@ jobs:
         yarn prettier:check
         yarn eslint:check
         yarn ts:check
-        yarn test
       env:
         CI: true
     - name: Check code quality on shared package
@@ -49,6 +47,5 @@ jobs:
         yarn prettier:check
         yarn eslint:check
         yarn ts:check
-        yarn test
       env:
         CI: true
