@@ -5,4 +5,5 @@ export enum CollectionName {
   TEAM = 'teams',
   SHEET = 'sheets',
   SCHEINEXAM = 'scheinexams',
+  SCHEINCRITERIA = 'scheincriterias',
 }
