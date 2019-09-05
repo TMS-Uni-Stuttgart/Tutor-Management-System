@@ -1,15 +1,21 @@
-import { Scheincriteria } from '../../model/scheincriteria/Scheincriteria';
 import {
-  FormEnumFieldData,
-  FormFieldData,
-  FormStringFieldData,
   FormBooleanFieldData,
-  FormIntegerFieldData,
-  FormFloatFieldData,
-  FormSelectValue,
   FormDataResponse,
   FormDataSet,
+  FormEnumFieldData,
+  FormFieldData,
+  FormFloatFieldData,
+  FormIntegerFieldData,
+  FormSelectValue,
+  FormStringFieldData,
 } from 'shared/dist/model/FormTypes';
+import { ScheinCriteriaDTO, ScheinCriteriaResponse } from 'shared/dist/model/ScheinCriteria';
+import { Typegoose } from 'typegoose';
+import ScheincriteriaModel, {
+  ScheincriteriaDocument,
+  ScheincriteriaSchema,
+} from '../../model/documents/ScheincriteriaDocument';
+import { Scheincriteria } from '../../model/scheincriteria/Scheincriteria';
 import { ScheincriteriaForm } from '../../model/scheincriteria/ScheincriteriaForm';
 import {
   ScheincriteriaMetadata,
@@ -23,6 +29,59 @@ export class ScheincriteriaService {
   constructor() {
     this.criteriaBluePrints = new Map();
     this.criteriaMetadata = new Map();
+  }
+
+  public async getAllCriterias(): Promise<ScheinCriteriaResponse[]> {
+    const criterias = await ScheincriteriaModel.find();
+
+    return Promise.all(criterias.map(doc => this.getResponseOrReject(doc)));
+  }
+
+  public async createCriteria(criteriaDTO: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
+    const scheincriteria: Scheincriteria = this.generateCriteriaFromDTO(criteriaDTO);
+    const documentData: Omit<ScheincriteriaSchema, keyof Typegoose> = {
+      criteria: scheincriteria,
+      name: criteriaDTO.name,
+    };
+    const criteriaDocument = await ScheincriteriaModel.create(documentData);
+
+    return this.getResponseOrReject(criteriaDocument);
+  }
+
+  private generateCriteriaFromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
+    const bluePrintData = this.criteriaBluePrints.get(identifier);
+
+    if (!bluePrintData) {
+      throw new Error(`No criteria found for identifier '${identifier}'.`);
+    }
+
+    const prototype = bluePrintData.blueprint;
+    const properties: PropertyDescriptorMap = {};
+
+    Object.entries(data).forEach(([key, value]) => (properties[key] = { value }));
+
+    // FIXME: Does not work with inheritance.
+    const criteria: Scheincriteria = Object.create(prototype, properties);
+
+    return criteria;
+  }
+
+  private async getResponseOrReject({
+    id,
+    name,
+    criteria,
+  }: ScheincriteriaDocument): Promise<ScheinCriteriaResponse> {
+    const response: ScheinCriteriaResponse = {
+      id,
+      identifier: criteria.identifier,
+      name,
+    };
+
+    for (const key in criteria) {
+      response[key] = (criteria as any)[key];
+    }
+
+    return response;
   }
 
   public async getFormData(): Promise<FormDataResponse> {
@@ -64,6 +123,39 @@ export class ScheincriteriaService {
 
     console.log(`Criteria blue print with identifier '${criteria.identifier}' registered.`);
     console.groupEnd();
+  }
+
+  public unregisterBluePrint(criteria: Scheincriteria) {
+    this.criteriaBluePrints.delete(criteria.identifier);
+  }
+
+  public addMetadata(key: ScheincriteriaMetadataKey, value: ScheincriteriaMetadata) {
+    this.criteriaMetadata.set(this.getKeyAsString(key), value);
+  }
+
+  public getBluePrintCount(): number {
+    return this.criteriaBluePrints.size;
+  }
+
+  private getMetadata(target: Record<string, any>, propertyName: string): ScheincriteriaMetadata {
+    let currentClass = target;
+
+    while (!!currentClass) {
+      const metadata = this.criteriaMetadata.get(
+        this.getKeyAsString({
+          className: currentClass.name || currentClass.constructor.name,
+          propertyName,
+        })
+      );
+
+      if (metadata) {
+        return metadata;
+      }
+
+      currentClass = Object.getPrototypeOf(currentClass);
+    }
+
+    return { type: 'empty' };
   }
 
   private getFormFieldDataForProperty(
@@ -141,39 +233,6 @@ export class ScheincriteriaService {
     }
 
     return fieldData;
-  }
-
-  public unregisterBluePrint(criteria: Scheincriteria) {
-    this.criteriaBluePrints.delete(criteria.identifier);
-  }
-
-  public addMetadata(key: ScheincriteriaMetadataKey, value: ScheincriteriaMetadata) {
-    this.criteriaMetadata.set(this.getKeyAsString(key), value);
-  }
-
-  public getBluePrintCount(): number {
-    return this.criteriaBluePrints.size;
-  }
-
-  private getMetadata(target: Record<string, any>, propertyName: string): ScheincriteriaMetadata {
-    let currentClass = target;
-
-    while (!!currentClass) {
-      const metadata = this.criteriaMetadata.get(
-        this.getKeyAsString({
-          className: currentClass.name || currentClass.constructor.name,
-          propertyName,
-        })
-      );
-
-      if (metadata) {
-        return metadata;
-      }
-
-      currentClass = Object.getPrototypeOf(currentClass);
-    }
-
-    return { type: 'empty' };
   }
 
   private getKeyAsString(key: ScheincriteriaMetadataKey): string {
