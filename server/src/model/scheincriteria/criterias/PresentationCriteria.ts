@@ -1,7 +1,6 @@
-import scheincriteriaService, {
-  Scheincriteria,
-} from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 import { ScheincriteriaNumber } from '../scheincriteriaDecorators';
+import { Scheincriteria } from '../scheincriterias';
 
 export class PresentationCriteria extends Scheincriteria {
   @ScheincriteriaNumber({ min: 0 })

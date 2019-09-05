@@ -1,6 +1,5 @@
-import scheincriteriaService, {
-  Scheincriteria,
-} from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import { Scheincriteria } from '../scheincriterias';
 import { StudentDocument } from '../../documents/StudentDocument';
 import { ScheincriteriaPercentage } from '../scheincriteriaDecorators';
 
