@@ -14,11 +14,6 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
     super('attendance', percentage, valueNeeded);
   }
 
-  isPassed(student: Student): boolean {
-    // TODO: Remove me!
-    throw new Error('Method not implemented.');
-  }
-
   async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
     const tutorial = await tutorialService.getDocumentWithID(student.tutorial);
     const total = tutorial.dates.length;

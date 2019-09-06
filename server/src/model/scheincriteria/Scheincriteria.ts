@@ -12,8 +12,6 @@ export abstract class Scheincriteria {
     this.identifier = identifier;
   }
 
-  abstract isPassed(student: Student): boolean;
-
   abstract async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse>;
 }
 

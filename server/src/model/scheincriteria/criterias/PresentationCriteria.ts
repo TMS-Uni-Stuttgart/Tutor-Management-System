@@ -15,11 +15,6 @@ export class PresentationCriteria extends Scheincriteria {
     this.presentationsNeeded = presentationsNeeded;
   }
 
-  isPassed(student: Student): boolean {
-    // TODO: Not needed -- at least not as abstract function?!
-    throw new Error('Method not implemented');
-  }
-
   async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
     const achieved = Object.values(student.presentationPoints).reduce(
       (prev, current) => prev + current,
