@@ -38,8 +38,6 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
       unit: ScheinCriteriaUnit.DATE,
       infos: {},
     };
-
-    throw new Error('Method not implemented.');
   }
 }
 
