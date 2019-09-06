@@ -8,7 +8,6 @@ import { validateRequestBody } from '../../middleware/Validation';
 import { ValidationErrorResponse } from '../../model/Errors';
 import { initScheincriteriaBlueprints } from '../../model/scheincriteria/Scheincriteria';
 import scheincriteriaService from './ScheincriteriaService.class';
-import scheinexamRouter from '../scheinexam-service/ScheinexamService.routes';
 
 function validateScheincriteriaDTOData(req: Request, res: Response, next: NextFunction) {
   const result = scheincriteriaService.validateDataOfScheincriteriaDTO(req.body);
