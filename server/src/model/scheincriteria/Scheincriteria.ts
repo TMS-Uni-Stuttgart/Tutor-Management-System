@@ -3,6 +3,8 @@ import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 
+export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;
+
 export abstract class Scheincriteria {
   readonly identifier: string;
 
@@ -12,7 +14,7 @@ export abstract class Scheincriteria {
 
   abstract isPassed(student: Student): boolean;
 
-  abstract getStatusDTO(student: Student): ScheinCriteriaStatus;
+  abstract checkCriteriaStatus(student: Student): StatusCheckResponse;
 }
 
 export type ScheincriteriaYupSchema = Yup.Schema<any>;

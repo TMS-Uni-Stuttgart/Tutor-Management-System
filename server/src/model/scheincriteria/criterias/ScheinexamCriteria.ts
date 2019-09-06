@@ -1,9 +1,8 @@
-import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { Scheincriteria } from '../Scheincriteria';
+import { Scheincriteria, StatusCheckResponse } from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../ScheincriteriaDecorators';
 
 export class ScheinexamCriteria extends Scheincriteria {
@@ -23,7 +22,7 @@ export class ScheinexamCriteria extends Scheincriteria {
     throw new Error('Method not implemented.');
   }
 
-  getStatusDTO(student: Student): ScheinCriteriaStatus {
+  checkCriteriaStatus(student: Student): StatusCheckResponse {
     throw new Error('Method not implemented.');
   }
 }

@@ -20,7 +20,7 @@ export interface ScheinCriteriaSummary {
   scheinCriteriaSummary: { [criteriaId: string]: ScheinCriteriaResponse };
 }
 
-// TODO: Rename commentated properties to self-explanatory. This comes with changes in the frontend!
+// TODO: Rename commentated properties to self-explanatory. This comes with changes in the frontend! -- Question: Are those actually (except 'id') really needed?
 export interface ScheinCriteriaStatus {
   // This is actually the ID of the criteria to which the response belongs to.
   id: string;

@@ -1,6 +1,6 @@
-import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import { StatusCheckResponse } from '../Scheincriteria';
 import {
   PossiblePercentageCriteria,
   possiblePercentageCriteriaSchema,
@@ -15,7 +15,7 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
     throw new Error('Method not implemented.');
   }
 
-  getStatusDTO(student: Student): ScheinCriteriaStatus {
+  checkCriteriaStatus(student: Student): StatusCheckResponse {
     throw new Error('Method not implemented.');
   }
 }

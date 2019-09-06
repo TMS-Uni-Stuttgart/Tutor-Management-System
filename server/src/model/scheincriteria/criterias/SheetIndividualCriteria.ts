@@ -1,10 +1,13 @@
-import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import { StatusCheckResponse } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../ScheincriteriaDecorators';
-import { PossiblePercentageCriteria, possiblePercentageCriteriaSchema } from './PossiblePercentageCriteria';
+import {
+  PossiblePercentageCriteria,
+  possiblePercentageCriteriaSchema,
+} from './PossiblePercentageCriteria';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
   @ScheincriteriaPossiblePercentage('percentagePerSheet')
@@ -27,7 +30,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     throw new Error('Method not implemented.');
   }
 
-  getStatusDTO(student: Student): ScheinCriteriaStatus {
+  checkCriteriaStatus(student: Student): StatusCheckResponse {
     throw new Error('Method not implemented.');
   }
 }

@@ -35,6 +35,7 @@ import studentService from '../student-service/StudentService.class';
 
 interface ScheincriteriaWithId {
   criteriaId: string;
+  criteriaName: string;
   criteria: Scheincriteria;
 }
 
@@ -116,10 +117,10 @@ export class ScheincriteriaService {
     const criteriaSummaries: ScheinCriteriaSummary['scheinCriteriaSummary'] = {};
     let isPassed: boolean = true;
 
-    criterias.forEach(({ criteriaId, criteria }) => {
-      const result = criteria.getStatusDTO(student);
+    criterias.forEach(({ criteriaId, criteriaName, criteria }) => {
+      const result = criteria.checkCriteriaStatus(student);
 
-      criteriaSummaries[criteriaId] = result;
+      criteriaSummaries[criteriaId] = { id: criteriaId, name: criteriaName, ...result };
 
       if (!result.passed) {
         isPassed = false;
@@ -138,6 +139,7 @@ export class ScheincriteriaService {
     return Promise.all(
       criterias.map(doc => ({
         criteriaId: doc.id,
+        criteriaName: doc.name,
         criteria: this.generateCriteriaFromDocument(doc),
       }))
     );
