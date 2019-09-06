@@ -30,7 +30,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     throw new Error('Method not implemented.');
   }
 
-  checkCriteriaStatus(student: Student): StatusCheckResponse {
+  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
     throw new Error('Method not implemented.');
   }
 }

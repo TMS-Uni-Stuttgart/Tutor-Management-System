@@ -20,7 +20,7 @@ export class PresentationCriteria extends Scheincriteria {
     throw new Error('Method not implemented');
   }
 
-  checkCriteriaStatus(student: Student): StatusCheckResponse {
+  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
     const achieved = Object.values(student.presentationPoints).reduce(
       (prev, current) => prev + current,
       0

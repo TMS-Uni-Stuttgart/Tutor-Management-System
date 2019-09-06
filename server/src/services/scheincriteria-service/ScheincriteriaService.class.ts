@@ -117,15 +117,15 @@ export class ScheincriteriaService {
     const criteriaSummaries: ScheinCriteriaSummary['scheinCriteriaSummary'] = {};
     let isPassed: boolean = true;
 
-    criterias.forEach(({ criteriaId, criteriaName, criteria }) => {
-      const result = criteria.checkCriteriaStatus(student);
+    for (const { criteriaId, criteriaName, criteria } of criterias) {
+      const result = await criteria.checkCriteriaStatus(student);
 
       criteriaSummaries[criteriaId] = { id: criteriaId, name: criteriaName, ...result };
 
       if (!result.passed) {
         isPassed = false;
       }
-    });
+    }
 
     return {
       passed: isPassed,

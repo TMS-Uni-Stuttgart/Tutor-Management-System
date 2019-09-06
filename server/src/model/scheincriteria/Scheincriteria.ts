@@ -14,7 +14,7 @@ export abstract class Scheincriteria {
 
   abstract isPassed(student: Student): boolean;
 
-  abstract checkCriteriaStatus(student: Student): StatusCheckResponse;
+  abstract async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse>;
 }
 
 export type ScheincriteriaYupSchema = Yup.Schema<any>;
