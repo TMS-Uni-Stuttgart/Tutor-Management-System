@@ -11,9 +11,7 @@ export interface ScheinCriteriaDTO {
   identifier: string;
 }
 
-export interface ScheincriteriaSummaryByStudents {
-  [studentId: string]: ScheinCriteriaSummary;
-}
+export type ScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCriteriaSummary };
 
 export interface ScheinCriteriaSummary {
   passed: boolean;
