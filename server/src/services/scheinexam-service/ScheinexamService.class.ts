@@ -6,6 +6,8 @@ import {
 } from '../../model/documents/ExerciseDocument';
 import ScheinexamModel, { ScheinexamDocument } from '../../model/documents/ScheinexamDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
+import { Student } from 'shared/dist/model/Student';
+import { PointId } from 'shared/dist/model/Sheet';
 
 class ScheinExamService {
   public async getAllScheinExams(): Promise<ScheinExam[]> {
@@ -72,6 +74,24 @@ class ScheinExamService {
     }
 
     return exam;
+  }
+
+  public getScheinExamResult(student: Student, exam: ScheinExam): number {
+    let result = 0;
+
+    exam.exercises.forEach(exercise => {
+      const pointId = new PointId(exam.id, exercise.exNo);
+      result += student.scheinExamResults[pointId.toString()] || 0;
+    });
+
+    return result;
+  }
+
+  public getScheinExamTotalPoints(exam: ScheinExam): number {
+    return exam.exercises.reduce(
+      (points, exercise) => points + (exercise.bonus ? 0 : exercise.maxPoints),
+      0
+    );
   }
 
   private async getScheinExamOrReject(scheinexam: ScheinexamDocument | null): Promise<ScheinExam> {
