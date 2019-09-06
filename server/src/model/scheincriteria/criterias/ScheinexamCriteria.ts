@@ -1,13 +1,12 @@
+import { PassedState, ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import scheinexamService from '../../../services/scheinexam-service/ScheinexamService.class';
 import { Scheincriteria, StatusCheckResponse } from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../ScheincriteriaDecorators';
-import scheinexamService from '../../../services/scheinexam-service/ScheinexamService.class';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { PointId } from 'shared/dist/model/Sheet';
-import { PassedState, ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
 
 export class ScheinexamCriteria extends Scheincriteria {
   readonly passAllExamsIndividually: boolean;
