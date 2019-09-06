@@ -25,6 +25,25 @@ scheincriteriaRouter.post('/', ...checkRoleAccess(Role.ADMIN), async (req, res) 
   res.json(criteria);
 });
 
+scheincriteriaRouter.patch('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+  const dto = req.body;
+
+  // TODO: Validation!
+
+  const criteria: ScheinCriteriaResponse = await scheincriteriaService.updateCriteria(id, dto);
+
+  res.json(criteria);
+});
+
+scheincriteriaRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+
+  await scheincriteriaService.deleteCriteria(id);
+
+  res.status(204).send();
+});
+
 scheincriteriaRouter.get('/form', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
   const formData = await scheincriteriaService.getFormData();
 

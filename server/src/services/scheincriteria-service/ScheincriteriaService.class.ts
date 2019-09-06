@@ -21,6 +21,7 @@ import {
   ScheincriteriaMetadata,
   ScheincriteriaMetadataKey,
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
+import { DocumentNotFoundError } from '../../model/Errors';
 
 export class ScheincriteriaService {
   private criteriaMetadata: Map<string, ScheincriteriaMetadata>;
@@ -34,7 +35,17 @@ export class ScheincriteriaService {
   public async getAllCriterias(): Promise<ScheinCriteriaResponse[]> {
     const criterias = await ScheincriteriaModel.find();
 
-    return Promise.all(criterias.map(doc => this.getResponseOrReject(doc)));
+    return Promise.all(criterias.map(doc => this.getScheincriteriaOrReject(doc)));
+  }
+
+  private async getDocumentWithId(id: string): Promise<ScheincriteriaDocument> {
+    const criteria: ScheincriteriaDocument | null = await ScheincriteriaModel.findById(id);
+
+    if (!criteria) {
+      return this.rejectScheincriteriaNotFound();
+    }
+
+    return criteria;
   }
 
   public async createCriteria(criteriaDTO: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
@@ -45,7 +56,26 @@ export class ScheincriteriaService {
     };
     const criteriaDocument = await ScheincriteriaModel.create(documentData);
 
-    return this.getResponseOrReject(criteriaDocument);
+    return this.getScheincriteriaOrReject(criteriaDocument);
+  }
+
+  public async updateCriteria(
+    id: string,
+    criteriaDTO: ScheinCriteriaDTO
+  ): Promise<ScheinCriteriaResponse> {
+    const criteriaDoc = await this.getDocumentWithId(id);
+    const updatedCriteria = this.generateCriteriaFromDTO(criteriaDTO);
+
+    criteriaDoc.name = criteriaDTO.name;
+    criteriaDoc.criteria = updatedCriteria;
+
+    return this.getScheincriteriaOrReject(await criteriaDoc.save());
+  }
+
+  public async deleteCriteria(id: string): Promise<ScheinCriteriaResponse> {
+    const criteria = await this.getDocumentWithId(id);
+
+    return this.getScheincriteriaOrReject(await criteria.remove());
   }
 
   private generateCriteriaFromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
@@ -62,7 +92,7 @@ export class ScheincriteriaService {
     return criteria;
   }
 
-  private async getResponseOrReject({
+  private async getScheincriteriaOrReject({
     id,
     name,
     criteria,
@@ -233,6 +263,10 @@ export class ScheincriteriaService {
 
   private getKeyAsString(key: ScheincriteriaMetadataKey): string {
     return `${key.className}::${key.propertyName}`;
+  }
+
+  private async rejectScheincriteriaNotFound(): Promise<any> {
+    return Promise.reject(new DocumentNotFoundError('Scheincriteria with that ID was not found.'));
   }
 }
 
