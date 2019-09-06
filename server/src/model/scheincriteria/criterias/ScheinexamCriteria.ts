@@ -1,6 +1,8 @@
+import * as Yup from 'yup';
+import { CleanShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { Scheincriteria } from '../Scheincriteria';
 import { StudentDocument } from '../../documents/StudentDocument';
+import { Scheincriteria, scheincriteriaSchema } from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../ScheincriteriaDecorators';
 
 export class ScheinexamCriteria extends Scheincriteria {
@@ -21,4 +23,13 @@ export class ScheinexamCriteria extends Scheincriteria {
   }
 }
 
-scheincriteriaService.registerBluePrint(new ScheinexamCriteria(false, 0));
+const scheinexamCriteriaSchema = Yup.object()
+  .shape<CleanShape<ScheinexamCriteria, Scheincriteria>>({
+    passAllExamsIndividually: Yup.boolean().required(),
+    percentageOfAllPointsNeeded: Yup.number()
+      .min(0)
+      .required(),
+  })
+  .concat(scheincriteriaSchema);
+
+scheincriteriaService.registerBluePrint(new ScheinexamCriteria(false, 0), scheinexamCriteriaSchema);

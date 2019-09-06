@@ -1,7 +1,12 @@
+import * as Yup from 'yup';
+import { CleanShape } from '../../../helpers/typings';
+import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 import { StudentDocument } from '../../documents/StudentDocument';
 import { ScheincriteriaPossiblePercentage } from '../ScheincriteriaDecorators';
-import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
-import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
+import {
+  PossiblePercentageCriteria,
+  possiblePercentageCriteriaSchema,
+} from './PossiblePercentageCriteria';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
   @ScheincriteriaPossiblePercentage('percentagePerSheet')
@@ -25,4 +30,16 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
   }
 }
 
-scheincriteriaService.registerBluePrint(new SheetIndividualCriteria(false, 0, false, 0));
+const sheetIndividualCriteriaSchema = Yup.object()
+  .shape<CleanShape<SheetIndividualCriteria, PossiblePercentageCriteria>>({
+    percentagePerSheet: Yup.boolean().required(),
+    valuePerSheetNeeded: Yup.number()
+      .min(0)
+      .required(),
+  })
+  .concat(possiblePercentageCriteriaSchema);
+
+scheincriteriaService.registerBluePrint(
+  new SheetIndividualCriteria(false, 0, false, 0),
+  sheetIndividualCriteriaSchema
+);

@@ -1,5 +1,7 @@
+import * as Yup from 'yup';
+import { CleanShape } from '../../../helpers/typings';
+import { Scheincriteria, scheincriteriaSchema } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../ScheincriteriaDecorators';
-import { Scheincriteria } from '../Scheincriteria';
 
 export abstract class PossiblePercentageCriteria extends Scheincriteria {
   readonly percentage: boolean;
@@ -14,3 +16,12 @@ export abstract class PossiblePercentageCriteria extends Scheincriteria {
     this.valueNeeded = valueNeeded;
   }
 }
+
+export const possiblePercentageCriteriaSchema = Yup.object()
+  .shape<CleanShape<PossiblePercentageCriteria, Scheincriteria>>({
+    percentage: Yup.boolean().required(),
+    valueNeeded: Yup.number()
+      .min(0)
+      .required(),
+  })
+  .concat(scheincriteriaSchema);

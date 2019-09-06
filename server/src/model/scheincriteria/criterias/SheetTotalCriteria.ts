@@ -1,4 +1,7 @@
-import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import {
+  PossiblePercentageCriteria,
+  possiblePercentageCriteriaSchema,
+} from './PossiblePercentageCriteria';
 import { StudentDocument } from '../../documents/StudentDocument';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 
@@ -12,4 +15,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
   }
 }
 
-scheincriteriaService.registerBluePrint(new SheetTotalCriteria(false, 0));
+scheincriteriaService.registerBluePrint(
+  new SheetTotalCriteria(false, 0),
+  possiblePercentageCriteriaSchema
+);

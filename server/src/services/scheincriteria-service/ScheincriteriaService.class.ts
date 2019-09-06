@@ -1,3 +1,4 @@
+import { ValidationErrorsWrapper } from 'shared/dist/model/errors/Errors';
 import {
   FormBooleanFieldData,
   FormDataResponse,
@@ -10,26 +11,31 @@ import {
   FormStringFieldData,
 } from 'shared/dist/model/FormTypes';
 import { ScheinCriteriaDTO, ScheinCriteriaResponse } from 'shared/dist/model/ScheinCriteria';
+import { validateSchema } from 'shared/dist/validators/helper';
 import { Typegoose } from 'typegoose';
+import * as Yup from 'yup';
 import ScheincriteriaModel, {
   ScheincriteriaDocument,
   ScheincriteriaSchema,
 } from '../../model/documents/ScheincriteriaDocument';
-import { Scheincriteria } from '../../model/scheincriteria/Scheincriteria';
+import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
+import { Scheincriteria, ScheincriteriaYupSchema } from '../../model/scheincriteria/Scheincriteria';
 import { ScheincriteriaForm } from '../../model/scheincriteria/ScheincriteriaForm';
 import {
   ScheincriteriaMetadata,
   ScheincriteriaMetadataKey,
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
-import { DocumentNotFoundError } from '../../model/Errors';
+import { NoFunctions } from '../../helpers/typings';
 
 export class ScheincriteriaService {
   private criteriaMetadata: Map<string, ScheincriteriaMetadata>;
   private criteriaBluePrints: Map<string, ScheincriteriaForm>;
+  private criteriaSchemas: Map<string, ScheincriteriaYupSchema>;
 
   constructor() {
     this.criteriaBluePrints = new Map();
     this.criteriaMetadata = new Map();
+    this.criteriaSchemas = new Map();
   }
 
   public async getAllCriterias(): Promise<ScheinCriteriaResponse[]> {
@@ -125,7 +131,21 @@ export class ScheincriteriaService {
     return formData;
   }
 
-  public registerBluePrint(criteria: Scheincriteria) {
+  public validateDataOfScheincriteriaDTO(
+    obj: ScheinCriteriaDTO
+  ): Yup.Shape<object, NoFunctions<Scheincriteria>> | ValidationErrorsWrapper {
+    const schema = this.criteriaSchemas.get(obj.identifier);
+
+    if (!schema) {
+      throw new BadRequestError(
+        `There is no schema registered for the given schein criteria identifier '${obj.identifier}`
+      );
+    }
+
+    return validateSchema(schema, obj.data);
+  }
+
+  public registerBluePrint(criteria: Scheincriteria, validationSchema: ScheincriteriaYupSchema) {
     console.group(`Scheincriteria identifier: ${criteria.identifier}`);
 
     const criteriaForm = new ScheincriteriaForm(criteria);
@@ -146,6 +166,7 @@ export class ScheincriteriaService {
     }
 
     this.criteriaBluePrints.set(criteria.identifier, criteriaForm);
+    this.criteriaSchemas.set(criteria.identifier, validationSchema);
 
     console.log(`Criteria blue print with identifier '${criteria.identifier}' registered.`);
     console.groupEnd();
