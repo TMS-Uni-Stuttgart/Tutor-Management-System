@@ -8,6 +8,9 @@ import {
   PossiblePercentageCriteria,
   possiblePercentageCriteriaSchema,
 } from './PossiblePercentageCriteria';
+import sheetService from '../../../services/sheet-service/SheetService.class';
+import { PassedState, ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
+import { Sheet } from 'shared/dist/model/Sheet';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
   @ScheincriteriaPossiblePercentage('percentagePerSheet')
@@ -26,12 +29,66 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     this.percentagePerSheet = percentagePerSheet;
   }
 
-  isPassed(student: Student): boolean {
-    throw new Error('Method not implemented.');
+  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
+    const sheets = await sheetService.getAllSheets();
+    const infos: StatusCheckResponse['infos'] = {};
+    const totalSheetCount = sheets.reduce((count, sheet) => count + (sheet.bonusSheet ? 0 : 1), 0);
+    const sheetsPassed = await this.checkAllSheets(sheets, student, infos);
+
+    let passed: boolean = false;
+
+    if (this.percentage) {
+      passed = sheetsPassed / totalSheetCount >= this.valueNeeded;
+    } else {
+      passed = sheetsPassed >= this.valueNeeded;
+    }
+
+    return {
+      identifier: this.identifier,
+      achieved: sheetsPassed,
+      total: totalSheetCount,
+      passed,
+      infos,
+      unit: ScheinCriteriaUnit.SHEET,
+    };
   }
 
-  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
-    throw new Error('Method not implemented.');
+  private async checkAllSheets(
+    sheets: Sheet[],
+    student: Student,
+    infos: StatusCheckResponse['infos']
+  ) {
+    let sheetsPassed = 0;
+    for (const sheet of sheets) {
+      const achieved = await sheetService.getPointsOfStudent(student, sheet);
+      const total = sheetService.getSheetTotalPoints(sheet);
+
+      let state = PassedState.NOTPASSED;
+
+      if (this.percentagePerSheet) {
+        if (achieved / total >= this.valuePerSheetNeeded) {
+          state = PassedState.PASSED;
+        }
+      } else {
+        if (achieved >= this.valuePerSheetNeeded) {
+          state = PassedState.PASSED;
+        }
+      }
+
+      if (state === PassedState.PASSED) {
+        sheetsPassed += 1;
+      }
+
+      infos[sheet.id] = {
+        achieved,
+        total,
+        no: sheet.sheetNo,
+        state,
+        unit: ScheinCriteriaUnit.POINT,
+      };
+    }
+
+    return sheetsPassed;
   }
 }
 
