@@ -32,6 +32,7 @@ import {
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
 import { Student } from 'shared/dist/model/Student';
 import studentService from '../student-service/StudentService.class';
+import tutorialService from '../tutorial-service/TutorialService.class';
 
 interface ScheincriteriaWithId {
   criteriaId: string;
@@ -97,17 +98,7 @@ export class ScheincriteriaService {
   }
 
   public async getCriteriaResultsOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
-    const summaries: ScheincriteriaSummaryByStudents = {};
-    const [students, criterias] = await Promise.all([
-      await studentService.getAllStudents(),
-      this.getAllCriteriaObjects(),
-    ]);
-
-    for (const student of students) {
-      summaries[student.id] = await this.calculateCriteriaResultOfStudent(student, criterias);
-    }
-
-    return summaries;
+    return this.calculateCriteriaResultOfMultipleStudents(await studentService.getAllStudents());
   }
 
   public async getCriteriaResultOfStudent(studentId: string): Promise<ScheinCriteriaSummary> {
@@ -117,6 +108,27 @@ export class ScheincriteriaService {
     ]);
 
     return this.calculateCriteriaResultOfStudent(student, criterias);
+  }
+
+  public async getCriteriaResultsOfStudentsOfTutorial(
+    tutorialId: string
+  ): Promise<ScheincriteriaSummaryByStudents> {
+    const students: Student[] = await tutorialService.getStudentsOfTutorial(tutorialId);
+
+    return this.calculateCriteriaResultOfMultipleStudents(students);
+  }
+
+  private async calculateCriteriaResultOfMultipleStudents(
+    students: Student[]
+  ): Promise<ScheincriteriaSummaryByStudents> {
+    const summaries: ScheincriteriaSummaryByStudents = {};
+    const criterias = await this.getAllCriteriaObjects();
+
+    for (const student of students) {
+      summaries[student.id] = await this.calculateCriteriaResultOfStudent(student, criterias);
+    }
+
+    return summaries;
   }
 
   private async calculateCriteriaResultOfStudent(

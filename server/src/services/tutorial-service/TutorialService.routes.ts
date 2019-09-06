@@ -8,6 +8,8 @@ import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamRouter from '../team-service/TeamService.routes';
 import tutorialService from './TutorialService.class';
+import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
+import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 
 const tutorialRouter = Router();
 
@@ -63,6 +65,19 @@ tutorialRouter.get('/:id/student', ...checkRoleAccess(Role.ADMIN), async (req, r
 
   res.json(students);
 });
+
+tutorialRouter.get(
+  '/:id/student/scheincriteria',
+  ...checkRoleAccess(Role.ADMIN),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const result: ScheincriteriaSummaryByStudents = await scheincriteriaService.getCriteriaResultsOfStudentsOfTutorial(
+      id
+    );
+
+    res.json(result);
+  }
+);
 
 tutorialRouter.get('/:id/substitute', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   const id: string = req.params.id;
