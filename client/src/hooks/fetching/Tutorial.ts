@@ -13,7 +13,7 @@ import {
   transformTutorialResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
-import { fetchTeamsOfStudents } from './Student';
+import { fetchTeamsOfStudents, getScheinCriteriaSummaryOfAllStudents } from './Student';
 
 export async function getAllTutorials(): Promise<Tutorial[]> {
   const response = await axios.get<Tutorial[]>('tutorial', {
@@ -252,11 +252,25 @@ async function fetchCorrectorsOfTutorial(
 export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): Promise<
   StudentByTutorialSlotSummaryMap
 > {
-  const response = await axios.get<StudentByTutorialSlotSummaryMap>(`scheincriteria/tutorial`);
+  const data: StudentByTutorialSlotSummaryMap = {};
+  const [tutorials, summaries] = await Promise.all([
+    getAllTutorials(),
+    getScheinCriteriaSummaryOfAllStudents(),
+  ]);
 
-  if (response.status === 200) {
-    return response.data;
-  }
+  Object.entries(summaries).forEach(([studentId, summary]) => {
+    tutorials.forEach(tutorial => {
+      if (tutorial.students.findIndex(id => id === studentId) !== -1) {
+        const key: string = tutorial.slot.toString();
 
-  return Promise.reject(`Wrong response code (${response.status}).`);
+        if (!data[key]) {
+          data[key] = [];
+        }
+
+        data[key].push(summary);
+      }
+    });
+  });
+
+  return data;
 }
