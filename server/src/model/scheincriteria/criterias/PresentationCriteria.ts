@@ -4,11 +4,11 @@ import { Scheincriteria } from '../Scheincriteria';
 
 export class PresentationCriteria extends Scheincriteria {
   @ScheincriteriaNumber({ min: 0 })
-  readonly presentationNeeded: number;
+  readonly presentationsNeeded: number;
 
-  constructor(presentationNeeded: number) {
+  constructor(presentationsNeeded: number) {
     super('presentation');
-    this.presentationNeeded = presentationNeeded;
+    this.presentationsNeeded = presentationsNeeded;
   }
 
   isPassed() {
