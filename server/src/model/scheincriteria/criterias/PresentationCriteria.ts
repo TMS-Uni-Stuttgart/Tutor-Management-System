@@ -1,9 +1,9 @@
-import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { Scheincriteria } from '../Scheincriteria';
+import { Scheincriteria, StatusCheckResponse } from '../Scheincriteria';
 import { ScheincriteriaNumber } from '../ScheincriteriaDecorators';
 
 export class PresentationCriteria extends Scheincriteria {
@@ -16,11 +16,24 @@ export class PresentationCriteria extends Scheincriteria {
   }
 
   isPassed(student: Student): boolean {
+    // TODO: Not needed -- at least not as abstract function?!
     throw new Error('Method not implemented');
   }
 
-  getStatusDTO(student: Student): ScheinCriteriaStatus {
-    throw new Error('Method not implemented.');
+  checkCriteriaStatus(student: Student): StatusCheckResponse {
+    const achieved = Object.values(student.presentationPoints).reduce(
+      (prev, current) => prev + current,
+      0
+    );
+
+    return {
+      identifier: this.identifier,
+      achieved,
+      total: this.presentationsNeeded,
+      passed: achieved >= this.presentationsNeeded,
+      unit: ScheinCriteriaUnit.PRESENTATION,
+      infos: {},
+    };
   }
 }
 
