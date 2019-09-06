@@ -1,12 +1,10 @@
+import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
-import { CleanShape } from '../../../helpers/typings';
+import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { StudentDocument } from '../../documents/StudentDocument';
 import { ScheincriteriaPossiblePercentage } from '../ScheincriteriaDecorators';
-import {
-  PossiblePercentageCriteria,
-  possiblePercentageCriteriaSchema,
-} from './PossiblePercentageCriteria';
+import { PossiblePercentageCriteria, possiblePercentageCriteriaSchema } from './PossiblePercentageCriteria';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
   @ScheincriteriaPossiblePercentage('percentagePerSheet')
@@ -25,13 +23,17 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     this.percentagePerSheet = percentagePerSheet;
   }
 
-  isPassed(student: StudentDocument): boolean {
+  isPassed(student: Student): boolean {
+    throw new Error('Method not implemented.');
+  }
+
+  getStatusDTO(student: Student): ScheinCriteriaStatus {
     throw new Error('Method not implemented.');
   }
 }
 
 const sheetIndividualCriteriaSchema = Yup.object()
-  .shape<CleanShape<SheetIndividualCriteria, PossiblePercentageCriteria>>({
+  .shape<CleanCriteriaShape<SheetIndividualCriteria, PossiblePercentageCriteria>>({
     percentagePerSheet: Yup.boolean().required(),
     valuePerSheetNeeded: Yup.number()
       .min(0)

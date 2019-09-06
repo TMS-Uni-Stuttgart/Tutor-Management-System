@@ -1,7 +1,9 @@
+import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
-import { CleanShape } from '../../../helpers/typings';
+import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { Scheincriteria, scheincriteriaSchema } from '../Scheincriteria';
+import { Scheincriteria } from '../Scheincriteria';
 import { ScheincriteriaNumber } from '../ScheincriteriaDecorators';
 
 export class PresentationCriteria extends Scheincriteria {
@@ -13,17 +15,19 @@ export class PresentationCriteria extends Scheincriteria {
     this.presentationsNeeded = presentationsNeeded;
   }
 
-  isPassed() {
-    return false;
+  isPassed(student: Student): boolean {
+    throw new Error('Method not implemented');
+  }
+
+  getStatusDTO(student: Student): ScheinCriteriaStatus {
+    throw new Error('Method not implemented.');
   }
 }
 
-const presentationCriteriaSchema = Yup.object()
-  .shape<CleanShape<PresentationCriteria, Scheincriteria>>({
-    presentationsNeeded: Yup.number()
-      .min(0)
-      .required(),
-  })
-  .concat(scheincriteriaSchema);
+const presentationCriteriaSchema = Yup.object().shape<CleanCriteriaShape<PresentationCriteria>>({
+  presentationsNeeded: Yup.number()
+    .min(0)
+    .required(),
+});
 
 scheincriteriaService.registerBluePrint(new PresentationCriteria(5), presentationCriteriaSchema);

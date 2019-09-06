@@ -1,5 +1,6 @@
+import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { Student } from 'shared/dist/model/Student';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { StudentDocument } from '../../documents/StudentDocument';
 import {
   PossiblePercentageCriteria,
   possiblePercentageCriteriaSchema,
@@ -10,7 +11,11 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
     super('attendance', percentage, valueNeeded);
   }
 
-  isPassed(student: StudentDocument): boolean {
+  isPassed(student: Student): boolean {
+    throw new Error('Method not implemented.');
+  }
+
+  getStatusDTO(student: Student): ScheinCriteriaStatus {
     throw new Error('Method not implemented.');
   }
 }

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
+import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
-import { NoFunctions } from '../../helpers/typings';
-import { StudentDocument } from '../documents/StudentDocument';
 
 export abstract class Scheincriteria {
   readonly identifier: string;
@@ -10,14 +10,12 @@ export abstract class Scheincriteria {
     this.identifier = identifier;
   }
 
-  abstract isPassed(student: StudentDocument): boolean;
+  abstract isPassed(student: Student): boolean;
+
+  abstract getStatusDTO(student: Student): ScheinCriteriaStatus;
 }
 
-export type ScheincriteriaYupSchema = Yup.Schema<NoFunctions<Scheincriteria>>;
-
-export const scheincriteriaSchema = Yup.object().shape<NoFunctions<Scheincriteria>>({
-  identifier: Yup.string().required(),
-});
+export type ScheincriteriaYupSchema = Yup.Schema<any>;
 
 export function initScheincriteriaBlueprints() {
   console.group('Scanning for schein criterias...');
