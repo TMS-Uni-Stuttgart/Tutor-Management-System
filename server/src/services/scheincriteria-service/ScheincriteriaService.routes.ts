@@ -8,6 +8,7 @@ import { validateRequestBody } from '../../middleware/Validation';
 import { ValidationErrorResponse } from '../../model/Errors';
 import { initScheincriteriaBlueprints } from '../../model/scheincriteria/Scheincriteria';
 import scheincriteriaService from './ScheincriteriaService.class';
+import scheinexamRouter from '../scheinexam-service/ScheinexamService.routes';
 
 function validateScheincriteriaDTOData(req: Request, res: Response, next: NextFunction) {
   const result = scheincriteriaService.validateDataOfScheincriteriaDTO(req.body);
@@ -72,6 +73,12 @@ scheincriteriaRouter.get('/form', ...checkRoleAccess(Role.ADMIN), async (_, res)
   const formData = await scheincriteriaService.getFormData();
 
   res.json(formData);
+});
+
+scheincriteriaRouter.get('/student', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+  const results = await scheincriteriaService.getCriteriaResultsOfAllStudents();
+
+  res.json(results);
 });
 
 export default scheincriteriaRouter;

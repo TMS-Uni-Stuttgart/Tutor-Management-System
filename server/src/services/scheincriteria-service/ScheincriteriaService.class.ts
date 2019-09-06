@@ -10,7 +10,12 @@ import {
   FormSelectValue,
   FormStringFieldData,
 } from 'shared/dist/model/FormTypes';
-import { ScheinCriteriaDTO, ScheinCriteriaResponse } from 'shared/dist/model/ScheinCriteria';
+import {
+  ScheinCriteriaDTO,
+  ScheinCriteriaResponse,
+  ScheincriteriaSummaryByStudents,
+  ScheinCriteriaSummary,
+} from 'shared/dist/model/ScheinCriteria';
 import { validateSchema } from 'shared/dist/validators/helper';
 import { Typegoose } from 'typegoose';
 import * as Yup from 'yup';
@@ -25,7 +30,13 @@ import {
   ScheincriteriaMetadata,
   ScheincriteriaMetadataKey,
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
-import { NoFunctions } from '../../helpers/typings';
+import { Student } from 'shared/dist/model/Student';
+import studentService from '../student-service/StudentService.class';
+
+interface ScheincriteriaWithId {
+  criteriaId: string;
+  criteria: Scheincriteria;
+}
 
 export class ScheincriteriaService {
   private criteriaMetadata: Map<string, ScheincriteriaMetadata>;
@@ -84,6 +95,60 @@ export class ScheincriteriaService {
     return this.getScheincriteriaOrReject(await criteria.remove());
   }
 
+  public async getCriteriaResultsOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
+    const summaries: ScheincriteriaSummaryByStudents = {};
+    const [students, criterias] = await Promise.all([
+      await studentService.getAllStudents(),
+      this.getAllCriteriaObjects(),
+    ]);
+
+    for (const student of students) {
+      summaries[student.id] = await this.getCriteriaResultOfStudent(student, criterias);
+    }
+
+    return summaries;
+  }
+
+  private async getCriteriaResultOfStudent(
+    student: Student,
+    criterias: ScheincriteriaWithId[]
+  ): Promise<ScheinCriteriaSummary> {
+    const criteriaSummaries: ScheinCriteriaSummary['scheinCriteriaSummary'] = {};
+    let isPassed: boolean = true;
+
+    criterias.forEach(({ criteriaId, criteria }) => {
+      const result = criteria.getStatusDTO(student);
+
+      criteriaSummaries[criteriaId] = result;
+
+      if (!result.passed) {
+        isPassed = false;
+      }
+    });
+
+    return {
+      passed: isPassed,
+      scheinCriteriaSummary: criteriaSummaries,
+    };
+  }
+
+  private async getAllCriteriaObjects(): Promise<ScheincriteriaWithId[]> {
+    const criterias = await ScheincriteriaModel.find();
+
+    return Promise.all(
+      criterias.map(doc => ({
+        criteriaId: doc.id,
+        criteria: this.generateCriteriaFromDocument(doc),
+      }))
+    );
+  }
+
+  private generateCriteriaFromDocument({ name, criteria }: ScheincriteriaDocument): Scheincriteria {
+    const { identifier, ...data } = criteria;
+
+    return this.generateCriteriaFromDTO({ identifier: criteria.identifier, data, name });
+  }
+
   private generateCriteriaFromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
     const bluePrintData = this.criteriaBluePrints.get(identifier);
 
@@ -133,7 +198,7 @@ export class ScheincriteriaService {
 
   public validateDataOfScheincriteriaDTO(
     obj: ScheinCriteriaDTO
-  ): Yup.Shape<object, NoFunctions<Scheincriteria>> | ValidationErrorsWrapper {
+  ): Yup.Shape<object, any> | ValidationErrorsWrapper {
     const schema = this.criteriaSchemas.get(obj.identifier);
 
     if (!schema) {
@@ -178,10 +243,6 @@ export class ScheincriteriaService {
 
   public addMetadata(key: ScheincriteriaMetadataKey, value: ScheincriteriaMetadata) {
     this.criteriaMetadata.set(this.getKeyAsString(key), value);
-  }
-
-  public getBluePrintCount(): number {
-    return this.criteriaBluePrints.size;
   }
 
   private getMetadata(target: Record<string, any>, propertyName: string): ScheincriteriaMetadata {
