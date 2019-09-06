@@ -40,8 +40,8 @@ export class ScheincriteriaService {
   public async createCriteria(criteriaDTO: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
     const scheincriteria: Scheincriteria = this.generateCriteriaFromDTO(criteriaDTO);
     const documentData: Omit<ScheincriteriaSchema, keyof Typegoose> = {
-      criteria: scheincriteria,
       name: criteriaDTO.name,
+      criteria: scheincriteria,
     };
     const criteriaDocument = await ScheincriteriaModel.create(documentData);
 
@@ -55,13 +55,9 @@ export class ScheincriteriaService {
       throw new Error(`No criteria found for identifier '${identifier}'.`);
     }
 
-    const prototype = bluePrintData.blueprint;
-    const properties: PropertyDescriptorMap = {};
-
-    Object.entries(data).forEach(([key, value]) => (properties[key] = { value }));
-
-    // FIXME: Does not work with inheritance.
-    const criteria: Scheincriteria = Object.create(prototype, properties);
+    // Get the constructor of the blueprint. The type needs to be set here because 'constructor' is only typed as 'Function' and therefore cannot be used with 'new' in front of it.
+    const prototype = bluePrintData.blueprint.constructor as (new () => Scheincriteria);
+    const criteria: Scheincriteria = Object.assign(new prototype(), data);
 
     return criteria;
   }
