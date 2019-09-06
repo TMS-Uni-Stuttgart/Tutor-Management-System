@@ -11,6 +11,8 @@ import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import studentService from './StudentService.class';
 import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
+import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 
 const studentRouter = Router();
 
@@ -115,5 +117,12 @@ studentRouter.put(
     res.status(204).send();
   }
 );
+
+studentRouter.get('/:id/scheincriteria', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+  const result: ScheinCriteriaSummary = await scheincriteriaService.getCriteriaResultOfStudent(id);
+
+  res.json(result);
+});
 
 export default studentRouter;

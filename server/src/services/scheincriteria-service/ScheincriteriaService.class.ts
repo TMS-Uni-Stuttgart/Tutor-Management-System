@@ -104,13 +104,22 @@ export class ScheincriteriaService {
     ]);
 
     for (const student of students) {
-      summaries[student.id] = await this.getCriteriaResultOfStudent(student, criterias);
+      summaries[student.id] = await this.calculateCriteriaResultOfStudent(student, criterias);
     }
 
     return summaries;
   }
 
-  private async getCriteriaResultOfStudent(
+  public async getCriteriaResultOfStudent(studentId: string): Promise<ScheinCriteriaSummary> {
+    const [student, criterias] = await Promise.all([
+      studentService.getStudentWithId(studentId),
+      this.getAllCriteriaObjects(),
+    ]);
+
+    return this.calculateCriteriaResultOfStudent(student, criterias);
+  }
+
+  private async calculateCriteriaResultOfStudent(
     student: Student,
     criterias: ScheincriteriaWithId[]
   ): Promise<ScheinCriteriaSummary> {
