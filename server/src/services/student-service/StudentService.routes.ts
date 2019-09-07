@@ -31,7 +31,7 @@ studentRouter.post(
     const dto = req.body;
     const student = await studentService.createStudent(dto);
 
-    return res.json(student);
+    return res.status(201).json(student);
   }
 );
 

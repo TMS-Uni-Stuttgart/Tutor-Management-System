@@ -41,7 +41,7 @@ scheincriteriaRouter.post(
 
     const criteria: ScheinCriteriaResponse = await scheincriteriaService.createCriteria(dto);
 
-    res.json(criteria);
+    res.status(201).json(criteria);
   }
 );
 

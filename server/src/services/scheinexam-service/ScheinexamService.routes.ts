@@ -22,7 +22,7 @@ scheinexamRouter.post(
     const dto = req.body;
     const exam = await scheinexamService.createScheinExam(dto);
 
-    return res.json(exam);
+    return res.status(201).json(exam);
   }
 );
 

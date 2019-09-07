@@ -22,7 +22,7 @@ sheetRouter.post(
     const dto = req.body;
     const sheet = await sheetService.createSheet(dto);
 
-    return res.json(sheet);
+    return res.status(201).json(sheet);
   }
 );
 
