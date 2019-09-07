@@ -3,7 +3,10 @@ import { Role } from 'shared/dist/model/Role';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
-import { validateAgainstTutorialDTO } from 'shared/dist/validators/Tutorial';
+import {
+  validateAgainstTutorialDTO,
+  validateAgainstSubstituteDTO,
+} from 'shared/dist/validators/Tutorial';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamRouter from '../team-service/TeamService.routes';
@@ -86,15 +89,19 @@ tutorialRouter.get('/:id/substitute', ...checkRoleAccess(Role.ADMIN), async (req
   res.json(substitutes);
 });
 
-tutorialRouter.post('/:id/substitute', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id: string = req.params.id;
-  const dto: SubstituteDTO = req.body;
+tutorialRouter.post(
+  '/:id/substitute',
+  ...checkRoleAccess(Role.ADMIN),
+  validateRequestBody(validateAgainstSubstituteDTO, 'Not a valid SubstituteDTO.'),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const dto: SubstituteDTO = req.body;
 
-  // TODO: Validation!
-  const tutorial = await tutorialService.addSubstituteToTutorial(id, dto);
+    const tutorial = await tutorialService.addSubstituteToTutorial(id, dto);
 
-  res.json(tutorial);
-});
+    res.json(tutorial);
+  }
+);
 
 tutorialRouter.use('/', teamRouter);
 
