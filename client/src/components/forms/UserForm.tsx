@@ -107,7 +107,7 @@ function getValidationSchema(
   isEditMode: boolean
 ): Yup.ObjectSchema<Yup.Shape<Partial<UserFormState>, Partial<UserFormState>>> {
   let validationShape: {
-    [K in keyof UserFormState]?: Yup.Schema<string | undefined> | Yup.ArraySchema<string>;
+    [K in keyof UserFormState]?: Yup.Schema<any>;
   } = {
     firstname: Yup.string().required('Benötigt'),
     lastname: Yup.string().required('Benötigt'),

@@ -144,6 +144,7 @@ export function getInitialTutorialFormValues(
   }
 
   const sortedDates: Date[] = tutorial.dates.sort((a, b) => a.getTime() - b.getTime());
+
   return {
     slot: tutorial.slot,
     tutor: tutorial.tutor ? tutorial.tutor.id : '',

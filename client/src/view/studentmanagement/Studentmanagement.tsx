@@ -111,7 +111,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       enqueueSnackbar('Student wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
       console.error(reason);
-      enqueueSnackbar('Student konnt nicht erstellt werden.', { variant: 'error' });
+      enqueueSnackbar('Student konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
       setSubmitting(false);
     }

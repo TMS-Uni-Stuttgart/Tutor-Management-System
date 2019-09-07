@@ -41,8 +41,6 @@ interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsed
 
 function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState {
   if (student) {
-    console.log(student);
-
     return {
       lastname: student.lastname,
       firstname: student.firstname,
