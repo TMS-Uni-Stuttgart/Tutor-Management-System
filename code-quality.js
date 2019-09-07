@@ -4,12 +4,6 @@ const options = {
   encoding: 'utf8',
 };
 
-console.log('Running "mvn formatter:format" in root folder...');
-console.log(exec('mvn formatter:format', options));
-
-console.log('Running "mvn process-classes" in root folder...');
-console.log(exec('mvn process-classes', options));
-
 console.log('Running "yarn ts:check" in client folder...');
 console.log(exec('cd client && yarn ts:check', options));
 
