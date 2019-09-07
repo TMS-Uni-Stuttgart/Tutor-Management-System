@@ -30,7 +30,7 @@ tutorialRouter.post(
     const dto = req.body;
     const tutorial = await tutorialService.createTutorial(dto);
 
-    return res.json(tutorial);
+    return res.status(201).json(tutorial);
   }
 );
 
@@ -60,6 +60,13 @@ tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =
   await tutorialService.deleteTutorial(id);
 
   res.status(204).send();
+});
+
+tutorialRouter.get('/:id/corrector', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id: string = req.params.id;
+  const correctors: User[] = await tutorialService.getCorrectorsOfTutorial(id);
+
+  res.json(correctors);
 });
 
 tutorialRouter.get('/:id/student', ...checkRoleAccess(Role.ADMIN), async (req, res) => {

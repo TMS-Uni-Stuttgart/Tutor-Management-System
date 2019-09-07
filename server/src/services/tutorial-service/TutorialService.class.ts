@@ -15,6 +15,7 @@ import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import studentService from '../student-service/StudentService.class';
 import userService from '../user-service/UserService.class';
 import { Types } from 'mongoose';
+import { parse } from 'date-fns';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -43,12 +44,14 @@ class TutorialService {
       correctorIds.map(corr => userService.getDocumentWithId(corr))
     );
 
+    const { startDate, endDate } = this.parseStartAndEndTimes(startTime, endTime);
+
     const tutorial: Omit<TutorialSchema, keyof Typegoose> = {
       ...dto,
       tutor,
       dates: dates.map(d => new Date(d)),
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
+      startTime: startDate,
+      endTime: endDate,
       students: [],
       teams: new Types.Array(),
       correctors,
@@ -100,9 +103,11 @@ class TutorialService {
       }
     }
 
+    const { startDate, endDate } = this.parseStartAndEndTimes(startTime, endTime);
+
     tutorial.slot = slot;
-    tutorial.startTime = new Date(startTime);
-    tutorial.endTime = new Date(endTime);
+    tutorial.startTime = startDate;
+    tutorial.endTime = endDate;
     tutorial.dates = dates.map(date => new Date(date));
     tutorial.correctors = correctors;
 
@@ -132,6 +137,15 @@ class TutorialService {
     }
 
     return this.getTutorialOrReject(await tutorial.remove());
+  }
+
+  public async getCorrectorsOfTutorial(id: string): Promise<User[]> {
+    const tutorial = await this.getDocumentWithID(id);
+    await tutorial.populate('correctors').execPopulate();
+
+    const correctors: UserDocument[] = tutorial.correctors as UserDocument[];
+
+    return Promise.all(correctors.map(cor => userService.getUserOrReject(cor)));
   }
 
   public async getStudentsOfTutorial(id: string): Promise<Student[]> {
@@ -244,6 +258,16 @@ class TutorialService {
       .map(id => this.getDocumentWithID(id));
 
     return Promise.all(promises);
+  }
+
+  private parseStartAndEndTimes(startTime: string, endTime: string) {
+    const startDate = parse(startTime, 'HH:mm:ss', new Date());
+    const endDate = parse(endTime, 'HH:mm:ss', new Date());
+
+    startDate.setSeconds(0);
+    endDate.setSeconds(0);
+
+    return { startDate, endDate };
   }
 }
 

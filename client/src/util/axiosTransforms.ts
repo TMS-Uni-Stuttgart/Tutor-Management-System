@@ -1,10 +1,9 @@
 import {
-  Tutorial,
-  ScheinExam,
   LoggedInUser,
   LoggedInUserSubstituteTutorial,
+  ScheinExam,
+  Tutorial,
 } from '../typings/ServerResponses';
-import { parse } from 'date-fns';
 
 interface TutorialResponse extends Omit<Tutorial, 'dates' | 'startTime' | 'endTime'> {
   dates: string[];
@@ -44,9 +43,11 @@ export function transformMultipleTutorialResponse(responseJSON: string): Tutoria
 
   const response: TutorialResponse[] = JSON.parse(responseJSON);
   const tutorials: Tutorial[] = [];
+
   response.forEach(res => {
     tutorials.push(transformTutorialResponse(JSON.stringify(res)));
   });
+
   return tutorials;
 }
 
@@ -59,8 +60,9 @@ export function transformTutorialResponse(responseJSON: string): Tutorial {
     ...rest
   }: TutorialResponse = JSON.parse(responseJSON);
   const dates: Date[] = [];
-  const startTime = parse(startTimeString, 'HH:mm:ss', new Date());
-  const endTime = parse(endTimeString, 'HH:mm:ss', new Date());
+
+  const startTime = new Date(startTimeString);
+  const endTime = new Date(endTimeString);
 
   dateStrings.forEach(date => dates.push(new Date(date)));
 
