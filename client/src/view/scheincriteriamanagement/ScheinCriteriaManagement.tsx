@@ -53,8 +53,8 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   ) => {
     const dto: ScheinCriteriaDTO = {
       identifier,
+      name,
       data: {
-        name,
         ...values,
       },
     };
@@ -84,8 +84,8 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   ) => {
     const dto: ScheinCriteriaDTO = {
       identifier,
+      name,
       data: {
-        name,
         ...values,
       },
     };

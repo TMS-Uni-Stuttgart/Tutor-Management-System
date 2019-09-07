@@ -43,6 +43,7 @@ export interface PresentationPointsDTO {
 
 export interface ScheinCriteriaDTO {
     data: any;
+    name: string;
     identifier: string;
 }
 
