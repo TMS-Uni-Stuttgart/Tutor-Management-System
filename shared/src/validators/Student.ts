@@ -4,8 +4,8 @@ import { validateSchema, YupIdShape } from './helper';
 import { StudentDTO, PresentationPointsDTO } from '../model/Student';
 
 const StudentDTOSchema = Yup.object().shape<StudentDTO>({
-  courseOfStudies: Yup.string().required(),
-  email: Yup.string().required(),
+  courseOfStudies: Yup.string(),
+  email: Yup.string(),
   firstname: Yup.string().required(),
   lastname: Yup.string().required(),
   matriculationNo: Yup.string()
