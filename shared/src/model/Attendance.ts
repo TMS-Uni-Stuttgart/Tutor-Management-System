@@ -5,8 +5,6 @@ export enum AttendanceState {
 }
 
 export interface Attendance {
-  // TODO: Needed?
-  // id: AttendanceId;
   date: Date;
   note?: string;
   state?: AttendanceState;

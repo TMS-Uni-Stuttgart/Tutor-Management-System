@@ -106,8 +106,6 @@ class TutorialService {
     tutorial.dates = dates.map(date => new Date(date));
     tutorial.correctors = correctors;
 
-    // TODO: Change / Check correctors.
-
     if (tutorId) {
       const nextTutor = await userService.getDocumentWithId(tutorId);
 

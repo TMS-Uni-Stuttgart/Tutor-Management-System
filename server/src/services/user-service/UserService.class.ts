@@ -184,8 +184,6 @@ class UserService {
       substitutes.push(new LoggedInUserSubstituteTutorialDTO(tutorial, dates))
     );
 
-    // TODO: Add corrector tutorials
-
     return new LoggedInUserDTO(user, substitutes, correctedTutorials);
   }
 
