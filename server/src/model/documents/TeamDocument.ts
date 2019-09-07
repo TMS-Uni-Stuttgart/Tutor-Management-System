@@ -15,7 +15,7 @@ export class TeamSchema extends Typegoose
   @arrayProp({ required: true, itemsRef: { name: 'StudentSchema' } })
   students!: Ref<StudentDocument>[];
 
-  @mapProp({ of: Number })
+  @mapProp({ of: Number, default: new Types.Map() })
   points!: Types.Map<number>;
 }
 
