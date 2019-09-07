@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { validateSchema } from './helper';
+import { validateSchema, YupIdShape } from './helper';
 import { ValidationErrorsWrapper } from '../model/errors/Errors';
 import { SheetDTO, ExerciseDTO, UpdatePointsDTO } from '../model/Sheet';
 
@@ -16,7 +16,7 @@ const SheetDTOSchema = Yup.object().shape<SheetDTO>({
 });
 
 const UpdatePointsDTOSchema = Yup.object().shape<UpdatePointsDTO>({
-  id: Yup.string().required(),
+  id: YupIdShape.required(),
   exercises: Yup.mixed().required(),
 });
 
