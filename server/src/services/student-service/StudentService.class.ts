@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
+import { Typegoose } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { adjustPoints } from '../../helpers/pointsHelpers';
@@ -9,7 +10,10 @@ import {
   AttendanceDocument,
   generateAttendanceDocumentFromDTO,
 } from '../../model/documents/AttendanceDocument';
-import StudentModel, { StudentDocument } from '../../model/documents/StudentDocument';
+import StudentModel, {
+  StudentDocument,
+  StudentSchema,
+} from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import scheinexamService from '../scheinexam-service/ScheinexamService.class';
@@ -55,13 +59,14 @@ class StudentService {
       await this.moveStudentToBeAttendeeOfNewTutorial(student, tutorial);
     }
 
-    await student.updateOne({
+    const updatedStudent: Omit<StudentSchema, keyof Typegoose> = {
       ...dto,
       tutorial: student.tutorial,
       team: student.team,
-    });
+      points: student.points,
+    };
 
-    // const updatedStudent = await this.getDocumentWithId(student.id);
+    await student.updateOne(updatedStudent);
 
     return this.getStudentOrReject(student);
   }
@@ -173,7 +178,6 @@ class StudentService {
       tutorial,
       team,
       attendance,
-      points,
       presentationPoints,
       scheinExamResults,
     } = student;
@@ -186,6 +190,8 @@ class StudentService {
       }
     }
 
+    const points = await this.getPointsOfStudent(student);
+
     return {
       id: _id,
       firstname,
@@ -196,12 +202,31 @@ class StudentService {
       tutorial: getIdOfDocumentRef(tutorial),
       team: team ? getIdOfDocumentRef(team) : undefined,
       attendance: parsedAttendances,
-      points: points ? points.toObject({ flattenMaps: true }) : {},
+      points,
       presentationPoints: presentationPoints
         ? presentationPoints.toObject({ flattenMaps: true })
         : {},
       scheinExamResults: scheinExamResults ? scheinExamResults.toObject({ flattenMaps: true }) : {},
     };
+  }
+
+  private async getPointsOfStudent(student: StudentDocument): Promise<Student['points']> {
+    if (!student.team) {
+      return student.points ? student.points.toObject({ flattenMaps: true }) : {};
+    }
+    const points: Student['points'] = {};
+    const [team] = await teamService.getDocumentWithId(
+      getIdOfDocumentRef(student.tutorial),
+      student.team.toString()
+    );
+
+    team.points.forEach((pts, key) => (points[key] = pts));
+
+    if (student.points) {
+      student.points.forEach((pts, key) => (points[key] = pts));
+    }
+
+    return points;
   }
 
   /**
@@ -274,15 +299,36 @@ class StudentService {
       stud => studentId !== getIdOfDocumentRef(stud)
     );
 
+    await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
+
     newTutorial.students.push(student);
     student.tutorial = newTutorial;
-
-    // TODO: Adjust points of student.
 
     if (saveStudent) {
       await Promise.all([oldTutorial.save(), newTutorial.save(), student.save()]);
     } else {
       await Promise.all([oldTutorial.save(), newTutorial.save()]);
+    }
+  }
+
+  public async movePointsFromTeamToStudent(student: StudentDocument) {
+    if (!student.team) {
+      return;
+    }
+
+    const [team] = await teamService.getDocumentWithId(
+      getIdOfDocumentRef(student.tutorial),
+      student.team.toString()
+    );
+
+    if (!student.points) {
+      student.points = new Types.Map();
+    }
+
+    for (const [key, points] of team.points) {
+      if (!student.points.has(key)) {
+        student.points.set(key, points);
+      }
     }
   }
 

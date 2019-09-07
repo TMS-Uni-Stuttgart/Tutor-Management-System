@@ -189,6 +189,8 @@ class TeamService {
       getIdOfDocumentRef(student.team)
     );
 
+    await studentService.movePointsFromTeamToStudent(student);
+
     oldTeam.students = oldTeam.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
     student.team = undefined;
 
