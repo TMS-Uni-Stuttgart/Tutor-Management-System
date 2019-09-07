@@ -7,6 +7,7 @@ import {
 import { Attendance, ScheinCriteriaSummary, Student, Team } from '../../typings/ServerResponses';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import axios from './Axios';
+import { getTeamOfTutorial } from './Team';
 
 async function getAllStudents(): Promise<Student[]> {
   const response = await axios.get<Student[]>('student');
@@ -122,18 +123,16 @@ export async function setExamPointsOfStudent(studentId: string, points: UpdatePo
   }
 }
 
-export async function getTeamOfStudent(id: string): Promise<Team | undefined> {
-  const response = await axios.get<Team | undefined>(`student/${id}/team`);
-
-  if (response.status === 200) {
-    return response.data;
+export async function getTeamOfStudent(student: Student): Promise<Team | undefined> {
+  if (!student.team) {
+    return undefined;
   }
 
-  return Promise.reject(`Wrong status code (${response.status}).`);
+  return getTeamOfTutorial(student.tutorial, student.team);
 }
 
 export async function fetchTeamOfStudent(student: Student): Promise<StudentWithFetchedTeam> {
-  const team = await getTeamOfStudent(student.id);
+  const team = await getTeamOfStudent(student);
 
   return { ...student, team };
 }
@@ -142,7 +141,7 @@ export async function fetchTeamsOfStudents(students: Student[]): Promise<Student
   const promises: Promise<StudentWithFetchedTeam>[] = [];
 
   for (const student of students) {
-    promises.push(getTeamOfStudent(student.id).then(team => ({ ...student, team })));
+    promises.push(getTeamOfStudent(student).then(team => ({ ...student, team })));
   }
 
   return Promise.all(promises);

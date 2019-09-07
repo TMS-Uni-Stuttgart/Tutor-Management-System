@@ -14,6 +14,16 @@ export async function getUsers(): Promise<User[]> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
+export async function getUser(id: string): Promise<User> {
+  const response = await axios.get<User>(`user/${id}`);
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
 export async function getUsersWithRole(role: Role): Promise<User[]> {
   const allUsers = await getUsers();
 
