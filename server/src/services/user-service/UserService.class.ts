@@ -2,10 +2,14 @@ import _ from 'lodash';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
-import { isDocument } from 'typegoose';
+import { isDocument, Typegoose } from 'typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import UserModel, { UserCredentials, UserDocument } from '../../model/documents/UserDocument';
+import UserModel, {
+  UserCredentials,
+  UserDocument,
+  UserSchema,
+} from '../../model/documents/UserDocument';
 import {
   LoggedInUserDTO,
   LoggedInUserSubstituteTutorialDTO,
@@ -59,7 +63,14 @@ class UserService {
     });
 
     const tutorials = await Promise.all(promises);
-    const createdUser = await UserModel.create({ ...dto, tutorials });
+
+    const userDoc: Omit<UserSchema, keyof Typegoose> = {
+      ...dto,
+      tutorials,
+      temporaryPassword: dto.password,
+    };
+
+    const createdUser = await UserModel.create(userDoc);
 
     for (const doc of tutorials) {
       doc.tutor = createdUser;
@@ -265,7 +276,7 @@ class UserService {
     }
   }
 
-  private async getUserOrReject(user: UserDocument | null): Promise<User> {
+  public async getUserOrReject(user: UserDocument | null): Promise<User> {
     if (!user) {
       return this.rejectUserNotFound();
     }
@@ -289,21 +300,11 @@ class UserService {
 
   public async initAdmin() {
     try {
-      const tutorial = await tutorialService.createTutorial({
-        slot: 1,
-        tutorId: undefined,
-        dates: [],
-        startTime: new Date(Date.now()).toISOString(),
-        endTime: new Date(Date.now()).toISOString(),
-        correctorIds: [],
-      });
-      const tutorialDocument = await tutorialService.getDocumentWithID(tutorial.id);
-
       const admin: CreateUserDTO = {
         firstname: 'admin',
         lastname: 'admin',
         roles: [Role.ADMIN],
-        tutorials: [tutorialDocument.id],
+        tutorials: [],
         username: 'admin',
         password: 'admin',
       };
