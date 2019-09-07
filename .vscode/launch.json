@@ -61,6 +61,20 @@
       "sourceMaps": true
     },
     {
+      "name": "Launch NodeJS server & client",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}/server",
+      "runtimeExecutable": "${cwd}/node_modules/.bin/ts-node-dev",
+      "restart": true,
+      "args": ["src/server.ts"],
+      "runtimeArgs": ["--nolazy"],
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Start Client",
+      "sourceMaps": true
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Launch NodeJS server (nodemon)",
