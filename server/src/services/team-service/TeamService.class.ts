@@ -63,7 +63,7 @@ class TeamService {
   public async updateTeam(
     tutorialId: string,
     teamId: string,
-    { teamNo, students }: TeamDTO
+    { students }: TeamDTO
   ): Promise<Team> {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
@@ -85,8 +85,6 @@ class TeamService {
     for (const student of studentsToAdd) {
       await this.makeStudentMemberOfTeam(student, team.id, { saveStudent: true });
     }
-
-    team.teamNo = teamNo;
 
     await tutorial.save();
 
