@@ -23,7 +23,7 @@ teamRouter.post(
     const tutorialId = req.params.tutorialId;
     const team = await teamService.createTeam(tutorialId, dto);
 
-    return res.json(team);
+    return res.status(201).json(team);
   }
 );
 
