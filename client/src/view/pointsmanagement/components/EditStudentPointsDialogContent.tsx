@@ -2,13 +2,12 @@ import { Button, Table, TableBody, TableCell, TableRow, Typography } from '@mate
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import React from 'react';
-import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../types';
 import { Exercise, Sheet } from '../../../typings/RatingModel';
-import { getExerciseIdentifier, getExercisePointsIdentifier } from '../util/helper';
 import { Student, Team } from '../../../typings/ServerResponses';
+import { getExerciseIdentifier, getExercisePointsIdentifier } from '../util/helper';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -103,7 +102,7 @@ function EditStudentPointsDialogContent({
       initialValues={getInitialValues(team, sheet, exercises)}
       // validationSchema={validationSchema}
     >
-      {({ handleSubmit, isValid, isSubmitting, values }) => (
+      {({ handleSubmit, isValid, isSubmitting }) => (
         <>
           <form onSubmit={handleSubmit}>
             <Table>
@@ -154,8 +153,6 @@ function EditStudentPointsDialogContent({
               </SubmitButton>
             </div>
           </form>
-
-          <FormikDebugDisplay values={values} />
         </>
       )}
     </Formik>
