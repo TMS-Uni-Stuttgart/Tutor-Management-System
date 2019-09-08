@@ -2,13 +2,13 @@ import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { validateAgainstSheetDTO } from 'shared/dist/validators/Sheet';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import { checkRoleAccess, isAuthenticated } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import sheetService from './SheetService.class';
 
 const sheetRouter = Router();
 
-sheetRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+sheetRouter.get('/', isAuthenticated, async (_, res) => {
   const sheets: Sheet[] = await sheetService.getAllSheets();
 
   return res.json(sheets);
