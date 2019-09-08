@@ -26,8 +26,7 @@ export function getDisplayStringOfScheinExam(exam: ScheinExam): string {
 }
 
 export function parseDateToMapKey(date: Date): string {
-  // Cut the milliseconds from the ISO string bc the server does not use the milliseconds in keys for maps.
-  return date.toISOString().replace(/\.[0-9]{3}/, '');
+  return date.toDateString();
 }
 
 export function getSumOfPointsOfStudentInScheinExam(
