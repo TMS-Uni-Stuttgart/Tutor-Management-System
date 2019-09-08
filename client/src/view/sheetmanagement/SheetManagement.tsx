@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import SheetForm, {
   SheetFormSubmitCallback,
   getInitialSheetFormState,
+  SheetFormExercise,
 } from '../../components/forms/SheetForm';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { Sheet } from '../../typings/RatingModel';
-import { SheetDTO } from '../../typings/RequestDTOs';
+import { SheetDTO, ExerciseDTO } from '../../typings/RequestDTOs';
 import SheetRow from './components/SheetRow';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
@@ -20,6 +21,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
+
+function convertSheetFormExercisesToDTOs(exercises: SheetFormExercise[]): ExerciseDTO[] {
+  return exercises.map(ex => ({
+    exNo: Number.parseInt(ex.exNo),
+    maxPoints: Number.parseFloat(ex.maxPoints),
+    bonus: ex.bonus,
+  }));
+}
 
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
@@ -78,7 +87,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
 
     const sheetDTO: SheetDTO = {
       sheetNo,
-      exercises,
+      exercises: convertSheetFormExercisesToDTOs(exercises),
       bonusSheet,
     };
 
@@ -104,7 +113,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   ) => {
     const sheetDTO: SheetDTO = {
       sheetNo,
-      exercises,
+      exercises: convertSheetFormExercisesToDTOs(exercises),
       bonusSheet,
     };
 

@@ -8,7 +8,17 @@ import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './Fo
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 
-type SheetFormState = Omit<Sheet, 'id'>;
+export interface SheetFormExercise {
+  exNo: string;
+  maxPoints: string;
+  bonus: boolean;
+}
+
+interface SheetFormState {
+  sheetNo: number;
+  exercises: SheetFormExercise[];
+  bonusSheet: boolean;
+}
 
 interface Props extends Omit<FormikBaseFormProps<SheetFormState>, CommonlyUsedFormProps> {
   sheet?: Sheet;
@@ -18,7 +28,13 @@ interface Props extends Omit<FormikBaseFormProps<SheetFormState>, CommonlyUsedFo
 
 export function getInitialSheetFormState(sheet?: Sheet, sheets?: Sheet[]): SheetFormState {
   if (!!sheet) {
-    return { ...sheet };
+    const exercises = sheet.exercises.map(ex => ({
+      exNo: ex.exNo.toString(),
+      maxPoints: ex.maxPoints.toString(),
+      bonus: ex.bonus,
+    }));
+
+    return { sheetNo: sheet.sheetNo, bonusSheet: sheet.bonusSheet, exercises };
   }
 
   let lastSheetNo = 0;
