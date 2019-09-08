@@ -2,13 +2,13 @@ import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { validateAgainstScheinexamDTO } from 'shared/dist/validators/Scheinexam';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import { checkRoleAccess, isAuthenticated } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import scheinexamService from './ScheinexamService.class';
 
 const scheinexamRouter = Router();
 
-scheinexamRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+scheinexamRouter.get('/', isAuthenticated, async (_, res) => {
   const exams: ScheinExam[] = await scheinexamService.getAllScheinExams();
 
   res.json(exams);
