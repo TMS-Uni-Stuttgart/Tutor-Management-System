@@ -1,6 +1,6 @@
-var exec = require('child_process').execSync;
+const exec = require('child_process').execSync;
 
-var options = {
+const options = {
   encoding: 'utf8',
 };
 
