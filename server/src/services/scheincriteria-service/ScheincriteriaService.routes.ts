@@ -23,7 +23,7 @@ initScheincriteriaBlueprints();
 
 const scheincriteriaRouter = Router();
 
-scheincriteriaRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+scheincriteriaRouter.get('/', ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]), async (_, res) => {
   const criterias: ScheinCriteriaResponse[] = await scheincriteriaService.getAllCriterias();
 
   res.json(criterias);
