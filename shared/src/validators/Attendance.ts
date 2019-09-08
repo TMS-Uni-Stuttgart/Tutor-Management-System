@@ -11,7 +11,11 @@ const AttendanceDTOSchema = Yup.object().shape<AttendanceDTO>({
     })
     .required(),
   note: Yup.string(),
-  state: Yup.mixed<AttendanceState | undefined>().oneOf(Object.values(AttendanceState)),
+  state: Yup.mixed<AttendanceState | undefined>().oneOf([
+    ...Object.values(AttendanceState),
+    null,
+    undefined,
+  ]),
 });
 
 export function validateAgainstAttendanceDTO(

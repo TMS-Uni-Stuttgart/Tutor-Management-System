@@ -24,7 +24,7 @@ export function generateAttendanceDocumentFromDTO(dto: AttendanceDTO): Attendanc
   const date = startOfDay(new Date(dto.date));
   const attendance: Omit<AttendanceSchema, keyof Typegoose> = {
     date,
-    state: dto.state,
+    state: dto.state || undefined,
     note: dto.note,
   };
 
