@@ -3,7 +3,7 @@ import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
 import { validateAgainstTutorialIdList } from 'shared/dist/validators/Tutorial';
 import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import { checkRoleAccess, isTargetedUserSameAsRequestUser } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import { BadRequestError } from '../../model/Errors';
 import userService from './UserService.class';
@@ -38,6 +38,7 @@ userRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
 userRouter.patch(
   '/:id',
   ...checkRoleAccess(Role.ADMIN),
+  isTargetedUserSameAsRequestUser,
   validateRequestBody(validateAgainstUserDTO, 'Not a valid UserDTO.'),
   async (req, res) => {
     const dto = req.body;
