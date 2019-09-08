@@ -17,11 +17,15 @@ export class BadRequestError {
   constructor(readonly message: string) {}
 }
 
-export class ErrorResponse {
+export class ValidationError {
+  constructor(readonly message: string, readonly errors: ValidationErrorExtract[]) {}
+}
+
+class ErrorResponse {
   constructor(readonly status: number, readonly message: string) {}
 }
 
-export class ValidationErrorResponse extends ErrorResponse {
+class ValidationErrorResponse extends ErrorResponse {
   constructor(readonly message: string, readonly errors: ValidationErrorExtract[]) {
     super(400, message);
   }
@@ -39,8 +43,14 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
       .send(new ErrorResponse(401, err.message || 'Error during authentication encountered.'));
   }
 
+  console.error(err);
+
   if (err instanceof DocumentNotFoundError) {
     return res.status(404).send(new ErrorResponse(404, err.message || 'Element was not found.'));
+  }
+
+  if (err instanceof ValidationError) {
+    return res.status(400).send(new ValidationErrorResponse(err.message, err.errors));
   }
 
   if (err instanceof BadRequestError) {

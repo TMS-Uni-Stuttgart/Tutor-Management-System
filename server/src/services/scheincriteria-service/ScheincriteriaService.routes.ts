@@ -5,7 +5,7 @@ import { ScheinCriteriaResponse } from 'shared/dist/model/ScheinCriteria';
 import { validateAgainstScheincriteriaDTO } from 'shared/dist/validators/Scheincriteria';
 import { checkRoleAccess } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
-import { ValidationErrorResponse } from '../../model/Errors';
+import { ValidationError } from '../../model/Errors';
 import { initScheincriteriaBlueprints } from '../../model/scheincriteria/Scheincriteria';
 import scheincriteriaService from './ScheincriteriaService.class';
 
@@ -13,9 +13,7 @@ function validateScheincriteriaDTOData(req: Request, res: Response, next: NextFu
   const result = scheincriteriaService.validateDataOfScheincriteriaDTO(req.body);
 
   if ('errors' in result) {
-    return res
-      .status(400)
-      .send(new ValidationErrorResponse('Data of ScheincriteriaDTO is not valid', result.errors));
+    throw new ValidationError('Data of ScheincriteriaDTO is not valid', result.errors);
   }
 
   next();

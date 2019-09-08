@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { ValidationErrorsWrapper } from 'shared/dist/model/errors/Errors';
 import * as Yup from 'yup';
-import { ValidationErrorResponse } from '../model/Errors';
+import { ValidationError } from '../model/Errors';
 
 /**
  * Validates the request body of the given request with the given function.
@@ -17,11 +17,11 @@ export function validateRequestBody<T extends object>(
   validator: (obj: any) => Yup.Shape<object, T> | ValidationErrorsWrapper,
   errorMessage: string
 ): RequestHandler {
-  return (req, res, next) => {
+  return (req, _, next) => {
     const result = validator(req.body);
 
     if ('errors' in result) {
-      return res.status(400).send(new ValidationErrorResponse(errorMessage, result.errors));
+      throw new ValidationError(errorMessage, result.errors);
     }
 
     next();
