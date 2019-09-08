@@ -79,7 +79,7 @@ userRouter.put(
   }
 );
 
-// TODO: Allow user to edit own password & temp password!
+// TODO: Allow user to edit own password (& tmp password?)
 userRouter.post('/:id/password', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   const id = req.params.id;
   const { password } = req.body;
