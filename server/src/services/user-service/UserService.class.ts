@@ -49,7 +49,9 @@ class UserService {
 
   public async getUserCredentialsWithUsername(username: string): Promise<UserCredentials> {
     // The username field could be encrypted so we create a dummy document which will have the username encrypted (if the 'original' ones have it encrypted aswell).
-    const docWithEncryptedUsername: EncryptedDocument<UserDocument> = new UserModel({ username }) as EncryptedDocument<UserDocument>;
+    const docWithEncryptedUsername: EncryptedDocument<UserDocument> = new UserModel({
+      username,
+    }) as EncryptedDocument<UserDocument>;
     docWithEncryptedUsername.encryptFieldsSync();
 
     // The find query is done with the encrypted version of the username.
@@ -120,7 +122,7 @@ class UserService {
     user.lastname = dto.lastname;
     user.roles = dto.roles;
     user.tutorials = [...user.tutorials];
-    
+
     const updatedUser = await user.save();
 
     return this.getUserOrReject(updatedUser);

@@ -1,11 +1,10 @@
 import bcrypt from 'bcryptjs';
-import config from 'config';
 import { Document, Model } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
 import { arrayProp, plugin, pre, prop, Ref, Typegoose } from 'typegoose';
-import databaseConfig, { DatabaseConfig } from '../../config/database';
+import databaseConfig from '../../config/database';
 import { CollectionName } from '../CollectionName';
 import { TutorialDocument } from './TutorialDocument';
 

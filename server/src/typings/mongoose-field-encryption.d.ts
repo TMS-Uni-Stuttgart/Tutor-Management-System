@@ -4,7 +4,7 @@ declare module 'mongoose-field-encryption' {
   export interface EncryptionFunctionsOnDocument {
     encryptFieldsSync(): void;
     decryptFieldsSync(): void;
-    stripEncryptionFieldMarkers(): void
+    stripEncryptionFieldMarkers(): void;
   }
 
   export type EncryptedDocument<T> = T & EncryptionFunctionsOnDocument;
