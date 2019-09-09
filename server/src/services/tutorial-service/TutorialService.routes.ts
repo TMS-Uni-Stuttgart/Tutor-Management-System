@@ -7,7 +7,14 @@ import {
   validateAgainstTutorialDTO,
   validateAgainstSubstituteDTO,
 } from 'shared/dist/validators/Tutorial';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import {
+  checkRoleAccess,
+  checkAccess,
+  hasUserOneOfRoles,
+  isUserTutorOfTutorial,
+  isUserSubstituteOfTutorial,
+  isUserCorrectorOfTutorial,
+} from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamRouter from '../team-service/TeamService.routes';
 import tutorialService from './TutorialService.class';
@@ -35,12 +42,21 @@ tutorialRouter.post(
 );
 
 // TODO: Add access of Tutor to the tutorial.
-tutorialRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id = req.params.id;
-  const tutorial = await tutorialService.getTutorialWithID(id);
+tutorialRouter.get(
+  '/:id',
+  ...checkAccess(
+    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
+    isUserTutorOfTutorial,
+    isUserSubstituteOfTutorial,
+    isUserCorrectorOfTutorial
+  ),
+  async (req, res) => {
+    const id = req.params.id;
+    const tutorial = await tutorialService.getTutorialWithID(id);
 
-  return res.json(tutorial);
-});
+    return res.json(tutorial);
+  }
+);
 
 tutorialRouter.patch(
   '/:id',
@@ -62,23 +78,41 @@ tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =
   res.status(204).send();
 });
 
-tutorialRouter.get('/:id/corrector', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id: string = req.params.id;
-  const correctors: User[] = await tutorialService.getCorrectorsOfTutorial(id);
+tutorialRouter.get(
+  '/:id/corrector',
+  ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const correctors: User[] = await tutorialService.getCorrectorsOfTutorial(id);
 
-  res.json(correctors);
-});
+    res.json(correctors);
+  }
+);
 
-tutorialRouter.get('/:id/student', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id: string = req.params.id;
-  const students: Student[] = await tutorialService.getStudentsOfTutorial(id);
+tutorialRouter.get(
+  '/:id/student',
+  ...checkAccess(
+    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
+    isUserTutorOfTutorial,
+    isUserSubstituteOfTutorial,
+    isUserCorrectorOfTutorial
+  ),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const students: Student[] = await tutorialService.getStudentsOfTutorial(id);
 
-  res.json(students);
-});
+    res.json(students);
+  }
+);
 
 tutorialRouter.get(
   '/:id/student/scheincriteria',
-  ...checkRoleAccess(Role.ADMIN),
+  ...checkAccess(
+    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
+    isUserTutorOfTutorial,
+    isUserSubstituteOfTutorial,
+    isUserCorrectorOfTutorial
+  ),
   async (req, res) => {
     const id: string = req.params.id;
     const result: ScheincriteriaSummaryByStudents = await scheincriteriaService.getCriteriaResultsOfStudentsOfTutorial(
@@ -89,12 +123,16 @@ tutorialRouter.get(
   }
 );
 
-tutorialRouter.get('/:id/substitute', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id: string = req.params.id;
-  const substitutes: Map<Date, User> = await tutorialService.getSubstitutesOfTutorial(id);
+tutorialRouter.get(
+  '/:id/substitute',
+  ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const substitutes: Map<Date, User> = await tutorialService.getSubstitutesOfTutorial(id);
 
-  res.json(substitutes);
-});
+    res.json(substitutes);
+  }
+);
 
 tutorialRouter.post(
   '/:id/substitute',

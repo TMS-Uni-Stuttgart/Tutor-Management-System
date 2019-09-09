@@ -1,46 +1,71 @@
 import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
 import { validateAgainstTeamDTO } from 'shared/dist/validators/Team';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import {
+  checkRoleAccess,
+  checkAccess,
+  hasUserOneOfRoles,
+  isUserTutorOfTutorial,
+  isUserSubstituteOfTutorial,
+  isUserCorrectorOfTutorial,
+} from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamService from './TeamService.class';
 import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
 
 const teamRouter = Router();
 
-teamRouter.get('/:tutorialId/team', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const teams = await teamService.getAllTeams(req.params.tutorialId);
+teamRouter.get(
+  '/:id/team',
+  ...checkAccess(
+    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
+    isUserTutorOfTutorial,
+    isUserSubstituteOfTutorial,
+    isUserCorrectorOfTutorial
+  ),
+  async (req, res) => {
+    const teams = await teamService.getAllTeams(req.params.id);
 
-  res.json(teams);
-});
+    res.json(teams);
+  }
+);
 
 teamRouter.post(
-  '/:tutorialId/team',
-  ...checkRoleAccess(Role.ADMIN),
+  '/:id/team',
+  ...checkAccess(hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]), isUserTutorOfTutorial),
   validateRequestBody(validateAgainstTeamDTO, 'Not a valid TeamDTO.'),
   async (req, res) => {
     const dto = req.body;
-    const tutorialId = req.params.tutorialId;
+    const tutorialId = req.params.id;
     const team = await teamService.createTeam(tutorialId, dto);
 
     return res.status(201).json(team);
   }
 );
 
-teamRouter.get('/:tutorialId/team/:teamId', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const tutorialId = req.params.tutorialId;
-  const teamId = req.params.teamId;
-  const team = await teamService.getTeamWithId(tutorialId, teamId);
+teamRouter.get(
+  '/:id/team/:teamId',
+  ...checkAccess(
+    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
+    isUserTutorOfTutorial,
+    isUserSubstituteOfTutorial,
+    isUserCorrectorOfTutorial
+  ),
+  async (req, res) => {
+    const tutorialId = req.params.id;
+    const teamId = req.params.teamId;
+    const team = await teamService.getTeamWithId(tutorialId, teamId);
 
-  return res.json(team);
-});
+    return res.json(team);
+  }
+);
 
 teamRouter.patch(
-  '/:tutorialId/team/:teamId',
-  ...checkRoleAccess(Role.ADMIN),
+  '/:id/team/:teamId',
+  ...checkAccess(hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]), isUserTutorOfTutorial),
   validateRequestBody(validateAgainstTeamDTO, 'Not a valid TeamDTO.'),
   async (req, res) => {
-    const tutorialId = req.params.tutorialId;
+    const tutorialId = req.params.id;
     const teamId = req.params.teamId;
     const dto = req.body;
 
@@ -50,20 +75,24 @@ teamRouter.patch(
   }
 );
 
-teamRouter.delete('/:tutorialId/team/:teamId', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const tutorialId = req.params.tutorialId;
-  const teamId = req.params.teamId;
-  await teamService.deleteTeam(tutorialId, teamId);
+teamRouter.delete(
+  '/:id/team/:teamId',
+  ...checkAccess(hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]), isUserTutorOfTutorial),
+  async (req, res) => {
+    const tutorialId = req.params.id;
+    const teamId = req.params.teamId;
+    await teamService.deleteTeam(tutorialId, teamId);
 
-  res.status(204).send();
-});
+    res.status(204).send();
+  }
+);
 
 teamRouter.put(
-  '/:tutorialId/team/:teamId/points', // TODO: Renam to /point
-  ...checkRoleAccess(Role.ADMIN),
+  '/:id/team/:teamId/points', // TODO: Renam to /point
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
   validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO'),
   async (req, res) => {
-    const tutorialId = req.params.tutorialId;
+    const tutorialId = req.params.id;
     const teamId = req.params.teamId;
     const dto = req.body;
 

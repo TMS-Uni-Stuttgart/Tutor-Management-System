@@ -1,5 +1,6 @@
 declare namespace Express {
-  interface Request {
+  export interface Request {
     hasAccess?: boolean;
+    tutorial?: import('../model/documents/TutorialDocument').TutorialDocument;
   }
 }
