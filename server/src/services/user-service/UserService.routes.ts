@@ -3,7 +3,12 @@ import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
 import { validateAgainstTutorialIdList } from 'shared/dist/validators/Tutorial';
 import { validateAgainstCreateUserDTO, validateAgainstUserDTO } from 'shared/dist/validators/User';
-import { checkRoleAccess, isTargetedUserSameAsRequestUser } from '../../middleware/AccessControl';
+import {
+  checkRoleAccess,
+  isTargetedUserSameAsRequestUser,
+  checkAccess,
+  hasUserOneOfRoles,
+} from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import { BadRequestError } from '../../model/Errors';
 import userService from './UserService.class';
@@ -28,17 +33,20 @@ userRouter.post(
   }
 );
 
-userRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id: string = req.params.id;
-  const user = await userService.getUserWithId(id);
+userRouter.get(
+  '/:id',
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isTargetedUserSameAsRequestUser),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const user = await userService.getUserWithId(id);
 
-  res.send(user);
-});
+    res.send(user);
+  }
+);
 
 userRouter.patch(
   '/:id',
-  ...checkRoleAccess(Role.ADMIN),
-  isTargetedUserSameAsRequestUser,
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isTargetedUserSameAsRequestUser),
   validateRequestBody(validateAgainstUserDTO, 'Not a valid UserDTO.'),
   async (req, res) => {
     const dto = req.body;
@@ -58,8 +66,7 @@ userRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
 
 userRouter.get(
   '/:id/tutorial',
-  ...checkRoleAccess(Role.ADMIN),
-  isTargetedUserSameAsRequestUser,
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isTargetedUserSameAsRequestUser),
   async (req, res) => {
     const id: string = req.params.id;
     const tutorials = await userService.getTutorialsOfUser(id);
@@ -87,8 +94,7 @@ userRouter.put(
 
 userRouter.post(
   '/:id/password',
-  ...checkRoleAccess(Role.ADMIN),
-  isTargetedUserSameAsRequestUser,
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isTargetedUserSameAsRequestUser),
   async (req, res) => {
     const id = req.params.id;
     const { password } = req.body;

@@ -9,6 +9,10 @@ export class AuthenticationError {
   constructor(readonly message: string) {}
 }
 
+export class PermissionDeniedError {
+  constructor(readonly message?: string) {}
+}
+
 export class DocumentNotFoundError {
   constructor(readonly message: string) {}
 }
@@ -44,6 +48,10 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
   }
 
   console.error(err);
+
+  if (err instanceof PermissionDeniedError) {
+    return res.status(403).send(new ErrorResponse(403, 'Permission denied.'));
+  }
 
   if (err instanceof DocumentNotFoundError) {
     return res.status(404).send(new ErrorResponse(404, err.message || 'Element was not found.'));
