@@ -41,7 +41,6 @@ tutorialRouter.post(
   }
 );
 
-// TODO: Add access of Tutor to the tutorial.
 tutorialRouter.get(
   '/:id',
   ...checkAccess(

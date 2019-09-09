@@ -116,7 +116,6 @@ export async function isUserTutorOfTutorial(req: Request, _: Response, next: Nex
     req.hasAccess = true;
   }
 
-  req.tutorial = tutorial;
   next();
 }
 
@@ -145,7 +144,6 @@ export async function isUserSubstituteOfTutorial(req: Request, _: Response, next
     });
   }
 
-  req.tutorial = tutorial;
   next();
 }
 
@@ -201,11 +199,26 @@ export function hasUserOneOfRoles(roles: Role | Role[]): RequestHandler {
   };
 }
 
+/**
+ * Returns the tutorial belonging to the request.
+ *
+ * If the request already has a `tutorial` on it (ie from previous middleware functions) this one will be reused. However, if the request does NOT have such a tutorial the tutorial with the given ID will be fetched from the TutorialService.
+ *
+ * In the end `req.tutorial` will be set to this tutorial to make future calls within the same request faster.
+ *
+ * The request needs to have an `id` param otherwise an `Error` will be thrown.
+ *
+ * @param req Request object
+ */
 async function getTutorialFromRequest(req: Request): Promise<TutorialDocument> {
+  assertRequestHasIdParam(req, 'getTutorialFromRequest()');
+
   const tutorialId = req.params.id;
   const tutorial = req.tutorial
     ? req.tutorial
     : await tutorialService.getDocumentWithID(tutorialId);
+
+  req.tutorial = tutorial;
 
   return tutorial;
 }
