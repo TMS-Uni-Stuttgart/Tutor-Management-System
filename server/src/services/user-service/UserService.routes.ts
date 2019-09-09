@@ -85,7 +85,6 @@ userRouter.put(
   }
 );
 
-// TODO: Allow user to edit own password (& tmp password?)
 userRouter.post(
   '/:id/password',
   ...checkRoleAccess(Role.ADMIN),

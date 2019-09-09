@@ -20,6 +20,7 @@ import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import { EncryptedDocument } from 'mongoose-field-encryption';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -167,6 +168,9 @@ class StudentService {
     if (!student) {
       return this.rejectStudentNotFound();
     }
+
+    // Make sure we get a document with decrypted fields.
+    (student as EncryptedDocument<StudentDocument>).decryptFieldsSync();
 
     const {
       _id,

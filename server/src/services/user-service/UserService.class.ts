@@ -121,9 +121,7 @@ class UserService {
     user.roles = dto.roles;
     user.tutorials = [...user.tutorials];
     
-    // Make sure we get a document with decrypted fields.
-    const updatedUser = await user.save() as EncryptedDocument<UserDocument>;
-    updatedUser.decryptFieldsSync();
+    const updatedUser = await user.save();
 
     return this.getUserOrReject(updatedUser);
   }
@@ -295,6 +293,9 @@ class UserService {
     if (!user) {
       return this.rejectUserNotFound();
     }
+
+    // Make sure we get a document with decrypted fields.
+    (user as EncryptedDocument<UserDocument>).decryptFieldsSync();
 
     const { _id, firstname, lastname, roles, tutorials, temporaryPassword, username } = user;
 
