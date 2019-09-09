@@ -1,11 +1,17 @@
 import { Document, Model, Types } from 'mongoose';
 import { Student } from 'shared/dist/model/Student';
-import { mapProp, prop, Ref, Typegoose } from 'typegoose';
+import { mapProp, prop, Ref, Typegoose, plugin } from 'typegoose';
 import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
+import databaseConfig, { DatabaseConfig } from '../../config/database';
+import { fieldEncryption } from 'mongoose-field-encryption';
 
+@plugin(fieldEncryption, {
+  secret: databaseConfig.secret,
+  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo'],
+})
 export class StudentSchema extends Typegoose
   implements
     Omit<

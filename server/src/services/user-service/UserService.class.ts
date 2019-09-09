@@ -17,6 +17,7 @@ import {
 } from '../../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import { EncryptedDocument } from 'mongoose-field-encryption';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -47,11 +48,20 @@ class UserService {
   }
 
   public async getUserCredentialsWithUsername(username: string): Promise<UserCredentials> {
-    const user: UserDocument | null = await UserModel.findOne({ username });
+    // The username field could be encrypted so we create a dummy document which will have the username encrypted (if the 'original' ones have it encrypted aswell).
+    const docWithEncryptedUsername: EncryptedDocument<UserDocument> = new UserModel({ username }) as EncryptedDocument<UserDocument>;
+    docWithEncryptedUsername.encryptFieldsSync();
 
-    if (!user) {
-      return Promise.reject('User not found.');
+    // The find query is done with the encrypted version of the username.
+    const userDocs: UserDocument[] = await UserModel.find({
+      username: docWithEncryptedUsername.username,
+    });
+
+    if (userDocs.length === 0) {
+      return Promise.reject('User with that username was not found.');
     }
+
+    const user = userDocs[0];
 
     return new UserCredentials(user.id, user.username, user.password);
   }
@@ -105,10 +115,15 @@ class UserService {
       await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
     }
 
-    const tutorialsToSave = user.tutorials.map(getIdOfDocumentRef);
-
-    await user.updateOne({ ...dto, tutorials: tutorialsToSave });
-    const updatedUser = await this.getDocumentWithId(id);
+    // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
+    user.firstname = dto.firstname;
+    user.lastname = dto.lastname;
+    user.roles = dto.roles;
+    user.tutorials = [...user.tutorials];
+    
+    // Make sure we get a document with decrypted fields.
+    const updatedUser = await user.save() as EncryptedDocument<UserDocument>;
+    updatedUser.decryptFieldsSync();
 
     return this.getUserOrReject(updatedUser);
   }

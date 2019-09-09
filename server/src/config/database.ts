@@ -1,4 +1,5 @@
 import { ConnectionOptions } from 'mongoose';
+import config from 'config';
 
 export interface DatabaseConfig {
   databaseURL: string;
@@ -6,19 +7,6 @@ export interface DatabaseConfig {
   config: ConnectionOptions;
 }
 
-const databaseConfig: DatabaseConfig = {
-  databaseURL: 'mongodb://localhost:27017/tms',
-  secret: 'keyboard cat',
-  config: {
-    useNewUrlParser: true,
-    // This is needed bc the docker-compose file
-    authSource: 'admin',
-    auth: {
-      user: 'root',
-      password: 'example',
-    },
-    authMechanism: 'SCRAM-SHA-1',
-  },
-};
+const databaseConfig: DatabaseConfig = config.get('database');
 
 export default databaseConfig;

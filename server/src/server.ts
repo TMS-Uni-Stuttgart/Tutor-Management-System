@@ -10,21 +10,18 @@ import session from 'express-session';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import uuid from 'uuid/v4';
+import databaseConfig from './config/database';
 // import databaseConfig from './config/database';
 import initPassport from './config/passport';
 import { handleError } from './model/Errors';
-import authenticationRouter from './services/user-service/authentication.routes';
+import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
 import scheinexamRouter from './services/scheinexam-service/ScheinexamService.routes';
 import sheetRouter from './services/sheet-service/SheetService.routes';
 import studentRouter from './services/student-service/StudentService.routes';
 import tutorialRouter from './services/tutorial-service/TutorialService.routes';
-import userRouter from './services/user-service/UserService.routes';
+import authenticationRouter from './services/user-service/authentication.routes';
 import userService from './services/user-service/UserService.class';
-import config from 'config';
-import { DatabaseConfig } from './config/database';
-import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
-
-const databaseConfig: DatabaseConfig = config.get('database');
+import userRouter from './services/user-service/UserService.routes';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
