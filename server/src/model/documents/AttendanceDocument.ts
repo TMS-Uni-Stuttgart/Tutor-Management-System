@@ -1,7 +1,8 @@
-import { Document, Model } from 'mongoose';
-import { Attendance, AttendanceState, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { prop, Typegoose } from 'typegoose';
 import { startOfDay } from 'date-fns';
+import { Document, Model } from 'mongoose';
+import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
+import { prop, Typegoose } from 'typegoose';
+import { TypegooseDocument } from '../../helpers/typings';
 
 export class AttendanceSchema extends Typegoose implements Omit<Attendance, 'id'> {
   @prop({ required: true })
@@ -22,7 +23,7 @@ const AttendanceModel: Model<AttendanceDocument> = new AttendanceSchema().getMod
 
 export function generateAttendanceDocumentFromDTO(dto: AttendanceDTO): AttendanceDocument {
   const date = startOfDay(new Date(dto.date));
-  const attendance: Omit<AttendanceSchema, keyof Typegoose> = {
+  const attendance: TypegooseDocument<AttendanceSchema> = {
     date,
     state: dto.state || undefined,
     note: dto.note,

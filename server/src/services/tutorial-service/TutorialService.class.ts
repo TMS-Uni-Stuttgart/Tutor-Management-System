@@ -1,10 +1,13 @@
+import { parse } from 'date-fns';
 import _ from 'lodash';
+import { Types } from 'mongoose';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
-import { Ref, Typegoose } from 'typegoose';
+import { Ref } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import TutorialModel, {
   TutorialDocument,
@@ -14,8 +17,6 @@ import { UserDocument } from '../../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import studentService from '../student-service/StudentService.class';
 import userService from '../user-service/UserService.class';
-import { Types } from 'mongoose';
-import { parse } from 'date-fns';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -46,7 +47,7 @@ class TutorialService {
 
     const { startDate, endDate } = this.parseStartAndEndTimes(startTime, endTime);
 
-    const tutorial: Omit<TutorialSchema, keyof Typegoose> = {
+    const tutorial: TypegooseDocument<TutorialSchema> = {
       ...dto,
       tutor,
       dates: dates.map(d => new Date(d)),

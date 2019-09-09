@@ -1,19 +1,19 @@
 import _ from 'lodash';
+import { Types } from 'mongoose';
+import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
-import { Typegoose } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import { adjustPoints } from '../../helpers/pointsHelpers';
+import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
+import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { Types } from 'mongoose';
-import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
-import { adjustPoints } from '../../helpers/pointsHelpers';
-import sheetService from '../sheet-service/SheetService.class';
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
@@ -39,7 +39,7 @@ class TeamService {
       studentIds.map(stud => studentService.getDocumentWithId(stud))
     );
 
-    const team: Omit<TeamSchema, keyof Typegoose> = {
+    const team: TypegooseDocument<TeamSchema> = {
       tutorial,
       students,
       points: new Types.Map(),

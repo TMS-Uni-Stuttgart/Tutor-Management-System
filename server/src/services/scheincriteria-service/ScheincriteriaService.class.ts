@@ -13,12 +13,13 @@ import {
 import {
   ScheinCriteriaDTO,
   ScheinCriteriaResponse,
-  ScheincriteriaSummaryByStudents,
   ScheinCriteriaSummary,
+  ScheincriteriaSummaryByStudents,
 } from 'shared/dist/model/ScheinCriteria';
+import { Student } from 'shared/dist/model/Student';
 import { validateSchema } from 'shared/dist/validators/helper';
-import { Typegoose } from 'typegoose';
 import * as Yup from 'yup';
+import { TypegooseDocument } from '../../helpers/typings';
 import ScheincriteriaModel, {
   ScheincriteriaDocument,
   ScheincriteriaSchema,
@@ -30,7 +31,6 @@ import {
   ScheincriteriaMetadata,
   ScheincriteriaMetadataKey,
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
-import { Student } from 'shared/dist/model/Student';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 
@@ -69,7 +69,7 @@ export class ScheincriteriaService {
 
   public async createCriteria(criteriaDTO: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
     const scheincriteria: Scheincriteria = this.generateCriteriaFromDTO(criteriaDTO);
-    const documentData: Omit<ScheincriteriaSchema, keyof Typegoose> = {
+    const documentData: TypegooseDocument<ScheincriteriaSchema> = {
       name: criteriaDTO.name,
       criteria: scheincriteria,
     };

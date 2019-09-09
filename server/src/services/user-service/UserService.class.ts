@@ -1,9 +1,11 @@
 import _ from 'lodash';
+import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
-import { isDocument, Typegoose } from 'typegoose';
+import { isDocument } from 'typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import { TypegooseDocument } from '../../helpers/typings';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import UserModel, {
   UserCredentials,
@@ -17,7 +19,6 @@ import {
 } from '../../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { EncryptedDocument } from 'mongoose-field-encryption';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -76,7 +77,7 @@ class UserService {
 
     const tutorials = await Promise.all(promises);
 
-    const userDoc: Omit<UserSchema, keyof Typegoose> = {
+    const userDoc: TypegooseDocument<UserSchema> = {
       ...dto,
       tutorials,
       temporaryPassword: dto.password,
@@ -299,10 +300,10 @@ class UserService {
     // Make sure we get a document with decrypted fields.
     (user as EncryptedDocument<UserDocument>).decryptFieldsSync();
 
-    const { _id, firstname, lastname, roles, tutorials, temporaryPassword, username } = user;
+    const { id, firstname, lastname, roles, tutorials, temporaryPassword, username } = user;
 
     return {
-      id: _id,
+      id,
       username,
       firstname,
       lastname,

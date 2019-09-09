@@ -1,11 +1,12 @@
 import { Types } from 'mongoose';
+import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
-import { Typegoose } from 'typegoose';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { adjustPoints } from '../../helpers/pointsHelpers';
+import { TypegooseDocument } from '../../helpers/typings';
 import {
   AttendanceDocument,
   generateAttendanceDocumentFromDTO,
@@ -20,7 +21,6 @@ import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { EncryptedDocument } from 'mongoose-field-encryption';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -60,7 +60,7 @@ class StudentService {
       await this.moveStudentToBeAttendeeOfNewTutorial(student, tutorial);
     }
 
-    const updatedStudent: Omit<StudentSchema, keyof Typegoose> = {
+    const updatedStudent: TypegooseDocument<StudentSchema> = {
       ...dto,
       tutorial: student.tutorial,
       team: student.team,
