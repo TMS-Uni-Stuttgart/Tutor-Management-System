@@ -169,6 +169,17 @@ export async function isUserCorrectorOfTutorial(req: Request, _: Response, next:
   next();
 }
 
+/**
+ * Checks if the user in the request is a tutor of the targeted student.
+ *
+ * This middleware must only be used on paths with an `id` parameter in it or else an `Error` will be thrown.
+ *
+ * If the user in the request is a tutor of the student than `req.hasAccess` will be set to `true`.
+ *
+ * @param req Request object
+ * @param res Response object (not used)
+ * @param next Next function
+ */
 export async function isUserTutorOfStudent(req: Request, _: Response, next: NextFunction) {
   assertRequestHasIdParam(req, 'isUserTutorOfStudent()');
 
@@ -186,6 +197,17 @@ export async function isUserTutorOfStudent(req: Request, _: Response, next: Next
   next();
 }
 
+/**
+ * Checks if the user in the request is a corrector of the targeted student.
+ *
+ * This middleware must only be used on paths with an `id` parameter in it or else an `Error` will be thrown.
+ *
+ * If the user in the request is a corrector of the student than `req.hasAccess` will be set to `true`.
+ *
+ * @param req Request object
+ * @param res Response object (not used)
+ * @param next Next function
+ */
 export async function isUserCorrectorOfStudent(req: Request, _: Response, next: NextFunction) {
   assertRequestHasIdParam(req, 'isUserCorrectorOfStudent()');
 
@@ -203,6 +225,17 @@ export async function isUserCorrectorOfStudent(req: Request, _: Response, next: 
   next();
 }
 
+/**
+ * Checks if the user in the request is a substitute tutor of the targeted student.
+ *
+ * This middleware must only be used on paths with an `id` parameter in it or else an `Error` will be thrown.
+ *
+ * If the user in the request is a substitute tutor of the student than `req.hasAccess` will be set to `true`.
+ *
+ * @param req Request object
+ * @param res Response object (not used)
+ * @param next Next function
+ */
 export async function isUserSubstituteTutorOfStudent(
   req: Request,
   _: Response,
