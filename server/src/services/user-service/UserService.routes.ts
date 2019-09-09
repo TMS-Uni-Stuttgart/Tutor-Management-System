@@ -56,12 +56,17 @@ userRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   res.status(204).send();
 });
 
-userRouter.get('/:id/tutorial', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id: string = req.params.id;
-  const tutorials = await userService.getTutorialsOfUser(id);
+userRouter.get(
+  '/:id/tutorial',
+  ...checkRoleAccess(Role.ADMIN),
+  isTargetedUserSameAsRequestUser,
+  async (req, res) => {
+    const id: string = req.params.id;
+    const tutorials = await userService.getTutorialsOfUser(id);
 
-  return res.json(tutorials);
-});
+    return res.json(tutorials);
+  }
+);
 
 userRouter.put(
   '/:id/tutorial',
@@ -81,18 +86,23 @@ userRouter.put(
 );
 
 // TODO: Allow user to edit own password (& tmp password?)
-userRouter.post('/:id/password', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id = req.params.id;
-  const { password } = req.body;
+userRouter.post(
+  '/:id/password',
+  ...checkRoleAccess(Role.ADMIN),
+  isTargetedUserSameAsRequestUser,
+  async (req, res) => {
+    const id = req.params.id;
+    const { password } = req.body;
 
-  if (!password) {
-    throw new BadRequestError('Request body does not contain a password.');
+    if (!password) {
+      throw new BadRequestError('Request body does not contain a password.');
+    }
+
+    await userService.setPasswordOfUser(id, password);
+
+    res.status(204).send();
   }
-
-  await userService.setPasswordOfUser(id, password);
-
-  res.status(204).send();
-});
+);
 
 userRouter.post('/:id/temporaryPassword', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
   const id = req.params.id;
