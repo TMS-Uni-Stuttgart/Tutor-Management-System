@@ -178,6 +178,50 @@ export async function isUserTutorOfStudent(req: Request, _: Response, next: Next
 
   const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialOfStudentFromRequest(req);
+
+  if (tutorial.isTutor(user)) {
+    req.hasAccess = true;
+  }
+
+  next();
+}
+
+export async function isUserCorrectorOfStudent(req: Request, _: Response, next: NextFunction) {
+  assertRequestHasIdParam(req, 'isUserCorrectorOfStudent()');
+
+  if (req.hasAccess) {
+    return next();
+  }
+
+  const user = assertUserWithIdInRequest(req);
+  const tutorial = await getTutorialOfStudentFromRequest(req);
+
+  if (tutorial.isCorrector(user)) {
+    req.hasAccess = true;
+  }
+
+  next();
+}
+
+export async function isUserSubstituteTutorOfStudent(
+  req: Request,
+  _: Response,
+  next: NextFunction
+) {
+  assertRequestHasIdParam(req, 'isUserSubstituteTutorOfStudent()');
+
+  if (req.hasAccess) {
+    return next();
+  }
+
+  const user = assertUserWithIdInRequest(req);
+  const tutorial = await getTutorialOfStudentFromRequest(req);
+
+  if (tutorial.isSubstitute(user)) {
+    req.hasAccess = true;
+  }
+
+  next();
 }
 
 /**

@@ -1,31 +1,38 @@
 import Router from 'express-promise-router';
 import { Attendance } from 'shared/dist/model/Attendance';
 import { Role } from 'shared/dist/model/Role';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { validateAgainstAttendanceDTO } from 'shared/dist/validators/Attendance';
+import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
 import {
   validateAgainstPresentationPointsDTO,
   validateAgainstStudentDTO,
 } from 'shared/dist/validators/Student';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import {
+  checkAccess,
+  checkRoleAccess,
+  hasUserOneOfRoles,
+  isUserTutorOfStudent,
+  isUserCorrectorOfStudent,
+  isUserSubstituteTutorOfStudent,
+} from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
-import studentService from './StudentService.class';
-import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import studentService from './StudentService.class';
 
 const studentRouter = Router();
 
-// TODO: Add access of Tutor to it's students (all paths!).
-studentRouter.get('/', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+studentRouter.get('/', ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]), async (_, res) => {
   const students: Student[] = await studentService.getAllStudents();
 
   return res.json(students);
 });
 
+// TODO: Check if the user is created in 'own' tutorial by non-admins.
 studentRouter.post(
   '/',
-  ...checkRoleAccess(Role.ADMIN),
+  ...checkRoleAccess([Role.ADMIN, Role.TUTOR]),
   validateRequestBody(validateAgainstStudentDTO, 'Not a valid StudentDTO.'),
   async (req, res) => {
     const dto = req.body;
@@ -35,16 +42,25 @@ studentRouter.post(
   }
 );
 
-studentRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id = req.params.id;
-  const student = await studentService.getStudentWithId(id);
+studentRouter.get(
+  '/:id',
+  ...checkAccess(
+    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
+    isUserTutorOfStudent,
+    isUserCorrectorOfStudent,
+    isUserSubstituteTutorOfStudent
+  ),
+  async (req, res) => {
+    const id = req.params.id;
+    const student = await studentService.getStudentWithId(id);
 
-  return res.json(student);
-});
+    return res.json(student);
+  }
+);
 
 studentRouter.patch(
   '/:id',
-  ...checkRoleAccess(Role.ADMIN),
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfStudent),
   validateRequestBody(validateAgainstStudentDTO, 'Not a valid StudentDTO.'),
   async (req, res) => {
     const id = req.params.id;
@@ -55,16 +71,24 @@ studentRouter.patch(
   }
 );
 
-studentRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id = req.params.id;
-  await studentService.deleteStudent(id);
+studentRouter.delete(
+  '/:id',
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfStudent),
+  async (req, res) => {
+    const id = req.params.id;
+    await studentService.deleteStudent(id);
 
-  res.status(204).send();
-});
+    res.status(204).send();
+  }
+);
 
 studentRouter.put(
   '/:id/attendance',
-  ...checkRoleAccess(Role.ADMIN),
+  ...checkAccess(
+    hasUserOneOfRoles(Role.ADMIN),
+    isUserTutorOfStudent,
+    isUserSubstituteTutorOfStudent
+  ),
   validateRequestBody(validateAgainstAttendanceDTO, 'Not a valid StudentDTO.'),
   async (req, res) => {
     const id = req.params.id;
@@ -78,7 +102,7 @@ studentRouter.put(
 
 studentRouter.put(
   '/:id/points', // TODO: Rename to /point
-  ...checkRoleAccess(Role.ADMIN),
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfStudent, isUserCorrectorOfStudent),
   validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO.'),
   async (req, res) => {
     const id = req.params.id;
@@ -92,7 +116,7 @@ studentRouter.put(
 
 studentRouter.put(
   '/:id/examresult',
-  ...checkRoleAccess(Role.ADMIN),
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfStudent, isUserCorrectorOfStudent),
   validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO.'),
   async (req, res) => {
     const id = req.params.id;
@@ -106,7 +130,11 @@ studentRouter.put(
 
 studentRouter.put(
   '/:id/presentation',
-  ...checkRoleAccess(Role.ADMIN),
+  ...checkAccess(
+    hasUserOneOfRoles(Role.ADMIN),
+    isUserTutorOfStudent,
+    isUserSubstituteTutorOfStudent
+  ),
   validateRequestBody(validateAgainstPresentationPointsDTO, 'Not a valid PresentationPointsDTO.'),
   async (req, res) => {
     const id = req.params.id;
@@ -118,11 +146,17 @@ studentRouter.put(
   }
 );
 
-studentRouter.get('/:id/scheincriteria', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const id = req.params.id;
-  const result: ScheinCriteriaSummary = await scheincriteriaService.getCriteriaResultOfStudent(id);
+studentRouter.get(
+  '/:id/scheincriteria',
+  ...checkAccess(hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]), isUserTutorOfStudent),
+  async (req, res) => {
+    const id = req.params.id;
+    const result: ScheinCriteriaSummary = await scheincriteriaService.getCriteriaResultOfStudent(
+      id
+    );
 
-  res.json(result);
-});
+    res.json(result);
+  }
+);
 
 export default studentRouter;
