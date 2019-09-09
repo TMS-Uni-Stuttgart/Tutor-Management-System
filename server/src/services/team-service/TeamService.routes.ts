@@ -1,17 +1,16 @@
 import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
+import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
 import { validateAgainstTeamDTO } from 'shared/dist/validators/Team';
 import {
-  checkRoleAccess,
   checkAccess,
   hasUserOneOfRoles,
-  isUserTutorOfTutorial,
-  isUserSubstituteOfTutorial,
   isUserCorrectorOfTutorial,
+  isUserSubstituteOfTutorial,
+  isUserTutorOfTutorial,
 } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamService from './TeamService.class';
-import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
 
 const teamRouter = Router();
 
