@@ -1,10 +1,11 @@
 import { Document, Model, Schema, Types } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import { arrayProp, mapProp, prop, Ref, Typegoose } from 'typegoose';
+import { arrayProp, mapProp, prop, Ref, Typegoose, instanceMethod, InstanceType } from 'typegoose';
 import { CollectionName } from '../CollectionName';
 import { StudentDocument } from './StudentDocument';
 import { TeamDocument, TeamSchema } from './TeamDocument';
 import { UserDocument } from './UserDocument';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 
 export class TutorialSchema extends Typegoose
   implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams' | 'substitutes'> {
@@ -34,6 +35,41 @@ export class TutorialSchema extends Typegoose
 
   @mapProp({ of: String, default: {} })
   substitutes?: Types.Map<string>;
+
+  @instanceMethod
+  isTutor(this: InstanceType<TutorialSchema>, user: UserDocument): boolean {
+    if (!this.tutor) {
+      return false;
+    }
+
+    return getIdOfDocumentRef(this.tutor) === user.id;
+  }
+
+  @instanceMethod
+  isSubstitute(this: InstanceType<TutorialSchema>, user: UserDocument): boolean {
+    if (!this.substitutes) {
+      return false;
+    }
+
+    for (const subst of this.substitutes.values()) {
+      if (subst === user.id) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @instanceMethod
+  isCorrector(this: InstanceType<TutorialSchema>, user: UserDocument): boolean {
+    for (const corrector of this.correctors) {
+      if (getIdOfDocumentRef(corrector) === user.id) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
 
 export interface TutorialDocument extends TutorialSchema, Document {}

@@ -4,6 +4,8 @@ import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import { TutorialDocument } from '../model/documents/TutorialDocument';
 import { PermissionDeniedError } from '../model/Errors';
 import tutorialService from '../services/tutorial-service/TutorialService.class';
+import studentService from '../services/student-service/StudentService.class';
+import { UserDocument } from '../model/documents/UserDocument';
 
 /**
  * Checks if the User of the request is authenticated. If he is NOT than the request is immediatly aborted and a status of 401 is returned.
@@ -109,10 +111,10 @@ export async function isUserTutorOfTutorial(req: Request, _: Response, next: Nex
     return next();
   }
 
-  const userId = assertUserWithIdInRequest(req);
+  const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialFromRequest(req);
 
-  if (tutorial.tutor && getIdOfDocumentRef(tutorial.tutor) === userId) {
+  if (tutorial.isTutor(user)) {
     req.hasAccess = true;
   }
 
@@ -133,15 +135,11 @@ export async function isUserTutorOfTutorial(req: Request, _: Response, next: Nex
 export async function isUserSubstituteOfTutorial(req: Request, _: Response, next: NextFunction) {
   assertRequestHasIdParam(req, 'isUserSubstituteOfTutorial()');
 
-  const userId = assertUserWithIdInRequest(req);
+  const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialFromRequest(req);
 
-  if (tutorial.substitutes) {
-    tutorial.substitutes.forEach(subst => {
-      if (subst === userId) {
-        req.hasAccess = true;
-      }
-    });
+  if (tutorial.isSubstitute(user)) {
+    req.hasAccess = true;
   }
 
   next();
@@ -161,14 +159,25 @@ export async function isUserSubstituteOfTutorial(req: Request, _: Response, next
 export async function isUserCorrectorOfTutorial(req: Request, _: Response, next: NextFunction) {
   assertRequestHasIdParam(req, 'isUserCorrectorOfTutorial()');
 
-  const userId = assertUserWithIdInRequest(req);
+  const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialFromRequest(req);
 
-  if (tutorial.correctors.findIndex(corr => getIdOfDocumentRef(corr) === userId) > -1) {
+  if (tutorial.isCorrector(user)) {
     req.hasAccess = true;
   }
 
   next();
+}
+
+export async function isUserTutorOfStudent(req: Request, _: Response, next: NextFunction) {
+  assertRequestHasIdParam(req, 'isUserTutorOfStudent()');
+
+  if (req.hasAccess) {
+    return next();
+  }
+
+  const user = assertUserWithIdInRequest(req);
+  const tutorial = await getTutorialOfStudentFromRequest(req);
 }
 
 /**
@@ -223,6 +232,21 @@ async function getTutorialFromRequest(req: Request): Promise<TutorialDocument> {
   return tutorial;
 }
 
+async function getTutorialOfStudentFromRequest(req: Request): Promise<TutorialDocument> {
+  assertRequestHasIdParam(req, 'getTutorialOfStudentFromRequest()');
+
+  const studentId = req.params.id;
+  const student = req.student ? req.student : await studentService.getDocumentWithId(studentId);
+  const tutorial = req.tutorial
+    ? req.tutorial
+    : await tutorialService.getDocumentWithID(getIdOfDocumentRef(student.tutorial));
+
+  req.tutorial = tutorial;
+  req.student = student;
+
+  return tutorial;
+}
+
 /**
  * Returns the ID property of the user in the request if possbile.
  *
@@ -232,7 +256,7 @@ async function getTutorialFromRequest(req: Request): Promise<TutorialDocument> {
  *
  * @param req Request to check
  */
-function assertUserWithIdInRequest(req: Request): string {
+function assertUserWithIdInRequest(req: Request): UserDocument {
   if (!req.user) {
     throw new PermissionDeniedError('No user in given request.');
   }
@@ -241,7 +265,11 @@ function assertUserWithIdInRequest(req: Request): string {
     throw new PermissionDeniedError('No id in user in given request.');
   }
 
-  return String(req.user.id);
+  if (typeof req.user.id !== 'string') {
+    throw new PermissionDeniedError('ID in user is not a string');
+  }
+
+  return req.user;
 }
 
 /**
