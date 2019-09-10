@@ -25,6 +25,12 @@ jobs:
         yarn install
       env:
         CI: true
+    - name: Build shared package
+      working-directory: shared/
+      run: |
+        yarn build
+      env:
+        CI: true
     - name: Check code quality on client
       working-directory: client/
       run: |
