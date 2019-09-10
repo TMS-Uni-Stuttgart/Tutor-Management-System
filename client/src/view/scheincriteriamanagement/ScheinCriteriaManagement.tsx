@@ -1,6 +1,10 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import {
+  ScheinCriteriaResponse as ScheinCriteria,
+  ScheinCriteriaDTO,
+} from 'shared/dist/model/ScheinCriteria';
 import ScheinCriteriaForm, {
   ScheinCriteriaFormCallback,
 } from '../../components/forms/ScheinCriteriaForm';
@@ -9,8 +13,6 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { ScheinCriteria } from '../../typings/RatingModel';
-import { ScheinCriteriaDTO } from '../../typings/RequestDTOs';
 import ScheinCriteriaRow from './components/ScheinCriteriaRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -53,8 +55,8 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   ) => {
     const dto: ScheinCriteriaDTO = {
       identifier,
+      name,
       data: {
-        name,
         ...values,
       },
     };
@@ -84,8 +86,8 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   ) => {
     const dto: ScheinCriteriaDTO = {
       identifier,
+      name,
       data: {
-        name,
         ...values,
       },
     };

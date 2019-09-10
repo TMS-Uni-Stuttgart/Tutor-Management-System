@@ -1,12 +1,12 @@
 import { Collapse, List, ListItem, ListItemText } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { AccountConvert as SubstituteTutorialIcon } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
-import { LoggedInUserTutorial } from '../../../typings/ServerResponses';
+import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 import { getTutorialRelatedPath, RouteType } from '../../../util/RoutingPath';
 import DrawerListItem from './DrawerListItem';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

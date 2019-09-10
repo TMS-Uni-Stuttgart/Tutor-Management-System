@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
-import { ScheinExam } from '../typings/RatingModel';
-import { NamedElement, Student } from '../typings/ServerResponses';
+import { NamedElement } from 'shared/dist/model/Common';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { Student } from 'shared/dist/model/Student';
 
 interface NameOptions {
   lastNameFirst: boolean;
@@ -26,8 +27,7 @@ export function getDisplayStringOfScheinExam(exam: ScheinExam): string {
 }
 
 export function parseDateToMapKey(date: Date): string {
-  // Cut the milliseconds from the ISO string bc the server does not use the milliseconds in keys for maps.
-  return date.toISOString().replace(/\.[0-9]{3}/, '');
+  return date.toDateString();
 }
 
 export function getSumOfPointsOfStudentInScheinExam(

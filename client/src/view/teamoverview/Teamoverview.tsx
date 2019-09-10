@@ -3,15 +3,14 @@ import { createStyles, makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { Team, TeamDTO } from 'shared/dist/model/Team';
 import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamForm';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import TeamTableRow from '../../components/TeamTableRow';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { TeamDTO } from '../../typings/RequestDTOs';
-import { Team } from '../../typings/ServerResponses';
 import { StudentWithFetchedTeam } from '../../typings/types';
-import LoadingSpinner from '../../components/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

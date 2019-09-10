@@ -6,34 +6,43 @@
   "main": "build/server.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc -w",
-    "prestart": "yarn build",
-    "start": "nodemon .",
+    "build": "tsc -b",
+    "build:watch": "tsc -b -w",
+    "start": "ts-node-dev --no-notify . --no-lazy",
     "test": "echo \"Error: no test specified\" && exit 0",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
-    "eslint:fix": "eslint --fix \"src/**/*.ts?(x)\"",
+    "format": "eslint --fix \"src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
-    "ts:check": "tsc --project . --noEmit",
-    "ts:check:watch": "tsc --project . --noEmit -w"
+    "ts:check": "tsc -b --force && tsc --project . --noEmit"
   },
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "config": "^3.2.2",
+    "connect-mongo": "^3.0.0",
     "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
     "express-session": "^1.16.2",
+    "js-yaml": "^3.13.1",
+    "lodash": "^4.17.15",
     "mongoose": "^5.6.9",
+    "mongoose-field-encryption": "^3.0.0",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
+    "reflect-metadata": "^0.1.13",
+    "shared": "1.0.0",
+    "typegoose": "^5.9.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@types/bcrypt": "^3.0.0",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/config": "^0.0.34",
+    "@types/connect-mongo": "^0.0.43",
     "@types/express": "^4.17.0",
     "@types/express-session": "^1.15.13",
     "@types/mongoose": "^5.5.12",
     "@types/passport": "^1.0.0",
     "@types/passport-http": "^0.3.8",
-    "shared": "1.0.0"
+    "ts-node-dev": "^1.0.0-pre.42"
   }
 }

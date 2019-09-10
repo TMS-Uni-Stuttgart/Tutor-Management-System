@@ -1,13 +1,28 @@
 import bodyParser from 'body-parser';
+import ConnectMongo, {
+  MongooseConnectionOptions,
+  MongoUrlOptions,
+  NativeMongoOptions,
+  NativeMongoPromiseOptions,
+} from 'connect-mongo';
 import express from 'express';
 import session from 'express-session';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import uuid from 'uuid/v4';
 import databaseConfig from './config/database';
+// import databaseConfig from './config/database';
 import initPassport from './config/passport';
-import authenticationRouter from './routes/authentication';
-import userService from './services/UserService';
+import { handleError } from './model/Errors';
+import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
+import scheinexamRouter from './services/scheinexam-service/ScheinexamService.routes';
+import sheetRouter from './services/sheet-service/SheetService.routes';
+import studentRouter from './services/student-service/StudentService.routes';
+import tutorialRouter from './services/tutorial-service/TutorialService.routes';
+import authenticationRouter from './services/user-service/authentication.routes';
+import userService from './services/user-service/UserService.class';
+import userRouter from './services/user-service/UserService.routes';
+import languageRouter from './services/language-service/LanguageService.routes';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
@@ -18,19 +33,27 @@ mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err =>
 });
 
 const db = mongoose.connection;
+const app = express();
+const BASE_API_PATH = '/api';
+const MongoStore = ConnectMongo(session);
+const mongoStoreOptions: { secret: string } & (
+  | MongoUrlOptions
+  | MongooseConnectionOptions
+  | NativeMongoOptions
+  | NativeMongoPromiseOptions) = {
+  mongooseConnection: mongoose.connection,
+  secret: databaseConfig.secret,
+};
+
 db.once('open', async () => {
   console.log('Connection to MongoDB database established.');
 
-  try {
-    await userService.getUserWithUsername('admin');
-  } catch (err) {
+  userService.getUserCredentialsWithUsername('admin').catch(async () => {
     console.log('Initializing new admin user because there is none..');
     await userService.initAdmin();
     console.log('Admin initializied.');
-  }
+  });
 });
-
-const app = express();
 
 initPassport(passport);
 
@@ -42,9 +65,10 @@ app.use(
     genid: () => {
       return uuid();
     },
-    secret: 'keyboard cat',
+    secret: databaseConfig.secret,
+    store: new MongoStore(mongoStoreOptions),
     resave: false,
-    // Is ued to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
+    // Is used to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
     rolling: true,
     saveUninitialized: true,
     cookie: {
@@ -57,6 +81,15 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', authenticationRouter);
+app.use(BASE_API_PATH, authenticationRouter);
+app.use(`${BASE_API_PATH}/user`, userRouter);
+app.use(`${BASE_API_PATH}/tutorial`, tutorialRouter);
+app.use(`${BASE_API_PATH}/student`, studentRouter);
+app.use(`${BASE_API_PATH}/sheet`, sheetRouter);
+app.use(`${BASE_API_PATH}/scheinexam`, scheinexamRouter);
+app.use(`${BASE_API_PATH}/scheincriteria`, scheincriteriaRouter);
+app.use(`${BASE_API_PATH}/locales`, languageRouter);
+
+app.use(handleError);
 
 app.listen(8080, () => console.log('Server started on port 8080.'));

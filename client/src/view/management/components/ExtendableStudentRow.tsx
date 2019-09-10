@@ -9,9 +9,10 @@ import {
 import clsx from 'clsx';
 import { AccountSwitch } from 'mdi-material-ui';
 import React, { useState } from 'react';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 import ListItemMenu from '../../../components/ListItemMenu';
 import PaperTableRow from '../../../components/PaperTableRow';
-import { ScheinCriteriaSummary, Tutorial } from '../../../typings/ServerResponses';
 import { StudentWithFetchedTeam } from '../../../typings/types';
 import ScheinCriteriaStatusTable from './ScheinCriteriaStatusTable';
 import StatusProgress from './StatusProgress';

@@ -1,14 +1,15 @@
-import { BasicStrategy } from 'passport-http';
+import bcrypt from 'bcryptjs';
 import { PassportStatic } from 'passport';
-import { User } from 'shared/typings/ServerResponse';
-import bcrypt from 'bcrypt';
-import userService from '../services/UserService';
+import { BasicStrategy } from 'passport-http';
+import userService from '../services/user-service/UserService.class';
+import { UserCredentials } from '../model/documents/UserDocument';
+import { AuthenticationError } from '../model/Errors';
 
 export default function initPassport(passport: PassportStatic) {
   passport.use(
     new BasicStrategy(async (username, password, done) => {
       try {
-        const user = await userService.getUserWithUsername(username);
+        const user: UserCredentials = await userService.getUserCredentialsWithUsername(username);
         const isCorrectPassword = await bcrypt.compare(password, user.password);
 
         if (isCorrectPassword) {
@@ -22,9 +23,9 @@ export default function initPassport(passport: PassportStatic) {
     })
   );
 
-  passport.serializeUser((user, done) => {
-    if (typeof user === 'object' && (user as User).id !== undefined) {
-      done(null, (user as User).id);
+  passport.serializeUser((user: unknown, done) => {
+    if (typeof user === 'object' && !!user && '_id' in user) {
+      done(null, (user as any)._id);
     } else {
       done(null, false);
     }
@@ -35,7 +36,14 @@ export default function initPassport(passport: PassportStatic) {
       userService
         .getUserWithId(id)
         .then(user => done(null, user))
-        .catch(err => done(err, null));
+        .catch(() =>
+          done(
+            new AuthenticationError(
+              'Could not find a user with the given ID. This could be due to an old cookie. Destorying the old session, now. Please try to login again.'
+            ),
+            null
+          )
+        );
     } else {
       done(null, false);
     }

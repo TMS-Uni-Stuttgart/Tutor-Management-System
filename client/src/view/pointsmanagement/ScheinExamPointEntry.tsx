@@ -1,17 +1,17 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { WithSnackbarProps, withSnackbar } from 'notistack';
-import { RouteComponentProps, withRouter } from 'react-router';
-import { useAxios } from '../../hooks/FetchingService';
-import { Student } from '../../typings/ServerResponses';
-import TableWithPadding from '../../components/TableWithPadding';
-import PointsRow, { PointsSaveCallback } from './components/PointsRow';
-import { getNameOfEntity, getDisplayStringOfScheinExam } from '../../util/helperFunctions';
-import { Person as PersonIcon } from '@material-ui/icons';
-import { ScheinExam } from '../../typings/RatingModel';
 import { Typography } from '@material-ui/core';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Person as PersonIcon } from '@material-ui/icons';
+import { withSnackbar, WithSnackbarProps } from 'notistack';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { Student } from 'shared/dist/model/Student';
 import CustomSelect from '../../components/CustomSelect';
-import { UpdatePointsDTO } from '../../typings/RequestDTOs';
+import TableWithPadding from '../../components/TableWithPadding';
+import { useAxios } from '../../hooks/FetchingService';
+import { getDisplayStringOfScheinExam, getNameOfEntity } from '../../util/helperFunctions';
+import PointsRow, { PointsSaveCallback } from './components/PointsRow';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

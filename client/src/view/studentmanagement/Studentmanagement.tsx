@@ -3,13 +3,14 @@ import { createStyles, makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import { StudentDTO } from 'shared/dist/model/Student';
+import { Team } from 'shared/dist/model/Team';
 import StudentForm, { StudentFormSubmitCallback } from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { StudentDTO } from '../../typings/RequestDTOs';
-import { Team, ScheinCriteriaSummary } from '../../typings/ServerResponses';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import { getNameOfEntity } from '../../util/helperFunctions';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
@@ -111,7 +112,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       enqueueSnackbar('Student wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
       console.error(reason);
-      enqueueSnackbar('Student konnt nicht erstellt werden.', { variant: 'error' });
+      enqueueSnackbar('Student konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
       setSubmitting(false);
     }

@@ -1,19 +1,21 @@
-import { SubstituteDTO, TutorialDTO } from '../../typings/RequestDTOs';
-import { Student, Tutorial, User } from '../../typings/ServerResponses';
+import { Student } from 'shared/dist/model/Student';
+import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
+import { User } from 'shared/dist/model/User';
 import {
+  StudentByTutorialSlotSummaryMap,
   StudentScheinCriteriaSummaryMap,
   StudentWithFetchedTeam,
   TutorialWithFetchedCorrectors,
   TutorialWithFetchedStudents,
   TutorialWithFetchedTutor,
-  StudentByTutorialSlotSummaryMap,
 } from '../../typings/types';
 import {
   transformMultipleTutorialResponse,
   transformTutorialResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
-import { fetchTeamsOfStudents } from './Student';
+import { fetchTeamsOfStudents, getScheinCriteriaSummaryOfAllStudents } from './Student';
+import { getUser } from './User';
 
 export async function getAllTutorials(): Promise<Tutorial[]> {
   const response = await axios.get<Tutorial[]>('tutorial', {
@@ -32,7 +34,7 @@ export async function getAllTutorialsAndFetchTutor(): Promise<TutorialWithFetche
   const promises: Promise<TutorialWithFetchedTutor>[] = [];
 
   for (const tutorial of tutorials) {
-    promises.push(getTutorOfTutorial(tutorial.id).then(tutor => ({ ...tutorial, tutor })));
+    promises.push(fetchTutorOfTutorial(tutorial));
   }
 
   return Promise.all(promises);
@@ -168,15 +170,15 @@ export async function deleteTutorial(id: string): Promise<void> {
   }
 }
 
-export async function getTutorOfTutorial(id: string): Promise<User | undefined> {
-  const response = await axios.get<User | undefined>(`tutorial/${id}/user`);
+// export async function getTutorOfTutorial(id: string): Promise<User | undefined> {
+//   const response = await axios.get<User | undefined>(`tutorial/${id}/user`);
 
-  if (response.status === 200) {
-    return response.data;
-  }
+//   if (response.status === 200) {
+//     return response.data;
+//   }
 
-  return Promise.reject(`Wrong response code (${response.status}).`);
-}
+//   return Promise.reject(`Wrong response code (${response.status}).`);
+// }
 
 export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
   const response = await axios.get<Student[]>(`tutorial/${id}/student`);
@@ -236,7 +238,7 @@ export async function setSubstituteTutor(
 }
 
 async function fetchTutorOfTutorial(tutorial: Tutorial): Promise<TutorialWithFetchedTutor> {
-  const tutor = await getTutorOfTutorial(tutorial.id);
+  const tutor = tutorial.tutor ? await getUser(tutorial.tutor) : undefined;
 
   return { ...tutorial, tutor };
 }
@@ -252,11 +254,25 @@ async function fetchCorrectorsOfTutorial(
 export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): Promise<
   StudentByTutorialSlotSummaryMap
 > {
-  const response = await axios.get<StudentByTutorialSlotSummaryMap>(`scheincriteria/tutorial`);
+  const data: StudentByTutorialSlotSummaryMap = {};
+  const [tutorials, summaries] = await Promise.all([
+    getAllTutorials(),
+    getScheinCriteriaSummaryOfAllStudents(),
+  ]);
 
-  if (response.status === 200) {
-    return response.data;
-  }
+  Object.entries(summaries).forEach(([studentId, summary]) => {
+    tutorials.forEach(tutorial => {
+      if (tutorial.students.findIndex(id => id === studentId) !== -1) {
+        const key: string = tutorial.slot.toString();
 
-  return Promise.reject(`Wrong response code (${response.status}).`);
+        if (!data[key]) {
+          data[key] = [];
+        }
+
+        data[key].push(summary);
+      }
+    });
+  });
+
+  return data;
 }

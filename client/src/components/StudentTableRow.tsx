@@ -9,11 +9,11 @@ import {
 import { lighten } from '@material-ui/core/styles';
 import { Person as PersonIcon } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
-import { ScheinCriteriaSummary } from '../typings/ServerResponses';
 import { StudentWithFetchedTeam } from '../typings/types';
 import ListItemMenu from './ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
 import { useAxios } from '../hooks/FetchingService';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 
 interface Props extends PaperTableRowProps {
   student: StudentWithFetchedTeam;

@@ -6,15 +6,27 @@
     "scripts",
     "shared"
   ],
+  "scripts": {
+    "format": "yarn format:client && yarn format:server && yarn format:shared",
+    "format:client": "echo Formatting client && cd ./client && yarn format",
+    "format:server": "echo Formatting server && cd ./server && yarn format",
+    "format:shared": "echo Formatting shared && cd ./shared && yarn format"
+  },
   "devDependencies": {
-    "@types/node": "^12.7.1",
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
-    "eslint": "^6.1.0",
-    "eslint-config-prettier": "^6.0.0",
+    "@types/node": "^12.7.4",
+    "@types/yup": "^0.26.23",
+    "@typescript-eslint/eslint-plugin": "^2.1.0",
+    "@typescript-eslint/parser": "^2.1.0",
+    "eslint": "^6.3.0",
+    "eslint-config-prettier": "^6.2.0",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.3",
     "prettier": "^1.18.2",
-    "typescript": "^3.5.3"
+    "ts-node": "^8.3.0",
+    "typescript": "^3.6.2"
+  },
+  "dependencies": {
+    "date-fns": "^2.1.0",
+    "yup": "^0.27.0"
   }
 }

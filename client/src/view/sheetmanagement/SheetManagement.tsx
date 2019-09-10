@@ -1,17 +1,17 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { ExerciseDTO, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 import SheetForm, {
-  SheetFormSubmitCallback,
   getInitialSheetFormState,
+  SheetFormExercise,
+  SheetFormSubmitCallback,
 } from '../../components/forms/SheetForm';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { Sheet } from '../../typings/RatingModel';
-import { SheetDTO } from '../../typings/RequestDTOs';
 import SheetRow from './components/SheetRow';
-import LoadingSpinner from '../../components/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,6 +20,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
+
+function convertSheetFormExercisesToDTOs(exercises: SheetFormExercise[]): ExerciseDTO[] {
+  return exercises.map(ex => ({
+    exNo: Number.parseInt(ex.exNo),
+    maxPoints: Number.parseFloat(ex.maxPoints),
+    bonus: ex.bonus,
+  }));
+}
 
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
@@ -78,7 +86,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
 
     const sheetDTO: SheetDTO = {
       sheetNo,
-      exercises,
+      exercises: convertSheetFormExercisesToDTOs(exercises),
       bonusSheet,
     };
 
@@ -104,7 +112,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   ) => {
     const sheetDTO: SheetDTO = {
       sheetNo,
-      exercises,
+      exercises: convertSheetFormExercisesToDTOs(exercises),
       bonusSheet,
     };
 

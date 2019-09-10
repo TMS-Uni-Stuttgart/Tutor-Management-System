@@ -9,9 +9,10 @@ import clsx from 'clsx';
 import { FormikHelpers } from 'formik';
 import pwGenerator from 'generate-password';
 import React, { useState } from 'react';
+import { Role } from 'shared/dist/model/Role';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
-import { Role, Tutorial } from '../../typings/ServerResponses';
 import { UserWithFetchedTutorials } from '../../typings/types';
 import { passwordValidationSchema } from '../../util/validationSchemas';
 import FormikSelect from './components/FormikSelect';
@@ -107,7 +108,7 @@ function getValidationSchema(
   isEditMode: boolean
 ): Yup.ObjectSchema<Yup.Shape<Partial<UserFormState>, Partial<UserFormState>>> {
   let validationShape: {
-    [K in keyof UserFormState]?: Yup.Schema<string | undefined> | Yup.ArraySchema<string>;
+    [K in keyof UserFormState]?: Yup.Schema<any>;
   } = {
     firstname: Yup.string().required('Benötigt'),
     lastname: Yup.string().required('Benötigt'),

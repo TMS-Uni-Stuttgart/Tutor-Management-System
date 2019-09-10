@@ -15,8 +15,8 @@ import {
 } from '@material-ui/icons';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import { Team } from 'shared/dist/model/Team';
 import ListItemMenu from '../../../components/ListItemMenu';
-import { Team } from '../../../typings/ServerResponses';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
