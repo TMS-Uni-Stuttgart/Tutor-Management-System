@@ -84,9 +84,9 @@ export function isTargetedUserSameAsRequestUser(req: Request, _: Response, next:
     return next();
   }
 
-  const userId = assertUserWithIdInRequest(req);
+  const user: UserDocument = assertUserWithIdInRequest(req);
 
-  if (userId === req.params.id) {
+  if (user.id === req.params.id) {
     req.hasAccess = true;
   }
 
