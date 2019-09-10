@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
-import { ScheinExam } from '../typings/RatingModel';
-import { NamedElement, Student } from '../typings/ServerResponses';
+import { NamedElement } from 'shared/dist/model/Common';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { Student } from 'shared/dist/model/Student';
 
 interface NameOptions {
   lastNameFirst: boolean;

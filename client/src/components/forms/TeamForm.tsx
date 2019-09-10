@@ -1,9 +1,9 @@
 import React from 'react';
+import { Team } from 'shared/dist/model/Team';
 import { FormikSubmitCallback } from '../../types';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikFilterableSelect from './components/FormikFilterableSelect';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { Team } from '../../typings/ServerResponses';
 
 export type TeamFormSubmitCallback = FormikSubmitCallback<TeamFormState>;
 

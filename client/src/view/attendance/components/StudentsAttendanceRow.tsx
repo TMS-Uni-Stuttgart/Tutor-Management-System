@@ -18,12 +18,13 @@ import clsx from 'clsx';
 import { Formik, FormikHelpers } from 'formik';
 import { NoteText as NoteTextIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
+import { Attendance, AttendanceState } from 'shared/dist/model/Attendance';
+import { Role } from 'shared/dist/model/Role';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import PaperTableRow from '../../../components/PaperTableRow';
 import { useLogin } from '../../../hooks/LoginService';
 import { FormikSubmitCallback } from '../../../types';
-import { Attendance, AttendanceState, Role } from '../../../typings/ServerResponses';
 import { StudentWithFetchedTeam } from '../../../typings/types';
 
 const ATTENDANCE_COLORS: { [K in keyof typeof AttendanceState]: string } = {

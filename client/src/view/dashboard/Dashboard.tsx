@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Role } from 'shared/dist/model/Role';
+import { Tutorial } from 'shared/dist/model/Tutorial';
+import { LoggedInUser } from 'shared/dist/model/User';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getTutorial } from '../../hooks/fetching/Tutorial';
 import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
-import { LoggedInUser, Role, Tutorial } from '../../typings/ServerResponses';
 import {
   StudentByTutorialSlotSummaryMap,
   StudentScheinCriteriaSummaryMap,

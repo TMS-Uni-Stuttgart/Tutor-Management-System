@@ -7,7 +7,7 @@ import { useLogin } from '../../hooks/LoginService';
 import { ROUTES, RouteType } from '../../util/RoutingPath';
 import DrawerListItem from './components/DrawerListItem';
 import TutorialSubList from './components/TutorialSubList';
-import { Role } from '../../typings/ServerResponses';
+import { Role } from 'shared/dist/model/Role';
 
 const DRAWER_WIDTH_OPEN = 240;
 const DRAWER_WIDTH_CLOSED = 56;

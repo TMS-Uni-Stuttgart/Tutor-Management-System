@@ -1,19 +1,18 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { ScheinExam, ScheinExamDTO } from 'shared/dist/model/Scheinexam';
 import ScheinExamForm, {
+  getInitialExamFormState,
   ScheinExamFormState,
   ScheinExamFormSubmitCallback,
-  getInitialExamFormState,
 } from '../../components/forms/ScheinExamForm';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { ScheinExam } from '../../typings/RatingModel';
-import { ScheinExamDTO } from '../../typings/RequestDTOs';
 import { getDisplayStringOfScheinExam } from '../../util/helperFunctions';
 import ScheinExamRow from './components/ScheinExamRow';
-import LoadingSpinner from '../../components/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

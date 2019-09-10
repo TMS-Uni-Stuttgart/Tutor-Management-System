@@ -11,10 +11,10 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { ScheinCriteriaStatus } from '../../../typings/ServerResponses';
+import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { useTranslation } from '../../../util/lang/configI18N';
 import InfoTable from './InfoTable';
 import StatusProgress from './StatusProgress';
-import { useTranslation } from '../../../util/lang/configI18N';
 
 interface Props {
   summary: ScheinCriteriaStatus[];

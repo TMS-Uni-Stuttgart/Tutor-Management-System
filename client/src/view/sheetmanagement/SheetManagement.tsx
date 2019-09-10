@@ -1,18 +1,17 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { ExerciseDTO, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 import SheetForm, {
-  SheetFormSubmitCallback,
   getInitialSheetFormState,
   SheetFormExercise,
+  SheetFormSubmitCallback,
 } from '../../components/forms/SheetForm';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { Sheet } from '../../typings/RatingModel';
-import { SheetDTO, ExerciseDTO } from '../../typings/RequestDTOs';
 import SheetRow from './components/SheetRow';
-import LoadingSpinner from '../../components/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

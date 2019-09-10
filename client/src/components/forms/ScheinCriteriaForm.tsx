@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormikSubmitCallback } from '../../types';
-import { ScheinCriteria } from '../../typings/RatingModel';
 import { i18nNamespace } from '../../util/lang/configI18N';
 import GeneratedForm from '../generatedForm/GeneratedForm';
 import { generateInitialValue } from '../generatedForm/generateInitialValues';
@@ -10,6 +9,7 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 import * as Yup from 'yup';
+import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/dist/model/ScheinCriteria';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Benötigt'),

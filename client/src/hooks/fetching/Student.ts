@@ -1,10 +1,8 @@
-import {
-  AttendanceDTO,
-  PresentationPointsDTO,
-  StudentDTO,
-  UpdatePointsDTO,
-} from '../../typings/RequestDTOs';
-import { Attendance, ScheinCriteriaSummary, Student, Team } from '../../typings/ServerResponses';
+import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
+import { Team } from 'shared/dist/model/Team';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import axios from './Axios';
 import { getTeamOfTutorial } from './Team';

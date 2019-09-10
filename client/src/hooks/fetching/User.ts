@@ -1,8 +1,9 @@
-import { CreateUserDTO, EditUserDTO, NewPasswordDTO } from '../../typings/RequestDTOs';
-import { Tutorial, User, Role } from '../../typings/ServerResponses';
 import { UserWithFetchedTutorials } from '../../typings/types';
 import { transformMultipleTutorialResponse } from '../../util/axiosTransforms';
 import axios from './Axios';
+import { User, CreateUserDTO, UserDTO, NewPasswordDTO } from 'shared/dist/model/User';
+import { Role } from 'shared/dist/model/Role';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 
 export async function getUsers(): Promise<User[]> {
   const response = await axios.get<User[]>('user');
@@ -60,7 +61,7 @@ export async function createUserAndFetchTutorials(
   return { ...user, tutorials };
 }
 
-export async function editUser(userid: string, userInformation: EditUserDTO): Promise<User> {
+export async function editUser(userid: string, userInformation: UserDTO): Promise<User> {
   const response = await axios.patch<User>(`user/${userid}`, userInformation);
 
   if (response.status === 200) {
@@ -72,7 +73,7 @@ export async function editUser(userid: string, userInformation: EditUserDTO): Pr
 
 export async function editUserAndFetchTutorials(
   userid: string,
-  userInformation: EditUserDTO
+  userInformation: UserDTO
 ): Promise<UserWithFetchedTutorials> {
   const user = await editUser(userid, userInformation);
   const tutorials = await getTutorialsOfUser(user.id);

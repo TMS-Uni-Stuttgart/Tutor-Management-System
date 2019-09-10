@@ -3,10 +3,10 @@ import { Role } from './Role';
 import { LoggedInUserTutorial, LoggedInUserSubstituteTutorial } from './Tutorial';
 
 export interface LoggedInUser extends NamedElement {
-  readonly tutorials: LoggedInUserTutorial[];
-  readonly roles: User['roles'];
-  readonly hasTemporaryPassword: boolean;
-  readonly substituteTutorials: LoggedInUserSubstituteTutorial[];
+  tutorials: LoggedInUserTutorial[];
+  roles: User['roles'];
+  hasTemporaryPassword: boolean;
+  substituteTutorials: LoggedInUserSubstituteTutorial[];
 }
 
 export interface User extends NamedElement {
@@ -25,5 +25,9 @@ export interface UserDTO {
 
 export interface CreateUserDTO extends UserDTO {
   username: string;
+  password: string;
+}
+
+export interface NewPasswordDTO {
   password: string;
 }

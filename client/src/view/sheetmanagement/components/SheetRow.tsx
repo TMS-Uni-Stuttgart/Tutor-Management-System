@@ -1,8 +1,8 @@
 import { TableCell, Typography } from '@material-ui/core';
 import React from 'react';
+import { Sheet } from 'shared/dist/model/Sheet';
 import ListItemMenu from '../../../components/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { Sheet } from '../../../typings/RatingModel';
 import { getPointsOfEntityAsString } from '../../pointsmanagement/util/helper';
 
 interface Props extends PaperTableRowProps {

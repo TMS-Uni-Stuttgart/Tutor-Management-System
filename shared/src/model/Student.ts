@@ -14,8 +14,8 @@ export interface Student extends NamedElement {
 }
 
 export interface StudentDTO {
-  courseOfStudies: string;
-  email: string;
+  courseOfStudies?: string;
+  email?: string;
   firstname: string;
   lastname: string;
   matriculationNo: string;

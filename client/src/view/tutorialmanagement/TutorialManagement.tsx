@@ -1,21 +1,22 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { parseISO, compareAsc } from 'date-fns';
+import { compareAsc, parseISO } from 'date-fns';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { HasId } from 'shared/dist/model/Common';
+import { TutorialDTO } from 'shared/dist/model/Tutorial';
+import { User } from 'shared/dist/model/User';
 import TutorialForm, {
   getInitialTutorialFormValues,
   TutorialFormState,
   TutorialFormSubmitCallback,
 } from '../../components/forms/TutorialForm';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { TutorialDTO } from '../../typings/RequestDTOs';
-import { HasId, User } from '../../typings/ServerResponses';
 import { TutorialWithFetchedCorrectors } from '../../typings/types';
 import { getNameOfEntity } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
-import LoadingSpinner from '../../components/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

@@ -15,7 +15,7 @@ export type ScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCrite
 
 export interface ScheinCriteriaSummary {
   passed: boolean;
-  scheinCriteriaSummary: { [criteriaId: string]: ScheinCriteriaResponse };
+  scheinCriteriaSummary: { [criteriaId: string]: ScheinCriteriaStatus };
 }
 
 // TODO: Rename commentated properties to self-explanatory. This comes with changes in the frontend! -- Question: Are those actually (except 'id') really needed?

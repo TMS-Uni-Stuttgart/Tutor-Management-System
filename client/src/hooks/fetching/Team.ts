@@ -1,6 +1,6 @@
-import { Team } from '../../typings/ServerResponses';
+import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { Team, TeamDTO } from 'shared/dist/model/Team';
 import axios from './Axios';
-import { UpdatePointsDTO, TeamDTO } from '../../typings/RequestDTOs';
 
 function sortStudentsOfTeam(team: Team) {
   team.students = team.students.sort((a, b) =>

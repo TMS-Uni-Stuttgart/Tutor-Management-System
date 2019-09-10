@@ -3,13 +3,13 @@ import { makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { Sheet, UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
+import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { Sheet } from '../../typings/RatingModel';
-import { PresentationPointsDTO, UpdatePointsDTO } from '../../typings/RequestDTOs';
-import { Student, Team } from '../../typings/ServerResponses';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';

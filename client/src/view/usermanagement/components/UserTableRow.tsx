@@ -2,9 +2,9 @@ import { Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Person as PersonIcon } from '@material-ui/icons';
 import React from 'react';
+import { Role } from 'shared/dist/model/Role';
 import ListItemMenu from '../../../components/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { Role } from '../../../typings/ServerResponses';
 import { UserWithFetchedTutorials } from '../../../typings/types';
 
 const useStyles = makeStyles((theme: Theme) =>

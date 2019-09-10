@@ -1,6 +1,5 @@
 import axios from './Axios';
-import { Sheet } from '../../typings/RatingModel';
-import { SheetDTO } from '../../typings/RequestDTOs';
+import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 
 export async function getAllSheets(): Promise<Sheet[]> {
   const response = await axios.get<Sheet[]>('sheet');

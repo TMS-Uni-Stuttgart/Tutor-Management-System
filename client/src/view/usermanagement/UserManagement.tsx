@@ -1,13 +1,14 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { Role } from 'shared/dist/model/Role';
+import { Tutorial } from 'shared/dist/model/Tutorial';
+import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
 import UserForm, { UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { CreateUserDTO, EditUserDTO } from '../../typings/RequestDTOs';
-import { Role, Tutorial } from '../../typings/ServerResponses';
 import { UserWithFetchedTutorials } from '../../typings/types';
 import UserTableRow from './components/UserTableRow';
 
@@ -92,7 +93,7 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     { firstname, lastname, roles, tutorials, password },
     { setSubmitting }
   ) => {
-    const userInformation: EditUserDTO = {
+    const userInformation: UserDTO = {
       firstname,
       lastname,
       roles,
