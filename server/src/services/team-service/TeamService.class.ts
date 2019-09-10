@@ -52,9 +52,8 @@ class TeamService {
     const createdTeam = tutorial.teams[tutorial.teams.length - 1];
 
     for (const student of students) {
-      await this.makeStudentMemberOfTeam(student, createdTeam.id.toString(), {
-        saveStudent: true,
-      });
+      student.team = createdTeam;
+      await student.save();
     }
 
     return this.getTeamOrReject(createdTeam);
