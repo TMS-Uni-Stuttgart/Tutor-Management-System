@@ -1,5 +1,5 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { compareAsc, parseISO } from 'date-fns';
+import { compareAsc } from 'date-fns';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
@@ -214,7 +214,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
                   const tutor = tutors.find(t => t.id === id);
 
                   return {
-                    date: parseISO(date),
+                    date: new Date(date),
                     name: tutor
                       ? getNameOfEntity(tutor, { lastNameFirst: true })
                       : 'TUTOR_NOT_FOUND',
