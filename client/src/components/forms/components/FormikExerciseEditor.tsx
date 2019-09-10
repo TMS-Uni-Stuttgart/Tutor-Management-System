@@ -1,9 +1,9 @@
 import { Button, IconButton } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { FieldArray, useFormikContext, ErrorMessage, FieldArrayRenderProps } from 'formik';
+import { ErrorMessage, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { MinusBox as MinusIcon, PlusBox as PlusIcon } from 'mdi-material-ui';
 import React from 'react';
-import { Exercise } from '../../../typings/RatingModel';
+import { Exercise } from 'shared/dist/model/Sheet';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
 

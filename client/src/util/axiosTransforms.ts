@@ -1,9 +1,6 @@
-import {
-  LoggedInUser,
-  LoggedInUserSubstituteTutorial,
-  ScheinExam,
-  Tutorial,
-} from '../typings/ServerResponses';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { LoggedInUserSubstituteTutorial, Tutorial } from 'shared/dist/model/Tutorial';
+import { LoggedInUser } from 'shared/dist/model/User';
 
 interface TutorialResponse extends Omit<Tutorial, 'dates' | 'startTime' | 'endTime'> {
   dates: string[];

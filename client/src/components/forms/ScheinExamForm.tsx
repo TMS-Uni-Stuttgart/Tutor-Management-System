@@ -1,8 +1,7 @@
-import { InputAdornment } from '@material-ui/core';
 import React from 'react';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { Exercise } from 'shared/dist/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
-import { ScheinExam } from '../../typings/RatingModel';
-import { Exercise } from '../../typings/ServerResponses';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikExerciseEditor from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';

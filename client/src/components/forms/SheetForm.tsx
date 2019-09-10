@@ -1,6 +1,6 @@
 import React from 'react';
+import { Sheet } from 'shared/dist/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
-import { Sheet } from '../../typings/RatingModel';
 import FormikCheckbox from './components/FormikCheckbox';
 import FormikExerciseEditor from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';

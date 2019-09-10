@@ -9,12 +9,15 @@ import DateOfTutorialSelection from '../../components/DateOfTutorialSelection';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
-import { AttendanceDTO } from '../../typings/RequestDTOs';
-import { Attendance, AttendanceState, LoggedInUser } from '../../typings/ServerResponses';
-import { StudentWithFetchedTeam, TutorialWithFetchedStudents } from '../../typings/types';
+import {
+  StudentWithFetchedTeam,
+  TutorialWithFetchedStudents as Tutorial,
+} from '../../typings/types';
 import { getNameOfEntity, parseDateToMapKey } from '../../util/helperFunctions';
 import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { LoggedInUser } from 'shared/dist/model/User';
+import { Attendance, AttendanceState, AttendanceDTO } from 'shared/dist/model/Attendance';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,8 +40,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-type Tutorial = TutorialWithFetchedStudents;
 
 interface Props {
   tutorial?: Tutorial;
@@ -152,7 +153,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
     const attendance: Attendance | undefined = student.attendance[parseDateToMapKey(date)];
     const attendanceDTO: AttendanceDTO = {
-      state: attendanceState || null,
+      state: attendanceState,
       date: date.toISOString(),
       note: attendance ? attendance.note : '',
     };
@@ -173,7 +174,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
       const attendance: Attendance | undefined = student.attendance[parseDateToMapKey(date)];
       const attendanceDTO: AttendanceDTO = {
-        state: (attendance && attendance.state) || null,
+        state: attendance.state,
         date: date.toISOString(),
         note,
       };

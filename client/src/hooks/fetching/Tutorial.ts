@@ -1,12 +1,13 @@
-import { SubstituteDTO, TutorialDTO } from '../../typings/RequestDTOs';
-import { Student, Tutorial, User } from '../../typings/ServerResponses';
+import { Student } from 'shared/dist/model/Student';
+import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
+import { User } from 'shared/dist/model/User';
 import {
+  StudentByTutorialSlotSummaryMap,
   StudentScheinCriteriaSummaryMap,
   StudentWithFetchedTeam,
   TutorialWithFetchedCorrectors,
   TutorialWithFetchedStudents,
   TutorialWithFetchedTutor,
-  StudentByTutorialSlotSummaryMap,
 } from '../../typings/types';
 import {
   transformMultipleTutorialResponse,

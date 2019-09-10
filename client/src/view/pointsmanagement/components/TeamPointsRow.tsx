@@ -1,6 +1,6 @@
 import { Group as GroupIcon } from '@material-ui/icons';
 import React from 'react';
-import { Team } from '../../../typings/ServerResponses';
+import { Team } from 'shared/dist/model/Team';
 import PointsRow, { PointsRowProps } from './PointsRow';
 
 export interface PointRowFormState {

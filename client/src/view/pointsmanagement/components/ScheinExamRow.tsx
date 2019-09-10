@@ -1,10 +1,10 @@
-import React from 'react';
-import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { TableCell, Typography } from '@material-ui/core';
+import React from 'react';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import ListItemMenu from '../../../components/ListItemMenu';
-import { ScheinExam } from '../../../typings/ServerResponses';
-import { getPointsOfEntityAsString } from '../util/helper';
+import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { getDisplayStringOfScheinExam } from '../../../util/helperFunctions';
+import { getPointsOfEntityAsString } from '../util/helper';
 
 interface Props extends PaperTableRowProps {
   exam: ScheinExam;

@@ -1,6 +1,8 @@
-import { PointRowFormState } from '../components/TeamPointsRow';
+import { HasId } from 'shared/dist/model/Common';
+import { Exercise } from 'shared/dist/model/Sheet';
+import { Student } from 'shared/dist/model/Student';
 import { HasExercises } from '../../../typings/types';
-import { HasId, Exercise, Student } from '../../../typings/ServerResponses';
+import { PointRowFormState } from '../components/TeamPointsRow';
 
 export type PointsMap = Student['points'];
 

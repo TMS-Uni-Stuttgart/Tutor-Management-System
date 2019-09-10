@@ -1,10 +1,13 @@
 import { Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { ChevronLeft as BackIcon } from '@material-ui/icons';
-import { format, compareAsc } from 'date-fns';
+import { compareAsc, format } from 'date-fns';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { Role } from 'shared/dist/model/Role';
+import { Tutorial } from 'shared/dist/model/Tutorial';
+import { User } from 'shared/dist/model/User';
 import { renderLink } from '../../components/drawer/components/renderLink';
 import FormikMultipleDatesPicker, {
   DateClickedHandler,
@@ -14,7 +17,6 @@ import FormikSelect from '../../components/forms/components/FormikSelect';
 import SubmitButton from '../../components/forms/components/SubmitButton';
 import { useAxios } from '../../hooks/FetchingService';
 import { FormikSubmitCallback } from '../../types';
-import { Role, Tutorial, User } from '../../typings/ServerResponses';
 import {
   getDisplayStringForTutorial,
   getNameOfEntity,

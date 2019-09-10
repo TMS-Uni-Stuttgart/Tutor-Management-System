@@ -2,11 +2,12 @@ import { Button, Table, TableBody, TableCell, TableRow, Typography } from '@mate
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import React from 'react';
+import { Exercise, Sheet } from 'shared/dist/model/Sheet';
+import { Student } from 'shared/dist/model/Student';
+import { Team } from 'shared/dist/model/Team';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../types';
-import { Exercise, Sheet } from '../../../typings/RatingModel';
-import { Student, Team } from '../../../typings/ServerResponses';
 import { getExerciseIdentifier, getExercisePointsIdentifier } from '../util/helper';
 
 const useStyles = makeStyles((theme: Theme) =>

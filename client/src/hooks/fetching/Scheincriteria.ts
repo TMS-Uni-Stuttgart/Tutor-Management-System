@@ -1,10 +1,9 @@
 import axios from './Axios';
 import { FormDataResponse } from '../../components/generatedForm/types/FieldData';
-import { ScheinCriteria } from '../../typings/RatingModel';
-import { ScheinCriteriaDTO } from '../../typings/RequestDTOs';
+import { ScheinCriteriaResponse, ScheinCriteriaDTO } from 'shared/dist/model/ScheinCriteria';
 
-export async function getAllScheinCriterias(): Promise<ScheinCriteria[]> {
-  const response = await axios.get<ScheinCriteria[]>('scheincriteria');
+export async function getAllScheinCriterias(): Promise<ScheinCriteriaResponse[]> {
+  const response = await axios.get<ScheinCriteriaResponse[]>('scheincriteria');
 
   if (response.status === 200) {
     return response.data;
@@ -25,8 +24,8 @@ export async function getScheinCriteriaFormData(): Promise<FormDataResponse> {
 
 export async function createScheinCriteria(
   criteriaInfo: ScheinCriteriaDTO
-): Promise<ScheinCriteria> {
-  const response = await axios.post<ScheinCriteria>('scheincriteria', criteriaInfo);
+): Promise<ScheinCriteriaResponse> {
+  const response = await axios.post<ScheinCriteriaResponse>('scheincriteria', criteriaInfo);
 
   if (response.status === 201) {
     return response.data;
@@ -38,8 +37,8 @@ export async function createScheinCriteria(
 export async function editScheinCriteria(
   id: string,
   criteriaInfo: ScheinCriteriaDTO
-): Promise<ScheinCriteria> {
-  const response = await axios.patch<ScheinCriteria>(`/scheincriteria/${id}`, criteriaInfo);
+): Promise<ScheinCriteriaResponse> {
+  const response = await axios.patch<ScheinCriteriaResponse>(`/scheincriteria/${id}`, criteriaInfo);
 
   if (response.status === 200) {
     return response.data;

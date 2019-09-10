@@ -5,7 +5,7 @@ import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { Team } from '../../typings/ServerResponses';
+import { Team } from 'shared/dist/model/Team';
 
 const validationSchema = Yup.object().shape({
   lastname: Yup.string().required('Benötigt'),
@@ -45,8 +45,8 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
       lastname: student.lastname,
       firstname: student.firstname,
       matriculationNo: Number.parseInt(student.matriculationNo),
-      email: student.email,
-      courseOfStudies: student.courseOfStudies,
+      email: student.email || '',
+      courseOfStudies: student.courseOfStudies || '',
       team: student.team ? student.team.id : '',
     };
   }

@@ -1,8 +1,8 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
-import { Tutorial } from '../../typings/ServerResponses';
 import { getDisplayStringForTutorial } from '../../util/helperFunctions';
 import FormikSelect from './components/FormikSelect';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';

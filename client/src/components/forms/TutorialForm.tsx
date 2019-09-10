@@ -4,7 +4,6 @@ import { addDays, addMinutes, addWeeks, compareAsc } from 'date-fns';
 import React from 'react';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
-import { Role, User } from '../../typings/ServerResponses';
 import { TutorialWithFetchedCorrectors } from '../../typings/types';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikMultipleDatesPicker from './components/FormikMultipleDatesPicker';
@@ -12,6 +11,8 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import { User } from 'shared/dist/model/User';
+import { Role } from 'shared/dist/model/Role';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

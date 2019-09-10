@@ -1,10 +1,9 @@
-import { ScheinExam } from '../../typings/RatingModel';
+import { ScheinExam, ScheinExamDTO } from 'shared/dist/model/Scheinexam';
 import {
   transformMultipleScheinExamResponse,
   transformScheinExamResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
-import { ScheinExamDTO } from '../../typings/RequestDTOs';
 
 export async function getAllScheinExams(): Promise<ScheinExam[]> {
   const response = await axios.get<ScheinExam[]>(`scheinexam`, {

@@ -4,12 +4,12 @@ import { Person as PersonIcon } from '@material-ui/icons';
 import { Formik } from 'formik';
 import { Check as CheckIcon } from 'mdi-material-ui';
 import React from 'react';
+import { Sheet } from 'shared/dist/model/Sheet';
+import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { FormikSubmitCallback } from '../../../types';
-import { Sheet } from '../../../typings/RatingModel';
-import { Student } from '../../../typings/ServerResponses';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

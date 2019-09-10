@@ -2,7 +2,7 @@ import { TableCell, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Group as GroupIcon } from '@material-ui/icons';
 import React from 'react';
-import { Team } from '../typings/ServerResponses';
+import { Team } from 'shared/dist/model/Team';
 import ListItemMenu from './ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
 

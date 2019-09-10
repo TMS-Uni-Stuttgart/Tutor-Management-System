@@ -1,9 +1,9 @@
 import { AxiosResponse } from 'axios';
 import React, { useContext, useState } from 'react';
-import { saveUser, getUser, removeUser } from '../util/userStorage';
-import axios from './fetching/Axios';
-import { LoggedInUser } from '../typings/ServerResponses';
+import { LoggedInUser } from 'shared/dist/model/User';
 import { transformLoggedInUserResponse } from '../util/axiosTransforms';
+import { getUser, removeUser, saveUser } from '../util/userStorage';
+import axios from './fetching/Axios';
 
 export type LoggedInFunction = (isLoggedIn: boolean) => void;
 

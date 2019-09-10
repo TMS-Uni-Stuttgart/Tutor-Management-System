@@ -32,7 +32,7 @@ import AllStudentsAdminView from '../view/studentmanagement/AllStudentsAdminView
 import ScheinExamPointEntry from '../view/pointsmanagement/ScheinExamPointEntry';
 import ScheinExamManagement from '../view/pointsmanagement/ScheinExamManagement';
 import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
-import { Role } from '../typings/ServerResponses';
+import { Role } from 'shared/dist/model/Role';
 
 export enum RoutingPath {
   ROOT = '/',

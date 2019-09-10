@@ -2,9 +2,9 @@ import { TableCell, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/dist/model/ScheinCriteria';
 import ListItemMenu from '../../../components/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { ScheinCriteria } from '../../../typings/RatingModel';
 import { i18nNamespace } from '../../../util/lang/configI18N';
 
 const useStyles = makeStyles((theme: Theme) =>

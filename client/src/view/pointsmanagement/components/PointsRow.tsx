@@ -9,9 +9,9 @@ import * as Yup from 'yup';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { FormikSubmitCallback } from '../../../types';
-import { HasId } from '../../../typings/ServerResponses';
 import { HasExercises, HasPoints } from '../../../typings/types';
 import { getExerciseIdentifier, getInitialValues, PointsMap } from '../util/helper';
+import { HasId } from 'shared/dist/model/Common';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
