@@ -29,4 +29,4 @@ export function getErrorExtracts(err: Yup.ValidationError): ValidationErrorExtra
   return errors;
 }
 
-export const YupIdShape = Yup.string().matches(/^[a-f\d]{24}$/i, 'Not a valid Object ID.');
+export const YupIdShape = Yup.string().matches(/^$|^[a-f\d]{24}$/i, 'Not a valid Object ID.');
