@@ -160,7 +160,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
     try {
       const response = await setAttendanceOfStudent(student.id, attendanceDTO);
-      await handlePutAttendanceResponse(student, response);
+      handlePutAttendanceResponse(student, response);
     } catch (reason) {
       console.log(reason);
     }
@@ -181,7 +181,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
       try {
         const response = await setAttendanceOfStudent(student.id, attendanceDTO);
-        await handlePutAttendanceResponse(student, response);
+        handlePutAttendanceResponse(student, response);
 
         closeDialog();
       } catch (reason) {
