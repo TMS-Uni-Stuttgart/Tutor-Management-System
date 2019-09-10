@@ -67,7 +67,12 @@ class StudentService {
       points: student.points,
     };
 
-    await student.updateOne(updatedStudent);
+    // Encrypt the student manually due to the encryption library not supporting 'updateOne()'.
+    const encryptedStudent = new StudentModel(updatedStudent) as EncryptedDocument<StudentDocument>;
+    encryptedStudent._id = student._id;
+    encryptedStudent.encryptFieldsSync();
+
+    await student.updateOne(encryptedStudent);
 
     return this.getStudentOrReject(student);
   }
