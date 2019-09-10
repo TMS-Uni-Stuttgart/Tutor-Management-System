@@ -2,45 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "java",
-      "name": "Spring TMS Server",
-      "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "console": "internalConsole",
-      "mainClass": "de.unistuttgart.iste.rss.tutormanagementsystem.TutorManagementSystemApplication",
-      "projectName": "tutor-management-system",
-      "args": "--spring.profiles.active=${input:setSpringProfile}",
-      "env": {
-        "TMS_DB_ENCRYPTION_KEY": "MySuperSecretKey",
-        "TMS_SERVER_INITIAL_ADMIN_PASSWORD": "admin",
-        "TMS_DB_URL": "jdbc:mysql://localhost:3306/db_example?useSSL=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&requireSSL=true",
-        "TMS_DB_USERNAME": "springuser",
-        "TMS_DB_PASSWORD": "ThePassword",
-        "TMS_SSL_KEY_STORE_LOCATION": "keystore.p12",
-        "TMS_SSL_KEY_STORE_PASSWORD": "mypass"
-      }
-    },
-    {
-      "type": "java",
-      "name": "Spring TMS Server & Client",
-      "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "console": "internalConsole",
-      "mainClass": "de.unistuttgart.iste.rss.tutormanagementsystem.TutorManagementSystemApplication",
-      "projectName": "tutor-management-system",
-      "args": "--spring.profiles.active=${input:setSpringProfile}",
-      "preLaunchTask": "Start Client",
-      "env": {
-        "TMS_DB_ENCRYPTION_KEY": "MySuperSecretKey",
-        "TMS_SERVER_INITIAL_ADMIN_PASSWORD": "admin",
-        "TMS_DB_URL": "jdbc:mysql://localhost:3306/db_example?useSSL=true&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&requireSSL=true",
-        "TMS_DB_USERNAME": "springuser",
-        "TMS_DB_PASSWORD": "ThePassword",
-        "TMS_SSL_KEY_STORE_LOCATION": "keystore.p12",
-        "TMS_SSL_KEY_STORE_PASSWORD": "mypass"
-      }
-    },
-    {
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome",
@@ -86,15 +47,6 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "sourceMaps": true
-    }
-  ],
-  "inputs": [
-    {
-      "id": "setSpringProfile",
-      "type": "pickString",
-      "description": "Which Spring profile should be used? If empty \"default\" will be used. ",
-      "options": ["dev", "default", "create-db"],
-      "default": "default"
     }
   ]
 }
