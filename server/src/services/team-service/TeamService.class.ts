@@ -30,15 +30,14 @@ class TeamService {
     return teams;
   }
 
-  public async createTeam(
-    tutorialId: string,
-    { teamNo, students: studentIds }: TeamDTO
-  ): Promise<Team> {
+  public async createTeam(tutorialId: string, { students: studentIds }: TeamDTO): Promise<Team> {
     const tutorial = await tutorialService.getDocumentWithID(tutorialId);
     const students: StudentDocument[] = await Promise.all(
       studentIds.map(stud => studentService.getDocumentWithId(stud))
     );
 
+    // Find the first teamNo that is available
+    const teamNo: number = this.getFirstAvailableTeamNo(tutorial);
     const team: TypegooseDocument<TeamSchema> = {
       tutorial,
       students,
@@ -211,6 +210,25 @@ class TeamService {
     }
 
     return false;
+  }
+
+  private getFirstAvailableTeamNo(tutorial: TutorialDocument): number {
+    for (let i = 1; i <= tutorial.teams.length; i++) {
+      let isTeamNoInUse = false;
+
+      for (const team of tutorial.teams) {
+        if (team.teamNo === i) {
+          isTeamNoInUse = true;
+          break;
+        }
+      }
+
+      if (!isTeamNoInUse) {
+        return i;
+      }
+    }
+
+    return tutorial.teams.length + 1;
   }
 
   private async getTeamOrReject(team: TeamDocument | null): Promise<Team> {
