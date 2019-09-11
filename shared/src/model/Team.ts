@@ -10,6 +10,4 @@ export interface Team extends HasId {
 
 export interface TeamDTO {
   students: string[];
-  // TODO: Remove me! Server sets team numbers.
-  teamNo: number;
 }

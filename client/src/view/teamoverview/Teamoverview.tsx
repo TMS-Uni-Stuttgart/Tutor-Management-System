@@ -87,10 +87,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     { students: studentsFromForm },
     { setSubmitting, resetForm }
   ) => {
-    const teamDTO: TeamDTO = {
-      teamNo: teams.length + 1,
-      students: studentsFromForm,
-    };
+    const teamDTO: TeamDTO = { students: studentsFromForm };
 
     try {
       const response = await createTeam(params.tutorialId, teamDTO);
@@ -149,10 +146,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     { students },
     { setSubmitting }
   ) => {
-    const teamDTO: TeamDTO = {
-      teamNo: 0, // FIXME: REMOVE ME!
-      students,
-    };
+    const teamDTO: TeamDTO = { students };
 
     try {
       const response = await editTeamRequest(params.tutorialId, team.id, teamDTO);
