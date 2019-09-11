@@ -5,7 +5,6 @@ import { ValidationErrorsWrapper } from '../model/errors/Errors';
 
 const TeamDTOSchema = Yup.object().shape<TeamDTO>({
   students: Yup.array<string>().of(YupIdShape),
-  teamNo: Yup.number().required(),
 });
 
 export function validateAgainstTeamDTO(
