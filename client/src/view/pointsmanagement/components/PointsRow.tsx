@@ -5,13 +5,14 @@ import clsx from 'clsx';
 import { Formik } from 'formik';
 import { Check as CheckIcon, TableEdit as TableEditIcon } from 'mdi-material-ui';
 import React from 'react';
+import { HasId } from 'shared/dist/model/Common';
+import { HasExercises } from 'shared/dist/model/Sheet';
 import * as Yup from 'yup';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { FormikSubmitCallback } from '../../../types';
-import { HasExercises, HasPoints } from '../../../typings/types';
+import { HasPoints } from '../../../typings/types';
 import { getExerciseIdentifier, getInitialValues, PointsMap } from '../util/helper';
-import { HasId } from 'shared/dist/model/Common';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

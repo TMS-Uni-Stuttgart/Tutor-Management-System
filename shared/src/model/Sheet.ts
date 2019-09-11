@@ -1,6 +1,10 @@
 import { HasId } from './Common';
 
-export interface Sheet extends HasId {
+export interface HasExercises extends HasId {
+  exercises: Exercise[];
+}
+
+export interface Sheet extends HasExercises {
   bonusSheet: boolean;
   exercises: Exercise[];
   id: string;

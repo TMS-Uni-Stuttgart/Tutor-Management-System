@@ -32,10 +32,6 @@ export interface HasPoints extends HasId {
   points: { [index: string]: number };
 }
 
-export interface HasExercises extends HasId {
-  exercises: Exercise[];
-}
-
 export interface StudentScheinCriteriaSummaryMap {
   [id: string]: ScheinCriteriaSummary;
 }
