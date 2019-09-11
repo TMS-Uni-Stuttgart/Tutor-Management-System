@@ -5,7 +5,7 @@ import {
   Info as InfoIcon,
   MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
-import { ListItemIcon, ListItemText, MenuItem } from '@material-ui/core';
+import { ListItemIcon, ListItemText, MenuItem, Tooltip } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import Menu, { MenuProps } from '@material-ui/core/Menu';
 import { MenuItemProps } from '@material-ui/core/MenuItem';
@@ -26,6 +26,7 @@ interface ListItem extends MenuItemProps {
   Icon: ComponentType<SvgIconProps>;
   listItemTextProps?: ListItemTextProps;
   iconProps?: SvgIconProps;
+  tooltip?: string;
 }
 
 export interface ListItemMenuProps extends Omit<MenuProps, UsedProps> {
@@ -34,6 +35,10 @@ export interface ListItemMenuProps extends Omit<MenuProps, UsedProps> {
   onDeleteClicked?: MouseEventHandler<HTMLLIElement>;
   additionalItems?: ListItem[];
   stopClickPropagation?: boolean;
+  disableDelete?: boolean;
+  editTooltip?: string;
+  moreInfosTooltip?: string;
+  deleteTooltip?: string;
 }
 
 function generateListItem({
@@ -42,15 +47,25 @@ function generateListItem({
   onClick,
   iconProps,
   listItemTextProps,
+  disabled,
+  tooltip,
 }: ListItem): JSX.Element {
-  return (
-    <MenuItem key={primary} onClick={onClick}>
+  const menuItem = (
+    <MenuItem key={primary} onClick={onClick} disabled={disabled}>
       <ListItemIcon>
         <Icon {...iconProps} />
       </ListItemIcon>
 
       <ListItemText {...listItemTextProps} primary={primary} />
     </MenuItem>
+  );
+
+  return tooltip ? (
+    <Tooltip title={tooltip} key={primary}>
+      {menuItem}
+    </Tooltip>
+  ) : (
+    menuItem
   );
 }
 
@@ -60,6 +75,10 @@ function ListItemMenu({
   onDeleteClicked,
   additionalItems,
   stopClickPropagation,
+  disableDelete,
+  deleteTooltip,
+  moreInfosTooltip,
+  editTooltip,
   ...other
 }: ListItemMenuProps): JSX.Element {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | undefined>(undefined);
@@ -99,6 +118,7 @@ function ListItemMenu({
             primary: 'Bearbeiten',
             onClick: onEditClicked,
             Icon: EditIcon,
+            tooltip: editTooltip,
           })}
 
         {onMoreInfosClicked &&
@@ -106,6 +126,7 @@ function ListItemMenu({
             primary: 'Mehr Infos',
             onClick: onMoreInfosClicked,
             Icon: InfoIcon,
+            tooltip: moreInfosTooltip,
           })}
 
         {additionalItems && additionalItems.map(item => generateListItem(item))}
@@ -114,6 +135,8 @@ function ListItemMenu({
           generateListItem({
             primary: 'Entfernen',
             onClick: onDeleteClicked,
+            disabled: disableDelete,
+            tooltip: deleteTooltip,
             listItemTextProps: {
               primaryTypographyProps: { color: 'error' },
             },
