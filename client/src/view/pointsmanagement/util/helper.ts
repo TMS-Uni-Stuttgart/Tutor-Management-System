@@ -1,5 +1,5 @@
 import { HasId } from 'shared/dist/model/Common';
-import { Exercise } from 'shared/dist/model/Sheet';
+import { Exercise, PointId } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import { HasExercises } from '../../../typings/types';
 import { PointRowFormState } from '../components/TeamPointsRow';
@@ -14,7 +14,7 @@ export function getExercisePointsIdentifier(
   entityWithExercises: HasId,
   exercise: Exercise
 ): string {
-  return `ID::${entityWithExercises.id}--Ex::${exercise.exNo}`;
+  return new PointId(entityWithExercises.id, exercise.exNo).toString();
 }
 
 export function getInitialValues(
