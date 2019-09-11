@@ -43,6 +43,8 @@ function TutorialTableRow({
 }: Props): JSX.Element {
   const classes = useStyles();
 
+  const disableDelete: boolean = tutorial.students.length > 0;
+
   return (
     <PaperTableRow
       label={`Tutorium #${tutorial.slot}`}
@@ -61,6 +63,8 @@ function TutorialTableRow({
           <ListItemMenu
             onEditClicked={() => onEditTutorialClicked(tutorial)}
             onDeleteClicked={() => onDeleteTutorialClicked(tutorial)}
+            disableDelete={disableDelete}
+            deleteTooltip={disableDelete ? 'Tutorium hat Studierende.' : undefined}
           />
         </>
       }
