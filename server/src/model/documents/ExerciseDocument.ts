@@ -1,6 +1,6 @@
-import { Document, Model } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 import { Exercise, ExerciseDTO } from 'shared/dist/model/Sheet';
-import { prop, Typegoose } from 'typegoose';
+import { prop, Typegoose, arrayProp } from 'typegoose';
 
 export class ExerciseSchema extends Typegoose implements Exercise {
   @prop({ required: true })
@@ -10,7 +10,22 @@ export class ExerciseSchema extends Typegoose implements Exercise {
   bonus!: boolean;
 
   @prop({ required: true })
-  maxPoints!: number;
+  private _maxPoints!: number;
+
+  @arrayProp({ items: ExerciseSchema, default: [] })
+  subexercises!: Types.Array<ExerciseDocument>;
+
+  @prop()
+  get maxPoints() {
+    if (this.subexercises.length === 0) {
+      return this._maxPoints;
+    }
+
+    return this.subexercises.reduce((pts, subEx) => pts + subEx.maxPoints, 0);
+  }
+  set maxPoints(pts: number) {
+    this._maxPoints = pts;
+  }
 }
 
 export interface ExerciseDocument extends ExerciseSchema, Document {}
@@ -20,9 +35,14 @@ const ExerciseModel: Model<ExerciseDocument> = new ExerciseSchema().getModelForC
 );
 
 export function convertDocumentToExercise(doc: ExerciseDocument): Exercise {
-  const { exNo, bonus, maxPoints } = doc;
+  const { exNo, bonus, maxPoints, subexercises } = doc;
 
-  return { exNo, bonus, maxPoints };
+  return {
+    exNo,
+    bonus,
+    maxPoints,
+    subexercises: subexercises.map(doc => convertDocumentToExercise(doc)),
+  };
 }
 
 export function generateExerciseDocumentsFromDTOs(

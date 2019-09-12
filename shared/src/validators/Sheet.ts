@@ -7,6 +7,7 @@ export const ExerciseDTOSchema = Yup.object().shape<ExerciseDTO>({
   exNo: Yup.number().required(),
   maxPoints: Yup.number().required(),
   bonus: Yup.boolean().required(),
+  subexercises: Yup.array(),
 });
 
 const SheetDTOSchema = Yup.object().shape<SheetDTO>({
