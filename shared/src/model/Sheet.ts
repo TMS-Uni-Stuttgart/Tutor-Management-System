@@ -13,7 +13,7 @@ export interface Sheet extends HasExercises {
 
 export interface Exercise {
   bonus: boolean;
-  exNo: number;
+  exName: string;
   maxPoints: number;
   subexercises: Exercise[];
 }
@@ -26,7 +26,7 @@ export interface SheetDTO {
 
 export interface ExerciseDTO {
   bonus: boolean;
-  exNo: number;
+  exName: string;
   maxPoints: number;
   subexercises: ExerciseDTO[];
 }
@@ -37,9 +37,16 @@ export interface UpdatePointsDTO {
 }
 
 export class PointId {
-  constructor(readonly sheetId: string, readonly exerciseNo: number) {}
+  private exerciseIdentifier: string;
+
+  readonly sheetId: string;
+
+  constructor(sheetId: string, exercise: Exercise) {
+    this.sheetId = sheetId;
+    this.exerciseIdentifier = exercise.exName;
+  }
 
   public toString(): string {
-    return `ID::${this.sheetId}--Ex::${this.exerciseNo}`;
+    return `ID::${this.sheetId}--Ex::${this.exerciseIdentifier}`;
   }
 }

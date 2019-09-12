@@ -75,7 +75,7 @@ class SheetService {
     let result = 0;
 
     for (const exercise of sheet.exercises) {
-      const pointId = new PointId(sheet.id, exercise.exNo);
+      const pointId = new PointId(sheet.id, exercise);
 
       if (student.points[pointId.toString()] !== undefined) {
         result += student.points[pointId.toString()];

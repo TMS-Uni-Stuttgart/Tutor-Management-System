@@ -6,14 +6,14 @@ import { PointRowFormState } from '../components/TeamPointsRow';
 export type PointsMap = Student['points'];
 
 export function getExerciseIdentifier(exercise: Exercise): string {
-  return `${exercise.exNo}`;
+  return `${exercise.exName}`;
 }
 
 export function getExercisePointsIdentifier(
   entityWithExercises: HasId,
   exercise: Exercise
 ): string {
-  return new PointId(entityWithExercises.id, exercise.exNo).toString();
+  return new PointId(entityWithExercises.id, exercise).toString();
 }
 
 export function getInitialValues(

@@ -19,13 +19,13 @@ interface HasExerciseDocuments {
 export function adjustPoints(
   pointsMap: Types.Map<number>,
   { id, exercises }: HasExerciseDocuments,
-  pointsGained: { [exNo: string]: number }
+  pointsGained: { [exName: string]: number }
 ) {
-  for (const [exNo, points] of Object.entries(pointsGained)) {
-    const exercise = exercises.find(ex => ex.exNo.toString() === exNo);
+  for (const [exName, points] of Object.entries(pointsGained)) {
+    const exercise = exercises.find(ex => ex.exName === exName);
 
     if (exercise) {
-      const pointId = new PointId(id, exercise.exNo);
+      const pointId = new PointId(id, exercise);
       pointsMap.set(pointId.toString(), points);
     }
   }

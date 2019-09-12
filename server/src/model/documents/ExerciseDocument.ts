@@ -2,9 +2,9 @@ import { Document, Model, Types } from 'mongoose';
 import { Exercise, ExerciseDTO } from 'shared/dist/model/Sheet';
 import { prop, Typegoose, arrayProp } from 'typegoose';
 
-export class ExerciseSchema extends Typegoose implements Exercise {
+export class ExerciseSchema extends Typegoose implements Omit<Exercise, 'subexercises'> {
   @prop({ required: true })
-  exNo!: number;
+  exName!: string;
 
   @prop({ required: true })
   bonus!: boolean;
@@ -35,10 +35,10 @@ const ExerciseModel: Model<ExerciseDocument> = new ExerciseSchema().getModelForC
 );
 
 export function convertDocumentToExercise(doc: ExerciseDocument): Exercise {
-  const { exNo, bonus, maxPoints, subexercises } = doc;
+  const { exName, bonus, maxPoints, subexercises } = doc;
 
   return {
-    exNo,
+    exName,
     bonus,
     maxPoints,
     subexercises: subexercises.map(doc => convertDocumentToExercise(doc)),
@@ -51,8 +51,8 @@ export function generateExerciseDocumentsFromDTOs(
 ): ExerciseDocument[] {
   const exercises: ExerciseDocument[] = [];
 
-  dtos.forEach(({ exNo, bonus, maxPoints }) => {
-    exercises.push(new ExerciseModel({ exNo, maxPoints, bonus: isBonus || bonus }));
+  dtos.forEach(({ exName, bonus, maxPoints }) => {
+    exercises.push(new ExerciseModel({ exName, maxPoints, bonus: isBonus || bonus }));
   });
 
   return exercises;

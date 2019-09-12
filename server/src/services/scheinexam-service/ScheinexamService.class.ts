@@ -80,7 +80,7 @@ class ScheinExamService {
     let result = 0;
 
     exam.exercises.forEach(exercise => {
-      const pointId = new PointId(exam.id, exercise.exNo);
+      const pointId = new PointId(exam.id, exercise);
       result += student.scheinExamResults[pointId.toString()] || 0;
     });
 
