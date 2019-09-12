@@ -9,11 +9,11 @@ import express from 'express';
 import session from 'express-session';
 import mongoose from 'mongoose';
 import passport from 'passport';
+import path from 'path';
 import uuid from 'uuid/v4';
 import databaseConfig from './config/database';
-// import databaseConfig from './config/database';
 import initPassport from './config/passport';
-import { handleError } from './model/Errors';
+import { handleError, EndpointNotFoundError } from './model/Errors';
 import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
 import scheinexamRouter from './services/scheinexam-service/ScheinexamService.routes';
 import sheetRouter from './services/sheet-service/SheetService.routes';
@@ -89,6 +89,17 @@ app.use(`${BASE_API_PATH}/sheet`, sheetRouter);
 app.use(`${BASE_API_PATH}/scheinexam`, scheinexamRouter);
 app.use(`${BASE_API_PATH}/scheincriteria`, scheincriteriaRouter);
 app.use(`${BASE_API_PATH}/locales`, languageRouter);
+
+// If there's a request which starts with the BASE_API_PATH which did not get handled yet, throw a not found error.
+app.use(BASE_API_PATH, () => {
+  throw new EndpointNotFoundError();
+});
+
+// Configure the express server to handle requests for the SPA files from the 'public' folder.
+app.use('/static', express.static('app/static'));
+app.use('*', (_, res) => {
+  res.sendFile(path.join(__dirname, 'app', 'index.html'));
+});
 
 app.use(handleError);
 

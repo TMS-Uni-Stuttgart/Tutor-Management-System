@@ -17,6 +17,10 @@ export class DocumentNotFoundError {
   constructor(readonly message: string) {}
 }
 
+export class EndpointNotFoundError {
+  constructor(readonly message?: string) {}
+}
+
 export class BadRequestError {
   constructor(readonly message: string) {}
 }
@@ -55,6 +59,12 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
 
   if (err instanceof DocumentNotFoundError) {
     return res.status(404).send(new ErrorResponse(404, err.message || 'Element was not found.'));
+  }
+
+  if (err instanceof EndpointNotFoundError) {
+    return res
+      .status(404)
+      .send(new ErrorResponse(404, err.message || 'Requested API endpoint was not found.'));
   }
 
   if (err instanceof ValidationError) {
