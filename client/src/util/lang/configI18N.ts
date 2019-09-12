@@ -9,7 +9,7 @@ export enum i18nNamespace {
 }
 
 i18n
-  // load translation using xhr -> see /public/locales
+  // load translation using xhr
   // learn more: https://github.com/i18next/i18next-xhr-backend
   .use(Backend)
   // pass the i18n instance to react-i18next.
@@ -28,7 +28,7 @@ i18n
       escapeValue: false, // not needed for react as it escapes by default
     },
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/static/locales/{{lng}}/{{ns}}.json',
       addPath: 'http://localhost:8080/api/locales/{{lng}}/{{ns}}',
       withCredentials: true,
       // overrideMimeType: true,
