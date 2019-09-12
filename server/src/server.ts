@@ -96,9 +96,9 @@ app.use(BASE_API_PATH, () => {
 });
 
 // Configure the express server to handle requests for the SPA files from the 'public' folder.
-app.use('/static', express.static('public'));
+app.use('/static', express.static('app/static'));
 app.use('*', (_, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'app', 'index.html'));
 });
 
 app.use(handleError);
