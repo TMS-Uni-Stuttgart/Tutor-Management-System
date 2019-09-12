@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  install-node-packages:
+  code-quality:
     runs-on: ubuntu-latest
 
     strategy:
@@ -30,17 +30,6 @@ jobs:
           yarn build
         env:
           CI: true
-
-  code-quality:
-    needs: install-node-packages
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [10.x]
-
-    steps:
       - name: Check code quality on client
         working-directory: client/
         run: |
