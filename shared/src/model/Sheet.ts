@@ -15,6 +15,7 @@ export interface Exercise {
   bonus: boolean;
   exNo: number;
   maxPoints: number;
+  subexercises: Exercise[];
 }
 
 export interface SheetDTO {
@@ -27,6 +28,7 @@ export interface ExerciseDTO {
   bonus: boolean;
   exNo: number;
   maxPoints: number;
+  subexercises: ExerciseDTO[];
 }
 
 export interface UpdatePointsDTO {
