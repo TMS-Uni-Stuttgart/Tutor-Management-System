@@ -76,6 +76,7 @@ export interface PointsRowProps<T extends EntityWithPoints> extends PaperTableRo
   onEditPoints?: (entity: T) => void;
 }
 
+// TODO: Adjust for subexercises.
 function PointsRow<T extends EntityWithPoints>({
   entity,
   label,
@@ -105,9 +106,9 @@ function PointsRow<T extends EntityWithPoints>({
             <form onSubmit={handleSubmit} className={classes.exerciseBox}>
               {exercises.map(ex => (
                 <FormikTextField
-                  key={ex.exNo}
+                  key={getExerciseIdentifier(ex)}
                   name={getExerciseIdentifier(ex)}
-                  label={`Aufgabe ${ex.exNo}`}
+                  label={`Aufgabe ${ex.exName}`}
                   className={classes.exerciseTf}
                   type='number'
                   inputProps={{

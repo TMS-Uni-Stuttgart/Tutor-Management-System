@@ -23,12 +23,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function convertSheetFormExercisesToDTOs(exercises: SheetFormExercise[]): ExerciseDTO[] {
   return exercises.map(ex => ({
-    exNo: Number.parseInt(ex.exNo),
+    exName: ex.exName,
     maxPoints: Number.parseFloat(ex.maxPoints),
     bonus: ex.bonus,
+    subexercises: convertSheetFormExercisesToDTOs(ex.subexercises),
   }));
 }
 
+// TODO: Adjust for subexercises.
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
@@ -57,9 +59,10 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   ) => {
     const isNoInUse = sheets.find(t => t.sheetNo === sheetNo) !== undefined;
 
+    // TODO: Conflicting DRY -- same code in ScheinExamManagement.
     function getIndexOfExerciseWithSameExNo(): number | undefined {
       for (const exercise of exercises) {
-        const ex = exercises.find(t => t !== exercise && t.exNo === exercise.exNo);
+        const ex = exercises.find(t => t !== exercise && t.exName === exercise.exName);
 
         if (ex !== undefined) {
           return exercises.indexOf(ex);
@@ -74,7 +77,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     if (idx !== undefined) {
       setFieldError(
         'exercises',
-        `Die Aufgabennummer ${exercises[idx].exNo} ist mehrfach vergeben.`
+        `Die Aufgabenbezeichnung ${exercises[idx].exName} ist mehrfach vergeben.`
       );
       return;
     }

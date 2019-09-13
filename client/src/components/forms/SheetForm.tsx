@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sheet } from 'shared/dist/model/Sheet';
+import { Sheet, Exercise } from 'shared/dist/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
 import FormikExerciseEditor from './components/FormikExerciseEditor';
@@ -9,9 +9,10 @@ import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './Fo
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 
 export interface SheetFormExercise {
-  exNo: string;
+  exName: string;
   maxPoints: string;
   bonus: boolean;
+  subexercises: SheetFormExercise[];
 }
 
 interface SheetFormState {
@@ -26,13 +27,23 @@ interface Props extends Omit<FormikBaseFormProps<SheetFormState>, CommonlyUsedFo
   sheets?: Sheet[];
 }
 
+function mapExerciseToSheetFormExercise({
+  exName,
+  maxPoints,
+  bonus,
+  subexercises,
+}: Exercise): SheetFormExercise {
+  return {
+    exName,
+    maxPoints: maxPoints.toString(),
+    bonus,
+    subexercises: subexercises.map(mapExerciseToSheetFormExercise),
+  };
+}
+
 export function getInitialSheetFormState(sheet?: Sheet, sheets?: Sheet[]): SheetFormState {
   if (!!sheet) {
-    const exercises = sheet.exercises.map(ex => ({
-      exNo: ex.exNo.toString(),
-      maxPoints: ex.maxPoints.toString(),
-      bonus: ex.bonus,
-    }));
+    const exercises: SheetFormExercise[] = sheet.exercises.map(mapExerciseToSheetFormExercise);
 
     return { sheetNo: sheet.sheetNo, bonusSheet: sheet.bonusSheet, exercises };
   }

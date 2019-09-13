@@ -56,12 +56,12 @@ interface Props {
   onSaveClicked: EditStudentPointsCallback;
 }
 
-interface EditStudentPointsFormState {
-  [studentId: string]: { [exNo: string]: number };
-}
+type EditStudentPointsFormState = {
+  [studentId: string]: { [exIdentifier: string]: number };
+};
 
 function getExerciseFieldName(student: Student, ex: Exercise): string {
-  return `${student.id}.${ex.exNo}`;
+  return `${student.id}.${getExerciseIdentifier(ex)}`;
 }
 
 function getInitialValues(
@@ -88,6 +88,7 @@ function getInitialValues(
   return values;
 }
 
+// TODO: Adjust for subexercises
 function EditStudentPointsDialogContent({
   team,
   sheet,
@@ -118,9 +119,9 @@ function EditStudentPointsDialogContent({
                       <div className={classes.exerciseBox}>
                         {exercises.map(ex => (
                           <FormikTextField
-                            key={ex.exNo}
+                            key={getExerciseIdentifier(ex)}
                             name={getExerciseFieldName(student, ex)}
-                            label={`Aufgabe ${ex.exNo}`}
+                            label={`Aufgabe ${ex.exName}`}
                             fullWidth={false}
                             type='number'
                             className={classes.exerciseTf}

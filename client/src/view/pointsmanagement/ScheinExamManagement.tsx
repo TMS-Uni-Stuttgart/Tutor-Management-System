@@ -36,6 +36,7 @@ function generateScheinExamDTO(values: ScheinExamFormState): ScheinExamDTO {
   };
 }
 
+// TODO: Adjust for subexercises.
 function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   const classes = useStyles();
 
@@ -58,9 +59,9 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   ) => {
     const isNoInUse = exams.find(t => t.scheinExamNo === values.scheinExamNo) !== undefined;
 
-    function getIndexOfExerciseWithSameExNo(): number | undefined {
+    function getIndexOfExerciseWithSameExName(): number | undefined {
       for (const exercise of values.exercises) {
-        const ex = values.exercises.find(t => t !== exercise && t.exNo === exercise.exNo);
+        const ex = values.exercises.find(t => t !== exercise && t.exName === exercise.exName);
 
         if (ex !== undefined) {
           return values.exercises.indexOf(ex);
@@ -70,12 +71,12 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       return undefined;
     }
 
-    const idx = getIndexOfExerciseWithSameExNo();
+    const idx = getIndexOfExerciseWithSameExName();
 
     if (idx !== undefined) {
       setFieldError(
         'exercises',
-        `Die Aufgabennummer ${values.exercises[idx].exNo} ist mehrfach vergeben.`
+        `Die Aufgabenbezeichnung ${values.exercises[idx].exName} ist mehrfach vergeben.`
       );
       return;
     }

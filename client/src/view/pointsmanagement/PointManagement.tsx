@@ -139,21 +139,21 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
     Object.entries(values).forEach(([studentId, exercises]) => {
       const student = students.find(s => s.id === studentId);
-      const changedExercises: { [exNo: string]: number } = {};
+      const changedExercises: { [exIdentifier: string]: number } = {};
 
       if (!student) {
         return;
       }
 
-      Object.entries(exercises).forEach(([exNo, points]) => {
+      Object.entries(exercises).forEach(([exIdentifier, points]) => {
         const exercise = currentSheet.exercises.find(
           e =>
-            e.exNo === parseInt(exNo) &&
+            e.exName === exIdentifier &&
             getPointsOfStudentOfExercise(student.points, e, currentSheet) !== points
         );
 
         if (!!exercise) {
-          changedExercises[exNo] = points;
+          changedExercises[exIdentifier] = points;
         }
       });
 
