@@ -69,6 +69,7 @@ function SheetForm({ onSubmit, className, sheet, sheets, ...other }: Props): JSX
       initialValues={initialFormState}
       // validationSchema={validationSchema}
       onSubmit={onSubmit}
+      enableDebug
     >
       {() => (
         <>
