@@ -11,7 +11,7 @@ export interface Sheet extends HasExercises {
   sheetNo: number;
 }
 
-export interface Exercise {
+export interface Exercise extends HasId {
   bonus: boolean;
   exName: string;
   maxPoints: number;
@@ -43,7 +43,7 @@ export class PointId {
 
   constructor(sheetId: string, exercise: Exercise) {
     this.sheetId = sheetId;
-    this.exerciseIdentifier = exercise.exName;
+    this.exerciseIdentifier = exercise.id;
   }
 
   public toString(): string {
