@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 10.x
       - name: Install node packages
         run: |
           yarn install
@@ -38,16 +38,12 @@ jobs:
   code-quality-server:
     runs-on: ubuntu-latest
 
-    # strategy:
-    #   matrix:
-    #     node-version: [10.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 10.x
       - name: Install node packages
         run: |
           yarn install
@@ -67,28 +63,16 @@ jobs:
           yarn ts:check
         env:
           CI: true
-      - name: Check code quality on shared package
-        working-directory: shared/
-        run: |
-          yarn prettier:check
-          yarn eslint:check
-          yarn ts:check
-        env:
-          CI: true
 
   code-quality-shared:
     runs-on: ubuntu-latest
 
-    # strategy:
-    #   matrix:
-    #     node-version: [10.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 10.x
       - name: Install node packages
         run: |
           yarn install
