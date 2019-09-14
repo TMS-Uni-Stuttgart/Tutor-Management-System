@@ -94,6 +94,7 @@ function ExerciseDataFields({ namePrefix, disablePoints }: ExerciseDataFieldsPro
         name={`${namePrefix}.exName`}
         label='Aufgabenbezeichnung'
         fullWidth={false}
+        autoFocus
       />
 
       <FormikTextField
