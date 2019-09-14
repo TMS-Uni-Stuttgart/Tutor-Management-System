@@ -3,6 +3,7 @@ import {
   convertDocumentToExercise,
   ExerciseDocument,
   generateExerciseDocumentsFromDTOs,
+  ExerciseModel
 } from '../../model/documents/ExerciseDocument';
 import SheetModel, { SheetDocument } from '../../model/documents/SheetDocument';
 import { DocumentNotFoundError } from '../../model/Errors';

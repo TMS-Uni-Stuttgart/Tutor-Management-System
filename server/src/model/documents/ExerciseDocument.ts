@@ -1,5 +1,5 @@
 import { Document, Model, Types } from 'mongoose';
-import { Exercise, ExerciseDTO } from 'shared/dist/model/Sheet';
+import { Exercise, ExerciseDTO, getPointsOfExercise } from 'shared/dist/model/Sheet';
 import { prop, Typegoose, arrayProp } from 'typegoose';
 
 export class ExerciseSchema extends Typegoose implements Omit<Exercise, 'id' | 'subexercises'> {
@@ -10,38 +10,26 @@ export class ExerciseSchema extends Typegoose implements Omit<Exercise, 'id' | '
   bonus!: boolean;
 
   @prop({ required: true })
-  private _maxPoints!: number;
+  maxPoints!: number;
 
   @arrayProp({ items: ExerciseSchema, default: [] })
   subexercises!: Types.Array<ExerciseDocument>;
-
-  @prop()
-  get maxPoints() {
-    if (this.subexercises.length === 0) {
-      return this._maxPoints;
-    }
-
-    return this.subexercises.reduce((pts, subEx) => pts + subEx.maxPoints, 0);
-  }
-  set maxPoints(pts: number) {
-    this._maxPoints = pts;
-  }
 }
 
 export interface ExerciseDocument extends ExerciseSchema, Document {}
 
-const ExerciseModel: Model<ExerciseDocument> = new ExerciseSchema().getModelForClass(
+export const ExerciseModel: Model<ExerciseDocument> = new ExerciseSchema().getModelForClass(
   ExerciseSchema
 );
 
 export function convertDocumentToExercise(doc: ExerciseDocument): Exercise {
-  const { id, exName, bonus, maxPoints, subexercises } = doc;
+  const { id, exName, bonus, subexercises } = doc;
 
   return {
     id,
     exName,
     bonus,
-    maxPoints,
+    maxPoints: getPointsOfExercise(doc),
     subexercises: subexercises.map(doc => convertDocumentToExercise(doc)),
   };
 }
@@ -52,8 +40,12 @@ export function generateExerciseDocumentsFromDTOs(
 ): ExerciseDocument[] {
   const exercises: ExerciseDocument[] = [];
 
-  dtos.forEach(({ exName, bonus, maxPoints }) => {
-    exercises.push(new ExerciseModel({ exName, maxPoints, bonus: isBonus || bonus }));
+  dtos.forEach(({ exName, bonus, maxPoints, subexercises }) => {
+    const subDocs = generateExerciseDocumentsFromDTOs(subexercises, isBonus || bonus);
+
+    exercises.push(
+      new ExerciseModel({ exName, maxPoints, bonus: isBonus || bonus, subexercises: subDocs })
+    );
   });
 
   return exercises;

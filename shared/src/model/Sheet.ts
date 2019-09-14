@@ -50,3 +50,14 @@ export class PointId {
     return `ID::${this.sheetId}--Ex::${this.exerciseIdentifier}`;
   }
 }
+
+// FIXME: Does NOT handle bonus points.
+export function getPointsOfExercise(exercise: Exercise): number {
+  if (exercise.subexercises.length === 0) {
+    return exercise.maxPoints;
+  }
+
+  return exercise.subexercises.reduce((pts, subEx) => {
+    return pts + getPointsOfExercise(subEx);
+  }, 0);
+}
