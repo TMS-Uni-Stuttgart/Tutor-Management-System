@@ -1,6 +1,5 @@
 import { HasId } from 'shared/dist/model/Common';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
-import { Exercise } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import { Tutorial } from 'shared/dist/model/Tutorial';
