@@ -1,10 +1,13 @@
 import { Button, IconButton } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { ErrorMessage, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { MinusBox as MinusIcon, PlusBox as PlusIcon } from 'mdi-material-ui';
+import { ErrorMessage, FieldArray, FieldArrayRenderProps, useField } from 'formik';
+import {
+  MinusBox as MinusIcon,
+  PlusBox as PlusIcon,
+  TimelinePlusOutline as PlusSubIcon,
+} from 'mdi-material-ui';
 import React from 'react';
-import { Exercise } from 'shared/dist/model/Sheet';
 import { SheetFormExercise } from '../SheetForm';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
@@ -28,11 +31,30 @@ const useStyles = makeStyles((theme: Theme) =>
         borderTop: `1.5px solid ${theme.palette.divider}`,
       },
     },
+    subexerciseBox: {
+      display: 'flex',
+      flexDirection: 'column',
+      gridColumn: '1 / -1',
+    },
     subexercise: {
-      paddingLeft: theme.spacing(4),
+      paddingLeft: theme.spacing(3),
+      paddingRight: 0,
+      borderBottom: 'none',
+      marginTop: 0,
+      '&:first-of-type': {
+        marginTop: theme.spacing(1),
+      },
+      '&:last-of-type': {
+        paddingBottom: 0,
+      },
     },
     addButton: {
       marginTop: theme.spacing(1),
+    },
+    addSubexerciseButton: {
+      marginTop: theme.spacing(1),
+      marginLeft: theme.spacing(2),
+      justifyContent: 'flex-start',
     },
     deleteButton: {
       color: theme.palette.error.light,
@@ -53,17 +75,25 @@ interface Props {
 
 interface ExerciseDataFieldsProps {
   namePrefix: string;
+  disablePoints?: boolean;
 }
 
-function ExerciseDataFields({ namePrefix }: ExerciseDataFieldsProps): JSX.Element {
+function getNewExercise(exName: string = ''): SheetFormExercise {
+  return {
+    exName,
+    maxPoints: '0.0',
+    bonus: false,
+    subexercises: [],
+  };
+}
+
+function ExerciseDataFields({ namePrefix, disablePoints }: ExerciseDataFieldsProps): JSX.Element {
   return (
     <>
       <FormikTextField
         name={`${namePrefix}.exName`}
         label='Aufgabenbezeichnung'
-        // type='number'
         fullWidth={false}
-        // inputProps={{ min: 0, step: 1 }}
       />
 
       <FormikTextField
@@ -72,6 +102,7 @@ function ExerciseDataFields({ namePrefix }: ExerciseDataFieldsProps): JSX.Elemen
         type='number'
         fullWidth={false}
         inputProps={{ min: 0, step: 0.1 }}
+        disabled={disablePoints}
       />
 
       <FormikCheckbox name={`${namePrefix}.bonus`} label='Bonusaufgabe' />
@@ -81,32 +112,13 @@ function ExerciseDataFields({ namePrefix }: ExerciseDataFieldsProps): JSX.Elemen
 
 function FormikExerciseEditor({ name }: Props): JSX.Element {
   const classes = useStyles();
-  const { values } = useFormikContext();
+  const [{ value }] = useField(name);
 
-  const exercises: Exercise[] = values[name] || [];
+  const exercises: SheetFormExercise[] = value || [];
 
   function handleCreateExercise(arrayHelpers: FieldArrayRenderProps) {
     return () => {
-      const exercise: SheetFormExercise = {
-        exName: (exercises.length + 1).toString(),
-        maxPoints: '0.0',
-        bonus: false,
-        subexercises: [
-          // FIXME: REMOVE ME!!
-          {
-            exName: 'a)',
-            maxPoints: '0.0',
-            bonus: false,
-            subexercises: [],
-          },
-          {
-            exName: 'b)',
-            maxPoints: '0.0',
-            bonus: false,
-            subexercises: [],
-          },
-        ],
-      };
+      const exercise: SheetFormExercise = getNewExercise((exercises.length + 1).toString());
 
       arrayHelpers.push(exercise);
     };
@@ -115,7 +127,7 @@ function FormikExerciseEditor({ name }: Props): JSX.Element {
   function handleExerciseDelete(idx: number, arrayHelpers: FieldArrayRenderProps) {
     return () => {
       // FIXME: Adjust so it'll still works with new sub-exercise prop 'exName'.
-      const exercises: readonly Exercise[] = arrayHelpers.form.values[name];
+      const exercises: readonly SheetFormExercise[] = arrayHelpers.form.values[name];
       // const removedExercise: Exercise = exercises[idx];
       const updatedExercises = [...exercises.slice(0, idx), ...exercises.slice(idx + 1)];
       // .map(ex => {
@@ -133,6 +145,34 @@ function FormikExerciseEditor({ name }: Props): JSX.Element {
     };
   }
 
+  function handleAddSubexercise(idx: number, arrayHelpers: FieldArrayRenderProps) {
+    return () => {
+      const exercise: SheetFormExercise = value[idx];
+
+      exercise.subexercises.push(getNewExercise());
+
+      arrayHelpers.replace(idx, exercise);
+    };
+  }
+
+  function handleDeleteSubexercise(
+    exIdx: number,
+    subIdx: number,
+    arrayHelpers: FieldArrayRenderProps
+  ) {
+    return () => {
+      const exercise: SheetFormExercise = value[exIdx];
+      const updatedSubexercises = [
+        ...exercise.subexercises.slice(0, subIdx),
+        ...exercise.subexercises.slice(subIdx + 1),
+      ];
+
+      exercise.subexercises = updatedSubexercises;
+
+      arrayHelpers.replace(exIdx, exercise);
+    };
+  }
+
   return (
     <FieldArray
       name={name}
@@ -141,24 +181,11 @@ function FormikExerciseEditor({ name }: Props): JSX.Element {
           {exercises.map((ex, idx) => (
             <React.Fragment key={idx}>
               <div className={classes.exercise}>
-                <ExerciseDataFields namePrefix={`${name}.${idx}`} />
-                {/* <FormikTextField
-                  name={`${name}.${idx}.exName`}
-                  label='Aufgabenbezeichnung'
-                  type='number'
-                  fullWidth={false}
-                  inputProps={{ min: 0, step: 1 }}
+                {/* TODO: Add calculation of points if there are subexercises. */}
+                <ExerciseDataFields
+                  namePrefix={`${name}.${idx}`}
+                  disablePoints={ex.subexercises.length > 0}
                 />
-
-                <FormikTextField
-                  name={`${name}.${idx}.maxPoints`}
-                  label='Punkte'
-                  type='number'
-                  fullWidth={false}
-                  inputProps={{ min: 0, step: 0.1 }}
-                />
-
-                <FormikCheckbox name={`${name}.${idx}.bonus`} label='Bonusaufgabe' /> */}
 
                 <IconButton
                   className={classes.deleteButton}
@@ -166,23 +193,33 @@ function FormikExerciseEditor({ name }: Props): JSX.Element {
                 >
                   <MinusIcon />
                 </IconButton>
-              </div>
 
-              {ex.subexercises.map((_, subIdx) => (
-                <div
-                  key={`sub-ex-${subIdx}`}
-                  className={clsx(classes.exercise, classes.subexercise)}
-                >
-                  <ExerciseDataFields namePrefix={`${name}.${idx}.subexercises.${subIdx}`} />
+                <div className={classes.subexerciseBox}>
+                  {ex.subexercises.map((_, subIdx) => (
+                    <div
+                      key={`sub-ex-${subIdx}`}
+                      className={clsx(classes.exercise, classes.subexercise)}
+                    >
+                      <ExerciseDataFields namePrefix={`${name}.${idx}.subexercises.${subIdx}`} />
 
-                  <IconButton
-                    className={classes.deleteButton}
-                    onClick={() => console.log('REMOVE SUB EXERCISE!')}
+                      <IconButton
+                        className={classes.deleteButton}
+                        onClick={handleDeleteSubexercise(idx, subIdx, arrayHelpers)}
+                      >
+                        <MinusIcon />
+                      </IconButton>
+                    </div>
+                  ))}
+
+                  <Button
+                    className={classes.addSubexerciseButton}
+                    onClick={handleAddSubexercise(idx, arrayHelpers)}
                   >
-                    <MinusIcon />
-                  </IconButton>
+                    <PlusSubIcon className={classes.iconInButton} />
+                    Neue Teilaufgabe hinzufügen
+                  </Button>
                 </div>
-              ))}
+              </div>
             </React.Fragment>
           ))}
 
