@@ -1,13 +1,12 @@
-import { Sheet, SheetDTO, PointId } from 'shared/dist/model/Sheet';
+import { PointId, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
+import { Student } from 'shared/dist/model/Student';
 import {
   convertDocumentToExercise,
   ExerciseDocument,
   generateExerciseDocumentsFromDTOs,
-  ExerciseModel
 } from '../../model/documents/ExerciseDocument';
 import SheetModel, { SheetDocument } from '../../model/documents/SheetDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
-import { Student } from 'shared/dist/model/Student';
 import teamService from '../team-service/TeamService.class';
 
 class SheetService {
