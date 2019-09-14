@@ -151,6 +151,9 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
           onCancelClicked={() => dialog.hide()}
         />
       ),
+      DialogProps: {
+        maxWidth: 'xl',
+      },
     });
   }
 
