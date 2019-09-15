@@ -13,7 +13,7 @@ import { useAxios } from '../../hooks/FetchingService';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
-import PointsCard from './components/PointsCard';
+import PointsCard from './components/points-card/PointsCard';
 import { PointsSaveCallback } from './components/PointsRow';
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
