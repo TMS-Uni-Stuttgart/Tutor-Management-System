@@ -13,11 +13,11 @@ import { useAxios } from '../../hooks/FetchingService';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
+import PointsCard from './components/PointsCard';
 import { PointsSaveCallback } from './components/PointsRow';
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
-import TeamPointsRow from './components/TeamPointsRow';
 import { getPointsOfStudentOfExercise } from './util/helper';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -316,15 +316,21 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                   key={currentSheet.id}
                   items={teams}
                   createRowFromItem={team => (
-                    <TeamPointsRow
+                    <PointsCard
                       key={team.id}
-                      entity={team}
-                      pointsMap={team.points}
-                      entityWithExercises={currentSheet}
-                      tabIndexForRow={teams.indexOf(team) + 1}
-                      onPointsSave={handleSavePoints(team)}
-                      onEditPoints={handleEditPointsOfStudents}
+                      // avatar={<TeamIcon />}
+                      title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
+                      subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
                     />
+                    // <TeamPointsRow
+                    //   key={team.id}
+                    //   entity={team}
+                    //   pointsMap={team.points}
+                    //   entityWithExercises={currentSheet}
+                    //   tabIndexForRow={teams.indexOf(team) + 1}
+                    //   onPointsSave={handleSavePoints(team)}
+                    //   onEditPoints={handleEditPointsOfStudents}
+                    // />
                   )}
                   placeholder='Keine Teams verfügbar.'
                 />
