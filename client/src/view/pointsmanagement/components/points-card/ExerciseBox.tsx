@@ -1,9 +1,11 @@
-import React from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { IconButton, Typography, TextField } from '@material-ui/core';
-import { getPointsOfExercise, Exercise } from 'shared/dist/model/Sheet';
-import { ChevronUp as OpenIcon } from 'mdi-material-ui';
+import { IconButton, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { ChevronUp as OpenIcon } from 'mdi-material-ui';
+import React from 'react';
+import { Exercise, getPointsOfExercise } from 'shared/dist/model/Sheet';
+import FormikTextField from '../../../../components/forms/components/FormikTextField';
+import { getExerciseIdentifier } from '../../util/helper';
 import PointsTextField from './PointsTextField';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -63,19 +65,24 @@ interface Props {
 
 function ExerciseBox({ exercise }: Props): JSX.Element {
   const classes = useStyles();
+
   const { subexercises } = exercise;
+  const identifier = getExerciseIdentifier(exercise);
+  const totalPoints = getPointsOfExercise(exercise);
 
   return (
-    <div key={exercise.id} className={classes.exerciseBox}>
+    <div className={classes.exerciseBox}>
       <IconButton size='small' className={classes.exerciseBoxCollapseButton}>
         <OpenIcon />
       </IconButton>
 
       <div className={classes.exerciseHeader}>
         <Typography className={classes.exerciseName}>{`Aufgabe ${exercise.exName}`}</Typography>
-        <Typography variant='body2' color='textSecondary'>{`## / ${getPointsOfExercise(
-          exercise
-        )} Punkte`}</Typography>
+
+        <Typography
+          variant='body2'
+          color='textSecondary'
+        >{`## / ${totalPoints} Punkte`}</Typography>
       </div>
 
       <Typography>Kommentar</Typography>
@@ -89,27 +96,29 @@ function ExerciseBox({ exercise }: Props): JSX.Element {
             <Typography className={classes.subexerciseName}>{subEx.exName}</Typography>
 
             <PointsTextField
+              name={`${getExerciseIdentifier(subEx)}.points`}
               className={classes.pointsTextField}
               placeholder='0'
-              points={getPointsOfExercise(subEx).toString()}
+              maxPoints={getPointsOfExercise(subEx)}
             />
           </div>
         ))
       ) : (
         <PointsTextField
+          name={`${identifier}.points`}
           className={clsx(classes.pointsTextField, classes.firstColumn)}
           placeholder='0'
-          points={getPointsOfExercise(exercise).toString()}
+          maxPoints={getPointsOfExercise(exercise)}
         />
       )}
 
-      <TextField
+      <FormikTextField
+        name={`${identifier}.comment`}
         className={classes.commentaryTextField}
         style={{
           gridRow: `2 / span ${subexercises.length > 0 ? subexercises.length + 1 : 2}`,
         }}
         placeholder='Kommentar'
-        variant='outlined'
         multiline
       />
     </div>

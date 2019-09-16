@@ -321,6 +321,14 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                       // avatar={<TeamIcon />}
                       title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
                       subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
+                      entity={team}
+                      entityWithExercises={currentSheet}
+                      onPointsSave={() => {
+                        throw new Error('Not implemented yet.');
+                      }}
+                      onEditPoints={() => {
+                        throw new Error('Not implemented yet.');
+                      }}
                     />
                     // <TeamPointsRow
                     //   key={team.id}
