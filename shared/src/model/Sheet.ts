@@ -31,7 +31,7 @@ export interface ExerciseDTO {
   subexercises: ExerciseDTO[];
 }
 
-type PointsOfSuberxises = {
+export type PointsOfSubexercises = {
   [subExId: string]: number;
 };
 
@@ -44,7 +44,7 @@ type PointsOfSuberxises = {
  */
 export interface PointMapEntry {
   comment: string;
-  points: number | PointsOfSuberxises;
+  points: number | PointsOfSubexercises;
 }
 
 /**
