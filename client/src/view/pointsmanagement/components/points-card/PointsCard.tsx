@@ -44,7 +44,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export type PointsCardFormState = {
   [exIdentifier: string]: {
-    points: number; // TODO: Subexercises!
+    points:
+      | string
+      | {
+          [subExId: string]: string;
+        };
     comment: string;
   };
 };

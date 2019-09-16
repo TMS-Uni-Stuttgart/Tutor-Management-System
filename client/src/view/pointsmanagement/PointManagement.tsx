@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { Sheet, UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { Sheet, UpdatePointsDTO, PointMap, PointsOfSubexercises } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
@@ -13,8 +13,7 @@ import { useAxios } from '../../hooks/FetchingService';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
-import PointsCard from './components/points-card/PointsCard';
-import { PointsSaveCallback } from './components/PointsRow';
+import PointsCard, { PointsSaveCallback } from './components/points-card/PointsCard';
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
@@ -98,9 +97,38 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
+    const exercises: PointMap = {};
+
+    Object.entries(values).forEach(([key, entry]) => {
+      if (typeof entry.points === 'string') {
+        if (Number.isNaN(Number.parseFloat(entry.points))) {
+          throw new Error(`Can not parse the points of ${key}.`);
+        }
+
+        exercises[key] = {
+          comment: entry.comment,
+          points: Number.parseFloat(entry.points),
+        };
+      } else {
+        const points: PointsOfSubexercises = {};
+
+        Object.entries(entry.points).forEach(([subKey, value]) => {
+          if (Number.isNaN(Number.parseFloat(value))) {
+            throw new Error(`Can not parse the points of ${subKey} of ${key}.`);
+          }
+          points[subKey] = Number.parseFloat(value);
+        });
+
+        exercises[key] = {
+          comment: entry.comment,
+          points,
+        };
+      }
+    });
+
     const pointsDTO: UpdatePointsDTO = {
       id: currentSheet.id,
-      exercises: values,
+      exercises,
     };
 
     try {

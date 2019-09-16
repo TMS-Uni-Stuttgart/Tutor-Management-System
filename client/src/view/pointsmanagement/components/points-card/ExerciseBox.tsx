@@ -96,7 +96,7 @@ function ExerciseBox({ exercise }: Props): JSX.Element {
             <Typography className={classes.subexerciseName}>{subEx.exName}</Typography>
 
             <PointsTextField
-              name={`${getExerciseIdentifier(subEx)}.points`}
+              name={`${identifier}.points.${subEx.id}`}
               className={classes.pointsTextField}
               placeholder='0'
               maxPoints={getPointsOfExercise(subEx)}

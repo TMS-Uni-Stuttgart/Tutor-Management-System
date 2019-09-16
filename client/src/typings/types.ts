@@ -4,6 +4,7 @@ import { Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
+import { PointMap } from 'shared/dist/model/Sheet';
 
 export interface UserWithFetchedTutorials extends Omit<User, 'tutorials'> {
   tutorials: Tutorial[];
@@ -28,7 +29,7 @@ export interface StudentWithFetchedTeam extends Omit<Student, 'team'> {
 }
 
 export interface HasPoints extends HasId {
-  points: { [index: string]: number };
+  points: PointMap;
 }
 
 export interface StudentScheinCriteriaSummaryMap {
