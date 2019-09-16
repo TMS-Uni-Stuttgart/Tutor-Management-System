@@ -1,8 +1,9 @@
 import { HasId } from './Common';
 import { Student } from './Student';
+import { PointMap } from './Sheet';
 
 export interface Team extends HasId {
-  points: { [index: string]: number };
+  points: PointMap;
   students: Student[];
   teamNo: number;
   tutorial: string;

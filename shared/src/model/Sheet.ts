@@ -31,8 +31,37 @@ export interface ExerciseDTO {
   subexercises: ExerciseDTO[];
 }
 
+type PointsOfSuberxises = {
+  [subExId: string]: number;
+};
+
+/**
+ * Entry of a `PointMap`.
+ *
+ * It contains a comment aswell as the gained points of an exercise. These can either be:
+ * - a `number` if the exercise does NOT have subexercises
+ * - OR a map which maps the subexercise Id to the gained points of this subexercise.
+ */
+export interface PointMapEntry {
+  comment: string;
+  points: number | PointsOfSuberxises;
+}
+
+/**
+ * Maps exercise identifier to the corresponding `PointMapEntry`.
+ *
+ * The string identifiers must be generated using a `PointId` object.
+ *
+ * The `PointMapEntry` contains a comment belonging to the exercise aswell as the points of the exercise. The later can either be:
+ * - a `number` if the exercise does NOT have subexercises
+ * - OR a map which maps the subexercise Id to the gained points of this subexercise.
+ */
+export type PointMap = {
+  [exercise: string]: PointMapEntry;
+};
+
 export interface UpdatePointsDTO {
-  exercises: { [index: string]: number };
+  exercises: PointMap;
   id: string;
 }
 
