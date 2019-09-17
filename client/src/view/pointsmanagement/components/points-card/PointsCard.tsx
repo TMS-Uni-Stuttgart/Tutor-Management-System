@@ -12,6 +12,8 @@ import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
 import ExerciseBox from './ExerciseBox';
+import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
+import { CardProps } from '@material-ui/core/Card';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,7 +57,7 @@ export type PointsCardFormState = {
 export type EntityWithPoints = HasId & HasPoints;
 export type PointsSaveCallback = FormikSubmitCallback<PointsCardFormState>;
 
-interface Props<T extends EntityWithPoints> {
+interface Props<T extends EntityWithPoints> extends CardProps {
   title: string;
   subtitle?: string;
   avatar?: React.ReactNode;
@@ -89,6 +91,18 @@ function getInitialValues(points: PointMap, { id, exercises }: HasExercises): Po
       }
 
       values[pointId.toString()] = { points, comment: entry.comment };
+    } else {
+      if (ex.subexercises.length > 0) {
+        const points: PointCardFormSubExState = {};
+
+        ex.subexercises.forEach(subEx => {
+          points[subEx.id] = '0.0';
+        });
+
+        values[pointId.toString()] = { points, comment: '' };
+      } else {
+        values[pointId.toString()] = { points: '0.0', comment: '' };
+      }
     }
   });
 
@@ -104,6 +118,7 @@ function PointsCard<T extends EntityWithPoints>({
   entityWithExercises,
   onPointsSave,
   onEditPoints,
+  ...other
 }: Props<T>): JSX.Element {
   const classes = useStyles();
   const [isCollapsed, setCollapsed] = useState(
@@ -121,13 +136,13 @@ function PointsCard<T extends EntityWithPoints>({
   }
 
   return (
-    <Card>
+    <Card {...other}>
       <Formik
         initialValues={initialValues}
         onSubmit={onPointsSave}
         // TODO: Add validation schema?!
       >
-        {({ handleSubmit, isValid, isSubmitting }) => (
+        {({ handleSubmit, isValid, isSubmitting, values }) => (
           <>
             <CustomCardHeader
               onClick={handleCollapseChange}
@@ -177,6 +192,8 @@ function PointsCard<T extends EntityWithPoints>({
                 </CardActions>
               </form>
             )}
+
+            <FormikDebugDisplay values={values} />
           </>
         )}
       </Formik>
