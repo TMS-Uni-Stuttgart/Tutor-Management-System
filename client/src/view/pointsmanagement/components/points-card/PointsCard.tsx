@@ -1,16 +1,17 @@
 import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { Formik } from 'formik';
 import { ChevronUp as OpenIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
-import { Exercise, getPointsOfExercise, HasExercises } from 'shared/dist/model/Sheet';
+import { HasId } from 'shared/dist/model/Common';
+import { getPointsOfExercise } from 'shared/dist/model/Points';
+import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import CustomCardHeader from '../../../../components/CustomCardHeader';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
-import ExerciseBox from './ExerciseBox';
 import { FormikSubmitCallback } from '../../../../types';
-import { HasId } from 'shared/dist/model/Common';
 import { HasPoints } from '../../../../typings/types';
-import { Formik } from 'formik';
+import ExerciseBox from './ExerciseBox';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

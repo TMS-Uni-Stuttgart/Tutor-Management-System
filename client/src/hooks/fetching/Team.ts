@@ -1,4 +1,4 @@
-import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import axios from './Axios';
 

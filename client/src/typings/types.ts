@@ -4,7 +4,7 @@ import { Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
-import { PointMap } from 'shared/dist/model/Sheet';
+import { PointMap } from 'shared/dist/model/Points';
 
 export interface UserWithFetchedTutorials extends Omit<User, 'tutorials'> {
   tutorials: Tutorial[];

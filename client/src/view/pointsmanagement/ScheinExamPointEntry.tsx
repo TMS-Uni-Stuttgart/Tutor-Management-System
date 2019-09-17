@@ -5,7 +5,7 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import CustomSelect from '../../components/CustomSelect';
 import TableWithPadding from '../../components/TableWithPadding';
