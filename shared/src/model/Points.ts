@@ -1,4 +1,4 @@
-import { Exercise } from './Sheet';
+import { Exercise, HasExercises } from './Sheet';
 
 export type PointsOfSubexercises = {
   [subExId: string]: number;
@@ -16,19 +16,6 @@ export interface PointMapEntry {
   points: number | PointsOfSubexercises;
 }
 
-// /**
-//  * Maps exercise identifier to the corresponding `PointMapEntry`.
-//  *
-//  * The string identifiers must be generated using a `PointId` object.
-//  *
-//  * The `PointMapEntry` contains a comment belonging to the exercise aswell as the points of the exercise. The later can either be:
-//  * - a `number` if the exercise does NOT have subexercises
-//  * - OR a map which maps the subexercise Id to the gained points of this subexercise.
-//  */
-// export type PointMap = {
-//   [exercise: string]: PointMapEntry;
-// };
-
 export interface UpdatePointsDTO {
   exercises: PointMapDTO;
   id: string;
@@ -38,6 +25,30 @@ export type PointMapDTO = {
   [exercise: string]: PointMapEntry | undefined;
 };
 
+export class PointId {
+  private exerciseIdentifier: string;
+
+  readonly sheetId: string;
+
+  constructor(sheetId: string, exercise: Exercise) {
+    this.sheetId = sheetId;
+    this.exerciseIdentifier = exercise.id;
+  }
+
+  public toString(): string {
+    return `ID::${this.sheetId}--Ex::${this.exerciseIdentifier}`;
+  }
+}
+
+/**
+ * Maps exercise identifier to the corresponding `PointMapEntry`.
+ *
+ * The string identifiers must be generated using a `PointId` object.
+ *
+ * The `PointMapEntry` contains a comment belonging to the exercise aswell as the points of the exercise. The later can either be:
+ * - a `number` if the exercise does NOT have subexercises
+ * - OR a map which maps the subexercise Id to the gained points of this subexercise.
+ */
 export class PointMap {
   static fromDTO(dto: PointMapDTO): PointMap {
     return new PointMap(dto);
@@ -50,11 +61,40 @@ export class PointMap {
   }
 
   setPoints(pointId: PointId, points: PointMapEntry) {
-    this.points[pointId.toString()] = points;
+    this.setPointsByKey(pointId.toString(), points);
   }
 
-  getPoints(pointId: PointId): PointMapEntry | undefined {
+  setPointsByKey(key: string, points: PointMapEntry) {
+    this.points[key] = points;
+  }
+
+  getPointEntry(pointId: PointId): PointMapEntry | undefined {
     return this.points[pointId.toString()];
+  }
+
+  adjustPoints({ id, exercises }: HasExercises, pointsGained: PointMap) {
+    for (const [exName, pointEntry] of pointsGained.getEntries()) {
+      const exercise = exercises.find(ex => ex.exName === exName);
+
+      if (exercise) {
+        const pointId = new PointId(id, exercise);
+        this.setPoints(pointId, pointEntry);
+      }
+    }
+  }
+
+  getPoints(pointId: PointId): number | undefined {
+    const pointEntry = this.getPointEntry(pointId);
+
+    if (!pointEntry) {
+      return undefined;
+    }
+
+    if (typeof pointEntry.points === 'number') {
+      return pointEntry.points;
+    }
+
+    return Object.values(pointEntry.points).reduce((sum, pts) => sum + pts, 0);
   }
 
   getEntries(): [string, PointMapEntry][] {
@@ -69,24 +109,19 @@ export class PointMap {
     return entries;
   }
 
+  has(id: string | PointId): boolean {
+    const key = id instanceof PointId ? id.toString() : id;
+
+    return !!this.points[key];
+  }
+
+  isEmpty(): boolean {
+    return Object.entries(this.points).length === 0;
+  }
+
   toDTO(): PointMapDTO {
     // TODO: Deep copy!
     return { ...this.points };
-  }
-}
-
-export class PointId {
-  private exerciseIdentifier: string;
-
-  readonly sheetId: string;
-
-  constructor(sheetId: string, exercise: Exercise) {
-    this.sheetId = sheetId;
-    this.exerciseIdentifier = exercise.id;
-  }
-
-  public toString(): string {
-    return `ID::${this.sheetId}--Ex::${this.exerciseIdentifier}`;
   }
 }
 
