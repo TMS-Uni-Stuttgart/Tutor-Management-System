@@ -90,11 +90,7 @@ export class PointMap {
       return undefined;
     }
 
-    if (typeof pointEntry.points === 'number') {
-      return pointEntry.points;
-    }
-
-    return Object.values(pointEntry.points).reduce((sum, pts) => sum + pts, 0);
+    return this.getPointsOfEntry(pointEntry);
   }
 
   getEntries(): [string, PointMapEntry][] {
@@ -107,6 +103,14 @@ export class PointMap {
     });
 
     return entries;
+  }
+
+  getSumOfPoints({ id, exercises }: HasExercises): number {
+    return exercises.reduce((sum, ex) => {
+      const pts = this.getPoints(new PointId(id, ex)) || 0;
+
+      return sum + pts;
+    }, 0);
   }
 
   has(id: string | PointId): boolean {
@@ -122,6 +126,14 @@ export class PointMap {
   toDTO(): PointMapDTO {
     // TODO: Deep copy!
     return { ...this.points };
+  }
+
+  private getPointsOfEntry(entry: PointMapEntry): number {
+    if (typeof entry.points === 'number') {
+      return entry.points;
+    }
+
+    return Object.values(entry.points).reduce((sum, pts) => sum + pts, 0);
   }
 }
 
