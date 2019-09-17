@@ -59,7 +59,7 @@ function CustomCardHeader({
   const classes = useStyles();
 
   let title = titleProp;
-  if (title != null && !disableTypography) {
+  if (!!title && !disableTypography) {
     title = (
       <Typography
         variant={avatar ? 'body2' : 'h5'}
@@ -74,7 +74,7 @@ function CustomCardHeader({
   }
 
   let subheader = subheaderProp;
-  if (subheader != null && !disableTypography) {
+  if (!!subheader && !disableTypography) {
     subheader = (
       <Typography
         variant={avatar ? 'body2' : 'body1'}
