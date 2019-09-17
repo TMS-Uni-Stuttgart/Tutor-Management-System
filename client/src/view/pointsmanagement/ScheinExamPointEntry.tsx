@@ -1,15 +1,19 @@
 import { Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Person as PersonIcon } from '@material-ui/icons';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { UpdatePointsDTO } from 'shared/dist/model/Points';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
 import CustomSelect from '../../components/CustomSelect';
-import TableWithPadding from '../../components/TableWithPadding';
 import { useAxios } from '../../hooks/FetchingService';
 import { getDisplayStringOfScheinExam, getNameOfEntity } from '../../util/helperFunctions';
+import PointsCard, {
+  convertPointsCardFormStateToDTO,
+  PointsSaveCallback,
+} from './components/points-card/PointsCard';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
     placeholder: {
       marginTop: theme.spacing(8),
       textAlign: 'center',
+    },
+    pointCard: {
+      marginTop: theme.spacing(2),
     },
   })
 );
@@ -61,39 +68,35 @@ function ScheinExamPointEntry({ match, enqueueSnackbar }: Props): JSX.Element {
     setCurrentExam(exam);
   }
 
-  // TODO: Reimplement me!
-  // const handleSavePoints: (student: Student) => PointsSaveCallback = student => async (
-  //   values,
-  //   { resetForm, setSubmitting }
-  // ) => {
-  //   if (!currentExam) {
-  //     return;
-  //   }
+  const handleSavePoints: (student: Student) => PointsSaveCallback = student => async (
+    values,
+    { resetForm, setSubmitting }
+  ) => {
+    if (!currentExam) {
+      return;
+    }
 
-  //   const points: UpdatePointsDTO = {
-  //     id: currentExam.id,
-  //     exercises: values,
-  //   };
+    const points: UpdatePointsDTO = convertPointsCardFormStateToDTO(values, currentExam);
 
-  //   try {
-  //     await setExamPointsOfStudent(student.id, points);
+    try {
+      await setExamPointsOfStudent(student.id, points);
 
-  //     const updatedStudent = await getStudent(student.id);
-  //     setStudents(students.map(s => (s.id === student.id ? updatedStudent : s)));
+      const updatedStudent = await getStudent(student.id);
+      setStudents(students.map(s => (s.id === student.id ? updatedStudent : s)));
 
-  //     resetForm({ values: { ...values } });
-  //     enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} erfolgreich eingetragen.`, {
-  //       variant: 'success',
-  //     });
-  //   } catch (reason) {
-  //     console.error(reason);
-  //     enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} eingetragen fehlgeschlagen.`, {
-  //       variant: 'error',
-  //     });
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
+      resetForm({ values: { ...values } });
+      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} erfolgreich eingetragen.`, {
+        variant: 'success',
+      });
+    } catch (reason) {
+      console.error(reason);
+      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} eingetragen fehlgeschlagen.`, {
+        variant: 'error',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -109,22 +112,23 @@ function ScheinExamPointEntry({ match, enqueueSnackbar }: Props): JSX.Element {
       />
 
       {currentExam ? (
-        <TableWithPadding
-          items={students}
-          createRowFromItem={student => (
-            <div>NOT IMPLEMENTED</div>
-            // <PointsRow
-            //   label={getNameOfEntity(student)}
-            //   icon={PersonIcon}
-            //   entity={student}
-            //   pointsMap={student.scheinExamResults}
-            //   entityWithExercises={currentExam}
-            //   tabIndexForRow={students.indexOf(student) + 1}
-            //   onPointsSave={handleSavePoints(student)}
-            // />
-          )}
-          placeholder='Keine Studierenden verfügbar.'
-        />
+        students.length > 0 ? (
+          students.map(student => (
+            <PointsCard
+              key={student.id}
+              className={classes.pointCard}
+              title={getNameOfEntity(student)}
+              avatar={<PersonIcon />}
+              entity={{ id: student.id, points: new PointMap(student.scheinExamResults) }}
+              entityWithExercises={currentExam}
+              onPointsSave={handleSavePoints(student)}
+            />
+          ))
+        ) : (
+          <Typography className={classes.placeholder} variant='h6'>
+            Keine Studierenden verfügbar.
+          </Typography>
+        )
       ) : (
         <Typography className={classes.placeholder} variant='h6'>
           Keine Scheinklausur ausgewählt.
