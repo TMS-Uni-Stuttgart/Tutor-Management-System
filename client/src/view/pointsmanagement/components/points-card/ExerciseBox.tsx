@@ -73,7 +73,7 @@ function ExerciseBox({ name, exercise }: Props): JSX.Element {
 
   return (
     <div className={classes.exerciseBox}>
-      <IconButton size='small' className={classes.exerciseBoxCollapseButton}>
+      <IconButton size='small' className={classes.exerciseBoxCollapseButton} tabIndex={-1}>
         <OpenIcon />
       </IconButton>
 
