@@ -1,4 +1,4 @@
-import { PointId, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
+import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import {
   convertDocumentToExercise,
@@ -8,6 +8,7 @@ import {
 import SheetModel, { SheetDocument } from '../../model/documents/SheetDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import teamService from '../team-service/TeamService.class';
+import { PointId, PointMap } from 'shared/dist/model/Points';
 
 class SheetService {
   public async getAllSheets(): Promise<Sheet[]> {
@@ -72,17 +73,23 @@ class SheetService {
   }
 
   public async getPointsOfStudent(student: Student, sheet: Sheet): Promise<number> {
+    const pointsOfStudent = new PointMap(student.points);
+    let pointsOfTeam = new PointMap();
+
+    if (student.team) {
+      const team = await teamService.getTeamWithId(student.tutorial, student.team);
+      pointsOfTeam = new PointMap(team.points);
+    }
+
     let result = 0;
 
     for (const exercise of sheet.exercises) {
       const pointId = new PointId(sheet.id, exercise);
 
-      if (student.points[pointId.toString()] !== undefined) {
-        result += student.points[pointId.toString()];
-      } else if (student.team) {
-        const team = await teamService.getTeamWithId(student.tutorial, student.team);
-
-        result += team.points[pointId.toString()] || 0;
+      if (pointsOfStudent.has(pointId)) {
+        result += pointsOfStudent.getPoints(pointId) || 0;
+      } else if (pointsOfTeam.has(pointId)) {
+        result += pointsOfTeam.getPoints(pointId) || 0;
       }
     }
 

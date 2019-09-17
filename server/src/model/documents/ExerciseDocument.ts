@@ -1,6 +1,7 @@
 import { Document, Model, Types } from 'mongoose';
-import { Exercise, ExerciseDTO, getPointsOfExercise } from 'shared/dist/model/Sheet';
+import { Exercise, ExerciseDTO } from 'shared/dist/model/Sheet';
 import { prop, Typegoose, arrayProp } from 'typegoose';
+import { getPointsOfExercise } from 'shared/dist/model/Points';
 
 export class ExerciseSchema extends Typegoose implements Omit<Exercise, 'id' | 'subexercises'> {
   @prop({ required: true })

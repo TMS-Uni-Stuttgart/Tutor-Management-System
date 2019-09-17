@@ -4,7 +4,6 @@ import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import { adjustPoints } from '../../helpers/pointsHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
@@ -111,14 +110,9 @@ class TeamService {
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
     const sheet = await sheetService.getDocumentWithId(sheetId);
-
-    if (!team.points) {
-      team.points = {};
-    }
-
     const pointMapOfTeam: PointMap = new PointMap(team.points);
 
-    adjustPoints(pointMapOfTeam, sheet, new PointMap(pointsGained));
+    pointMapOfTeam.adjustPoints(sheet, new PointMap(pointsGained));
     team.points = pointMapOfTeam.toDTO();
 
     await tutorial.save();
