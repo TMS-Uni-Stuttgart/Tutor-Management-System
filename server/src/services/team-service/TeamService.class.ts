@@ -8,7 +8,7 @@ import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import { DocumentNotFoundError } from '../../model/Errors';
+import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
@@ -111,10 +111,19 @@ class TeamService {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
     const sheet = await sheetService.getDocumentWithId(sheetId);
     const pointMapOfTeam: PointMap = new PointMap(team.points);
+    const idxOfTeam = tutorial.teams.findIndex(doc => doc.id === team.id);
 
-    pointMapOfTeam.adjustPoints(sheet, new PointMap(pointsGained));
+    if (idxOfTeam === -1) {
+      throw new BadRequestError('Could not find Team in Tutorial.');
+    }
+
+    pointMapOfTeam.adjustPoints(new PointMap(pointsGained));
+
     team.points = pointMapOfTeam.toDTO();
 
+    // Mongoose is not able to detect the change so we tell it that the teams array has changed...
+    // See: https://mongoosejs.com/docs/schematypes.html#mixed
+    tutorial.markModified('teams');
     await tutorial.save();
   }
 

@@ -72,15 +72,10 @@ export class PointMap {
     return this.points[pointId.toString()];
   }
 
-  adjustPoints({ id, exercises }: HasExercises, pointsGained: PointMap) {
-    for (const [exName, pointEntry] of pointsGained.getEntries()) {
-      const exercise = exercises.find(ex => ex.exName === exName);
-
-      if (exercise) {
-        const pointId = new PointId(id, exercise);
-        this.setPoints(pointId, pointEntry);
-      }
-    }
+  adjustPoints(pointsGained: PointMap) {
+    pointsGained.getEntries().forEach(([key, entry]) => {
+      this.setPointsByKey(key, entry);
+    });
   }
 
   getPoints(pointId: PointId): number | undefined {
@@ -125,7 +120,7 @@ export class PointMap {
 
   toDTO(): PointMapDTO {
     // TODO: Deep copy!
-    return { ...this.points };
+    return this.points;
   }
 
   private getPointsOfEntry(entry: PointMapEntry): number {

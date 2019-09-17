@@ -113,7 +113,7 @@ class StudentService {
     const sheet = await sheetService.getDocumentWithId(sheetId);
     const pointMapOfStudent = new PointMap(student.points);
 
-    pointMapOfStudent.adjustPoints(sheet, new PointMap(pointsGained));
+    pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
     student.points = pointMapOfStudent.toDTO();
 
     await student.save();
@@ -127,7 +127,7 @@ class StudentService {
     const exam = await scheinexamService.getDocumentWithId(examId);
     const pointMapOfStudent = new PointMap(student.scheinExamResults);
 
-    pointMapOfStudent.adjustPoints(exam, new PointMap(pointsGained));
+    pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
     student.scheinExamResults = pointMapOfStudent.toDTO();
 
     await student.save();
