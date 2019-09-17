@@ -36,7 +36,6 @@ function generateScheinExamDTO(values: ScheinExamFormState): ScheinExamDTO {
   };
 }
 
-// TODO: Adjust for subexercises.
 function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   const classes = useStyles();
 

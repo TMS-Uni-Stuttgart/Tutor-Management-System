@@ -30,7 +30,6 @@ function convertSheetFormExercisesToDTOs(exercises: SheetFormExercise[]): Exerci
   }));
 }
 
-// TODO: Adjust for subexercises.
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
