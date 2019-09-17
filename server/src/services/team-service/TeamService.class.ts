@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import { Types } from 'mongoose';
-import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { isDocument } from 'typegoose/lib/utils';
@@ -41,7 +40,7 @@ class TeamService {
     const team: TypegooseDocument<TeamSchema> = {
       tutorial,
       students,
-      points: new Types.Map(),
+      points: new PointMap().toDTO(),
       teamNo,
     };
     tutorial.teams.push(team);
@@ -114,10 +113,13 @@ class TeamService {
     const sheet = await sheetService.getDocumentWithId(sheetId);
 
     if (!team.points) {
-      team.points = new Types.Map();
+      team.points = {};
     }
 
-    adjustPoints(team.points, sheet, pointsGained);
+    const pointMapOfTeam: PointMap = new PointMap(team.points);
+
+    adjustPoints(pointMapOfTeam, sheet, new PointMap(pointsGained));
+    team.points = pointMapOfTeam.toDTO();
 
     await tutorial.save();
   }
@@ -254,7 +256,7 @@ class TeamService {
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
       students,
-      points: points ? points.toObject({ flattenMaps: true }) : {},
+      points,
     };
   }
 
