@@ -3,7 +3,8 @@ import { makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { Sheet, UpdatePointsDTO, PointMap, PointsOfSubexercises } from 'shared/dist/model/Sheet';
+import { Sheet } from 'shared/dist/model/Sheet';
+import { UpdatePointsDTO, PointMap, PointsOfSubexercises, PointId } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
@@ -97,7 +98,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
-    const exercises: PointMap = {};
+    const exercises: PointMap = new PointMap();
 
     Object.entries(values).forEach(([key, entry]) => {
       if (typeof entry.points === 'string') {
@@ -105,10 +106,10 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
           throw new Error(`Can not parse the points of ${key}.`);
         }
 
-        exercises[key] = {
+        exercises.setPointsByKey(key, {
           comment: entry.comment,
           points: Number.parseFloat(entry.points),
-        };
+        });
       } else {
         const points: PointsOfSubexercises = {};
 
@@ -119,16 +120,16 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
           points[subKey] = Number.parseFloat(value);
         });
 
-        exercises[key] = {
+        exercises.setPointsByKey(key, {
           comment: entry.comment,
           points,
-        };
+        });
       }
     });
 
     const pointsDTO: UpdatePointsDTO = {
       id: currentSheet.id,
-      exercises,
+      exercises: exercises.toDTO(),
     };
 
     try {
@@ -167,27 +168,30 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
     Object.entries(values).forEach(([studentId, exercises]) => {
       const student = students.find(s => s.id === studentId);
-      const changedExercises: { [exIdentifier: string]: number } = {};
+      const changedExercises: PointMap = new PointMap();
 
       if (!student) {
         return;
       }
 
+      const pointsOfStudent = new PointMap(student.points);
+
       Object.entries(exercises).forEach(([exIdentifier, points]) => {
-        const exercise = currentSheet.exercises.find(
-          e =>
-            e.exName === exIdentifier &&
-            getPointsOfStudentOfExercise(student.points, e, currentSheet) !== points
-        );
+        const exercise = currentSheet.exercises.find(e => e.exName === exIdentifier);
 
         if (!!exercise) {
-          changedExercises[exIdentifier] = points;
+          const pointId = new PointId(currentSheet.id, exercise);
+          const prevPoints = pointsOfStudent.getPoints(pointId);
+
+          if (prevPoints !== points) {
+            changedExercises.setPoints(pointId, points);
+          }
         }
       });
 
       const pointsDTO: UpdatePointsDTO = {
         id: currentSheet.id,
-        exercises: changedExercises,
+        exercises: changedExercises.toDTO(),
       };
 
       promises.push(setPointsOfStudent(studentId, pointsDTO));
@@ -349,7 +353,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                       // avatar={<TeamIcon />}
                       title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
                       subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
-                      entity={team}
+                      entity={{ id: team.id, points: new PointMap(team.points) }}
                       entityWithExercises={currentSheet}
                       onPointsSave={() => {
                         throw new Error('Not implemented yet.');
