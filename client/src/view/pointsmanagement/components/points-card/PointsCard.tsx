@@ -5,7 +5,7 @@ import { Formik } from 'formik';
 import { ChevronUp as OpenIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
-import { getPointsOfExercise } from 'shared/dist/model/Points';
+import { getPointsOfExercise, PointId, PointMap } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import CustomCardHeader from '../../../../components/CustomCardHeader';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
@@ -43,13 +43,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+type PointCardFormSubExState = { [subExId: string]: string };
+
 export type PointsCardFormState = {
   [exIdentifier: string]: {
-    points:
-      | string
-      | {
-          [subExId: string]: string;
-        };
+    points: string | PointCardFormSubExState;
     comment: string;
   };
 };
@@ -66,6 +64,35 @@ interface Props<T extends EntityWithPoints> {
   entityWithExercises: HasExercises;
   onPointsSave: PointsSaveCallback;
   onEditPoints?: (entity: T) => void;
+}
+
+function getInitialValues(points: PointMap, { id, exercises }: HasExercises): PointsCardFormState {
+  const values: PointsCardFormState = {};
+
+  exercises.forEach(ex => {
+    const pointId = new PointId(id, ex);
+    const entry = points.getPointEntry(pointId);
+
+    if (entry) {
+      let points: string | PointCardFormSubExState;
+
+      if (typeof entry.points === 'number') {
+        points = entry.points.toString();
+      } else {
+        const tmpPoints: PointCardFormSubExState = {};
+
+        Object.entries(entry.points).forEach(([key, value]) => {
+          tmpPoints[key] = value.toString();
+        });
+
+        points = tmpPoints;
+      }
+
+      values[pointId.toString()] = { points, comment: entry.comment };
+    }
+  });
+
+  return values;
 }
 
 function PointsCard<T extends EntityWithPoints>({
@@ -86,8 +113,7 @@ function PointsCard<T extends EntityWithPoints>({
   const exercises: Exercise[] = entityWithExercises.exercises;
 
   const totalPoints: number = exercises.reduce((pts, ex) => pts + getPointsOfExercise(ex), 0);
-  // TODO: Generate these from the given entity!
-  const initialValues: PointsCardFormState = {};
+  const initialValues: PointsCardFormState = getInitialValues(entity.points, entityWithExercises);
 
   function handleCollapseChange(e: React.MouseEvent<HTMLElement>) {
     e.stopPropagation();
@@ -123,7 +149,11 @@ function PointsCard<T extends EntityWithPoints>({
               <form onSubmit={handleSubmit}>
                 <CardContent className={classes.content}>
                   {exercises.map(ex => (
-                    <ExerciseBox key={ex.id} exercise={ex} />
+                    <ExerciseBox
+                      key={ex.id}
+                      name={new PointId(entityWithExercises.id, ex).toString()}
+                      exercise={ex}
+                    />
                   ))}
                 </CardContent>
 

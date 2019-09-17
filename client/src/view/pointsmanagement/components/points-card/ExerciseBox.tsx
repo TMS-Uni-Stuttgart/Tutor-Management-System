@@ -61,14 +61,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  name: string;
   exercise: Exercise;
 }
 
-function ExerciseBox({ exercise }: Props): JSX.Element {
+function ExerciseBox({ name, exercise }: Props): JSX.Element {
   const classes = useStyles();
 
   const { subexercises } = exercise;
-  const identifier = getExerciseIdentifier(exercise);
   const totalPoints = getPointsOfExercise(exercise);
 
   return (
@@ -97,7 +97,7 @@ function ExerciseBox({ exercise }: Props): JSX.Element {
             <Typography className={classes.subexerciseName}>{subEx.exName}</Typography>
 
             <PointsTextField
-              name={`${identifier}.points.${subEx.id}`}
+              name={`${name}.points.${subEx.id}`}
               className={classes.pointsTextField}
               placeholder='0'
               maxPoints={getPointsOfExercise(subEx)}
@@ -106,7 +106,7 @@ function ExerciseBox({ exercise }: Props): JSX.Element {
         ))
       ) : (
         <PointsTextField
-          name={`${identifier}.points`}
+          name={`${name}.points`}
           className={clsx(classes.pointsTextField, classes.firstColumn)}
           placeholder='0'
           maxPoints={getPointsOfExercise(exercise)}
@@ -114,7 +114,7 @@ function ExerciseBox({ exercise }: Props): JSX.Element {
       )}
 
       <FormikTextField
-        name={`${identifier}.comment`}
+        name={`${name}.comment`}
         className={classes.commentaryTextField}
         style={{
           gridRow: `2 / span ${subexercises.length > 0 ? subexercises.length + 1 : 2}`,
