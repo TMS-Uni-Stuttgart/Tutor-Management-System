@@ -14,7 +14,7 @@ import { useAxios } from '../../hooks/FetchingService';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
-import PointsCard, { PointsSaveCallback } from './components/points-card/PointsCard';
+import PointsCard, { PointsSaveCallback, convertPointsCardFormStateToDTO } from './components/points-card/PointsCard';
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
@@ -101,39 +101,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
-    const exercises: PointMap = new PointMap();
-
-    Object.entries(values).forEach(([key, entry]) => {
-      if (typeof entry.points === 'string') {
-        if (Number.isNaN(Number.parseFloat(entry.points))) {
-          throw new Error(`Can not parse the points of ${key}.`);
-        }
-
-        exercises.setPointsByKey(key, {
-          comment: entry.comment,
-          points: Number.parseFloat(entry.points),
-        });
-      } else {
-        const points: PointsOfSubexercises = {};
-
-        Object.entries(entry.points).forEach(([subKey, value]) => {
-          if (Number.isNaN(Number.parseFloat(value))) {
-            throw new Error(`Can not parse the points of ${subKey} of ${key}.`);
-          }
-          points[subKey] = Number.parseFloat(value);
-        });
-
-        exercises.setPointsByKey(key, {
-          comment: entry.comment,
-          points,
-        });
-      }
-    });
-
-    const pointsDTO: UpdatePointsDTO = {
-      id: currentSheet.id,
-      exercises: exercises.toDTO(),
-    };
+    const pointsDTO = convertPointsCardFormStateToDTO(values, currentSheet);
 
     try {
       await setPointsOfTeam(match.params.tutorialId, team.id, pointsDTO);

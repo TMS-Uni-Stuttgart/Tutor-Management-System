@@ -1,22 +1,31 @@
 import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui/core';
+import { CardProps } from '@material-ui/core/Card';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik } from 'formik';
 import { ChevronUp as OpenIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
-import { getPointsOfExercise, PointId, PointMap } from 'shared/dist/model/Points';
+import {
+  getPointsOfExercise,
+  PointId,
+  PointMap,
+  PointsOfSubexercises,
+  UpdatePointsDTO,
+} from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import CustomCardHeader from '../../../../components/CustomCardHeader';
+import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
 import ExerciseBox from './ExerciseBox';
-import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
-import { CardProps } from '@material-ui/core/Card';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    root: {
+      flexShrink: 0,
+    },
     header: {
       cursor: 'pointer',
     },
@@ -66,6 +75,45 @@ interface Props<T extends EntityWithPoints> extends CardProps {
   entityWithExercises: HasExercises;
   onPointsSave: PointsSaveCallback;
   onEditPoints?: (entity: T) => void;
+}
+
+export function convertPointsCardFormStateToDTO(
+  values: PointsCardFormState,
+  exerciseContainer: HasExercises
+): UpdatePointsDTO {
+  const exercises: PointMap = new PointMap();
+
+  Object.entries(values).forEach(([key, entry]) => {
+    if (typeof entry.points === 'string') {
+      if (Number.isNaN(Number.parseFloat(entry.points))) {
+        throw new Error(`Can not parse the points of ${key}.`);
+      }
+
+      exercises.setPointsByKey(key, {
+        comment: entry.comment,
+        points: Number.parseFloat(entry.points),
+      });
+    } else {
+      const points: PointsOfSubexercises = {};
+
+      Object.entries(entry.points).forEach(([subKey, value]) => {
+        if (Number.isNaN(Number.parseFloat(value))) {
+          throw new Error(`Can not parse the points of ${subKey} of ${key}.`);
+        }
+        points[subKey] = Number.parseFloat(value);
+      });
+
+      exercises.setPointsByKey(key, {
+        comment: entry.comment,
+        points,
+      });
+    }
+  });
+
+  return {
+    id: exerciseContainer.id,
+    exercises: exercises.toDTO(),
+  };
 }
 
 function getInitialValues(points: PointMap, { id, exercises }: HasExercises): PointsCardFormState {
@@ -118,6 +166,7 @@ function PointsCard<T extends EntityWithPoints>({
   entityWithExercises,
   onPointsSave,
   onEditPoints,
+  className,
   ...other
 }: Props<T>): JSX.Element {
   const classes = useStyles();
@@ -136,7 +185,7 @@ function PointsCard<T extends EntityWithPoints>({
   }
 
   return (
-    <Card {...other}>
+    <Card {...other} className={clsx(className, classes.root)}>
       <Formik
         initialValues={initialValues}
         onSubmit={onPointsSave}
