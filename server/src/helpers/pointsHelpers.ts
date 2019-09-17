@@ -1,5 +1,4 @@
-import { Types } from 'mongoose';
-import { PointId, PointMap, PointMapEntry } from 'shared/dist/model/Sheet';
+import { PointId, PointMap } from 'shared/dist/model/Points';
 import { ExerciseDocument } from '../model/documents/ExerciseDocument';
 
 interface HasExerciseDocuments {
@@ -17,16 +16,16 @@ interface HasExerciseDocuments {
  * @param pointsGained Object containing the achieved points with the exercise numbers as keys.
  */
 export function adjustPoints(
-  pointsMap: Types.Map<PointMapEntry>,
+  pointsMap: PointMap,
   { id, exercises }: HasExerciseDocuments,
   pointsGained: PointMap
 ) {
-  for (const [exName, pointEntry] of Object.entries(pointsGained)) {
+  for (const [exName, pointEntry] of pointsGained.getEntries()) {
     const exercise = exercises.find(ex => ex.exName === exName);
 
     if (exercise) {
       const pointId = new PointId(id, exercise);
-      pointsMap.set(pointId.toString(), pointEntry);
+      pointsMap.setPoints(pointId, pointEntry);
     }
   }
 }
