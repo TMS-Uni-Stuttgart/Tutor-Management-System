@@ -57,8 +57,16 @@ export class PointMap {
     return this.points[pointId.toString()];
   }
 
-  getEntries(): [string, PointMapEntry | undefined][] {
-    return Object.entries(this.points);
+  getEntries(): [string, PointMapEntry][] {
+    const entries: [string, PointMapEntry][] = [];
+
+    Object.entries(this.points).forEach(([key, entry]) => {
+      if (!!entry) {
+        entries.push([key, entry]);
+      }
+    });
+
+    return entries;
   }
 
   toDTO(): PointMapDTO {
