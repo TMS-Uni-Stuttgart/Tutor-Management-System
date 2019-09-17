@@ -1,12 +1,13 @@
 import { IconButton, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { useField } from 'formik';
 import { ChevronUp as OpenIcon } from 'mdi-material-ui';
 import React from 'react';
 import { getPointsOfExercise } from 'shared/dist/model/Points';
 import { Exercise } from 'shared/dist/model/Sheet';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
-import { getExerciseIdentifier } from '../../util/helper';
+import { PointsCardFormExerciseState } from './PointsCard';
 import PointsTextField from './PointsTextField';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -65,10 +66,23 @@ interface Props {
   exercise: Exercise;
 }
 
+function getPointsFromBoxValue({ points }: PointsCardFormExerciseState): number {
+  if (typeof points === 'string') {
+    return points ? Number.parseFloat(points) : 0;
+  }
+
+  return Object.values(points).reduce(
+    (sum, value) => (value ? sum + Number.parseFloat(value) : sum),
+    0
+  );
+}
+
 function ExerciseBox({ name, exercise }: Props): JSX.Element {
   const classes = useStyles();
+  const [{ value }] = useField(name);
 
   const { subexercises } = exercise;
+  const achievedPoints = getPointsFromBoxValue(value);
   const totalPoints = getPointsOfExercise(exercise);
 
   return (
@@ -83,7 +97,7 @@ function ExerciseBox({ name, exercise }: Props): JSX.Element {
         <Typography
           variant='body2'
           color='textSecondary'
-        >{`## / ${totalPoints} Punkte`}</Typography>
+        >{`${achievedPoints} / ${totalPoints} Punkte`}</Typography>
       </div>
 
       <Typography>Kommentar</Typography>

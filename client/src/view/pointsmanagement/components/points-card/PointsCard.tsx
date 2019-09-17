@@ -15,7 +15,6 @@ import {
 } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import CustomCardHeader from '../../../../components/CustomCardHeader';
-import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
@@ -54,13 +53,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type PointCardFormSubExState = { [subExId: string]: string };
+type PointsCardFormSubExState = { [subExId: string]: string };
+
+export type PointsCardFormExerciseState = {
+  points: string | PointsCardFormSubExState;
+  comment: string;
+};
 
 export type PointsCardFormState = {
-  [exIdentifier: string]: {
-    points: string | PointCardFormSubExState;
-    comment: string;
-  };
+  [exIdentifier: string]: PointsCardFormExerciseState;
 };
 
 export type EntityWithPoints = HasId & HasPoints;
@@ -85,22 +86,15 @@ export function convertPointsCardFormStateToDTO(
 
   Object.entries(values).forEach(([key, entry]) => {
     if (typeof entry.points === 'string') {
-      if (Number.isNaN(Number.parseFloat(entry.points))) {
-        throw new Error(`Can not parse the points of ${key}.`);
-      }
-
       exercises.setPointsByKey(key, {
         comment: entry.comment,
-        points: Number.parseFloat(entry.points),
+        points: entry.points ? Number.parseFloat(entry.points) : 0,
       });
     } else {
       const points: PointsOfSubexercises = {};
 
       Object.entries(entry.points).forEach(([subKey, value]) => {
-        if (Number.isNaN(Number.parseFloat(value))) {
-          throw new Error(`Can not parse the points of ${subKey} of ${key}.`);
-        }
-        points[subKey] = Number.parseFloat(value);
+        points[subKey] = value ? Number.parseFloat(value) : 0;
       });
 
       exercises.setPointsByKey(key, {
@@ -124,12 +118,12 @@ function getInitialValues(points: PointMap, { id, exercises }: HasExercises): Po
     const entry = points.getPointEntry(pointId);
 
     if (entry) {
-      let points: string | PointCardFormSubExState;
+      let points: string | PointsCardFormSubExState;
 
       if (typeof entry.points === 'number') {
         points = entry.points.toString();
       } else {
-        const tmpPoints: PointCardFormSubExState = {};
+        const tmpPoints: PointsCardFormSubExState = {};
 
         Object.entries(entry.points).forEach(([key, value]) => {
           tmpPoints[key] = value.toString();
@@ -141,7 +135,7 @@ function getInitialValues(points: PointMap, { id, exercises }: HasExercises): Po
       values[pointId.toString()] = { points, comment: entry.comment };
     } else {
       if (ex.subexercises.length > 0) {
-        const points: PointCardFormSubExState = {};
+        const points: PointsCardFormSubExState = {};
 
         ex.subexercises.forEach(subEx => {
           points[subEx.id] = '0.0';
@@ -155,6 +149,18 @@ function getInitialValues(points: PointMap, { id, exercises }: HasExercises): Po
   });
 
   return values;
+}
+
+function getAchievedPointsFromState(state: PointsCardFormState): number {
+  return Object.values(state).reduce((sum, { points }) => {
+    if (typeof points === 'string') {
+      return sum + Number.parseFloat(points);
+    }
+
+    return Object.values(points).reduce((pts, value) => {
+      return pts + Number.parseFloat(value);
+    }, sum);
+  }, 0);
 }
 
 function PointsCard<T extends EntityWithPoints>({
@@ -199,7 +205,7 @@ function PointsCard<T extends EntityWithPoints>({
               avatar={avatar}
               title={title}
               subheader={subtitle}
-              midText={`Gesamt: ## / ${totalPoints} Punkte`}
+              midText={`Gesamt: ${getAchievedPointsFromState(values)} / ${totalPoints} Punkte`}
               action={
                 <IconButton onClick={handleCollapseChange}>
                   <OpenIcon
@@ -241,8 +247,6 @@ function PointsCard<T extends EntityWithPoints>({
                 </CardActions>
               </form>
             )}
-
-            <FormikDebugDisplay values={values} />
           </>
         )}
       </Formik>
