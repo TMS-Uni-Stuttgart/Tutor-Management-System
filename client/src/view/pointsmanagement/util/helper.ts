@@ -1,7 +1,6 @@
 import { HasId } from 'shared/dist/model/Common';
 import { PointId, PointMap } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
-import { PointRowFormState } from '../components/TeamPointsRow';
 
 export function getExerciseIdentifier(exercise: Exercise): string {
   return `${exercise.exName}`;
@@ -12,23 +11,6 @@ export function getExercisePointsIdentifier(
   exercise: Exercise
 ): string {
   return new PointId(entityWithExercises.id, exercise).toString();
-}
-
-// TODO: Adjust me to use subexercises and the correct identifier on the state.
-export function getInitialValues(
-  points: PointMap,
-  { id, exercises }: HasExercises
-): PointRowFormState {
-  const state: PointRowFormState = {};
-
-  for (const exercise of exercises) {
-    const pointId = new PointId(id, exercise);
-    const pts = points.getPoints(pointId) || 0;
-
-    state[getExerciseIdentifier(exercise)] = pts;
-  }
-
-  return state;
 }
 
 export function getPointsOfStudentOfExercise(
