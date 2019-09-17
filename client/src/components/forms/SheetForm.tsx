@@ -82,7 +82,7 @@ function SheetForm({ onSubmit, className, sheet, sheets, ...other }: Props): JSX
 
           <FormikCheckbox name='bonusSheet' label='Bonusblatt' />
 
-          <FormikExerciseEditor name='exercises' />
+          <FormikExerciseEditor name='exercises' disableAutofocus={!!sheet} />
         </>
       )}
     </FormikBaseForm>

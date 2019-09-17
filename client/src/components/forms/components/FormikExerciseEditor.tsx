@@ -71,11 +71,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   name: string;
+  disableAutofocus?: boolean;
 }
 
 interface ExerciseDataFieldsProps {
   namePrefix: string;
   disablePoints?: boolean;
+  disableAutofocus?: boolean;
 }
 
 function getNewExercise(exName: string = ''): SheetFormExercise {
@@ -87,14 +89,18 @@ function getNewExercise(exName: string = ''): SheetFormExercise {
   };
 }
 
-function ExerciseDataFields({ namePrefix, disablePoints }: ExerciseDataFieldsProps): JSX.Element {
+function ExerciseDataFields({
+  namePrefix,
+  disablePoints,
+  disableAutofocus,
+}: ExerciseDataFieldsProps): JSX.Element {
   return (
     <>
       <FormikTextField
         name={`${namePrefix}.exName`}
         label='Aufgabenbezeichnung'
         fullWidth={false}
-        autoFocus
+        autoFocus={!disableAutofocus}
       />
 
       <FormikTextField
@@ -111,7 +117,7 @@ function ExerciseDataFields({ namePrefix, disablePoints }: ExerciseDataFieldsPro
   );
 }
 
-function FormikExerciseEditor({ name }: Props): JSX.Element {
+function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
   const classes = useStyles();
   const [{ value }] = useField(name);
 
@@ -186,6 +192,7 @@ function FormikExerciseEditor({ name }: Props): JSX.Element {
                 <ExerciseDataFields
                   namePrefix={`${name}.${idx}`}
                   disablePoints={ex.subexercises.length > 0}
+                  disableAutofocus={disableAutofocus}
                 />
 
                 <IconButton
@@ -201,7 +208,10 @@ function FormikExerciseEditor({ name }: Props): JSX.Element {
                       key={`sub-ex-${subIdx}`}
                       className={clsx(classes.exercise, classes.subexercise)}
                     >
-                      <ExerciseDataFields namePrefix={`${name}.${idx}.subexercises.${subIdx}`} />
+                      <ExerciseDataFields
+                        namePrefix={`${name}.${idx}.subexercises.${subIdx}`}
+                        disableAutofocus={disableAutofocus}
+                      />
 
                       <IconButton
                         className={classes.deleteButton}

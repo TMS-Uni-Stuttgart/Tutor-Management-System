@@ -77,7 +77,7 @@ function ScheinExamForm({ onSubmit, className, exam, exams, ...other }: Props): 
 
           <FormikDatePicker name='date' label='Datum' />
 
-          <FormikExerciseEditor name='exercises' />
+          <FormikExerciseEditor name='exercises' disableAutofocus={!!exam} />
         </>
       )}
     </FormikBaseForm>
