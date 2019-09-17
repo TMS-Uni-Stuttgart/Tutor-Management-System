@@ -1,6 +1,6 @@
 import React from 'react';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
-import { Typography } from '@material-ui/core';
+import { Typography, Box } from '@material-ui/core';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -62,13 +62,13 @@ function CustomCardHeader({
   if (!!title && !disableTypography) {
     title = (
       <Typography
-        variant={avatar ? 'body2' : 'h5'}
+        variant={avatar ? 'subtitle1' : 'h5'}
         className={classes.title}
         component='span'
         display='block'
         {...titleTypographyProps}
       >
-        {title}
+        <Box fontWeight={avatar ? 'fontWeightMedium' : 'fontWeightRegular'}>{title}</Box>
       </Typography>
     );
   }
