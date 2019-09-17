@@ -110,7 +110,6 @@ class StudentService {
 
   public async setPoints(id: string, { id: sheetId, exercises: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
-    const sheet = await sheetService.getDocumentWithId(sheetId);
     const pointMapOfStudent = new PointMap(student.points);
 
     pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
@@ -124,7 +123,6 @@ class StudentService {
     { id: examId, exercises: pointsGained }: UpdatePointsDTO
   ) {
     const student = await this.getDocumentWithId(id);
-    const exam = await scheinexamService.getDocumentWithId(examId);
     const pointMapOfStudent = new PointMap(student.scheinExamResults);
 
     pointMapOfStudent.adjustPoints(new PointMap(pointsGained));

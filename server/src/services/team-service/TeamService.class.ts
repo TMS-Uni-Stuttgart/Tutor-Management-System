@@ -109,7 +109,6 @@ class TeamService {
     { id: sheetId, exercises: pointsGained }: UpdatePointsDTO
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
-    const sheet = await sheetService.getDocumentWithId(sheetId);
     const pointMapOfTeam: PointMap = new PointMap(team.points);
     const idxOfTeam = tutorial.teams.findIndex(doc => doc.id === team.id);
 

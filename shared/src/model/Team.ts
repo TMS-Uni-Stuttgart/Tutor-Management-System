@@ -1,6 +1,6 @@
 import { HasId } from './Common';
+import { PointMapDTO } from './Points';
 import { Student } from './Student';
-import { PointMap, PointMapDTO } from './Points';
 
 export interface Team extends HasId {
   points: PointMapDTO;
