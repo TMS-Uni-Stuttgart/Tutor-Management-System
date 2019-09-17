@@ -77,18 +77,18 @@ function getInitialValues(
     for (const ex of exercises) {
       const identifier = getExercisePointsIdentifier(sheet, ex);
 
-      if (student.points[identifier] !== undefined) {
-        values[student.id][getExerciseIdentifier(ex)] = student.points[identifier];
-      } else {
-        values[student.id][getExerciseIdentifier(ex)] = team.points[identifier] || 0;
-      }
+      // if (student.points[identifier] !== undefined) {
+      //   values[student.id][getExerciseIdentifier(ex)] = student.points[identifier];
+      // } else {
+      //   values[student.id][getExerciseIdentifier(ex)] = team.points[identifier] || 0;
+      // }
     }
   }
 
   return values;
 }
 
-// TODO: Adjust for subexercises
+// TODO: Adjust for subexercises (including getInitialValues).
 function EditStudentPointsDialogContent({
   team,
   sheet,
