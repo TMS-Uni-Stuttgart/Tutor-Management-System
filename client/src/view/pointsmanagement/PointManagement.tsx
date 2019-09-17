@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: theme.spacing(8),
       textAlign: 'center',
     },
+    pointCard: {
+      marginTop: theme.spacing(2),
+    },
   })
 );
 
@@ -184,7 +187,8 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
           const prevPoints = pointsOfStudent.getPoints(pointId);
 
           if (prevPoints !== points) {
-            changedExercises.setPoints(pointId, points);
+            // TODO: Implement this part after redoing the EditStudentDialog!
+            // changedExercises.setPoints(pointId, points);
           }
         }
       });
@@ -343,38 +347,28 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
           {
             {
-              [TabValue.POINTS]: (
-                <TableWithPadding
-                  key={currentSheet.id}
-                  items={teams}
-                  createRowFromItem={team => (
+              [TabValue.POINTS]:
+                teams.length > 0 ? (
+                  teams.map(team => (
                     <PointsCard
                       key={team.id}
+                      className={classes.pointCard}
                       // avatar={<TeamIcon />}
                       title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
                       subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
                       entity={{ id: team.id, points: new PointMap(team.points) }}
                       entityWithExercises={currentSheet}
-                      onPointsSave={() => {
-                        throw new Error('Not implemented yet.');
-                      }}
+                      onPointsSave={handleSavePoints(team)}
                       onEditPoints={() => {
                         throw new Error('Not implemented yet.');
                       }}
                     />
-                    // <TeamPointsRow
-                    //   key={team.id}
-                    //   entity={team}
-                    //   pointsMap={team.points}
-                    //   entityWithExercises={currentSheet}
-                    //   tabIndexForRow={teams.indexOf(team) + 1}
-                    //   onPointsSave={handleSavePoints(team)}
-                    //   onEditPoints={handleEditPointsOfStudents}
-                    // />
-                  )}
-                  placeholder='Keine Teams verfügbar.'
-                />
-              ),
+                  ))
+                ) : (
+                  <Typography variant='h6' className={classes.placeholder}>
+                    Keine Teams verfügbar.
+                  </Typography>
+                ),
               [TabValue.PRESENTATION]: (
                 <TableWithPadding
                   key={currentSheet.id}
