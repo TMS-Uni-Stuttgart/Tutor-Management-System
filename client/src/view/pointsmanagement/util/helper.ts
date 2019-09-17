@@ -1,9 +1,7 @@
 import { HasId } from 'shared/dist/model/Common';
-import { Exercise, HasExercises, PointId } from 'shared/dist/model/Sheet';
-import { Student } from 'shared/dist/model/Student';
+import { PointId, PointMap } from 'shared/dist/model/Points';
+import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import { PointRowFormState } from '../components/TeamPointsRow';
-
-export type PointsMap = Student['points'];
 
 export function getExerciseIdentifier(exercise: Exercise): string {
   return `${exercise.exName}`;
@@ -16,14 +14,17 @@ export function getExercisePointsIdentifier(
   return new PointId(entityWithExercises.id, exercise).toString();
 }
 
+// TODO: Adjust me to use subexercises and the correct identifier on the state.
 export function getInitialValues(
-  points: PointsMap,
-  entityWithExercises: HasExercises
+  points: PointMap,
+  { id, exercises }: HasExercises
 ): PointRowFormState {
   const state: PointRowFormState = {};
 
-  for (const exercise of entityWithExercises.exercises) {
-    const pts = points[getExercisePointsIdentifier(entityWithExercises, exercise)] || 0;
+  for (const exercise of exercises) {
+    const pointId = new PointId(id, exercise);
+    const pts = points.getPoints(pointId) || 0;
+
     state[getExerciseIdentifier(exercise)] = pts;
   }
 
@@ -31,23 +32,11 @@ export function getInitialValues(
 }
 
 export function getPointsOfStudentOfExercise(
-  studentPoints: PointsMap,
+  studentPoints: PointMap,
   exercise: Exercise,
-  entityWithExercise: HasId
+  { id }: HasId
 ): number {
-  return studentPoints[getExercisePointsIdentifier(entityWithExercise, exercise)] || 0;
-}
-
-export function getPointsOfStudentOfSheet(
-  studentPoints: PointsMap,
-  entityWithExercises: HasExercises
-): number {
-  const { exercises } = entityWithExercises;
-
-  return exercises.reduce(
-    (prev, ex) => prev + (studentPoints[getExercisePointsIdentifier(entityWithExercises, ex)] || 0),
-    0
-  );
+  return studentPoints.getPoints(new PointId(id, exercise)) || 0;
 }
 
 export function getPointsOfEntityAsString(sheet: HasExercises): string {
