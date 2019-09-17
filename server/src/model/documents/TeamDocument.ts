@@ -1,10 +1,20 @@
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
+import { PointMapDTO } from 'shared/dist/model/Points';
 import { Team } from 'shared/dist/model/Team';
-import { arrayProp, mapProp, prop, Ref, Typegoose } from 'typegoose';
+import { arrayProp, prop, Ref, Typegoose, pre } from 'typegoose';
 import { StudentDocument } from './StudentDocument';
 import { TutorialDocument } from './TutorialDocument';
-import { PointMapEntry } from 'shared/dist/model/Sheet';
 
+// TODO: REMOVE PRE HOOKS AFTER TESTING!
+@pre<TeamDocument>('save', function(next) {
+  console.log('TEAM DOC SAVED!');
+  next();
+})
+@pre<TeamDocument>('find', function(next, docs?: any[]) {
+  console.log('TEAM DOC FOUND');
+  console.log(docs);
+  next();
+})
 export class TeamSchema extends Typegoose
   implements Omit<Team, 'id' | 'tutorial' | 'students' | 'points'> {
   @prop({ required: true })
@@ -16,8 +26,8 @@ export class TeamSchema extends Typegoose
   @arrayProp({ required: true, itemsRef: { name: 'StudentSchema' } })
   students!: Ref<StudentDocument>[];
 
-  @mapProp({ of: Object, default: new Types.Map() })
-  points!: Types.Map<PointMapEntry>;
+  @prop({ default: {} })
+  points!: PointMapDTO;
 }
 
 export interface TeamDocument extends TeamSchema, Document {}
