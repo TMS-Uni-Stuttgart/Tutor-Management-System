@@ -1,10 +1,11 @@
 import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import { People as TeamIcon } from '@material-ui/icons';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { PointId, PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
-import { UpdatePointsDTO, PointMap, PointsOfSubexercises, PointId } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
@@ -14,11 +15,13 @@ import { useAxios } from '../../hooks/FetchingService';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
-import PointsCard, { PointsSaveCallback, convertPointsCardFormStateToDTO } from './components/points-card/PointsCard';
+import PointsCard, {
+  convertPointsCardFormStateToDTO,
+  PointsSaveCallback,
+} from './components/points-card/PointsCard';
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
-import { getPointsOfStudentOfExercise } from './util/helper';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -321,7 +324,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                     <PointsCard
                       key={team.id}
                       className={classes.pointCard}
-                      // avatar={<TeamIcon />}
+                      avatar={<TeamIcon />}
                       title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
                       subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
                       entity={{ id: team.id, points: new PointMap(team.points) }}
