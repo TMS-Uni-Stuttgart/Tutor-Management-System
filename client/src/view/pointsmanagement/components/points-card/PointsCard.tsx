@@ -2,8 +2,8 @@ import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui
 import { CardProps } from '@material-ui/core/Card';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Formik } from 'formik';
-import { ChevronUp as OpenIcon } from 'mdi-material-ui';
+import { Formik, useField, useFormik, FormikConsumer } from 'formik';
+import { ChevronUp as OpenIcon, TableEdit as EditPointsIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
 import {
@@ -19,6 +19,7 @@ import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
 import ExerciseBox from './ExerciseBox';
+import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,6 +69,7 @@ export type EntityWithPoints = HasId & HasPoints;
 export type PointsSaveCallback = FormikSubmitCallback<PointsCardFormState>;
 
 interface Props<T extends EntityWithPoints> extends CardProps {
+  name?: string;
   title: string;
   subtitle?: string;
   avatar?: React.ReactNode;
@@ -75,7 +77,7 @@ interface Props<T extends EntityWithPoints> extends CardProps {
   entity: T;
   entityWithExercises: HasExercises;
   onPointsSave: PointsSaveCallback;
-  onEditPoints?: (entity: T) => void;
+  onEditPoints?: () => void;
 }
 
 export function convertPointsCardFormStateToDTO(
@@ -110,7 +112,10 @@ export function convertPointsCardFormStateToDTO(
   };
 }
 
-function getInitialValues(points: PointMap, { id, exercises }: HasExercises): PointsCardFormState {
+export function getInitialPointsCardValues(
+  points: PointMap,
+  { id, exercises }: HasExercises
+): PointsCardFormState {
   const values: PointsCardFormState = {};
 
   exercises.forEach(ex => {
@@ -164,6 +169,7 @@ function getAchievedPointsFromState(state: PointsCardFormState): number {
 }
 
 function PointsCard<T extends EntityWithPoints>({
+  name,
   avatar,
   title,
   subtitle,
@@ -183,73 +189,117 @@ function PointsCard<T extends EntityWithPoints>({
   const exercises: Exercise[] = entityWithExercises.exercises;
 
   const totalPoints: number = exercises.reduce((pts, ex) => pts + getPointsOfExercise(ex), 0);
-  const initialValues: PointsCardFormState = getInitialValues(entity.points, entityWithExercises);
+  const initialValues: PointsCardFormState = getInitialPointsCardValues(
+    entity.points,
+    entityWithExercises
+  );
 
   function handleCollapseChange(e: React.MouseEvent<HTMLElement>) {
     e.stopPropagation();
     setCollapsed(!isCollapsed);
   }
 
+  function Header({ values }: { values: PointsCardFormState }) {
+    return (
+      <CustomCardHeader
+        onClick={handleCollapseChange}
+        className={classes.header}
+        avatar={avatar}
+        title={title}
+        subheader={subtitle}
+        midText={`Gesamt: ${getAchievedPointsFromState(values)} / ${totalPoints} Punkte`}
+        action={
+          <>
+            {onEditPoints && (
+              <IconButton
+                onClick={e => {
+                  e.stopPropagation();
+                  onEditPoints();
+                }}
+              >
+                <EditPointsIcon />
+              </IconButton>
+            )}
+
+            <IconButton onClick={handleCollapseChange}>
+              <OpenIcon
+                className={clsx(classes.collpaseIcon, !isCollapsed && classes.collapseIconOpen)}
+              />
+            </IconButton>
+          </>
+        }
+      />
+    );
+  }
+
+  function Content({ namePrefix }: { namePrefix?: string }): JSX.Element {
+    const prefix = namePrefix ? namePrefix + '.' : '';
+
+    return (
+      <CardContent className={classes.content}>
+        {exercises.map(ex => (
+          <ExerciseBox
+            key={ex.id}
+            name={prefix + new PointId(entityWithExercises.id, ex).toString()}
+            exercise={ex}
+          />
+        ))}
+      </CardContent>
+    );
+  }
+
   return (
     <Card {...other} className={clsx(className, classes.root)}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onPointsSave}
-        // TODO: Add validation schema?!
-      >
-        {({ handleSubmit, isValid, isSubmitting, values }) => (
-          <>
-            <CustomCardHeader
-              onClick={handleCollapseChange}
-              className={classes.header}
-              avatar={avatar}
-              title={title}
-              subheader={subtitle}
-              midText={`Gesamt: ${getAchievedPointsFromState(values)} / ${totalPoints} Punkte`}
-              action={
-                <IconButton onClick={handleCollapseChange}>
-                  <OpenIcon
-                    className={clsx(classes.collpaseIcon, !isCollapsed && classes.collapseIconOpen)}
-                  />
-                </IconButton>
-              }
-            />
+      {!!name ? (
+        <FormikConsumer>
+          {({ values }) => (
+            <>
+              <Header values={values[name]} />
 
-            {!isCollapsed && (
-              <form onSubmit={handleSubmit}>
-                <CardContent className={classes.content}>
-                  {exercises.map(ex => (
-                    <ExerciseBox
-                      key={ex.id}
-                      name={new PointId(entityWithExercises.id, ex).toString()}
-                      exercise={ex}
-                    />
-                  ))}
-                </CardContent>
+              <Content namePrefix={name} />
+            </>
+          )}
+        </FormikConsumer>
+      ) : (
+        <Formik
+          initialValues={initialValues}
+          onSubmit={onPointsSave}
+          // TODO: Add validation schema?!
+        >
+          {({ handleSubmit, isValid, isSubmitting, values }) => (
+            <>
+              <Header values={values} />
 
-                <CardActions className={classes.actions}>
-                  <Button
-                    variant='outlined'
-                    className={classes.cancelButton}
-                    onClick={() => setCollapsed(true)}
-                  >
-                    Abbrechen
-                  </Button>
+              {!isCollapsed && (
+                <form onSubmit={handleSubmit}>
+                  <Content />
 
-                  <SubmitButton
-                    variant='outlined'
-                    color='primary'
-                    disabled={!isValid || isSubmitting}
-                    isSubmitting={isSubmitting}
-                  >
-                    Speichern
-                  </SubmitButton>
-                </CardActions>
-              </form>
-            )}
-          </>
-        )}
-      </Formik>
+                  <CardActions className={classes.actions}>
+                    <Button
+                      variant='outlined'
+                      className={classes.cancelButton}
+                      onClick={() => setCollapsed(true)}
+                    >
+                      Abbrechen
+                    </Button>
+
+                    <SubmitButton
+                      variant='outlined'
+                      color='primary'
+                      disabled={!isValid || isSubmitting}
+                      isSubmitting={isSubmitting}
+                    >
+                      Speichern
+                    </SubmitButton>
+                  </CardActions>
+                </form>
+              )}
+
+              <FormikDebugDisplay values={values} />
+            </>
+          )}
+        </Formik>
+      )}
     </Card>
   );
 }

@@ -9,6 +9,13 @@ import FormikTextField from '../../../components/forms/components/FormikTextFiel
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../types';
 import { getExerciseIdentifier, getExercisePointsIdentifier } from '../util/helper';
+import PointsCard, {
+  PointsCardFormState,
+  getInitialPointsCardValues,
+} from './points-card/PointsCard';
+import { PointMap, PointId } from 'shared/dist/model/Points';
+import { getNameOfEntity } from '../../../util/helperFunctions';
+import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,32 +64,26 @@ interface Props {
 }
 
 type EditStudentPointsFormState = {
-  [studentId: string]: { [exIdentifier: string]: number };
+  [studentId: string]: PointsCardFormState;
 };
 
 function getExerciseFieldName(student: Student, ex: Exercise): string {
   return `${student.id}.${getExerciseIdentifier(ex)}`;
 }
 
-function getInitialValues(
-  team: Team,
-  sheet: Sheet,
-  exercises: Exercise[]
-): EditStudentPointsFormState {
+function getInitialValues(team: Team, sheet: Sheet): EditStudentPointsFormState {
   const values: EditStudentPointsFormState = {};
+  const pointsOfTeam = new PointMap(team.points);
+  const formStateOfTeam = getInitialPointsCardValues(pointsOfTeam, sheet);
 
   for (const student of team.students) {
-    values[student.id] = {};
+    const pointsOfStudent = new PointMap(student.points);
+    const formStateOfStudent = getInitialPointsCardValues(pointsOfStudent, sheet);
 
-    for (const ex of exercises) {
-      const identifier = getExercisePointsIdentifier(sheet, ex);
-
-      // if (student.points[identifier] !== undefined) {
-      //   values[student.id][getExerciseIdentifier(ex)] = student.points[identifier];
-      // } else {
-      //   values[student.id][getExerciseIdentifier(ex)] = team.points[identifier] || 0;
-      // }
-    }
+    values[student.id] = {
+      ...formStateOfTeam,
+      ...formStateOfStudent,
+    };
   }
 
   return values;
@@ -101,13 +102,23 @@ function EditStudentPointsDialogContent({
   return (
     <Formik
       onSubmit={onSaveClicked}
-      initialValues={getInitialValues(team, sheet, exercises)}
+      initialValues={getInitialValues(team, sheet)}
       // validationSchema={validationSchema}
     >
-      {({ handleSubmit, isValid, isSubmitting }) => (
+      {({ handleSubmit, isValid, isSubmitting, values }) => (
         <>
           <form onSubmit={handleSubmit}>
-            <Table>
+            {team.students.map(student => (
+              <PointsCard
+                key={student.id}
+                name={student.id}
+                title={getNameOfEntity(student)}
+                entity={{ id: student.id, points: new PointMap(student.points) }}
+                entityWithExercises={sheet}
+                onPointsSave={() => console.log('SAVE POINTS!')}
+              />
+            ))}
+            {/* <Table>
               <TableBody>
                 {team.students.map(student => (
                   <TableRow key={student.id}>
@@ -144,7 +155,7 @@ function EditStudentPointsDialogContent({
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+            </Table> */}
 
             <div className={classes.buttonBox}>
               <Button className={classes.cancelButton} onClick={onCancelClicked}>
@@ -154,6 +165,8 @@ function EditStudentPointsDialogContent({
                 Speichern
               </SubmitButton>
             </div>
+
+            <FormikDebugDisplay values={values} />
           </form>
         </>
       )}

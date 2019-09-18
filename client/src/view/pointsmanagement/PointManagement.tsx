@@ -157,10 +157,10 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
           const pointId = new PointId(currentSheet.id, exercise);
           const prevPoints = pointsOfStudent.getPoints(pointId);
 
-          if (prevPoints !== points) {
-            // TODO: Implement this part after redoing the EditStudentDialog!
-            // changedExercises.setPoints(pointId, points);
-          }
+          // TODO: Implement this part after redoing the EditStudentDialog!
+          // if (prevPoints && prevPoints.toString() !== points) {
+          //   // changedExercises.setPoints(pointId, points);
+          // }
         }
       });
 
@@ -218,7 +218,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     dialog.hide();
   };
 
-  const handleEditPointsOfStudents = (team: Team) => {
+  const handleEditPointsOfStudents = (team: Team) => () => {
     if (!currentSheet) {
       return;
     }
@@ -330,9 +330,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                       entity={{ id: team.id, points: new PointMap(team.points) }}
                       entityWithExercises={currentSheet}
                       onPointsSave={handleSavePoints(team)}
-                      onEditPoints={() => {
-                        throw new Error('Not implemented yet.');
-                      }}
+                      onEditPoints={handleEditPointsOfStudents(team)}
                     />
                   ))
                 ) : (
