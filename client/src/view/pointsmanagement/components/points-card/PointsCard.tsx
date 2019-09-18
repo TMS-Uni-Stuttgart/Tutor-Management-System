@@ -270,8 +270,7 @@ function PointsCard<T extends EntityWithPoints>({
           {({ values }) => (
             <>
               <Header values={values[name]} />
-
-              <Content namePrefix={name} />
+              {!!isCollapsed && <Content namePrefix={name} />}
             </>
           )}
         </FormikConsumer>
