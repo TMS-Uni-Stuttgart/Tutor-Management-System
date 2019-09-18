@@ -116,6 +116,31 @@ function getValidationSchema(
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
     password: passwordValidationSchema,
+    tutorials: Yup.array<string>().test({
+      test: function(this, value: unknown) {
+        const roles = this.resolve(Yup.ref('roles'));
+
+        if (!Array.isArray(roles)) {
+          // If roles is not an array consider this field as always valid.
+          return true;
+        }
+
+        if (roles.indexOf(Role.CORRECTOR) === -1) {
+          // If the edited user is NOT a corrector no special rules apply for this field.
+          return true;
+        }
+
+        if (!Array.isArray(value) || value.length === 0) {
+          return new Yup.ValidationError(
+            'Korrigierende brauchen mind. 1 Tutorial.',
+            value,
+            'tutorials'
+          );
+        }
+
+        return true;
+      },
+    }),
   };
 
   if (!isEditMode) {
