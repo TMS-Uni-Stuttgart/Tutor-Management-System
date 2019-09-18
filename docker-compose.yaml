@@ -1,35 +1,29 @@
 version: "3"
 services:
-  mysql-server:
-    image: mysql:latest
-    container_name: mysql-db
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=springuser
-      - MYSQL_PASSWORD=ThePassword
-      - MYSQL_DATABASE=db_example
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo
     ports:
-      - "3306:3306"
-      - "33060:33060"
+      - 27017:27017
     networks:
       - tms_db
-    volumes:
-      - db-data:/var/lib/mysql
-      - ./db_config/config:/etc/mysql/conf.d
-      - ./db_config/certs:/etc/mysql/ssl
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
 
   tms-server:
-    depends_on:
-      - mysql-server
     image: tutor-management-system
-    env_file:
-      - tms_env_values.env
+    container_name: tms-server
+    restart: always
+    depends_on:
+      - mongo
     ports:
-      - "8443:8443"
+      - "8080:8080"
     networks:
       - tms_db
-    volumes:
-      - ./keystore.p12:/tms/keystore.p12
+    volumes: 
+      - ./server/config/default.yml:/tms/server/config/default.yml
 
 volumes:
   db-data:
