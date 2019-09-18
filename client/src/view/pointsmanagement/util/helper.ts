@@ -1,6 +1,7 @@
 import { HasId } from 'shared/dist/model/Common';
 import { PointId, PointMap } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
+import { ExerciseFormExercise } from '../../../components/forms/components/FormikExerciseEditor';
 
 // TODO: Remove me!
 export function getExerciseIdentifier(exercise: Exercise): string {
@@ -30,4 +31,16 @@ export function getPointsOfEntityAsString(sheet: HasExercises): string {
   );
 
   return bonus > 0 ? `${must} + ${bonus}` : `${must}`;
+}
+
+export function getDuplicateExerciseName(exercises: ExerciseFormExercise[]): string | undefined {
+  for (const exercise of exercises) {
+    const ex = exercises.find(t => t !== exercise && t.exName === exercise.exName);
+
+    if (ex !== undefined) {
+      return ex.exName;
+    }
+  }
+
+  return undefined;
 }

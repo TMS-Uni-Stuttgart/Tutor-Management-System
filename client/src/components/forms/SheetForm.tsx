@@ -1,23 +1,16 @@
 import React from 'react';
-import { Sheet, Exercise } from 'shared/dist/model/Sheet';
+import { Sheet, ExerciseDTO } from 'shared/dist/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
-import FormikExerciseEditor from './components/FormikExerciseEditor';
+import FormikExerciseEditor, { ExerciseFormExercise, mapExerciseToFormExercise } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 
-export interface SheetFormExercise {
-  exName: string;
-  maxPoints: string;
-  bonus: boolean;
-  subexercises: SheetFormExercise[];
-}
-
 interface SheetFormState {
   sheetNo: number;
-  exercises: SheetFormExercise[];
+  exercises: ExerciseFormExercise[];
   bonusSheet: boolean;
 }
 
@@ -27,23 +20,18 @@ interface Props extends Omit<FormikBaseFormProps<SheetFormState>, CommonlyUsedFo
   sheets?: Sheet[];
 }
 
-function mapExerciseToSheetFormExercise({
-  exName,
-  maxPoints,
-  bonus,
-  subexercises,
-}: Exercise): SheetFormExercise {
-  return {
-    exName,
-    maxPoints: maxPoints.toString(),
-    bonus,
-    subexercises: subexercises.map(mapExerciseToSheetFormExercise),
-  };
+export function convertFormExercisesToDTOs(exercises: ExerciseFormExercise[]): ExerciseDTO[] {
+  return exercises.map(ex => ({
+    exName: ex.exName,
+    maxPoints: Number.parseFloat(ex.maxPoints),
+    bonus: ex.bonus,
+    subexercises: convertFormExercisesToDTOs(ex.subexercises),
+  }));
 }
 
 export function getInitialSheetFormState(sheet?: Sheet, sheets?: Sheet[]): SheetFormState {
   if (!!sheet) {
-    const exercises: SheetFormExercise[] = sheet.exercises.map(mapExerciseToSheetFormExercise);
+    const exercises: ExerciseFormExercise[] = sheet.exercises.map(mapExerciseToFormExercise);
 
     return { sheetNo: sheet.sheetNo, bonusSheet: sheet.bonusSheet, exercises };
   }
@@ -69,7 +57,6 @@ function SheetForm({ onSubmit, className, sheet, sheets, ...other }: Props): JSX
       initialValues={initialFormState}
       // validationSchema={validationSchema}
       onSubmit={onSubmit}
-      enableDebug
     >
       {() => (
         <>

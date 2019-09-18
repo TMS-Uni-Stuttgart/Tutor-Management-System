@@ -2,15 +2,17 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { ExerciseDTO, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
+import { ExerciseFormExercise } from '../../components/forms/components/FormikExerciseEditor';
 import SheetForm, {
   getInitialSheetFormState,
-  SheetFormExercise,
   SheetFormSubmitCallback,
+  convertFormExercisesToDTOs,
 } from '../../components/forms/SheetForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
+import { getDuplicateExerciseName } from '../pointsmanagement/util/helper';
 import SheetRow from './components/SheetRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,15 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-function convertSheetFormExercisesToDTOs(exercises: SheetFormExercise[]): ExerciseDTO[] {
-  return exercises.map(ex => ({
-    exName: ex.exName,
-    maxPoints: Number.parseFloat(ex.maxPoints),
-    bonus: ex.bonus,
-    subexercises: convertSheetFormExercisesToDTOs(ex.subexercises),
-  }));
-}
 
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
@@ -57,27 +50,10 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     { setSubmitting, resetForm, setFieldError }
   ) => {
     const isNoInUse = sheets.find(t => t.sheetNo === sheetNo) !== undefined;
+    const duplicateName: string | undefined = getDuplicateExerciseName(exercises);
 
-    // TODO: Conflicting DRY -- same code in ScheinExamManagement.
-    function getIndexOfExerciseWithSameExNo(): number | undefined {
-      for (const exercise of exercises) {
-        const ex = exercises.find(t => t !== exercise && t.exName === exercise.exName);
-
-        if (ex !== undefined) {
-          return exercises.indexOf(ex);
-        }
-      }
-
-      return undefined;
-    }
-
-    const idx = getIndexOfExerciseWithSameExNo();
-
-    if (idx !== undefined) {
-      setFieldError(
-        'exercises',
-        `Die Aufgabenbezeichnung ${exercises[idx].exName} ist mehrfach vergeben.`
-      );
+    if (duplicateName) {
+      setFieldError('exercises', `Die Aufgabenbezeichnung ${duplicateName} ist mehrfach vergeben.`);
       return;
     }
 
@@ -88,7 +64,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
 
     const sheetDTO: SheetDTO = {
       sheetNo,
-      exercises: convertSheetFormExercisesToDTOs(exercises),
+      exercises: convertFormExercisesToDTOs(exercises),
       bonusSheet,
     };
 
@@ -114,7 +90,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   ) => {
     const sheetDTO: SheetDTO = {
       sheetNo,
-      exercises: convertSheetFormExercisesToDTOs(exercises),
+      exercises: convertFormExercisesToDTOs(exercises),
       bonusSheet,
     };
 

@@ -8,7 +8,7 @@ import {
   TimelinePlusOutline as PlusSubIcon,
 } from 'mdi-material-ui';
 import React from 'react';
-import { SheetFormExercise } from '../SheetForm';
+import { Exercise } from 'shared/dist/model/Sheet';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
 
@@ -69,6 +69,27 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+export interface ExerciseFormExercise {
+  exName: string;
+  maxPoints: string;
+  bonus: boolean;
+  subexercises: ExerciseFormExercise[];
+}
+
+export function mapExerciseToFormExercise({
+  exName,
+  maxPoints,
+  bonus,
+  subexercises,
+}: Exercise): ExerciseFormExercise {
+  return {
+    exName,
+    maxPoints: maxPoints.toString(),
+    bonus,
+    subexercises: subexercises.map(mapExerciseToFormExercise),
+  };
+}
+
 interface Props {
   name: string;
   disableAutofocus?: boolean;
@@ -80,7 +101,7 @@ interface ExerciseDataFieldsProps {
   disableAutofocus?: boolean;
 }
 
-function getNewExercise(exName: string = ''): SheetFormExercise {
+function getNewExercise(exName: string = ''): ExerciseFormExercise {
   return {
     exName,
     maxPoints: '0.0',
@@ -121,11 +142,11 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
   const classes = useStyles();
   const [{ value }] = useField(name);
 
-  const exercises: SheetFormExercise[] = value || [];
+  const exercises: ExerciseFormExercise[] = value || [];
 
   function handleCreateExercise(arrayHelpers: FieldArrayRenderProps) {
     return () => {
-      const exercise: SheetFormExercise = getNewExercise((exercises.length + 1).toString());
+      const exercise: ExerciseFormExercise = getNewExercise((exercises.length + 1).toString());
 
       arrayHelpers.push(exercise);
     };
@@ -134,7 +155,7 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
   function handleExerciseDelete(idx: number, arrayHelpers: FieldArrayRenderProps) {
     return () => {
       // FIXME: Adjust so it'll still works with new sub-exercise prop 'exName'.
-      const exercises: readonly SheetFormExercise[] = arrayHelpers.form.values[name];
+      const exercises: readonly ExerciseFormExercise[] = arrayHelpers.form.values[name];
       // const removedExercise: Exercise = exercises[idx];
       const updatedExercises = [...exercises.slice(0, idx), ...exercises.slice(idx + 1)];
       // .map(ex => {
@@ -154,7 +175,7 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
 
   function handleAddSubexercise(idx: number, arrayHelpers: FieldArrayRenderProps) {
     return () => {
-      const exercise: SheetFormExercise = value[idx];
+      const exercise: ExerciseFormExercise = value[idx];
 
       exercise.subexercises.push(getNewExercise());
 
@@ -168,7 +189,7 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
     arrayHelpers: FieldArrayRenderProps
   ) {
     return () => {
-      const exercise: SheetFormExercise = value[exIdx];
+      const exercise: ExerciseFormExercise = value[exIdx];
       const updatedSubexercises = [
         ...exercise.subexercises.slice(0, subIdx),
         ...exercise.subexercises.slice(subIdx + 1),
