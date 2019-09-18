@@ -1,10 +1,10 @@
 import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import { People as TeamIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { PointId, PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { PointMap, PointMapEntry, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
@@ -16,6 +16,7 @@ import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
 import PointsCard, {
+  convertPointsCardExerciseToPointMapEntry,
   convertPointsCardFormStateToDTO,
   PointsSaveCallback,
 } from './components/points-card/PointsCard';
@@ -140,27 +141,22 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
     const promises: Promise<void>[] = [];
 
-    Object.entries(values).forEach(([studentId, exercises]) => {
+    Object.entries(values).forEach(([studentId, formState]) => {
       const student = students.find(s => s.id === studentId);
-      const changedExercises: PointMap = new PointMap();
 
       if (!student) {
         return;
       }
 
+      const changedExercises: PointMap = new PointMap();
       const pointsOfStudent = new PointMap(student.points);
 
-      Object.entries(exercises).forEach(([exIdentifier, points]) => {
-        const exercise = currentSheet.exercises.find(e => e.exName === exIdentifier);
+      Object.entries(formState).forEach(([exIdentifier, exercise]) => {
+        const exerciseEntry: PointMapEntry = convertPointsCardExerciseToPointMapEntry(exercise);
+        const prevEntry = pointsOfStudent.getPointEntry(exIdentifier);
 
-        if (!!exercise) {
-          const pointId = new PointId(currentSheet.id, exercise);
-          const prevPoints = pointsOfStudent.getPoints(pointId);
-
-          // TODO: Implement this part after redoing the EditStudentDialog!
-          // if (prevPoints && prevPoints.toString() !== points) {
-          //   // changedExercises.setPoints(pointId, points);
-          // }
+        if (!prevEntry || !PointMap.arePointMapEntriesEqual(prevEntry, exerciseEntry)) {
+          changedExercises.setPointsByKey(exIdentifier, exerciseEntry);
         }
       });
 
@@ -229,7 +225,6 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
         <EditStudentPointsDialogContent
           team={team}
           sheet={currentSheet}
-          exercises={currentSheet.exercises}
           onSaveClicked={savePointsOfStudents}
           onCancelClicked={dialog.hide}
         />

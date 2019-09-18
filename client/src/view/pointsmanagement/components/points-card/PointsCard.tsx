@@ -10,12 +10,12 @@ import {
   getPointsOfExercise,
   PointId,
   PointMap,
+  PointMapEntry,
   PointsOfSubexercises,
   UpdatePointsDTO,
 } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import CustomCardHeader from '../../../../components/CustomCardHeader';
-import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
@@ -69,7 +69,15 @@ export type EntityWithPoints = HasId & HasPoints;
 export type PointsSaveCallback = FormikSubmitCallback<PointsCardFormState>;
 
 interface Props<T extends EntityWithPoints> extends CardProps {
+  /**
+   * By specifing a `name` this component can be used inside another Formik context.
+   *
+   * If a `name` is specified:
+   * - This will be handled as a prefix to all Formik-compatible sub-components (followed by a '.').
+   * - The Formik context inside the PointsCard will __NOT__ be provided. Instead there has to be such a context from outside.
+   */
   name?: string;
+
   title: string;
   subtitle?: string;
   avatar?: React.ReactNode;
@@ -80,6 +88,29 @@ interface Props<T extends EntityWithPoints> extends CardProps {
   onEditPoints?: () => void;
 }
 
+export function convertPointsCardExerciseToPointMapEntry({
+  comment,
+  points,
+}: PointsCardFormExerciseState): PointMapEntry {
+  if (typeof points === 'string') {
+    return {
+      comment,
+      points: points ? Number.parseFloat(points) : 0,
+    };
+  } else {
+    const pointsOfSubexercises: PointsOfSubexercises = {};
+
+    Object.entries(points).forEach(([subKey, value]) => {
+      pointsOfSubexercises[subKey] = value ? Number.parseFloat(value) : 0;
+    });
+
+    return {
+      comment,
+      points: pointsOfSubexercises,
+    };
+  }
+}
+
 export function convertPointsCardFormStateToDTO(
   values: PointsCardFormState,
   exerciseContainer: HasExercises
@@ -87,23 +118,7 @@ export function convertPointsCardFormStateToDTO(
   const exercises: PointMap = new PointMap();
 
   Object.entries(values).forEach(([key, entry]) => {
-    if (typeof entry.points === 'string') {
-      exercises.setPointsByKey(key, {
-        comment: entry.comment,
-        points: entry.points ? Number.parseFloat(entry.points) : 0,
-      });
-    } else {
-      const points: PointsOfSubexercises = {};
-
-      Object.entries(entry.points).forEach(([subKey, value]) => {
-        points[subKey] = value ? Number.parseFloat(value) : 0;
-      });
-
-      exercises.setPointsByKey(key, {
-        comment: entry.comment,
-        points,
-      });
-    }
+    exercises.setPointsByKey(key, convertPointsCardExerciseToPointMapEntry(entry));
   });
 
   return {
@@ -294,8 +309,6 @@ function PointsCard<T extends EntityWithPoints>({
                   </CardActions>
                 </form>
               )}
-
-              <FormikDebugDisplay values={values} />
             </>
           )}
         </Formik>
