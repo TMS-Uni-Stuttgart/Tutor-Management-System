@@ -76,6 +76,12 @@ class ScheinExamService {
     return exam;
   }
 
+  public async doesScheinexamWithIdExist(id: string): Promise<boolean> {
+    const exam: ScheinexamDocument | null = await ScheinexamModel.findById(id);
+
+    return !!exam;
+  }
+
   public getScheinExamResult(student: Student, exam: ScheinExam): number {
     const pointsOfStudent = new PointMap(student.points);
     let result = 0;

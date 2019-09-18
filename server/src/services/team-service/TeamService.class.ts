@@ -109,6 +109,13 @@ class TeamService {
     { id: sheetId, exercises: pointsGained }: UpdatePointsDTO
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+
+    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+      return Promise.reject(
+        new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
+      );
+    }
+
     const pointMapOfTeam: PointMap = new PointMap(team.points);
     const idxOfTeam = tutorial.teams.findIndex(doc => doc.id === team.id);
 

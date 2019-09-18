@@ -110,6 +110,13 @@ class StudentService {
 
   public async setPoints(id: string, { id: sheetId, exercises: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
+
+    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+      return Promise.reject(
+        new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
+      );
+    }
+
     const pointMapOfStudent = new PointMap(student.points);
 
     pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
@@ -123,6 +130,13 @@ class StudentService {
     { id: examId, exercises: pointsGained }: UpdatePointsDTO
   ) {
     const student = await this.getDocumentWithId(id);
+
+    if (!(await scheinexamService.doesScheinexamWithIdExist(examId))) {
+      return Promise.reject(
+        new DocumentNotFoundError('Scheinexam with the given ID does not exist on the server.')
+      );
+    }
+
     const pointMapOfStudent = new PointMap(student.scheinExamResults);
 
     pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
