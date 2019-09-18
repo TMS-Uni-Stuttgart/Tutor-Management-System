@@ -3,14 +3,11 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import React from 'react';
 import { PointMap } from 'shared/dist/model/Points';
-import { Exercise, Sheet } from 'shared/dist/model/Sheet';
-import { Student } from 'shared/dist/model/Student';
+import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
-import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../types';
 import { getNameOfEntity } from '../../../util/helperFunctions';
-import { getExerciseIdentifier } from '../util/helper';
 import PointsCard, {
   getInitialPointsCardValues,
   PointsCardFormState,
@@ -57,7 +54,6 @@ export type EditStudentPointsCallback = FormikSubmitCallback<EditStudentPointsFo
 interface Props {
   team: Team;
   sheet: Sheet;
-  exercises: Exercise[];
   onCancelClicked: () => void;
   onSaveClicked: EditStudentPointsCallback;
 }
@@ -65,10 +61,6 @@ interface Props {
 type EditStudentPointsFormState = {
   [studentId: string]: PointsCardFormState;
 };
-
-function getExerciseFieldName(student: Student, ex: Exercise): string {
-  return `${student.id}.${getExerciseIdentifier(ex)}`;
-}
 
 function getInitialValues(team: Team, sheet: Sheet): EditStudentPointsFormState {
   const values: EditStudentPointsFormState = {};
@@ -88,11 +80,9 @@ function getInitialValues(team: Team, sheet: Sheet): EditStudentPointsFormState 
   return values;
 }
 
-// TODO: Adjust for subexercises (including getInitialValues).
 function EditStudentPointsDialogContent({
   team,
   sheet,
-  exercises,
   onSaveClicked,
   onCancelClicked,
 }: Props): JSX.Element {
@@ -104,7 +94,7 @@ function EditStudentPointsDialogContent({
       initialValues={getInitialValues(team, sheet)}
       // validationSchema={validationSchema}
     >
-      {({ handleSubmit, isValid, isSubmitting, values }) => (
+      {({ handleSubmit, isValid, isSubmitting }) => (
         <>
           <form onSubmit={handleSubmit}>
             {team.students.map(student => (
@@ -117,44 +107,6 @@ function EditStudentPointsDialogContent({
                 onPointsSave={() => console.log('SAVE POINTS!')}
               />
             ))}
-            {/* <Table>
-              <TableBody>
-                {team.students.map(student => (
-                  <TableRow key={student.id}>
-                    <TableCell>
-                      <Typography>{`${student.lastname}, ${student.firstname}`}</Typography>
-                    </TableCell>
-
-                    <TableCell>
-                      <div className={classes.exerciseBox}>
-                        {exercises.map(ex => (
-                          <FormikTextField
-                            key={getExerciseIdentifier(ex)}
-                            name={getExerciseFieldName(student, ex)}
-                            label={`Aufgabe ${ex.exName}`}
-                            fullWidth={false}
-                            type='number'
-                            className={classes.exerciseTf}
-                            inputProps={{
-                              min: 0,
-                              step: 0.1,
-                            }}
-                            InputProps={{
-                              endAdornment: (
-                                <Typography
-                                  noWrap
-                                  style={{ overflow: 'unset' }}
-                                >{`/ ${ex.maxPoints} Pkt.`}</Typography>
-                              ),
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table> */}
 
             <div className={classes.buttonBox}>
               <Button className={classes.cancelButton} onClick={onCancelClicked}>
@@ -164,8 +116,6 @@ function EditStudentPointsDialogContent({
                 Speichern
               </SubmitButton>
             </div>
-
-            <FormikDebugDisplay values={values} />
           </form>
         </>
       )}
