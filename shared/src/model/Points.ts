@@ -54,6 +54,30 @@ export class PointMap {
     return new PointMap(dto);
   }
 
+  static arePointMapEntriesEqual(first: PointMapEntry, second: PointMapEntry): boolean {
+    if (first.comment !== second.comment) {
+      return false;
+    }
+
+    // If one of the points is number just check the numbers.
+    if (typeof first.points === 'number' || typeof second.points === 'number') {
+      return first.points === second.points;
+    }
+
+    // Both points are objects so compare all of their entries.
+    if (Object.entries(first.points).length !== Object.entries(second.points).length) {
+      return false;
+    }
+
+    for (const [key, value] of Object.entries(first.points)) {
+      if (value !== second.points[key]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private points: PointMapDTO;
 
   constructor(dto: PointMapDTO = {}) {
@@ -68,8 +92,10 @@ export class PointMap {
     this.points[key] = points;
   }
 
-  getPointEntry(pointId: PointId): PointMapEntry | undefined {
-    return this.points[pointId.toString()];
+  getPointEntry(id: string | PointId): PointMapEntry | undefined {
+    const key = id instanceof PointId ? id.toString() : id;
+
+    return this.points[key];
   }
 
   adjustPoints(pointsGained: PointMap) {
