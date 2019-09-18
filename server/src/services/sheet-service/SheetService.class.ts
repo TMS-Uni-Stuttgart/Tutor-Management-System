@@ -37,6 +37,8 @@ class SheetService {
     const sheet: SheetDocument = await this.getDocumentWithId(id);
     const exercises: ExerciseDocument[] = generateExerciseDocumentsFromDTOs(exDTOs, bonusSheet);
 
+    // FIXME: If editing a sheet the IDs of exercisees & subexercises change. To solve this: Add an optional ID property to ExerciseDTO to handle that!
+
     sheet.sheetNo = sheetNo;
     sheet.bonusSheet = bonusSheet;
     sheet.exercises = exercises;
