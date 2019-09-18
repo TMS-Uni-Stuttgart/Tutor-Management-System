@@ -25,6 +25,7 @@ export interface SheetDTO {
 }
 
 export interface ExerciseDTO {
+  id?: string;
   bonus: boolean;
   exName: string;
   maxPoints: number;

@@ -2,6 +2,7 @@ import { Document, Model, Types } from 'mongoose';
 import { Exercise, ExerciseDTO } from 'shared/dist/model/Sheet';
 import { prop, Typegoose, arrayProp } from 'typegoose';
 import { getPointsOfExercise } from 'shared/dist/model/Points';
+import { ObjectID } from 'bson';
 
 export class ExerciseSchema extends Typegoose implements Omit<Exercise, 'id' | 'subexercises'> {
   @prop({ required: true })
@@ -41,11 +42,17 @@ export function generateExerciseDocumentsFromDTOs(
 ): ExerciseDocument[] {
   const exercises: ExerciseDocument[] = [];
 
-  dtos.forEach(({ exName, bonus, maxPoints, subexercises }) => {
+  dtos.forEach(({ id, exName, bonus, maxPoints, subexercises }) => {
     const subDocs = generateExerciseDocumentsFromDTOs(subexercises, isBonus || bonus);
 
     exercises.push(
-      new ExerciseModel({ exName, maxPoints, bonus: isBonus || bonus, subexercises: subDocs })
+      new ExerciseModel({
+        _id: new ObjectID(id),
+        exName,
+        maxPoints,
+        bonus: isBonus || bonus,
+        subexercises: subDocs,
+      })
     );
   });
 

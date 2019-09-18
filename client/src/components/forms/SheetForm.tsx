@@ -25,6 +25,7 @@ interface Props extends Omit<FormikBaseFormProps<SheetFormState>, CommonlyUsedFo
 
 export function convertFormExercisesToDTOs(exercises: ExerciseFormExercise[]): ExerciseDTO[] {
   return exercises.map(ex => ({
+    id: ex.id ? ex.id : undefined,
     exName: ex.exName,
     maxPoints: Number.parseFloat(ex.maxPoints),
     bonus: ex.bonus,

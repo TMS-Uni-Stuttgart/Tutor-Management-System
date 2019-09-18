@@ -70,6 +70,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface ExerciseFormExercise {
+  id?: string;
   exName: string;
   maxPoints: string;
   bonus: boolean;
@@ -77,12 +78,14 @@ export interface ExerciseFormExercise {
 }
 
 export function mapExerciseToFormExercise({
+  id,
   exName,
   maxPoints,
   bonus,
   subexercises,
 }: Exercise): ExerciseFormExercise {
   return {
+    id,
     exName,
     maxPoints: maxPoints.toString(),
     bonus,
@@ -103,6 +106,7 @@ interface ExerciseDataFieldsProps {
 
 function getNewExercise(exName: string = ''): ExerciseFormExercise {
   return {
+    id: undefined,
     exName,
     maxPoints: '0.0',
     bonus: false,
