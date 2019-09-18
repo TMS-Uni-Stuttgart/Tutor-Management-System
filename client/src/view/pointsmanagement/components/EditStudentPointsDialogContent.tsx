@@ -15,15 +15,8 @@ import PointsCard, {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    exerciseBox: {
-      display: 'flex',
-    },
-    exerciseTf: {
-      marginRight: theme.spacing(2),
-      flex: 1,
-      '& input': {
-        textAlign: 'right',
-      },
+    pointsCard: {
+      marginTop: theme.spacing(2),
     },
     buttonBox: {
       marginTop: theme.spacing(2),
@@ -101,6 +94,7 @@ function EditStudentPointsDialogContent({
               <PointsCard
                 key={student.id}
                 name={student.id}
+                className={classes.pointsCard}
                 title={getNameOfEntity(student)}
                 entity={{ id: student.id, points: new PointMap(student.points) }}
                 entityWithExercises={sheet}
