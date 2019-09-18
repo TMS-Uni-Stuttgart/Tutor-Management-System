@@ -1,16 +1,14 @@
 import _ from 'lodash';
-import { Types } from 'mongoose';
-import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import { adjustPoints } from '../../helpers/pointsHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import { DocumentNotFoundError } from '../../model/Errors';
+import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
@@ -41,7 +39,7 @@ class TeamService {
     const team: TypegooseDocument<TeamSchema> = {
       tutorial,
       students,
-      points: new Types.Map(),
+      points: new PointMap().toDTO(),
       teamNo,
     };
     tutorial.teams.push(team);
@@ -111,14 +109,27 @@ class TeamService {
     { id: sheetId, exercises: pointsGained }: UpdatePointsDTO
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
-    const sheet = await sheetService.getDocumentWithId(sheetId);
 
-    if (!team.points) {
-      team.points = new Types.Map();
+    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+      return Promise.reject(
+        new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
+      );
     }
 
-    adjustPoints(team.points, sheet, pointsGained);
+    const pointMapOfTeam: PointMap = new PointMap(team.points);
+    const idxOfTeam = tutorial.teams.findIndex(doc => doc.id === team.id);
 
+    if (idxOfTeam === -1) {
+      throw new BadRequestError('Could not find Team in Tutorial.');
+    }
+
+    pointMapOfTeam.adjustPoints(new PointMap(pointsGained));
+
+    team.points = pointMapOfTeam.toDTO();
+
+    // Mongoose is not able to detect the change so we tell it that the teams array has changed...
+    // See: https://mongoosejs.com/docs/schematypes.html#mixed
+    tutorial.markModified('teams');
     await tutorial.save();
   }
 
@@ -254,7 +265,7 @@ class TeamService {
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
       students,
-      points: points ? points.toObject({ flattenMaps: true }) : {},
+      points,
     };
   }
 

@@ -1,14 +1,15 @@
 import { NamedElement } from './Common';
 import { Attendance } from './Attendance';
+import { PointMapDTO } from './Points';
 
 export interface Student extends NamedElement {
   attendance: { [index: string]: Attendance };
   courseOfStudies?: string;
   email?: string;
   matriculationNo: string;
-  points: { [index: string]: number };
+  points: PointMapDTO;
   presentationPoints: { [index: string]: number };
-  scheinExamResults: { [index: string]: number };
+  scheinExamResults: PointMapDTO;
   team?: string;
   tutorial: string;
 }

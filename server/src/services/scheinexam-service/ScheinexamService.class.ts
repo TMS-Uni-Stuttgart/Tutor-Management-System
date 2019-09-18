@@ -7,7 +7,7 @@ import {
 import ScheinexamModel, { ScheinexamDocument } from '../../model/documents/ScheinexamDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import { Student } from 'shared/dist/model/Student';
-import { PointId } from 'shared/dist/model/Sheet';
+import { PointId, PointMap } from 'shared/dist/model/Points';
 
 class ScheinExamService {
   public async getAllScheinExams(): Promise<ScheinExam[]> {
@@ -76,12 +76,19 @@ class ScheinExamService {
     return exam;
   }
 
+  public async doesScheinexamWithIdExist(id: string): Promise<boolean> {
+    const exam: ScheinexamDocument | null = await ScheinexamModel.findById(id);
+
+    return !!exam;
+  }
+
   public getScheinExamResult(student: Student, exam: ScheinExam): number {
+    const pointsOfStudent = new PointMap(student.points);
     let result = 0;
 
     exam.exercises.forEach(exercise => {
-      const pointId = new PointId(exam.id, exercise.exNo);
-      result += student.scheinExamResults[pointId.toString()] || 0;
+      const pointId = new PointId(exam.id, exercise);
+      result += pointsOfStudent.getPoints(pointId) || 0;
     });
 
     return result;

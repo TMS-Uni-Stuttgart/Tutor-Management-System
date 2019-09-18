@@ -1,11 +1,10 @@
 import { Types } from 'mongoose';
 import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
 import { isDocument } from 'typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import { adjustPoints } from '../../helpers/pointsHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import {
   AttendanceDocument,
@@ -65,6 +64,7 @@ class StudentService {
       tutorial: student.tutorial,
       team: student.team,
       points: student.points,
+      scheinExamResults: student.scheinExamResults,
     };
 
     // Encrypt the student manually due to the encryption library not supporting 'updateOne()'.
@@ -110,13 +110,17 @@ class StudentService {
 
   public async setPoints(id: string, { id: sheetId, exercises: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
-    const sheet = await sheetService.getDocumentWithId(sheetId);
 
-    if (!student.points) {
-      student.points = new Types.Map();
+    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+      return Promise.reject(
+        new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
+      );
     }
 
-    adjustPoints(student.points, sheet, pointsGained);
+    const pointMapOfStudent = new PointMap(student.points);
+
+    pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
+    student.points = pointMapOfStudent.toDTO();
 
     await student.save();
   }
@@ -126,13 +130,17 @@ class StudentService {
     { id: examId, exercises: pointsGained }: UpdatePointsDTO
   ) {
     const student = await this.getDocumentWithId(id);
-    const exam = await scheinexamService.getDocumentWithId(examId);
 
-    if (!student.scheinExamResults) {
-      student.scheinExamResults = new Types.Map();
+    if (!(await scheinexamService.doesScheinexamWithIdExist(examId))) {
+      return Promise.reject(
+        new DocumentNotFoundError('Scheinexam with the given ID does not exist on the server.')
+      );
     }
 
-    adjustPoints(student.scheinExamResults, exam, pointsGained);
+    const pointMapOfStudent = new PointMap(student.scheinExamResults);
+
+    pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
+    student.scheinExamResults = pointMapOfStudent.toDTO();
 
     await student.save();
   }
@@ -215,27 +223,32 @@ class StudentService {
       presentationPoints: presentationPoints
         ? presentationPoints.toObject({ flattenMaps: true })
         : {},
-      scheinExamResults: scheinExamResults ? scheinExamResults.toObject({ flattenMaps: true }) : {},
+      scheinExamResults: scheinExamResults,
     };
   }
 
   private async getPointsOfStudent(student: StudentDocument): Promise<Student['points']> {
     if (!student.team) {
-      return student.points ? student.points.toObject({ flattenMaps: true }) : {};
+      return student.points;
     }
-    const points: Student['points'] = {};
+
+    const points = new PointMap();
     const [team] = await teamService.getDocumentWithId(
       getIdOfDocumentRef(student.tutorial),
       student.team.toString()
     );
 
-    team.points.forEach((pts, key) => (points[key] = pts));
+    const pointsOfTeam = new PointMap(team.points);
+    pointsOfTeam.getEntries().forEach(([key, entry]) => {
+      points.setPointsByKey(key, entry);
+    });
 
-    if (student.points) {
-      student.points.forEach((pts, key) => (points[key] = pts));
-    }
+    const pointsOfStudent = new PointMap(student.points);
+    pointsOfStudent.getEntries().forEach(([key, entry]) => {
+      points.setPointsByKey(key, entry);
+    });
 
-    return points;
+    return points.toDTO();
   }
 
   /**
@@ -330,15 +343,16 @@ class StudentService {
       student.team.toString()
     );
 
-    if (!student.points) {
-      student.points = new Types.Map();
-    }
+    const pointsOfTeam = new PointMap(team.points);
+    const pointsOfStudent = new PointMap(student.points);
 
-    for (const [key, points] of team.points) {
-      if (!student.points.has(key)) {
-        student.points.set(key, points);
+    pointsOfTeam.getEntries().forEach(([key, entry]) => {
+      if (!pointsOfStudent.has(key)) {
+        pointsOfStudent.setPointsByKey(key, entry);
       }
-    }
+    });
+
+    student.points = pointsOfStudent.toDTO();
   }
 
   /**

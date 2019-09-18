@@ -11,10 +11,14 @@
     "format:client": "echo Formatting client && cd ./client && yarn format",
     "format:server": "echo Formatting server && cd ./server && yarn format",
     "format:shared": "echo Formatting shared && cd ./shared && yarn format",
-    "build": "yarn build:client && yarn build:server && yarn copy:app",
+    "build": "yarn build:shared && yarn build:client && yarn build:server && yarn copy:app",
     "build:client": "cd ./client && yarn build",
     "build:server": "cd ./server && yarn build",
-    "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/app"
+    "build:shared": "cd ./shared && yarn build",
+    "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/app",
+    "docker:build": "yarn docker:image:build && yarn docker:image:tar",
+    "docker:image:build": "docker build --tag=tutor-management-system .",
+    "docker:image:tar": "docker save -o Tutor-Management-System.tar tutor-management-system"
   },
   "devDependencies": {
     "@types/node": "^12.7.4",

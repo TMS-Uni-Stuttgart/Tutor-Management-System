@@ -1,26 +1,22 @@
-import { Button, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import React from 'react';
-import { Exercise, Sheet } from 'shared/dist/model/Sheet';
-import { Student } from 'shared/dist/model/Student';
+import { PointMap } from 'shared/dist/model/Points';
+import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
-import FormikTextField from '../../../components/forms/components/FormikTextField';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../types';
-import { getExerciseIdentifier, getExercisePointsIdentifier } from '../util/helper';
+import { getNameOfEntity } from '../../../util/helperFunctions';
+import PointsCard, {
+  getInitialPointsCardValues,
+  PointsCardFormState,
+} from './points-card/PointsCard';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    exerciseBox: {
-      display: 'flex',
-    },
-    exerciseTf: {
-      marginRight: theme.spacing(2),
-      flex: 1,
-      '& input': {
-        textAlign: 'right',
-      },
+    pointsCard: {
+      marginTop: theme.spacing(2),
     },
     buttonBox: {
       marginTop: theme.spacing(2),
@@ -51,38 +47,27 @@ export type EditStudentPointsCallback = FormikSubmitCallback<EditStudentPointsFo
 interface Props {
   team: Team;
   sheet: Sheet;
-  exercises: Exercise[];
   onCancelClicked: () => void;
   onSaveClicked: EditStudentPointsCallback;
 }
 
-interface EditStudentPointsFormState {
-  [studentId: string]: { [exNo: string]: number };
-}
+type EditStudentPointsFormState = {
+  [studentId: string]: PointsCardFormState;
+};
 
-function getExerciseFieldName(student: Student, ex: Exercise): string {
-  return `${student.id}.${ex.exNo}`;
-}
-
-function getInitialValues(
-  team: Team,
-  sheet: Sheet,
-  exercises: Exercise[]
-): EditStudentPointsFormState {
+function getInitialValues(team: Team, sheet: Sheet): EditStudentPointsFormState {
   const values: EditStudentPointsFormState = {};
+  const pointsOfTeam = new PointMap(team.points);
+  const formStateOfTeam = getInitialPointsCardValues(pointsOfTeam, sheet);
 
   for (const student of team.students) {
-    values[student.id] = {};
+    const pointsOfStudent = new PointMap(student.points);
+    const formStateOfStudent = getInitialPointsCardValues(pointsOfStudent, sheet);
 
-    for (const ex of exercises) {
-      const identifier = getExercisePointsIdentifier(sheet, ex);
-
-      if (student.points[identifier] !== undefined) {
-        values[student.id][getExerciseIdentifier(ex)] = student.points[identifier];
-      } else {
-        values[student.id][getExerciseIdentifier(ex)] = team.points[identifier] || 0;
-      }
-    }
+    values[student.id] = {
+      ...formStateOfTeam,
+      ...formStateOfStudent,
+    };
   }
 
   return values;
@@ -91,7 +76,6 @@ function getInitialValues(
 function EditStudentPointsDialogContent({
   team,
   sheet,
-  exercises,
   onSaveClicked,
   onCancelClicked,
 }: Props): JSX.Element {
@@ -100,50 +84,23 @@ function EditStudentPointsDialogContent({
   return (
     <Formik
       onSubmit={onSaveClicked}
-      initialValues={getInitialValues(team, sheet, exercises)}
+      initialValues={getInitialValues(team, sheet)}
       // validationSchema={validationSchema}
     >
       {({ handleSubmit, isValid, isSubmitting }) => (
         <>
           <form onSubmit={handleSubmit}>
-            <Table>
-              <TableBody>
-                {team.students.map(student => (
-                  <TableRow key={student.id}>
-                    <TableCell>
-                      <Typography>{`${student.lastname}, ${student.firstname}`}</Typography>
-                    </TableCell>
-
-                    <TableCell>
-                      <div className={classes.exerciseBox}>
-                        {exercises.map(ex => (
-                          <FormikTextField
-                            key={ex.exNo}
-                            name={getExerciseFieldName(student, ex)}
-                            label={`Aufgabe ${ex.exNo}`}
-                            fullWidth={false}
-                            type='number'
-                            className={classes.exerciseTf}
-                            inputProps={{
-                              min: 0,
-                              step: 0.1,
-                            }}
-                            InputProps={{
-                              endAdornment: (
-                                <Typography
-                                  noWrap
-                                  style={{ overflow: 'unset' }}
-                                >{`/ ${ex.maxPoints} Pkt.`}</Typography>
-                              ),
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {team.students.map(student => (
+              <PointsCard
+                key={student.id}
+                name={student.id}
+                className={classes.pointsCard}
+                title={getNameOfEntity(student)}
+                entity={{ id: student.id, points: new PointMap(student.points) }}
+                entityWithExercises={sheet}
+                onPointsSave={() => console.log('SAVE POINTS!')}
+              />
+            ))}
 
             <div className={classes.buttonBox}>
               <Button className={classes.cancelButton} onClick={onCancelClicked}>

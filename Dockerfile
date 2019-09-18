@@ -1,45 +1,44 @@
 # =============================================
 #
-# Build frontend
+# Build frontend & backend
+#
+# This also copies the builded frontend into the server.
 #
 # =============================================
-FROM node as client
+FROM node:10 as build
 
-COPY client/ client/
-WORKDIR /client
-RUN npm i
-RUN npm run build
+COPY client/ tms/client/
+COPY server/ tms/server/
+COPY shared/ tms/shared/
 
-
-# =============================================
-#
-# Build backend and bundle frontend
-#
-# =============================================
-FROM maven:3.6-jdk-11 as server
-
-# Make sure the output is not spammed with "Downloading ..." message
-ENV MAVEN_OPTS="-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-
-COPY pom.xml server/
-COPY src/ server/src/
-COPY --from=client client/build/ server/client/build
-
-WORKDIR /server/
-RUN mvn --batch-mode --errors package
-
-
-# =============================================
-#
-# Create the real image containing the JAR
-#
-# =============================================
-FROM openjdk:11.0-jre-slim
-
-COPY --from=server server/target/Tutor-Management-System.jar tms/
-
-# The port on which the server listens
-EXPOSE 8443
+COPY package.json tms/
+COPY yarn.lock tms/
 
 WORKDIR /tms/
-ENTRYPOINT [ "java", "-jar", "Tutor-Management-System.jar", "--spring.profiles.active=production" ]
+
+RUN yarn
+RUN yarn build
+
+# =============================================
+#
+# Create the image which runs the server
+#
+# =============================================
+FROM node:10-alpine
+
+COPY --from=build tms/server/build tms/server
+COPY --from=build tms/shared/dist tms/shared/dist
+
+COPY package.json /tms
+COPY yarn.lock /tms
+COPY server/package.json /tms/server
+COPY shared/package.json /tms/shared
+
+# The port on which the server listens
+EXPOSE 8080
+
+# Install the packages needed for the server
+WORKDIR /tms/server/
+RUN yarn install --production
+
+ENTRYPOINT [ "node", "server.js" ]

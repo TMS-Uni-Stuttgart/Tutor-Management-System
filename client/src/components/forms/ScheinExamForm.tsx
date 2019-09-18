@@ -1,16 +1,18 @@
 import React from 'react';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { Exercise } from 'shared/dist/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
 import FormikDatePicker from './components/FormikDatePicker';
-import FormikExerciseEditor from './components/FormikExerciseEditor';
+import FormikExerciseEditor, {
+  ExerciseFormExercise,
+  mapExerciseToFormExercise,
+} from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 
 export interface ScheinExamFormState {
   date: string;
-  exercises: Exercise[];
-  scheinExamNo: number;
+  exercises: ExerciseFormExercise[];
+  scheinExamNo: string;
   percentageNeeded: number;
 }
 
@@ -27,10 +29,12 @@ export function getInitialExamFormState(
   exams?: ScheinExam[]
 ): ScheinExamFormState {
   if (!!exam) {
+    const exercises = exam.exercises.map(mapExerciseToFormExercise);
+
     return {
-      ...exam,
+      scheinExamNo: exam.scheinExamNo.toString(),
+      exercises,
       percentageNeeded: exam.percentageNeeded,
-      // percentageNeeded: exam.percentageNeeded * 100,
       date: exam.date.toDateString(),
     };
   }
@@ -41,7 +45,7 @@ export function getInitialExamFormState(
   }
 
   return {
-    scheinExamNo: lastScheinExamNo + 1,
+    scheinExamNo: (lastScheinExamNo + 1).toString(),
     exercises: [],
     date: new Date(Date.now()).toDateString(),
     percentageNeeded: 0.5,
@@ -77,7 +81,7 @@ function ScheinExamForm({ onSubmit, className, exam, exams, ...other }: Props): 
 
           <FormikDatePicker name='date' label='Datum' />
 
-          <FormikExerciseEditor name='exercises' />
+          <FormikExerciseEditor name='exercises' disableAutofocus={!!exam} />
         </>
       )}
     </FormikBaseForm>

@@ -8,6 +8,7 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import printJS from 'print-js';
 import React, { useEffect, useState } from 'react';
 import { Attendance } from 'shared/dist/model/Attendance';
+import { PointMap } from 'shared/dist/model/Points';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { StudentDTO } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
@@ -24,10 +25,7 @@ import { useAxios } from '../../hooks/FetchingService';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import { getSumOfPointsOfStudentInScheinExam, parseDateToMapKey } from '../../util/helperFunctions';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
-import {
-  getPointsOfEntityAsString,
-  getPointsOfStudentOfSheet,
-} from '../pointsmanagement/util/helper';
+import { getPointsOfEntityAsString } from '../pointsmanagement/util/helper';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -283,6 +281,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       const criteriaResult = summaries[id];
       const exams = await getAllScheinExams();
       const sheets = await getAllSheets();
+      const pointsOfStudent = new PointMap(points);
 
       const data: RowMap = {
         lastname,
@@ -296,7 +295,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
 
       for (const sheet of sheets) {
         const maxPoints = getPointsOfEntityAsString(sheet);
-        const sheetResult = getPointsOfStudentOfSheet(points, sheet);
+        const sheetResult = pointsOfStudent.getSumOfPoints(sheet);
         data[`sheet-${sheet.sheetNo}`] = `${sheetResult}/${maxPoints}`;
       }
 
@@ -306,7 +305,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       }
 
       for (const exam of exams) {
-        const scheinExamResult = getSumOfPointsOfStudentInScheinExam(scheinExamResults, exam.id);
+        const scheinExamResult = getSumOfPointsOfStudentInScheinExam(scheinExamResults, exam);
         data[`exam-${exam.scheinExamNo}`] = scheinExamResult.toString();
       }
       dataArray.push(data);

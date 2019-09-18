@@ -1,22 +1,19 @@
 import React from 'react';
-import { Sheet } from 'shared/dist/model/Sheet';
+import { Sheet, ExerciseDTO } from 'shared/dist/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
-import FormikExerciseEditor from './components/FormikExerciseEditor';
+import FormikExerciseEditor, {
+  ExerciseFormExercise,
+  mapExerciseToFormExercise,
+} from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 
-export interface SheetFormExercise {
-  exNo: string;
-  maxPoints: string;
-  bonus: boolean;
-}
-
 interface SheetFormState {
   sheetNo: number;
-  exercises: SheetFormExercise[];
+  exercises: ExerciseFormExercise[];
   bonusSheet: boolean;
 }
 
@@ -26,13 +23,19 @@ interface Props extends Omit<FormikBaseFormProps<SheetFormState>, CommonlyUsedFo
   sheets?: Sheet[];
 }
 
+export function convertFormExercisesToDTOs(exercises: ExerciseFormExercise[]): ExerciseDTO[] {
+  return exercises.map(ex => ({
+    id: ex.id ? ex.id : undefined,
+    exName: ex.exName,
+    maxPoints: Number.parseFloat(ex.maxPoints),
+    bonus: ex.bonus,
+    subexercises: convertFormExercisesToDTOs(ex.subexercises),
+  }));
+}
+
 export function getInitialSheetFormState(sheet?: Sheet, sheets?: Sheet[]): SheetFormState {
   if (!!sheet) {
-    const exercises = sheet.exercises.map(ex => ({
-      exNo: ex.exNo.toString(),
-      maxPoints: ex.maxPoints.toString(),
-      bonus: ex.bonus,
-    }));
+    const exercises: ExerciseFormExercise[] = sheet.exercises.map(mapExerciseToFormExercise);
 
     return { sheetNo: sheet.sheetNo, bonusSheet: sheet.bonusSheet, exercises };
   }
@@ -70,7 +73,7 @@ function SheetForm({ onSubmit, className, sheet, sheets, ...other }: Props): JSX
 
           <FormikCheckbox name='bonusSheet' label='Bonusblatt' />
 
-          <FormikExerciseEditor name='exercises' />
+          <FormikExerciseEditor name='exercises' disableAutofocus={!!sheet} />
         </>
       )}
     </FormikBaseForm>

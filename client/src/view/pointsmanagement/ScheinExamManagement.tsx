@@ -13,6 +13,8 @@ import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { getDisplayStringOfScheinExam } from '../../util/helperFunctions';
 import ScheinExamRow from './components/ScheinExamRow';
+import { getDuplicateExerciseName } from './util/helper';
+import { convertFormExercisesToDTOs } from '../../components/forms/SheetForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,7 +33,9 @@ function generateScheinExamDTO(values: ScheinExamFormState): ScheinExamDTO {
   const date = new Date(values.date);
 
   return {
-    ...values,
+    scheinExamNo: Number.parseFloat(values.scheinExamNo),
+    exercises: convertFormExercisesToDTOs(values.exercises),
+    percentageNeeded: values.percentageNeeded,
     date: date.toISOString(),
   };
 }
@@ -56,31 +60,16 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     values,
     { resetForm, setSubmitting, setFieldError }
   ) => {
-    const isNoInUse = exams.find(t => t.scheinExamNo === values.scheinExamNo) !== undefined;
+    const isNotInUse =
+      exams.find(t => t.scheinExamNo.toString() === values.scheinExamNo) !== undefined;
+    const duplicateName = getDuplicateExerciseName(values.exercises);
 
-    function getIndexOfExerciseWithSameExNo(): number | undefined {
-      for (const exercise of values.exercises) {
-        const ex = values.exercises.find(t => t !== exercise && t.exNo === exercise.exNo);
-
-        if (ex !== undefined) {
-          return values.exercises.indexOf(ex);
-        }
-      }
-
-      return undefined;
-    }
-
-    const idx = getIndexOfExerciseWithSameExNo();
-
-    if (idx !== undefined) {
-      setFieldError(
-        'exercises',
-        `Die Aufgabennummer ${values.exercises[idx].exNo} ist mehrfach vergeben.`
-      );
+    if (duplicateName) {
+      setFieldError('exercises', `Die Aufgabenbezeichnung ${duplicateName} ist mehrfach vergeben.`);
       return;
     }
 
-    if (isNoInUse) {
+    if (isNotInUse) {
       setFieldError('scheinExamNo', 'Diese Nummer ist bereits vergeben.');
       return;
     }

@@ -1,12 +1,14 @@
 import * as Yup from 'yup';
 import { validateSchema, YupIdShape } from './helper';
 import { ValidationErrorsWrapper } from '../model/errors/Errors';
-import { SheetDTO, ExerciseDTO, UpdatePointsDTO } from '../model/Sheet';
+import { SheetDTO, ExerciseDTO } from '../model/Sheet';
+import { UpdatePointsDTO } from '../model/Points';
 
 export const ExerciseDTOSchema = Yup.object().shape<ExerciseDTO>({
-  exNo: Yup.number().required(),
+  exName: Yup.string().required(),
   maxPoints: Yup.number().required(),
   bonus: Yup.boolean().required(),
+  subexercises: Yup.array(),
 });
 
 const SheetDTOSchema = Yup.object().shape<SheetDTO>({

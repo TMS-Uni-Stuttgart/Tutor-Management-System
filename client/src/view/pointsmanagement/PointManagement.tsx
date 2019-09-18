@@ -1,9 +1,11 @@
 import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
+import { People as TeamIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { Sheet, UpdatePointsDTO } from 'shared/dist/model/Sheet';
+import { PointMap, PointMapEntry, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { Sheet } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
@@ -13,12 +15,14 @@ import { useAxios } from '../../hooks/FetchingService';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
-import { PointsSaveCallback } from './components/PointsRow';
+import PointsCard, {
+  convertPointsCardExerciseToPointMapEntry,
+  convertPointsCardFormStateToDTO,
+  PointsSaveCallback,
+} from './components/points-card/PointsCard';
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
-import TeamPointsRow from './components/TeamPointsRow';
-import { getPointsOfStudentOfExercise } from './util/helper';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,6 +36,9 @@ const useStyles = makeStyles((theme: Theme) =>
     placeholder: {
       marginTop: theme.spacing(8),
       textAlign: 'center',
+    },
+    pointCard: {
+      marginTop: theme.spacing(2),
     },
   })
 );
@@ -98,10 +105,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
-    const pointsDTO: UpdatePointsDTO = {
-      id: currentSheet.id,
-      exercises: values,
-    };
+    const pointsDTO = convertPointsCardFormStateToDTO(values, currentSheet);
 
     try {
       await setPointsOfTeam(match.params.tutorialId, team.id, pointsDTO);
@@ -137,29 +141,28 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
     const promises: Promise<void>[] = [];
 
-    Object.entries(values).forEach(([studentId, exercises]) => {
+    Object.entries(values).forEach(([studentId, formState]) => {
       const student = students.find(s => s.id === studentId);
-      const changedExercises: { [exNo: string]: number } = {};
 
       if (!student) {
         return;
       }
 
-      Object.entries(exercises).forEach(([exNo, points]) => {
-        const exercise = currentSheet.exercises.find(
-          e =>
-            e.exNo === parseInt(exNo) &&
-            getPointsOfStudentOfExercise(student.points, e, currentSheet) !== points
-        );
+      const changedExercises: PointMap = new PointMap();
+      const pointsOfStudent = new PointMap(student.points);
 
-        if (!!exercise) {
-          changedExercises[exNo] = points;
+      Object.entries(formState).forEach(([exIdentifier, exercise]) => {
+        const exerciseEntry: PointMapEntry = convertPointsCardExerciseToPointMapEntry(exercise);
+        const prevEntry = pointsOfStudent.getPointEntry(exIdentifier);
+
+        if (!prevEntry || !PointMap.arePointMapEntriesEqual(prevEntry, exerciseEntry)) {
+          changedExercises.setPointsByKey(exIdentifier, exerciseEntry);
         }
       });
 
       const pointsDTO: UpdatePointsDTO = {
         id: currentSheet.id,
-        exercises: changedExercises,
+        exercises: changedExercises.toDTO(),
       };
 
       promises.push(setPointsOfStudent(studentId, pointsDTO));
@@ -211,7 +214,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     dialog.hide();
   };
 
-  const handleEditPointsOfStudents = (team: Team) => {
+  const handleEditPointsOfStudents = (team: Team) => () => {
     if (!currentSheet) {
       return;
     }
@@ -222,7 +225,6 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
         <EditStudentPointsDialogContent
           team={team}
           sheet={currentSheet}
-          exercises={currentSheet.exercises}
           onSaveClicked={savePointsOfStudents}
           onCancelClicked={dialog.hide}
         />
@@ -311,24 +313,26 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
           {
             {
-              [TabValue.POINTS]: (
-                <TableWithPadding
-                  key={currentSheet.id}
-                  items={teams}
-                  createRowFromItem={team => (
-                    <TeamPointsRow
+              [TabValue.POINTS]:
+                teams.length > 0 ? (
+                  teams.map(team => (
+                    <PointsCard
                       key={team.id}
-                      entity={team}
-                      pointsMap={team.points}
+                      className={classes.pointCard}
+                      avatar={<TeamIcon />}
+                      title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
+                      subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
+                      entity={{ id: team.id, points: new PointMap(team.points) }}
                       entityWithExercises={currentSheet}
-                      tabIndexForRow={teams.indexOf(team) + 1}
                       onPointsSave={handleSavePoints(team)}
-                      onEditPoints={handleEditPointsOfStudents}
+                      onEditPoints={handleEditPointsOfStudents(team)}
                     />
-                  )}
-                  placeholder='Keine Teams verfügbar.'
-                />
-              ),
+                  ))
+                ) : (
+                  <Typography variant='h6' className={classes.placeholder}>
+                    Keine Teams verfügbar.
+                  </Typography>
+                ),
               [TabValue.PRESENTATION]: (
                 <TableWithPadding
                   key={currentSheet.id}

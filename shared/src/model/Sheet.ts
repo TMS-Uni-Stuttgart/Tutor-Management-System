@@ -1,16 +1,21 @@
 import { HasId } from './Common';
 
-export interface Sheet extends HasId {
+export interface HasExercises extends HasId {
+  exercises: Exercise[];
+}
+
+export interface Sheet extends HasExercises {
   bonusSheet: boolean;
   exercises: Exercise[];
   id: string;
   sheetNo: number;
 }
 
-export interface Exercise {
+export interface Exercise extends HasId {
   bonus: boolean;
-  exNo: number;
+  exName: string;
   maxPoints: number;
+  subexercises: Exercise[];
 }
 
 export interface SheetDTO {
@@ -20,20 +25,9 @@ export interface SheetDTO {
 }
 
 export interface ExerciseDTO {
+  id?: string;
   bonus: boolean;
-  exNo: number;
+  exName: string;
   maxPoints: number;
-}
-
-export interface UpdatePointsDTO {
-  exercises: { [index: string]: number };
-  id: string;
-}
-
-export class PointId {
-  constructor(readonly sheetId: string, readonly exerciseNo: number) {}
-
-  public toString(): string {
-    return `ID::${this.sheetId}--Ex::${this.exerciseNo}`;
-  }
+  subexercises: ExerciseDTO[];
 }

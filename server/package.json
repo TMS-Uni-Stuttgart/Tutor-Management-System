@@ -14,7 +14,7 @@
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
     "format": "eslint --fix \"src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
-    "ts:check": "tsc -b --force && tsc --project . --noEmit"
+    "ts:check": "tsc --project . --noEmit"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

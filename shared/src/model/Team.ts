@@ -1,8 +1,9 @@
 import { HasId } from './Common';
+import { PointMapDTO } from './Points';
 import { Student } from './Student';
 
 export interface Team extends HasId {
-  points: { [index: string]: number };
+  points: PointMapDTO;
   students: Student[];
   teamNo: number;
   tutorial: string;

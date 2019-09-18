@@ -3,6 +3,7 @@ import deLocale from 'date-fns/locale/de';
 import { NamedElement } from 'shared/dist/model/Common';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
+import { PointMap } from 'shared/dist/model/Points';
 
 interface NameOptions {
   lastNameFirst: boolean;
@@ -32,9 +33,7 @@ export function parseDateToMapKey(date: Date): string {
 
 export function getSumOfPointsOfStudentInScheinExam(
   scheinExamResults: Student['scheinExamResults'],
-  examId: string
+  exam: ScheinExam
 ): number {
-  return Object.entries(scheinExamResults)
-    .filter(([key]) => key.includes(examId))
-    .reduce((prev, [, points]) => prev + points, 0);
+  return new PointMap(scheinExamResults).getSumOfPoints(exam);
 }
