@@ -1,12 +1,11 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { ExerciseDTO, Sheet, SheetDTO } from 'shared/dist/model/Sheet';
-import { ExerciseFormExercise } from '../../components/forms/components/FormikExerciseEditor';
+import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 import SheetForm, {
+  convertFormExercisesToDTOs,
   getInitialSheetFormState,
   SheetFormSubmitCallback,
-  convertFormExercisesToDTOs,
 } from '../../components/forms/SheetForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';

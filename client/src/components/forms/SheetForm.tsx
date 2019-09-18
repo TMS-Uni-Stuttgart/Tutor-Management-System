@@ -2,7 +2,10 @@ import React from 'react';
 import { Sheet, ExerciseDTO } from 'shared/dist/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
-import FormikExerciseEditor, { ExerciseFormExercise, mapExerciseToFormExercise } from './components/FormikExerciseEditor';
+import FormikExerciseEditor, {
+  ExerciseFormExercise,
+  mapExerciseToFormExercise,
+} from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 

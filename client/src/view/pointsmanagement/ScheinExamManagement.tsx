@@ -60,7 +60,8 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     values,
     { resetForm, setSubmitting, setFieldError }
   ) => {
-    const isNotInUse = exams.find(t => t.scheinExamNo.toString() === values.scheinExamNo) !== undefined;
+    const isNotInUse =
+      exams.find(t => t.scheinExamNo.toString() === values.scheinExamNo) !== undefined;
     const duplicateName = getDuplicateExerciseName(values.exercises);
 
     if (duplicateName) {

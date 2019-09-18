@@ -2,7 +2,7 @@ import { Button, Card, CardActions, CardContent, IconButton } from '@material-ui
 import { CardProps } from '@material-ui/core/Card';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Formik, useField, useFormik, FormikConsumer } from 'formik';
+import { Formik, FormikConsumer } from 'formik';
 import { ChevronUp as OpenIcon, TableEdit as EditPointsIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
@@ -15,11 +15,11 @@ import {
 } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import CustomCardHeader from '../../../../components/CustomCardHeader';
+import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
 import ExerciseBox from './ExerciseBox';
-import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

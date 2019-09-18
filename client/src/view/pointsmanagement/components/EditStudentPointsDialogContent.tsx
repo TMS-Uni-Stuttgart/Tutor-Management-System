@@ -1,21 +1,20 @@
-import { Button, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import React from 'react';
+import { PointMap } from 'shared/dist/model/Points';
 import { Exercise, Sheet } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
-import FormikTextField from '../../../components/forms/components/FormikTextField';
+import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../types';
-import { getExerciseIdentifier, getExercisePointsIdentifier } from '../util/helper';
-import PointsCard, {
-  PointsCardFormState,
-  getInitialPointsCardValues,
-} from './points-card/PointsCard';
-import { PointMap, PointId } from 'shared/dist/model/Points';
 import { getNameOfEntity } from '../../../util/helperFunctions';
-import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
+import { getExerciseIdentifier } from '../util/helper';
+import PointsCard, {
+  getInitialPointsCardValues,
+  PointsCardFormState,
+} from './points-card/PointsCard';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
