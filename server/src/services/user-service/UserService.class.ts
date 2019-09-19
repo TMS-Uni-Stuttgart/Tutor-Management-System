@@ -218,7 +218,7 @@ class UserService {
     const user = await this.getDocumentWithId(id);
 
     user.password = newPassword;
-    user.temporaryPassword = '';
+    user.temporaryPassword = undefined;
 
     user.save();
   }
@@ -227,7 +227,7 @@ class UserService {
     const user = await this.getDocumentWithId(id);
 
     user.password = newTempPassword;
-    user.temporaryPassword = undefined;
+    user.temporaryPassword = newTempPassword;
 
     user.save();
   }
