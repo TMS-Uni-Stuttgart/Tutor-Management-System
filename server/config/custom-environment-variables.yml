@@ -1,0 +1,6 @@
+mailing:
+  auth:
+    user: 'TSM_SMTP_USER_MAIL'
+    clientId: 'TSM_SMTP_CLIENT_ID'
+    clientSecret: 'TSM_SMTP_CLIENT_SECRET'
+    refreshToken: 'TSM_SMTP_REFRESH_TOKEN'
