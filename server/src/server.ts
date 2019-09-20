@@ -23,6 +23,7 @@ import authenticationRouter from './services/user-service/authentication.routes'
 import userService from './services/user-service/UserService.class';
 import userRouter from './services/user-service/UserService.routes';
 import languageRouter from './services/language-service/LanguageService.routes';
+import mailRouter from './services/mail-service/MailService.routes';
 
 mongoose.connect(databaseConfig.databaseURL, databaseConfig.config).catch(err => {
   console.group('Error stack:');
@@ -88,6 +89,7 @@ app.use(`${BASE_API_PATH}/student`, studentRouter);
 app.use(`${BASE_API_PATH}/sheet`, sheetRouter);
 app.use(`${BASE_API_PATH}/scheinexam`, scheinexamRouter);
 app.use(`${BASE_API_PATH}/scheincriteria`, scheincriteriaRouter);
+app.use(`${BASE_API_PATH}/mail`, mailRouter);
 app.use(`${BASE_API_PATH}/locales`, languageRouter);
 
 // If there's a request which starts with the BASE_API_PATH which did not get handled yet, throw a not found error.
