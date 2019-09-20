@@ -1,6 +1,5 @@
 import config from 'config';
 import nodemailer from 'nodemailer';
-import { google } from 'googleapis';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 class MailService {
@@ -28,23 +27,6 @@ class MailService {
 
     if (!user || !clientId || !clientSecret || !refreshToken) {
       return Promise.reject('user & clientId & clientSecret & refreshToken all have to be set.');
-    }
-
-    const oauth2Client = new google.auth.OAuth2(
-      clientId,
-      clientSecret,
-      'https://developers.google.com/oauthplayground'
-    );
-
-    oauth2Client.setCredentials({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      refresh_token: refreshToken,
-    });
-
-    const accessToken = (await oauth2Client.getAccessToken()).token;
-
-    if (!accessToken) {
-      return Promise.reject('Could not generate access token');
     }
 
     const smtpTransport = nodemailer.createTransport(config);
