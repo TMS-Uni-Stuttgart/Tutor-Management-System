@@ -6,8 +6,10 @@ import SMTPConnection, {
 } from 'nodemailer/lib/smtp-connection';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { User } from 'shared/dist/model/User';
+import { MailingStatus, FailedMail } from 'shared/dist/model/Mail';
 import { InvalidConfigurationError } from '../../model/Errors';
 import userService from '../user-service/UserService.class';
+import Mail from 'nodemailer/lib/mailer';
 
 interface AdditionalOptions {
   templates: {
@@ -15,40 +17,66 @@ interface AdditionalOptions {
   };
 }
 
+class MailingError {
+  constructor(readonly userId: string, readonly message?: string) {}
+}
+
+type MailingResponse = SMTPTransport.SentMessageInfo | MailingError;
 type TransportOptions = SMTPTransport.Options & AdditionalOptions;
 
 class MailService {
-  public async mailCredentials() {
+  public async mailCredentials(): Promise<MailingStatus> {
     const options = this.getConfig();
     const smtpTransport = nodemailer.createTransport(options);
 
     const users = await userService.getAllUsers();
-    const mails: Promise<SMTPTransport.SentMessageInfo>[] = [];
-    const userToSendMailTo = users.filter(
-      u => u.username !== 'admin' && !!u.temporaryPassword && !!u.email
-    );
+    const mails: Promise<MailingResponse>[] = [];
+    const userToSendMailTo = users.filter(u => u.username !== 'admin' && !!u.temporaryPassword);
 
     // TODO: Check that e-mail is valid.
     for (const user of userToSendMailTo) {
-      mails.push(
-        smtpTransport.sendMail({
-          from: this.getUser(),
-          to: `${user.email}`,
-          subject: 'Credentials',
-          text: this.getTextOfMail(user, options),
-        })
-      );
+      mails.push(this.sendMail(user, smtpTransport, options));
     }
 
-    const sendedMails = await Promise.all(mails);
-
-    for (const mail of sendedMails) {
-      console.group(`ID: ${mail.messageId}`);
-      console.log(`Preview URL: ${nodemailer.getTestMessageUrl(mail)}`);
-      console.groupEnd();
-    }
+    const status = this.generateMailingStatus(await Promise.all(mails), users);
 
     smtpTransport.close();
+    return status;
+  }
+
+  private async sendMail(
+    user: User,
+    transport: Mail,
+    options: TransportOptions
+  ): Promise<MailingResponse> {
+    try {
+      return await transport.sendMail({
+        from: this.getUser(),
+        to: `${user.email}`,
+        subject: 'Credentials',
+        text: this.getTextOfMail(user, options),
+      });
+    } catch (err) {
+      return new MailingError(user.id, 'Could not send mail');
+    }
+  }
+
+  private generateMailingStatus(mails: MailingResponse[], users: User[]): MailingStatus {
+    const failedMailsInfo: FailedMail[] = [];
+    let successFullSend: number = 0;
+
+    for (const mail of mails) {
+      if (mail instanceof MailingError) {
+        const user = users.find(u => u.id === mail.userId) as User;
+        failedMailsInfo.push({
+          userId: user.id,
+        });
+      } else {
+        successFullSend++;
+      }
+    }
+
+    return { successFullSend, failedMailsInfo };
   }
 
   private getTextOfMail(user: User, { templates }: TransportOptions): string {

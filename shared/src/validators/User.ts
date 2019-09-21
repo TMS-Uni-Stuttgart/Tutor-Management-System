@@ -8,6 +8,9 @@ import { TutorialIdListSchema } from './Tutorial';
 const UserDTOSchema = Yup.object().shape<UserDTO>({
   firstname: Yup.string().required(),
   lastname: Yup.string().required(),
+  email: Yup.string()
+    .email()
+    .required(),
   roles: Yup.array<Role>().required(),
   tutorials: TutorialIdListSchema,
 });
@@ -15,6 +18,9 @@ const UserDTOSchema = Yup.object().shape<UserDTO>({
 const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
   firstname: Yup.string().required(),
   lastname: Yup.string().required(),
+  email: Yup.string()
+    .email()
+    .required(),
   username: Yup.string().required(),
   password: Yup.string().required(),
   roles: Yup.array<Role>().required(),

@@ -124,7 +124,7 @@ class UserService {
     user.lastname = dto.lastname;
     user.roles = dto.roles;
     user.tutorials = [...user.tutorials];
-    user.email = dto.email || '';
+    user.email = dto.email;
 
     const updatedUser = await user.save();
 
@@ -325,6 +325,7 @@ class UserService {
       const admin: CreateUserDTO = {
         firstname: 'admin',
         lastname: 'admin',
+        email: 'admin@admin.admin',
         roles: [Role.ADMIN],
         tutorials: [],
         username: 'admin',

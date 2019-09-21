@@ -22,7 +22,7 @@ export interface UserDTO {
   lastname: User['lastname'];
   tutorials: string[];
   roles: User['roles'];
-  email?: User['email'];
+  email: User['email'];
 }
 
 export interface CreateUserDTO extends UserDTO {

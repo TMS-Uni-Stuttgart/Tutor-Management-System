@@ -5,7 +5,6 @@ import {
   RestoreOutlined as RestoreOutlinedIcon,
   Shuffle as ShuffleIcon,
 } from '@material-ui/icons';
-import clsx from 'clsx';
 import { FormikHelpers } from 'formik';
 import pwGenerator from 'generate-password';
 import React, { useState } from 'react';
