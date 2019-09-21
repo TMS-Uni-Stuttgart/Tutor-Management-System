@@ -1,15 +1,19 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { MailingStatus } from 'shared/dist/model/Mail';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
+import SubmitButton from '../../components/forms/components/SubmitButton';
 import UserForm, { UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import SnackbarWithList from '../../components/SnackbarWithList';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { UserWithFetchedTutorials } from '../../typings/types';
+import { getNameOfEntity } from '../../util/helperFunctions';
 import UserTableRow from './components/UserTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,6 +32,7 @@ const availableRoles = [Role.ADMIN, Role.CORRECTOR, Role.TUTOR, Role.EMPLOYEE];
 function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingCredentials, setSendingCredentials] = useState(false);
   const [users, setUsers] = useState<UserWithFetchedTutorials[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const {
@@ -37,6 +42,7 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     deleteUser: deleteUserRequest,
     getAllTutorials,
     setTemporaryPassword,
+    sendCredentials: sendCredentialsRequest,
   } = useAxios();
   const dialog = useDialog();
 
@@ -173,6 +179,66 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     });
   }
 
+  function handleSendCredentials() {
+    dialog.show({
+      title: 'Zugangsdaten verschicken',
+      content:
+        'Sollen die Zugangsdaten der Nutzer/innen an diese geschickt werden? Dies sendet jedem/r Nutzer/in eine E-Mail mit seinen/ihren Zugangsdaten.',
+      actions: [
+        {
+          label: 'Abbrechen',
+          onClick: () => dialog.hide(),
+        },
+        {
+          label: 'Senden',
+          onClick: () => {
+            dialog.hide();
+            sendCredentials();
+          },
+          buttonProps: {
+            color: 'primary',
+          },
+        },
+      ],
+    });
+  }
+
+  async function sendCredentials() {
+    setSendingCredentials(true);
+
+    try {
+      const { failedMailsInfo }: MailingStatus = await sendCredentialsRequest();
+
+      if (failedMailsInfo.length === 0) {
+        enqueueSnackbar('Zugangsdaten wurden erfolgreich verschickt.', { variant: 'success' });
+      } else {
+        const failedNames: string[] = failedMailsInfo.map(info => {
+          const user = users.find(u => u.id === info.userId);
+
+          return user ? getNameOfEntity(user) : 'NOT_FOUND';
+        });
+
+        enqueueSnackbar('', {
+          persist: true,
+          children: id => (
+            <SnackbarWithList
+              id={id}
+              title={'Nicht zugestellte Zugangsdaten'}
+              textBeforeList={
+                'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:'
+              }
+              items={failedNames}
+              isOpen
+            />
+          ),
+        });
+      }
+    } catch {
+      enqueueSnackbar('Zugangsdaten konnten nicht verschickt werden.', { variant: 'error' });
+    }
+    setSendingCredentials(false);
+  }
+
   return (
     <div className={classes.root}>
       {isLoading ? (
@@ -187,6 +253,15 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
               tutorials={tutorials}
               onSubmit={handleCreateUser}
             />
+          }
+          topBarContent={
+            <SubmitButton
+              variant='outlined'
+              isSubmitting={isSendingCredentials}
+              onClick={handleSendCredentials}
+            >
+              Zugangsdaten verschicken
+            </SubmitButton>
           }
           items={users}
           createRowFromItem={user => (

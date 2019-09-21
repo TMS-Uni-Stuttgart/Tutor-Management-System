@@ -1,5 +1,5 @@
 export interface FailedMail {
-  userId: string | 'UNKNOWN';
+  userId: string;
 }
 
 export interface MailingStatus {
