@@ -56,7 +56,7 @@ function ScheinCriteriaRow({
               {`${value}` === 'true' || `${value}` === 'false' ? (
                 <Typography component='span'>{t(value)}</Typography>
               ) : key.startsWith('percentage') ? (
-                <Typography component='span'>{`${value}` + ' %'}</Typography>
+                <Typography component='span'>{`${value} %`}</Typography>
               ) : (
                 <Typography component='span'>{`${value}`}</Typography>
               )}
