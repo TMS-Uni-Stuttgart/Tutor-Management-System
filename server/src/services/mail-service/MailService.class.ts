@@ -10,7 +10,9 @@ import { InvalidConfigurationError } from '../../model/Errors';
 import userService from '../user-service/UserService.class';
 
 interface AdditionalOptions {
-  template: string;
+  templates: {
+    credentials: string;
+  };
 }
 
 type TransportOptions = SMTPTransport.Options & AdditionalOptions;
@@ -41,8 +43,8 @@ class MailService {
     }
   }
 
-  private getTextOfMail(user: User, { template }: TransportOptions): string {
-    return template
+  private getTextOfMail(user: User, { templates }: TransportOptions): string {
+    return templates.credentials
       .replace('{{name}}', `${user.firstname} ${user.lastname}`)
       .replace('{{username}}', user.username)
       .replace('{{password}}', user.temporaryPassword || '');
@@ -57,7 +59,9 @@ class MailService {
       return options;
     } else {
       return {
-        template: options.template,
+        templates: {
+          credentials: options.templates.credentials,
+        },
         host: 'smtp.ethereal.email',
         port: 587,
         auth: {
@@ -79,8 +83,14 @@ class MailService {
   }
 
   private assertValidConfig(config: TransportOptions) {
-    if (!config.template) {
-      throw new InvalidConfigurationError('No authentication settings were provided');
+    if (!config.templates) {
+      throw new InvalidConfigurationError('No template settings were provided');
+    }
+
+    if (!config.templates.credentials) {
+      throw new InvalidConfigurationError(
+        'No template settings for the credentials mail were provided'
+      );
     }
 
     if (!config.auth) {
