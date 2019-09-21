@@ -169,7 +169,7 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
       ),
       DialogProps: {
         maxWidth: 'lg',
-      }
+      },
     });
   }
 

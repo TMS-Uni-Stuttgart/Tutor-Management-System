@@ -40,18 +40,19 @@ export function FormikTextFieldWithButtons({
     <Field name={name}>
       {({ field, form }: FieldProps) => (
         <div {...DivProps}>
-          <div className={classes.textFieldWithButtonsContainer}>
-            <TextField
-              label={label}
-              variant='outlined'
-              fullWidth
-              {...field}
-              {...(TextFieldProps as any)}
-              error={Boolean(form.touched[field.name]) && Boolean(form.errors[field.name])}
-              onFocus={e => e.target.select()}
-            />
-            {buttons}
-          </div>
+          <TextField
+            label={label}
+            variant='outlined'
+            fullWidth
+            {...field}
+            {...(TextFieldProps as any)}
+            error={Boolean(form.touched[field.name]) && Boolean(form.errors[field.name])}
+            onFocus={e => e.target.select()}
+            InputProps={{
+              endAdornment: <>{buttons}</>,
+            }}
+          />
+
           <ErrorMessage name={field.name} component='span' className={classes.errorMessage} />
         </div>
       )}
