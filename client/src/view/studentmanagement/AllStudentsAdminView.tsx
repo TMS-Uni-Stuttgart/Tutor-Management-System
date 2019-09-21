@@ -108,7 +108,12 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
     });
     getScheinCriteriaSummaryOfAllStudents().then(response => setSummaries(response));
     getAllTutorials().then(response => setTutorials(response));
-  }, [fetchTeamsOfStudents, getAllStudentsAndFetchTeams]);
+  }, [
+    fetchTeamsOfStudents,
+    getAllStudentsAndFetchTeams,
+    getAllTutorials,
+    getScheinCriteriaSummaryOfAllStudents,
+  ]);
 
   function printOverviewSheet() {
     const studentDataToPrint: { matriculationNo: string; schein: string }[] = [];

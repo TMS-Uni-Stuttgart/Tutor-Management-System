@@ -67,8 +67,8 @@
     "prefix": "express service",
     "description": "boilerplate code for a CRUD service",
     "body": [
-      "import { DocumentNotFoundError } from '../model/Errors';",
-      "import { getIdOfDocumentRef } from '../helpers/documentHelpers';",
+      "import { DocumentNotFoundError } from '../../model/Errors';",
+      "import { getIdOfDocumentRef } from '../../helpers/documentHelpers';",
       "",
       "class ${1:Type}Service {",
         "\tpublic async getAll$1s(): Promise<$1$0[]> {",

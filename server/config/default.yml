@@ -2,11 +2,34 @@ database:
   databaseURL: 'mongodb://localhost:27017/tms'
   secret: 'keyboard cat'
   config:
-    useNewUrlParser: true 
-    # This is needed bc the docker-compose file
+    useNewUrlParser: true
+    # This is needed bc of the docker-compose file
     authSource: 'admin'
-    auth: 
+    auth:
       user: 'root'
       password: 'example'
     authMechanism: 'SCRAM-SHA-1'
-  
+
+mailing:
+  templates: 
+  # Replacements:
+  # {{name}}: Name of user
+  # {{username}}: Username of user
+  # {{password}}: Temporary password of user
+    credentials: "Hallo {{name}},\n
+      \n
+      hier sind deine Zugangsdaten zum Tutor-Management-System:\n
+      \n
+      Nutzername: {{username}}\n
+      Passwort: {{password}}\n
+      \n
+      Mit freundlichen Grüßen\n
+      TMS Admin"
+  service: 'gmail'
+  auth:
+    type: 'OAuth2'
+    # All of the below can also be set via an environment variable.
+    user: 'USER-MAIL'
+    clientId: 'clientId'
+    clientSecret: 'clientSecret'
+    refreshToken: 'refreshToken'

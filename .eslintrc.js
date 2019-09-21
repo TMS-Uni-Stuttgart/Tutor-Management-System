@@ -32,6 +32,7 @@ module.exports = {
     'no-fallthrough': 'error',
     'react/display-name': 'off',
     'react/jsx-no-duplicate-props': ['warn', { ignoreCase: false }],
+    'react/prop-types': [0],
     'prettier/prettier': 'warn',
   },
   plugins: ['react'],

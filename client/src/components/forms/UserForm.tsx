@@ -5,7 +5,6 @@ import {
   RestoreOutlined as RestoreOutlinedIcon,
   Shuffle as ShuffleIcon,
 } from '@material-ui/icons';
-import clsx from 'clsx';
 import { FormikHelpers } from 'formik';
 import pwGenerator from 'generate-password';
 import React, { useState } from 'react';
@@ -61,6 +60,7 @@ export interface UserFormState {
   lastname: string;
   roles: Role[];
   tutorials: string[];
+  email: string;
   username: string;
   password: string;
 }
@@ -89,6 +89,7 @@ function getInitialFormState(user?: UserWithFetchedTutorials): UserFormState {
       roles: [Role.TUTOR],
       tutorials: [],
       username: '',
+      email: '',
       password: generateTemporaryPassword(),
     };
   }
@@ -98,7 +99,8 @@ function getInitialFormState(user?: UserWithFetchedTutorials): UserFormState {
     lastname: user.lastname,
     roles: user.roles,
     tutorials: user.tutorials.map(t => t.id),
-    username: user.username || '',
+    username: user.username,
+    email: user.email,
     password: '',
   };
 }
@@ -112,6 +114,9 @@ function getValidationSchema(
   } = {
     firstname: Yup.string().required('Benötigt'),
     lastname: Yup.string().required('Benötigt'),
+    email: Yup.string()
+      .email('Keine gültige E-Mailadresse')
+      .required('Benötigt'),
     roles: Yup.array()
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
@@ -197,6 +202,7 @@ function UserForm({
           <FormikTextField
             name='firstname'
             label='Vorname'
+            required
             autoFocus
             onChangeCapture={(e: any) =>
               generateUsername(
@@ -209,6 +215,7 @@ function UserForm({
           <FormikTextField
             name='lastname'
             label='Nachname'
+            required
             onChangeCapture={(e: any) =>
               generateUsername(
                 { firstname: values.firstname, lastname: (e.target as HTMLInputElement).value },
@@ -217,9 +224,12 @@ function UserForm({
             }
           />
 
+          <FormikTextField name='email' label='E-Mailadresse' required />
+
           <FormikSelect
             name='roles'
             label='Rolle'
+            required
             emptyPlaceholder='Keine Rollen vorhanden.'
             items={availableRoles}
             itemToString={role => Role[role].toString()}
@@ -228,22 +238,11 @@ function UserForm({
             isItemSelected={role => values['roles'].indexOf(role) > -1}
           />
 
-          <FormikSelect
-            name='tutorials'
-            label='Tutorien'
-            emptyPlaceholder='Keine Tutorien vorhanden.'
-            items={tutorials}
-            itemToString={tutorial => `Slot ${tutorial.slot}`}
-            itemToValue={tutorial => tutorial.id}
-            multiple
-            isItemSelected={tutorial => values['tutorials'].indexOf(tutorial.id) > -1}
-            disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
-          />
-
           {!isEditMode && (
             <FormikTextFieldWithButtons
               name='username'
               label='Benutzername'
+              required
               buttons={[
                 <Button
                   key='generateUsername'
@@ -266,6 +265,7 @@ function UserForm({
             name='password'
             label={isEditMode ? 'Neues Passwort' : 'Erstes Passwort'}
             type={hidePassword ? 'password' : 'text'}
+            required={!isEditMode}
             buttons={[
               <Button
                 key='hidePassword'
@@ -286,9 +286,18 @@ function UserForm({
                 <ShuffleIcon fontSize='small' />
               </Button>,
             ]}
-            DivProps={{
-              className: clsx(isEditMode && classes.twoColumns),
-            }}
+          />
+
+          <FormikSelect
+            name='tutorials'
+            label='Tutorien'
+            emptyPlaceholder='Keine Tutorien vorhanden.'
+            items={tutorials}
+            itemToString={tutorial => `Slot ${tutorial.slot}`}
+            itemToValue={tutorial => tutorial.id}
+            multiple
+            isItemSelected={tutorial => values['tutorials'].indexOf(tutorial.id) > -1}
+            disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
           />
         </>
       )}

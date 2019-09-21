@@ -4,6 +4,7 @@ import axios from './Axios';
 import { User, CreateUserDTO, UserDTO, NewPasswordDTO } from 'shared/dist/model/User';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
+import { MailingStatus } from 'shared/dist/model/Mail';
 
 export async function getUsers(): Promise<User[]> {
   const response = await axios.get<User[]>('user');
@@ -100,6 +101,7 @@ export async function deleteUser(userid: string): Promise<void> {
     return Promise.reject(`Wrong response code (${response.status}).`);
   }
 }
+
 export async function setTemporaryPassword(
   userid: string,
   password: NewPasswordDTO
@@ -108,5 +110,15 @@ export async function setTemporaryPassword(
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong response code (${response.status}).`);
+  }
+}
+
+export async function sendCredentials(): Promise<MailingStatus> {
+  const response = await axios.get<MailingStatus>('mail/credentials');
+
+  if (response.status !== 200) {
+    return Promise.reject(`Wrong response code (${response.status}).`);
+  } else {
+    return response.data;
   }
 }

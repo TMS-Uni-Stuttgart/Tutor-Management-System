@@ -77,7 +77,12 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       setTeams(teams);
       setIsLoading(false);
     })();
-  }, [getStudentsOfTutorialAndFetchTeams, getTeamsOfTutorial, params.tutorialId]);
+  }, [
+    getStudentsOfTutorialAndFetchTeams,
+    getTeamsOfTutorial,
+    getScheinCriteriaSummaryOfAllStudents,
+    params.tutorialId,
+  ]);
 
   const handleCreateStudent: StudentFormSubmitCallback = async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team },
