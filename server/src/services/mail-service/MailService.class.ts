@@ -1,14 +1,13 @@
 import config from 'config';
 import nodemailer from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import Mail from 'nodemailer/lib/mailer';
-import { InvalidConfigurationError } from '../../model/Errors';
 import SMTPConnection, {
-  AuthenticationTypeOAuth2,
   AuthenticationTypeLogin,
+  AuthenticationTypeOAuth2,
 } from 'nodemailer/lib/smtp-connection';
-import userService from '../user-service/UserService.class';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { User } from 'shared/dist/model/User';
+import { InvalidConfigurationError } from '../../model/Errors';
+import userService from '../user-service/UserService.class';
 
 interface AdditionalOptions {
   template: string;
