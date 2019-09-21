@@ -64,12 +64,13 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   }, [enqueueSnackbar, getUsersAndFetchTutorials, getAllTutorials]);
 
   const handleCreateUser: UserFormSubmitCallback = async (
-    { firstname, lastname, tutorials, roles, username, password },
+    { firstname, lastname, tutorials, roles, username, password, email },
     { resetForm, setSubmitting }
   ) => {
     const userToCreate: CreateUserDTO = {
       firstname,
       lastname,
+      email,
       roles,
       tutorials,
       username,
@@ -90,12 +91,13 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   };
 
   const editUser: (user: UserWithFetchedTutorials) => UserFormSubmitCallback = user => async (
-    { firstname, lastname, roles, tutorials, password },
+    { firstname, lastname, roles, tutorials, password, email },
     { setSubmitting }
   ) => {
     const userInformation: UserDTO = {
       firstname,
       lastname,
+      email,
       roles,
       tutorials,
     };
@@ -165,6 +167,9 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
           onCancelClicked={() => dialog.hide()}
         />
       ),
+      DialogProps: {
+        maxWidth: 'lg',
+      }
     });
   }
 
