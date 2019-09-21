@@ -1,13 +1,11 @@
 name: Create Docker image
 
 on:
-  pull_request:
+  release:
+    types: 
+      - created
     branches:
       - master
-  # release:
-  #   types: [created]
-  #   branches:
-  #     - master
 
 jobs:
  build-docker-image:
