@@ -81,6 +81,7 @@ class UserService {
       ...dto,
       tutorials,
       temporaryPassword: dto.password,
+      email: dto.email || '',
     };
 
     const createdUser = await UserModel.create(userDoc);
@@ -123,6 +124,7 @@ class UserService {
     user.lastname = dto.lastname;
     user.roles = dto.roles;
     user.tutorials = [...user.tutorials];
+    user.email = dto.email || '';
 
     const updatedUser = await user.save();
 
@@ -300,7 +302,7 @@ class UserService {
     // Make sure we get a document with decrypted fields.
     (user as EncryptedDocument<UserDocument>).decryptFieldsSync();
 
-    const { id, firstname, lastname, roles, tutorials, temporaryPassword, username } = user;
+    const { id, firstname, lastname, roles, tutorials, temporaryPassword, username, email } = user;
 
     return {
       id,
@@ -310,6 +312,7 @@ class UserService {
       roles,
       tutorials: tutorials.map(getIdOfDocumentRef),
       temporaryPassword,
+      email,
     };
   }
 

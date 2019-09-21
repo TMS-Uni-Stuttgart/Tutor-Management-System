@@ -13,6 +13,7 @@ export interface User extends NamedElement {
   readonly tutorials: string[];
   readonly roles: Role[];
   readonly username: string;
+  readonly email: string;
   readonly temporaryPassword?: string;
 }
 
@@ -21,6 +22,7 @@ export interface UserDTO {
   lastname: User['lastname'];
   tutorials: string[];
   roles: User['roles'];
+  email?: User['email'];
 }
 
 export interface CreateUserDTO extends UserDTO {

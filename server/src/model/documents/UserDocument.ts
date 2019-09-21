@@ -14,7 +14,7 @@ export class UserCredentials {
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
-  fields: ['firstname', 'lastname', 'temporaryPassword', 'password'],
+  fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email'],
   // saltGenerator: function(secret: string) {
   // TODO: Make deterministic salt generator to be able to encrypt username?!
   //   return "1234567890123456"; // should ideally use the secret to return a string of length 16
@@ -43,6 +43,9 @@ export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorial
 
   @prop({ required: true })
   username!: string;
+
+  @prop({ default: '' })
+  email!: string;
 
   @prop({ default: '' })
   temporaryPassword?: string;

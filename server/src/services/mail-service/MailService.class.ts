@@ -24,12 +24,16 @@ class MailService {
 
     const users = await userService.getAllUsers();
     const mails: Promise<SMTPTransport.SentMessageInfo>[] = [];
+    const userToSendMailTo = users.filter(
+      u => u.username !== 'admin' && !!u.temporaryPassword && !!u.email
+    );
 
-    for (const user of users.filter(u => u.username !== 'admin' && !!u.temporaryPassword)) {
+    // TODO: Check that e-mail is valid.
+    for (const user of userToSendMailTo) {
       mails.push(
         smtpTransport.sendMail({
           from: this.getUser(),
-          to: `${user.lastname}@user.com`,
+          to: `${user.email}`,
           subject: 'Credentials',
           text: this.getTextOfMail(user, options),
         })
@@ -39,8 +43,12 @@ class MailService {
     const sendedMails = await Promise.all(mails);
 
     for (const mail of sendedMails) {
+      console.group(`ID: ${mail.messageId}`);
       console.log(`Preview URL: ${nodemailer.getTestMessageUrl(mail)}`);
+      console.groupEnd();
     }
+
+    smtpTransport.close();
   }
 
   private getTextOfMail(user: User, { templates }: TransportOptions): string {
