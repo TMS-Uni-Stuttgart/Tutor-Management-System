@@ -2,8 +2,7 @@ name: Create Docker image
 
 on:
   release:
-    types: 
-      - created
+    types: [created] 
     branches:
       - master
 
