@@ -2,9 +2,7 @@ name: Create Docker image
 
 on:
   release:
-    types: [created] 
-    branches:
-      - master
+    types: [created]
 
 jobs:
  build-docker-image:
