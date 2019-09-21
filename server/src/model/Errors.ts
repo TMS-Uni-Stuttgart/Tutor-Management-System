@@ -25,6 +25,10 @@ export class BadRequestError {
   constructor(readonly message: string) {}
 }
 
+export class InvalidConfigurationError {
+  constructor(readonly message?: string) {}
+}
+
 export class ValidationError {
   constructor(readonly message: string, readonly errors: ValidationErrorExtract[]) {}
 }
@@ -73,6 +77,12 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
 
   if (err instanceof BadRequestError) {
     return res.status(400).send(new ErrorResponse(400, err.message || 'The request is not valid.'));
+  }
+
+  if (err instanceof InvalidConfigurationError) {
+    return res
+      .status(500)
+      .send(new ErrorResponse(500, err.message || 'The configuration of the server is invalid.'));
   }
 
   return res.status(500).send(new ErrorResponse(500, err.message || 'Internal server error.'));
