@@ -14,6 +14,7 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { useLogin } from '../hooks/LoginService';
 import { getTutorialRelatedPath, ROUTES, RouteType } from '../util/RoutingPath';
+import { GithubCircle as GitHubIcon } from 'mdi-material-ui';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,11 +28,15 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: -12,
       marginRight: 20,
     },
+    githubButton: {
+      color: 'inherit',
+      marginLeft: theme.spacing(2),
+    },
     loggedInAsArea: {
       display: 'flex',
       flexDirection: 'column',
       marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
+      marginRight: theme.spacing(3),
       textAlign: 'right',
     },
   })
@@ -115,6 +120,7 @@ function AppBar(props: PropType): JSX.Element {
               <Typography variant='caption' color='inherit'>
                 Angemeldet als:
               </Typography>
+
               <Typography variant='caption' color='inherit'>
                 {userData ? `${userData.firstname} ${userData.lastname}` : 'NOT_FOUND'}
               </Typography>
@@ -125,6 +131,14 @@ function AppBar(props: PropType): JSX.Element {
             </Button>
           </>
         )}
+
+        <IconButton
+          className={classes.githubButton}
+          href='https://github.com/Dudrie/Tutor-Management-System/issues'
+          target='_blank'
+        >
+          <GitHubIcon fontSize='default' />
+        </IconButton>
       </Toolbar>
     </MuiAppBar>
   );
