@@ -244,10 +244,15 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     const snackbarKey = enqueueSnackbar('Verschicke Zugangsdaten...', { variant: 'info' });
 
     try {
-      await sendCredentialsToSingleUserRequest(user.id);
+      const status: MailingStatus = await sendCredentialsToSingleUserRequest(user.id);
 
       closeSnackbar(snackbarKey || undefined);
-      enqueueSnackbar('Zugangsdaten erfolgreich verschickt.', { variant: 'success' });
+
+      if (status.failedMailsInfo.length === 0) {
+        enqueueSnackbar('Zugangsdaten erfolgreich verschickt.', { variant: 'success' });
+      } else {
+        enqueueSnackbar('Zugangsdaten verschicken fehlgeschlagen.', { variant: 'error' });
+      }
     } catch {
       enqueueSnackbar('Zugangsdaten verschicken fehlgeschlagen.', { variant: 'error' });
     }
