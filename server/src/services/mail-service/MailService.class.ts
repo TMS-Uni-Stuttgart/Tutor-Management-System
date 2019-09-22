@@ -44,6 +44,18 @@ class MailService {
     return status;
   }
 
+  public async mailSingleCredentials(userId: string): Promise<MailingStatus> {
+    const options = this.getConfig();
+    const smtpTransport = nodemailer.createTransport(options);
+
+    const user = await userService.getUserWithId(userId);
+    const status = await this.sendMail(user, smtpTransport, options);
+
+    smtpTransport.close();
+
+    return this.generateMailingStatus([status], [user]);
+  }
+
   private async sendMail(
     user: User,
     transport: Mail,
