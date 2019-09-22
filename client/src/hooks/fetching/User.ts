@@ -122,3 +122,9 @@ export async function sendCredentials(): Promise<MailingStatus> {
     return response.data;
   }
 }
+
+export async function sendCredentialsToSingleUser(userId: string) {
+  const response = await axios.get(`mail/credentials/${userId}`);
+
+  // TODO: Implement me!
+}

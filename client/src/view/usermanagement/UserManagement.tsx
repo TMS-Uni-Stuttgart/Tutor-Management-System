@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const availableRoles = [Role.ADMIN, Role.CORRECTOR, Role.TUTOR, Role.EMPLOYEE];
 
-function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
+function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
@@ -43,6 +43,7 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     getAllTutorials,
     setTemporaryPassword,
     sendCredentials: sendCredentialsRequest,
+    sendCredentialsToSingleUser: sendCredentialsToSingleUserRequest,
   } = useAxios();
   const dialog = useDialog();
 
@@ -239,6 +240,19 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     setSendingCredentials(false);
   }
 
+  async function sendCredentialsToSingleUser(user: UserWithFetchedTutorials) {
+    const snackbarKey = enqueueSnackbar('Verschicke Zugangsdaten...', { variant: 'info' });
+
+    try {
+      await sendCredentialsToSingleUserRequest(user.id);
+
+      closeSnackbar(snackbarKey || undefined);
+      enqueueSnackbar('Zugangsdaten erfolgreich verschickt.', { variant: 'success' });
+    } catch {
+      enqueueSnackbar('Zugangsdaten verschicken fehlgeschlagen.', { variant: 'error' });
+    }
+  }
+
   return (
     <div className={classes.root}>
       {isLoading ? (
@@ -269,6 +283,7 @@ function UserManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
               user={user}
               onEditUserClicked={handleEditUser}
               onDeleteUserClicked={handleDeleteUser}
+              onSendCredentialsClicked={sendCredentialsToSingleUser}
             />
           )}
         />
