@@ -122,3 +122,13 @@ export async function sendCredentials(): Promise<MailingStatus> {
     return response.data;
   }
 }
+
+export async function sendCredentialsToSingleUser(userId: string): Promise<MailingStatus> {
+  const response = await axios.get<MailingStatus>(`mail/credentials/${userId}`);
+
+  if (response.status !== 200) {
+    return Promise.reject(`Wrong response code (${response.status}).`);
+  } else {
+    return response.data;
+  }
+}

@@ -23,7 +23,7 @@ const LoginContext = React.createContext<LoginState>({
   userData: undefined,
 });
 
-async function login(username: string, password: string): Promise<LoggedInUser | undefined> {
+async function login(username: string, password: string): Promise<LoggedInUser> {
   const response = await axios.post<LoggedInUser>('login', null, {
     auth: {
       username,
@@ -37,13 +37,12 @@ async function login(username: string, password: string): Promise<LoggedInUser |
   const user: LoggedInUser = await handleResponse(response);
 
   if (user) {
-    // saveAuthData(authData);
     saveUser(user);
 
     return user;
   }
 
-  return Promise.reject();
+  return Promise.reject(response.statusText);
 }
 
 async function changePassword(password: string): Promise<LoggedInUser | undefined> {

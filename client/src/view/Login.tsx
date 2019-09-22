@@ -77,17 +77,14 @@ function Login({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   ) => {
     try {
       const userData = await login(username, password);
+
       if (userData && !userData.hasTemporaryPassword) {
         enqueueSnackbar('Erfolgreich eingeloggt', { variant: 'success' });
       }
     } catch (reason) {
-      if (reason.message === 'Network Error') {
+      if (reason === 'Network Error') {
         setError('Der Loginserver ist aktuell nicht erreichbar.');
-      } else if (
-        reason.message &&
-        typeof reason.message === 'string' &&
-        (reason.message as string).indexOf('401') > -1
-      ) {
+      } else if (reason === 'Unauthorized') {
         setError('Nutzername und Passwort stimmen nicht überein.');
       } else {
         setError('Ein unbekannter Fehler ist aufgetreten.');

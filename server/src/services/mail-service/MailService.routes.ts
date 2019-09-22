@@ -12,4 +12,11 @@ mailRouter.get('/credentials', ...checkRoleAccess(Role.ADMIN), async (_, res) =>
   res.json(mailingStatus);
 });
 
+mailRouter.get('/credentials/:userId', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const userId = req.params.userId;
+  const mailingStatus: MailingStatus = await mailService.mailSingleCredentials(userId);
+
+  res.json(mailingStatus);
+});
+
 export default mailRouter;
