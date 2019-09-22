@@ -12,8 +12,11 @@ interface ScheinExamResponse extends Omit<ScheinExam, 'date'> {
   date: string;
 }
 
-export function transformLoggedInUserResponse(responseJSON: string): LoggedInUser {
-  // FIXME: Crashed if responseJSON is empty.
+export function transformLoggedInUserResponse(responseJSON: string): LoggedInUser | undefined {
+  if (!responseJSON) {
+    return undefined;
+  }
+
   const { substituteTutorials, ...rest }: LoggedInUser = JSON.parse(responseJSON);
   const parsedSubstituteTutorials: LoggedInUserSubstituteTutorial[] = [];
 

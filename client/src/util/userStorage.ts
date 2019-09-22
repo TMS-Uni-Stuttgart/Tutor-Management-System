@@ -12,7 +12,7 @@ export function getUser(): LoggedInUser | undefined {
     return undefined;
   }
 
-  const user: LoggedInUser = transformLoggedInUserResponse(userItem);
+  const user: LoggedInUser | undefined = transformLoggedInUserResponse(userItem);
 
   return user;
 }
