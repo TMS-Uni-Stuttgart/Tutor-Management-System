@@ -2,7 +2,6 @@ database:
   databaseURL: 'mongodb://localhost:27017/tms'
   secret: 'keyboard cat'
   config:
-    useNewUrlParser: true
     # This is needed bc of the docker-compose file
     authSource: 'admin'
     auth:
