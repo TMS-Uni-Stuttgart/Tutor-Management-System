@@ -5,6 +5,10 @@ export interface StatusErrorMessages {
   [status: number]: string;
 }
 
+export class StartUpError {
+  constructor(readonly message: string) {}
+}
+
 export class AuthenticationError {
   constructor(readonly message: string) {}
 }
