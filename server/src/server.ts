@@ -11,8 +11,8 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import path from 'path';
 import uuid from 'uuid/v4';
-import databaseConfig from './config/database';
-import initPassport from './config/passport';
+import databaseConfig from './helpers/database';
+import initPassport from './helpers/passport';
 import { handleError, EndpointNotFoundError, StartUpError } from './model/Errors';
 import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
 import scheinexamRouter from './services/scheinexam-service/ScheinexamService.routes';
@@ -24,6 +24,7 @@ import userService from './services/user-service/UserService.class';
 import userRouter from './services/user-service/UserService.routes';
 import languageRouter from './services/language-service/LanguageService.routes';
 import mailRouter from './services/mail-service/MailService.routes';
+import Logger from './helpers/Logger';
 
 const BASE_API_PATH = '/api';
 const app = express();
@@ -40,7 +41,7 @@ async function connectToDB() {
   let prevTries = 0;
 
   while (prevTries < maxRetries) {
-    console.log(`Connecting to MongoDB database (previous tries: ${prevTries})...`);
+    Logger.info(`Connecting to MongoDB database (previous tries: ${prevTries})...`);
 
     try {
       await mongoose.connect(databaseConfig.databaseURL, {
@@ -48,7 +49,7 @@ async function connectToDB() {
         ...databaseConfig.config,
       });
 
-      console.log('Connection to MongoDB database established.');
+      Logger.info('Connection to MongoDB database established.');
       return;
     } catch {
       prevTries++;
@@ -72,7 +73,7 @@ function initJSONMiddleware() {
  * This function sets up the security middleware 'passport' and configures sessions.
  */
 function initSecurityMiddleware() {
-  console.log('Setting up passport...');
+  Logger.info('Setting up passport...');
   const MongoStore = ConnectMongo(session);
   const mongoStoreOptions: { secret: string } & (
     | MongoUrlOptions
@@ -106,7 +107,7 @@ function initSecurityMiddleware() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  console.log('Passport setup complete.');
+  Logger.info('Passport setup complete.');
 }
 
 /**
@@ -119,7 +120,7 @@ function initSecurityMiddleware() {
  * @param endpointName (optional) Name of path
  */
 function registerAPIEndpoint(endpoint: string, router: express.Router, endpointName: string = '') {
-  console.log(`Endpoint '${endpointName || endpoint}' registered.`);
+  Logger.info(`\tEndpoint '${endpointName || endpoint}' registered.`);
   app.use(endpoint, router);
 }
 
@@ -129,8 +130,8 @@ function registerAPIEndpoint(endpoint: string, router: express.Router, endpointN
  * Adds all API endpoints aswell as everything needed to serve the SPA.
  */
 function initEndpoints() {
-  console.group('Setting up endpoints...');
-  console.log('Registering API endpoints...');
+  Logger.info('Setting up endpoints...');
+  Logger.info('Registering API endpoints...');
   registerAPIEndpoint(BASE_API_PATH, authenticationRouter, 'authentication');
   registerAPIEndpoint(`${BASE_API_PATH}/user`, userRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/tutorial`, tutorialRouter);
@@ -146,7 +147,7 @@ function initEndpoints() {
     throw new EndpointNotFoundError(`Endpoint ${req.url}@${req.method} was not found.`);
   });
 
-  console.log('Registering static endpoint...');
+  Logger.info('\tRegistering static endpoint...');
   // Configure the express server to handle requests for the SPA files from the 'public' folder.
   app.use('/static', express.static('app/static'));
   app.use('*', (_, res) => {
@@ -155,8 +156,7 @@ function initEndpoints() {
 
   app.use(handleError);
 
-  console.log('Endpoints setup complete.');
-  console.groupEnd();
+  Logger.info('Endpoints setup complete.');
 }
 
 /**
@@ -166,9 +166,9 @@ async function initAdmin() {
   try {
     await userService.getUserCredentialsWithUsername('admin');
   } catch {
-    console.log('Initializing new admin user because there is none...');
+    Logger.info('Initializing new admin user because there is none...');
     await userService.initAdmin();
-    console.log('Admin initializied.');
+    Logger.info('Admin initializied.');
   }
 }
 
@@ -187,14 +187,12 @@ async function startServer() {
 
     await initAdmin();
 
-    app.listen(8080, () => console.log('Server started on port 8080.'));
+    app.listen(8080, () => Logger.info('Server started on port 8080.'));
   } catch (err) {
     if (err.message) {
-      console.group('Server start failed. More infos below:');
-      console.error(err.message);
-      console.groupEnd();
+      Logger.error(`Server start failed. Error: ${err.message}`, { error: err });
     } else {
-      console.error('Server start failed.');
+      Logger.error('Server start failed.');
     }
 
     process.exit(1);
