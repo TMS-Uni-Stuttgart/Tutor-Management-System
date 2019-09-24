@@ -40,7 +40,6 @@ export enum RoutingPath {
   STUDENTOVERVIEW = '/studentoverview',
   TEAMOVERVIEW = '/teamoverview',
   ATTENDANCE = '/attendance',
-  TEAMINFO = '/teaminfo/:id',
   ENTER_POINTS = '/enterpoints',
   SCHEIN_EXAMS = '/scheinexams',
   DASHBOARD = '/dashboard',
@@ -71,7 +70,6 @@ export interface RouteType {
 
 export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
 
-// TODO: EMPLOYEE needs routes to have access to.
 export const ROUTES: readonly RouteType[] = [
   {
     path: RoutingPath.LOGIN,
@@ -93,16 +91,6 @@ export const ROUTES: readonly RouteType[] = [
     isPrivate: true,
   },
   {
-    path: RoutingPath.STUDENTOVERVIEW,
-    title: 'Studentenübersicht',
-    component: Studentoverview,
-    icon: PersonIcon,
-    roles: [Role.TUTOR],
-    isInDrawer: true,
-    isPrivate: true,
-    isTutorialRelated: true,
-  },
-  {
     path: RoutingPath.ATTENDANCE,
     title: 'Anwesenheiten',
     component: AttendanceView,
@@ -112,26 +100,6 @@ export const ROUTES: readonly RouteType[] = [
     isPrivate: true,
     isTutorialRelated: true,
     isAccessibleBySubstitute: true,
-  },
-  {
-    path: RoutingPath.TEAMINFO,
-    title: 'Teaminfo',
-    component: Teamoverview,
-    icon: GroupIcon,
-    roles: [Role.TUTOR],
-    isInDrawer: false,
-    isPrivate: true,
-    isTutorialRelated: true,
-  },
-  {
-    path: RoutingPath.TEAMOVERVIEW,
-    title: 'Teamübersicht',
-    component: Teamoverview,
-    icon: GroupIcon,
-    roles: [Role.TUTOR],
-    isInDrawer: true,
-    isPrivate: true,
-    isTutorialRelated: true,
   },
   {
     path: RoutingPath.ENTER_POINTS,
@@ -149,6 +117,26 @@ export const ROUTES: readonly RouteType[] = [
     component: ScheinExamPointEntry,
     icon: FileDocumentBoxIcon,
     roles: [Role.TUTOR, Role.CORRECTOR],
+    isInDrawer: true,
+    isPrivate: true,
+    isTutorialRelated: true,
+  },
+  {
+    path: RoutingPath.STUDENTOVERVIEW,
+    title: 'Studentenübersicht',
+    component: Studentoverview,
+    icon: PersonIcon,
+    roles: [Role.TUTOR],
+    isInDrawer: true,
+    isPrivate: true,
+    isTutorialRelated: true,
+  },
+  {
+    path: RoutingPath.TEAMOVERVIEW,
+    title: 'Teamübersicht',
+    component: Teamoverview,
+    icon: GroupIcon,
+    roles: [Role.TUTOR],
     isInDrawer: true,
     isPrivate: true,
     isTutorialRelated: true,
