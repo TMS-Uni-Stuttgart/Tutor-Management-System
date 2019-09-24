@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface TutorialFormState {
-  slot: number;
+  slot: string;
   tutor: string;
   startDate: string;
   endDate: string;
@@ -63,9 +63,7 @@ export interface TutorialFormState {
 }
 
 const validationSchema = Yup.object().shape({
-  slot: Yup.number()
-    .required('Benötigt')
-    .min(0, 'Darf nicht negativ sein.'),
+  slot: Yup.string().required('Benötigt'),
   startDate: Yup.string().required('Benötigt'),
   endDate: Yup.string()
     .required('Benötigt')
@@ -133,7 +131,7 @@ export function getInitialTutorialFormValues(
 
   if (!tutorial) {
     return {
-      slot: findFirstEmptySlot(allTutorials),
+      slot: '',
       tutor: '',
       startDate,
       endDate,
@@ -186,14 +184,7 @@ function TutorialForm({
     >
       {({ values, setFieldValue, touched }) => (
         <>
-          <FormikTextField
-            name='slot'
-            label='Slot'
-            type='number'
-            inputProps={{
-              min: 0,
-            }}
-          />
+          <FormikTextField name='slot' label='Slot' />
 
           <FormikSelect
             name='tutor'
@@ -262,9 +253,7 @@ function TutorialForm({
             multiple
             isItemSelected={tutor => values['correctors'].indexOf(tutor.id) > -1}
             fullWidth
-            // className={classes.correctorsDropdown}
           />
-          {/* </div> */}
 
           <div className={classes.dateSelector}>
             <FormikMultipleDatesPicker name='selectedDates' label='Ausgewählte Tage' />

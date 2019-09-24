@@ -4,7 +4,7 @@ import { ValidationErrorsWrapper } from '../model/errors/Errors';
 import { validateSchema, YupIdShape } from './helper';
 
 const TutorialDTOSchema = Yup.object().shape<TutorialDTO>({
-  slot: Yup.number().required(),
+  slot: Yup.string().required(),
   tutorId: YupIdShape.notRequired(),
   correctorIds: Yup.array<string>()
     .test({

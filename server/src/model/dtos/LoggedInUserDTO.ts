@@ -6,7 +6,7 @@ import { UserDocument } from '../documents/UserDocument';
 
 export class LoggedInUserTutorialDTO implements LoggedInUserTutorial {
   readonly id: string;
-  readonly slot: number;
+  readonly slot: string;
 
   constructor({ id, slot }: Pick<TutorialDocument, 'id' | 'slot'>) {
     this.id = id;

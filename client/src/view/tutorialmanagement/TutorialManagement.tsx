@@ -15,7 +15,7 @@ import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { TutorialWithFetchedCorrectors } from '../../typings/types';
-import { getNameOfEntity } from '../../util/helperFunctions';
+import { getNameOfEntity, getDisplayStringForTutorial } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -161,9 +161,11 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
   }
 
   function handleDeleteTutorial(tutorial: TutorialWithFetchedCorrectors) {
+    const tutorialDisplay = getDisplayStringForTutorial(tutorial);
+
     dialog.show({
       title: 'Tutorium löschen',
-      content: `Soll das Tutorium #${tutorial.slot} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.`,
+      content: `Soll das ${tutorialDisplay} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.`,
       actions: [
         {
           label: 'Nicht löschen',
@@ -184,7 +186,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     deleteTutorialRequest(tutorial.id)
       .then(() => {
         setTutorials(tutorials.filter(t => t.id !== tutorial.id));
-        enqueueSnackbar(`Tutorium #${tutorial.slot} wurde gelöscht.`, {
+        enqueueSnackbar(`${getDisplayStringForTutorial(tutorial)} wurde gelöscht.`, {
           variant: 'success',
         });
       })

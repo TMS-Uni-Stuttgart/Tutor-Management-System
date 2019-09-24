@@ -6,6 +6,7 @@ import { Role } from 'shared/dist/model/Role';
 import ListItemMenu from '../../../components/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { UserWithFetchedTutorials } from '../../../typings/types';
+import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,7 +61,7 @@ function UserTableRow({
         {user.tutorials.map(tutorial => (
           <Chip
             key={tutorial.id}
-            label={`Tutorium #${tutorial.slot}`}
+            label={getDisplayStringForTutorial(tutorial)}
             className={classes.tutorialChip}
             color='default'
           />

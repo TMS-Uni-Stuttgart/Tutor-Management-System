@@ -10,7 +10,7 @@ import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 export class TutorialSchema extends Typegoose
   implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams' | 'substitutes'> {
   @prop({ required: true })
-  slot!: number;
+  slot!: string;
 
   @prop({ ref: { name: 'UserSchema' } })
   tutor?: Ref<UserDocument>;

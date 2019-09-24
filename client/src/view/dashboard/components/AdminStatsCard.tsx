@@ -77,7 +77,7 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
           legend: 'none',
           isStacked: true,
           hAxis: {
-            title: 'Tutorium #',
+            title: 'Tutorium',
           },
           vAxis: {
             title: 'Prozentsatz bestanden',

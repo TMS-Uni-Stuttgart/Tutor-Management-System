@@ -359,7 +359,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
             createRowFromItem={student => (
               <ExtendableStudentRow
                 student={student}
-                showTutorialNo
+                showTutorial
                 tutorials={tutorials}
                 summary={summaries[student.id]}
                 onEditStudentClicked={handleEditStudent}
