@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ValidationErrorExtract } from 'shared/dist/model/errors/Errors';
+import Logger from '../helpers/Logger';
 
 export interface StatusErrorMessages {
   [status: number]: string;
@@ -59,7 +60,7 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
       .send(new ErrorResponse(401, err.message || 'Error during authentication encountered.'));
   }
 
-  console.error(err);
+  Logger.error(err);
 
   if (err instanceof PermissionDeniedError) {
     return res.status(403).send(new ErrorResponse(403, 'Permission denied.'));

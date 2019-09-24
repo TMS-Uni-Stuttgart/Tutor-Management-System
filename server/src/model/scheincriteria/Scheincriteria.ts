@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
+import Logger from '../../helpers/Logger';
 
 export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;
 
@@ -18,7 +19,7 @@ export abstract class Scheincriteria {
 export type ScheincriteriaYupSchema = Yup.Schema<any>;
 
 export function initScheincriteriaBlueprints() {
-  console.group('Scanning for schein criterias...');
+  Logger.info('Scanning for schein criteria...');
 
   fs.readdirSync(__dirname + '/criterias')
     .filter(file => file.match(/\.(js|ts)$/) !== null)
@@ -26,6 +27,5 @@ export function initScheincriteriaBlueprints() {
       require('./criterias/' + file);
     });
 
-  console.groupEnd();
-  console.log('Scanning for schein criterias finished.');
+  Logger.info('Scanning for schein criterias finished.');
 }

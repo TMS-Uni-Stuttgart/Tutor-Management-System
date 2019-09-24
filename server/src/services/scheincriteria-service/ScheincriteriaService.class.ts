@@ -33,6 +33,7 @@ import {
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import Logger from '../../helpers/Logger';
 
 interface ScheincriteriaWithId {
   criteriaId: string;
@@ -234,7 +235,7 @@ export class ScheincriteriaService {
   }
 
   public registerBluePrint(criteria: Scheincriteria, validationSchema: ScheincriteriaYupSchema) {
-    console.group(`Scheincriteria identifier: ${criteria.identifier}`);
+    Logger.info(`Scheincriteria identifier: ${criteria.identifier}`);
 
     const criteriaForm = new ScheincriteriaForm(criteria);
 
@@ -249,15 +250,14 @@ export class ScheincriteriaService {
 
       if (fieldData) {
         criteriaForm.formDataSet.set(propertyName, fieldData);
-        console.log(`${fieldData.type} field '${propertyName}' added.`);
+        Logger.info(`\t${fieldData.type} field '${propertyName}' added.`);
       }
     }
 
     this.criteriaBluePrints.set(criteria.identifier, criteriaForm);
     this.criteriaSchemas.set(criteria.identifier, validationSchema);
 
-    console.log(`Criteria blue print with identifier '${criteria.identifier}' registered.`);
-    console.groupEnd();
+    Logger.info(`\tCriteria blue print with identifier '${criteria.identifier}' registered.`);
   }
 
   public unregisterBluePrint(criteria: Scheincriteria) {
@@ -358,7 +358,7 @@ export class ScheincriteriaService {
         break;
 
       default:
-        console.log(
+        Logger.warn(
           `Property '${propertyName}' with type '${type}' is not supported by the scheincriteria form systems.`
         );
     }

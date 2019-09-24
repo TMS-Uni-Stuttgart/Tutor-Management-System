@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import Logger from '../../helpers/Logger';
 
 class LanguageService {
   public addMissingLanguageKey(
@@ -7,7 +8,7 @@ class LanguageService {
     namespace: string,
     params: { [key: string]: string[] }
   ) {
-    console.log(
+    Logger.warn(
       `Missing language keys detected for language '${lang}' in namespace '${namespace}'`
     );
 
