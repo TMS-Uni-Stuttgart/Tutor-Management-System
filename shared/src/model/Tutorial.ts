@@ -4,13 +4,13 @@ export interface TutorialDTO {
   correctorIds: string[];
   dates: string[];
   endTime: string;
-  slot: number;
+  slot: string;
   startTime: string;
   tutorId?: string | null;
 }
 
 export interface Tutorial extends HasId {
-  slot: number;
+  slot: string;
   tutor?: string;
   dates: Date[];
   startTime: Date;
@@ -27,7 +27,7 @@ export interface SubstituteDTO {
 }
 
 export interface LoggedInUserTutorial extends HasId {
-  slot: number;
+  slot: string;
 }
 
 export interface LoggedInUserSubstituteTutorial extends LoggedInUserTutorial {
