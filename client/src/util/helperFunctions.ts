@@ -17,8 +17,8 @@ export function getNameOfEntity(entity: NamedElement, options: Partial<NameOptio
   }
 }
 
-export function getDisplayStringForTutorial(tutorial: { slot: number }): string {
-  return `Tutorium #${tutorial.slot.toString().padStart(2, '0')}`;
+export function getDisplayStringForTutorial(tutorial: { slot: string }): string {
+  return `Tutorium ${tutorial.slot.padStart(2, '0')}`;
 }
 
 export function getDisplayStringOfScheinExam(exam: ScheinExam): string {

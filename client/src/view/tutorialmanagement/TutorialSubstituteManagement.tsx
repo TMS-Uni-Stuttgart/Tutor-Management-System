@@ -177,7 +177,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
         <Formik initialValues={initialValues} onSubmit={handleSubmit}>
           {({ values, isSubmitting, resetForm, initialValues, handleSubmit }) => (
             <>
-              <Typography variant='h6'>{`Gewähltes Tutorium: ${getDisplayStringForTutorial(
+              <Typography variant='h6'>{`Gewählt: ${getDisplayStringForTutorial(
                 tutorial
               )}`}</Typography>
 

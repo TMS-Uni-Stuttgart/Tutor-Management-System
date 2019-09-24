@@ -7,6 +7,7 @@ import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTabl
 import { TutorialWithFetchedCorrectors } from '../../../typings/types';
 import { renderLink } from '../../../components/drawer/components/renderLink';
 import { RoutingPath } from '../../../util/RoutingPath';
+import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,7 +48,7 @@ function TutorialTableRow({
 
   return (
     <PaperTableRow
-      label={`Tutorium #${tutorial.slot}`}
+      label={getDisplayStringForTutorial(tutorial)}
       buttonCellContent={
         <>
           <Button

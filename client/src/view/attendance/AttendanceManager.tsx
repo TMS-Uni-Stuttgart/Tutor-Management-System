@@ -13,7 +13,7 @@ import {
   StudentWithFetchedTeam,
   TutorialWithFetchedStudents as Tutorial,
 } from '../../typings/types';
-import { getNameOfEntity, parseDateToMapKey } from '../../util/helperFunctions';
+import { getNameOfEntity, parseDateToMapKey, getDisplayStringForTutorial } from '../../util/helperFunctions';
 import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { LoggedInUser } from 'shared/dist/model/User';
@@ -196,6 +196,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       return;
     }
 
+    const tutorialDisplay = getDisplayStringForTutorial(tutorial);
     const tutorName = tutorial.tutor
       ? `${tutorial.tutor.firstname} ${tutorial.tutor.lastname}`
       : 'KEIN TUTOR';
@@ -227,7 +228,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
         { field: 'signing', displayName: 'Unterschrift' },
       ],
       type: 'json',
-      header: `<h4>Anwesenheitsliste</h4> <table style="width: 100%; margin-bottom: 1em" ><tbody><tr><td style="padding: 0; text-align: left">Tutorium: ${tutorial.slot}, Tutor: ${tutorName}${substitutePart}</td> <td style="padding: 0; text-align: right">Datum: ${dateString}</td></tr></tbody></table>`,
+      header: `<h4>Anwesenheitsliste</h4> <table style="width: 100%; margin-bottom: 1em" ><tbody><tr><td style="padding: 0; text-align: left">${tutorialDisplay}, Tutor: ${tutorName}${substitutePart}</td> <td style="padding: 0; text-align: right">Datum: ${dateString}</td></tr></tbody></table>`,
       style: "* { font-family: 'Arial' }  td { padding: 0.5em 1em } h4 { text-align: center }",
     });
   }

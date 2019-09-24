@@ -16,6 +16,7 @@ import PaperTableRow from '../../../components/PaperTableRow';
 import { StudentWithFetchedTeam } from '../../../typings/types';
 import ScheinCriteriaStatusTable from './ScheinCriteriaStatusTable';
 import StatusProgress from './StatusProgress';
+import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -92,7 +93,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props extends TableRowProps {
   student: StudentWithFetchedTeam;
-  showTutorialNo?: boolean;
+  showTutorial?: boolean;
   tutorials?: Tutorial[];
   summary?: ScheinCriteriaSummary;
   onEditStudentClicked: (student: StudentWithFetchedTeam) => void;
@@ -130,7 +131,7 @@ function ExtendableStudentRow({
   student,
   className,
   onClick,
-  showTutorialNo,
+  showTutorial,
   tutorials,
   summary,
   onEditStudentClicked,
@@ -151,8 +152,8 @@ function ExtendableStudentRow({
         {...rest}
         label={`${lastname}, ${firstname}`}
         subText={
-          showTutorialNo && !!tutorial
-            ? `Tutorium: ${tutorial.slot} - ${
+          showTutorial && !!tutorial
+            ? `${getDisplayStringForTutorial(tutorial)} - ${
                 team ? `Team: #${team.teamNo.toString().padStart(2, '0')}` : 'Kein Team'
               }`
             : `${team ? `Team: #${team.teamNo.toString().padStart(2, '0')}` : 'Kein Team'}`

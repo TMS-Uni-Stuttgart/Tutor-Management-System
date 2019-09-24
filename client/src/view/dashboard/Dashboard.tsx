@@ -53,7 +53,7 @@ function Dashboard(): JSX.Element {
         setSummaries(response);
       }
 
-      const sortedTutorials = userData.tutorials.sort((a, b) => a.slot - b.slot);
+      const sortedTutorials = userData.tutorials.sort((a, b) => a.slot.localeCompare(b.slot));
 
       for (const loggedInTutorial of sortedTutorials) {
         const tutorial = await getTutorial(loggedInTutorial.id);
