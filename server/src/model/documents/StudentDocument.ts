@@ -3,7 +3,7 @@ import { fieldEncryption } from 'mongoose-field-encryption';
 import { PointMapDTO } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { mapProp, plugin, prop, Ref, Typegoose } from 'typegoose';
-import databaseConfig from '../../config/database';
+import databaseConfig from '../../helpers/database';
 import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
