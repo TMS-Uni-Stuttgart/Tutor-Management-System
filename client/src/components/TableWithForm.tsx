@@ -10,9 +10,10 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
       height: 48,
       marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(-8),
     },
     listWithClosedEditor: {
-      marginTop: theme.spacing(4),
+      marginTop: theme.spacing(8),
     },
     listWithOpenEditor: {
       marginTop: 0,
