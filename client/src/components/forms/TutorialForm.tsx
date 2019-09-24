@@ -253,9 +253,7 @@ function TutorialForm({
             multiple
             isItemSelected={tutor => values['correctors'].indexOf(tutor.id) > -1}
             fullWidth
-            // className={classes.correctorsDropdown}
           />
-          {/* </div> */}
 
           <div className={classes.dateSelector}>
             <FormikMultipleDatesPicker name='selectedDates' label='Ausgewählte Tage' />

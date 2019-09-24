@@ -13,7 +13,11 @@ import {
   StudentWithFetchedTeam,
   TutorialWithFetchedStudents as Tutorial,
 } from '../../typings/types';
-import { getNameOfEntity, parseDateToMapKey, getDisplayStringForTutorial } from '../../util/helperFunctions';
+import {
+  getNameOfEntity,
+  parseDateToMapKey,
+  getDisplayStringForTutorial,
+} from '../../util/helperFunctions';
 import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { LoggedInUser } from 'shared/dist/model/User';
