@@ -21,7 +21,9 @@ export class UserCredentials {
   // }
 })
 @pre<UserDocument>('save', async function(next) {
-  if (!this.isModified('password')) {
+  const isHashed = /^\$2[ayb]\$.{56}$/.test(this.password);
+
+  if (isHashed) {
     return next();
   }
 
