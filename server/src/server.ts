@@ -36,27 +36,35 @@ const app = express();
  *
  * The amount of retries can be configured using the database configuration.
  */
-async function connectToDB() {
-  const maxRetries = databaseConfig.maxRetries || 5;
-  let prevTries = 0;
+function connectToDB(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const maxRetries = databaseConfig.maxRetries || 5;
 
-  while (prevTries < maxRetries) {
-    Logger.info(`Connecting to MongoDB database (previous tries: ${prevTries})...`);
+    async function tryToConnect(prevTries: number) {
+      if (prevTries >= maxRetries) {
+        return reject(
+          new StartUpError(`Connection to MongoDB database failed after ${prevTries} retries.`)
+        );
+      }
 
-    try {
-      await mongoose.connect(databaseConfig.databaseURL, {
-        useNewUrlParser: true,
-        ...databaseConfig.config,
-      });
+      try {
+        Logger.info(`Connecting to MongoDB database (previous tries: ${prevTries})...`);
 
-      Logger.info('Connection to MongoDB database established.');
-      return;
-    } catch {
-      prevTries++;
+        await mongoose.connect(databaseConfig.databaseURL, {
+          useNewUrlParser: true,
+          ...databaseConfig.config,
+        });
+
+        Logger.info('Connection to MongoDB database established.');
+
+        return resolve();
+      } catch {
+        setTimeout(() => tryToConnect(++prevTries), 1000);
+      }
     }
-  }
 
-  throw new StartUpError(`Connection to MongoDB database failed after ${prevTries} retries.`);
+    tryToConnect(0);
+  });
 }
 
 /**

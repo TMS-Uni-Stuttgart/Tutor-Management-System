@@ -15,7 +15,6 @@ services:
   tms-server:
     image: tutor-management-system
     container_name: tms-server
-    restart: always
     depends_on:
       - mongo
     ports:
@@ -23,7 +22,7 @@ services:
     networks:
       - tms_db
     volumes: 
-      - ./server/config/default.yml:/tms/server/config/default.yml
+      - ./server/config:/tms/server/config
 
 volumes:
   db-data:
