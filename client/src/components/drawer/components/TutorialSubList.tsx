@@ -1,7 +1,10 @@
 import { Collapse, List, ListItem, ListItemText } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { AccountConvert as SubstituteTutorialIcon } from 'mdi-material-ui';
+import {
+  AccountConvert as SubstituteTutorialIcon,
+  CheckboxMarkedCircleOutline as TutorialToCorrectIcon,
+} from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
 import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
@@ -14,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'center',
     },
-    substituteIcon: {
+    icon: {
       marginLeft: theme.spacing(1),
     },
   })
@@ -24,6 +27,7 @@ interface TutorialSubListProps {
   tutorial: LoggedInUserTutorial;
   tutorialRoutes: RouteType[];
   isDrawerOpen: boolean;
+  isTutorialToCorrect?: boolean;
   isSubstituteTutorial?: boolean;
 }
 
@@ -31,6 +35,7 @@ function TutorialSubList({
   tutorial,
   tutorialRoutes,
   isDrawerOpen,
+  isTutorialToCorrect,
   isSubstituteTutorial,
 }: TutorialSubListProps) {
   const classes = useStyles();
@@ -55,11 +60,14 @@ function TutorialSubList({
               <>
                 {getDisplayStringForTutorial(tutorial)}{' '}
                 {isSubstituteTutorial && (
-                  <SubstituteTutorialIcon fontSize='small' className={classes.substituteIcon} />
+                  <SubstituteTutorialIcon fontSize='small' className={classes.icon} />
+                )}
+                {isTutorialToCorrect && (
+                  <TutorialToCorrectIcon fontSize='small' className={classes.icon} />
                 )}
               </>
             ) : (
-              `#${tutorial.slot}`
+              `${tutorial.slot}`
             )
           }
           classes={{
