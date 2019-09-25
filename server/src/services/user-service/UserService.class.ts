@@ -17,7 +17,7 @@ import {
   LoggedInUserSubstituteTutorialDTO,
   LoggedInUserTutorialDTO,
 } from '../../model/dtos/LoggedInUserDTO';
-import { DocumentNotFoundError } from '../../model/Errors';
+import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import Logger from '../../helpers/Logger';
 
@@ -70,19 +70,31 @@ class UserService {
     return new UserCredentials(user.id, user.username, user.password);
   }
 
-  public async createUser(dto: CreateUserDTO): Promise<User> {
+  public async createUser({
+    tutorials: tutorialIds,
+    tutorialsToCorrect: tutorialsToCorrectIds,
+    password,
+    email,
+    ...dto
+  }: CreateUserDTO): Promise<User> {
     const promises: Promise<TutorialDocument>[] = [];
-    dto.tutorials.forEach(id => {
+    tutorialIds.forEach(id => {
       promises.push(tutorialService.getDocumentWithID(id));
     });
 
     const tutorials = await Promise.all(promises);
+    const tutorialsToCorrect = await Promise.all(
+      tutorialsToCorrectIds.map(id => tutorialService.getDocumentWithID(id))
+    );
 
     const userDoc: TypegooseDocument<UserSchema> = {
       ...dto,
-      tutorials,
-      temporaryPassword: dto.password,
-      email: dto.email || '',
+      password,
+      temporaryPassword: password,
+      email: email || '',
+      // These will be added later.
+      tutorials: [],
+      tutorialsToCorrect: [],
     };
 
     const createdUser = await UserModel.create(userDoc);
@@ -92,20 +104,30 @@ class UserService {
       await doc.save();
     }
 
-    return this.getUserOrReject(createdUser);
+    for (const doc of tutorialsToCorrect) {
+      this.makeUserCorrectorOfTutorial(createdUser, doc, { saveUser: false });
+    }
+
+    return this.getUserOrReject(await createdUser.save());
   }
 
-  public async updateUser(id: string, { tutorials, ...dto }: UserDTO): Promise<User> {
+  public async updateUser(
+    id: string,
+    { tutorials, tutorialsToCorrect, ...dto }: UserDTO
+  ): Promise<User> {
     const user: UserDocument = await this.getDocumentWithId(id);
+    const currentTutorials: string[] = user.tutorials.map(getIdOfDocumentRef);
+    const currentTutorialsToCorrect = user.tutorialsToCorrect.map(getIdOfDocumentRef);
 
-    const tutorialsToRemoveUserFrom: string[] = _.difference(
-      user.tutorials.map(getIdOfDocumentRef),
-      tutorials
+    const tutorialsToRemoveUserFrom: string[] = _.difference(currentTutorials, tutorials);
+    const tutorialsToAddUserTo: string[] = _.difference(tutorials, currentTutorials);
+    const tutorialsToRemoveUserAsCorrectorFrom = _.difference(
+      currentTutorialsToCorrect,
+      tutorialsToCorrect
     );
-
-    const tutorialsToAddUserTo: string[] = _.difference(
-      tutorials,
-      user.tutorials.map(getIdOfDocumentRef)
+    const tutorialsToAddUserAsCorrectorTo = _.difference(
+      tutorialsToCorrect,
+      currentTutorialsToCorrect
     );
 
     for (const id of tutorialsToRemoveUserFrom) {
@@ -120,12 +142,26 @@ class UserService {
       await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
     }
 
+    for (const id of tutorialsToRemoveUserAsCorrectorFrom) {
+      const tutorial = await tutorialService.getDocumentWithID(id);
+
+      await this.removeUserAsCorrectorFromTutorial(user, tutorial, { saveUser: false });
+    }
+
+    for (const id of tutorialsToAddUserAsCorrectorTo) {
+      const tutorial = await tutorialService.getDocumentWithID(id);
+
+      await this.makeUserCorrectorOfTutorial(user, tutorial, { saveUser: false });
+    }
+
     // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
     user.roles = dto.roles;
-    user.tutorials = [...user.tutorials];
     user.email = dto.email;
+
+    user.tutorials = [...user.tutorials];
+    user.tutorialsToCorrect = [...user.tutorialsToCorrect];
 
     const updatedUser = await user.save();
 
@@ -252,7 +288,9 @@ class UserService {
     { saveUser }: { saveUser?: boolean } = {}
   ) {
     if (this.hasUserTutorial(user, tutorial)) {
-      Logger.debug('User should be added to a tutorial which he already contains. Skipping.');
+      Logger.warn(
+        'User should be added to a tutorial as tutor which he already holds. Skipping rest of process.'
+      );
       return;
     }
 
@@ -300,6 +338,78 @@ class UserService {
     }
   }
 
+  /**
+   * Adds the given User as corrector to the given TutorialDocument.
+   *
+   * This will adjust the TutorialDocument to include the User as corrector afterwards.
+   *
+   * If the TutorialDocument already has this user as a corrector nothing is done. If the user does __not__ have the role 'CORRECTOR' a `BadRequestError` is thrown. Both cases skip saving the document(s) completly.
+   *
+   * By default this function will __not__ save the UserDocument of the corrector after adding it to the TutorialDocument. To do so provide the `saveUser` option with a truthy value.
+   *
+   * @param user UserDocument which is the corrector
+   * @param tutorial Tutorial which the user should correct
+   * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
+   */
+  public async makeUserCorrectorOfTutorial(
+    user: UserDocument,
+    tutorial: TutorialDocument,
+    { saveUser }: { saveUser?: boolean } = {}
+  ): Promise<void> {
+    if (!this.hasUserRole(user, Role.CORRECTOR)) {
+      throw new BadRequestError(
+        'Only users with the CORRECTOR role can be set as a corrector a a tutorial.'
+      );
+    }
+
+    if (this.hasTutorialCorrector(tutorial, user)) {
+      Logger.warn(
+        'User should be added as corrector to a tutorial which he already corrects. Skipping rest of process'
+      );
+      return;
+    }
+
+    tutorial.correctors.push(user);
+    const savePromises: Promise<unknown>[] = [];
+
+    if (saveUser) {
+      savePromises.push(user.save());
+    }
+
+    savePromises.push(tutorial.save());
+
+    await Promise.all(savePromises);
+  }
+
+  /**
+   * Removes the given user as corrector from the tutorial.
+   *
+   * The given user is removed from the TutorialDocument as corrector. If the user was NOT a corrector beforehand the TutorialDocument does not change. However, the saving __will be done__.
+   *
+   * By default this function will __not__ save the provided UserDocument. To do so provide the `saveUser` option with a truthy value.
+   *
+   * @param user User to remove as corrector.
+   * @param tutorial Tutorial to remove the corrector from.
+   * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
+   */
+  public async removeUserAsCorrectorFromTutorial(
+    user: UserDocument,
+    tutorial: TutorialDocument,
+    { saveUser }: { saveUser?: boolean } = {}
+  ): Promise<void> {
+    tutorial.correctors = tutorial.correctors.filter(c => getIdOfDocumentRef(c) !== user.id);
+
+    const savePromises: Promise<unknown>[] = [];
+
+    if (saveUser) {
+      savePromises.push(user.save());
+    }
+
+    savePromises.push(tutorial.save());
+
+    await Promise.all(savePromises);
+  }
+
   public async getUserOrReject(user: UserDocument | null): Promise<User> {
     if (!user) {
       return this.rejectUserNotFound();
@@ -308,7 +418,17 @@ class UserService {
     // Make sure we get a document with decrypted fields.
     (user as EncryptedDocument<UserDocument>).decryptFieldsSync();
 
-    const { id, firstname, lastname, roles, tutorials, temporaryPassword, username, email } = user;
+    const {
+      id,
+      firstname,
+      lastname,
+      roles,
+      tutorials,
+      tutorialsToCorrect,
+      temporaryPassword,
+      username,
+      email,
+    } = user;
 
     return {
       id,
@@ -317,6 +437,7 @@ class UserService {
       lastname,
       roles,
       tutorials: tutorials.map(getIdOfDocumentRef),
+      tutorialsToCorrect: tutorialsToCorrect.map(getIdOfDocumentRef),
       temporaryPassword,
       email,
     };
@@ -334,6 +455,7 @@ class UserService {
         email: 'admin@admin.admin',
         roles: [Role.ADMIN],
         tutorials: [],
+        tutorialsToCorrect: [],
         username: 'admin',
         password: 'admin',
       };
@@ -346,6 +468,14 @@ class UserService {
 
   private hasUserTutorial(user: UserDocument, tutorial: TutorialDocument): boolean {
     return user.tutorials.findIndex(t => getIdOfDocumentRef(t) === tutorial.id) > -1;
+  }
+
+  private hasTutorialCorrector(tutorial: TutorialDocument, user: UserDocument): boolean {
+    return tutorial.correctors.findIndex(c => getIdOfDocumentRef(c) === user.id) > -1;
+  }
+
+  private hasUserRole(user: UserDocument, role: Role): boolean {
+    return user.roles.includes(role);
   }
 }
 
