@@ -7,6 +7,7 @@
     "shared"
   ],
   "scripts": {
+    "postinstall": "yarn build:shared",
     "format": "yarn format:client && yarn format:server && yarn format:shared",
     "format:client": "echo Formatting client && cd ./client && yarn format",
     "format:server": "echo Formatting server && cd ./server && yarn format",
