@@ -10,15 +10,17 @@ import { MailingStatus, FailedMail } from 'shared/dist/model/Mail';
 import { InvalidConfigurationError } from '../../model/Errors';
 import userService from '../user-service/UserService.class';
 import Mail from 'nodemailer/lib/mailer';
+import Logger from '../../helpers/Logger';
 
 interface AdditionalOptions {
+  testingMode?: boolean;
   templates: {
     credentials: string;
   };
 }
 
 class MailingError {
-  constructor(readonly userId: string, readonly message?: string) {}
+  constructor(readonly userId: string, readonly err: Error, readonly message: string) {}
 }
 
 type MailingResponse = SMTPTransport.SentMessageInfo | MailingError;
@@ -69,7 +71,7 @@ class MailService {
         text: this.getTextOfMail(user, options),
       });
     } catch (err) {
-      return new MailingError(user.id, 'Could not send mail');
+      return new MailingError(user.id, err, 'Could not send mail.');
     }
   }
 
@@ -80,10 +82,14 @@ class MailService {
     for (const mail of mails) {
       if (mail instanceof MailingError) {
         const user = users.find(u => u.id === mail.userId) as User;
+
         failedMailsInfo.push({
           userId: user.id,
         });
+
+        Logger.error(mail.message, mail.err);
       } else {
+        Logger.info('Mail successfully send.');
         successFullSend++;
       }
     }
@@ -101,11 +107,21 @@ class MailService {
   private getConfig(): TransportOptions {
     const options = config.get<TransportOptions>('mailing');
 
-    if (process.env.NODE_ENV === 'production') {
-      this.assertValidConfig(options);
+    if (options.testingMode) {
+      const auth = options.auth as (AuthenticationTypeLogin | undefined);
 
-      return options;
-    } else {
+      if (!auth || !auth.user || !auth.pass) {
+        throw new InvalidConfigurationError(
+          'In testing mode an ethereal user & pass has to be supplied.'
+        );
+      }
+
+      if (!auth.user.includes('ethereal')) {
+        throw new InvalidConfigurationError(
+          'In testing mode mailing user has to be an ethereal user.'
+        );
+      }
+
       return {
         templates: {
           credentials: options.templates.credentials,
@@ -113,10 +129,14 @@ class MailService {
         host: 'smtp.ethereal.email',
         port: 587,
         auth: {
-          user: 'cristal.keebler13@ethereal.email',
-          pass: 'vTeyXZdDcphxAQTk9X',
+          user: auth.user,
+          pass: auth.pass,
         },
       };
+    } else {
+      this.assertValidConfig(options);
+
+      return options;
     }
   }
 
