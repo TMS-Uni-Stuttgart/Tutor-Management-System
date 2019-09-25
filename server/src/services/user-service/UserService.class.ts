@@ -282,21 +282,21 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ) {
-    if (this.hasUserTutorial(user, tutorial)) {
-      Logger.warn(
-        'User should be added to a tutorial as tutor which he already holds. Skipping rest of process.'
-      );
-      return;
+    if (!this.hasUserTutorial(user, tutorial)) {
+      user.tutorials.push(tutorial);
+    } else {
+      Logger.warn('User should be added to a tutorial as tutor which he already holds.');
     }
 
-    if (tutorial.tutor) {
+    if (tutorial.tutor && !this.hasTutorialTutor(tutorial, user)) {
       const oldTutor = await this.getDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
 
       await this.removeUserAsTutorFromTutorial(oldTutor, tutorial, { saveUser: true });
-    }
 
-    tutorial.tutor = user;
-    user.tutorials.push(tutorial);
+      tutorial.tutor = user;
+    } else {
+      Logger.warn('Tutorial should get a tutor which already is the tutor of it.');
+    }
 
     if (saveUser) {
       await Promise.all([tutorial.save(), user.save()]);
@@ -338,7 +338,7 @@ class UserService {
    *
    * This will adjust the TutorialDocument to include the User as corrector afterwards.
    *
-   * If the TutorialDocument already has this user as a corrector nothing is done. If the user does __not__ have the role 'CORRECTOR' a `BadRequestError` is thrown. Both cases skip saving the document(s) completly.
+   * If the user does __not__ have the role 'CORRECTOR' a `BadRequestError` is thrown. Both cases skip saving the document(s) completly.
    *
    * By default this function will __not__ save the UserDocument of the corrector after adding it to the TutorialDocument. To do so provide the `saveUser` option with a truthy value.
    *
@@ -357,14 +357,18 @@ class UserService {
       );
     }
 
-    if (this.hasTutorialCorrector(tutorial, user)) {
-      Logger.warn(
-        'User should be added as corrector to a tutorial which he already corrects. Skipping rest of process'
-      );
-      return;
+    if (!this.hasTutorialCorrector(tutorial, user)) {
+      tutorial.correctors.push(user);
+    } else {
+      Logger.warn('User should be added as corrector to a tutorial which he already corrects.');
     }
 
-    tutorial.correctors.push(user);
+    if (!this.hasUserTutorialToCorrect(user, tutorial)) {
+      user.tutorialsToCorrect.push(tutorial);
+    } else {
+      Logger.warn('Tutorial should be added to the User which he already correct.');
+    }
+
     const savePromises: Promise<unknown>[] = [];
 
     if (saveUser) {
@@ -465,8 +469,16 @@ class UserService {
     return user.tutorials.findIndex(t => getIdOfDocumentRef(t) === tutorial.id) > -1;
   }
 
+  private hasTutorialTutor(tutorial: TutorialDocument, user: UserDocument): boolean {
+    return !!tutorial.tutor && getIdOfDocumentRef(tutorial.tutor) === user.id;
+  }
+
   private hasTutorialCorrector(tutorial: TutorialDocument, user: UserDocument): boolean {
     return tutorial.correctors.findIndex(c => getIdOfDocumentRef(c) === user.id) > -1;
+  }
+
+  private hasUserTutorialToCorrect(user: UserDocument, tutorial: TutorialDocument): boolean {
+    return user.tutorialsToCorrect.findIndex(t => getIdOfDocumentRef(t) === tutorial.id) > -1;
   }
 
   private hasUserRole(user: UserDocument, role: Role): boolean {
