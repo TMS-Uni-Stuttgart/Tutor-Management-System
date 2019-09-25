@@ -252,28 +252,23 @@ function UserForm({
             isItemSelected={role => values['roles'].indexOf(role) > -1}
           />
 
-          {!isEditMode && (
-            <FormikTextFieldWithButtons
-              name='username'
-              label='Benutzername'
-              required
-              buttons={[
-                <Button
-                  key='generateUsername'
-                  variant='outlined'
-                  className={classes.textFieldButton}
-                  onClick={() =>
-                    generateUsername(
-                      { firstname: values.firstname, lastname: values.lastname },
-                      setFieldValue
-                    )
-                  }
-                >
-                  <RestoreOutlinedIcon fontSize='small' />
-                </Button>,
-              ]}
-            />
-          )}
+          <FormikTextFieldWithButtons
+            name='username'
+            label='Benutzername'
+            required
+            disabled={isEditMode}
+            buttons={[
+              {
+                key: 'generateUsername',
+                Icon: RestoreOutlinedIcon,
+                onClick: () =>
+                  generateUsername(
+                    { firstname: values.firstname, lastname: values.lastname },
+                    setFieldValue
+                  ),
+              },
+            ]}
+          />
 
           <FormikTextFieldWithButtons
             name='password'
@@ -281,24 +276,17 @@ function UserForm({
             type={hidePassword ? 'password' : 'text'}
             required={!isEditMode}
             buttons={[
-              <Button
-                key='hidePassword'
-                variant='outlined'
-                className={classes.textFieldButton}
-                onClick={() => setHidePassword(!hidePassword)}
-                color={hidePassword ? 'default' : 'secondary'}
-              >
-                <RemoveRedEyeOutlinedIcon fontSize='small' />
-              </Button>,
-
-              <Button
-                key='generatePassword'
-                variant='outlined'
-                className={classes.textFieldButton}
-                onClick={() => setFieldValue('password', generateTemporaryPassword())}
-              >
-                <ShuffleIcon fontSize='small' />
-              </Button>,
+              {
+                key: 'hidePassword',
+                Icon: RemoveRedEyeOutlinedIcon,
+                color: hidePassword ? 'default' : 'secondary',
+                onClick: () => setHidePassword(!hidePassword),
+              },
+              {
+                key: 'generatePassword',
+                Icon: ShuffleIcon,
+                onClick: () => setFieldValue('password', generateTemporaryPassword()),
+              },
             ]}
           />
 
