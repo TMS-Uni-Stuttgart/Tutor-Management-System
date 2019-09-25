@@ -60,6 +60,7 @@ export interface UserFormState {
   lastname: string;
   roles: Role[];
   tutorials: string[];
+  tutorialsToCorrect: string[];
   email: string;
   username: string;
   password: string;
@@ -88,6 +89,7 @@ function getInitialFormState(user?: UserWithFetchedTutorials): UserFormState {
       lastname: '',
       roles: [Role.TUTOR],
       tutorials: [],
+      tutorialsToCorrect: [],
       username: '',
       email: '',
       password: generateTemporaryPassword(),
@@ -99,6 +101,7 @@ function getInitialFormState(user?: UserWithFetchedTutorials): UserFormState {
     lastname: user.lastname,
     roles: user.roles,
     tutorials: user.tutorials.map(t => t.id),
+    tutorialsToCorrect: [...user.tutorialsToCorrect],
     username: user.username,
     email: user.email,
     password: '',
@@ -121,7 +124,7 @@ function getValidationSchema(
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
     password: passwordValidationSchema,
-    tutorials: Yup.array<string>().test({
+    tutorialsToCorrect: Yup.array<string>().test({
       test: function(this, value: unknown) {
         const roles = this.resolve(Yup.ref('roles'));
 
@@ -139,7 +142,7 @@ function getValidationSchema(
           return new Yup.ValidationError(
             'Korrigierende brauchen mind. 1 Tutorial.',
             value,
-            'tutorials'
+            'tutorialsToCorrect'
           );
         }
 
@@ -231,6 +234,17 @@ function UserForm({
             label='Rolle'
             required
             emptyPlaceholder='Keine Rollen vorhanden.'
+            onChange={(e: any) => {
+              const roles: string[] = e.target.value;
+
+              if (!roles.includes(Role.TUTOR)) {
+                setFieldValue('tutorials', []);
+              }
+
+              if (!roles.includes(Role.CORRECTOR)) {
+                setFieldValue('tutorialsToCorrect', []);
+              }
+            }}
             items={availableRoles}
             itemToString={role => Role[role].toString()}
             itemToValue={role => role}
@@ -291,6 +305,7 @@ function UserForm({
           <FormikSelect
             name='tutorials'
             label='Tutorien'
+            helperText='Tutorien, die gehalten werden.'
             emptyPlaceholder='Keine Tutorien vorhanden.'
             items={tutorials}
             itemToString={tutorial => `Slot ${tutorial.slot}`}
@@ -298,6 +313,19 @@ function UserForm({
             multiple
             isItemSelected={tutorial => values['tutorials'].indexOf(tutorial.id) > -1}
             disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
+          />
+
+          <FormikSelect
+            name='tutorialsToCorrect'
+            label='Korrigierte Tutorien'
+            helperText='Tutorien, die korrigiert werden.'
+            emptyPlaceholder='Keine Tutorien vorhanden.'
+            items={tutorials}
+            itemToString={tutorial => `Slot ${tutorial.slot}`}
+            itemToValue={tutorial => tutorial.id}
+            multiple
+            isItemSelected={tutorial => values['tutorialsToCorrect'].indexOf(tutorial.id) > -1}
+            disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
           />
         </>
       )}
