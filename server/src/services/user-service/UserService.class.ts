@@ -19,6 +19,7 @@ import {
 } from '../../model/dtos/LoggedInUserDTO';
 import { DocumentNotFoundError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import Logger from '../../helpers/Logger';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -250,6 +251,11 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ) {
+    if (this.hasUserTutorial(user, tutorial)) {
+      Logger.debug('User should be added to a tutorial which he already contains. Skipping.');
+      return;
+    }
+
     if (tutorial.tutor) {
       const oldTutor = await this.getDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
 
@@ -336,6 +342,10 @@ class UserService {
     } catch (err) {
       throw err;
     }
+  }
+
+  private hasUserTutorial(user: UserDocument, tutorial: TutorialDocument): boolean {
+    return user.tutorials.findIndex(t => getIdOfDocumentRef(t) === tutorial.id) > -1;
   }
 }
 
