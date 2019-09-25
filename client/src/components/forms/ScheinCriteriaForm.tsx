@@ -75,8 +75,6 @@ function ScheinCriteriaForm({ onSubmit, formData, criteria, ...other }: Props): 
                   ...generateInitialValue(formData[newIdentifier]),
                 });
               }
-
-              setFieldValue('identifier', newIdentifier);
             }}
           />
 
