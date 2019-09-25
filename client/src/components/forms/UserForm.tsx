@@ -1,5 +1,3 @@
-import { Button } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   RemoveRedEyeOutlined as RemoveRedEyeOutlinedIcon,
   RestoreOutlined as RestoreOutlinedIcon,
@@ -18,40 +16,6 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import { FormikTextFieldWithButtons } from './components/FormikTextFieldWithButtons';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    form: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gridColumnGap: theme.spacing(1),
-      gridRowGap: theme.spacing(2),
-    },
-    tutorialDropdown: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    chipContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    textFieldButton: {
-      minWidth: 0,
-      height: 32,
-      width: 32,
-      marginLeft: theme.spacing(0.75),
-    },
-    twoColumns: {
-      gridColumn: '1 / span 2',
-    },
-    buttonRow: {
-      gridColumn: '1 / span 2',
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
-  })
-);
 
 export type UserFormSubmitCallback = FormikSubmitCallback<UserFormState>;
 
@@ -174,7 +138,6 @@ function UserForm({
   className,
   ...other
 }: Props): JSX.Element {
-  const classes = useStyles();
   const [hidePassword, setHidePassword] = useState(true);
 
   const isEditMode = user !== undefined;

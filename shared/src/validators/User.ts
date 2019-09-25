@@ -26,7 +26,7 @@ const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
   password: Yup.string().required(),
   roles: Yup.array<Role>().required(),
   tutorials: TutorialIdListSchema,
-  tutorialsToCorrect: TutorialIdListSchema
+  tutorialsToCorrect: TutorialIdListSchema,
 });
 
 export function validateAgainstCreateUserDTO(
