@@ -32,6 +32,7 @@ export class LoggedInUserDTO implements LoggedInUser {
   readonly roles: Role[];
   readonly hasTemporaryPassword: boolean;
   readonly tutorials: LoggedInUserTutorialDTO[];
+  readonly tutorialsToCorrect: LoggedInUserTutorialDTO[];
   readonly substituteTutorials: LoggedInUserSubstituteTutorialDTO[];
 
   constructor(
@@ -52,6 +53,6 @@ export class LoggedInUserDTO implements LoggedInUser {
         return new LoggedInUserTutorialDTO(t as TutorialDocument);
       });
 
-    this.tutorials.push(...correctedTutorials);
+    this.tutorialsToCorrect = [...correctedTutorials];
   }
 }
