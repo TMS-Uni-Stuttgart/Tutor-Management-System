@@ -123,11 +123,25 @@ class MailService {
   private getUser(): string {
     const options = this.getConfig();
 
-    if (!options.auth || !options.auth.user) {
-      throw new InvalidConfigurationError("Mailing auth must contain a 'user' property");
+    if (options.from) {
+      if (typeof options.from === 'string') {
+        return options.from;
+      }
+
+      if (options.from.address) {
+        return options.from.address;
+      }
     }
 
-    return options.auth.user;
+    if (options.auth && options.auth.user) {
+      if (this.isValidEmail(options.auth.user)) {
+        return options.auth.user;
+      }
+    }
+
+    throw new InvalidConfigurationError(
+      "Mailing must contain either a 'from' prop which contains an email address or the 'auth.user' must be a valid email address"
+    );
   }
 
   private assertValidConfig(config: TransportOptions) {
@@ -180,6 +194,12 @@ class MailService {
 
   private isBasicAuth(auth: SMTPConnection.AuthenticationType): auth is AuthenticationTypeLogin {
     return !auth.type || auth.type === 'login' || auth.type === 'Login' || auth.type === 'LOGIN';
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+      email
+    );
   }
 }
 
