@@ -77,15 +77,8 @@ class UserService {
     email,
     ...dto
   }: CreateUserDTO): Promise<User> {
-    const promises: Promise<TutorialDocument>[] = [];
-    tutorialIds.forEach(id => {
-      promises.push(tutorialService.getDocumentWithID(id));
-    });
-
-    const tutorials = await Promise.all(promises);
-    const tutorialsToCorrect = await Promise.all(
-      tutorialsToCorrectIds.map(id => tutorialService.getDocumentWithID(id))
-    );
+    const tutorials = await this.getAllTutorials(tutorialIds);
+    const tutorialsToCorrect = await this.getAllTutorials(tutorialsToCorrectIds);
 
     const userDoc: TypegooseDocument<UserSchema> = {
       ...dto,
@@ -119,46 +112,40 @@ class UserService {
     const currentTutorials: string[] = user.tutorials.map(getIdOfDocumentRef);
     const currentTutorialsToCorrect = user.tutorialsToCorrect.map(getIdOfDocumentRef);
 
-    const tutorialsToRemoveUserFrom: string[] = _.difference(currentTutorials, tutorials);
-    const tutorialsToAddUserTo: string[] = _.difference(tutorials, currentTutorials);
-    const tutorialsToRemoveUserAsCorrectorFrom = _.difference(
-      currentTutorialsToCorrect,
-      tutorialsToCorrect
+    const tutorialsToRemoveUserFrom = await this.getAllTutorials(
+      _.difference(currentTutorials, tutorials)
     );
-    const tutorialsToAddUserAsCorrectorTo = _.difference(
-      tutorialsToCorrect,
-      currentTutorialsToCorrect
+    const tutorialsToAddUserTo = await this.getAllTutorials(
+      _.difference(tutorials, currentTutorials)
     );
-
-    for (const id of tutorialsToRemoveUserFrom) {
-      const tutorial = await tutorialService.getDocumentWithID(id);
-
-      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
-    }
-
-    for (const id of tutorialsToAddUserTo) {
-      const tutorial = await tutorialService.getDocumentWithID(id);
-
-      await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
-    }
-
-    for (const id of tutorialsToRemoveUserAsCorrectorFrom) {
-      const tutorial = await tutorialService.getDocumentWithID(id);
-
-      await this.removeUserAsCorrectorFromTutorial(user, tutorial, { saveUser: false });
-    }
-
-    for (const id of tutorialsToAddUserAsCorrectorTo) {
-      const tutorial = await tutorialService.getDocumentWithID(id);
-
-      await this.makeUserCorrectorOfTutorial(user, tutorial, { saveUser: false });
-    }
+    const tutorialsToRemoveUserAsCorrectorFrom = await this.getAllTutorials(
+      _.difference(currentTutorialsToCorrect, tutorialsToCorrect)
+    );
+    const tutorialsToAddUserAsCorrectorTo = await this.getAllTutorials(
+      _.difference(tutorialsToCorrect, currentTutorialsToCorrect)
+    );
 
     // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
-    user.roles = dto.roles;
     user.email = dto.email;
+    user.roles = dto.roles;
+
+    for (const tutorial of tutorialsToRemoveUserFrom) {
+      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
+    }
+
+    for (const tutorial of tutorialsToAddUserTo) {
+      await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
+    }
+
+    for (const tutorial of tutorialsToRemoveUserAsCorrectorFrom) {
+      await this.removeUserAsCorrectorFromTutorial(user, tutorial, { saveUser: false });
+    }
+
+    for (const tutorial of tutorialsToAddUserAsCorrectorTo) {
+      await this.makeUserCorrectorOfTutorial(user, tutorial, { saveUser: false });
+    }
 
     user.tutorials = [...user.tutorials];
     user.tutorialsToCorrect = [...user.tutorialsToCorrect];
@@ -484,6 +471,10 @@ class UserService {
 
   private hasUserRole(user: UserDocument, role: Role): boolean {
     return user.roles.includes(role);
+  }
+
+  private async getAllTutorials(ids: string[]): Promise<TutorialDocument[]> {
+    return Promise.all(ids.map(id => tutorialService.getDocumentWithID(id)));
   }
 }
 
