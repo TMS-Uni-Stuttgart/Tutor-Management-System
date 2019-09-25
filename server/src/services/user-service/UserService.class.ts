@@ -180,6 +180,14 @@ class UserService {
       await this.removeUserAsTutorFromTutorial(user, tutorial);
     }
 
+    for (const doc of user.tutorialsToCorrect) {
+      const tutorial = isDocument(doc)
+        ? doc
+        : await tutorialService.getDocumentWithID(doc.toString());
+
+      await this.removeUserAsCorrectorFromTutorial(user, tutorial);
+    }
+
     return this.getUserOrReject(await user.remove());
   }
 
