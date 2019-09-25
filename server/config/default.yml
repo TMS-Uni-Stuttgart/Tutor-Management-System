@@ -10,6 +10,7 @@ database:
     authMechanism: 'SCRAM-SHA-1'
 
 mailing:
+  testingMode: false
   templates: 
   # Replacements:
   # {{name}}: Name of user
