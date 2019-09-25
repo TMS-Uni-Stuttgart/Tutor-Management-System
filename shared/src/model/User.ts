@@ -21,6 +21,7 @@ export interface UserDTO {
   firstname: User['firstname'];
   lastname: User['lastname'];
   tutorials: string[];
+  tutorialsToCorrect: string[];
   roles: User['roles'];
   email: User['email'];
 }
