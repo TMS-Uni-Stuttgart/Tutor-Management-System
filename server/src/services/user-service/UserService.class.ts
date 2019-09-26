@@ -94,8 +94,9 @@ class UserService {
     createdUser.decryptFieldsSync();
 
     for (const doc of tutorials) {
-      doc.tutor = createdUser;
-      await doc.save();
+      this.makeUserTutorOfTutorial(createdUser, doc, { saveUser: false });
+      // doc.tutor = createdUser;
+      // await doc.save();
     }
 
     for (const doc of tutorialsToCorrect) {
