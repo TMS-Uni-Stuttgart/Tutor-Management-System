@@ -95,8 +95,6 @@ class UserService {
 
     for (const doc of tutorials) {
       this.makeUserTutorOfTutorial(createdUser, doc, { saveUser: false });
-      // doc.tutor = createdUser;
-      // await doc.save();
     }
 
     for (const doc of tutorialsToCorrect) {
@@ -284,20 +282,28 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ) {
-    if (!this.hasUserTutorial(user, tutorial)) {
-      user.tutorials.push(tutorial);
-    } else {
-      Logger.warn('User should be added to a tutorial as tutor which he already holds.');
+    if (!this.hasUserRole(user, Role.TUTOR)) {
+      throw new BadRequestError(
+        'Only users with the TUTOR role can be set as a tutor of a tutorial.'
+      );
     }
 
     if (tutorial.tutor && !this.hasTutorialTutor(tutorial, user)) {
       const oldTutor = await this.getDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
 
       await this.removeUserAsTutorFromTutorial(oldTutor, tutorial, { saveUser: true });
+    }
 
+    if (!this.hasTutorialTutor(tutorial, user)) {
       tutorial.tutor = user;
     } else {
       Logger.warn('Tutorial should get a tutor which already is the tutor of it.');
+    }
+
+    if (!this.hasUserTutorial(user, tutorial)) {
+      user.tutorials.push(tutorial);
+    } else {
+      Logger.warn('User should be added to a tutorial as tutor which he already holds.');
     }
 
     if (saveUser) {
@@ -323,6 +329,12 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ): Promise<void> {
+    if (!this.hasTutorialTutor(tutorial, user)) {
+      throw new BadRequestError(
+        'A user who is NOT a tutor of the tutorial should be removed as tutor from the tutorial. This is a no-op.'
+      );
+    }
+
     const tutorialId: string = tutorial.id;
     tutorial.tutor = undefined;
 
@@ -355,7 +367,7 @@ class UserService {
   ): Promise<void> {
     if (!this.hasUserRole(user, Role.CORRECTOR)) {
       throw new BadRequestError(
-        'Only users with the CORRECTOR role can be set as a corrector a a tutorial.'
+        'Only users with the CORRECTOR role can be set as a corrector of a tutorial.'
       );
     }
 
@@ -373,11 +385,11 @@ class UserService {
 
     const savePromises: Promise<unknown>[] = [];
 
+    savePromises.push(tutorial.save());
+
     if (saveUser) {
       savePromises.push(user.save());
     }
-
-    savePromises.push(tutorial.save());
 
     await Promise.all(savePromises);
   }
@@ -399,14 +411,17 @@ class UserService {
     { saveUser }: { saveUser?: boolean } = {}
   ): Promise<void> {
     tutorial.correctors = tutorial.correctors.filter(c => getIdOfDocumentRef(c) !== user.id);
+    user.tutorialsToCorrect = user.tutorialsToCorrect.filter(
+      t => getIdOfDocumentRef(t) !== tutorial.id
+    );
 
     const savePromises: Promise<unknown>[] = [];
+
+    savePromises.push(tutorial.save());
 
     if (saveUser) {
       savePromises.push(user.save());
     }
-
-    savePromises.push(tutorial.save());
 
     await Promise.all(savePromises);
   }
