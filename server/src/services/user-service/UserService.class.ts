@@ -90,7 +90,8 @@ class UserService {
       tutorialsToCorrect: [],
     };
 
-    const createdUser = await UserModel.create(userDoc);
+    const createdUser = (await UserModel.create(userDoc)) as EncryptedDocument<UserDocument>;
+    createdUser.decryptFieldsSync();
 
     for (const doc of tutorials) {
       doc.tutor = createdUser;
