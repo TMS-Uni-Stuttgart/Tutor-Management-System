@@ -4,6 +4,7 @@ import { TutorialSummaryInfo } from '../Dashboard';
 import ScheinCriteriaStatsCard from './ScheinCrtieriaStatsCard';
 import ScheinPassedStatsCard from './ScheinPassedStatsCard';
 import TutorialStatsCard from './TutorialStatsCard';
+import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 
 interface TutorialStatisticsProps {
   value: TutorialSummaryInfo;
@@ -40,7 +41,7 @@ function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
   return (
     <>
       <Paper className={classes.tutorialHeading}>
-        <Typography variant='h5'>{'Tutorial #' + value.tutorial.slot}</Typography>
+        <Typography variant='h5'>{getDisplayStringForTutorial(value.tutorial)}</Typography>
       </Paper>
       <div className={classes.cardsContainer}>
         <TutorialStatsCard value={value} />
