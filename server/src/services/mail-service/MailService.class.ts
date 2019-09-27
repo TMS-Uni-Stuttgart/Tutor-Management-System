@@ -11,6 +11,7 @@ import { InvalidConfigurationError } from '../../model/Errors';
 import userService from '../user-service/UserService.class';
 import Mail from 'nodemailer/lib/mailer';
 import Logger from '../../helpers/Logger';
+import { isFulfilled } from 'q';
 
 interface AdditionalOptions {
   testingMode?: boolean;
@@ -89,7 +90,14 @@ class MailService {
 
         Logger.error(mail.message, mail.err);
       } else {
-        Logger.info('Mail successfully send.');
+        const previewURL = nodemailer.getTestMessageUrl(mail);
+
+        if (previewURL) {
+          Logger.info(`Mail successfully send. Preview: ${previewURL}`);
+        } else {
+          Logger.info('Mail successfully send.');
+        }
+
         successFullSend++;
       }
     }
