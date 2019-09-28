@@ -94,7 +94,6 @@ export type TutorialFormSubmitCallback = FormikSubmitCallback<TutorialFormState>
 
 interface Props extends Omit<FormikBaseFormProps<TutorialFormState>, CommonlyUsedFormProps> {
   tutors: User[];
-  allTutorials: TutorialWithFetchedCorrectors[];
   tutorial?: TutorialWithFetchedCorrectors;
   onSubmit: TutorialFormSubmitCallback;
 }
@@ -112,18 +111,7 @@ function getAllWeeklyDatesBetween(startDate: Date, endDate: Date): Date[] {
   return dates;
 }
 
-function findFirstEmptySlot(tutorials: { slot: number }[]): number {
-  for (let i = 0; i <= tutorials.length; i++) {
-    if (tutorials.findIndex(tut => tut.slot === i) === -1) {
-      return i;
-    }
-  }
-
-  return tutorials.length + 1;
-}
-
 export function getInitialTutorialFormValues(
-  allTutorials: TutorialWithFetchedCorrectors[],
   tutorial?: TutorialWithFetchedCorrectors
 ): TutorialFormState {
   const startDate = new Date(Date.now()).toISOString();
@@ -158,17 +146,10 @@ export function getInitialTutorialFormValues(
   };
 }
 
-function TutorialForm({
-  tutors,
-  tutorial,
-  allTutorials,
-  onSubmit,
-  className,
-  ...other
-}: Props): JSX.Element {
+function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props): JSX.Element {
   const classes = useStyles();
 
-  const initialFormValues: TutorialFormState = getInitialTutorialFormValues(allTutorials, tutorial);
+  const initialFormValues: TutorialFormState = getInitialTutorialFormValues(tutorial);
 
   const userConverterFunctions = {
     itemToString: (tutor: User) => `${tutor.lastname}, ${tutor.firstname}`,
