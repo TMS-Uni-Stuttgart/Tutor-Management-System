@@ -30,14 +30,16 @@ interface Substitute {
 
 interface Props extends PaperTableRowProps {
   tutorial: TutorialWithFetchedCorrectors;
+  substitutes: Substitute[];
+  correctors: string[];
   onEditTutorialClicked: (tutorial: TutorialWithFetchedCorrectors) => void;
   onDeleteTutorialClicked: (tutorial: TutorialWithFetchedCorrectors) => void;
-  substitutes: Substitute[];
 }
 
 function TutorialTableRow({
   tutorial,
   substitutes,
+  correctors,
   onEditTutorialClicked,
   onDeleteTutorialClicked,
   ...rest
@@ -72,14 +74,30 @@ function TutorialTableRow({
       {...rest}
     >
       <TableCell className={classes.wrappingCell}>
-        {tutorial.tutor && (
-          <Chip
-            key={tutorial.id}
-            label={`Tutor: ${tutorial.tutor.lastname}, ${tutorial.tutor.firstname}`}
-            className={classes.tutorChip}
-            color='primary'
-          />
-        )}
+        <div>
+          {tutorial.tutor && (
+            <Chip
+              key={tutorial.id}
+              label={`Tutor: ${tutorial.tutor.lastname}, ${tutorial.tutor.firstname}`}
+              className={classes.tutorChip}
+              color='primary'
+            />
+          )}
+
+          {correctors.length > 0 && (
+            <>
+              {correctors.map(cor => (
+                <Chip
+                  key={cor}
+                  label={`Korrektor: ${cor}`}
+                  color='secondary'
+                  className={classes.tutorChip}
+                />
+              ))}
+            </>
+          )}
+        </div>
+
         {substitutes.length > 0 && (
           <div>
             {substitutes.map(sub => (

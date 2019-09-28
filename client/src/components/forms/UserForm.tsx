@@ -1,5 +1,3 @@
-import { Button } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   RemoveRedEyeOutlined as RemoveRedEyeOutlinedIcon,
   RestoreOutlined as RestoreOutlinedIcon,
@@ -19,40 +17,6 @@ import FormikTextField from './components/FormikTextField';
 import { FormikTextFieldWithButtons } from './components/FormikTextFieldWithButtons';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    form: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gridColumnGap: theme.spacing(1),
-      gridRowGap: theme.spacing(2),
-    },
-    tutorialDropdown: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    chipContainer: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    textFieldButton: {
-      minWidth: 0,
-      height: 32,
-      width: 32,
-      marginLeft: theme.spacing(0.75),
-    },
-    twoColumns: {
-      gridColumn: '1 / span 2',
-    },
-    buttonRow: {
-      gridColumn: '1 / span 2',
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
-  })
-);
-
 export type UserFormSubmitCallback = FormikSubmitCallback<UserFormState>;
 
 export interface UserFormState {
@@ -60,6 +24,7 @@ export interface UserFormState {
   lastname: string;
   roles: Role[];
   tutorials: string[];
+  tutorialsToCorrect: string[];
   email: string;
   username: string;
   password: string;
@@ -88,6 +53,7 @@ function getInitialFormState(user?: UserWithFetchedTutorials): UserFormState {
       lastname: '',
       roles: [Role.TUTOR],
       tutorials: [],
+      tutorialsToCorrect: [],
       username: '',
       email: '',
       password: generateTemporaryPassword(),
@@ -99,6 +65,7 @@ function getInitialFormState(user?: UserWithFetchedTutorials): UserFormState {
     lastname: user.lastname,
     roles: user.roles,
     tutorials: user.tutorials.map(t => t.id),
+    tutorialsToCorrect: user.tutorialsToCorrect.map(t => t.id),
     username: user.username,
     email: user.email,
     password: '',
@@ -121,31 +88,6 @@ function getValidationSchema(
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
     password: passwordValidationSchema,
-    tutorials: Yup.array<string>().test({
-      test: function(this, value: unknown) {
-        const roles = this.resolve(Yup.ref('roles'));
-
-        if (!Array.isArray(roles)) {
-          // If roles is not an array consider this field as always valid.
-          return true;
-        }
-
-        if (roles.indexOf(Role.CORRECTOR) === -1) {
-          // If the edited user is NOT a corrector no special rules apply for this field.
-          return true;
-        }
-
-        if (!Array.isArray(value) || value.length === 0) {
-          return new Yup.ValidationError(
-            'Korrigierende brauchen mind. 1 Tutorial.',
-            value,
-            'tutorials'
-          );
-        }
-
-        return true;
-      },
-    }),
   };
 
   if (!isEditMode) {
@@ -171,7 +113,6 @@ function UserForm({
   className,
   ...other
 }: Props): JSX.Element {
-  const classes = useStyles();
   const [hidePassword, setHidePassword] = useState(true);
 
   const isEditMode = user !== undefined;
@@ -231,6 +172,17 @@ function UserForm({
             label='Rolle'
             required
             emptyPlaceholder='Keine Rollen vorhanden.'
+            onChange={(e: any) => {
+              const roles: string[] = e.target.value;
+
+              if (!roles.includes(Role.TUTOR)) {
+                setFieldValue('tutorials', []);
+              }
+
+              if (!roles.includes(Role.CORRECTOR)) {
+                setFieldValue('tutorialsToCorrect', []);
+              }
+            }}
             items={availableRoles}
             itemToString={role => Role[role].toString()}
             itemToValue={role => role}
@@ -238,28 +190,23 @@ function UserForm({
             isItemSelected={role => values['roles'].indexOf(role) > -1}
           />
 
-          {!isEditMode && (
-            <FormikTextFieldWithButtons
-              name='username'
-              label='Benutzername'
-              required
-              buttons={[
-                <Button
-                  key='generateUsername'
-                  variant='outlined'
-                  className={classes.textFieldButton}
-                  onClick={() =>
-                    generateUsername(
-                      { firstname: values.firstname, lastname: values.lastname },
-                      setFieldValue
-                    )
-                  }
-                >
-                  <RestoreOutlinedIcon fontSize='small' />
-                </Button>,
-              ]}
-            />
-          )}
+          <FormikTextFieldWithButtons
+            name='username'
+            label='Benutzername'
+            required
+            disabled={isEditMode}
+            buttons={[
+              {
+                key: 'generateUsername',
+                Icon: RestoreOutlinedIcon,
+                onClick: () =>
+                  generateUsername(
+                    { firstname: values.firstname, lastname: values.lastname },
+                    setFieldValue
+                  ),
+              },
+            ]}
+          />
 
           <FormikTextFieldWithButtons
             name='password'
@@ -267,30 +214,24 @@ function UserForm({
             type={hidePassword ? 'password' : 'text'}
             required={!isEditMode}
             buttons={[
-              <Button
-                key='hidePassword'
-                variant='outlined'
-                className={classes.textFieldButton}
-                onClick={() => setHidePassword(!hidePassword)}
-                color={hidePassword ? 'default' : 'secondary'}
-              >
-                <RemoveRedEyeOutlinedIcon fontSize='small' />
-              </Button>,
-
-              <Button
-                key='generatePassword'
-                variant='outlined'
-                className={classes.textFieldButton}
-                onClick={() => setFieldValue('password', generateTemporaryPassword())}
-              >
-                <ShuffleIcon fontSize='small' />
-              </Button>,
+              {
+                key: 'hidePassword',
+                Icon: RemoveRedEyeOutlinedIcon,
+                color: hidePassword ? 'default' : 'secondary',
+                onClick: () => setHidePassword(!hidePassword),
+              },
+              {
+                key: 'generatePassword',
+                Icon: ShuffleIcon,
+                onClick: () => setFieldValue('password', generateTemporaryPassword()),
+              },
             ]}
           />
 
           <FormikSelect
             name='tutorials'
             label='Tutorien'
+            helperText='Tutorien, die gehalten werden.'
             emptyPlaceholder='Keine Tutorien vorhanden.'
             items={tutorials}
             itemToString={tutorial => `Slot ${tutorial.slot}`}
@@ -298,6 +239,19 @@ function UserForm({
             multiple
             isItemSelected={tutorial => values['tutorials'].indexOf(tutorial.id) > -1}
             disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
+          />
+
+          <FormikSelect
+            name='tutorialsToCorrect'
+            label='Korrigierte Tutorien'
+            helperText='Tutorien, die korrigiert werden.'
+            emptyPlaceholder='Keine Tutorien vorhanden.'
+            items={tutorials}
+            itemToString={tutorial => `Slot ${tutorial.slot}`}
+            itemToValue={tutorial => tutorial.id}
+            multiple
+            isItemSelected={tutorial => values['tutorialsToCorrect'].indexOf(tutorial.id) > -1}
+            disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
           />
         </>
       )}

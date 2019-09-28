@@ -17,8 +17,9 @@ import {
   LoggedInUserSubstituteTutorialDTO,
   LoggedInUserTutorialDTO,
 } from '../../model/dtos/LoggedInUserDTO';
-import { DocumentNotFoundError } from '../../model/Errors';
+import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import Logger from '../../helpers/Logger';
 
 class UserService {
   public async getAllUsers(): Promise<User[]> {
@@ -69,62 +70,85 @@ class UserService {
     return new UserCredentials(user.id, user.username, user.password);
   }
 
-  public async createUser(dto: CreateUserDTO): Promise<User> {
-    const promises: Promise<TutorialDocument>[] = [];
-    dto.tutorials.forEach(id => {
-      promises.push(tutorialService.getDocumentWithID(id));
-    });
-
-    const tutorials = await Promise.all(promises);
+  public async createUser({
+    tutorials: tutorialIds,
+    tutorialsToCorrect: tutorialsToCorrectIds,
+    password,
+    email,
+    ...dto
+  }: CreateUserDTO): Promise<User> {
+    const tutorials = await this.getAllTutorials(tutorialIds);
+    const tutorialsToCorrect = await this.getAllTutorials(tutorialsToCorrectIds);
 
     const userDoc: TypegooseDocument<UserSchema> = {
       ...dto,
-      tutorials,
-      temporaryPassword: dto.password,
-      email: dto.email || '',
+      password,
+      temporaryPassword: password,
+      email: email || '',
+      // These will be added later.
+      tutorials: [],
+      tutorialsToCorrect: [],
     };
 
-    const createdUser = await UserModel.create(userDoc);
+    const createdUser = (await UserModel.create(userDoc)) as EncryptedDocument<UserDocument>;
+    createdUser.decryptFieldsSync();
 
     for (const doc of tutorials) {
-      doc.tutor = createdUser;
-      await doc.save();
+      this.makeUserTutorOfTutorial(createdUser, doc, { saveUser: false });
     }
 
-    return this.getUserOrReject(createdUser);
+    for (const doc of tutorialsToCorrect) {
+      this.makeUserCorrectorOfTutorial(createdUser, doc, { saveUser: false });
+    }
+
+    return this.getUserOrReject(await createdUser.save());
   }
 
-  public async updateUser(id: string, { tutorials, ...dto }: UserDTO): Promise<User> {
+  public async updateUser(
+    id: string,
+    { tutorials, tutorialsToCorrect, ...dto }: UserDTO
+  ): Promise<User> {
     const user: UserDocument = await this.getDocumentWithId(id);
+    const currentTutorials: string[] = user.tutorials.map(getIdOfDocumentRef);
+    const currentTutorialsToCorrect = user.tutorialsToCorrect.map(getIdOfDocumentRef);
 
-    const tutorialsToRemoveUserFrom: string[] = _.difference(
-      user.tutorials.map(getIdOfDocumentRef),
-      tutorials
+    const tutorialsToRemoveUserFrom = await this.getAllTutorials(
+      _.difference(currentTutorials, tutorials)
     );
-
-    const tutorialsToAddUserTo: string[] = _.difference(
-      tutorials,
-      user.tutorials.map(getIdOfDocumentRef)
+    const tutorialsToAddUserTo = await this.getAllTutorials(
+      _.difference(tutorials, currentTutorials)
     );
-
-    for (const id of tutorialsToRemoveUserFrom) {
-      const tutorial = await tutorialService.getDocumentWithID(id);
-
-      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
-    }
-
-    for (const id of tutorialsToAddUserTo) {
-      const tutorial = await tutorialService.getDocumentWithID(id);
-
-      await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
-    }
+    const tutorialsToRemoveUserAsCorrectorFrom = await this.getAllTutorials(
+      _.difference(currentTutorialsToCorrect, tutorialsToCorrect)
+    );
+    const tutorialsToAddUserAsCorrectorTo = await this.getAllTutorials(
+      _.difference(tutorialsToCorrect, currentTutorialsToCorrect)
+    );
 
     // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
-    user.roles = dto.roles;
-    user.tutorials = [...user.tutorials];
     user.email = dto.email;
+    user.roles = dto.roles;
+
+    for (const tutorial of tutorialsToRemoveUserFrom) {
+      await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
+    }
+
+    for (const tutorial of tutorialsToAddUserTo) {
+      await this.makeUserTutorOfTutorial(user, tutorial, { saveUser: false });
+    }
+
+    for (const tutorial of tutorialsToRemoveUserAsCorrectorFrom) {
+      await this.removeUserAsCorrectorFromTutorial(user, tutorial, { saveUser: false });
+    }
+
+    for (const tutorial of tutorialsToAddUserAsCorrectorTo) {
+      await this.makeUserCorrectorOfTutorial(user, tutorial, { saveUser: false });
+    }
+
+    user.tutorials = [...user.tutorials];
+    user.tutorialsToCorrect = [...user.tutorialsToCorrect];
 
     const updatedUser = await user.save();
 
@@ -141,6 +165,14 @@ class UserService {
         : await tutorialService.getDocumentWithID(doc.toString());
 
       await this.removeUserAsTutorFromTutorial(user, tutorial);
+    }
+
+    for (const doc of user.tutorialsToCorrect) {
+      const tutorial = isDocument(doc)
+        ? doc
+        : await tutorialService.getDocumentWithID(doc.toString());
+
+      await this.removeUserAsCorrectorFromTutorial(user, tutorial);
     }
 
     return this.getUserOrReject(await user.remove());
@@ -250,14 +282,29 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ) {
-    if (tutorial.tutor) {
+    if (!this.hasUserRole(user, Role.TUTOR)) {
+      throw new BadRequestError(
+        'Only users with the TUTOR role can be set as a tutor of a tutorial.'
+      );
+    }
+
+    if (tutorial.tutor && !this.hasTutorialTutor(tutorial, user)) {
       const oldTutor = await this.getDocumentWithId(getIdOfDocumentRef(tutorial.tutor));
 
       await this.removeUserAsTutorFromTutorial(oldTutor, tutorial, { saveUser: true });
     }
 
-    tutorial.tutor = user;
-    user.tutorials.push(tutorial);
+    if (!this.hasTutorialTutor(tutorial, user)) {
+      tutorial.tutor = user;
+    } else {
+      Logger.warn('Tutorial should get a tutor which already is the tutor of it.');
+    }
+
+    if (!this.hasUserTutorial(user, tutorial)) {
+      user.tutorials.push(tutorial);
+    } else {
+      Logger.warn('User should be added to a tutorial as tutor which he already holds.');
+    }
 
     if (saveUser) {
       await Promise.all([tutorial.save(), user.save()]);
@@ -282,6 +329,12 @@ class UserService {
     tutorial: TutorialDocument,
     { saveUser }: { saveUser?: boolean } = {}
   ): Promise<void> {
+    if (!this.hasTutorialTutor(tutorial, user)) {
+      throw new BadRequestError(
+        'A user who is NOT a tutor of the tutorial should be removed as tutor from the tutorial. This is a no-op.'
+      );
+    }
+
     const tutorialId: string = tutorial.id;
     tutorial.tutor = undefined;
 
@@ -294,6 +347,85 @@ class UserService {
     }
   }
 
+  /**
+   * Adds the given User as corrector to the given TutorialDocument.
+   *
+   * This will adjust the TutorialDocument to include the User as corrector afterwards.
+   *
+   * If the user does __not__ have the role 'CORRECTOR' a `BadRequestError` is thrown. Both cases skip saving the document(s) completly.
+   *
+   * By default this function will __not__ save the UserDocument of the corrector after adding it to the TutorialDocument. To do so provide the `saveUser` option with a truthy value.
+   *
+   * @param user UserDocument which is the corrector
+   * @param tutorial Tutorial which the user should correct
+   * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
+   */
+  public async makeUserCorrectorOfTutorial(
+    user: UserDocument,
+    tutorial: TutorialDocument,
+    { saveUser }: { saveUser?: boolean } = {}
+  ): Promise<void> {
+    if (!this.hasUserRole(user, Role.CORRECTOR)) {
+      throw new BadRequestError(
+        'Only users with the CORRECTOR role can be set as a corrector of a tutorial.'
+      );
+    }
+
+    if (!this.hasTutorialCorrector(tutorial, user)) {
+      tutorial.correctors.push(user);
+    } else {
+      Logger.warn('User should be added as corrector to a tutorial which he already corrects.');
+    }
+
+    if (!this.hasUserTutorialToCorrect(user, tutorial)) {
+      user.tutorialsToCorrect.push(tutorial);
+    } else {
+      Logger.warn('Tutorial should be added to the User which he already correct.');
+    }
+
+    const savePromises: Promise<unknown>[] = [];
+
+    savePromises.push(tutorial.save());
+
+    if (saveUser) {
+      savePromises.push(user.save());
+    }
+
+    await Promise.all(savePromises);
+  }
+
+  /**
+   * Removes the given user as corrector from the tutorial.
+   *
+   * The given user is removed from the TutorialDocument as corrector. If the user was NOT a corrector beforehand the TutorialDocument does not change. However, the saving __will be done__.
+   *
+   * By default this function will __not__ save the provided UserDocument. To do so provide the `saveUser` option with a truthy value.
+   *
+   * @param user User to remove as corrector.
+   * @param tutorial Tutorial to remove the corrector from.
+   * @param options _(optional)_ Special options to be passed. Defaults to an empty object.
+   */
+  public async removeUserAsCorrectorFromTutorial(
+    user: UserDocument,
+    tutorial: TutorialDocument,
+    { saveUser }: { saveUser?: boolean } = {}
+  ): Promise<void> {
+    tutorial.correctors = tutorial.correctors.filter(c => getIdOfDocumentRef(c) !== user.id);
+    user.tutorialsToCorrect = user.tutorialsToCorrect.filter(
+      t => getIdOfDocumentRef(t) !== tutorial.id
+    );
+
+    const savePromises: Promise<unknown>[] = [];
+
+    savePromises.push(tutorial.save());
+
+    if (saveUser) {
+      savePromises.push(user.save());
+    }
+
+    await Promise.all(savePromises);
+  }
+
   public async getUserOrReject(user: UserDocument | null): Promise<User> {
     if (!user) {
       return this.rejectUserNotFound();
@@ -302,7 +434,17 @@ class UserService {
     // Make sure we get a document with decrypted fields.
     (user as EncryptedDocument<UserDocument>).decryptFieldsSync();
 
-    const { id, firstname, lastname, roles, tutorials, temporaryPassword, username, email } = user;
+    const {
+      id,
+      firstname,
+      lastname,
+      roles,
+      tutorials,
+      tutorialsToCorrect,
+      temporaryPassword,
+      username,
+      email,
+    } = user;
 
     return {
       id,
@@ -311,6 +453,7 @@ class UserService {
       lastname,
       roles,
       tutorials: tutorials.map(getIdOfDocumentRef),
+      tutorialsToCorrect: tutorialsToCorrect.map(getIdOfDocumentRef),
       temporaryPassword,
       email,
     };
@@ -328,6 +471,7 @@ class UserService {
         email: 'admin@admin.admin',
         roles: [Role.ADMIN],
         tutorials: [],
+        tutorialsToCorrect: [],
         username: 'admin',
         password: 'admin',
       };
@@ -336,6 +480,30 @@ class UserService {
     } catch (err) {
       throw err;
     }
+  }
+
+  private hasUserTutorial(user: UserDocument, tutorial: TutorialDocument): boolean {
+    return user.tutorials.findIndex(t => getIdOfDocumentRef(t) === tutorial.id) > -1;
+  }
+
+  private hasTutorialTutor(tutorial: TutorialDocument, user: UserDocument): boolean {
+    return !!tutorial.tutor && getIdOfDocumentRef(tutorial.tutor) === user.id;
+  }
+
+  private hasTutorialCorrector(tutorial: TutorialDocument, user: UserDocument): boolean {
+    return tutorial.correctors.findIndex(c => getIdOfDocumentRef(c) === user.id) > -1;
+  }
+
+  private hasUserTutorialToCorrect(user: UserDocument, tutorial: TutorialDocument): boolean {
+    return user.tutorialsToCorrect.findIndex(t => getIdOfDocumentRef(t) === tutorial.id) > -1;
+  }
+
+  private hasUserRole(user: UserDocument, role: Role): boolean {
+    return user.roles.includes(role);
+  }
+
+  private async getAllTutorials(ids: string[]): Promise<TutorialDocument[]> {
+    return Promise.all(ids.map(id => tutorialService.getDocumentWithID(id)));
   }
 }
 

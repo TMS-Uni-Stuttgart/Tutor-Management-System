@@ -13,6 +13,7 @@ const UserDTOSchema = Yup.object().shape<UserDTO>({
     .required(),
   roles: Yup.array<Role>().required(),
   tutorials: TutorialIdListSchema,
+  tutorialsToCorrect: TutorialIdListSchema,
 });
 
 const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
@@ -25,6 +26,7 @@ const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
   password: Yup.string().required(),
   roles: Yup.array<Role>().required(),
   tutorials: TutorialIdListSchema,
+  tutorialsToCorrect: TutorialIdListSchema,
 });
 
 export function validateAgainstCreateUserDTO(

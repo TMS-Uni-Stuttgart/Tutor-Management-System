@@ -113,7 +113,7 @@ function Drawer({
     throw new Error('Drawer without a user should be rendered. This is forbidden.');
   }
 
-  const { tutorials, substituteTutorials } = userData;
+  const { tutorials, tutorialsToCorrect, substituteTutorials } = userData;
   const {
     userRoutesWithoutTutorialRoutes,
     tutorialRoutes,
@@ -158,6 +158,21 @@ function Drawer({
               tutorial={tutorial}
               tutorialRoutes={tutorialRoutes}
               isDrawerOpen={!!open}
+            />
+          </React.Fragment>
+        ))}
+
+        {tutorialsToCorrect.map(tutorial => (
+          <React.Fragment key={tutorial.id}>
+            <Divider />
+
+            <TutorialSubList
+              tutorial={tutorial}
+              tutorialRoutes={tutorialRoutes.filter(route =>
+                isRoleMatching([Role.CORRECTOR], route.roles)
+              )}
+              isDrawerOpen={!!open}
+              isTutorialToCorrect
             />
           </React.Fragment>
         ))}

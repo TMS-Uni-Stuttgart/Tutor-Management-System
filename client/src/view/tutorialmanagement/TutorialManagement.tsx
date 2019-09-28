@@ -211,6 +211,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
           createRowFromItem={tutorial => (
             <TutorialTableRow
               tutorial={tutorial}
+              correctors={tutorial.correctors.map(corr => getNameOfEntity(corr))}
               substitutes={Object.entries(tutorial.substitutes)
                 .map(([date, id]) => {
                   const tutor = tutors.find(t => t.id === id);
