@@ -71,7 +71,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   }, [enqueueSnackbar, getUsersAndFetchTutorials, getAllTutorials]);
 
   const handleCreateUser: UserFormSubmitCallback = async (
-    { firstname, lastname, tutorials, roles, username, password, email },
+    { firstname, lastname, tutorials, tutorialsToCorrect, roles, username, password, email },
     { resetForm, setSubmitting }
   ) => {
     const userToCreate: CreateUserDTO = {
@@ -80,6 +80,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       email,
       roles,
       tutorials,
+      tutorialsToCorrect,
       username,
       password,
     };
@@ -98,7 +99,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   };
 
   const editUser: (user: UserWithFetchedTutorials) => UserFormSubmitCallback = user => async (
-    { firstname, lastname, roles, tutorials, password, email },
+    { firstname, lastname, roles, tutorials, tutorialsToCorrect, password, email },
     { setSubmitting }
   ) => {
     const userInformation: UserDTO = {
@@ -107,6 +108,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       email,
       roles,
       tutorials,
+      tutorialsToCorrect,
     };
 
     try {
@@ -138,7 +140,10 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       .then(() => {
         setUsers(users.filter(u => u.id !== user.id));
       })
-      .finally(() => dialog.hide());
+      .finally(() => {
+        dialog.hide();
+        enqueueSnackbar(`Nutzer wurde erfolgreich gelöscht.`, { variant: 'success' });
+      });
   }
 
   function handleDeleteUser(user: UserWithFetchedTutorials) {

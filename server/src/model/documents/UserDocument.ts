@@ -33,7 +33,8 @@ export class UserCredentials {
   this.password = hashedPassword;
   next();
 })
-export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorials'> {
+export class UserSchema extends Typegoose
+  implements Omit<User, 'id' | 'tutorials' | 'tutorialsToCorrect'> {
   @prop({ required: true })
   firstname!: string;
 
@@ -54,6 +55,9 @@ export class UserSchema extends Typegoose implements Omit<User, 'id' | 'tutorial
 
   @arrayProp({ required: true, itemsRef: { name: 'TutorialSchema' } })
   tutorials!: Ref<TutorialDocument>[];
+
+  @arrayProp({ itemsRef: { name: 'TutorialSchema' }, default: [] })
+  tutorialsToCorrect!: Ref<TutorialDocument>[];
 
   @prop({ required: true })
   password!: string;
