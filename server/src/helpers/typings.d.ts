@@ -1,5 +1,5 @@
 import { Scheincriteria } from '../model/scheincriteria/Scheincriteria';
-import { Typegoose } from 'typegoose';
+import { Typegoose } from '@hasezoey/typegoose';
 
 type FunctionKeys<T> = ({ [P in keyof T]: T[P] extends Function ? P : never })[keyof T];
 

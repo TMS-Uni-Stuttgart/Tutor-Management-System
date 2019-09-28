@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
-import { isDocument } from 'typegoose/lib/utils';
+import { isDocument } from '@hasezoey/typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';

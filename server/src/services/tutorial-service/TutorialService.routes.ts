@@ -2,7 +2,7 @@ import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial } from 'shared/dist/model/Tutorial';
-import { User } from 'shared/dist/model/User';
+import { User, TutorInfo } from 'shared/dist/model/User';
 import {
   validateAgainstTutorialDTO,
   validateAgainstSubstituteDTO,
@@ -76,6 +76,21 @@ tutorialRouter.delete('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) =
 
   res.status(204).send();
 });
+
+tutorialRouter.get(
+  '/:id/tutor',
+  ...checkAccess(
+    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
+    isUserTutorOfTutorial,
+    isUserSubstituteOfTutorial
+  ),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const tutorInfo: TutorInfo = await tutorialService.getTutorInfoOfTutorial(id);
+
+    res.json(tutorInfo);
+  }
+);
 
 tutorialRouter.get(
   '/:id/corrector',

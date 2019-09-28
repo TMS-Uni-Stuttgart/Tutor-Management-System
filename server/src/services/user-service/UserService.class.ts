@@ -3,7 +3,7 @@ import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, LoggedInUser, User, UserDTO } from 'shared/dist/model/User';
-import { isDocument } from 'typegoose';
+import { isDocument } from '@hasezoey/typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';

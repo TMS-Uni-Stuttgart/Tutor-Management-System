@@ -3,9 +3,9 @@ import _ from 'lodash';
 import { Types } from 'mongoose';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
-import { User } from 'shared/dist/model/User';
-import { Ref } from 'typegoose';
-import { isDocument } from 'typegoose/lib/utils';
+import { User, TutorInfo } from 'shared/dist/model/User';
+import { Ref } from '@hasezoey/typegoose';
+import { isDocument } from '@hasezoey/typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
@@ -155,6 +155,20 @@ class TutorialService {
     }
 
     return tutorial;
+  }
+
+  public async getTutorInfoOfTutorial(id: string): Promise<TutorInfo> {
+    const tutorial = await this.getDocumentWithID(id);
+
+    if (!tutorial.tutor) {
+      throw new BadRequestError('Tutorial does not have a tutor.');
+    }
+
+    const { lastname, firstname } = await userService.getDocumentWithId(
+      getIdOfDocumentRef(tutorial.tutor)
+    );
+
+    return { lastname, firstname };
   }
 
   public async getCorrectorsOfTutorial(id: string): Promise<User[]> {
