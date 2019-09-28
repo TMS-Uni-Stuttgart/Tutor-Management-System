@@ -3,7 +3,7 @@ import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
-import { isDocument } from 'typegoose/lib/utils';
+// import { isDocument } from '@hasezoey/typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import {
@@ -20,6 +20,7 @@ import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import { isDocument } from '@hasezoey/typegoose';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {

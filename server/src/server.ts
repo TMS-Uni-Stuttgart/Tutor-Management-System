@@ -52,6 +52,7 @@ function connectToDB(): Promise<void> {
 
         await mongoose.connect(databaseConfig.databaseURL, {
           useNewUrlParser: true,
+          useUnifiedTopology: true,
           ...databaseConfig.config,
         });
 
