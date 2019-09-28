@@ -101,6 +101,7 @@ function CustomSelect<T>({
   const classes = useStyles();
   const inputLabel = useRef<HTMLLabelElement>(null);
   const [labelWidth, setLabelWidth] = useState(0);
+
   useEffect(() => {
     const label = inputLabel.current;
     setLabelWidth(label ? label.offsetWidth : 0);
@@ -143,7 +144,7 @@ function CustomSelect<T>({
         })}
 
         {items.length === 0 && (
-          <MenuItem value=''>
+          <MenuItem value='' disabled>
             <ListItemText primary={emptyPlaceholder} />
           </MenuItem>
         )}
