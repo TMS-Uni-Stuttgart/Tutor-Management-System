@@ -217,22 +217,20 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
     const studentsPrintObjects = students
       .sort((a, b) => {
-        const nameOfA = `${a.lastname}, ${a.firstname}`;
-        const nameOfB = `${b.lastname}, ${b.firstname}`;
+        const nameOfA = getNameOfEntity(a, { lastNameFirst: true });
+        const nameOfB = getNameOfEntity(b, { lastNameFirst: true });
 
         return nameOfA.localeCompare(nameOfB);
       })
       .map(({ firstname, lastname }) => ({
-        firstname,
-        lastname,
+        name: getNameOfEntity({ lastname, firstname }, { lastNameFirst: true }),
         signing: '',
       }));
 
     printJS({
       printable: studentsPrintObjects,
       properties: [
-        { field: 'lastname', displayName: 'Nachname' },
-        { field: 'firstname', displayName: 'Vorname' },
+        { field: 'name', displayName: 'Name' },
         { field: 'signing', displayName: 'Unterschrift' },
       ],
       type: 'json',
