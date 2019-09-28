@@ -6,8 +6,9 @@ import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
 import { PointMap } from 'shared/dist/model/Points';
 
-export interface UserWithFetchedTutorials extends Omit<User, 'tutorials'> {
+export interface UserWithFetchedTutorials extends Omit<User, 'tutorials' | 'tutorialsToCorrect'> {
   tutorials: Tutorial[];
+  tutorialsToCorrect: Tutorial[];
 }
 
 export interface TutorialWithFetchedTutor extends Omit<Tutorial, 'tutor'> {

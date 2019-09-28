@@ -5,6 +5,16 @@ import { User, CreateUserDTO, UserDTO, NewPasswordDTO } from 'shared/dist/model/
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { MailingStatus } from 'shared/dist/model/Mail';
+import { getTutorial } from './Tutorial';
+
+async function fetchTutorialsOfUser(user: User): Promise<UserWithFetchedTutorials> {
+  const tutorials = await getTutorialsOfUser(user.id);
+  const tutorialsToCorrect: Tutorial[] = await Promise.all(
+    user.tutorialsToCorrect.map(tutId => getTutorial(tutId))
+  );
+
+  return { ...user, tutorials, tutorialsToCorrect };
+}
 
 export async function getUsers(): Promise<User[]> {
   const response = await axios.get<User[]>('user');
@@ -37,7 +47,7 @@ export async function getUsersAndFetchTutorials(): Promise<UserWithFetchedTutori
   const promises: Promise<UserWithFetchedTutorials>[] = [];
 
   for (const user of users) {
-    promises.push(getTutorialsOfUser(user.id).then(tutorials => ({ ...user, tutorials })));
+    promises.push(fetchTutorialsOfUser(user));
   }
 
   return Promise.all(promises);
@@ -57,9 +67,8 @@ export async function createUserAndFetchTutorials(
   userInformation: CreateUserDTO
 ): Promise<UserWithFetchedTutorials> {
   const user = await createUser(userInformation);
-  const tutorials = await getTutorialsOfUser(user.id);
 
-  return { ...user, tutorials };
+  return fetchTutorialsOfUser(user);
 }
 
 export async function editUser(userid: string, userInformation: UserDTO): Promise<User> {
@@ -77,9 +86,8 @@ export async function editUserAndFetchTutorials(
   userInformation: UserDTO
 ): Promise<UserWithFetchedTutorials> {
   const user = await editUser(userid, userInformation);
-  const tutorials = await getTutorialsOfUser(user.id);
 
-  return { ...user, tutorials };
+  return fetchTutorialsOfUser(user);
 }
 
 export async function getTutorialsOfUser(userid: string): Promise<Tutorial[]> {

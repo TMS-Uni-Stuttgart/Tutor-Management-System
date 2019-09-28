@@ -65,7 +65,7 @@ function getInitialFormState(user?: UserWithFetchedTutorials): UserFormState {
     lastname: user.lastname,
     roles: user.roles,
     tutorials: user.tutorials.map(t => t.id),
-    tutorialsToCorrect: [...user.tutorialsToCorrect],
+    tutorialsToCorrect: user.tutorialsToCorrect.map(t => t.id),
     username: user.username,
     email: user.email,
     password: '',

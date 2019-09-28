@@ -63,9 +63,22 @@ function UserTableRow({
             key={tutorial.id}
             label={getDisplayStringForTutorial(tutorial)}
             className={classes.tutorialChip}
-            color='default'
+            color='primary'
           />
         ))}
+
+        {user.tutorialsToCorrect.length > 0 && (
+          <div>
+            {user.tutorialsToCorrect.map(tutorial => (
+              <Chip
+                key={tutorial.id}
+                label={`Korrigiert: ${getDisplayStringForTutorial(tutorial)}`}
+                className={classes.tutorialChip}
+                color='default'
+              />
+            ))}
+          </div>
+        )}
       </TableCell>
     </PaperTableRow>
   );
