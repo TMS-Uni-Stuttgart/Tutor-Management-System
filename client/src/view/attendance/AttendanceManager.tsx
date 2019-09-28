@@ -4,8 +4,11 @@ import { compareAsc, format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
 import printJS from 'print-js';
 import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
+import { LoggedInUser, TutorInfo } from 'shared/dist/model/User';
 import CustomSelect from '../../components/CustomSelect';
 import DateOfTutorialSelection from '../../components/DateOfTutorialSelection';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
@@ -14,14 +17,11 @@ import {
   TutorialWithFetchedStudents as Tutorial,
 } from '../../typings/types';
 import {
+  getDisplayStringForTutorial,
   getNameOfEntity,
   parseDateToMapKey,
-  getDisplayStringForTutorial,
 } from '../../util/helperFunctions';
 import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import { LoggedInUser } from 'shared/dist/model/User';
-import { Attendance, AttendanceState, AttendanceDTO } from 'shared/dist/model/Attendance';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,8 +62,6 @@ function getAvailableDates(
     const substituteTutorial = user.substituteTutorials.find(sub => sub.id === tutorial.id);
 
     if (substituteTutorial) {
-      console.log(substituteTutorial.dates);
-
       return tutorial.dates.filter(
         date => substituteTutorial.dates.findIndex(d => compareAsc(date, d) === 0) !== -1
       );
@@ -84,6 +82,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
+
+  const [tutorInfo, setTutorInfo] = useState<TutorInfo | undefined>();
   const [tutorial, setTutorial] = useState<Tutorial | undefined>();
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
 
@@ -93,6 +93,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     setAttendanceOfStudent,
     getAllTutorialsAndFetchStudents,
     fetchTeamsOfStudents,
+    getTutorInfoOfTutorial,
   } = useAxios();
 
   useEffect(() => {
@@ -102,12 +103,13 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   useEffect(() => {
     if (tutorial) {
       fetchTeamsOfStudents(tutorial.students).then(response => setStudents(response));
+      getTutorInfoOfTutorial(tutorial.id).then(info => setTutorInfo(info));
     } else {
       setStudents([]);
     }
 
     setDate(undefined);
-  }, [tutorial, fetchTeamsOfStudents]);
+  }, [tutorial, fetchTeamsOfStudents, getTutorInfoOfTutorial]);
 
   useEffect(() => {
     if (!tutorialFromProps) {
@@ -203,8 +205,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     }
 
     const tutorialDisplay = getDisplayStringForTutorial(tutorial);
-    const tutorName = tutorial.tutor
-      ? `${tutorial.tutor.firstname} ${tutorial.tutor.lastname}`
+    const tutorName = tutorInfo
+      ? getNameOfEntity(tutorInfo, { lastNameFirst: true })
       : 'KEIN TUTOR';
 
     const substitutePart = isSubstituteTutor(tutorial, userData)
@@ -215,22 +217,20 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
     const studentsPrintObjects = students
       .sort((a, b) => {
-        const nameOfA = `${a.lastname}, ${a.firstname}`;
-        const nameOfB = `${b.lastname}, ${b.firstname}`;
+        const nameOfA = getNameOfEntity(a, { lastNameFirst: true });
+        const nameOfB = getNameOfEntity(b, { lastNameFirst: true });
 
         return nameOfA.localeCompare(nameOfB);
       })
       .map(({ firstname, lastname }) => ({
-        firstname,
-        lastname,
+        name: getNameOfEntity({ lastname, firstname }, { lastNameFirst: true }),
         signing: '',
       }));
 
     printJS({
       printable: studentsPrintObjects,
       properties: [
-        { field: 'lastname', displayName: 'Nachname' },
-        { field: 'firstname', displayName: 'Vorname' },
+        { field: 'name', displayName: 'Name' },
         { field: 'signing', displayName: 'Unterschrift' },
       ],
       type: 'json',
@@ -274,7 +274,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               color='primary'
               className={classes.printButton}
               onClick={printAttendanceSheet}
-              disabled={!tutorial || !date}
+              disabled={!tutorial || !date || !tutorInfo}
             >
               Unterschriftenliste ausdrucken
             </Button>

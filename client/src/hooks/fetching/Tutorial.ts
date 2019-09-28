@@ -1,6 +1,6 @@
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
-import { User } from 'shared/dist/model/User';
+import { User, TutorInfo } from 'shared/dist/model/User';
 import {
   StudentByTutorialSlotSummaryMap,
   StudentScheinCriteriaSummaryMap,
@@ -41,7 +41,7 @@ export async function getAllTutorialsAndFetchTutor(): Promise<TutorialWithFetche
 }
 
 export async function getAllTutorialsAndFetchStudents(): Promise<TutorialWithFetchedStudents[]> {
-  const tutorials = await getAllTutorialsAndFetchTutor();
+  const tutorials = await getAllTutorials();
   const promises: Promise<TutorialWithFetchedStudents>[] = [];
 
   for (const tutorial of tutorials) {
@@ -87,7 +87,7 @@ export async function getTutorialAndFetchTutor(id: string): Promise<TutorialWith
 export async function getTutorialAndFetchTutorAndStudents(
   id: string
 ): Promise<TutorialWithFetchedStudents> {
-  const tutorial = await getTutorialAndFetchTutor(id);
+  const tutorial = await getTutorial(id);
   const students = await getStudentsOfTutorial(tutorial.id);
 
   return { ...tutorial, students };
@@ -170,15 +170,15 @@ export async function deleteTutorial(id: string): Promise<void> {
   }
 }
 
-// export async function getTutorOfTutorial(id: string): Promise<User | undefined> {
-//   const response = await axios.get<User | undefined>(`tutorial/${id}/user`);
+export async function getTutorInfoOfTutorial(id: string): Promise<TutorInfo | undefined> {
+  const response = await axios.get<TutorInfo | undefined>(`tutorial/${id}/tutor`);
 
-//   if (response.status === 200) {
-//     return response.data;
-//   }
+  if (response.status === 200) {
+    return response.data;
+  }
 
-//   return Promise.reject(`Wrong response code (${response.status}).`);
-// }
+  return Promise.reject(`Wrong response code (${response.status}).`);
+}
 
 export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
   const response = await axios.get<Student[]>(`tutorial/${id}/student`);

@@ -3,6 +3,7 @@ services:
   mongo:
     image: mongo
     container_name: mongo
+    restart: always
     ports:
       - 27017:27017
     networks:
@@ -28,6 +29,7 @@ services:
   tms-server:
     image: tutor-management-system
     container_name: tms-server
+    restart: on-failure:1
     depends_on:
       - mongo
     ports:

@@ -107,7 +107,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
       setTutorials(allTutorials);
 
       enqueueSnackbar('Tutorium wurde erstellt.', { variant: 'success' });
-      resetForm({ values: getInitialTutorialFormValues(allTutorials) });
+      resetForm({ values: getInitialTutorialFormValues() });
     } catch (reason) {
       console.log(reason);
     } finally {
@@ -148,7 +148,6 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
       content: (
         <TutorialForm
           tutorial={tutorial}
-          allTutorials={tutorials}
           tutors={tutors}
           onSubmit={editTutorial(tutorial)}
           onCancelClicked={() => dialog.hide()}
@@ -200,13 +199,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
       ) : (
         <TableWithForm
           title='Neues Tutorium erstellen'
-          form={
-            <TutorialForm
-              tutors={tutors}
-              onSubmit={handleCreateTutorial}
-              allTutorials={tutorials}
-            />
-          }
+          form={<TutorialForm tutors={tutors} onSubmit={handleCreateTutorial} />}
           items={tutorials}
           createRowFromItem={tutorial => (
             <TutorialTableRow
