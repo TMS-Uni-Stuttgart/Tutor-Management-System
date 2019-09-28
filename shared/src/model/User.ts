@@ -36,3 +36,8 @@ export interface CreateUserDTO extends UserDTO {
 export interface NewPasswordDTO {
   password: string;
 }
+
+export interface TutorInfo {
+  lastname: string;
+  firstname: string;
+}
