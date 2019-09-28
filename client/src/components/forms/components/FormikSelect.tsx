@@ -24,13 +24,13 @@ function FormikSelect<T>({ onChange, name, helperText, ...other }: Props<T>): JS
 
   return (
     <Field name={name}>
-      {({ field, form }: FieldProps) => (
+      {({ field, meta: { touched, error } }: FieldProps) => (
         <CustomSelect
           {...other}
           {...field}
           onChange={handleChange(field.onChange)}
-          helperText={(!!form.touched[field.name] && form.errors[field.name]) || helperText}
-          error={Boolean(form.touched[field.name]) && Boolean(form.errors[field.name])}
+          helperText={!!touched && error}
+          error={touched && !!error}
         />
       )}
     </Field>

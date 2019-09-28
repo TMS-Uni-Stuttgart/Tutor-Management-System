@@ -66,7 +66,7 @@ export function FormikTextFieldWithButtons({
 
   return (
     <Field name={name}>
-      {({ field, form }: FieldProps) => (
+      {({ field, meta: { touched, error } }: FieldProps) => (
         <div {...DivProps}>
           <TextField
             label={label}
@@ -74,7 +74,7 @@ export function FormikTextFieldWithButtons({
             fullWidth
             {...field}
             {...(TextFieldProps as any)}
-            error={Boolean(form.touched[field.name]) && Boolean(form.errors[field.name])}
+            error={touched && !!error}
             onFocus={e => e.target.select()}
             InputProps={{
               endAdornment: <>{buttonComps}</>,

@@ -28,7 +28,7 @@ function FormikTextField({
 
   return (
     <Field name={name}>
-      {({ field, form }: FieldProps) => (
+      {({ field, form, meta: { error, touched } }: FieldProps) => (
         <TextField
           fullWidth
           InputProps={{
@@ -45,8 +45,8 @@ function FormikTextField({
               form.setFieldValue(name, e.target.value);
             }
           }}
-          helperText={!!form.touched[field.name] && form.errors[field.name]}
-          error={Boolean(form.touched[field.name]) && Boolean(form.errors[field.name])}
+          helperText={!!touched && error}
+          error={touched && !!error}
           onFocus={e => e.target.select()}
         >
           {children}

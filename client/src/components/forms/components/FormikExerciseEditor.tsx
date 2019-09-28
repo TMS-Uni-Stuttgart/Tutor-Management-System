@@ -269,7 +269,7 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
             Neue Aufgabe hinzufügen
           </Button>
 
-          <ErrorMessage component='div' name={name} className={classes.errorMessage} />
+          {/* <ErrorMessage component='div' name={name} className={classes.errorMessage} /> */}
         </div>
       )}
     />
