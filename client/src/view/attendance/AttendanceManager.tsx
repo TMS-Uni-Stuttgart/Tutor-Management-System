@@ -62,6 +62,8 @@ function getAvailableDates(
     const substituteTutorial = user.substituteTutorials.find(sub => sub.id === tutorial.id);
 
     if (substituteTutorial) {
+      console.log(substituteTutorial.dates);
+
       return tutorial.dates.filter(
         date => substituteTutorial.dates.findIndex(d => compareAsc(date, d) === 0) !== -1
       );
@@ -158,7 +160,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     const attendance: Attendance | undefined = student.attendance[parseDateToMapKey(date)];
     const attendanceDTO: AttendanceDTO = {
       state: attendanceState,
-      date: date.toISOString(),
+      date: date.toDateString(),
       note: attendance ? attendance.note : '',
     };
 
@@ -179,7 +181,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       const attendance: Attendance | undefined = student.attendance[parseDateToMapKey(date)];
       const attendanceDTO: AttendanceDTO = {
         state: attendance.state,
-        date: date.toISOString(),
+        date: date.toDateString(),
         note,
       };
 
@@ -282,8 +284,12 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
             <TableWithPadding
               items={students}
               createRowFromItem={student => {
-                const dateWithoutMs: string = parseDateToMapKey(date);
-                const attendance: Attendance | undefined = student.attendance[dateWithoutMs];
+                const dateKey: string = parseDateToMapKey(date);
+                const attendance: Attendance | undefined = student.attendance[dateKey];
+
+                console.log(student.attendance);
+                console.log(dateKey);
+                console.log(attendance);
 
                 return (
                   <StudentAttendanceRow
