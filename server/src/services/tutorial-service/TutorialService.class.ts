@@ -17,6 +17,7 @@ import { UserDocument } from '../../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import studentService from '../student-service/StudentService.class';
 import userService from '../user-service/UserService.class';
+import { isUserTutorOfTutorial } from '../../middleware/AccessControl';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {
@@ -80,13 +81,10 @@ class TutorialService {
     );
 
     if (tutorial.tutor) {
-      const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
+      if (getIdOfDocumentRef(tutorial.tutor) !== tutorId) {
+        const tutor = await this.getTutorDocumentOfTutorial(tutorial.tutor);
 
-      if (tutor.id !== tutorId) {
         await userService.removeUserAsTutorFromTutorial(tutor, tutorial, { saveUser: true });
-        // tutor.tutorials = await this.filterTutorials(tutor.tutorials, t => t !== id);
-
-        // await tutor.save();
       }
     }
 
@@ -99,12 +97,11 @@ class TutorialService {
     tutorial.correctors = correctors;
 
     if (tutorId) {
-      const nextTutor = await userService.getDocumentWithId(tutorId);
+      if (!tutorial.tutor || getIdOfDocumentRef(tutorial.tutor) !== tutorId) {
+        const nextTutor = await userService.getDocumentWithId(tutorId);
 
-      await userService.makeUserTutorOfTutorial(nextTutor, tutorial, { saveUser: true });
-
-      // nextTutor.tutorials = [...nextTutor.tutorials, tutorial];
-      // await nextTutor.save();
+        await userService.makeUserTutorOfTutorial(nextTutor, tutorial, { saveUser: true });
+      }
     }
 
     return this.getTutorialOrReject(await tutorial.save());
