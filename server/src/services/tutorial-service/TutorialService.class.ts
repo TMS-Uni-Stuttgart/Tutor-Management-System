@@ -76,9 +76,19 @@ class TutorialService {
   ): Promise<Tutorial> {
     const doc: TutorialDocument = await this.getDocumentWithID(id);
     const tutorial: TutorialDocument = await doc.populate('tutor').execPopulate();
-    const correctors: UserDocument[] = await Promise.all(
-      correctorIds.map(corr => userService.getDocumentWithId(corr))
+    const currentCorrectors: string[] = tutorial.correctors.map(getIdOfDocumentRef);
+
+    const correctorsToRemove = await Promise.all(
+      _.difference(currentCorrectors, correctorIds).map(corr => userService.getDocumentWithId(corr))
     );
+
+    const correctorsToAdd = await Promise.all(
+      _.difference(correctorIds, currentCorrectors).map(corr => userService.getDocumentWithId(corr))
+    );
+
+    // const correctors: UserDocument[] = await Promise.all(
+    //   correctorIds.map(corr => userService.getDocumentWithId(corr))
+    // );
 
     if (tutorial.tutor) {
       if (getIdOfDocumentRef(tutorial.tutor) !== tutorId) {
@@ -94,7 +104,6 @@ class TutorialService {
     tutorial.startTime = startDate;
     tutorial.endTime = endDate;
     tutorial.dates = dates.map(date => new Date(date));
-    tutorial.correctors = correctors;
 
     if (tutorId) {
       if (!tutorial.tutor || getIdOfDocumentRef(tutorial.tutor) !== tutorId) {
@@ -102,6 +111,14 @@ class TutorialService {
 
         await userService.makeUserTutorOfTutorial(nextTutor, tutorial, { saveUser: true });
       }
+    }
+
+    for (const corr of correctorsToRemove) {
+      await userService.removeUserAsCorrectorFromTutorial(corr, tutorial, { saveUser: true });
+    }
+
+    for (const corr of correctorsToAdd) {
+      await userService.makeUserCorrectorOfTutorial(corr, tutorial, { saveUser: true });
     }
 
     return this.getTutorialOrReject(await tutorial.save());
