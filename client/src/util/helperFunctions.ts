@@ -1,15 +1,22 @@
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
-import { NamedElement } from 'shared/dist/model/Common';
+import { PointMap } from 'shared/dist/model/Points';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
-import { PointMap } from 'shared/dist/model/Points';
+
+interface EntityWithName {
+  lastname: string;
+  firstname: string;
+}
 
 interface NameOptions {
   lastNameFirst: boolean;
 }
 
-export function getNameOfEntity(entity: NamedElement, options: Partial<NameOptions> = {}): string {
+export function getNameOfEntity(
+  entity: EntityWithName,
+  options: Partial<NameOptions> = {}
+): string {
   if (options.lastNameFirst) {
     return `${entity.lastname}, ${entity.firstname} `;
   } else {

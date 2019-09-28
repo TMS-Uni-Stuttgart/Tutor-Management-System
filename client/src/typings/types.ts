@@ -15,8 +15,8 @@ export interface TutorialWithFetchedTutor extends Omit<Tutorial, 'tutor'> {
   tutor?: User;
 }
 
-export interface TutorialWithFetchedStudents extends Omit<Tutorial, 'tutor' | 'students'> {
-  tutor?: User;
+export interface TutorialWithFetchedStudents extends Omit<Tutorial, 'students'> {
+  // tutor?: User;
   students: Student[];
 }
 
