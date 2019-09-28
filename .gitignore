@@ -8,3 +8,5 @@
 # Bundled image
 *.tar
 *.zip
+
+*.log
