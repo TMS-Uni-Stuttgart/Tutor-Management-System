@@ -17,6 +17,7 @@
     "ts:check": "tsc --project . --noEmit"
   },
   "dependencies": {
+    "@hasezoey/typegoose": "^5.9.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "config": "^3.2.2",
@@ -34,7 +35,6 @@
     "passport-http": "^0.3.0",
     "reflect-metadata": "^0.1.13",
     "shared": "1.0.0",
-    "typegoose": "^5.9.1",
     "uuid": "^3.3.3",
     "winston": "^3.2.1"
   },

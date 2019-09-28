@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 import { PointMapDTO } from 'shared/dist/model/Points';
 import { Team } from 'shared/dist/model/Team';
-import { arrayProp, prop, Ref, Typegoose } from 'typegoose';
+import { arrayProp, prop, Ref, Typegoose } from '@hasezoey/typegoose';
 import { StudentDocument } from './StudentDocument';
 import { TutorialDocument } from './TutorialDocument';
 

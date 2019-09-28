@@ -953,6 +953,13 @@
   dependencies:
     "@hapi/hoek" "8.x.x"
 
+"@hasezoey/typegoose@^5.9.2":
+  version "5.9.2"
+  resolved "https://registry.yarnpkg.com/@hasezoey/typegoose/-/typegoose-5.9.2.tgz#10e949ba04da61156416448f9d5990794dd15fd3"
+  integrity sha512-PwbOGJi9IggUF8E2K3fEHSEoBgXV3nlDd1H6m/rjC9iWG1GeKHAp9gp0SPZh3e/5rJ3vWbfWbyukD/pMT3tbxA==
+  dependencies:
+    reflect-metadata "^0.1.13"
+
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
@@ -11007,13 +11014,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-typegoose@^5.9.1:
-  version "5.9.1"
-  resolved "https://registry.yarnpkg.com/typegoose/-/typegoose-5.9.1.tgz#58dbb14f35ecf96b22e7c744fa7a0f9731260f29"
-  integrity sha512-D+vMhNyZeKBZHrmJFZwOodl3T9W2NOXY+hbnW/f1n60oEL8+L15eryFc9C6fAKrlnkgpui+kdQnNXsLwx2MgCw==
-  dependencies:
-    reflect-metadata "^0.1.13"
 
 typescript@^3.6.3:
   version "3.6.3"

@@ -1,6 +1,6 @@
 import { Document, Model, Schema, Types } from 'mongoose';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import { arrayProp, mapProp, prop, Ref, Typegoose, instanceMethod, InstanceType } from 'typegoose';
+import { arrayProp, mapProp, prop, Ref, Typegoose, instanceMethod, InstanceType } from '@hasezoey/typegoose';
 import { CollectionName } from '../CollectionName';
 import { StudentDocument } from './StudentDocument';
 import { TeamDocument, TeamSchema } from './TeamDocument';
