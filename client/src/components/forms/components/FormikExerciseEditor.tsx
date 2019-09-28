@@ -1,7 +1,7 @@
 import { Button, IconButton } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { ErrorMessage, FieldArray, FieldArrayRenderProps, useField } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useField } from 'formik';
 import {
   MinusBox as MinusIcon,
   PlusBox as PlusIcon,
@@ -268,8 +268,6 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
             <PlusIcon className={classes.iconInButton} />
             Neue Aufgabe hinzufügen
           </Button>
-
-          {/* <ErrorMessage component='div' name={name} className={classes.errorMessage} /> */}
         </div>
       )}
     />
