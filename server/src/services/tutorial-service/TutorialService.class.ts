@@ -17,7 +17,6 @@ import { UserDocument } from '../../model/documents/UserDocument';
 import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import studentService from '../student-service/StudentService.class';
 import userService from '../user-service/UserService.class';
-import { isUserTutorOfTutorial } from '../../middleware/AccessControl';
 
 class TutorialService {
   public async getAllTutorials(): Promise<Tutorial[]> {

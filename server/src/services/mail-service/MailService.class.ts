@@ -1,17 +1,16 @@
 import config from 'config';
 import nodemailer from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
 import SMTPConnection, {
   AuthenticationTypeLogin,
   AuthenticationTypeOAuth2,
 } from 'nodemailer/lib/smtp-connection';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { FailedMail, MailingStatus } from 'shared/dist/model/Mail';
 import { User } from 'shared/dist/model/User';
-import { MailingStatus, FailedMail } from 'shared/dist/model/Mail';
+import Logger from '../../helpers/Logger';
 import { InvalidConfigurationError } from '../../model/Errors';
 import userService from '../user-service/UserService.class';
-import Mail from 'nodemailer/lib/mailer';
-import Logger from '../../helpers/Logger';
-import { isFulfilled } from 'q';
 
 interface AdditionalOptions {
   testingMode?: boolean;

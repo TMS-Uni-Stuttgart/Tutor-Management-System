@@ -75,27 +75,27 @@ function TutorialTableRow({
     >
       <TableCell className={classes.wrappingCell}>
         <div>
-        {tutorial.tutor && (
-          <Chip
-            key={tutorial.id}
-            label={`Tutor: ${tutorial.tutor.lastname}, ${tutorial.tutor.firstname}`}
-            className={classes.tutorChip}
-            color='primary'
-          />
-        )}
+          {tutorial.tutor && (
+            <Chip
+              key={tutorial.id}
+              label={`Tutor: ${tutorial.tutor.lastname}, ${tutorial.tutor.firstname}`}
+              className={classes.tutorChip}
+              color='primary'
+            />
+          )}
 
-        {correctors.length > 0 && (
-          <>
-            {correctors.map(cor => (
-              <Chip
-                key={cor}
-                label={`Korrektor: ${cor}`}
-                color='secondary'
-                className={classes.tutorChip}
-              />
-            ))}
-          </>
-        )}
+          {correctors.length > 0 && (
+            <>
+              {correctors.map(cor => (
+                <Chip
+                  key={cor}
+                  label={`Korrektor: ${cor}`}
+                  color='secondary'
+                  className={classes.tutorChip}
+                />
+              ))}
+            </>
+          )}
         </div>
 
         {substitutes.length > 0 && (
