@@ -1,0 +1,20 @@
+<h3 style="text-align: center">Anwesenheitsliste</h3>
+
+<div style="display: flex; width: 100%;">
+  <span>Tutorium: {{ tutorialSlot }}</span>
+  <span style="margin-left: auto; float: right;">Datum: {{date, dd.MM.yyyy}}</span>
+</div>
+
+<div style=" margin-bottom: 16px;">
+  <span>Tutor: {{ tutorName }}</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Unterschrift</th>
+    </tr>
+  </thead>
+  <tbody>{{students}}</tbody>
+</table>
