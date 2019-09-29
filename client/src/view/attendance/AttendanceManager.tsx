@@ -22,6 +22,7 @@ import {
   parseDateToMapKey,
 } from '../../util/helperFunctions';
 import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
+import SubmitButton from '../../components/forms/components/SubmitButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,6 +81,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const { userData } = useLogin();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingPDF, setLoadingPDF] = useState(false);
+
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
 
@@ -94,6 +97,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     getAllTutorialsAndFetchStudents,
     fetchTeamsOfStudents,
     getTutorInfoOfTutorial,
+    getAttendancePDF,
   } = useAxios();
 
   useEffect(() => {
@@ -199,44 +203,52 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     };
   }
 
-  function printAttendanceSheet() {
+  async function printAttendanceSheet() {
     if (!tutorial || !date || !userData) {
       return;
     }
 
-    const tutorialDisplay = getDisplayStringForTutorial(tutorial);
-    const tutorName = tutorInfo
-      ? getNameOfEntity(tutorInfo, { lastNameFirst: true })
-      : 'KEIN TUTOR';
+    setLoadingPDF(true);
 
-    const substitutePart = isSubstituteTutor(tutorial, userData)
-      ? `, Ersatztutor: ${getNameOfEntity(userData)}`
-      : '';
+    const pdf = await getAttendancePDF(tutorial.id, format(date, 'yyyy-MM-dd'));
 
-    const dateString = format(date, 'dd.MM.yyyy', { locale: deLocale });
+    console.log(pdf);
 
-    const studentsPrintObjects = students
-      .sort((a, b) => {
-        const nameOfA = getNameOfEntity(a, { lastNameFirst: true });
-        const nameOfB = getNameOfEntity(b, { lastNameFirst: true });
+    setLoadingPDF(false);
 
-        return nameOfA.localeCompare(nameOfB);
-      })
-      .map(({ firstname, lastname }) => ({
-        name: getNameOfEntity({ lastname, firstname }, { lastNameFirst: true }),
-        signing: '',
-      }));
+    // const tutorialDisplay = getDisplayStringForTutorial(tutorial);
+    // const tutorName = tutorInfo
+    //   ? getNameOfEntity(tutorInfo, { lastNameFirst: true })
+    //   : 'KEIN TUTOR';
 
-    printJS({
-      printable: studentsPrintObjects,
-      properties: [
-        { field: 'name', displayName: 'Name' },
-        { field: 'signing', displayName: 'Unterschrift' },
-      ],
-      type: 'json',
-      header: `<h4>Anwesenheitsliste</h4> <table style="width: 100%; margin-bottom: 1em" ><tbody><tr><td style="padding: 0; text-align: left">${tutorialDisplay}, Tutor: ${tutorName}${substitutePart}</td> <td style="padding: 0; text-align: right">Datum: ${dateString}</td></tr></tbody></table>`,
-      style: "* { font-family: 'Arial' }  td { padding: 0.5em 1em } h4 { text-align: center }",
-    });
+    // const substitutePart = isSubstituteTutor(tutorial, userData)
+    //   ? `, Ersatztutor: ${getNameOfEntity(userData)}`
+    //   : '';
+
+    // const dateString = format(date, 'dd.MM.yyyy', { locale: deLocale });
+
+    // const studentsPrintObjects = students
+    //   .sort((a, b) => {
+    //     const nameOfA = getNameOfEntity(a, { lastNameFirst: true });
+    //     const nameOfB = getNameOfEntity(b, { lastNameFirst: true });
+
+    //     return nameOfA.localeCompare(nameOfB);
+    //   })
+    //   .map(({ firstname, lastname }) => ({
+    //     name: getNameOfEntity({ lastname, firstname }, { lastNameFirst: true }),
+    //     signing: '',
+    //   }));
+
+    // printJS({
+    //   printable: studentsPrintObjects,
+    //   properties: [
+    //     { field: 'name', displayName: 'Name' },
+    //     { field: 'signing', displayName: 'Unterschrift' },
+    //   ],
+    //   type: 'json',
+    //   header: `<h4>Anwesenheitsliste</h4> <table style="width: 100%; margin-bottom: 1em" ><tbody><tr><td style="padding: 0; text-align: left">${tutorialDisplay}, Tutor: ${tutorName}${substitutePart}</td> <td style="padding: 0; text-align: right">Datum: ${dateString}</td></tr></tbody></table>`,
+    //   style: "* { font-family: 'Arial' }  td { padding: 0.5em 1em } h4 { text-align: center }",
+    // });
   }
 
   return (
@@ -268,16 +280,16 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               value={date ? date.toISOString() : ''}
             />
 
-            <Button
-              type='button'
+            <SubmitButton
               variant='contained'
               color='primary'
+              isSubmitting={isLoadingPDF}
               className={classes.printButton}
               onClick={printAttendanceSheet}
               disabled={!tutorial || !date || !tutorInfo}
             >
               Unterschriftenliste ausdrucken
-            </Button>
+            </SubmitButton>
           </div>
 
           {date ? (
