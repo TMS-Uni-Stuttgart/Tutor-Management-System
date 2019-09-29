@@ -1,13 +1,13 @@
-import { Button, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { compareAsc, format } from 'date-fns';
-import deLocale from 'date-fns/locale/de';
-import printJS from 'print-js';
+import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
 import { LoggedInUser, TutorInfo } from 'shared/dist/model/User';
 import CustomSelect from '../../components/CustomSelect';
 import DateOfTutorialSelection from '../../components/DateOfTutorialSelection';
+import SubmitButton from '../../components/forms/components/SubmitButton';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useAxios } from '../../hooks/FetchingService';
@@ -16,13 +16,8 @@ import {
   StudentWithFetchedTeam,
   TutorialWithFetchedStudents as Tutorial,
 } from '../../typings/types';
-import {
-  getDisplayStringForTutorial,
-  getNameOfEntity,
-  parseDateToMapKey,
-} from '../../util/helperFunctions';
+import { parseDateToMapKey, saveBlob } from '../../util/helperFunctions';
 import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
-import SubmitButton from '../../components/forms/components/SubmitButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -92,6 +87,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
   const availableDates = getAvailableDates(tutorial, userData, !tutorialFromProps);
 
+  const { enqueueSnackbar } = useSnackbar();
   const {
     setAttendanceOfStudent,
     getAllTutorialsAndFetchStudents,
@@ -209,46 +205,17 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     }
 
     setLoadingPDF(true);
+    const dateString = format(date, 'yyyy-MM-dd');
 
-    const pdf = await getAttendancePDF(tutorial.id, format(date, 'yyyy-MM-dd'));
+    try {
+      const blob = await getAttendancePDF(tutorial.id, dateString);
 
-    console.log(pdf);
-
-    setLoadingPDF(false);
-
-    // const tutorialDisplay = getDisplayStringForTutorial(tutorial);
-    // const tutorName = tutorInfo
-    //   ? getNameOfEntity(tutorInfo, { lastNameFirst: true })
-    //   : 'KEIN TUTOR';
-
-    // const substitutePart = isSubstituteTutor(tutorial, userData)
-    //   ? `, Ersatztutor: ${getNameOfEntity(userData)}`
-    //   : '';
-
-    // const dateString = format(date, 'dd.MM.yyyy', { locale: deLocale });
-
-    // const studentsPrintObjects = students
-    //   .sort((a, b) => {
-    //     const nameOfA = getNameOfEntity(a, { lastNameFirst: true });
-    //     const nameOfB = getNameOfEntity(b, { lastNameFirst: true });
-
-    //     return nameOfA.localeCompare(nameOfB);
-    //   })
-    //   .map(({ firstname, lastname }) => ({
-    //     name: getNameOfEntity({ lastname, firstname }, { lastNameFirst: true }),
-    //     signing: '',
-    //   }));
-
-    // printJS({
-    //   printable: studentsPrintObjects,
-    //   properties: [
-    //     { field: 'name', displayName: 'Name' },
-    //     { field: 'signing', displayName: 'Unterschrift' },
-    //   ],
-    //   type: 'json',
-    //   header: `<h4>Anwesenheitsliste</h4> <table style="width: 100%; margin-bottom: 1em" ><tbody><tr><td style="padding: 0; text-align: left">${tutorialDisplay}, Tutor: ${tutorName}${substitutePart}</td> <td style="padding: 0; text-align: right">Datum: ${dateString}</td></tr></tbody></table>`,
-    //   style: "* { font-family: 'Arial' }  td { padding: 0.5em 1em } h4 { text-align: center }",
-    // });
+      saveBlob(blob, `Anwesenheit_${tutorial.slot}_${dateString}.pdf`);
+    } catch (err) {
+      enqueueSnackbar('PDF konnte nicht erstellt werden.', { variant: 'error' });
+    } finally {
+      setLoadingPDF(false);
+    }
   }
 
   return (
@@ -298,10 +265,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               createRowFromItem={student => {
                 const dateKey: string = parseDateToMapKey(date);
                 const attendance: Attendance | undefined = student.attendance[dateKey];
-
-                console.log(student.attendance);
-                console.log(dateKey);
-                console.log(attendance);
 
                 return (
                   <StudentAttendanceRow
