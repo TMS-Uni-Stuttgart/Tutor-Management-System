@@ -27,4 +27,13 @@ pdfRouter.get(
   }
 );
 
+pdfRouter.get('/scheinstatus', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+  const stream = await pdfService.generateStudentScheinOverviewPDF();
+
+  res.contentType('pdf');
+  res.attachment('scheinstatus.pdf');
+
+  stream.pipe(res);
+});
+
 export default pdfRouter;

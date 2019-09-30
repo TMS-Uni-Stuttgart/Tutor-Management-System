@@ -1,0 +1,20 @@
+<h3 style="text-align: center">Scheinliste</h3>
+
+<table>
+  <style scoped>
+    td {
+      padding: 0.5em 1em;
+      font-family: Courier;
+    }
+  </style>
+
+  <thead>
+    <tr>
+      <th>Matrikelnummer</th>
+      <th>Bestanden / Nicht bestanden</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ statuses, [Bestanden, Nicht bestanden] }}
+  </tbody>
+</table>
