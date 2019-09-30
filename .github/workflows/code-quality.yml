@@ -23,6 +23,10 @@ jobs:
           yarn install
         env:
           CI: true
+      - name: Build shared
+        run: yarn build:shared
+        env:
+          CI: true
       - name: Check code quality on client
         working-directory: client/
         run: |
@@ -44,6 +48,10 @@ jobs:
       - name: Install node packages
         run: |
           yarn install
+        env:
+          CI: true
+      - name: Build shared
+        run: yarn build:shared
         env:
           CI: true
       - name: Check code quality on server
