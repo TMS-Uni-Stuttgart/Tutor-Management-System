@@ -38,7 +38,9 @@ COPY shared/package.json /tms/shared
 EXPOSE 8080
 
 # Install the packages needed for the server
-WORKDIR /tms/server/
+WORKDIR /tms
 RUN yarn install --production
+
+WORKDIR /tms/server
 
 ENTRYPOINT [ "node", "server.js" ]
