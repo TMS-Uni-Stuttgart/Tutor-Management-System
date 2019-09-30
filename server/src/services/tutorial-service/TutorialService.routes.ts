@@ -2,24 +2,22 @@ import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial } from 'shared/dist/model/Tutorial';
-import { User, TutorInfo } from 'shared/dist/model/User';
+import { TutorInfo, User } from 'shared/dist/model/User';
 import {
-  validateAgainstTutorialDTO,
   validateAgainstSubstituteDTO,
+  validateAgainstTutorialDTO,
 } from 'shared/dist/validators/Tutorial';
 import {
-  checkRoleAccess,
   checkAccess,
+  checkRoleAccess,
   hasUserOneOfRoles,
-  isUserTutorOfTutorial,
-  isUserSubstituteOfTutorial,
   isUserCorrectorOfTutorial,
+  isUserSubstituteOfTutorial,
+  isUserTutorOfTutorial,
 } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import teamRouter from '../team-service/TeamService.routes';
 import tutorialService from './TutorialService.class';
-import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
-import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 
 const tutorialRouter = Router();
 
