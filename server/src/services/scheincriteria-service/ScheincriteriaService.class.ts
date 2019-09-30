@@ -19,6 +19,7 @@ import {
 import { Student } from 'shared/dist/model/Student';
 import { validateSchema } from 'shared/dist/validators/helper';
 import * as Yup from 'yup';
+import Logger from '../../helpers/Logger';
 import { TypegooseDocument } from '../../helpers/typings';
 import ScheincriteriaModel, {
   ScheincriteriaDocument,
@@ -33,7 +34,6 @@ import {
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import Logger from '../../helpers/Logger';
 
 interface ScheincriteriaWithId {
   criteriaId: string;

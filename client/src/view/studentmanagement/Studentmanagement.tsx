@@ -53,7 +53,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     createStudentAndFetchTeam,
     editStudentAndFetchTeam: editStudentRequest,
     deleteStudent: deleteStudentRequest,
-    getScheinCriteriaSummaryOfAllStudents,
+    getScheinCriteriaSummariesOfAllStudentsOfTutorial,
   } = useAxios();
   const dialog = useDialog();
 
@@ -66,7 +66,9 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
         getTeamsOfTutorial(params.tutorialId),
       ]);
 
-      getScheinCriteriaSummaryOfAllStudents().then(response => setSummaries(response));
+      getScheinCriteriaSummariesOfAllStudentsOfTutorial(params.tutorialId).then(response =>
+        setSummaries(response)
+      );
       setStudents(
         studentsResponse.sort((a, b) =>
           getNameOfEntity(a, { lastNameFirst: true }).localeCompare(
@@ -80,7 +82,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
   }, [
     getStudentsOfTutorialAndFetchTeams,
     getTeamsOfTutorial,
-    getScheinCriteriaSummaryOfAllStudents,
+    getScheinCriteriaSummariesOfAllStudentsOfTutorial,
     params.tutorialId,
   ]);
 
