@@ -66,7 +66,9 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
         getTeamsOfTutorial(params.tutorialId),
       ]);
 
-      getScheinCriteriaSummariesOfAllStudentsOfTutorial(params.tutorialId).then(response => setSummaries(response));
+      getScheinCriteriaSummariesOfAllStudentsOfTutorial(params.tutorialId).then(response =>
+        setSummaries(response)
+      );
       setStudents(
         studentsResponse.sort((a, b) =>
           getNameOfEntity(a, { lastNameFirst: true }).localeCompare(
