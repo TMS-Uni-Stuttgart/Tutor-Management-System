@@ -219,7 +219,7 @@ function ExtendableStudentRow({
 
       {showInfoBox && summary && (
         <TableRow>
-          <TableCell className={classes.infoRowCell} align='center' colSpan={4}>
+          <TableCell className={classes.infoRowCell} align='center' colSpan={5}>
             <div className={classes.infoRowContent}>
               <ScheinCriteriaStatusTable summary={Object.values(summary.scheinCriteriaSummary)} />
             </div>
