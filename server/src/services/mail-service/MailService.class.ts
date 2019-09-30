@@ -69,6 +69,10 @@ class MailService {
         to: `${user.email}`,
         subject: 'Credentials',
         text: this.getTextOfMail(user, options),
+        envelope: {
+          to: `${user.email}`,
+          ...options.envelope,
+        },
       });
     } catch (err) {
       return new MailingError(user.id, err, 'Could not send mail.');
@@ -87,7 +91,7 @@ class MailService {
           userId: user.id,
         });
 
-        Logger.error(mail.message, mail.err);
+        Logger.error(mail.message, ' ', mail.err);
       } else {
         const previewURL = nodemailer.getTestMessageUrl(mail);
 
