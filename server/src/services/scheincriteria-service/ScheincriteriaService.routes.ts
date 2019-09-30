@@ -1,9 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
-import { ScheinCriteriaResponse } from 'shared/dist/model/ScheinCriteria';
+import {
+  ScheinCriteriaResponse,
+  ScheincriteriaSummaryByStudents,
+} from 'shared/dist/model/ScheinCriteria';
 import { validateAgainstScheincriteriaDTO } from 'shared/dist/validators/Scheincriteria';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import {
+  checkRoleAccess,
+  checkAccess,
+  hasUserOneOfRoles,
+  isUserTutorOfTutorial,
+} from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import { ValidationError } from '../../model/Errors';
 import { initScheincriteriaBlueprints } from '../../model/scheincriteria/Scheincriteria';
@@ -72,10 +80,27 @@ scheincriteriaRouter.get('/form', ...checkRoleAccess(Role.ADMIN), async (_, res)
   res.json(formData);
 });
 
-scheincriteriaRouter.get('/student', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
-  const results = await scheincriteriaService.getCriteriaResultsOfAllStudents();
+scheincriteriaRouter.get(
+  '/student',
+  ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]),
+  async (_, res) => {
+    const results = await scheincriteriaService.getCriteriaResultsOfAllStudents();
 
-  res.json(results);
-});
+    res.json(results);
+  }
+);
+
+scheincriteriaRouter.get(
+  '/tutorial/:id',
+  ...checkAccess(hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]), isUserTutorOfTutorial),
+  async (req, res) => {
+    const id: string = req.params.id;
+    const result: ScheincriteriaSummaryByStudents = await scheincriteriaService.getCriteriaResultsOfStudentsOfTutorial(
+      id
+    );
+
+    res.json(result);
+  }
+);
 
 export default scheincriteriaRouter;

@@ -120,24 +120,6 @@ tutorialRouter.get(
 );
 
 tutorialRouter.get(
-  '/:id/student/scheincriteria',
-  ...checkAccess(
-    hasUserOneOfRoles([Role.ADMIN, Role.EMPLOYEE]),
-    isUserTutorOfTutorial,
-    isUserSubstituteOfTutorial,
-    isUserCorrectorOfTutorial
-  ),
-  async (req, res) => {
-    const id: string = req.params.id;
-    const result: ScheincriteriaSummaryByStudents = await scheincriteriaService.getCriteriaResultsOfStudentsOfTutorial(
-      id
-    );
-
-    res.json(result);
-  }
-);
-
-tutorialRouter.get(
   '/:id/substitute',
   ...checkRoleAccess([Role.ADMIN, Role.EMPLOYEE]),
   async (req, res) => {
