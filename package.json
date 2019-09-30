@@ -23,7 +23,10 @@
     "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/app",
     "docker:build": "yarn docker:image:build && yarn docker:image:tar",
     "docker:image:build": "docker build --tag=tutor-management-system .",
-    "docker:image:tar": "docker save -o Tutor-Management-System.tar tutor-management-system:latest"
+    "docker:image:tar": "docker save -o Tutor-Management-System.tar tutor-management-system",
+    "docker:build:pre": "yarn docker:image:build:pre && yarn docker:image:tar:pre",
+    "docker:image:build:pre": "docker build --tag=tutor-management-system:pre .",
+    "docker:image:tar:pre": "docker save -o Tutor-Management-System_pre.tar tutor-management-system:pre"
   },
   "devDependencies": {
     "@types/node": "^12.7.8",
