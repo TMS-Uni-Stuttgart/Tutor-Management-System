@@ -10,6 +10,7 @@ import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
+import githubMarkdownCSS from './css/githubMarkdown';
 
 interface StudentData {
   matriculationNo: string;
@@ -66,16 +67,6 @@ class PdfService {
           }
         });
     });
-  }
-
-  private getGithubMarkdownCSS(): string {
-    if (!this.githubMarkdownCSS) {
-      this.githubMarkdownCSS = fs
-        .readFileSync(path.join(__dirname, 'css', 'githubMarkdown.css'))
-        .toString();
-    }
-
-    return this.githubMarkdownCSS;
   }
 
   private getAttendanceTemplate(): string {
@@ -140,7 +131,7 @@ class PdfService {
       .replace(/{{tutorialSlot}}/g, slot)
       .replace(/{{tutorName}}/g, tutorName)
       .replace(/{{students}}/g, students)
-      .replace(/{{date.*}}/, substring => {
+      .replace(/{{date.*}}/g, substring => {
         const dateFormat = substring.split(',').map(s => s.replace(/{{|}}/, ''))[1];
 
         try {
@@ -239,7 +230,14 @@ class PdfService {
   }
 
   private prepareTemplate(template: string): string {
-    return template.replace(/{{\s+/g, '{{').replace(/\s+}}/g, '}}');
+    return template
+      .replace(/{{\s+/g, '{{')
+      .replace(/\s+}}/g, '}}')
+      .replace(/(?=<!--)([\s\S]*?)-->/gim, '');
+  }
+
+  private getGithubMarkdownCSS(): string {
+    return githubMarkdownCSS;
   }
 }
 
