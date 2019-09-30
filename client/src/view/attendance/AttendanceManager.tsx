@@ -67,10 +67,6 @@ function getAvailableDates(
   return tutorial.dates;
 }
 
-function isSubstituteTutor(tutorial: Tutorial, user: LoggedInUser): boolean {
-  return user.substituteTutorials.find(sub => sub.id === tutorial.id) !== undefined;
-}
-
 function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element {
   const classes = useStyles();
   const { userData } = useLogin();
