@@ -32,4 +32,11 @@ pdfRouter.get('/scheinstatus', ...checkRoleAccess(Role.ADMIN), async (_, res) =>
   res.send(pdfBuffer);
 });
 
+pdfRouter.get('/credentials', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+  const pdfBuffer = await pdfService.generateCredentialsPDF();
+
+  res.contentType('pdf');
+  res.send(pdfBuffer);
+});
+
 export default pdfRouter;

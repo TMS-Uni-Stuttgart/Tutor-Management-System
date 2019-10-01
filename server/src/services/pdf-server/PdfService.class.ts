@@ -5,6 +5,7 @@ import puppeteer from 'puppeteer';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
+import { User } from 'shared/dist/model/User';
 import { BadRequestError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import studentService from '../student-service/StudentService.class';
@@ -20,7 +21,7 @@ interface StudentData {
 class PdfService {
   private githubMarkdownCSS: string = '';
 
-  public async generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
+  public generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
       try {
         const tutorial = await tutorialService.getTutorialWithID(tutorialId);
@@ -57,24 +58,36 @@ class PdfService {
     });
   }
 
-  private getAttendanceTemplate(): string {
-    try {
-      const filePath = path.join(process.cwd(), 'config', 'html', 'attendance.html');
+  public async generateCredentialsPDF(): Promise<Buffer> {
+    const users: User[] = await userService.getAllUsers();
+    const body = await this.generateCredentialsHTML(users);
+    const html = this.putBodyInHtml(body);
 
-      return fs.readFileSync(filePath).toString();
-    } catch {
-      throw new BadRequestError('No template file present for attendance sheet (attendance.html).');
-    }
+    const buffer = await this.getPDFFromHTML(html);
+
+    return buffer;
+  }
+
+  private getAttendanceTemplate(): string {
+    return this.getTemplate('attendance.html');
   }
 
   private getScheinStatusTemplate(): string {
+    return this.getTemplate('scheinstatus.html');
+  }
+
+  private getCredentialsTemplate(): string {
+    return this.getTemplate('credentials.html');
+  }
+
+  private getTemplate(filename: string): string {
     try {
-      const filePath = path.join(process.cwd(), 'config', 'html', 'scheinstatus.html');
+      const filePath = path.join(process.cwd(), 'config', 'html', filename);
 
       return fs.readFileSync(filePath).toString();
     } catch {
       throw new BadRequestError(
-        'No template file present for schein status overview sheet (scheinstatus.html).'
+        `No template file present for filename '${filename}' in ./config/tms folder`
       );
     }
   }
@@ -108,6 +121,36 @@ class PdfService {
     return this.fillAttendanceTemplate(template, tutorial.slot, tutorName, rows, date);
   }
 
+  private async generateScheinStatusHTML(
+    students: Student[],
+    summaries: ScheincriteriaSummaryByStudents
+  ): Promise<string> {
+    const template = this.getScheinStatusTemplate();
+    const studentDataToPrint: StudentData[] = this.getStudentDataToPrint(students, summaries);
+
+    const rows: string[] = [];
+
+    studentDataToPrint.forEach(data => {
+      rows.push(`<tr><td>${data.matriculationNo}</td><td>${data.schein}</td></tr>`);
+    });
+
+    return this.fillScheinStatusTemplate(template, rows.join(''));
+  }
+
+  private async generateCredentialsHTML(users: User[]): Promise<string> {
+    const template = this.getCredentialsTemplate();
+    const rows: string[] = [];
+
+    users.forEach(user => {
+      const tempPwd = user.temporaryPassword || 'NO TMP PASSWORD';
+      const nameOfUser = `${user.lastname}, ${user.firstname}`;
+
+      rows.push(`<tr><td>${nameOfUser}</td><td>${user.username}</td><td>${tempPwd}</td></tr>`);
+    });
+
+    return this.fillCredentialsTemplate(template, rows.join(''));
+  }
+
   private fillAttendanceTemplate(
     template: string,
     slot: string,
@@ -134,22 +177,6 @@ class PdfService {
       });
   }
 
-  private async generateScheinStatusHTML(
-    students: Student[],
-    summaries: ScheincriteriaSummaryByStudents
-  ): Promise<string> {
-    const template = this.getScheinStatusTemplate();
-    const studentDataToPrint: StudentData[] = this.getStudentDataToPrint(students, summaries);
-
-    const rows: string[] = [];
-
-    studentDataToPrint.forEach(data => {
-      rows.push(`<tr><td>${data.matriculationNo}</td><td>${data.schein}</td></tr>`);
-    });
-
-    return this.fillScheinStatusTemplate(template, rows.join(''));
-  }
-
   private fillScheinStatusTemplate(template: string, statuses: string): string {
     return this.prepareTemplate(template).replace(/{{statuses.*}}/g, substring => {
       const wordArray = substring.match(/(\[(\w|\s)*,(\w|\s)*\])/g);
@@ -169,6 +196,10 @@ class PdfService {
         .replace(/{{yes}}/g, replacements.yes)
         .replace(/{{no}}/g, replacements.no);
     });
+  }
+
+  private fillCredentialsTemplate(template: string, credentials: string): string {
+    return this.prepareTemplate(template).replace(/{{credentials}}/g, credentials);
   }
 
   private getStudentDataToPrint(
