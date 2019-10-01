@@ -44,3 +44,18 @@ export function getSumOfPointsOfStudentInScheinExam(
 ): number {
   return new PointMap(scheinExamResults).getSumOfPoints(exam);
 }
+
+export function saveBlob(blob: Blob, filename: string) {
+  const link = document.createElement('a');
+
+  link.href = window.URL.createObjectURL(blob);
+  link.download = filename;
+
+  document.body.appendChild(link);
+
+  link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+  link.remove();
+
+  // This fixes some issues with browser like cutting big PDFs in chunks.
+  window.URL.revokeObjectURL(link.href);
+}

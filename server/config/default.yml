@@ -25,11 +25,9 @@ mailing:
       \n
       Mit freundlichen Grüßen\n
       TMS Admin"
-  service: 'gmail'
+  host: 'SERVER'
+  port: 587
+  from: 'MAIL'
   auth:
-    type: 'OAuth2'
-    # All of the below can also be set via an environment variable.
-    user: 'USER-MAIL'
-    clientId: 'clientId'
-    clientSecret: 'clientSecret'
-    refreshToken: 'refreshToken'
+    user: USER
+    pass: PASS

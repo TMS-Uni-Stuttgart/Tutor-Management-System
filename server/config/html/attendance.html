@@ -1,0 +1,32 @@
+<!-- 
+  This is the HTML template used by the PdfService to create an attendance sheet. 
+  
+  The head & body tags will be inserted by the service and must NOT be in this file.
+
+  The following replacement options are available (one can inlucde spaces after '{{' and before '}}'):
+  - {{tutorialSlot}}: Slot of the tutorial
+  - {{date, format}}: Requested date. The format is optional but if provided it needs to comply to the UTC#35 standard (https://date-fns.org/v2.4.1/docs/format)
+  - {{tutorName}}: Full name of the tutor with the format 'lastname, firstname'
+  - {{students}}: Generated table rows for all students in the tutorial.
+ -->
+
+<h3 style="text-align: center">Anwesenheitsliste</h3>
+
+<div style="display: flex; width: 100%;">
+  <span>Tutorium: {{ tutorialSlot }}</span>
+  <span style="margin-left: auto; float: right;">Datum: {{date, dd.MM.yyyy}}</span>
+</div>
+
+<div style=" margin-bottom: 16px;">
+  <span>Tutor: {{ tutorName }}</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Unterschrift</th>
+    </tr>
+  </thead>
+  <tbody>{{students}}</tbody>
+</table>

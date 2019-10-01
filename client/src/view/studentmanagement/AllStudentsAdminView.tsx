@@ -1,11 +1,10 @@
-import { Button, Theme } from '@material-ui/core';
+import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { format } from 'date-fns';
 import fastcsv from 'fast-csv';
 import { Row, RowMap } from 'fast-csv/build/src/parser';
 import FileSaver from 'file-saver';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
-import printJS from 'print-js';
 import React, { useEffect, useState } from 'react';
 import { Attendance } from 'shared/dist/model/Attendance';
 import { PointMap } from 'shared/dist/model/Points';
@@ -23,7 +22,11 @@ import { useDialog } from '../../hooks/DialogService';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { useAxios } from '../../hooks/FetchingService';
 import { StudentWithFetchedTeam } from '../../typings/types';
-import { getSumOfPointsOfStudentInScheinExam, parseDateToMapKey } from '../../util/helperFunctions';
+import {
+  getSumOfPointsOfStudentInScheinExam,
+  parseDateToMapKey,
+  saveBlob,
+} from '../../util/helperFunctions';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
 import { getPointsOfEntityAsString } from '../pointsmanagement/util/helper';
 
@@ -51,44 +54,17 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type PropType = WithSnackbarProps;
 
-function getShortenedMatrNo(
-  student: StudentWithFetchedTeam,
-  students: StudentWithFetchedTeam[]
-): string {
-  const otherStudents = students.filter(s => s.id !== student.id);
-  const lengthOfNo = student.matriculationNo.length;
-
-  for (let iteration = 1; iteration < lengthOfNo; iteration++) {
-    const shortStudent = student.matriculationNo.substr(lengthOfNo - iteration, iteration);
-    let isOkay = true;
-
-    for (const otherStudent of otherStudents) {
-      const shortOtherStudent = otherStudent.matriculationNo.substr(
-        lengthOfNo - iteration,
-        iteration
-      );
-
-      if (shortStudent === shortOtherStudent) {
-        isOkay = false;
-        break;
-      }
-    }
-
-    if (isOkay) {
-      return shortStudent.padStart(7, '*');
-    }
-  }
-
-  return student.matriculationNo;
-}
-
 function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
   const classes = useStyles();
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingCSVFile, setCreatingCSVFile] = useState(false);
+  const [isCreatingScheinStatus, setCreatingScheinStatus] = useState(false);
+
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [summaries, setSummaries] = useState<{ [studentId: string]: ScheinCriteriaSummary }>({});
-  const [isCreatingCSVFile, setCreatingCSVFile] = useState(false);
+
   const {
     fetchTeamsOfStudents,
     editStudentAndFetchTeam: editStudentRequest,
@@ -97,6 +73,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
     getAllScheinExams,
     getAllTutorials,
     getScheinCriteriaSummaryOfAllStudents,
+    getScheinStatusPDF,
   } = useAxios();
   const dialog = useDialog();
 
@@ -115,29 +92,18 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
     getScheinCriteriaSummaryOfAllStudents,
   ]);
 
-  function printOverviewSheet() {
-    const studentDataToPrint: { matriculationNo: string; schein: string }[] = [];
+  async function printOverviewSheet() {
+    setCreatingScheinStatus(true);
 
-    for (const student of students) {
-      studentDataToPrint.push({
-        matriculationNo: getShortenedMatrNo(student, students),
-        schein: summaries[student.id].passed ? 'Bestanden' : 'Nicht bestanden',
-      });
+    try {
+      const blob = await getScheinStatusPDF();
+
+      saveBlob(blob, 'Scheinübersichtsliste.pdf');
+    } catch {
+      enqueueSnackbar('Scheinübersichtsliste konnte nicht erstellt werden', { variant: 'error' });
+    } finally {
+      setCreatingScheinStatus(false);
     }
-
-    studentDataToPrint.sort((a, b) => a.matriculationNo.localeCompare(b.matriculationNo));
-
-    printJS({
-      printable: studentDataToPrint,
-      properties: [
-        { field: 'matriculationNo', displayName: 'Matrikelnummer' },
-        { field: 'schein', displayName: 'Schein' },
-      ],
-      type: 'json',
-      header: '<h4 class="custom-h4">Scheinliste</h4>',
-      style:
-        "* { font-family: 'Arial' }  td { padding: 0.5em 1em; font-family: 'Courier' } h4 { text-align: center }",
-    });
   }
 
   const editStudent: (student: StudentWithFetchedTeam) => StudentFormSubmitCallback = student => (
@@ -331,15 +297,16 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       ) : (
         <>
           <div className={classes.topBar}>
-            <Button
+            <SubmitButton
               variant='contained'
               color='primary'
+              isSubmitting={isCreatingScheinStatus}
               className={classes.printButton}
               onClick={printOverviewSheet}
               disabled={students.length === 0}
             >
               Scheinliste ausdrucken
-            </Button>
+            </SubmitButton>
 
             <SubmitButton
               variant='contained'
