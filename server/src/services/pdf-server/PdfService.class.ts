@@ -232,7 +232,9 @@ class PdfService {
     let browser: puppeteer.Browser | undefined = undefined;
 
     try {
-      browser = await puppeteer.launch();
+      browser = await puppeteer.launch({
+        args: ['--disable-dev-shm-usage'],
+      });
 
       const page = await browser.newPage();
       await page.setContent(html);
