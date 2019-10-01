@@ -24,7 +24,8 @@ RUN yarn build
 # Create the image which runs the server
 #
 # =============================================
-FROM node:10-alpine
+FROM alpine:edge
+# FROM node:10-alpine
 
 COPY --from=build tms/server/build tms/server
 COPY --from=build tms/shared/dist tms/shared/dist
@@ -39,12 +40,15 @@ EXPOSE 8080
 
 # Install the packages needed for the server & puppeteer
 RUN apk add --no-cache \
+      chromium \
       nss \
       freetype \
       freetype-dev \
       harfbuzz \
       ca-certificates \
-      ttf-freefont
+      ttf-freefont \
+      nodejs \
+      yarn 
 
 WORKDIR /tms
 RUN yarn install --production
