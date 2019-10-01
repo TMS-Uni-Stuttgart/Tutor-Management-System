@@ -1,6 +1,5 @@
 import { format } from 'date-fns';
 import fs, { ReadStream } from 'fs';
-import pdf from 'html-pdf';
 import path from 'path';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
@@ -11,6 +10,7 @@ import userService from '../user-service/UserService.class';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import githubMarkdownCSS from './css/githubMarkdown';
+import puppeteer from 'puppeteer';
 
 interface StudentData {
   matriculationNo: string;
@@ -20,30 +20,24 @@ interface StudentData {
 class PdfService {
   private githubMarkdownCSS: string = '';
 
-  public async generateAttendancePDF(tutorialId: string, date: Date): Promise<ReadStream> {
+  public async generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
       const tutorial = await tutorialService.getTutorialWithID(tutorialId);
 
       const body: string = await this.generateAttendanceHTML(tutorial, date);
-      const html = `<html><head><style>${this.getGithubMarkdownCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
+      const html = this.putBodyInHtml(body);
 
-      pdf
-        .create(html, {
-          format: 'A4',
-          orientation: 'portrait',
-          border: '1cm',
-        })
-        .toStream((err, stream) => {
-          if (err) {
-            reject(new BadRequestError(String(err)));
-          } else {
-            resolve(stream);
-          }
-        });
+      try {
+        const buffer = await this.getPDFFromHTML(html);
+
+        resolve(buffer);
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
-  public generateStudentScheinOverviewPDF(): Promise<ReadStream> {
+  public generateStudentScheinOverviewPDF(): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
       const [students, summaries] = await Promise.all([
         studentService.getAllStudents(),
@@ -51,21 +45,15 @@ class PdfService {
       ]);
 
       const body = await this.generateScheinStatusHTML(students, summaries);
-      const html = `<html><head><style>${this.getGithubMarkdownCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
+      const html = this.putBodyInHtml(body);
 
-      pdf
-        .create(html, {
-          format: 'A4',
-          orientation: 'portrait',
-          border: '1cm',
-        })
-        .toStream((err, stream) => {
-          if (err) {
-            reject(new BadRequestError(String(err)));
-          } else {
-            resolve(stream);
-          }
-        });
+      try {
+        const buffer = await this.getPDFFromHTML(html);
+
+        resolve(buffer);
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
@@ -236,8 +224,47 @@ class PdfService {
       .replace(/(?=<!--)([\s\S]*?)-->/gim, '');
   }
 
+  private putBodyInHtml(body: string): string {
+    return `<html><head><style>${this.getGithubMarkdownCSS()}</style><style>${this.getCustomCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
+  }
+
+  private async getPDFFromHTML(html: string): Promise<Buffer> {
+    let browser: puppeteer.Browser | undefined = undefined;
+
+    try {
+      browser = await puppeteer.launch();
+
+      const page = await browser.newPage();
+      await page.setContent(html);
+
+      const buffer = await page.pdf({
+        format: 'A4',
+        margin: {
+          top: '1cm',
+          right: '1cm',
+          bottom: '1cm',
+          left: '1cm',
+        },
+      });
+
+      await browser.close();
+
+      return buffer;
+    } catch (err) {
+      if (browser) {
+        browser.close();
+      }
+
+      throw err;
+    }
+  }
+
   private getGithubMarkdownCSS(): string {
     return githubMarkdownCSS;
+  }
+
+  private getCustomCSS(): string {
+    return '.markdown-body table { display: table; width: 100%; background: red; }';
   }
 }
 
