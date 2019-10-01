@@ -1,16 +1,16 @@
 import { format } from 'date-fns';
-import fs, { ReadStream } from 'fs';
+import fs from 'fs';
 import path from 'path';
+import puppeteer from 'puppeteer';
+import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { BadRequestError } from '../../model/Errors';
+import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
-import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
-import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import githubMarkdownCSS from './css/githubMarkdown';
-import puppeteer from 'puppeteer';
 
 interface StudentData {
   matriculationNo: string;
@@ -22,12 +22,12 @@ class PdfService {
 
   public async generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
-      const tutorial = await tutorialService.getTutorialWithID(tutorialId);
-
-      const body: string = await this.generateAttendanceHTML(tutorial, date);
-      const html = this.putBodyInHtml(body);
-
       try {
+        const tutorial = await tutorialService.getTutorialWithID(tutorialId);
+
+        const body: string = await this.generateAttendanceHTML(tutorial, date);
+        const html = this.putBodyInHtml(body);
+
         const buffer = await this.getPDFFromHTML(html);
 
         resolve(buffer);
@@ -39,15 +39,15 @@ class PdfService {
 
   public generateStudentScheinOverviewPDF(): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
-      const [students, summaries] = await Promise.all([
-        studentService.getAllStudents(),
-        scheincriteriaService.getCriteriaResultsOfAllStudents(),
-      ]);
-
-      const body = await this.generateScheinStatusHTML(students, summaries);
-      const html = this.putBodyInHtml(body);
-
       try {
+        const [students, summaries] = await Promise.all([
+          studentService.getAllStudents(),
+          scheincriteriaService.getCriteriaResultsOfAllStudents(),
+        ]);
+
+        const body = await this.generateScheinStatusHTML(students, summaries);
+        const html = this.putBodyInHtml(body);
+
         const buffer = await this.getPDFFromHTML(html);
 
         resolve(buffer);
