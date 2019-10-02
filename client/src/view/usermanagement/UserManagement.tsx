@@ -13,7 +13,7 @@ import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { UserWithFetchedTutorials } from '../../typings/types';
-import { getNameOfEntity } from '../../util/helperFunctions';
+import { getNameOfEntity, saveBlob } from '../../util/helperFunctions';
 import UserTableRow from './components/UserTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -44,6 +44,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     setTemporaryPassword,
     sendCredentials: sendCredentialsRequest,
     sendCredentialsToSingleUser: sendCredentialsToSingleUserRequest,
+    getCredentialsPDF,
   } = useAxios();
   const dialog = useDialog();
 
@@ -245,6 +246,20 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     setSendingCredentials(false);
   }
 
+  async function handlePrintCredentials() {
+    setSendingCredentials(true);
+
+    try {
+      const blob = await getCredentialsPDF();
+
+      saveBlob(blob, 'Zugangsdaten');
+    } catch {
+      enqueueSnackbar('Zugangsdaten PDF konnte nicht erzeugt werden.', { variant: 'error' });
+    }
+
+    setSendingCredentials(false);
+  }
+
   async function sendCredentialsToSingleUser(user: UserWithFetchedTutorials) {
     const snackbarKey = enqueueSnackbar('Verschicke Zugangsdaten...', { variant: 'info' });
 
@@ -279,13 +294,26 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
             />
           }
           topBarContent={
-            <SubmitButton
-              variant='outlined'
-              isSubmitting={isSendingCredentials}
-              onClick={handleSendCredentials}
-            >
-              Zugangsdaten verschicken
-            </SubmitButton>
+            <>
+              <SubmitButton
+                variant='outlined'
+                isSubmitting={isSendingCredentials}
+                onClick={handleSendCredentials}
+              >
+                Zugangsdaten verschicken
+              </SubmitButton>
+
+              <SubmitButton
+                variant='outlined'
+                isSubmitting={isSendingCredentials}
+                onClick={handlePrintCredentials}
+                style={{
+                  marginLeft: 8,
+                }}
+              >
+                Zugangsdaten ausdrucken
+              </SubmitButton>
+            </>
           }
           items={users}
           createRowFromItem={user => (

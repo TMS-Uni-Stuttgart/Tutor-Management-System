@@ -24,7 +24,20 @@ RUN yarn build
 # Create the image which runs the server
 #
 # =============================================
-FROM node:10-alpine
+FROM alpine:edge
+
+# Installs latest Chromium (76) package.
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      freetype-dev \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      terminus-font \
+      nodejs \
+      yarn 
 
 COPY --from=build tms/server/build tms/server
 COPY --from=build tms/shared/dist tms/shared/dist
@@ -34,20 +47,30 @@ COPY yarn.lock /tms
 COPY server/package.json /tms/server
 COPY shared/package.json /tms/shared
 
-# The port on which the server listens
-EXPOSE 8080
+# Tell Puppeteer to skip installing Chrome. We'll be using the installed package. 
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# Add packages & files needed to run phantomJS in the container
-# PhantomJS is used to create the PDFs on the server.
-RUN apk add --update --no-cache ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
-RUN apk --update --no-cache add curl
-RUN curl -Ls "https://github.com/dustinblackman/phantomized/releases/download/2.1.1a/dockerized-phantomjs.tar.gz" | tar xz -C /
-RUN apk del curl
+# Tell the PDFService where to find the Chrome executable.
+ENV TMS_PUPPETEER_EXEC_PATH "/usr/bin/chromium-browser"
 
-# Install the packages needed for the server
+# Puppeteer v1.17.0 works with Chromium 76.
+RUN yarn add puppeteer@1.17.0
+
+# Add user so we don't need --no-sandbox.
+RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
+    && mkdir -p /home/pptruser/Downloads /app \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app \
+    && chown -R pptruser:pptruser /tms
+
+# Run everything after as non-privileged user.
+USER pptruser
+
 WORKDIR /tms
 RUN yarn install --production
 
 # Set up container entrypoint to be the server file.
+EXPOSE 8080
 WORKDIR /tms/server
+
 ENTRYPOINT [ "node", "server.js" ]

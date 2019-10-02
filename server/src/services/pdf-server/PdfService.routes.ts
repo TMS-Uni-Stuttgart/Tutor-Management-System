@@ -18,22 +18,25 @@ pdfRouter.get(
       throw new BadRequestError('Given date string is not a date in the format yyyy-MM-dd.');
     }
 
-    const stream = await pdfService.generateAttendancePDF(tutorialId, date);
+    const pdfBuffer = await pdfService.generateAttendancePDF(tutorialId, date);
 
     res.contentType('pdf');
-    res.attachment('attendance.pdf');
-
-    stream.pipe(res);
+    res.send(pdfBuffer);
   }
 );
 
 pdfRouter.get('/scheinstatus', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
-  const stream = await pdfService.generateStudentScheinOverviewPDF();
+  const pdfBuffer = await pdfService.generateStudentScheinOverviewPDF();
 
   res.contentType('pdf');
-  res.attachment('scheinstatus.pdf');
+  res.send(pdfBuffer);
+});
 
-  stream.pipe(res);
+pdfRouter.get('/credentials', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
+  const pdfBuffer = await pdfService.generateCredentialsPDF();
+
+  res.contentType('pdf');
+  res.send(pdfBuffer);
 });
 
 export default pdfRouter;

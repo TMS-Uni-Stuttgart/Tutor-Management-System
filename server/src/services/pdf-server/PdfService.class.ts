@@ -1,16 +1,18 @@
 import { format } from 'date-fns';
-import fs, { ReadStream } from 'fs';
-import pdf from 'html-pdf';
+import fs from 'fs';
 import path from 'path';
+import puppeteer from 'puppeteer';
+import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
+import { User } from 'shared/dist/model/User';
 import { BadRequestError } from '../../model/Errors';
+import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
-import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
-import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import githubMarkdownCSS from './css/githubMarkdown';
+import Logger from '../../helpers/Logger';
 
 interface StudentData {
   matriculationNo: string;
@@ -20,73 +22,73 @@ interface StudentData {
 class PdfService {
   private githubMarkdownCSS: string = '';
 
-  public async generateAttendancePDF(tutorialId: string, date: Date): Promise<ReadStream> {
+  public generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
-      const tutorial = await tutorialService.getTutorialWithID(tutorialId);
+      try {
+        const tutorial = await tutorialService.getTutorialWithID(tutorialId);
 
-      const body: string = await this.generateAttendanceHTML(tutorial, date);
-      const html = `<html><head><style>${this.getGithubMarkdownCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
+        const body: string = await this.generateAttendanceHTML(tutorial, date);
+        const html = this.putBodyInHtml(body);
 
-      pdf
-        .create(html, {
-          format: 'A4',
-          orientation: 'portrait',
-          border: '1cm',
-        })
-        .toStream((err, stream) => {
-          if (err) {
-            reject(new BadRequestError(String(err)));
-          } else {
-            resolve(stream);
-          }
-        });
+        const buffer = await this.getPDFFromHTML(html);
+
+        resolve(buffer);
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
-  public generateStudentScheinOverviewPDF(): Promise<ReadStream> {
+  public generateStudentScheinOverviewPDF(): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
-      const [students, summaries] = await Promise.all([
-        studentService.getAllStudents(),
-        scheincriteriaService.getCriteriaResultsOfAllStudents(),
-      ]);
+      try {
+        const [students, summaries] = await Promise.all([
+          studentService.getAllStudents(),
+          scheincriteriaService.getCriteriaResultsOfAllStudents(),
+        ]);
 
-      const body = await this.generateScheinStatusHTML(students, summaries);
-      const html = `<html><head><style>${this.getGithubMarkdownCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
+        const body = await this.generateScheinStatusHTML(students, summaries);
+        const html = this.putBodyInHtml(body);
 
-      pdf
-        .create(html, {
-          format: 'A4',
-          orientation: 'portrait',
-          border: '1cm',
-        })
-        .toStream((err, stream) => {
-          if (err) {
-            reject(new BadRequestError(String(err)));
-          } else {
-            resolve(stream);
-          }
-        });
+        const buffer = await this.getPDFFromHTML(html);
+
+        resolve(buffer);
+      } catch (err) {
+        reject(err);
+      }
     });
+  }
+
+  public async generateCredentialsPDF(): Promise<Buffer> {
+    const users: User[] = await userService.getAllUsers();
+    const body = await this.generateCredentialsHTML(users);
+    const html = this.putBodyInHtml(body);
+
+    const buffer = await this.getPDFFromHTML(html);
+
+    return buffer;
   }
 
   private getAttendanceTemplate(): string {
-    try {
-      const filePath = path.join(process.cwd(), 'config', 'html', 'attendance.html');
-
-      return fs.readFileSync(filePath).toString();
-    } catch {
-      throw new BadRequestError('No template file present for attendance sheet (attendance.html).');
-    }
+    return this.getTemplate('attendance.html');
   }
 
   private getScheinStatusTemplate(): string {
+    return this.getTemplate('scheinstatus.html');
+  }
+
+  private getCredentialsTemplate(): string {
+    return this.getTemplate('credentials.html');
+  }
+
+  private getTemplate(filename: string): string {
     try {
-      const filePath = path.join(process.cwd(), 'config', 'html', 'scheinstatus.html');
+      const filePath = path.join(process.cwd(), 'config', 'html', filename);
 
       return fs.readFileSync(filePath).toString();
     } catch {
       throw new BadRequestError(
-        'No template file present for schein status overview sheet (scheinstatus.html).'
+        `No template file present for filename '${filename}' in ./config/tms folder`
       );
     }
   }
@@ -120,6 +122,36 @@ class PdfService {
     return this.fillAttendanceTemplate(template, tutorial.slot, tutorName, rows, date);
   }
 
+  private async generateScheinStatusHTML(
+    students: Student[],
+    summaries: ScheincriteriaSummaryByStudents
+  ): Promise<string> {
+    const template = this.getScheinStatusTemplate();
+    const studentDataToPrint: StudentData[] = this.getStudentDataToPrint(students, summaries);
+
+    const rows: string[] = [];
+
+    studentDataToPrint.forEach(data => {
+      rows.push(`<tr><td>${data.matriculationNo}</td><td>${data.schein}</td></tr>`);
+    });
+
+    return this.fillScheinStatusTemplate(template, rows.join(''));
+  }
+
+  private async generateCredentialsHTML(users: User[]): Promise<string> {
+    const template = this.getCredentialsTemplate();
+    const rows: string[] = [];
+
+    users.forEach(user => {
+      const tempPwd = user.temporaryPassword || 'NO TMP PASSWORD';
+      const nameOfUser = `${user.lastname}, ${user.firstname}`;
+
+      rows.push(`<tr><td>${nameOfUser}</td><td>${user.username}</td><td>${tempPwd}</td></tr>`);
+    });
+
+    return this.fillCredentialsTemplate(template, rows.join(''));
+  }
+
   private fillAttendanceTemplate(
     template: string,
     slot: string,
@@ -146,22 +178,6 @@ class PdfService {
       });
   }
 
-  private async generateScheinStatusHTML(
-    students: Student[],
-    summaries: ScheincriteriaSummaryByStudents
-  ): Promise<string> {
-    const template = this.getScheinStatusTemplate();
-    const studentDataToPrint: StudentData[] = this.getStudentDataToPrint(students, summaries);
-
-    const rows: string[] = [];
-
-    studentDataToPrint.forEach(data => {
-      rows.push(`<tr><td>${data.matriculationNo}</td><td>${data.schein}</td></tr>`);
-    });
-
-    return this.fillScheinStatusTemplate(template, rows.join(''));
-  }
-
   private fillScheinStatusTemplate(template: string, statuses: string): string {
     return this.prepareTemplate(template).replace(/{{statuses.*}}/g, substring => {
       const wordArray = substring.match(/(\[(\w|\s)*,(\w|\s)*\])/g);
@@ -181,6 +197,10 @@ class PdfService {
         .replace(/{{yes}}/g, replacements.yes)
         .replace(/{{no}}/g, replacements.no);
     });
+  }
+
+  private fillCredentialsTemplate(template: string, credentials: string): string {
+    return this.prepareTemplate(template).replace(/{{credentials}}/g, credentials);
   }
 
   private getStudentDataToPrint(
@@ -236,8 +256,62 @@ class PdfService {
       .replace(/(?=<!--)([\s\S]*?)-->/gim, '');
   }
 
+  private putBodyInHtml(body: string): string {
+    return `<html><head><style>${this.getGithubMarkdownCSS()}</style><style>${this.getCustomCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
+  }
+
+  private async getPDFFromHTML(html: string): Promise<Buffer> {
+    let browser: puppeteer.Browser | undefined = undefined;
+
+    Logger.debug('Starting browser...');
+    Logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);
+
+    try {
+      browser = await puppeteer.launch({
+        args: ['--disable-dev-shm-usage'],
+        executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
+      });
+
+      Logger.debug('Browser startet.');
+
+      const page = await browser.newPage();
+      Logger.debug('Page created.');
+
+      await page.setContent(html, { waitUntil: 'domcontentloaded' });
+      Logger.debug('Page content loaded');
+
+      const buffer = await page.pdf({
+        format: 'A4',
+        margin: {
+          top: '1cm',
+          right: '1cm',
+          bottom: '1cm',
+          left: '1cm',
+        },
+      });
+
+      Logger.debug('PDF created.');
+
+      await browser.close();
+
+      return buffer;
+    } catch (err) {
+      if (browser) {
+        browser.close();
+      }
+
+      Logger.error(JSON.stringify(err, null, 2));
+
+      throw err;
+    }
+  }
+
   private getGithubMarkdownCSS(): string {
     return githubMarkdownCSS;
+  }
+
+  private getCustomCSS(): string {
+    return '.markdown-body table { display: table; width: 100%; }';
   }
 }
 
