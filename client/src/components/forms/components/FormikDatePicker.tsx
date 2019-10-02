@@ -11,7 +11,7 @@ type PropType = Props & Omit<DatePickerProps, keyof FieldProps['field']>;
 function FormikDatePicker({ name, className, ...other }: PropType): JSX.Element {
   return (
     <Field name={name}>
-      {({ field, form, ...otherFieldProps }: FieldProps) => (
+      {({ field, form, meta: { touched, error } }: FieldProps) => (
         <DatePicker
           variant='inline'
           format='EE, dd MMMM yyyy'
@@ -20,11 +20,10 @@ function FormikDatePicker({ name, className, ...other }: PropType): JSX.Element 
           {...field}
           {...other}
           onChange={date => form.setFieldValue(field.name, date, true)}
-          helperText={!!form.touched[field.name] && form.errors[field.name]}
-          error={Boolean(form.touched[field.name]) && Boolean(form.errors[field.name])}
+          helperText={!!touched && error}
+          error={touched && !!error}
           className={className}
           inputVariant='outlined'
-          {...otherFieldProps}
         />
       )}
     </Field>

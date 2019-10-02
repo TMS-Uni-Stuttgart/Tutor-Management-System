@@ -10,8 +10,7 @@ interface Props extends Omit<TimePickerProps, keyof FieldProps['field']> {
 function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
   return (
     <Field name={name}>
-      {({ field, form, ...otherFieldProps }: FieldProps) => (
-        // <div className={className}>
+      {({ field, form, meta: { touched, error } }: FieldProps) => (
         <TimePicker
           variant='inline'
           autoOk
@@ -20,8 +19,8 @@ function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
           fullWidth
           {...field}
           {...other}
-          helperText={!!form.touched[field.name] && form.errors[field.name]}
-          error={Boolean(form.touched[field.name]) && Boolean(form.errors[field.name])}
+          helperText={!!touched && error}
+          error={touched && !!error}
           onChange={time => {
             form.setFieldValue(field.name, time, true);
 
@@ -30,9 +29,7 @@ function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
             }
           }}
           inputVariant='outlined'
-          {...otherFieldProps}
         />
-        // </div>
       )}
     </Field>
   );

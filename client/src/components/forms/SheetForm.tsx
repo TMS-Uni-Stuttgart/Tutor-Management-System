@@ -8,8 +8,26 @@ import FormikExerciseEditor, {
 } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import * as Yup from 'yup';
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
+
+const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
+  Yup.object().shape<ExerciseFormExercise>({
+    exName: Yup.string().required('Benötigt'),
+    bonus: Yup.boolean().required('Benötigt'),
+    maxPoints: Yup.string().matches(/^\d(\.\d+)?$/, 'Punkte dürfen nur Zahlen sein'),
+    subexercises: Yup.array().of(exerciseValidationSchema),
+  })
+);
+
+const validationSchema = Yup.object().shape<SheetFormState>({
+  sheetNo: Yup.number().required('Benötigt'),
+  bonusSheet: Yup.boolean().required('Benötigt'),
+  exercises: Yup.array<ExerciseFormExercise>()
+    .of(exerciseValidationSchema)
+    .required('Mind. 1 Aufgabe benötigt.'),
+});
 
 interface SheetFormState {
   sheetNo: number;
@@ -59,7 +77,7 @@ function SheetForm({ onSubmit, className, sheet, sheets, ...other }: Props): JSX
     <FormikBaseForm
       {...other}
       initialValues={initialFormState}
-      // validationSchema={validationSchema}
+      validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
       {() => (
