@@ -41,8 +41,6 @@ RUN apk add --no-cache \
 
 COPY --from=build tms/server/build tms/server
 COPY --from=build tms/shared/dist tms/shared/dist
-# COPY server/build tms/server
-# COPY shared/dist tms/shared/dist
 
 COPY package.json /tms
 COPY yarn.lock /tms
