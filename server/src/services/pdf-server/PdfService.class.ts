@@ -12,6 +12,7 @@ import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
+import Logger from '../../helpers/Logger';
 
 interface StudentData {
   matriculationNo: string;
@@ -260,15 +261,22 @@ class PdfService {
   }
 
   private async getPDFFromHTML(html: string): Promise<Buffer> {
+    Logger.debug('Starting browser...');
     let browser: puppeteer.Browser | undefined = undefined;
 
     try {
       browser = await puppeteer.launch({
         args: ['--disable-dev-shm-usage'],
+        executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
       });
 
+      Logger.debug('Browser startet.');
+
       const page = await browser.newPage();
-      await page.setContent(html);
+      Logger.debug('Page created.');
+
+      await page.setContent(html, { waitUntil: 'domcontentloaded' });
+      Logger.debug('Page content loaded');
 
       const buffer = await page.pdf({
         format: 'A4',
@@ -280,6 +288,8 @@ class PdfService {
         },
       });
 
+      Logger.debug('PDF created.');
+
       await browser.close();
 
       return buffer;
@@ -287,6 +297,8 @@ class PdfService {
       if (browser) {
         browser.close();
       }
+
+      Logger.error(JSON.stringify(err, null, 2));
 
       throw err;
     }
@@ -297,7 +309,7 @@ class PdfService {
   }
 
   private getCustomCSS(): string {
-    return '.markdown-body table { display: table; width: 100%; background: red; }';
+    return '.markdown-body table { display: table; width: 100%; }';
   }
 }
 
