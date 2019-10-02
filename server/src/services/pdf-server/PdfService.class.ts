@@ -261,8 +261,10 @@ class PdfService {
   }
 
   private async getPDFFromHTML(html: string): Promise<Buffer> {
-    Logger.debug('Starting browser...');
     let browser: puppeteer.Browser | undefined = undefined;
+
+    Logger.debug('Starting browser...');
+    Logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);
 
     try {
       browser = await puppeteer.launch({
