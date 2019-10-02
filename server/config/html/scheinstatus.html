@@ -1,0 +1,29 @@
+<!-- 
+  This is the HTML template used by the PdfService to create an schein status overview sheet. 
+  
+  The head & body tags will be inserted by the service and must NOT be in this file.
+
+  The following replacement options are available (one can inlucde spaces after '{{' and before '}}'):
+  - {{ statuses, [yes, no] }}: Generated table rows (2 columns: 'matriculation no', 'achieved / not achieved') for all students. The array is optional but if provided one can customize the text for 'achieved'/'not achieved' ('yes' for 'achieved', 'no' for 'not achieved'). If it's not provided the literal strings 'yes'/'no' will be used.
+ -->
+
+<h3 style="text-align: center">Scheinliste</h3>
+
+<table>
+  <style scoped>
+    td {
+      padding: 0.5em 1em;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+
+  <thead>
+    <tr>
+      <th>Matrikelnummer</th>
+      <th>Bestanden / Nicht bestanden</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ statuses, [Bestanden, Nicht bestanden] }}
+  </tbody>
+</table>

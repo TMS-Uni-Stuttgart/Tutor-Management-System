@@ -67,7 +67,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
       setCriterias([...criterias, response]);
       resetForm();
 
-      enqueueSnackbar(`Kriterium "${dto.data.name}" erfolgreich erstellt.`, {
+      enqueueSnackbar(`Kriterium "${dto.name}" erfolgreich erstellt.`, {
         variant: 'success',
       });
     } catch (reason) {
@@ -98,7 +98,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
       setCriterias(criterias.map(crit => (crit.id === criteria.id ? response : crit)));
 
       dialog.hide();
-      enqueueSnackbar(`Kriterium "${dto.data.name}" erfolgreich bearbeitet.`, {
+      enqueueSnackbar(`Kriterium "${dto.name}" erfolgreich bearbeitet.`, {
         variant: 'success',
       });
     } catch (reason) {

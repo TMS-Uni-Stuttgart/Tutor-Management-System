@@ -202,7 +202,7 @@ export async function getScheinCriteriaSummariesOfAllStudentsOfTutorial(
   id: string
 ): Promise<StudentScheinCriteriaSummaryMap> {
   const response = await axios.get<StudentScheinCriteriaSummaryMap>(
-    `tutorial/${id}/student/scheincriteria`
+    `scheincriteria/tutorial/${id}`
   );
 
   if (response.status === 200) {
