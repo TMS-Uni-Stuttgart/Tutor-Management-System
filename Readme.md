@@ -6,7 +6,7 @@ The Tutor Management System (short _TMS_) aims to be a tool used at universitite
 
 ## Getting Started
 
-You can find more information about how to set up your development environment in the [GET_STARTED.md](/GET_STARTED.md).
+You can find more information about how to set up your development environment in the [development environment guide](https://github.com/Dudrie/Tutor-Management-System/wiki/Development-Environment).
 
 
 ## Deployment
