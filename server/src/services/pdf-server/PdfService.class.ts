@@ -6,13 +6,14 @@ import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteri
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
+import showdown, { ShowdownExtension } from 'showdown';
+import Logger from '../../helpers/Logger';
 import { BadRequestError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
-import Logger from '../../helpers/Logger';
 
 interface StudentData {
   matriculationNo: string;
@@ -20,7 +21,26 @@ interface StudentData {
 }
 
 class PdfService {
-  private githubMarkdownCSS: string = '';
+  private markdownConverter: showdown.Converter;
+
+  constructor() {
+    const noMoreParagraphs: ShowdownExtension = {
+      type: 'output',
+      filter: text => {
+        const regex = /<\/?p>/gi;
+
+        return text.replace(regex, '');
+      },
+    };
+
+    this.markdownConverter = new showdown.Converter({
+      ghCodeBlocks: true,
+      omitExtraWLInCodeBlocks: true,
+      extensions: [noMoreParagraphs],
+    });
+
+    this.markdownConverter.setFlavor('github');
+  }
 
   public generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
@@ -67,6 +87,18 @@ class PdfService {
     const buffer = await this.getPDFFromHTML(html);
 
     return buffer;
+  }
+
+  public async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {
+    const html = this.generateHTMLFromMarkdown(markdown);
+
+    return await this.getPDFFromHTML(html);
+  }
+
+  private generateHTMLFromMarkdown(markdown: string): string {
+    const body = this.markdownConverter.makeHtml(markdown);
+
+    return this.putBodyInHtml(body);
   }
 
   private getAttendanceTemplate(): string {
@@ -293,6 +325,8 @@ class PdfService {
       Logger.debug('PDF created.');
 
       await browser.close();
+
+      Logger.debug('Browser closed');
 
       return buffer;
     } catch (err) {
