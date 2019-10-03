@@ -2,7 +2,7 @@
 
 ![](https://github.com/Dudrie/Tutor-Management-System/workflows/Code%20Quality/badge.svg)
 
-The Tutor Management System (short _TMS_) aims to be a tool used at universitites (in Germany). It can be used to track the requirements which a student has to fulfill to be allowed to write the exam in Germany. It can (amongst other things) track the points gained by the students in their homeworks, how often a student attended the tutorial and how often a student presented a solution.
+The Tutor Management System (short _TMS_) aims to be a tool used at universitites (in Germany). It can be used to track the requirements which a student has to fulfill to be allowed to write the exam. It can (among other things) track the points gained by the students in their homeworks, how often a student attended the tutorial and how often a student presented a solution.
 
 ## Getting Started
 
