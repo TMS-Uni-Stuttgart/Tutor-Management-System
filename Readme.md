@@ -11,6 +11,9 @@ You can find more information about how to set up your development environment i
 
 ## Deployment
 
+For more information on how to deploy this tool please read the [installation guide](https://github.com/Dudrie/Tutor-Management-System/wiki/Installation) in the project wiki.
+
+If you want to update your existing deployment to a new version please refer to the [update guide](https://github.com/Dudrie/Tutor-Management-System/wiki/Updating).
 
 ## Built With
 Here are the most important libraries listed which are used in any part of the project.
