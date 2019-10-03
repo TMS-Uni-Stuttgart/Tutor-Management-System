@@ -6,7 +6,7 @@
 ## "I want to help"
 If you want to work on an issue please check first if no one else is working on it. If no one is working on it please leave a comment that you start working.
 
-See [get started](/GET_STARTED.md) for more information on how to setup your local development environment.
+See [Development Environment](https://github.com/Dudrie/Tutor-Management-System/wiki/Development-Environment) in the wiki. for more information on how to setup your local development environment.
 
 While all of the below refers to the git command line interface you can achieve a lot of this by using the [GitHub Desktop client](https://desktop.github.com/) _(This tool is currently only available for Windows & MacOS)_.
 
