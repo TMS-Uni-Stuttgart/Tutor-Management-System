@@ -278,6 +278,7 @@ function PointsCard<T extends EntityWithPoints>({
         <Formik
           initialValues={initialValues}
           onSubmit={onPointsSave}
+          enableReinitialize
           // TODO: Add validation schema?!
         >
           {({ handleSubmit, isValid, isSubmitting, values }) => (

@@ -77,9 +77,13 @@ function getPointsFromBoxValue({ points }: PointsCardFormExerciseState): number 
   );
 }
 
-function ExerciseBox({ name, exercise }: Props): JSX.Element {
+function ExerciseBox({ name, exercise }: Props): JSX.Element | null {
   const classes = useStyles();
   const [{ value }] = useField(name);
+
+  if (!value) {
+    return null;
+  }
 
   const { subexercises } = exercise;
   const achievedPoints = getPointsFromBoxValue(value);

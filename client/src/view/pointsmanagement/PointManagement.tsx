@@ -71,6 +71,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
+
   const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>(undefined);
   const [selectedTab, setSelectedTab] = useState<TabValue>(TabValue.POINTS);
 
