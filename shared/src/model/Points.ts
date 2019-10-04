@@ -26,9 +26,8 @@ export type PointMapDTO = {
 };
 
 export class PointId {
-  private exerciseIdentifier: string;
-
-  readonly sheetId: string;
+  private readonly exerciseIdentifier: string;
+  private readonly sheetId: string;
 
   constructor(sheetId: string, exercise: Exercise) {
     this.sheetId = sheetId;
