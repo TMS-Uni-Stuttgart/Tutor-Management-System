@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import fs from 'fs';
+import JSZip from 'jszip';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
@@ -7,10 +8,13 @@ import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
 import showdown, { ShowdownExtension } from 'showdown';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
 import { BadRequestError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
+import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
+import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
@@ -87,6 +91,62 @@ class PdfService {
     const buffer = await this.getPDFFromHTML(html);
 
     return buffer;
+  }
+
+  public async generateZIPFromComments(
+    tutorialId: string,
+    sheetId: string
+  ): Promise<NodeJS.ReadableStream> {
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
+    const sheet = await sheetService.getDocumentWithId(sheetId);
+
+    const commentsByTeam: { teamName: string; markdown: string }[] = [];
+    const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
+
+    for (const team of tutorial.teams) {
+      const entries = await teamService.getPoints(tutorialId, team.id, sheetId);
+      const students = await Promise.all(
+        team.students.map(s => studentService.getDocumentWithId(getIdOfDocumentRef(s)))
+      );
+
+      const teamName = students.map(s => s.lastname).join('');
+      let markdown: string = `# ${teamName}\n\n`;
+
+      entries.forEach(({ exName, entry }) => {
+        markdown += `## Aufgabe ${exName}\n\n ${entry.comment}\n\n`;
+      });
+
+      commentsByTeam.push({ teamName, markdown });
+    }
+
+    const files: { filename: string; payload: Buffer }[] = [];
+
+    for (const comment of commentsByTeam) {
+      files.push({
+        filename: `Ex${sheetNo}_${comment.teamName}.pdf`, // TODO: Make template.
+        payload: await this.generatePDFFromMarkdown(comment.markdown),
+      });
+    }
+
+    const zip = new JSZip();
+
+    files.forEach(({ filename, payload }) => {
+      zip.file(filename, payload, { binary: true });
+    });
+
+    return zip.generateNodeStream({ type: 'nodebuffer' });
+  }
+
+  public async generateZip(): Promise<NodeJS.ReadableStream> {
+    const results = await this.generateStudentScheinOverviewPDF();
+    const credentials = await this.generateCredentialsPDF();
+
+    const zip = new JSZip();
+
+    zip.file('results.pdf', results, { binary: true });
+    zip.file('credentials.pdf', credentials, { binary: true });
+
+    return zip.generateNodeStream({ type: 'nodebuffer' });
   }
 
   public async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {

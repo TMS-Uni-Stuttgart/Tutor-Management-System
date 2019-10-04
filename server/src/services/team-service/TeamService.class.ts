@@ -139,6 +139,17 @@ class TeamService {
     await tutorial.save();
   }
 
+  /**
+   * Returns a list of information about the PointEntries of a team for a sheet.
+   *
+   * Collects all information about PointEntries of the given team for the given sheet. Empty or non-present entries will be skipped and not added to the list.
+   *
+   * @param tutorialId ID of the tutorial.
+   * @param teamId ID of the team which infos to get.
+   * @param sheetId Sheet which infos to get.
+   *
+   * @returns Sorted list (ascending by exercise name) of point information.
+   */
   public async getPoints(
     tutorialId: string,
     teamId: string,
@@ -157,6 +168,8 @@ class TeamService {
         entries.push({ id: ex.id, exName: ex.exName, entry });
       }
     });
+
+    entries.sort((a, b) => a.exName.localeCompare(b.exName));
 
     return entries;
   }

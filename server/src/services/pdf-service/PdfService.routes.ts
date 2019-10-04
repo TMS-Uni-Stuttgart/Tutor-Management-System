@@ -1,7 +1,13 @@
 import { isValid, parse } from 'date-fns';
 import Router from 'express-promise-router';
 import { Role } from 'shared/dist/model/Role';
-import { checkRoleAccess } from '../../middleware/AccessControl';
+import {
+  checkRoleAccess,
+  checkAccess,
+  hasUserOneOfRoles,
+  isUserTutorOfTutorial,
+  isUserCorrectorOfTutorial,
+} from '../../middleware/AccessControl';
 import { BadRequestError } from '../../model/Errors';
 import pdfService from './PdfService.class';
 
@@ -38,5 +44,19 @@ pdfRouter.get('/credentials', ...checkRoleAccess(Role.ADMIN), async (_, res) => 
   res.contentType('pdf');
   res.send(pdfBuffer);
 });
+
+pdfRouter.get(
+  '/correction/:tutorialId/:sheetId',
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
+  async (req, res) => {
+    const tutorialId = req.params.tutorialId;
+    const sheetId = req.params.sheetId;
+
+    const zipStream = await pdfService.generateZIPFromComments(tutorialId, sheetId);
+
+    res.contentType('zip');
+    zipStream.pipe(res);
+  }
+);
 
 export default pdfRouter;
