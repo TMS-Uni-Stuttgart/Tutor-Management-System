@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { PointMap, UpdatePointsDTO, PointMapEntry, PointId } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { isDocument } from '@hasezoey/typegoose';
@@ -12,6 +12,12 @@ import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+
+export interface PointInformation {
+  id: string;
+  exName: string;
+  entry: PointMapEntry;
+}
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
@@ -131,6 +137,28 @@ class TeamService {
     // See: https://mongoosejs.com/docs/schematypes.html#mixed
     tutorial.markModified('teams');
     await tutorial.save();
+  }
+
+  public async getPoints(
+    tutorialId: string,
+    teamId: string,
+    sheetId: string
+  ): Promise<PointInformation[]> {
+    const [team] = await this.getDocumentWithId(tutorialId, teamId);
+    const sheet = await sheetService.getSheetWithId(sheetId);
+
+    const pointMap = new PointMap(team.points);
+    const entries: PointInformation[] = [];
+
+    sheet.exercises.forEach(ex => {
+      const entry = pointMap.getPointEntry(new PointId(sheetId, ex));
+
+      if (entry) {
+        entries.push({ id: ex.id, exName: ex.exName, entry });
+      }
+    });
+
+    return entries;
   }
 
   public async getTeamWithId(tutorialId: string, id: string): Promise<Team> {
