@@ -105,7 +105,7 @@ export function isTargetedUserSameAsRequestUser(req: Request, _: Response, next:
  * @param next Next function
  */
 export async function isUserTutorOfTutorial(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasTutorialParam(req, 'isUserTutorOfTutorial()')
+  assertRequestHasTutorialParam(req, 'isUserTutorOfTutorial()');
 
   if (req.hasAccess) {
     return next();
