@@ -3,7 +3,7 @@ import { CardProps } from '@material-ui/core/Card';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik, FormikConsumer } from 'formik';
-import { ChevronUp as OpenIcon, TableEdit as EditPointsIcon } from 'mdi-material-ui';
+import { TableEdit as EditPointsIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
 import {
@@ -15,6 +15,7 @@ import {
   UpdatePointsDTO,
 } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
+import CollapseButton from '../../../../components/CollapseButton';
 import CustomCardHeader from '../../../../components/CustomCardHeader';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
@@ -236,11 +237,7 @@ function PointsCard<T extends EntityWithPoints>({
               </IconButton>
             )}
 
-            <IconButton onClick={handleCollapseChange}>
-              <OpenIcon
-                className={clsx(classes.collpaseIcon, !isCollapsed && classes.collapseIconOpen)}
-              />
-            </IconButton>
+            <CollapseButton isCollapsed={isCollapsed} onClick={handleCollapseChange} />
           </>
         }
       />
@@ -281,7 +278,7 @@ function PointsCard<T extends EntityWithPoints>({
           enableReinitialize
           // TODO: Add validation schema?!
         >
-          {({ handleSubmit, isValid, isSubmitting, values }) => (
+          {({ handleSubmit, isValid, isSubmitting, values, resetForm }) => (
             <>
               <Header values={values} />
 
@@ -293,7 +290,10 @@ function PointsCard<T extends EntityWithPoints>({
                     <Button
                       variant='outlined'
                       className={classes.cancelButton}
-                      onClick={() => setCollapsed(true)}
+                      onClick={() => {
+                        resetForm();
+                        setCollapsed(true);
+                      }}
                     >
                       Abbrechen
                     </Button>
