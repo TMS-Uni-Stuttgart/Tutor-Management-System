@@ -105,7 +105,7 @@ export function isTargetedUserSameAsRequestUser(req: Request, _: Response, next:
  * @param next Next function
  */
 export async function isUserTutorOfTutorial(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserTutorOfTutorial()');
+  assertRequestHasTutorialParam(req, 'isUserTutorOfTutorial()')
 
   if (req.hasAccess) {
     return next();
@@ -133,7 +133,7 @@ export async function isUserTutorOfTutorial(req: Request, _: Response, next: Nex
  * @param next Next function
  */
 export async function isUserSubstituteOfTutorial(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserSubstituteOfTutorial()');
+  assertRequestHasTutorialParam(req, 'isUserSubstituteOfTutorial()');
 
   const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialFromRequest(req);
@@ -157,7 +157,7 @@ export async function isUserSubstituteOfTutorial(req: Request, _: Response, next
  * @param next Next function
  */
 export async function isUserCorrectorOfTutorial(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserCorrectorOfTutorial()');
+  assertRequestHasTutorialParam(req, 'isUserCorrectorOfTutorial()');
 
   const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialFromRequest(req);
@@ -297,7 +297,7 @@ export function hasUserOneOfRoles(roles: Role | Role[]): RequestHandler {
  * @param req Request object
  */
 async function getTutorialFromRequest(req: Request): Promise<TutorialDocument> {
-  assertRequestHasIdParam(req, 'getTutorialFromRequest()');
+  assertRequestHasTutorialParam(req, 'getTutorialFromRequest()');
 
   const tutorialId = req.params.tutorialId || req.params.id;
 
@@ -385,6 +385,14 @@ function assertRequestHasIdParam(req: Request, middlewareName: string) {
   if (!req.params.id) {
     throw new Error(
       `${middlewareName} middleware must only be used in paths which have an 'id' parameter.`
+    );
+  }
+}
+
+function assertRequestHasTutorialParam(req: Request, middlewareName: string) {
+  if (!req.params.tutorialId && !req.params.id) {
+    throw new Error(
+      `${middlewareName} middleware must only be used in paths which have a 'tutorialId' or an 'id' parameter.`
     );
   }
 }

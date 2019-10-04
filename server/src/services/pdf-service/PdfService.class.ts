@@ -113,7 +113,7 @@ class PdfService {
       let markdown: string = `# ${teamName}\n\n`;
 
       entries.forEach(({ exName, entry }) => {
-        markdown += `## Aufgabe ${exName}\n\n ${entry.comment}\n\n`;
+        markdown += `## Aufgabe ${exName}\n\n${entry.comment}\n\n`;
       });
 
       commentsByTeam.push({ teamName, markdown });
