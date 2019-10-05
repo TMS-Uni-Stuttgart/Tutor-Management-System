@@ -1,4 +1,4 @@
-import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
+import { createStyles, Tab, Tabs, Theme, Typography, Button } from '@material-ui/core';
 import { People as TeamIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
@@ -23,6 +23,8 @@ import PointsCard, {
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
+import SubmitButton from '../../components/forms/components/SubmitButton';
+import { saveBlob } from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,6 +34,17 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     sheetSelect: {
       marginBottom: theme.spacing(2),
+    },
+    buttonBox: {
+      display: 'flex',
+      justifyContent: 'flex-start',
+      marginTop: theme.spacing(2),
+    },
+    button: {
+      marginRight: theme.spacing(1),
+      '&:last-of-type': {
+        marginRight: 0,
+      },
     },
     placeholder: {
       marginTop: theme.spacing(8),
@@ -66,6 +79,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     setPresentationPointsOfStudent,
     getStudent,
     getTeamOfTutorial,
+    getCorrectionCommentPDFs,
   } = useAxios();
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
@@ -75,19 +89,19 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
   const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>(undefined);
   const [selectedTab, setSelectedTab] = useState<TabValue>(TabValue.POINTS);
 
+  const [isGeneratingPDFs, setGeneratingPDFs] = useState(false);
+
+  const { tutorialId } = match.params;
+
   useEffect(() => {
-    Promise.all([
-      getAllSheets(),
-      getTeamsOfTutorial(match.params.tutorialId),
-      getStudentsOfTutorial(match.params.tutorialId),
-    ])
+    Promise.all([getAllSheets(), getTeamsOfTutorial(tutorialId), getStudentsOfTutorial(tutorialId)])
       .then(([sheetResponse, teamResponse, studentResponse]) => {
         setSheets(sheetResponse);
         setTeams(teamResponse);
         setStudents(studentResponse);
       })
       .catch(reason => console.error(reason));
-  }, [getAllSheets, getTeamsOfTutorial, getStudentsOfTutorial, match.params.tutorialId]);
+  }, [getAllSheets, getTeamsOfTutorial, getStudentsOfTutorial, tutorialId]);
 
   function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
     if (typeof e.target.value !== 'string') {
@@ -109,9 +123,9 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     const pointsDTO = convertPointsCardFormStateToDTO(values, currentSheet);
 
     try {
-      await setPointsOfTeam(match.params.tutorialId, team.id, pointsDTO);
+      await setPointsOfTeam(tutorialId, team.id, pointsDTO);
 
-      const updatedTeam = await getTeamOfTutorial(match.params.tutorialId, team.id);
+      const updatedTeam = await getTeamOfTutorial(tutorialId, team.id);
 
       setTeams(teams.map(t => (t.id === team.id ? updatedTeam : t)));
 
@@ -183,7 +197,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
         if (teamId && !fetchedTeamIds.includes(teamId)) {
           fetchedTeamIds.push(teamId);
-          updatedTeamPromises.push(getTeamOfTutorial(match.params.tutorialId, teamId));
+          updatedTeamPromises.push(getTeamOfTutorial(tutorialId, teamId));
         }
       }
 
@@ -292,6 +306,24 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
+  const handleGeneratingAllPDFs = async () => {
+    if (!currentSheet) {
+      return;
+    }
+
+    setGeneratingPDFs(true);
+
+    try {
+      const blob = await getCorrectionCommentPDFs(tutorialId, currentSheet.id);
+
+      saveBlob(blob, `Bewertungen_${currentSheet.sheetNo.toString().padStart(2, '0')}`);
+    } catch {
+      enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
+    }
+
+    setGeneratingPDFs(false);
+  };
+
   return (
     <div className={classes.root}>
       <CustomSelect
@@ -311,6 +343,22 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
             <Tab value={TabValue.POINTS} label='Punkte' />
             <Tab value={TabValue.PRESENTATION} label='Präsentationen' />
           </Tabs>
+
+          <div className={classes.buttonBox}>
+            {selectedTab === TabValue.POINTS && (
+              <SubmitButton
+                isSubmitting={isGeneratingPDFs}
+                variant='outlined'
+                className={classes.button}
+                onClick={handleGeneratingAllPDFs}
+                disabled={!currentSheet}
+                modalText='Erstelle PDFs...'
+              >
+                PDFs erstellen
+              </SubmitButton>
+            )}
+            {/* <Button variant='outlined'>Alle speichern</Button> */}
+          </div>
 
           {
             {
