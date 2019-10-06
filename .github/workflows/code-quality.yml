@@ -98,7 +98,7 @@ jobs:
           CI: true
 
   code-quality-shared:
-    name: Code Quality
+    name: Code Quality Shared
     runs-on: ubuntu-latest
 
     steps:
