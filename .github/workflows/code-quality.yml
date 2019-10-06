@@ -33,11 +33,11 @@ jobs:
         env:
           CI: true
       - name: Type check client
-        run: ts:check:client
+        run: yarn ts:check:client
         env:
           CI: true
       - name: Type check server
-        run: ts:check:server
+        run: yarn ts:check:server
         env:
           CI: true
 
