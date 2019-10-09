@@ -10,6 +10,7 @@ import { User } from 'shared/dist/model/User';
 import showdown, { ShowdownExtension } from 'showdown';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
+import { TeamDocument } from '../../model/documents/TeamDocument';
 import { BadRequestError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../sheet-service/SheetService.class';
@@ -18,7 +19,7 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
-import { TeamDocument } from '../../model/documents/TeamDocument';
+import { PointMap } from 'shared/dist/model/Points';
 
 interface StudentData {
   matriculationNo: string;
@@ -164,11 +165,20 @@ class PdfService {
     );
 
     const teamName = students.map(s => s.lastname).join('');
-    let markdown: string = `# ${teamName}\n\n`;
+    const pointInfo = { achieved: 0, total: 0 };
+    let exerciseMarkdown: string = '';
 
-    entries.forEach(({ exName, entry }) => {
-      markdown += `## Aufgabe ${exName}\n\n${entry.comment}\n\n`;
+    entries.forEach(({ exName, entry, exMaxPoints }) => {
+      const achievedPts = PointMap.getPointsOfEntry(entry);
+
+      pointInfo.achieved += achievedPts;
+      pointInfo.total += exMaxPoints;
+
+      exerciseMarkdown += `## Aufgabe ${exName} [${achievedPts}/${exMaxPoints}]  \n\n${entry.comment}\n\n`;
     });
+
+    const totalPointInfo = `**Gesamt: ${pointInfo.achieved} / ${pointInfo.total}**`;
+    const markdown = `# ${teamName}\n\n${totalPointInfo}\n\n${exerciseMarkdown}`;
 
     return { teamName, markdown };
   }

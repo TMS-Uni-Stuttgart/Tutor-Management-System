@@ -77,6 +77,14 @@ export class PointMap {
     return true;
   }
 
+  static getPointsOfEntry(entry: PointMapEntry): number {
+    if (typeof entry.points === 'number') {
+      return entry.points;
+    }
+
+    return Object.values(entry.points).reduce((sum, pts) => sum + pts, 0);
+  }
+
   private points: PointMapDTO;
 
   constructor(dto: PointMapDTO = {}) {
@@ -110,7 +118,7 @@ export class PointMap {
       return undefined;
     }
 
-    return this.getPointsOfEntry(pointEntry);
+    return PointMap.getPointsOfEntry(pointEntry);
   }
 
   getEntries(): [string, PointMapEntry][] {
@@ -146,14 +154,6 @@ export class PointMap {
   toDTO(): PointMapDTO {
     // TODO: Deep copy!
     return this.points;
-  }
-
-  private getPointsOfEntry(entry: PointMapEntry): number {
-    if (typeof entry.points === 'number') {
-      return entry.points;
-    }
-
-    return Object.values(entry.points).reduce((sum, pts) => sum + pts, 0);
   }
 }
 

@@ -1,5 +1,11 @@
 import _ from 'lodash';
-import { PointMap, UpdatePointsDTO, PointMapEntry, PointId } from 'shared/dist/model/Points';
+import {
+  PointMap,
+  UpdatePointsDTO,
+  PointMapEntry,
+  PointId,
+  getPointsOfExercise,
+} from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { isDocument } from '@hasezoey/typegoose';
@@ -16,6 +22,7 @@ import tutorialService from '../tutorial-service/TutorialService.class';
 export interface PointInformation {
   id: string;
   exName: string;
+  exMaxPoints: number;
   entry: PointMapEntry;
 }
 
@@ -165,7 +172,7 @@ class TeamService {
       const entry = pointMap.getPointEntry(new PointId(sheetId, ex));
 
       if (entry) {
-        entries.push({ id: ex.id, exName: ex.exName, entry });
+        entries.push({ id: ex.id, exName: ex.exName, entry, exMaxPoints: getPointsOfExercise(ex) });
       }
     });
 
