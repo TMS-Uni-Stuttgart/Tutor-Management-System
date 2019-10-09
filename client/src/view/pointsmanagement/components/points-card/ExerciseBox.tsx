@@ -6,9 +6,9 @@ import React, { useState } from 'react';
 import { getPointsOfExercise } from 'shared/dist/model/Points';
 import { Exercise } from 'shared/dist/model/Sheet';
 import CollapseButton from '../../../../components/CollapseButton';
-import FormikTextField from '../../../../components/forms/components/FormikTextField';
 import { PointsCardFormExerciseState } from './PointsCard';
 import PointsTextField from './PointsTextField';
+import FormikMarkdownTextfield from '../../../../components/forms/components/FormikMarkdownTextfield';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -151,7 +151,7 @@ function ExerciseBox({ name, exercise }: Props): JSX.Element | null {
           gridRow: `2 / span ${subexercises.length > 0 ? subexercises.length + 1 : 2}`,
         }}
       >
-        <FormikTextField name={`${name}.comment`} placeholder='Kommentar' multiline />
+        <FormikMarkdownTextfield name={`${name}.comment`} placeholder='Kommentar' />
       </Collapse>
     </div>
   );
