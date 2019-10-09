@@ -18,10 +18,16 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
+import { TeamDocument } from '../../model/documents/TeamDocument';
 
 interface StudentData {
   matriculationNo: string;
   schein: string;
+}
+
+interface TeamCommentData {
+  teamName: string;
+  markdown: string;
 }
 
 class PdfService {
@@ -100,23 +106,13 @@ class PdfService {
     const tutorial = await tutorialService.getDocumentWithID(tutorialId);
     const sheet = await sheetService.getDocumentWithId(sheetId);
 
-    const commentsByTeam: { teamName: string; markdown: string }[] = [];
+    const commentsByTeam: TeamCommentData[] = [];
     const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 
     for (const team of tutorial.teams) {
-      const entries = await teamService.getPoints(tutorialId, team.id, sheetId);
-      const students = await Promise.all(
-        team.students.map(s => studentService.getDocumentWithId(getIdOfDocumentRef(s)))
+      commentsByTeam.push(
+        await this.generateMarkdownFromTeamComment({ team, tutorialId, sheetId })
       );
-
-      const teamName = students.map(s => s.lastname).join('');
-      let markdown: string = `# ${teamName}\n\n`;
-
-      entries.forEach(({ exName, entry }) => {
-        markdown += `## Aufgabe ${exName}\n\n${entry.comment}\n\n`;
-      });
-
-      commentsByTeam.push({ teamName, markdown });
     }
 
     const files: { filename: string; payload: Buffer }[] = [];
@@ -137,19 +133,47 @@ class PdfService {
     return zip.generateNodeStream({ type: 'nodebuffer' });
   }
 
-  public async generateZip(): Promise<NodeJS.ReadableStream> {
-    const results = await this.generateStudentScheinOverviewPDF();
-    const credentials = await this.generateCredentialsPDF();
+  public async getMarkdownFromTeamComment(
+    tutorialId: string,
+    teamId: string,
+    sheetId: string
+  ): Promise<string> {
+    const [team] = await teamService.getDocumentWithId(tutorialId, teamId);
 
-    const zip = new JSZip();
+    const { markdown } = await this.generateMarkdownFromTeamComment({
+      team,
+      sheetId,
+      tutorialId,
+    });
 
-    zip.file('results.pdf', results, { binary: true });
-    zip.file('credentials.pdf', credentials, { binary: true });
-
-    return zip.generateNodeStream({ type: 'nodebuffer' });
+    return markdown;
   }
 
-  public async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {
+  private async generateMarkdownFromTeamComment({
+    team,
+    tutorialId,
+    sheetId,
+  }: {
+    team: TeamDocument;
+    tutorialId: string;
+    sheetId: string;
+  }): Promise<TeamCommentData> {
+    const entries = await teamService.getPoints(tutorialId, team.id, sheetId);
+    const students = await Promise.all(
+      team.students.map(s => studentService.getDocumentWithId(getIdOfDocumentRef(s)))
+    );
+
+    const teamName = students.map(s => s.lastname).join('');
+    let markdown: string = `# ${teamName}\n\n`;
+
+    entries.forEach(({ exName, entry }) => {
+      markdown += `## Aufgabe ${exName}\n\n${entry.comment}\n\n`;
+    });
+
+    return { teamName, markdown };
+  }
+
+  private async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {
     const html = this.generateHTMLFromMarkdown(markdown);
 
     return await this.getPDFFromHTML(html);

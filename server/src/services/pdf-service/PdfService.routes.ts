@@ -59,4 +59,18 @@ pdfRouter.get(
   }
 );
 
+pdfRouter.get(
+  '/markdown/:tutorialId/:sheetId/:teamId',
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
+  async (req, res) => {
+    const tutorialId = req.params.tutorialId;
+    const teamId = req.params.teamId;
+    const sheetId = req.params.sheetId;
+
+    const markdown = await pdfService.getMarkdownFromTeamComment(tutorialId, teamId, sheetId);
+
+    res.send(markdown);
+  }
+);
+
 export default pdfRouter;

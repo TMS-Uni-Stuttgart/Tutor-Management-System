@@ -1,4 +1,4 @@
-import { createStyles, Tab, Tabs, Theme, Typography, Button } from '@material-ui/core';
+import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
 import { People as TeamIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
@@ -9,9 +9,11 @@ import { Sheet } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
+import SubmitButton from '../../components/forms/components/SubmitButton';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
+import { saveBlob } from '../../util/helperFunctions';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
@@ -23,8 +25,6 @@ import PointsCard, {
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
-import SubmitButton from '../../components/forms/components/SubmitButton';
-import { saveBlob } from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
