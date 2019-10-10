@@ -3,7 +3,7 @@ import { CardProps } from '@material-ui/core/Card';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik, FormikConsumer } from 'formik';
-import { TableEdit as EditPointsIcon } from 'mdi-material-ui';
+import { TableEdit as EditPointsIcon, PdfBox as PdfIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
 import {
@@ -87,6 +87,7 @@ interface Props<T extends EntityWithPoints> extends CardProps {
   entityWithExercises: HasExercises;
   onPointsSave: PointsSaveCallback;
   onEditPoints?: () => void;
+  onGeneratePdf?: () => void;
 }
 
 export function convertPointsCardExerciseToPointMapEntry({
@@ -194,6 +195,7 @@ function PointsCard<T extends EntityWithPoints>({
   entityWithExercises,
   onPointsSave,
   onEditPoints,
+  onGeneratePdf,
   className,
   ...other
 }: Props<T>): JSX.Element {
@@ -226,6 +228,17 @@ function PointsCard<T extends EntityWithPoints>({
         midText={`Gesamt: ${getAchievedPointsFromState(values)} / ${totalPoints} Punkte`}
         action={
           <>
+            {onGeneratePdf && (
+              <IconButton
+                onClick={e => {
+                  e.stopPropagation();
+                  onGeneratePdf();
+                }}
+              >
+                <PdfIcon />
+              </IconButton>
+            )}
+
             {onEditPoints && (
               <IconButton
                 onClick={e => {

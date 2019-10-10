@@ -60,6 +60,21 @@ pdfRouter.get(
 );
 
 pdfRouter.get(
+  '/correction/:tutorialId/:sheetId/:teamId',
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
+  async (req, res) => {
+    const tutorialId = req.params.tutorialId;
+    const teamId = req.params.teamId;
+    const sheetId = req.params.sheetId;
+
+    const pdf = await pdfService.generatePDFFromSingleComment(tutorialId, sheetId, teamId);
+
+    res.contentType('pdf');
+    res.send(pdf);
+  }
+);
+
+pdfRouter.get(
   '/markdown/:tutorialId/:sheetId/:teamId',
   ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
   async (req, res) => {

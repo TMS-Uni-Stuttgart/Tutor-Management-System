@@ -79,6 +79,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     setPresentationPointsOfStudent,
     getStudent,
     getTeamOfTutorial,
+    getSingleCorrectionCommentPDF,
     getCorrectionCommentPDFs,
   } = useAxios();
 
@@ -306,6 +307,25 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
+  const handleGenerateSinglePdf = (team: Team) => async () => {
+    if (!currentSheet) {
+      return;
+    }
+
+    setGeneratingPDFs(true);
+
+    try {
+      const blob = await getSingleCorrectionCommentPDF(tutorialId, currentSheet.id, team.id);
+      const teamName = team.students.map(s => s.lastname).join('');
+
+      saveBlob(blob, `Bewertung_${currentSheet.sheetNo.toString().padStart(2, '0')}_${teamName}`);
+    } catch {
+      enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
+    }
+
+    setGeneratingPDFs(false);
+  };
+
   const handleGeneratingAllPDFs = async () => {
     if (!currentSheet) {
       return;
@@ -375,6 +395,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                       entityWithExercises={currentSheet}
                       onPointsSave={handleSavePoints(team)}
                       onEditPoints={handleEditPointsOfStudents(team)}
+                      onGeneratePdf={handleGenerateSinglePdf(team)}
                     />
                   ))
                 ) : (

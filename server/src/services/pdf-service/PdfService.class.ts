@@ -100,6 +100,17 @@ class PdfService {
     return buffer;
   }
 
+  public async generatePDFFromSingleComment(
+    tutorialId: string,
+    sheetId: string,
+    teamId: string
+  ): Promise<Buffer> {
+    const [team] = await teamService.getDocumentWithId(tutorialId, teamId);
+    const { markdown } = await this.generateMarkdownFromTeamComment({ team, tutorialId, sheetId });
+
+    return this.generatePDFFromMarkdown(markdown);
+  }
+
   public async generateZIPFromComments(
     tutorialId: string,
     sheetId: string
