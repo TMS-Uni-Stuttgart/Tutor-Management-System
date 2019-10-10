@@ -61,6 +61,12 @@ enum TabValue {
   PRESENTATION = 'PRESENTATION',
 }
 
+enum PDFGeneratingState {
+  NONE,
+  SINGLE,
+  MULTIPLE,
+}
+
 interface Params {
   tutorialId: string;
 }
@@ -90,7 +96,9 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
   const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>(undefined);
   const [selectedTab, setSelectedTab] = useState<TabValue>(TabValue.POINTS);
 
-  const [isGeneratingPDFs, setGeneratingPDFs] = useState(false);
+  const [isGeneratingPDFs, setGeneratingPDFs] = useState<PDFGeneratingState>(
+    PDFGeneratingState.NONE
+  );
 
   const { tutorialId } = match.params;
 
@@ -312,7 +320,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
-    setGeneratingPDFs(true);
+    setGeneratingPDFs(PDFGeneratingState.SINGLE);
 
     try {
       const blob = await getSingleCorrectionCommentPDF(tutorialId, currentSheet.id, team.id);
@@ -323,7 +331,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
     }
 
-    setGeneratingPDFs(false);
+    setGeneratingPDFs(PDFGeneratingState.NONE);
   };
 
   const handleGeneratingAllPDFs = async () => {
@@ -331,7 +339,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
-    setGeneratingPDFs(true);
+    setGeneratingPDFs(PDFGeneratingState.MULTIPLE);
 
     try {
       const blob = await getCorrectionCommentPDFs(tutorialId, currentSheet.id);
@@ -341,7 +349,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
     }
 
-    setGeneratingPDFs(false);
+    setGeneratingPDFs(PDFGeneratingState.NONE);
   };
 
   return (
@@ -367,12 +375,12 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
           <div className={classes.buttonBox}>
             {selectedTab === TabValue.POINTS && (
               <SubmitButton
-                isSubmitting={isGeneratingPDFs}
+                isSubmitting={isGeneratingPDFs !== PDFGeneratingState.NONE}
                 variant='outlined'
                 className={classes.button}
                 onClick={handleGeneratingAllPDFs}
                 disabled={!currentSheet}
-                modalText='Erstelle PDFs...'
+                modalText={PDFGeneratingState.SINGLE ? 'Erstelle PDF...' : 'Erstelle PDFs...'}
               >
                 PDFs erstellen
               </SubmitButton>
