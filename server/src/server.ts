@@ -25,7 +25,7 @@ import userRouter from './services/user-service/UserService.routes';
 import languageRouter from './services/language-service/LanguageService.routes';
 import mailRouter from './services/mail-service/MailService.routes';
 import Logger from './helpers/Logger';
-import pdfRouter from './services/pdf-server/PdfService.routes';
+import pdfRouter from './services/pdf-service/PdfService.routes';
 
 const BASE_API_PATH = '/api';
 const app = express();

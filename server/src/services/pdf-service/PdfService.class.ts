@@ -1,26 +1,57 @@
 import { format } from 'date-fns';
 import fs from 'fs';
+import JSZip from 'jszip';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
+import showdown, { ShowdownExtension } from 'showdown';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import Logger from '../../helpers/Logger';
+import { TeamDocument } from '../../model/documents/TeamDocument';
 import { BadRequestError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
+import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
+import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
-import Logger from '../../helpers/Logger';
+import { PointMap } from 'shared/dist/model/Points';
 
 interface StudentData {
   matriculationNo: string;
   schein: string;
 }
 
+interface TeamCommentData {
+  teamName: string;
+  markdown: string;
+}
+
 class PdfService {
-  private githubMarkdownCSS: string = '';
+  private markdownConverter: showdown.Converter;
+
+  constructor() {
+    const noMoreParagraphs: ShowdownExtension = {
+      type: 'output',
+      filter: text => {
+        const regex = /<\/?p>/gi;
+
+        return text.replace(regex, '');
+      },
+    };
+
+    this.markdownConverter = new showdown.Converter({
+      ghCodeBlocks: true,
+      omitExtraWLInCodeBlocks: true,
+      extensions: [noMoreParagraphs],
+    });
+
+    this.markdownConverter.setFlavor('github');
+  }
 
   public generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
@@ -67,6 +98,112 @@ class PdfService {
     const buffer = await this.getPDFFromHTML(html);
 
     return buffer;
+  }
+
+  public async generatePDFFromSingleComment(
+    tutorialId: string,
+    sheetId: string,
+    teamId: string
+  ): Promise<Buffer> {
+    const [team] = await teamService.getDocumentWithId(tutorialId, teamId);
+    const { markdown } = await this.generateMarkdownFromTeamComment({ team, tutorialId, sheetId });
+
+    return this.generatePDFFromMarkdown(markdown);
+  }
+
+  public async generateZIPFromComments(
+    tutorialId: string,
+    sheetId: string
+  ): Promise<NodeJS.ReadableStream> {
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
+    const sheet = await sheetService.getDocumentWithId(sheetId);
+
+    const commentsByTeam: TeamCommentData[] = [];
+    const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
+
+    for (const team of tutorial.teams) {
+      commentsByTeam.push(
+        await this.generateMarkdownFromTeamComment({ team, tutorialId, sheetId })
+      );
+    }
+
+    const files: { filename: string; payload: Buffer }[] = [];
+
+    for (const comment of commentsByTeam) {
+      files.push({
+        filename: `Ex${sheetNo}_${comment.teamName}.pdf`, // TODO: Make template.
+        payload: await this.generatePDFFromMarkdown(comment.markdown),
+      });
+    }
+
+    const zip = new JSZip();
+
+    files.forEach(({ filename, payload }) => {
+      zip.file(filename, payload, { binary: true });
+    });
+
+    return zip.generateNodeStream({ type: 'nodebuffer' });
+  }
+
+  public async getMarkdownFromTeamComment(
+    tutorialId: string,
+    teamId: string,
+    sheetId: string
+  ): Promise<string> {
+    const [team] = await teamService.getDocumentWithId(tutorialId, teamId);
+
+    const { markdown } = await this.generateMarkdownFromTeamComment({
+      team,
+      sheetId,
+      tutorialId,
+    });
+
+    return markdown;
+  }
+
+  private async generateMarkdownFromTeamComment({
+    team,
+    tutorialId,
+    sheetId,
+  }: {
+    team: TeamDocument;
+    tutorialId: string;
+    sheetId: string;
+  }): Promise<TeamCommentData> {
+    const entries = await teamService.getPoints(tutorialId, team.id, sheetId);
+    const students = await Promise.all(
+      team.students.map(s => studentService.getDocumentWithId(getIdOfDocumentRef(s)))
+    );
+
+    const teamName = students.map(s => s.lastname).join('');
+    const pointInfo = { achieved: 0, total: 0 };
+    let exerciseMarkdown: string = '';
+
+    entries.forEach(({ exName, entry, exMaxPoints }) => {
+      const achievedPts = PointMap.getPointsOfEntry(entry);
+
+      pointInfo.achieved += achievedPts;
+      pointInfo.total += exMaxPoints;
+
+      exerciseMarkdown += `## Aufgabe ${exName} [${achievedPts}/${exMaxPoints}]  \n\n${entry.comment}\n\n`;
+    });
+
+    const totalPointInfo = `**Gesamt: ${pointInfo.achieved} / ${pointInfo.total}**`;
+    const markdown = `# ${teamName}\n\n${totalPointInfo}\n\n${exerciseMarkdown}`;
+
+    return { teamName, markdown };
+  }
+
+  private async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {
+    const html = this.generateHTMLFromMarkdown(markdown);
+
+    return await this.getPDFFromHTML(html);
+  }
+
+  private generateHTMLFromMarkdown(markdown: string): string {
+    const body = this.markdownConverter.makeHtml(markdown);
+
+    return this.putBodyInHtml(body);
   }
 
   private getAttendanceTemplate(): string {
@@ -293,6 +430,8 @@ class PdfService {
       Logger.debug('PDF created.');
 
       await browser.close();
+
+      Logger.debug('Browser closed');
 
       return buffer;
     } catch (err) {

@@ -9,7 +9,40 @@ on:
       - master
 
 jobs:
+  type-check:
+    name: Type Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: Install node packages
+        run: |
+          yarn install
+        env:
+          CI: true
+      - name: Build shared package
+        run: yarn build:shared
+        env:
+          CI: true
+      - name: Type check shared
+        run: yarn run ts:check:shared
+        env:
+          CI: true
+      - name: Type check client
+        run: yarn ts:check:client
+        env:
+          CI: true
+      - name: Type check server
+        run: yarn ts:check:server
+        env:
+          CI: true
+
   code-quality-client:
+    name: Code Quality Client
     runs-on: ubuntu-latest
 
     steps:
@@ -37,6 +70,7 @@ jobs:
           CI: true
 
   code-quality-server:
+    name: Code Quality Server
     runs-on: ubuntu-latest
 
     steps:
@@ -64,6 +98,7 @@ jobs:
           CI: true
 
   code-quality-shared:
+    name: Code Quality Shared
     runs-on: ubuntu-latest
 
     steps:
