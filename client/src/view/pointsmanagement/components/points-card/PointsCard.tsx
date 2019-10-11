@@ -3,7 +3,11 @@ import { CardProps } from '@material-ui/core/Card';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik, FormikConsumer } from 'formik';
-import { TableEdit as EditPointsIcon, PdfBox as PdfIcon, FileFind as PdfPreviewIcon } from 'mdi-material-ui';
+import {
+  TableEdit as EditPointsIcon,
+  PdfBox as PdfIcon,
+  FileFind as PdfPreviewIcon,
+} from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
 import {

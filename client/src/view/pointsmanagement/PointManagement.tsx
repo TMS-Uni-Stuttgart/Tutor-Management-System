@@ -1,8 +1,10 @@
 import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
 import { People as TeamIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
+import 'github-markdown-css/github-markdown.css';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
+import Markdown from 'react-markdown';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { PointMap, PointMapEntry, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
@@ -321,6 +323,12 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
+    const markdownSource = await getSingleCorrectionCommentMarkdown(
+      tutorialId,
+      currentSheet.id,
+      team.id
+    );
+
     dialog.show({
       actions: [
         {
@@ -328,8 +336,32 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
           onClick: () => dialog.hide(),
         },
       ],
+      DialogProps: {
+        maxWidth: 'lg',
+      },
       title: 'Markdown-Vorschau',
-      content: <div>MARKDOWN</div>,
+      content: (
+        <div>
+          <Markdown
+            source={markdownSource}
+            parserOptions={{ gfm: true }}
+            renderers={{
+              /* This fixes an 'remark' library issue: remark renders ('[<some text>]' as real links even though - following the markdown specs - it should not change it and just render '[<some text>]').
+               * Thanks to the comment from 'taylor-verys' on github:
+               * https://github.com/rexxars/react-markdown/issues/276#issuecomment-486875119
+               */
+              linkReference: (reference): React.ReactElement => {
+                if (!reference.href) {
+                  return <>[{reference.children[0]}]</>;
+                }
+
+                return <a href={reference.$ref}>{reference.children}</a>;
+              },
+            }}
+            className='markdown-body'
+          />
+        </div>
+      ),
       onClose: () => dialog.hide(),
     });
   };

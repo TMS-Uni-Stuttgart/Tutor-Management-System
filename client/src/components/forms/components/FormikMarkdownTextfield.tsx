@@ -1,10 +1,10 @@
 import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useField } from 'formik';
+import 'github-markdown-css/github-markdown.css';
 import React, { useState } from 'react';
 import Markdown from 'react-markdown';
 import FormikTextField, { FormikTextFieldProps } from './FormikTextField';
-import 'github-markdown-css/github-markdown.css';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
