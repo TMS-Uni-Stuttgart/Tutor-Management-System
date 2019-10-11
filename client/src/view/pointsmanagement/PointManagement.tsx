@@ -85,6 +85,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     setPresentationPointsOfStudent,
     getStudent,
     getTeamOfTutorial,
+    getSingleCorrectionCommentMarkdown,
     getSingleCorrectionCommentPDF,
     getCorrectionCommentPDFs,
   } = useAxios();
@@ -315,6 +316,24 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
+  const handleSingleMarkdownPreview = (team: Team) => async () => {
+    if (!currentSheet) {
+      return;
+    }
+
+    dialog.show({
+      actions: [
+        {
+          label: 'Schließen',
+          onClick: () => dialog.hide(),
+        },
+      ],
+      title: 'Markdown-Vorschau',
+      content: <div>MARKDOWN</div>,
+      onClose: () => dialog.hide(),
+    });
+  };
+
   const handleGenerateSinglePdf = (team: Team) => async () => {
     if (!currentSheet) {
       return;
@@ -404,6 +423,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                       onPointsSave={handleSavePoints(team)}
                       onEditPoints={handleEditPointsOfStudents(team)}
                       onGeneratePdf={handleGenerateSinglePdf(team)}
+                      onPreviewPdf={handleSingleMarkdownPreview(team)}
                     />
                   ))
                 ) : (
