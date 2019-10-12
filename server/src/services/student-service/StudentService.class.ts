@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { PointMap, UpdatePointsDTO, PointMapDTO } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
 // import { isDocument } from '@hasezoey/typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
@@ -208,7 +208,7 @@ class StudentService {
       }
     }
 
-    const points = await this.getPointsOfStudent(student);
+    const points: Student['points'] = (await student.getPoints()).toDTO();
 
     return {
       id: _id,
@@ -226,30 +226,6 @@ class StudentService {
         : {},
       scheinExamResults: scheinExamResults,
     };
-  }
-
-  private async getPointsOfStudent(student: StudentDocument): Promise<Student['points']> {
-    if (!student.team) {
-      return student.points;
-    }
-
-    const points = new PointMap();
-    const [team] = await teamService.getDocumentWithId(
-      getIdOfDocumentRef(student.tutorial),
-      student.team.toString()
-    );
-
-    const pointsOfTeam = new PointMap(team.points);
-    pointsOfTeam.getEntries().forEach(([key, entry]) => {
-      points.setPointsByKey(key, entry);
-    });
-
-    const pointsOfStudent = new PointMap(student.points);
-    pointsOfStudent.getEntries().forEach(([key, entry]) => {
-      points.setPointsByKey(key, entry);
-    });
-
-    return points.toDTO();
   }
 
   /**
