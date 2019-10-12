@@ -6,6 +6,10 @@ declare module 'excel4node' {
   }
 
   export interface Worksheet {
-    cell: (row: number, col: number) => any;
+    cell: (row: number, col: number) => Cell;
+  }
+
+  export interface Cell {
+    string: (data: string) => any;
   }
 }

@@ -5,8 +5,9 @@ import excelService from './ExcelService.class';
 
 const excelRouter = Router();
 
-excelRouter.get('/test', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
-  const excelBuffer = await excelService.generateTestExcel();
+excelRouter.get('/test/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const tutorialId = req.params.id;
+  const excelBuffer = await excelService.generateXLSXForTutorial(tutorialId);
 
   res.contentType('xlsx');
   res.send(excelBuffer);
