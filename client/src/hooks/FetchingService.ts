@@ -5,7 +5,7 @@ import * as teamFunctions from './fetching/Team';
 import * as tutorialFunctions from './fetching/Tutorial';
 import * as userFunctions from './fetching/User';
 import * as scheinExamFunctions from './fetching/ScheinExam';
-import * as pdfFunctions from './fetching/PDF';
+import * as pdfFunctions from './fetching/Files';
 
 export function useAxios() {
   return {
