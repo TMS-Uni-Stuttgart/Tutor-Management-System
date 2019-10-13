@@ -1,14 +1,14 @@
 import { isDocument } from '@hasezoey/typegoose';
 import xl, { Workbook, Worksheet } from 'excel4node';
-import Logger from '../../helpers/Logger';
-import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import tutorialService from '../tutorial-service/TutorialService.class';
-import { SheetDocument } from '../../model/documents/SheetDocument';
-import sheetService from '../sheet-service/SheetService.class';
+import { PointId, PointMap } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
-import { StudentDocument } from '../../model/documents/StudentDocument';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import { PointId } from 'shared/dist/model/Points';
+import Logger from '../../helpers/Logger';
+import { StudentDocument } from '../../model/documents/StudentDocument';
+import sheetService from '../sheet-service/SheetService.class';
+import tutorialService from '../tutorial-service/TutorialService.class';
+import { TutorialDocument } from '../../model/documents/TutorialDocument';
+import { AttendanceState } from 'shared/dist/model/Attendance';
 
 interface HeaderData {
   name: string;
@@ -16,8 +16,10 @@ interface HeaderData {
 }
 
 interface CellData {
-  content: string;
+  // TODO: Better typesafety regarding the actual type?
+  content: any;
   row: number;
+  type?: 'string' | 'number';
 }
 
 type HeaderDataCollection<T extends string> = {
@@ -61,11 +63,12 @@ class ExcelService {
 
     this.createMemberWorksheet(workbook, students);
 
+    // TODO: Add sheet with attendances of students (by date as headers).
+    this.createAttendanceWorksheet(workbook, tutorial, students);
+
     for (const sheet of sheets) {
       await this.createWorksheetForExerciseSheet(workbook, sheet, students);
     }
-
-    // TODO: Add sheet with attendances of students (by date as headers).
 
     return workbook.writeToBuffer();
   }
@@ -106,15 +109,6 @@ class ExcelService {
       courseOfStudies: [],
       email: [],
     };
-    // this.fillHeaders(overviewSheet, [
-    //   'Vorname',
-    //   'Name',
-    //   'Status',
-    //   'Matrklnr.',
-    //   'Studiengang',
-    //   'E-Mail',
-    // ]);
-    // currentRow++;
 
     let row = 2;
     for (const student of students) {
@@ -124,15 +118,6 @@ class ExcelService {
       cellData['matriculationNo'].push({ content: matriculationNo, row });
       cellData['courseOfStudies'].push({ content: courseOfStudies || 'N/A', row });
       cellData['email'].push({ content: email || 'N/A', row });
-
-      // this.fillRow(overviewSheet, row, [
-      //   firstname,
-      //   lastname,
-      //   'N/A',
-      //   matriculationNo,
-      //   courseOfStudies || 'N/A',
-      //   email || 'N/A',
-      // ]);
 
       row++;
     }
@@ -160,20 +145,117 @@ class ExcelService {
         column: 3,
       },
     };
-    let column = 4;
+    const data: CellDataCollection<any> = {
+      firstname: [],
+      lastname: [],
+      presentation: [],
+    };
 
+    let column = 4;
     for (const ex of sheet.exercises) {
+      const pointId = new PointId(sheet.id, ex);
+
       headers[ex.id] = {
         name: `Aufgabe ${ex.exName}`,
         column,
       };
+      data[ex.id] = [];
       column++;
 
-      // TODO: Add points of exercises
-      // TODO: Add presentation points
+      let row = 2;
+      for (const student of students) {
+        const entry = await student.getPointEntry(pointId);
+
+        data['firstname'].push({
+          content: student.firstname,
+          row,
+        });
+
+        data['lastname'].push({
+          content: student.lastname,
+          row,
+        });
+
+        data[ex.id].push({
+          content: entry ? PointMap.getPointsOfEntry(entry) : 'N/A',
+          type: entry ? 'number' : 'string',
+          row,
+        });
+
+        data['presentation'].push({
+          content: student.getPresentationPointsOfSheet(sheet),
+          type: 'number',
+          row,
+        });
+
+        row++;
+      }
     }
 
-    this.fillSheet(worksheet, headers, {});
+    this.fillSheet(worksheet, headers, data);
+  }
+
+  private createAttendanceWorksheet(
+    workbook: Workbook,
+    tutorial: TutorialDocument,
+    students: StudentDocument[]
+  ) {
+    const sheet = workbook.addWorksheet('Anwesenheiten');
+    const headers: HeaderDataCollection<any> = {
+      firstname: {
+        name: 'Vorname',
+        column: 1,
+      },
+      lastname: {
+        name: 'Nachname',
+        column: 2,
+      },
+    };
+    const data: CellDataCollection<any> = {
+      firstname: [],
+      lastname: [],
+    };
+
+    let column = 3;
+    for (const date of tutorial.dates) {
+      const dateKey = date.toISOString();
+      headers[dateKey] = {
+        name: date.toDateString(),
+        column,
+      };
+      data[dateKey] = [];
+
+      let row = 2;
+      for (const student of students) {
+        const attendance = student.getAttendanceOfDay(date);
+        data['firstname'].push({
+          content: student.firstname,
+          row,
+        });
+        data['lastname'].push({
+          content: student.lastname,
+          row,
+        });
+
+        if (attendance) {
+          data[dateKey].push({
+            content: attendance.state || AttendanceState.UNEXCUSED,
+            row,
+          });
+        } else {
+          data[dateKey].push({
+            content: 'N/A',
+            row,
+          });
+        }
+
+        row++;
+      }
+
+      column++;
+    }
+
+    this.fillSheet(sheet, headers, data);
   }
 
   private fillSheet<T extends string>(
@@ -194,7 +276,14 @@ class ExcelService {
       }
 
       for (const d of data) {
-        sheet.cell(d.row, header.column).string(d.content);
+        switch (d.type) {
+          case 'number':
+            sheet.cell(d.row, header.column).number(d.content);
+            break;
+          case 'string':
+          default:
+            sheet.cell(d.row, header.column).string(d.content);
+        }
       }
     });
   }

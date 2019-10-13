@@ -10,6 +10,7 @@ declare module 'excel4node' {
   }
 
   export interface Cell {
-    string: (data: string) => any;
+    string: (text: string) => any;
+    number: (number: number) => any;
   }
 }
