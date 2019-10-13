@@ -60,7 +60,7 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
       .send(new ErrorResponse(401, err.message || 'Error during authentication encountered.'));
   }
 
-  Logger.error(err);
+  Logger.error(err.message);
 
   if (err instanceof PermissionDeniedError) {
     return res.status(403).send(new ErrorResponse(403, 'Permission denied.'));

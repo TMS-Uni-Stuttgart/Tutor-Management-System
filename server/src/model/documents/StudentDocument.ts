@@ -1,9 +1,12 @@
+import { instanceMethod, mapProp, plugin, prop, Ref, Typegoose } from '@hasezoey/typegoose';
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
-import { PointMapDTO } from 'shared/dist/model/Points';
+import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';
+import { Sheet } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
-import { mapProp, plugin, prop, Ref, Typegoose } from '@hasezoey/typegoose';
 import databaseConfig from '../../helpers/database';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import teamService from '../../services/team-service/TeamService.class';
 import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
@@ -59,6 +62,98 @@ export class StudentSchema extends Typegoose
 
   @prop({ default: {} })
   scheinExamResults!: PointMapDTO;
+
+  @instanceMethod
+  async getTeam(): Promise<TeamDocument> {
+    if (!this.team) {
+      throw new Error('Can not get team because this student does not belong to a team.');
+    }
+
+    const [team] = await teamService.getDocumentWithId(
+      getIdOfDocumentRef(this.tutorial),
+      getIdOfDocumentRef(this.team)
+    );
+
+    return team;
+  }
+
+  @instanceMethod
+  async getPoints(): Promise<PointMap> {
+    if (!this.team) {
+      return new PointMap(this.points);
+    }
+
+    const team = await this.getTeam();
+    const points = new PointMap();
+    const pointsOfTeam = new PointMap(team.points);
+    const ownPoints = new PointMap(this.points);
+
+    pointsOfTeam.getEntries().forEach(([key, entry]) => {
+      points.setPointsByKey(key, entry);
+    });
+
+    ownPoints.getEntries().forEach(([key, entry]) => {
+      points.setPointsByKey(key, entry);
+    });
+
+    return points;
+  }
+
+  @instanceMethod
+  async getPointEntry(id: PointId): Promise<PointMapEntry | undefined> {
+    const ownMap = new PointMap(this.points);
+    const entry = ownMap.getPointEntry(id);
+
+    if (entry) {
+      return entry;
+    }
+
+    if (!this.team) {
+      return undefined;
+    }
+
+    const team = await this.getTeam();
+    const teamEntry = new PointMap(team.points).getPointEntry(id);
+
+    return teamEntry;
+  }
+
+  @instanceMethod
+  async getPointsOfExercise(id: PointId): Promise<number> {
+    const entry = await this.getPointEntry(id);
+
+    return entry ? PointMap.getPointsOfEntry(entry) : 0;
+  }
+
+  @instanceMethod
+  getPresentationPointsOfSheet(sheet: Sheet): number {
+    if (!this.presentationPoints) {
+      return 0;
+    }
+
+    const pts = this.presentationPoints.get(sheet.id);
+
+    return pts || 0;
+  }
+
+  @instanceMethod
+  setAttendance(attendance: AttendanceDocument) {
+    if (!this.attendance) {
+      this.attendance = new Types.Map();
+    }
+
+    const date = attendance.date;
+    this.attendance.set(date.toDateString(), attendance);
+  }
+
+  @instanceMethod
+  getAttendanceOfDay(date: Date): AttendanceDocument | undefined {
+    if (!this.attendance) {
+      return undefined;
+    }
+
+    return this.attendance.get(date.toDateString());
+  }
 }
 
 export interface StudentDocument extends StudentSchema, Document {}

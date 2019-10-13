@@ -1,3 +1,4 @@
+import { isDocument } from '@hasezoey/typegoose';
 import { Types } from 'mongoose';
 import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
@@ -20,7 +21,6 @@ import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { isDocument } from '@hasezoey/typegoose';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -98,11 +98,7 @@ class StudentService {
     const student = await this.getDocumentWithId(id);
     const attendanceDocument = generateAttendanceDocumentFromDTO(attendanceDTO);
 
-    if (!student.attendance) {
-      student.attendance = new Types.Map();
-    }
-
-    student.attendance.set(attendanceDocument.date.toDateString(), attendanceDocument);
+    student.setAttendance(attendanceDocument);
 
     await student.save();
 
@@ -208,7 +204,7 @@ class StudentService {
       }
     }
 
-    const points = await this.getPointsOfStudent(student);
+    const points: Student['points'] = (await student.getPoints()).toDTO();
 
     return {
       id: _id,
@@ -226,30 +222,6 @@ class StudentService {
         : {},
       scheinExamResults: scheinExamResults,
     };
-  }
-
-  private async getPointsOfStudent(student: StudentDocument): Promise<Student['points']> {
-    if (!student.team) {
-      return student.points;
-    }
-
-    const points = new PointMap();
-    const [team] = await teamService.getDocumentWithId(
-      getIdOfDocumentRef(student.tutorial),
-      student.team.toString()
-    );
-
-    const pointsOfTeam = new PointMap(team.points);
-    pointsOfTeam.getEntries().forEach(([key, entry]) => {
-      points.setPointsByKey(key, entry);
-    });
-
-    const pointsOfStudent = new PointMap(student.points);
-    pointsOfStudent.getEntries().forEach(([key, entry]) => {
-      points.setPointsByKey(key, entry);
-    });
-
-    return points.toDTO();
   }
 
   /**

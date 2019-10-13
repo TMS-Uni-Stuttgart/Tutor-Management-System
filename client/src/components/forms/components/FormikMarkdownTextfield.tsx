@@ -29,10 +29,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {
-  name: string;
-}
-
 function FormikMarkdownTextfield({ name, ...other }: FormikTextFieldProps): JSX.Element {
   const classes = useStyles();
   const [isPreview, setPreview] = useState(false);

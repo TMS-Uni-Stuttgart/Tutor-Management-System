@@ -6,7 +6,7 @@ import passport = require('passport');
 const authenticationRouter = Router();
 
 authenticationRouter.post('/login', (req, res, next) => {
-  passport.authenticate('basic', { session: true }, (err, user, info) => {
+  passport.authenticate('basic', { session: true }, (_err, user, _info) => {
     req.login(user, async err => {
       if (err || !user) {
         return res.status(401).send();

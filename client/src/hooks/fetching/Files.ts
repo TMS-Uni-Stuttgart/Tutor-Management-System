@@ -98,3 +98,20 @@ export async function getCorrectionCommentPDFs(tutorialId: string, sheetId: stri
 
   return Promise.reject(`Wrong response code (${response.status})`);
 }
+
+export async function getTutorialXLSX(tutorialId: string): Promise<Blob> {
+  const response = await axios.get(`/excel/tutorial/${tutorialId}`, {
+    responseType: 'arraybuffer',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
+
+  if (response.status === 200) {
+    return new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+  }
+
+  return Promise.reject(`Wrong response code (${response.status})`);
+}
