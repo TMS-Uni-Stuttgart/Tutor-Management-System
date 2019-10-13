@@ -25,7 +25,8 @@ import userRouter from './services/user-service/UserService.routes';
 import languageRouter from './services/language-service/LanguageService.routes';
 import mailRouter from './services/mail-service/MailService.routes';
 import Logger from './helpers/Logger';
-import pdfRouter from './services/pdf-server/PdfService.routes';
+import pdfRouter from './services/pdf-service/PdfService.routes';
+import excelRouter from './services/excel-service/ExcelService.routes';
 
 const BASE_API_PATH = '/api';
 const app = express();
@@ -151,6 +152,7 @@ function initEndpoints() {
   registerAPIEndpoint(`${BASE_API_PATH}/scheincriteria`, scheincriteriaRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/mail`, mailRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/pdf`, pdfRouter);
+  registerAPIEndpoint(`${BASE_API_PATH}/excel`, excelRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/locales`, languageRouter);
 
   // If there's a request which starts with the BASE_API_PATH which did not get handled yet, throw a not found error.

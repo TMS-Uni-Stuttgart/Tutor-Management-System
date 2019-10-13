@@ -2,7 +2,7 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { Role } from 'shared/dist/model/Role';
 import { getIdOfDocumentRef } from '../helpers/documentHelpers';
 import { TutorialDocument } from '../model/documents/TutorialDocument';
-import { PermissionDeniedError } from '../model/Errors';
+import { PermissionDeniedError, BadRequestError } from '../model/Errors';
 import tutorialService from '../services/tutorial-service/TutorialService.class';
 import studentService from '../services/student-service/StudentService.class';
 import { UserDocument } from '../model/documents/UserDocument';
@@ -96,7 +96,7 @@ export function isTargetedUserSameAsRequestUser(req: Request, _: Response, next:
 /**
  * Checks if the user in the request is the tutor of the targeted tutorial.
  *
- * This middleware must only be used on paths with an `id` parameter in it or else an `Error` will be thrown.
+ * This middleware must only be used on paths with a `tutorialId` or an `id` parameter in it or else an `Error` will be thrown.
  *
  * If the user in the request is the tutor of the tutorial than `req.hasAccess` will be set to `true`.
  *
@@ -105,7 +105,7 @@ export function isTargetedUserSameAsRequestUser(req: Request, _: Response, next:
  * @param next Next function
  */
 export async function isUserTutorOfTutorial(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserTutorOfTutorial()');
+  assertRequestHasTutorialParam(req, 'isUserTutorOfTutorial()');
 
   if (req.hasAccess) {
     return next();
@@ -124,7 +124,7 @@ export async function isUserTutorOfTutorial(req: Request, _: Response, next: Nex
 /**
  * Checks if the user in the request is a substitute of the targeted tutorial.
  *
- * This middleware must only be used on paths with an `id` parameter in it or else an `Error` will be thrown.
+ * This middleware must only be used on paths with a `tutorialId` or an `id` parameter in it or else an `Error` will be thrown.
  *
  * If the user in the request is a substitute tutor of the tutorial than `req.hasAccess` will be set to `true`.
  *
@@ -133,7 +133,7 @@ export async function isUserTutorOfTutorial(req: Request, _: Response, next: Nex
  * @param next Next function
  */
 export async function isUserSubstituteOfTutorial(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserSubstituteOfTutorial()');
+  assertRequestHasTutorialParam(req, 'isUserSubstituteOfTutorial()');
 
   const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialFromRequest(req);
@@ -148,7 +148,7 @@ export async function isUserSubstituteOfTutorial(req: Request, _: Response, next
 /**
  * Checks if the user in the request is a corrector of the targeted tutorial.
  *
- * This middleware must only be used on paths with an `id` parameter in it or else an `Error` will be thrown.
+ * This middleware must only be used on paths with a `tutorialId` or an `id` parameter in it or else an `Error` will be thrown.
  *
  * If the user in the request is a corrector of the tutorial than `req.hasAccess` will be set to `true`.
  *
@@ -157,7 +157,7 @@ export async function isUserSubstituteOfTutorial(req: Request, _: Response, next
  * @param next Next function
  */
 export async function isUserCorrectorOfTutorial(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserCorrectorOfTutorial()');
+  assertRequestHasTutorialParam(req, 'isUserCorrectorOfTutorial()');
 
   const user = assertUserWithIdInRequest(req);
   const tutorial = await getTutorialFromRequest(req);
@@ -292,14 +292,19 @@ export function hasUserOneOfRoles(roles: Role | Role[]): RequestHandler {
  *
  * In the end `req.tutorial` will be set to this tutorial to make future calls within the same request faster.
  *
- * The request needs to have an `id` param otherwise an `Error` will be thrown.
+ * The request needs to have a `tutorialId` or an `id` param otherwise an `Error` will be thrown.
  *
  * @param req Request object
  */
 async function getTutorialFromRequest(req: Request): Promise<TutorialDocument> {
-  assertRequestHasIdParam(req, 'getTutorialFromRequest()');
+  assertRequestHasTutorialParam(req, 'getTutorialFromRequest()');
 
-  const tutorialId = req.params.id;
+  const tutorialId = req.params.tutorialId || req.params.id;
+
+  if (!tutorialId) {
+    throw new BadRequestError('Request does not contain a tutorialId nor an id property.');
+  }
+
   const tutorial = req.tutorial
     ? req.tutorial
     : await tutorialService.getDocumentWithID(tutorialId);
@@ -380,6 +385,14 @@ function assertRequestHasIdParam(req: Request, middlewareName: string) {
   if (!req.params.id) {
     throw new Error(
       `${middlewareName} middleware must only be used in paths which have an 'id' parameter.`
+    );
+  }
+}
+
+function assertRequestHasTutorialParam(req: Request, middlewareName: string) {
+  if (!req.params.tutorialId && !req.params.id) {
+    throw new Error(
+      `${middlewareName} middleware must only be used in paths which have a 'tutorialId' or an 'id' parameter.`
     );
   }
 }

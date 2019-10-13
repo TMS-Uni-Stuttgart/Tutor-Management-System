@@ -1,14 +1,14 @@
-import { IconButton, Typography } from '@material-ui/core';
+import { Typography, Collapse } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useField } from 'formik';
-import { ChevronUp as OpenIcon } from 'mdi-material-ui';
-import React from 'react';
+import React, { useState } from 'react';
 import { getPointsOfExercise } from 'shared/dist/model/Points';
 import { Exercise } from 'shared/dist/model/Sheet';
-import FormikTextField from '../../../../components/forms/components/FormikTextField';
+import CollapseButton from '../../../../components/CollapseButton';
 import { PointsCardFormExerciseState } from './PointsCard';
 import PointsTextField from './PointsTextField';
+import FormikMarkdownTextfield from '../../../../components/forms/components/FormikMarkdownTextfield';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme: Theme) =>
       '&:last-of-type': {
         marginBottom: 0,
       },
+    },
+    commentHeader: {
+      cursor: 'pointer',
     },
     exerciseBoxCollapseButton: {
       position: 'absolute',
@@ -77,9 +80,14 @@ function getPointsFromBoxValue({ points }: PointsCardFormExerciseState): number 
   );
 }
 
-function ExerciseBox({ name, exercise }: Props): JSX.Element {
+function ExerciseBox({ name, exercise }: Props): JSX.Element | null {
   const classes = useStyles();
   const [{ value }] = useField(name);
+  const [isCommentCollapsed, setCommentCollapsed] = useState(false);
+
+  if (!value) {
+    return null;
+  }
 
   const { subexercises } = exercise;
   const achievedPoints = getPointsFromBoxValue(value);
@@ -87,9 +95,13 @@ function ExerciseBox({ name, exercise }: Props): JSX.Element {
 
   return (
     <div className={classes.exerciseBox}>
-      <IconButton size='small' className={classes.exerciseBoxCollapseButton} tabIndex={-1}>
-        <OpenIcon />
-      </IconButton>
+      <CollapseButton
+        isCollapsed={isCommentCollapsed}
+        size='small'
+        className={classes.exerciseBoxCollapseButton}
+        tabIndex={-1}
+        onClick={() => setCommentCollapsed(!isCommentCollapsed)}
+      />
 
       <div className={classes.exerciseHeader}>
         <Typography className={classes.exerciseName}>{`Aufgabe ${exercise.exName}`}</Typography>
@@ -100,7 +112,12 @@ function ExerciseBox({ name, exercise }: Props): JSX.Element {
         >{`${achievedPoints} / ${totalPoints} Punkte`}</Typography>
       </div>
 
-      <Typography>Kommentar</Typography>
+      <Typography
+        className={classes.commentHeader}
+        onClick={() => setCommentCollapsed(!isCommentCollapsed)}
+      >
+        Kommentar
+      </Typography>
 
       {subexercises.length > 0 ? (
         subexercises.map(subEx => (
@@ -127,15 +144,15 @@ function ExerciseBox({ name, exercise }: Props): JSX.Element {
         />
       )}
 
-      <FormikTextField
-        name={`${name}.comment`}
+      <Collapse
+        in={!isCommentCollapsed}
         className={classes.commentaryTextField}
         style={{
           gridRow: `2 / span ${subexercises.length > 0 ? subexercises.length + 1 : 2}`,
         }}
-        placeholder='Kommentar'
-        multiline
-      />
+      >
+        <FormikMarkdownTextfield name={`${name}.comment`} placeholder='Kommentar' />
+      </Collapse>
     </div>
   );
 }

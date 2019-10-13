@@ -8,14 +8,14 @@ interface Props {
   isPercentage?: boolean;
 }
 
-type PropType = Props & TextFieldProps;
+export type FormikTextFieldProps = Props & TextFieldProps;
 
 function FormikTextField({
   name,
   children,
   isPercentage,
   ...textfieldProps
-}: PropType): JSX.Element {
+}: FormikTextFieldProps): JSX.Element {
   function getValue(fieldValue: any): any {
     if (isPercentage) {
       const value = Math.floor(fieldValue * 100 * 10) / 10;

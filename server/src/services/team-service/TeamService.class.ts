@@ -1,5 +1,11 @@
 import _ from 'lodash';
-import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import {
+  PointMap,
+  UpdatePointsDTO,
+  PointMapEntry,
+  PointId,
+  getPointsOfExercise,
+} from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { isDocument } from '@hasezoey/typegoose';
@@ -12,6 +18,13 @@ import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+
+export interface PointInformation {
+  id: string;
+  exName: string;
+  exMaxPoints: number;
+  entry: PointMapEntry;
+}
 
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
@@ -131,6 +144,41 @@ class TeamService {
     // See: https://mongoosejs.com/docs/schematypes.html#mixed
     tutorial.markModified('teams');
     await tutorial.save();
+  }
+
+  /**
+   * Returns a list of information about the PointEntries of a team for a sheet.
+   *
+   * Collects all information about PointEntries of the given team for the given sheet. Empty or non-present entries will be skipped and not added to the list.
+   *
+   * @param tutorialId ID of the tutorial.
+   * @param teamId ID of the team which infos to get.
+   * @param sheetId Sheet which infos to get.
+   *
+   * @returns Sorted list (ascending by exercise name) of point information.
+   */
+  public async getPoints(
+    tutorialId: string,
+    teamId: string,
+    sheetId: string
+  ): Promise<PointInformation[]> {
+    const [team] = await this.getDocumentWithId(tutorialId, teamId);
+    const sheet = await sheetService.getSheetWithId(sheetId);
+
+    const pointMap = new PointMap(team.points);
+    const entries: PointInformation[] = [];
+
+    sheet.exercises.forEach(ex => {
+      const entry = pointMap.getPointEntry(new PointId(sheetId, ex));
+
+      if (entry) {
+        entries.push({ id: ex.id, exName: ex.exName, entry, exMaxPoints: getPointsOfExercise(ex) });
+      }
+    });
+
+    entries.sort((a, b) => a.exName.localeCompare(b.exName));
+
+    return entries;
   }
 
   public async getTeamWithId(tutorialId: string, id: string): Promise<Team> {

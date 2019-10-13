@@ -1,17 +1,21 @@
 import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
 import { People as TeamIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
+import 'github-markdown-css/github-markdown.css';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
+import Markdown from 'react-markdown';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { PointMap, PointMapEntry, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { PresentationPointsDTO, Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
+import SubmitButton from '../../components/forms/components/SubmitButton';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
+import { saveBlob } from '../../util/helperFunctions';
 import EditStudentPointsDialogContent, {
   EditStudentPointsCallback,
 } from './components/EditStudentPointsDialogContent';
@@ -33,6 +37,17 @@ const useStyles = makeStyles((theme: Theme) =>
     sheetSelect: {
       marginBottom: theme.spacing(2),
     },
+    buttonBox: {
+      display: 'flex',
+      justifyContent: 'flex-start',
+      marginTop: theme.spacing(2),
+    },
+    button: {
+      marginRight: theme.spacing(1),
+      '&:last-of-type': {
+        marginRight: 0,
+      },
+    },
     placeholder: {
       marginTop: theme.spacing(8),
       textAlign: 'center',
@@ -46,6 +61,12 @@ const useStyles = makeStyles((theme: Theme) =>
 enum TabValue {
   POINTS = 'POINTS',
   PRESENTATION = 'PRESENTATION',
+}
+
+enum PDFGeneratingState {
+  NONE,
+  SINGLE,
+  MULTIPLE,
 }
 
 interface Params {
@@ -66,27 +87,33 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     setPresentationPointsOfStudent,
     getStudent,
     getTeamOfTutorial,
+    getSingleCorrectionCommentMarkdown,
+    getSingleCorrectionCommentPDF,
+    getCorrectionCommentPDFs,
   } = useAxios();
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
+
   const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>(undefined);
   const [selectedTab, setSelectedTab] = useState<TabValue>(TabValue.POINTS);
 
+  const [isGeneratingPDFs, setGeneratingPDFs] = useState<PDFGeneratingState>(
+    PDFGeneratingState.NONE
+  );
+
+  const { tutorialId } = match.params;
+
   useEffect(() => {
-    Promise.all([
-      getAllSheets(),
-      getTeamsOfTutorial(match.params.tutorialId),
-      getStudentsOfTutorial(match.params.tutorialId),
-    ])
+    Promise.all([getAllSheets(), getTeamsOfTutorial(tutorialId), getStudentsOfTutorial(tutorialId)])
       .then(([sheetResponse, teamResponse, studentResponse]) => {
         setSheets(sheetResponse);
         setTeams(teamResponse);
         setStudents(studentResponse);
       })
       .catch(reason => console.error(reason));
-  }, [getAllSheets, getTeamsOfTutorial, getStudentsOfTutorial, match.params.tutorialId]);
+  }, [getAllSheets, getTeamsOfTutorial, getStudentsOfTutorial, tutorialId]);
 
   function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
     if (typeof e.target.value !== 'string') {
@@ -108,9 +135,9 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     const pointsDTO = convertPointsCardFormStateToDTO(values, currentSheet);
 
     try {
-      await setPointsOfTeam(match.params.tutorialId, team.id, pointsDTO);
+      await setPointsOfTeam(tutorialId, team.id, pointsDTO);
 
-      const updatedTeam = await getTeamOfTutorial(match.params.tutorialId, team.id);
+      const updatedTeam = await getTeamOfTutorial(tutorialId, team.id);
 
       setTeams(teams.map(t => (t.id === team.id ? updatedTeam : t)));
 
@@ -182,7 +209,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
 
         if (teamId && !fetchedTeamIds.includes(teamId)) {
           fetchedTeamIds.push(teamId);
-          updatedTeamPromises.push(getTeamOfTutorial(match.params.tutorialId, teamId));
+          updatedTeamPromises.push(getTeamOfTutorial(tutorialId, teamId));
         }
       }
 
@@ -291,6 +318,91 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
+  const handleSingleMarkdownPreview = (team: Team) => async () => {
+    if (!currentSheet) {
+      return;
+    }
+
+    const markdownSource = await getSingleCorrectionCommentMarkdown(
+      tutorialId,
+      currentSheet.id,
+      team.id
+    );
+
+    dialog.show({
+      actions: [
+        {
+          label: 'Schließen',
+          onClick: () => dialog.hide(),
+        },
+      ],
+      DialogProps: {
+        maxWidth: 'lg',
+      },
+      title: 'Markdown-Vorschau',
+      content: (
+        <div>
+          <Markdown
+            source={markdownSource}
+            parserOptions={{ gfm: true }}
+            renderers={{
+              /* This fixes an 'remark' library issue: remark renders ('[<some text>]' as real links even though - following the markdown specs - it should not change it and just render '[<some text>]').
+               * Thanks to the comment from 'taylor-verys' on github:
+               * https://github.com/rexxars/react-markdown/issues/276#issuecomment-486875119
+               */
+              linkReference: (reference): React.ReactElement => {
+                if (!reference.href) {
+                  return <>[{reference.children[0]}]</>;
+                }
+
+                return <a href={reference.$ref}>{reference.children}</a>;
+              },
+            }}
+            className='markdown-body'
+          />
+        </div>
+      ),
+      onClose: () => dialog.hide(),
+    });
+  };
+
+  const handleGenerateSinglePdf = (team: Team) => async () => {
+    if (!currentSheet) {
+      return;
+    }
+
+    setGeneratingPDFs(PDFGeneratingState.SINGLE);
+
+    try {
+      const blob = await getSingleCorrectionCommentPDF(tutorialId, currentSheet.id, team.id);
+      const teamName = team.students.map(s => s.lastname).join('');
+
+      saveBlob(blob, `Bewertung_${currentSheet.sheetNo.toString().padStart(2, '0')}_${teamName}`);
+    } catch {
+      enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
+    }
+
+    setGeneratingPDFs(PDFGeneratingState.NONE);
+  };
+
+  const handleGeneratingAllPDFs = async () => {
+    if (!currentSheet) {
+      return;
+    }
+
+    setGeneratingPDFs(PDFGeneratingState.MULTIPLE);
+
+    try {
+      const blob = await getCorrectionCommentPDFs(tutorialId, currentSheet.id);
+
+      saveBlob(blob, `Bewertungen_${currentSheet.sheetNo.toString().padStart(2, '0')}`);
+    } catch {
+      enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
+    }
+
+    setGeneratingPDFs(PDFGeneratingState.NONE);
+  };
+
   return (
     <div className={classes.root}>
       <CustomSelect
@@ -311,6 +423,22 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
             <Tab value={TabValue.PRESENTATION} label='Präsentationen' />
           </Tabs>
 
+          <div className={classes.buttonBox}>
+            {selectedTab === TabValue.POINTS && (
+              <SubmitButton
+                isSubmitting={isGeneratingPDFs !== PDFGeneratingState.NONE}
+                variant='outlined'
+                className={classes.button}
+                onClick={handleGeneratingAllPDFs}
+                disabled={!currentSheet}
+                modalText={PDFGeneratingState.SINGLE ? 'Erstelle PDF...' : 'Erstelle PDFs...'}
+              >
+                PDFs erstellen
+              </SubmitButton>
+            )}
+            {/* <Button variant='outlined'>Alle speichern</Button> */}
+          </div>
+
           {
             {
               [TabValue.POINTS]:
@@ -326,6 +454,8 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                       entityWithExercises={currentSheet}
                       onPointsSave={handleSavePoints(team)}
                       onEditPoints={handleEditPointsOfStudents(team)}
+                      onGeneratePdf={handleGenerateSinglePdf(team)}
+                      onPreviewPdf={handleSingleMarkdownPreview(team)}
                     />
                   ))
                 ) : (
