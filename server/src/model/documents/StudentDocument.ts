@@ -1,18 +1,16 @@
+import { instanceMethod, mapProp, plugin, prop, Ref, Typegoose } from '@hasezoey/typegoose';
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
-import { PointMapDTO, PointId, PointMap, PointMapEntry } from 'shared/dist/model/Points';
+import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';
+import { Sheet } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
-import { mapProp, plugin, prop, Ref, Typegoose, instanceMethod } from '@hasezoey/typegoose';
 import databaseConfig from '../../helpers/database';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import teamService from '../../services/team-service/TeamService.class';
 import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
-import teamService from '../../services/team-service/TeamService.class';
-import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import { isObject } from 'util';
-import { SheetDocument } from './SheetDocument';
-import { Sheet } from 'shared/dist/model/Sheet';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
