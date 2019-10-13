@@ -38,8 +38,8 @@ Please read [CONTRIBUTING.md](/CONTRIBUTING.md) for details on how to contribute
 
 This project uses [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/Dudrie/Tutor-Management-System/tags). 
 
-## Authors
+<!-- ## Authors -->
 
 
-## License
+<!-- ## License -->
 
