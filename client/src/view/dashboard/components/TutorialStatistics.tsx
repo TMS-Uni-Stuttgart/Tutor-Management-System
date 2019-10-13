@@ -1,20 +1,23 @@
-import { createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Paper, Theme, Typography, IconButton } from '@material-ui/core';
 import React from 'react';
 import { TutorialSummaryInfo } from '../Dashboard';
 import ScheinCriteriaStatsCard from './ScheinCrtieriaStatsCard';
 import ScheinPassedStatsCard from './ScheinPassedStatsCard';
 import TutorialStatsCard from './TutorialStatsCard';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-
-interface TutorialStatisticsProps {
-  value: TutorialSummaryInfo;
-}
+import { Download as DownloadIcon } from 'mdi-material-ui';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     tutorialHeading: {
+      display: 'flex',
+      justifyItems: 'center',
       padding: theme.spacing(1.5),
       margin: theme.spacing(1, 0),
+    },
+    iconButton: {
+      marginLeft: 'auto',
     },
     cardsContainer: {
       display: 'grid',
@@ -26,7 +29,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
+interface TutorialStatisticsProps {
+  value: TutorialSummaryInfo;
+  onDownloadClicked: (tutorial: Tutorial) => void;
+}
+
+function TutorialStatistics({ value, onDownloadClicked }: TutorialStatisticsProps): JSX.Element {
   const classes = useStyles();
   const activeCriteria: string[] = [];
 
@@ -42,6 +50,14 @@ function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
     <>
       <Paper className={classes.tutorialHeading}>
         <Typography variant='h5'>{getDisplayStringForTutorial(value.tutorial)}</Typography>
+
+        <IconButton
+          size='small'
+          className={classes.iconButton}
+          onClick={() => onDownloadClicked(value.tutorial)}
+        >
+          <DownloadIcon />
+        </IconButton>
       </Paper>
       <div className={classes.cardsContainer}>
         <TutorialStatsCard value={value} />
