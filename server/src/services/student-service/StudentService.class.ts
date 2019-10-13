@@ -1,7 +1,8 @@
+import { isDocument } from '@hasezoey/typegoose';
 import { Types } from 'mongoose';
 import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { PointMap, UpdatePointsDTO, PointMapDTO } from 'shared/dist/model/Points';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
 // import { isDocument } from '@hasezoey/typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
@@ -20,7 +21,6 @@ import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { isDocument } from '@hasezoey/typegoose';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -98,11 +98,7 @@ class StudentService {
     const student = await this.getDocumentWithId(id);
     const attendanceDocument = generateAttendanceDocumentFromDTO(attendanceDTO);
 
-    if (!student.attendance) {
-      student.attendance = new Types.Map();
-    }
-
-    student.attendance.set(attendanceDocument.date.toDateString(), attendanceDocument);
+    student.setAttendance(attendanceDocument);
 
     await student.save();
 

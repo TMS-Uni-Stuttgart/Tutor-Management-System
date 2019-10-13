@@ -1,6 +1,6 @@
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
-import { PointMapDTO, PointId, PointMap } from 'shared/dist/model/Points';
+import { PointMapDTO, PointId, PointMap, PointMapEntry } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { mapProp, plugin, prop, Ref, Typegoose, instanceMethod } from '@hasezoey/typegoose';
 import databaseConfig from '../../helpers/database';
@@ -11,6 +11,8 @@ import { TutorialDocument } from './TutorialDocument';
 import teamService from '../../services/team-service/TeamService.class';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { isObject } from 'util';
+import { SheetDocument } from './SheetDocument';
+import { Sheet } from 'shared/dist/model/Sheet';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
@@ -100,22 +102,59 @@ export class StudentSchema extends Typegoose
   }
 
   @instanceMethod
-  async getPointEntry(id: PointId): Promise<number> {
+  async getPointEntry(id: PointId): Promise<PointMapEntry | undefined> {
     const ownMap = new PointMap(this.points);
     const entry = ownMap.getPointEntry(id);
 
     if (entry) {
-      return PointMap.getPointsOfEntry(entry);
+      return entry;
     }
 
     if (!this.team) {
-      return 0;
+      return undefined;
     }
 
     const team = await this.getTeam();
     const teamEntry = new PointMap(team.points).getPointEntry(id);
 
-    return teamEntry ? PointMap.getPointsOfEntry(teamEntry) : 0;
+    return teamEntry;
+  }
+
+  @instanceMethod
+  async getPointsOfExercise(id: PointId): Promise<number> {
+    const entry = await this.getPointEntry(id);
+
+    return entry ? PointMap.getPointsOfEntry(entry) : 0;
+  }
+
+  @instanceMethod
+  getPresentationPointsOfSheet(sheet: Sheet): number {
+    if (!this.presentationPoints) {
+      return 0;
+    }
+
+    const pts = this.presentationPoints.get(sheet.id);
+
+    return pts || 0;
+  }
+
+  @instanceMethod
+  setAttendance(attendance: AttendanceDocument) {
+    if (!this.attendance) {
+      this.attendance = new Types.Map();
+    }
+
+    const date = attendance.date;
+    this.attendance.set(date.toDateString(), attendance);
+  }
+
+  @instanceMethod
+  getAttendanceOfDay(date: Date): AttendanceDocument | undefined {
+    if (!this.attendance) {
+      return undefined;
+    }
+
+    return this.attendance.get(date.toDateString());
   }
 }
 
