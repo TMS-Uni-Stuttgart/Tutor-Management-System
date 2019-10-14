@@ -25,7 +25,7 @@
     "excel4node": "^1.7.2",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
-    "express-session": "^1.16.2",
+    "express-session": "^1.17.0",
     "js-yaml": "^3.13.1",
     "jszip": "^3.2.2",
     "lodash": "^4.17.15",
