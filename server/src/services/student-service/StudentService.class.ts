@@ -4,7 +4,6 @@ import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
-// import { isDocument } from '@hasezoey/typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import {
@@ -34,9 +33,17 @@ class StudentService {
     return students;
   }
 
-  public async createStudent(dto: StudentDTO): Promise<Student> {
-    const tutorial = await tutorialService.getDocumentWithID(dto.tutorial);
-    const createdStudent = await StudentModel.create({ ...dto, tutorial });
+  public async createStudent({ tutorial: tutorialId, ...dto }: StudentDTO): Promise<Student> {
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
+
+    const studentData: TypegooseDocument<StudentSchema> = {
+      ...dto,
+      tutorial,
+      team: undefined,
+      points: {},
+      scheinExamResults: {},
+    };
+    const createdStudent = await StudentModel.create(studentData);
 
     this.makeStudentAttendeeOfTutorial(createdStudent, tutorial.id, { saveStudent: false });
 

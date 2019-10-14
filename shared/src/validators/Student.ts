@@ -9,7 +9,7 @@ const StudentDTOSchema = Yup.object().shape<StudentDTO>({
   firstname: Yup.string().required(),
   lastname: Yup.string().required(),
   matriculationNo: Yup.string().required(),
-  team: YupIdShape.nullable(),
+  team: YupIdShape.notRequired(),
   tutorial: YupIdShape.required(),
 });
 

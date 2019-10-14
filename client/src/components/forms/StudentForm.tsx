@@ -44,7 +44,7 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
     return {
       lastname: student.lastname,
       firstname: student.firstname,
-      matriculationNo: Number.parseInt(student.matriculationNo),
+      matriculationNo: student.matriculationNo ? Number.parseInt(student.matriculationNo) : 0,
       email: student.email || '',
       courseOfStudies: student.courseOfStudies || '',
       team: student.team ? student.team.id : '',

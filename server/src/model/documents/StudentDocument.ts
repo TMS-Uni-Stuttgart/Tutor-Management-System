@@ -39,8 +39,8 @@ export class StudentSchema extends Typegoose
   @prop({ required: true })
   lastname!: string;
 
-  @prop({ required: true })
-  matriculationNo!: string;
+  @prop()
+  matriculationNo?: string;
 
   @prop()
   email?: string;

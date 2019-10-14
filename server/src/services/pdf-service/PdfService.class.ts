@@ -347,10 +347,18 @@ class PdfService {
     const studentDataToPrint: { matriculationNo: string; schein: string }[] = [];
 
     students.forEach(student => {
-      studentDataToPrint.push({
-        matriculationNo: this.getShortenedMatrNo(student, students),
-        schein: summaries[student.id].passed ? '{{yes}}' : '{{no}}',
-      });
+      try {
+        const matriculationNo = this.getShortenedMatrNo(student, students);
+
+        studentDataToPrint.push({
+          matriculationNo,
+          schein: summaries[student.id].passed ? '{{yes}}' : '{{no}}',
+        });
+      } catch {
+        Logger.warn(
+          `Student ${student.id} does NOT have a matriculation number. Therefore it can not be added to the list`
+        );
+      }
     });
 
     studentDataToPrint.sort((a, b) => a.matriculationNo.localeCompare(b.matriculationNo));
@@ -359,6 +367,10 @@ class PdfService {
   }
 
   private getShortenedMatrNo(student: Student, students: Student[]): string {
+    if (!student.matriculationNo) {
+      throw new Error(`Student ${student.id} does not have a matriculation number.`);
+    }
+
     const otherStudents = students.filter(s => s.id !== student.id);
     const lengthOfNo = student.matriculationNo.length;
 
@@ -367,6 +379,10 @@ class PdfService {
       let isOkay = true;
 
       for (const otherStudent of otherStudents) {
+        if (!otherStudent.matriculationNo) {
+          continue;
+        }
+
         const shortOtherStudent = otherStudent.matriculationNo.substr(
           lengthOfNo - iteration,
           iteration
