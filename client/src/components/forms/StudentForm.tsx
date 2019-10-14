@@ -15,9 +15,9 @@ const validationSchema = Yup.object().shape({
     .required('Benötigt')
     .test({
       test: function(this, matriculationNo: number) {
-        return !!matriculationNo && matriculationNo.toString().length === 7;
+        return !!matriculationNo && matriculationNo.toString().length >= 6;
       },
-      message: 'Muss siebenstellig sein',
+      message: 'Muss mind. 6 Stellen haben',
     }),
 });
 
