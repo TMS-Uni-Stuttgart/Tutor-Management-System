@@ -5,6 +5,7 @@ import { ErrorMessage, Field, FieldProps } from 'formik';
 import React from 'react';
 import { SvgIconComponent } from '@material-ui/icons';
 import { ButtonBaseProps } from '@material-ui/core/ButtonBase';
+import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,6 +32,7 @@ interface ButtonItem {
   Icon: SvgIconComponent;
   onClick: ButtonBaseProps['onClick'];
   color?: PropTypes.Color;
+  tooltip?: TooltipProps['title'];
 }
 
 interface Props {
@@ -51,18 +53,28 @@ export function FormikTextFieldWithButtons({
   ...TextFieldProps
 }: PropType) {
   const classes = useStyles();
-  const buttonComps = buttons.map(({ key, Icon, onClick, color }) => (
-    <Button
-      key={key}
-      variant='outlined'
-      className={classes.button}
-      disabled={disabled}
-      onClick={onClick}
-      color={color}
-    >
-      <Icon fontSize='small' />
-    </Button>
-  ));
+  const buttonComps = buttons.map(({ key, Icon, onClick, color, tooltip }) => {
+    const buttonComp = (
+      <Button
+        key={key}
+        variant='outlined'
+        className={classes.button}
+        disabled={disabled}
+        onClick={onClick}
+        color={color}
+      >
+        <Icon fontSize='small' />
+      </Button>
+    );
+
+    return tooltip ? (
+      <Tooltip key={key} title={tooltip}>
+        {buttonComp}
+      </Tooltip>
+    ) : (
+      buttonComp
+    );
+  });
 
   return (
     <Field name={name}>
