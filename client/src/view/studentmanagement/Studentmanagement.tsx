@@ -98,10 +98,14 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       setFieldError('matriculationNo', 'Matrikelnummer bereits verwendet.');
       return;
     }
+
+    const matrNoString =
+      typeof matriculationNo === 'number' ? matriculationNo.toString() : undefined;
+
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
-      matriculationNo: matriculationNo.toString(),
+      matriculationNo: matrNoString,
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
@@ -140,10 +144,13 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       return;
     }
 
+    const matrNoString =
+      typeof matriculationNo === 'number' ? matriculationNo.toString() : undefined;
+
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
-      matriculationNo: matriculationNo.toString(),
+      matriculationNo: matrNoString,
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
