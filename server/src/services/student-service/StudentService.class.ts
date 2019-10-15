@@ -82,7 +82,7 @@ class StudentService {
 
     await student.updateOne(encryptedStudent);
 
-    return this.getStudentOrReject(student);
+    return this.getStudentOrReject(await this.getDocumentWithId(id));
   }
 
   public async deleteStudent(id: string): Promise<Student> {
