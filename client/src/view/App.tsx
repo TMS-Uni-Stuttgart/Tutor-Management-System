@@ -24,16 +24,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     contentWrapper: {
       display: 'flex',
-      flexGrow: 1,
-      height: '100%',
+      flex: '1 1 auto',
+      overflowY: 'auto',
     },
     content: {
       width: 0,
       flexGrow: 1,
-      height: '100%',
+      height: 'inherit',
       '& > *': {
         height: 'inherit',
-        overflowY: 'auto',
         padding: theme.spacing(2, 2, 1, 2),
         position: 'relative',
       },
