@@ -41,7 +41,7 @@ export type StudentFormSubmitCallback = FormikSubmitCallback<StudentFormState>;
 interface StudentFormState {
   lastname: string;
   firstname: string;
-  matriculationNo: number | '';
+  matriculationNo: string; // TODO: Change me to 'string' -- this will prevent lots of errors!
   email: string;
   courseOfStudies: string;
   team: string;
@@ -59,8 +59,7 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
     return {
       lastname: student.lastname,
       firstname: student.firstname,
-      matriculationNo:
-        student.matriculationNo !== undefined ? Number.parseInt(student.matriculationNo) : '',
+      matriculationNo: student.matriculationNo !== undefined ? student.matriculationNo : '',
       email: student.email || '',
       courseOfStudies: student.courseOfStudies || '',
       team: student.team ? student.team.id : '',
@@ -109,7 +108,7 @@ function StudentForm({
               min: 0,
             }}
             helperText={
-              values['matriculationNo'] == '' ? 'Keine Matrikelnummer eingegeben.' : undefined
+              values['matriculationNo'] === '' ? 'Keine Matrikelnummer eingegeben.' : undefined
             }
             InputProps={{
               endAdornment:

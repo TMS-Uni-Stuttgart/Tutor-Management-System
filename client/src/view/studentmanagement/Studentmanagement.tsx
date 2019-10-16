@@ -99,13 +99,10 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       return;
     }
 
-    const matrNoString =
-      typeof matriculationNo === 'number' ? matriculationNo.toString() : undefined;
-
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
-      matriculationNo: matrNoString,
+      matriculationNo,
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
@@ -144,13 +141,10 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       return;
     }
 
-    const matrNoString =
-      typeof matriculationNo === 'number' ? matriculationNo.toString() : undefined;
-
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
-      matriculationNo: matrNoString,
+      matriculationNo,
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
