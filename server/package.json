@@ -56,5 +56,9 @@
     "@types/showdown": "^1.9.3",
     "copyfiles": "^2.1.1",
     "ts-node-dev": "^1.0.0-pre.42"
+  },
+  "resolutions": {
+    "@types/connect-mongo/@types/express-session": "^1.15.15",
+    "@types/connect-mongo/@types/mongoose": "^5.5.21"
   }
 }
