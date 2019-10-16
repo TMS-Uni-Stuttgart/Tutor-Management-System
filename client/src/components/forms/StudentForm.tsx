@@ -1,7 +1,5 @@
-import {
-  Marker as DisallowEmptyMatrNoIcon,
-  MarkerCancel as AllowEmptyMatrNoIcon,
-} from 'mdi-material-ui';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { AlertOutline as AlertIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Team } from 'shared/dist/model/Team';
 import * as Yup from 'yup';
@@ -9,22 +7,30 @@ import { FormikSubmitCallback } from '../../types';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
-import { FormikTextFieldWithButtons } from './components/FormikTextFieldWithButtons';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    warningColor: {
+      color: theme.palette.warning.main,
+    },
+    warningBorder: {
+      borderColor: theme.palette.warning.main,
+    },
+  })
+);
 
 const validationSchema = Yup.object().shape({
   lastname: Yup.string().required('Benötigt'),
   firstname: Yup.string().required('Benötigt'),
   email: Yup.string().email('Keine gültige E-Mailadresse'),
   matriculationNo: Yup.number().test({
-    test: function(this, matriculationNo: number) {
-      const allowEmptyMatrNo = this.resolve(Yup.ref('allowEmptyMatrNo'));
-
-      if (allowEmptyMatrNo) {
+    test: function(this, matriculationNo: number | undefined) {
+      if (matriculationNo === undefined) {
         return true;
       }
 
-      return !!matriculationNo && matriculationNo.toString().length >= 6;
+      return matriculationNo.toString().length >= 6;
     },
     message: 'Muss mind. 6 Stellen haben',
   }),
@@ -35,7 +41,6 @@ export type StudentFormSubmitCallback = FormikSubmitCallback<StudentFormState>;
 interface StudentFormState {
   lastname: string;
   firstname: string;
-  allowEmptyMatrNo: boolean;
   matriculationNo: number | '';
   email: string;
   courseOfStudies: string;
@@ -54,7 +59,6 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
     return {
       lastname: student.lastname,
       firstname: student.firstname,
-      allowEmptyMatrNo: student.matriculationNo === undefined,
       matriculationNo:
         student.matriculationNo !== undefined ? Number.parseInt(student.matriculationNo) : '',
       email: student.email || '',
@@ -66,8 +70,7 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
   return {
     lastname: '',
     firstname: '',
-    allowEmptyMatrNo: false,
-    matriculationNo: 0,
+    matriculationNo: '',
     email: '',
     courseOfStudies: '',
     team: '',
@@ -82,6 +85,7 @@ function StudentForm({
   disableTeamDropdown,
   ...other
 }: Props): JSX.Element {
+  const classes = useStyles();
   const initialFormState = getInitialFormState(student);
 
   return (
@@ -91,30 +95,44 @@ function StudentForm({
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      {({ setFieldValue, values }) => (
+      {({ values }) => (
         <>
-          <FormikTextField name='firstname' label='Vorname' />
+          <FormikTextField name='firstname' label='Vorname' required />
 
-          <FormikTextField name='lastname' label='Nachname' />
+          <FormikTextField name='lastname' label='Nachname' required />
 
-          <FormikTextFieldWithButtons
+          <FormikTextField
             name='matriculationNo'
             label='Matrikelnummer'
             type='number'
             inputProps={{
               min: 0,
             }}
-            buttons={[
-              {
-                key: 'allowEmptMatrNo',
-                Icon: values.allowEmptyMatrNo ? AllowEmptyMatrNoIcon : DisallowEmptyMatrNoIcon,
-                color: values.allowEmptyMatrNo ? 'secondary' : 'default',
-                tooltip: values.allowEmptyMatrNo
-                  ? 'Keine Matrikelnummer benötigt.'
-                  : 'Matrikelnummer benötigt',
-                onClick: () => setFieldValue('allowEmptyMatrNo', !values.allowEmptyMatrNo),
+            helperText={
+              values['matriculationNo'] == '' ? 'Keine Matrikelnummer eingegeben.' : undefined
+            }
+            InputProps={{
+              endAdornment:
+                values['matriculationNo'] === '' ? (
+                  <AlertIcon className={classes.warningColor} />
+                ) : (
+                  undefined
+                ),
+              classes: {
+                notchedOutline:
+                  values['matriculationNo'] === '' ? classes.warningBorder : undefined,
               },
-            ]}
+            }}
+            InputLabelProps={{
+              classes: {
+                root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
+              },
+            }}
+            FormHelperTextProps={{
+              classes: {
+                root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
+              },
+            }}
           />
 
           <FormikTextField name='email' label='E-Mailadresse' />
