@@ -24,10 +24,11 @@ const LoginContext = React.createContext<LoginState>({
 });
 
 async function login(username: string, password: string): Promise<LoggedInUser> {
+  // We build the Authorization header by ourselfs because the axios library does NOT use UTF-8 to encode the string as base64.
+  const encodedAuth = Buffer.from(username + ':' + password, 'utf8').toString('base64');
   const response = await axios.post<LoggedInUser>('login', null, {
-    auth: {
-      username,
-      password,
+    headers: {
+      Authorization: `Basic ${encodedAuth}`,
     },
     transformResponse: transformLoggedInUserResponse,
     // Override the behaviour of checking the response status to not be 401 (session timed out)
