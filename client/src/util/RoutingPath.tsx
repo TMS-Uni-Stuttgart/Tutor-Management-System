@@ -73,7 +73,7 @@ export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
 export const ROUTES: readonly RouteType[] = [
   {
     path: RoutingPath.LOGIN,
-    title: 'Tutor Management Software',
+    title: 'Tutor Management System',
     component: Login,
     roles: 'all',
     isInDrawer: false,
