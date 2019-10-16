@@ -25,23 +25,27 @@
     "docker:image:tar": "docker save -o Tutor-Management-System.tar tutor-management-system:latest",
     "docker:build:pre": "yarn docker:image:build:pre && yarn docker:image:tar:pre",
     "docker:image:build:pre": "docker build --tag=tutor-management-system:pre .",
-    "docker:image:tar:pre": "docker save -o Tutor-Management-System_pre.tar tutor-management-system:pre"
+    "docker:image:tar:pre": "docker save -o Tutor-Management-System_pre.tar tutor-management-system:pre",
+    "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server && yarn upgrade-pgk:shared",
+    "upgrade-pgk:client": "cd ./client && npm-upgrade",
+    "upgrade-pgk:server": "cd ./server && npm-upgrade",
+    "upgrade-pgk:shared": "cd ./shared && npm-upgrade"
   },
   "devDependencies": {
-    "@types/node": "^12.7.8",
+    "@types/node": "^12.11.1",
     "@types/yup": "^0.26.24",
-    "@typescript-eslint/eslint-plugin": "^2.3.1",
-    "@typescript-eslint/parser": "^2.3.1",
-    "eslint": "^6.4.0",
-    "eslint-config-prettier": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^2.4.0",
+    "@typescript-eslint/parser": "^2.4.0",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react": "^7.16.0",
     "prettier": "^1.18.2",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "date-fns": "^2.4.0",
+    "date-fns": "^2.5.0",
     "yup": "^0.27.0"
   }
 }
