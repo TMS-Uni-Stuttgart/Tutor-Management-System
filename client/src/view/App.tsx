@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
     content: {
       width: 0,
       flexGrow: 1,
-      height: 'inherit',
+      height: '100%',
       '& > *': {
         height: 'inherit',
         padding: theme.spacing(2, 2, 1, 2),
