@@ -54,11 +54,14 @@ class StudentService {
     return this.getStudentOrReject(createdStudent);
   }
 
-  public async updateStudent(id: string, { tutorial, ...dto }: StudentDTO): Promise<Student> {
+  public async updateStudent(
+    id: string,
+    { tutorial, courseOfStudies, email, matriculationNo, team, ...dto }: StudentDTO
+  ): Promise<Student> {
     const student = await this.getDocumentWithId(id);
 
-    if (dto.team) {
-      await teamService.makeStudentMemberOfTeam(student, dto.team, { saveStudent: false });
+    if (team) {
+      await teamService.makeStudentMemberOfTeam(student, team, { saveStudent: false });
     } else {
       await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
@@ -69,6 +72,9 @@ class StudentService {
 
     const updatedStudent: TypegooseDocument<StudentSchema> = {
       ...dto,
+      matriculationNo: matriculationNo || '',
+      email: email || '',
+      courseOfStudies: courseOfStudies || '',
       tutorial: student.tutorial,
       team: student.team,
       points: student.points,
