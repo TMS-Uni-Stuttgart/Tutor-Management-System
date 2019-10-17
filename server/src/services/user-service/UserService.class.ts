@@ -131,6 +131,9 @@ class UserService {
     user.email = dto.email;
     user.roles = dto.roles;
 
+    // TODO: Check if duplicate username.
+    user.username = dto.username;
+
     for (const tutorial of tutorialsToRemoveUserFrom) {
       await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
     }
