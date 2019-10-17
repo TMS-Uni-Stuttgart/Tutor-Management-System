@@ -6,7 +6,7 @@ import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
 import SubmitButton from '../../components/forms/components/SubmitButton';
-import UserForm, { UserFormSubmitCallback } from '../../components/forms/UserForm';
+import UserForm, { UserFormSubmitCallback, UserFormState } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import SnackbarWithList from '../../components/SnackbarWithList';
 import TableWithForm from '../../components/TableWithForm';
@@ -27,7 +27,42 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+class UsernameAlreadyTakenError {
+  constructor(readonly message: string) {}
+}
+
 const availableRoles = [Role.ADMIN, Role.CORRECTOR, Role.TUTOR, Role.EMPLOYEE];
+
+/**
+ * Converts the given form state to an UserDTO.
+ *
+ * __Important__: The `otherUsers` array must only contain __other__ users not the one which for example gets edited. This is because the function also checks if the username is already taken by one of the users in `otherUsers` and if it is an `UsernameAlreadyTakenError` is thrown.
+ *
+ * @param formState State of the UserForm to convert.
+ * @param otherUsers Other users to compare usernames with.
+ *
+ * @throws `UsernameAlreadyTakenError` If the username is already taken by an other user this error gets thrown.
+ */
+function convertFormStateToUserDTO(
+  { firstname, lastname, tutorials, tutorialsToCorrect, roles, username, email }: UserFormState,
+  otherUsers: UserWithFetchedTutorials[]
+): UserDTO {
+  for (const user of otherUsers) {
+    if (user.username.toLowerCase().localeCompare(username.toLowerCase()) === 0) {
+      throw new UsernameAlreadyTakenError(`Username ${username} already taken.`);
+    }
+  }
+
+  return {
+    firstname,
+    lastname,
+    username,
+    email,
+    roles,
+    tutorials,
+    tutorialsToCorrect,
+  };
+}
 
 function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
@@ -72,27 +107,25 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   }, [enqueueSnackbar, getUsersAndFetchTutorials, getAllTutorials]);
 
   const handleCreateUser: UserFormSubmitCallback = async (
-    { firstname, lastname, tutorials, tutorialsToCorrect, roles, username, password, email },
-    { resetForm, setSubmitting }
+    formState,
+    { resetForm, setSubmitting, setFieldError }
   ) => {
-    const userToCreate: CreateUserDTO = {
-      firstname,
-      lastname,
-      email,
-      roles,
-      tutorials,
-      tutorialsToCorrect,
-      username,
-      password,
-    };
-
     try {
+      const userToCreate: CreateUserDTO = {
+        ...convertFormStateToUserDTO(formState, users),
+        password: formState.password,
+      };
+
       const response = await createUserAndFetchTutorials(userToCreate);
 
       setUsers([...users, response]);
       enqueueSnackbar(`Nutzer wurde erfolgreich angelegt.`, { variant: 'success' });
       resetForm();
     } catch (reason) {
+      if (reason instanceof UsernameAlreadyTakenError) {
+        setFieldError('username', 'Nutzername bereits vergeben.');
+      }
+
       enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
     } finally {
       setSubmitting(false);
@@ -100,19 +133,16 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   };
 
   const editUser: (user: UserWithFetchedTutorials) => UserFormSubmitCallback = user => async (
-    { firstname, lastname, roles, tutorials, tutorialsToCorrect, password, email },
-    { setSubmitting }
+    formState,
+    { setSubmitting, setFieldError }
   ) => {
-    const userInformation: UserDTO = {
-      firstname,
-      lastname,
-      email,
-      roles,
-      tutorials,
-      tutorialsToCorrect,
-    };
-
     try {
+      const { password } = formState;
+      const userInformation: UserDTO = convertFormStateToUserDTO(
+        formState,
+        users.filter(u => u.id !== user.id)
+      );
+
       const updatedUser = await editUserRequest(user.id, userInformation);
       setUsers(
         users.map(u => {
@@ -131,8 +161,12 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       enqueueSnackbar(`Nutzer wurde erfolgreich gespeichert.`, { variant: 'success' });
       dialog.hide();
     } catch (e) {
-      setSubmitting(false);
+      if (e instanceof UsernameAlreadyTakenError) {
+        setFieldError('username', 'Nutzername bereits vergeben.');
+      }
+
       enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
+      setSubmitting(false);
     }
   };
 
