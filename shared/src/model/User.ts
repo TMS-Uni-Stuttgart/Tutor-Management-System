@@ -26,10 +26,10 @@ export interface UserDTO {
   tutorialsToCorrect: string[];
   roles: User['roles'];
   email: User['email'];
+  username: User['username'];
 }
 
 export interface CreateUserDTO extends UserDTO {
-  username: string;
   password: string;
 }
 

@@ -12,6 +12,7 @@ const UserDTOSchema = Yup.object().shape<UserDTO>({
     .email()
     .required(),
   roles: Yup.array<Role>().required(),
+  username: Yup.string().required(),
   tutorials: TutorialIdListSchema,
   tutorialsToCorrect: TutorialIdListSchema,
 });
