@@ -4,7 +4,6 @@ import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
-// import { isDocument } from '@hasezoey/typegoose/lib/utils';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import {
@@ -34,9 +33,17 @@ class StudentService {
     return students;
   }
 
-  public async createStudent(dto: StudentDTO): Promise<Student> {
-    const tutorial = await tutorialService.getDocumentWithID(dto.tutorial);
-    const createdStudent = await StudentModel.create({ ...dto, tutorial });
+  public async createStudent({ tutorial: tutorialId, ...dto }: StudentDTO): Promise<Student> {
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
+
+    const studentData: TypegooseDocument<StudentSchema> = {
+      ...dto,
+      tutorial,
+      team: undefined,
+      points: {},
+      scheinExamResults: {},
+    };
+    const createdStudent = await StudentModel.create(studentData);
 
     this.makeStudentAttendeeOfTutorial(createdStudent, tutorial.id, { saveStudent: false });
 
@@ -47,11 +54,14 @@ class StudentService {
     return this.getStudentOrReject(createdStudent);
   }
 
-  public async updateStudent(id: string, { tutorial, ...dto }: StudentDTO): Promise<Student> {
+  public async updateStudent(
+    id: string,
+    { tutorial, courseOfStudies, email, matriculationNo, team, ...dto }: StudentDTO
+  ): Promise<Student> {
     const student = await this.getDocumentWithId(id);
 
-    if (dto.team) {
-      await teamService.makeStudentMemberOfTeam(student, dto.team, { saveStudent: false });
+    if (team) {
+      await teamService.makeStudentMemberOfTeam(student, team, { saveStudent: false });
     } else {
       await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
@@ -62,6 +72,9 @@ class StudentService {
 
     const updatedStudent: TypegooseDocument<StudentSchema> = {
       ...dto,
+      matriculationNo: matriculationNo || '',
+      email: email || '',
+      courseOfStudies: courseOfStudies || '',
       tutorial: student.tutorial,
       team: student.team,
       points: student.points,
@@ -75,7 +88,7 @@ class StudentService {
 
     await student.updateOne(encryptedStudent);
 
-    return this.getStudentOrReject(student);
+    return this.getStudentOrReject(await this.getDocumentWithId(id));
   }
 
   public async deleteStudent(id: string): Promise<Student> {

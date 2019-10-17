@@ -257,7 +257,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       const data: RowMap = {
         lastname,
         firstname,
-        matriculationNo,
+        matriculationNo: matriculationNo || 'NA',
         scheinPassed: criteriaResult.passed + '',
         presentations: Object.values(presentationPoints)
           .reduce((prev, current) => prev + current, 0)

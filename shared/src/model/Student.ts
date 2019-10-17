@@ -6,7 +6,7 @@ export interface Student extends NamedElement {
   attendance: { [index: string]: Attendance };
   courseOfStudies?: string;
   email?: string;
-  matriculationNo: string;
+  matriculationNo?: string;
   points: PointMapDTO;
   presentationPoints: { [index: string]: number };
   scheinExamResults: PointMapDTO;
@@ -19,8 +19,8 @@ export interface StudentDTO {
   email?: string;
   firstname: string;
   lastname: string;
-  matriculationNo: string;
-  team?: string | null;
+  matriculationNo?: string;
+  team?: string;
   tutorial: string;
 }
 

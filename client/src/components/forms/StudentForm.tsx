@@ -1,24 +1,39 @@
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { AlertOutline as AlertIcon } from 'mdi-material-ui';
 import React from 'react';
+import { Team } from 'shared/dist/model/Team';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { Team } from 'shared/dist/model/Team';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    warningColor: {
+      color: theme.palette.warning.main,
+    },
+    warningBorder: {
+      borderColor: theme.palette.warning.main,
+    },
+  })
+);
 
 const validationSchema = Yup.object().shape({
   lastname: Yup.string().required('Benötigt'),
   firstname: Yup.string().required('Benötigt'),
   email: Yup.string().email('Keine gültige E-Mailadresse'),
-  matriculationNo: Yup.number()
-    .required('Benötigt')
-    .test({
-      test: function(this, matriculationNo: number) {
-        return !!matriculationNo && matriculationNo.toString().length >= 6;
-      },
-      message: 'Muss mind. 6 Stellen haben',
-    }),
+  matriculationNo: Yup.number().test({
+    test: function(this, matriculationNo: number | undefined) {
+      if (matriculationNo === undefined) {
+        return true;
+      }
+
+      return matriculationNo.toString().length >= 6;
+    },
+    message: 'Muss mind. 6 Stellen haben',
+  }),
 });
 
 export type StudentFormSubmitCallback = FormikSubmitCallback<StudentFormState>;
@@ -26,7 +41,7 @@ export type StudentFormSubmitCallback = FormikSubmitCallback<StudentFormState>;
 interface StudentFormState {
   lastname: string;
   firstname: string;
-  matriculationNo: number;
+  matriculationNo: string; // TODO: Change me to 'string' -- this will prevent lots of errors!
   email: string;
   courseOfStudies: string;
   team: string;
@@ -44,7 +59,7 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
     return {
       lastname: student.lastname,
       firstname: student.firstname,
-      matriculationNo: Number.parseInt(student.matriculationNo),
+      matriculationNo: student.matriculationNo !== undefined ? student.matriculationNo : '',
       email: student.email || '',
       courseOfStudies: student.courseOfStudies || '',
       team: student.team ? student.team.id : '',
@@ -54,7 +69,7 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
   return {
     lastname: '',
     firstname: '',
-    matriculationNo: 0,
+    matriculationNo: '',
     email: '',
     courseOfStudies: '',
     team: '',
@@ -69,6 +84,7 @@ function StudentForm({
   disableTeamDropdown,
   ...other
 }: Props): JSX.Element {
+  const classes = useStyles();
   const initialFormState = getInitialFormState(student);
 
   return (
@@ -78,38 +94,67 @@ function StudentForm({
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      <FormikTextField name='firstname' label='Vorname' />
+      {({ values }) => (
+        <>
+          <FormikTextField name='firstname' label='Vorname' required />
 
-      <FormikTextField name='lastname' label='Nachname' />
+          <FormikTextField name='lastname' label='Nachname' required />
 
-      <FormikTextField
-        name='matriculationNo'
-        label='Matrikelnummer'
-        type='number'
-        inputProps={{
-          min: 0,
-        }}
-      />
+          <FormikTextField
+            name='matriculationNo'
+            label='Matrikelnummer'
+            type='number'
+            inputProps={{
+              min: 0,
+            }}
+            helperText={
+              values['matriculationNo'] === '' ? 'Keine Matrikelnummer eingegeben.' : undefined
+            }
+            InputProps={{
+              endAdornment:
+                values['matriculationNo'] === '' ? (
+                  <AlertIcon className={classes.warningColor} />
+                ) : (
+                  undefined
+                ),
+              classes: {
+                notchedOutline:
+                  values['matriculationNo'] === '' ? classes.warningBorder : undefined,
+              },
+            }}
+            InputLabelProps={{
+              classes: {
+                root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
+              },
+            }}
+            FormHelperTextProps={{
+              classes: {
+                root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
+              },
+            }}
+          />
 
-      <FormikTextField name='email' label='E-Mailadresse' />
+          <FormikTextField name='email' label='E-Mailadresse' />
 
-      <FormikTextField name='courseOfStudies' label='Studiengang' />
+          <FormikTextField name='courseOfStudies' label='Studiengang' />
 
-      <FormikSelect
-        name='team'
-        label='Team'
-        emptyPlaceholder='Keine Teams vorhanden.'
-        items={teams}
-        itemToString={team =>
-          `#${team.teamNo.toString().padStart(2, '0')} ${
-            team.students.length
-              ? `(${team.students.map(student => student.lastname).join(', ')})`
-              : ''
-          }`
-        }
-        itemToValue={team => team.id}
-        disabled={disableTeamDropdown}
-      />
+          <FormikSelect
+            name='team'
+            label='Team'
+            emptyPlaceholder='Keine Teams vorhanden.'
+            items={teams}
+            itemToString={team =>
+              `#${team.teamNo.toString().padStart(2, '0')} ${
+                team.students.length
+                  ? `(${team.students.map(student => student.lastname).join(', ')})`
+                  : ''
+              }`
+            }
+            itemToValue={team => team.id}
+            disabled={disableTeamDropdown}
+          />
+        </>
+      )}
     </FormikBaseForm>
   );
 }

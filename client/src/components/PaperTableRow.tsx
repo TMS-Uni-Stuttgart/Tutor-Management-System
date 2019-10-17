@@ -1,10 +1,11 @@
-import { TableRow, TableCell, Avatar, Typography } from '@material-ui/core';
+import { TableRow, TableCell, Avatar, Typography, Tooltip } from '@material-ui/core';
 import Paper, { PaperProps } from '@material-ui/core/Paper';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
 import { SvgIconComponent } from '@material-ui/icons';
 import { TypographyProps } from '@material-ui/core/Typography';
+import { AvatarProps } from '@material-ui/core/Avatar';
 
 interface StyleProps {
   colorOfBottomBar?: string;
@@ -35,12 +36,6 @@ const useStyles = makeStyles<Theme, StyleProps>(theme =>
       if (props.colorOfBottomBar) {
         return {
           borderBottom: `4px solid ${props.colorOfBottomBar}`,
-          // '&:after': {
-          //   content: '"HALLO"',
-          //   height: 4,
-          //   background: props.colorOfBottomBar,
-          //   width: '100%',
-          // },
         };
       }
 
@@ -48,8 +43,8 @@ const useStyles = makeStyles<Theme, StyleProps>(theme =>
         bottomBorder: 'none',
       };
     },
-    avatar: {
-      marginLeft: theme.spacing(2),
+    avatarCell: {
+      paddingLeft: theme.spacing(2),
     },
     labelCell: {
       width: 'max-content',
@@ -63,11 +58,13 @@ const useStyles = makeStyles<Theme, StyleProps>(theme =>
 interface Props {
   label: string;
   subText?: string;
+  avatarTooltip?: string;
   icon?: SvgIconComponent;
   LabelProps?: TypographyProps;
   SubTextProps?: TypographyProps;
   buttonCellContent?: React.ReactNode;
   colorOfBottomBar?: string;
+  AvatarProps?: AvatarProps;
 }
 
 export type PaperTableRowProps = Omit<PaperProps, 'component'>;
@@ -76,6 +73,7 @@ type PropType = Props & PaperTableRowProps;
 function PaperTableRow({
   label,
   subText,
+  avatarTooltip,
   icon: Icon,
   className,
   children,
@@ -83,9 +81,15 @@ function PaperTableRow({
   SubTextProps,
   buttonCellContent: ButtonCellContent,
   colorOfBottomBar,
+  AvatarProps,
   ...rest
 }: PropType): JSX.Element {
   const classes = useStyles({ colorOfBottomBar: colorOfBottomBar });
+  const AvatarComp = Icon && (
+    <Avatar {...AvatarProps}>
+      <Icon />
+    </Avatar>
+  );
 
   return (
     <Paper
@@ -93,11 +97,9 @@ function PaperTableRow({
       component={TableRow}
       className={clsx(classes.content, className, colorOfBottomBar && classes.coloredBar)}
     >
-      {Icon && (
-        <TableCell padding='checkbox'>
-          <Avatar className={classes.avatar}>
-            <Icon />
-          </Avatar>
+      {AvatarComp && (
+        <TableCell padding='checkbox' className={classes.avatarCell}>
+          {avatarTooltip ? <Tooltip title={avatarTooltip}>{AvatarComp}</Tooltip> : AvatarComp}
         </TableCell>
       )}
 

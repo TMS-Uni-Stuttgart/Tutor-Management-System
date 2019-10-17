@@ -98,10 +98,11 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       setFieldError('matriculationNo', 'Matrikelnummer bereits verwendet.');
       return;
     }
+
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
-      matriculationNo: matriculationNo.toString(),
+      matriculationNo,
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
@@ -143,7 +144,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
-      matriculationNo: matriculationNo.toString(),
+      matriculationNo,
       email,
       courseOfStudies,
       tutorial: params.tutorialId,

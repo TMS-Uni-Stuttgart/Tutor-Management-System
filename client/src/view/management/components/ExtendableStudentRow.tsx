@@ -7,7 +7,7 @@ import {
   Person as PersonIcon,
 } from '@material-ui/icons';
 import clsx from 'clsx';
-import { AccountSwitch } from 'mdi-material-ui';
+import { AccountSwitch, MessageAlert as WarningIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
@@ -41,8 +41,8 @@ const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
-    avatar: {
-      marginLeft: theme.spacing(2),
+    warningAvatar: {
+      backgroundColor: theme.palette.warning.dark,
     },
     infoBlock: {
       display: 'grid',
@@ -158,7 +158,13 @@ function ExtendableStudentRow({
               }`
             : `${team ? `Team: #${team.teamNo.toString().padStart(2, '0')}` : 'Kein Team'}`
         }
-        icon={PersonIcon}
+        icon={!!student.matriculationNo ? PersonIcon : WarningIcon}
+        avatarTooltip={
+          !student.matriculationNo ? 'Student/in hat keine hinterlegte Matrikelnummer.' : undefined
+        }
+        AvatarProps={{
+          className: clsx(!student.matriculationNo && classes.warningAvatar),
+        }}
         className={clsx(classes.content, className, showInfoBox && classes.noBottomBorder)}
         onClick={() => {
           setShowInfoBox(!showInfoBox);

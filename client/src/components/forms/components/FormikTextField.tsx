@@ -1,4 +1,4 @@
-import { TextField, InputAdornment } from '@material-ui/core';
+import { TextField, InputAdornment, StyledComponentProps } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import { Field, FieldProps } from 'formik';
 import React from 'react';
@@ -8,12 +8,18 @@ interface Props {
   isPercentage?: boolean;
 }
 
-export type FormikTextFieldProps = Props & TextFieldProps;
+type OutlineTextFieldClassKeys = 'root' | 'notchedOutline';
+
+export type FormikTextFieldProps = Props &
+  TextFieldProps &
+  StyledComponentProps<OutlineTextFieldClassKeys>;
 
 function FormikTextField({
   name,
   children,
   isPercentage,
+  helperText,
+  InputProps,
   ...textfieldProps
 }: FormikTextFieldProps): JSX.Element {
   function getValue(fieldValue: any): any {
@@ -33,6 +39,7 @@ function FormikTextField({
           fullWidth
           InputProps={{
             endAdornment: isPercentage ? <InputAdornment position='end'>%</InputAdornment> : null,
+            ...InputProps,
           }}
           {...textfieldProps}
           {...field}
@@ -45,7 +52,7 @@ function FormikTextField({
               form.setFieldValue(name, e.target.value);
             }
           }}
-          helperText={!!touched && error}
+          helperText={(!!touched && error) || helperText}
           error={touched && !!error}
           onFocus={e => e.target.select()}
         >
