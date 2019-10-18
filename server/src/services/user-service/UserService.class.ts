@@ -49,7 +49,7 @@ class UserService {
     return this.getUserOrReject(user);
   }
 
-  public async getUserCredentialsWithUsername(username: string): Promise<UserCredentials> {
+  private async getUserWithUsername(username: string): Promise<UserDocument | undefined> {
     // The username field could be encrypted so we create a dummy document which will have the username encrypted (if the 'original' ones have it encrypted aswell).
     const docWithEncryptedUsername: EncryptedDocument<UserDocument> = new UserModel({
       username,
@@ -62,10 +62,18 @@ class UserService {
     });
 
     if (userDocs.length === 0) {
-      return Promise.reject('User with that username was not found.');
+      return undefined;
     }
 
-    const user = userDocs[0];
+    return userDocs[0];
+  }
+
+  public async getUserCredentialsWithUsername(username: string): Promise<UserCredentials> {
+    const user = await this.getUserWithUsername(username);
+
+    if (!user) {
+      return Promise.reject('User with that username was not found.');
+    }
 
     return new UserCredentials(user.id, user.username, user.password);
   }
@@ -77,6 +85,10 @@ class UserService {
     email,
     ...dto
   }: CreateUserDTO): Promise<User> {
+    if (await this.getUserWithUsername(dto.username)) {
+      throw new BadRequestError('User with the given username already exists.');
+    }
+
     const tutorials = await this.getAllTutorials(tutorialIds);
     const tutorialsToCorrect = await this.getAllTutorials(tutorialsToCorrectIds);
 
@@ -109,6 +121,12 @@ class UserService {
     { tutorials, tutorialsToCorrect, ...dto }: UserDTO
   ): Promise<User> {
     const user: UserDocument = await this.getDocumentWithId(id);
+    const userWithSameUsername = await this.getUserWithUsername(dto.username);
+
+    if (userWithSameUsername && userWithSameUsername.id !== user.id) {
+      throw new BadRequestError('User with the given username already exists.');
+    }
+
     const currentTutorials: string[] = user.tutorials.map(getIdOfDocumentRef);
     const currentTutorialsToCorrect = user.tutorialsToCorrect.map(getIdOfDocumentRef);
 
@@ -128,11 +146,9 @@ class UserService {
     // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
+    user.username = dto.username;
     user.email = dto.email;
     user.roles = dto.roles;
-
-    // TODO: Check if duplicate username.
-    user.username = dto.username;
 
     for (const tutorial of tutorialsToRemoveUserFrom) {
       await this.removeUserAsTutorFromTutorial(user, tutorial, { saveUser: false });
