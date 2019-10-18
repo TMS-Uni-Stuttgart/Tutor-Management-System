@@ -6,7 +6,7 @@ import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Role } from 'shared/dist/model/Role';
-import { Tutorial } from 'shared/dist/model/Tutorial';
+import { Tutorial, SubstituteDTO } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
 import { renderLink } from '../../components/drawer/components/renderLink';
 import FormikMultipleDatesPicker, {
@@ -23,13 +23,12 @@ import {
   parseDateToMapKey,
 } from '../../util/helperFunctions';
 import { RoutingPath } from '../../util/RoutingPath';
+import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
-      // display: 'flex',
-      // flexDirection: 'column',
     },
     backIcon: {
       marginLeft: theme.spacing(-0.5),
@@ -135,23 +134,35 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
       return;
     }
 
+    // TODO: Does not work if tutor was set previously and gets set to '""' (or falsy value in general).
+    //       To solve this problem the editor state propably has to be done in a different way - if not the whole SubstituteDTO part in a way that it allows the tutor property to be 'undefined'.
     const datesOfSubstitutes: { [tutor: string]: string[] } = {};
+    const datesWithoutSubstitute: any[] = [];
 
     Object.entries(substitutes).forEach(([date, tutor]) => {
-      if (tutor) {
+      if (!!tutor) {
         const prevDates: string[] = datesOfSubstitutes[tutor] || [];
 
         datesOfSubstitutes[tutor] = [...prevDates, date];
+      } else {
+        datesWithoutSubstitute.push(date);
       }
     });
 
-    let response: Tutorial | undefined = undefined;
+    const noSubDTO: SubstituteDTO = {
+      tutorId: undefined,
+      dates: datesWithoutSubstitute.map(d => new Date(d).toISOString()),
+    };
+
+    let response: Tutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
 
     for (const [tutor, dates] of Object.entries(datesOfSubstitutes)) {
-      response = await setSubstituteTutor(tutorial.id, {
+      const dto: SubstituteDTO = {
         tutorId: tutor,
         dates: dates.map(d => new Date(d).toISOString()),
-      });
+      };
+
+      response = await setSubstituteTutor(tutorial.id, dto);
     }
 
     if (response) {
@@ -207,6 +218,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                         name={`substitutes.${selectedDate.toDateString()}`}
                         label='Ersatztutor'
                         emptyPlaceholder='Keine Tutoren vorhanden.'
+                        hasNoneItem
                         items={tutors}
                         itemToString={getNameOfEntity}
                         itemToValue={t => t.id}
@@ -242,6 +254,8 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                   </div>
                 </div>
               </form>
+
+              <FormikDebugDisplay values={values} />
             </>
           )}
         </Formik>
