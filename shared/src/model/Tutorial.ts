@@ -22,8 +22,8 @@ export interface Tutorial extends HasId {
 }
 
 export interface SubstituteDTO {
+  tutorId?: string;
   dates: string[];
-  tutorId: string;
 }
 
 export interface LoggedInUserTutorial extends HasId {

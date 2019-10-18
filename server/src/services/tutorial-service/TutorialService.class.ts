@@ -209,7 +209,9 @@ class TutorialService {
 
   public async addSubstituteToTutorial(id: string, substDTO: SubstituteDTO): Promise<Tutorial> {
     const tutorial = await this.getDocumentWithID(id);
-    const substitute = await userService.getDocumentWithId(substDTO.tutorId);
+    const substitute = substDTO.tutorId
+      ? await userService.getDocumentWithId(substDTO.tutorId)
+      : undefined;
 
     const newDates: Date[] = substDTO.dates.map(d => new Date(d));
     const previousDates: Date[] = [];
@@ -224,12 +226,18 @@ class TutorialService {
       }
     }
 
-    for (const date of _.difference(previousDates, newDates)) {
-      tutorial.substitutes.delete(date.toDateString());
-    }
+    if (substitute) {
+      for (const date of _.difference(previousDates, newDates)) {
+        tutorial.substitutes.delete(date.toDateString());
+      }
 
-    for (const date of _.difference(newDates, previousDates)) {
-      tutorial.substitutes.set(date.toDateString(), substitute.id);
+      for (const date of _.difference(newDates, previousDates)) {
+        tutorial.substitutes.set(date.toDateString(), substitute.id);
+      }
+    } else {
+      for (const date of newDates) {
+        tutorial.substitutes.delete(date.toDateString());
+      }
     }
 
     return this.getTutorialOrReject(await tutorial.save());

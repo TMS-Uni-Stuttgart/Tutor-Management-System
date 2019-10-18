@@ -229,7 +229,7 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
             name='correctors'
             label='Korrektoren'
             emptyPlaceholder='Keine Korrektoren vorhanden.'
-            items={tutors.filter(tutor => tutor.roles.indexOf(Role.CORRECTOR) > -1)}
+            items={tutors}
             {...userConverterFunctions}
             multiple
             isItemSelected={tutor => values['correctors'].indexOf(tutor.id) > -1}

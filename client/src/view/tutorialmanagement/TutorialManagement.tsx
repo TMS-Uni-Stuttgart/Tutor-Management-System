@@ -3,6 +3,7 @@ import { compareAsc } from 'date-fns';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { HasId } from 'shared/dist/model/Common';
+import { Role } from 'shared/dist/model/Role';
 import { TutorialDTO } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
 import TutorialForm, {
@@ -15,7 +16,7 @@ import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { TutorialWithFetchedCorrectors } from '../../typings/types';
-import { getNameOfEntity, getDisplayStringForTutorial } from '../../util/helperFunctions';
+import { getDisplayStringForTutorial, getNameOfEntity } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,7 +59,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
   const [tutorials, setTutorials] = useState<TutorialWithFetchedCorrectors[]>([]);
   const [tutors, setTutors] = useState<User[]>([]);
   const {
-    getUsers,
+    getUsersWithRole,
     getAllTutorialsAndFetchCorrectors,
     createTutorialAndFetchCorrectors,
     editTutorialAndFetchCorrectors: editTutorialRequest,
@@ -69,7 +70,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
   useEffect(() => {
     setIsLoading(true);
     Promise.all([
-      getUsers().catch(reason => {
+      getUsersWithRole(Role.TUTOR).catch(reason => {
         console.error(reason);
         enqueueSnackbar('Nutzer konnten nicht abgerufen werden.', { variant: 'error' });
       }),
@@ -88,7 +89,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
 
       setIsLoading(false);
     });
-  }, [enqueueSnackbar, getUsers, getAllTutorialsAndFetchCorrectors]);
+  }, [enqueueSnackbar, getUsersWithRole, getAllTutorialsAndFetchCorrectors]);
 
   const handleCreateTutorial: TutorialFormSubmitCallback = async (
     values,
