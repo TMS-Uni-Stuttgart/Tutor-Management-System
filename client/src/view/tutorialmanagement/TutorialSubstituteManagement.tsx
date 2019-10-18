@@ -134,8 +134,6 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
       return;
     }
 
-    // TODO: Does not work if tutor was set previously and gets set to '""' (or falsy value in general).
-    //       To solve this problem the editor state propably has to be done in a different way - if not the whole SubstituteDTO part in a way that it allows the tutor property to be 'undefined'.
     const datesOfSubstitutes: { [tutor: string]: string[] } = {};
     const datesWithoutSubstitute: any[] = [];
 
@@ -218,9 +216,9 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                         name={`substitutes.${selectedDate.toDateString()}`}
                         label='Ersatztutor'
                         emptyPlaceholder='Keine Tutoren vorhanden.'
-                        hasNoneItem
+                        nameOfNoneItem='Keine Vertretung'
                         items={tutors}
-                        itemToString={getNameOfEntity}
+                        itemToString={tutor => getNameOfEntity(tutor, { lastNameFirst: true })}
                         itemToValue={t => t.id}
                       />
                     </>
