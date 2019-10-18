@@ -38,7 +38,7 @@ export interface CustomSelectProps<T>
   name?: string;
   label: string;
   emptyPlaceholder: string;
-  hasNoneItem?: boolean;
+  nameOfNoneItem?: string;
   helperText?: React.ReactNode;
   items: T[];
   itemToString: ItemToString<T>;
@@ -91,7 +91,7 @@ function CustomSelect<T>({
   items: itemsFromProps,
   itemToString,
   itemToValue,
-  hasNoneItem,
+  nameOfNoneItem,
   isItemSelected,
   multiple,
   FormControlProps,
@@ -104,9 +104,9 @@ function CustomSelect<T>({
     );
   }
 
-  if (multiple && hasNoneItem) {
+  if (multiple && !!nameOfNoneItem) {
     throw new Error(
-      `[CustomSelect] -- You have set the Select '${name}' to allow multiple selections and you also set 'hasNoneItem' to true. This combination of properties is not supported because 'multiple = true' Selects already support deselecting a selection.`
+      `[CustomSelect] -- You have set the Select '${name}' to allow multiple selections and you also provided 'nameOfNoneItem'. This combination of properties is not supported because 'multiple = true' Selects do not need an extra 'none item'.`
     );
   }
 
@@ -116,7 +116,9 @@ function CustomSelect<T>({
   const inputLabel = useRef<HTMLLabelElement>(null);
   const [labelWidth, setLabelWidth] = useState(0);
 
-  const items: (T | EmptyItem)[] = hasNoneItem ? [NONE_ITEM, ...itemsFromProps] : itemsFromProps;
+  const items: (T | EmptyItem)[] = !!nameOfNoneItem
+    ? [NONE_ITEM, ...itemsFromProps]
+    : itemsFromProps;
 
   useEffect(() => {
     const label = inputLabel.current;
@@ -152,7 +154,7 @@ function CustomSelect<T>({
           if (item instanceof EmptyItem) {
             return (
               <MenuItem key={NONE_ITEM.id} value={''}>
-                {NONE_ITEM.name}
+                <i>{nameOfNoneItem}</i>
               </MenuItem>
             );
           }
