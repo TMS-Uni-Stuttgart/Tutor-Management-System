@@ -18,7 +18,7 @@ const TutorialDTOSchema = Yup.object().shape<TutorialDTO>({
 });
 
 const SubstituteDTOSchema = Yup.object().shape<SubstituteDTO>({
-  tutorId: Yup.string().required(),
+  tutorId: Yup.string().notRequired(),
   dates: Yup.array<string>().required(),
 });
 
