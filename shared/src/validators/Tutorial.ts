@@ -22,7 +22,17 @@ const SubstituteDTOSchema = Yup.object().shape<SubstituteDTO>({
   dates: Yup.array<string>().required(),
 });
 
-export const TutorialIdListSchema = Yup.array().of(YupIdShape);
+export const TutorialIdListSchema = Yup.array()
+  .of(YupIdShape)
+  .test({
+    test: function(this, value) {
+      if (value === undefined || value === null) {
+        return new Yup.ValidationError('Value is required', value, this.path);
+      }
+
+      return true;
+    },
+  });
 
 export function validateAgainstTutorialDTO(
   obj: any

@@ -158,20 +158,8 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
 
   function handleExerciseDelete(idx: number, arrayHelpers: FieldArrayRenderProps) {
     return () => {
-      // FIXME: Adjust so it'll still works with new sub-exercise prop 'exName'.
       const exercises: readonly ExerciseFormExercise[] = arrayHelpers.form.values[name];
-      // const removedExercise: Exercise = exercises[idx];
       const updatedExercises = [...exercises.slice(0, idx), ...exercises.slice(idx + 1)];
-      // .map(ex => {
-      //   if (ex.exNo > removedExercise.exNo) {
-      //     return {
-      //       ...ex,
-      //       exNo: ex.exNo - 1,
-      //     };
-      //   }
-
-      //   return ex;
-      // });
 
       arrayHelpers.form.setFieldValue(name, updatedExercises);
     };

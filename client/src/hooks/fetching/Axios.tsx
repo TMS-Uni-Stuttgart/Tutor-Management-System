@@ -22,8 +22,6 @@ function createBaseURL() {
 
 function validateStatus(status: number): boolean {
   if (status === 401) {
-    console.log('SESSION TIMED OUT!');
-
     showDialogOutsideContext({
       title: 'Erneut anmelden',
       content: <RelogForm />,

@@ -87,15 +87,11 @@ function getValidationSchema(
     roles: Yup.array()
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
+    username: Yup.string().required('Benötigt'),
     password: passwordValidationSchema,
   };
 
-  if (!isEditMode) {
-    validationShape = {
-      ...validationShape,
-      username: Yup.string().required('Benötigt'),
-    };
-  } else {
+  if (isEditMode) {
     validationShape = {
       ...validationShape,
       password: passwordValidationSchema.notRequired(),
@@ -194,7 +190,6 @@ function UserForm({
             name='username'
             label='Benutzername'
             required
-            disabled={isEditMode}
             buttons={[
               {
                 key: 'generateUsername',
