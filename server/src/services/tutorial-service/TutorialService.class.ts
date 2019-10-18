@@ -226,13 +226,17 @@ class TutorialService {
       }
     }
 
-    for (const date of _.difference(previousDates, newDates)) {
-      tutorial.substitutes.delete(date.toDateString());
-    }
-
     if (substitute) {
+      for (const date of _.difference(previousDates, newDates)) {
+        tutorial.substitutes.delete(date.toDateString());
+      }
+
       for (const date of _.difference(newDates, previousDates)) {
         tutorial.substitutes.set(date.toDateString(), substitute.id);
+      }
+    } else {
+      for (const date of newDates) {
+        tutorial.substitutes.delete(date.toDateString());
       }
     }
 
