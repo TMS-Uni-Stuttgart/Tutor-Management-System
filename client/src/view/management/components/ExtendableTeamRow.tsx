@@ -136,7 +136,6 @@ function ExtendableTeamRow({ team, className, onClick, ...rest }: Props): JSX.El
             <KeyboardArrowDownIcon />
           </IconButton>
 
-          {/* TODO: Fill me with listeners */}
           <ListItemMenu />
         </TableCell>
       </TableRow>
