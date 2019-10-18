@@ -38,12 +38,17 @@ export interface CustomSelectProps<T>
   name?: string;
   label: string;
   emptyPlaceholder: string;
+  hasNoneItem?: boolean;
   helperText?: React.ReactNode;
   items: T[];
   itemToString: ItemToString<T>;
   itemToValue: ItemToString<T>;
   isItemSelected?: (item: T) => boolean;
   FormControlProps?: Omit<FormControlProps, 'variant' | 'className'>;
+}
+
+class EmptyItem {
+  constructor(readonly id: string, readonly name: string) {}
 }
 
 function renderValue<T>(
@@ -83,9 +88,10 @@ function CustomSelect<T>({
   error,
   className,
   onChange,
-  items,
+  items: itemsFromProps,
   itemToString,
   itemToValue,
+  hasNoneItem,
   isItemSelected,
   multiple,
   FormControlProps,
@@ -94,13 +100,23 @@ function CustomSelect<T>({
 }: CustomSelectProps<T>): JSX.Element {
   if (multiple && !isItemSelected) {
     console.error(
-      `[CustomSelect] -- You have set the dropdown box '${name}' to allow multiple selections but you have not passed an isItemSelected function via props. Therefore Checkboxes won't be shown for the items.`
+      `[CustomSelect] -- You have set the Select '${name}' to allow multiple selections but you have not passed an isItemSelected function via props. Therefore Checkboxes won't be shown for the items.`
     );
   }
+
+  if (multiple && hasNoneItem) {
+    throw new Error(
+      `[CustomSelect] -- You have set the Select '${name}' to allow multiple selections and you also set 'hasNoneItem' to true. This combination of properties is not supported because 'multiple = true' Selects already support deselecting a selection.`
+    );
+  }
+
+  const NONE_ITEM = new EmptyItem('NONE', 'NONE_NAME');
 
   const classes = useStyles();
   const inputLabel = useRef<HTMLLabelElement>(null);
   const [labelWidth, setLabelWidth] = useState(0);
+
+  const items: (T | EmptyItem)[] = hasNoneItem ? [NONE_ITEM, ...itemsFromProps] : itemsFromProps;
 
   useEffect(() => {
     const label = inputLabel.current;
@@ -118,7 +134,14 @@ function CustomSelect<T>({
         input={<OutlinedInput labelWidth={labelWidth} />}
         multiple={multiple}
         renderValue={
-          multiple ? renderValue(items, itemToString, itemToValue, classes.chip) : undefined
+          multiple
+            ? renderValue(
+                items.filter(i => !(i instanceof EmptyItem)) as T[],
+                itemToString,
+                itemToValue,
+                classes.chip
+              )
+            : undefined
         }
         classes={{
           ...classesFromProps,
@@ -126,6 +149,14 @@ function CustomSelect<T>({
         }}
       >
         {items.map(item => {
+          if (item instanceof EmptyItem) {
+            return (
+              <MenuItem key={NONE_ITEM.id} value={''}>
+                {NONE_ITEM.name}
+              </MenuItem>
+            );
+          }
+
           const itemString: string = itemToString(item);
           const itemValue: string = itemToValue(item);
 
