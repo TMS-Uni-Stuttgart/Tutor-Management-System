@@ -1,9 +1,9 @@
-import React from 'react';
+import { CircularProgress, Modal, Tooltip, Typography } from '@material-ui/core';
 import Button, { ButtonProps } from '@material-ui/core/Button';
-import { CircularProgress, Modal, Typography } from '@material-ui/core';
 import { CircularProgressProps } from '@material-ui/core/CircularProgress';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,6 +33,7 @@ interface Props extends Omit<ButtonProps, 'type'> {
   isSubmitting: boolean;
   CircularProgressProps?: CircularProgressProps;
   modalText?: string;
+  tooltipText?: string;
 }
 
 function SubmitButton({
@@ -41,25 +42,35 @@ function SubmitButton({
   children,
   disabled,
   modalText,
+  tooltipText,
   ...other
 }: Props): JSX.Element {
   const classes = useStyles();
+  const isDisabled = isSubmitting || disabled;
+
+  const ButtomComp = (
+    <Button {...other} type='submit' disabled={isDisabled}>
+      {isSubmitting && (
+        <CircularProgress
+          size={24}
+          {...CircularProgressProps}
+          className={clsx(
+            CircularProgressProps && CircularProgressProps.className,
+            classes.spinner
+          )}
+        />
+      )}
+
+      {children}
+    </Button>
+  );
   return (
     <>
-      <Button {...other} type='submit' disabled={isSubmitting || disabled}>
-        {isSubmitting && (
-          <CircularProgress
-            size={24}
-            {...CircularProgressProps}
-            className={clsx(
-              CircularProgressProps && CircularProgressProps.className,
-              classes.spinner
-            )}
-          />
-        )}
-
-        {children}
-      </Button>
+      {tooltipText && !isDisabled ? (
+        <Tooltip title={tooltipText}>{ButtomComp}</Tooltip>
+      ) : (
+        ButtomComp
+      )}
 
       <Modal open={!!modalText && isSubmitting} className={classes.modal}>
         <div className={classes.modalContent} tabIndex={-1}>
