@@ -7,9 +7,10 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 import CustomSelect from '../../components/CustomSelect';
 import { useAxios } from '../../hooks/FetchingService';
-import { getDisplayStringOfScheinExam, getNameOfEntity } from '../../util/helperFunctions';
+import { getDisplayStringOfScheinExam } from '../../util/helperFunctions';
 import PointsCard, {
   convertPointsCardFormStateToDTO,
   PointsSaveCallback,

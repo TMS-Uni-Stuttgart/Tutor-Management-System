@@ -4,26 +4,6 @@ import { PointMap } from 'shared/dist/model/Points';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
 
-interface EntityWithName {
-  lastname: string;
-  firstname: string;
-}
-
-interface NameOptions {
-  lastNameFirst: boolean;
-}
-
-export function getNameOfEntity(
-  entity: EntityWithName,
-  options: Partial<NameOptions> = {}
-): string {
-  if (options.lastNameFirst) {
-    return `${entity.lastname}, ${entity.firstname} `;
-  } else {
-    return `${entity.firstname} ${entity.lastname}`;
-  }
-}
-
 export function getDisplayStringForTutorial(tutorial: { slot: string }): string {
   return `Tutorium ${tutorial.slot.padStart(2, '0')}`;
 }

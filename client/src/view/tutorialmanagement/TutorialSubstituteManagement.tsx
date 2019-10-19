@@ -6,9 +6,11 @@ import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Role } from 'shared/dist/model/Role';
-import { Tutorial, SubstituteDTO } from 'shared/dist/model/Tutorial';
+import { SubstituteDTO, Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 import { renderLink } from '../../components/drawer/components/renderLink';
+import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 import FormikMultipleDatesPicker, {
   DateClickedHandler,
   getDateString,
@@ -17,13 +19,8 @@ import FormikSelect from '../../components/forms/components/FormikSelect';
 import SubmitButton from '../../components/forms/components/SubmitButton';
 import { useAxios } from '../../hooks/FetchingService';
 import { FormikSubmitCallback } from '../../types';
-import {
-  getDisplayStringForTutorial,
-  getNameOfEntity,
-  parseDateToMapKey,
-} from '../../util/helperFunctions';
+import { getDisplayStringForTutorial, parseDateToMapKey } from '../../util/helperFunctions';
 import { RoutingPath } from '../../util/RoutingPath';
-import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

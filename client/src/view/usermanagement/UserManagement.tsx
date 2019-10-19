@@ -5,15 +5,16 @@ import { MailingStatus } from 'shared/dist/model/Mail';
 import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 import SubmitButton from '../../components/forms/components/SubmitButton';
-import UserForm, { UserFormSubmitCallback, UserFormState } from '../../components/forms/UserForm';
+import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import SnackbarWithList from '../../components/SnackbarWithList';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { UserWithFetchedTutorials } from '../../typings/types';
-import { getNameOfEntity, saveBlob } from '../../util/helperFunctions';
+import { saveBlob } from '../../util/helperFunctions';
 import UserTableRow from './components/UserTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>

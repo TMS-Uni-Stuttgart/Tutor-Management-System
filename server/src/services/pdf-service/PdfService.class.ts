@@ -20,6 +20,7 @@ import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
 import { PointMap } from 'shared/dist/model/Points';
+import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
 
 interface StudentData {
   matriculationNo: string;
@@ -243,6 +244,7 @@ class PdfService {
     const students: Student[] = await Promise.all(
       tutorial.students.map(student => studentService.getStudentWithId(student))
     );
+    students.sort(sortByName);
     // const substitutePart = isSubstituteTutor(tutorial, userData)
     //   ? `, Ersatztutor: ${getNameOfEntity(userData)}`
     //   : '';
@@ -252,7 +254,9 @@ class PdfService {
     const rows: string = students
       .map(
         student =>
-          `<tr><td>${student.lastname}, ${student.firstname}</td><td width="50%"></td></tr>`
+          `<tr><td>${getNameOfEntity(student, {
+            lastNameFirst: true,
+          })}</td><td width="50%"></td></tr>`
       )
       .join('');
 

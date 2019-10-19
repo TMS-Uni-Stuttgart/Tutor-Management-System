@@ -1,5 +1,6 @@
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
+import { sortByName } from 'shared/dist/util/helpers';
 import { User, TutorInfo } from 'shared/dist/model/User';
 import {
   StudentByTutorialSlotSummaryMap,
@@ -184,7 +185,7 @@ export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
   const response = await axios.get<Student[]>(`tutorial/${id}/student`);
 
   if (response.status === 200) {
-    return response.data;
+    return response.data.sort(sortByName);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
