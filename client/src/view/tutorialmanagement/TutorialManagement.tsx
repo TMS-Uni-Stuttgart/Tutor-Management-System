@@ -6,6 +6,7 @@ import { HasId } from 'shared/dist/model/Common';
 import { Role } from 'shared/dist/model/Role';
 import { TutorialDTO } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 import TutorialForm, {
   getInitialTutorialFormValues,
   TutorialFormState,
@@ -16,7 +17,7 @@ import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { TutorialWithFetchedCorrectors } from '../../typings/types';
-import { getDisplayStringForTutorial, getNameOfEntity } from '../../util/helperFunctions';
+import { getDisplayStringForTutorial } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>

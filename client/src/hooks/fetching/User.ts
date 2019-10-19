@@ -6,7 +6,7 @@ import { Role } from 'shared/dist/model/Role';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { MailingStatus } from 'shared/dist/model/Mail';
 import { getTutorial } from './Tutorial';
-import { getNameOfEntity } from '../../util/helperFunctions';
+import { sortByName } from 'shared/dist/util/helpers';
 
 async function fetchTutorialsOfUser(user: User): Promise<UserWithFetchedTutorials> {
   const tutorials = await getTutorialsOfUser(user.id);
@@ -21,12 +21,7 @@ export async function getUsers(): Promise<User[]> {
   const response = await axios.get<User[]>('user');
 
   if (response.status === 200) {
-    return response.data.sort((a, b) => {
-      const nameOfA = getNameOfEntity(a, { lastNameFirst: true });
-      const nameOfB = getNameOfEntity(b, { lastNameFirst: true });
-
-      return nameOfA.localeCompare(nameOfB);
-    });
+    return response.data.sort(sortByName);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);

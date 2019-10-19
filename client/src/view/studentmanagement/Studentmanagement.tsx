@@ -6,13 +6,13 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { StudentDTO } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 import StudentForm, { StudentFormSubmitCallback } from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { StudentWithFetchedTeam } from '../../typings/types';
-import { getNameOfEntity } from '../../util/helperFunctions';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -69,13 +69,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       getScheinCriteriaSummariesOfAllStudentsOfTutorial(params.tutorialId).then(response =>
         setSummaries(response)
       );
-      setStudents(
-        studentsResponse.sort((a, b) =>
-          getNameOfEntity(a, { lastNameFirst: true }).localeCompare(
-            getNameOfEntity(b, { lastNameFirst: true })
-          )
-        )
-      );
+      setStudents(studentsResponse);
       setTeams(teams);
       setIsLoading(false);
     })();

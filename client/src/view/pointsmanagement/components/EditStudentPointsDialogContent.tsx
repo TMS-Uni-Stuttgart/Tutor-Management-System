@@ -5,9 +5,9 @@ import React from 'react';
 import { PointMap } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../types';
-import { getNameOfEntity } from '../../../util/helperFunctions';
 import PointsCard, {
   getInitialPointsCardValues,
   PointsCardFormState,
