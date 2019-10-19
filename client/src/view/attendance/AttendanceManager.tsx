@@ -1,4 +1,5 @@
 import { Typography } from '@material-ui/core';
+import GREEN from '@material-ui/core/colors/green';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { compareAsc, format } from 'date-fns';
 import { useSnackbar } from 'notistack';
@@ -35,8 +36,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: 64,
       textAlign: 'center',
     },
-    printButton: {
-      marginRight: theme.spacing(1),
+    allPresentButton: {
+      marginRight: theme.spacing(2),
+      backgroundColor: GREEN[600],
+      color: theme.palette.getContrastText(GREEN[600]),
     },
   })
 );
@@ -73,6 +76,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingPDF, setLoadingPDF] = useState(false);
+  const [isSettingPresent, setSettingsPresent] = useState(false);
 
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
@@ -178,7 +182,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
       const attendance: Attendance | undefined = student.attendance[parseDateToMapKey(date)];
       const attendanceDTO: AttendanceDTO = {
-        state: attendance.state,
+        state: attendance ? attendance.state : undefined,
         date: date.toDateString(),
         note,
       };
@@ -193,6 +197,29 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
         setSubmitting(false);
       }
     };
+  }
+
+  async function handleAllStudentPresent() {
+    if (!date) {
+      return;
+    }
+
+    setSettingsPresent(true);
+
+    const dateKey = parseDateToMapKey(date);
+    const promises: Promise<void>[] = [];
+
+    for (const student of students) {
+      const attendance: Attendance | undefined = student.attendance[dateKey];
+
+      if (!attendance || !attendance.state) {
+        promises.push(handleStudentAttendanceChange(student, AttendanceState.PRESENT));
+      }
+    }
+
+    await Promise.all(promises);
+
+    setSettingsPresent(false);
   }
 
   async function printAttendanceSheet() {
@@ -246,12 +273,25 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
             <SubmitButton
               variant='contained'
               color='primary'
+              isSubmitting={isSettingPresent}
+              className={classes.allPresentButton}
+              onClick={handleAllStudentPresent}
+              disabled={!tutorial || !date}
+              modalText='Ändere Anwesenheitsstatus...'
+              tooltipText='Setzt alle Studierenden, die noch keinen Status haben, auf anwesend.'
+            >
+              Alle anwesend
+            </SubmitButton>
+
+            <SubmitButton
+              variant='contained'
+              color='primary'
               isSubmitting={isLoadingPDF}
-              className={classes.printButton}
               onClick={printAttendanceSheet}
               disabled={!tutorial || !date || !tutorInfo}
+              tooltipText='Erstellt eine Unterschriftenliste für den ausgewählten Tag.'
             >
-              Unterschriftenliste ausdrucken
+              Unterschriftenliste erstellen
             </SubmitButton>
           </div>
 
