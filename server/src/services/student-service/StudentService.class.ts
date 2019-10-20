@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
-import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
+import { PresentationPointsDTO, Student, StudentDTO, CakeCountDTO } from 'shared/dist/model/Student';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import {
@@ -42,6 +42,7 @@ class StudentService {
       team: undefined,
       points: {},
       scheinExamResults: {},
+      cakeCount: 0,
     };
     const createdStudent = await StudentModel.create(studentData);
 
@@ -79,6 +80,7 @@ class StudentService {
       team: student.team,
       points: student.points,
       scheinExamResults: student.scheinExamResults,
+      cakeCount: student.cakeCount,
     };
 
     // Encrypt the student manually due to the encryption library not supporting 'updateOne()'.
@@ -172,6 +174,14 @@ class StudentService {
     await student.save();
   }
 
+  public async setCakeCount(studentId: string, cakeDTO: CakeCountDTO) {
+    const student = await this.getDocumentWithId(studentId);
+
+    student.cakeCount = cakeDTO.cakeCount;
+
+    await student.save();
+  }
+
   public async getStudentWithId(id: string): Promise<Student> {
     const student: StudentDocument | null = await this.getDocumentWithId(id);
 
@@ -208,6 +218,7 @@ class StudentService {
       attendance,
       presentationPoints,
       scheinExamResults,
+      cakeCount,
     } = student;
 
     const parsedAttendances: Student['attendance'] = {};
@@ -235,6 +246,7 @@ class StudentService {
         ? presentationPoints.toObject({ flattenMaps: true })
         : {},
       scheinExamResults: scheinExamResults,
+      cakeCount,
     };
   }
 
