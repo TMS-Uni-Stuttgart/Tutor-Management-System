@@ -6,8 +6,12 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { StudentDTO } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
-import StudentForm, { StudentFormSubmitCallback } from '../../components/forms/StudentForm';
+import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
+import StudentForm, {
+  CREATE_NEW_TEAM_VALUE,
+  StudentFormSubmitCallback,
+  getInitialStudentFormState,
+} from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
@@ -43,30 +47,35 @@ type PropType = WithSnackbarProps & RouteComponentProps<Params>;
 
 function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.Element {
   const classes = useStyles();
+
   const [isLoading, setIsLoading] = useState(false);
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [summaries, setSummaries] = useState<{ [studentId: string]: ScheinCriteriaSummary }>({});
+
+  const dialog = useDialog();
   const {
     getTeamsOfTutorial,
     getStudentsOfTutorialAndFetchTeams,
     createStudentAndFetchTeam,
+    createTeam,
     editStudentAndFetchTeam: editStudentRequest,
     deleteStudent: deleteStudentRequest,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
   } = useAxios();
-  const dialog = useDialog();
+
+  const tutorialId: string = params.tutorialId;
 
   useEffect(() => {
     setIsLoading(true);
 
     (async function() {
       const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorialAndFetchTeams(params.tutorialId),
-        getTeamsOfTutorial(params.tutorialId),
+        getStudentsOfTutorialAndFetchTeams(tutorialId),
+        getTeamsOfTutorial(tutorialId),
       ]);
 
-      getScheinCriteriaSummariesOfAllStudentsOfTutorial(params.tutorialId).then(response =>
+      getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId).then(response =>
         setSummaries(response)
       );
       setStudents(studentsResponse);
@@ -77,8 +86,17 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     getStudentsOfTutorialAndFetchTeams,
     getTeamsOfTutorial,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-    params.tutorialId,
+    tutorialId,
   ]);
+
+  async function createTeamIfNeccessary(team: string | undefined): Promise<string | undefined> {
+    if (team === CREATE_NEW_TEAM_VALUE) {
+      const createdTeam = await createTeam(tutorialId, { students: [] });
+      return createdTeam.id;
+    } else {
+      return team;
+    }
+  }
 
   const handleCreateStudent: StudentFormSubmitCallback = async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team },
@@ -93,6 +111,8 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       return;
     }
 
+    const teamId = await createTeamIfNeccessary(team);
+
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
@@ -100,17 +120,17 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
-      team: !team ? undefined : team,
+      team: teamId || undefined,
     };
 
     try {
       const response = await createStudentAndFetchTeam(studentDTO);
-      setStudents(
-        [...students, response].sort((a, b) =>
-          `${a.lastname}, ${a.firstname}`.localeCompare(`${b.lastname}, ${b.firstname}`)
-        )
-      );
-      resetForm();
+      const teams = await getTeamsOfTutorial(tutorialId);
+
+      setStudents([...students, response].sort(sortByName));
+      setTeams(teams);
+
+      resetForm({ values: getInitialStudentFormState(teams) });
       enqueueSnackbar('Student wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
       console.error(reason);
@@ -135,6 +155,8 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       return;
     }
 
+    const teamId = await createTeamIfNeccessary(team);
+
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
@@ -142,11 +164,13 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
-      team: !team ? undefined : team,
+      team: !teamId ? undefined : teamId,
     };
 
     try {
       const response = await editStudentRequest(student.id, studentDTO);
+      const teams = await getTeamsOfTutorial(tutorialId);
+
       setStudents(
         students.map(stud => {
           if (stud.id === student.id) {
@@ -156,6 +180,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
           return stud;
         })
       );
+      setTeams(teams);
 
       enqueueSnackbar('Student wurde erfolgreich gespeichert.', { variant: 'success' });
       dialog.hide();
@@ -202,13 +227,20 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     });
   }
 
-  function deleteStudent(student: StudentWithFetchedTeam) {
-    deleteStudentRequest(student.id)
-      .then(() => {
-        setStudents(students.filter(u => u.id !== student.id));
-        enqueueSnackbar('Student wurde erfolgreich gelöscht.', { variant: 'success' });
-      })
-      .finally(() => dialog.hide());
+  async function deleteStudent(student: StudentWithFetchedTeam) {
+    try {
+      await deleteStudentRequest(student.id);
+      const teams = await getTeamsOfTutorial(tutorialId);
+
+      setStudents(students.filter(u => u.id !== student.id));
+      setTeams(teams);
+
+      enqueueSnackbar('Student/in wurde erfolgreich gelöscht.', { variant: 'success' });
+    } catch {
+      enqueueSnackbar('Student/in konnte nicht gelöscht werden.', { variant: 'error' });
+    } finally {
+      dialog.hide();
+    }
   }
 
   return (

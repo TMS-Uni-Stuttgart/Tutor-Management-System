@@ -1,6 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { FormikHelpers } from 'formik';
 import { AlertOutline as AlertIcon } from 'mdi-material-ui';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Team } from 'shared/dist/model/Team';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
@@ -41,10 +42,10 @@ export type StudentFormSubmitCallback = FormikSubmitCallback<StudentFormState>;
 interface StudentFormState {
   lastname: string;
   firstname: string;
-  matriculationNo: string; // TODO: Change me to 'string' -- this will prevent lots of errors!
+  matriculationNo: string;
   email: string;
   courseOfStudies: string;
-  team: string;
+  team?: string;
 }
 
 interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsedFormProps> {
@@ -54,7 +55,30 @@ interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsed
   disableTeamDropdown?: boolean;
 }
 
-function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState {
+export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
+type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
+
+function getMaxTeamSize() {
+  // TODO: Replace with settings after settings are implemented.
+  return 2;
+}
+
+function getNextTeamWithSlot(teams: Team[]): string {
+  const maxTeamSize = getMaxTeamSize();
+
+  for (const team of teams) {
+    if (team.students.length < maxTeamSize) {
+      return team.id;
+    }
+  }
+
+  return CREATE_NEW_TEAM_VALUE;
+}
+
+export function getInitialStudentFormState(
+  teams: Team[],
+  student?: StudentWithFetchedTeam
+): StudentFormState {
   if (student) {
     return {
       lastname: student.lastname,
@@ -72,12 +96,32 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
     matriculationNo: '',
     email: '',
     courseOfStudies: '',
-    team: '',
+    team: getNextTeamWithSlot(teams),
   };
 }
 
+function teamItemToString(team: ItemType): string {
+  if ('type' in team) {
+    return 'Neues Team erstellen';
+  }
+
+  const studentsInTeam = team.students.length
+    ? `(${team.students.map(student => student.lastname).join(', ')})`
+    : '';
+
+  return `#${team.teamNo.toString().padStart(2, '0')} ${studentsInTeam}`;
+}
+
+function teamItemToValue(team: ItemType): string {
+  if ('type' in team) {
+    return CREATE_NEW_TEAM_VALUE;
+  }
+
+  return team.id;
+}
+
 function StudentForm({
-  teams,
+  teams: teamsFromProps,
   onSubmit,
   className,
   student,
@@ -85,18 +129,33 @@ function StudentForm({
   ...other
 }: Props): JSX.Element {
   const classes = useStyles();
-  const initialFormState = getInitialFormState(student);
+  const firstnameInputRef = useRef<HTMLElement>();
+  const initialFormState = getInitialStudentFormState(teamsFromProps, student);
+
+  const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...teamsFromProps];
+
+  async function handleSubmit(
+    values: StudentFormState,
+    formikHelpers: FormikHelpers<StudentFormState>
+  ) {
+    // onSubmit might be a promise so we wrap it here with the promise library. This handles Promises and non-Promises alike.
+    await Promise.resolve(onSubmit(values, formikHelpers));
+
+    if (firstnameInputRef.current) {
+      firstnameInputRef.current.focus();
+    }
+  }
 
   return (
     <FormikBaseForm
       {...other}
       initialValues={initialFormState}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       {({ values }) => (
         <>
-          <FormikTextField name='firstname' label='Vorname' required />
+          <FormikTextField name='firstname' label='Vorname' inputRef={firstnameInputRef} required />
 
           <FormikTextField name='lastname' label='Nachname' required />
 
@@ -142,15 +201,10 @@ function StudentForm({
             name='team'
             label='Team'
             emptyPlaceholder='Keine Teams vorhanden.'
+            nameOfNoneItem='Kein Team'
             items={teams}
-            itemToString={team =>
-              `#${team.teamNo.toString().padStart(2, '0')} ${
-                team.students.length
-                  ? `(${team.students.map(student => student.lastname).join(', ')})`
-                  : ''
-              }`
-            }
-            itemToValue={team => team.id}
+            itemToString={teamItemToString}
+            itemToValue={teamItemToValue}
             disabled={disableTeamDropdown}
           />
         </>
