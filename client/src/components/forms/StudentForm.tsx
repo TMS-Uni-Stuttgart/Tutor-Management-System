@@ -1,6 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { FormikHelpers } from 'formik';
 import { AlertOutline as AlertIcon } from 'mdi-material-ui';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Team } from 'shared/dist/model/Team';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
@@ -54,10 +55,30 @@ interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsed
   disableTeamDropdown?: boolean;
 }
 
-export const CREATE_NEW_TEAM_ID = 'CREATE_NEW_TEAM_ACTION';
-type ItemType = Team | { type: typeof CREATE_NEW_TEAM_ID };
+export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
+type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
 
-function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState {
+function getMaxTeamSize() {
+  // TODO: Replace with settings after settings are implemented.
+  return 2;
+}
+
+function getNextTeamWithSlot(teams: Team[]): string {
+  const maxTeamSize = getMaxTeamSize();
+
+  for (const team of teams) {
+    if (team.students.length < maxTeamSize) {
+      return team.id;
+    }
+  }
+
+  return CREATE_NEW_TEAM_VALUE;
+}
+
+export function getInitialStudentFormState(
+  teams: Team[],
+  student?: StudentWithFetchedTeam
+): StudentFormState {
   if (student) {
     return {
       lastname: student.lastname,
@@ -75,7 +96,7 @@ function getInitialFormState(student?: StudentWithFetchedTeam): StudentFormState
     matriculationNo: '',
     email: '',
     courseOfStudies: '',
-    team: '',
+    team: getNextTeamWithSlot(teams),
   };
 }
 
@@ -93,7 +114,7 @@ function teamItemToString(team: ItemType): string {
 
 function teamItemToValue(team: ItemType): string {
   if ('type' in team) {
-    return CREATE_NEW_TEAM_ID;
+    return CREATE_NEW_TEAM_VALUE;
   }
 
   return team.id;
@@ -108,9 +129,10 @@ function StudentForm({
   ...other
 }: Props): JSX.Element {
   const classes = useStyles();
-  const initialFormState = getInitialFormState(student);
+  const initialFormState = getInitialStudentFormState(teamsFromProps, student);
 
-  const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_ID }, ...teamsFromProps];
+  const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...teamsFromProps];
+
 
   return (
     <FormikBaseForm

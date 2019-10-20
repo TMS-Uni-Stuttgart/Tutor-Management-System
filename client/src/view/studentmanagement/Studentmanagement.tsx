@@ -8,8 +8,9 @@ import { StudentDTO } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
 import StudentForm, {
-  CREATE_NEW_TEAM_ID,
+  CREATE_NEW_TEAM_VALUE,
   StudentFormSubmitCallback,
+  getInitialStudentFormState,
 } from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
@@ -89,7 +90,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
   ]);
 
   async function createTeamIfNeccessary(team: string | undefined): Promise<string | undefined> {
-    if (team === CREATE_NEW_TEAM_ID) {
+    if (team === CREATE_NEW_TEAM_VALUE) {
       const createdTeam = await createTeam(tutorialId, { students: [] });
       return createdTeam.id;
     } else {
@@ -129,7 +130,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       setStudents([...students, response].sort(sortByName));
       setTeams(teams);
 
-      resetForm();
+      resetForm({ values: getInitialStudentFormState(teams) });
       enqueueSnackbar('Student wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
       console.error(reason);
@@ -168,6 +169,8 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
 
     try {
       const response = await editStudentRequest(student.id, studentDTO);
+      const teams = await getTeamsOfTutorial(tutorialId);
+
       setStudents(
         students.map(stud => {
           if (stud.id === student.id) {
@@ -177,6 +180,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
           return stud;
         })
       );
+      setTeams(teams);
 
       enqueueSnackbar('Student wurde erfolgreich gespeichert.', { variant: 'success' });
       dialog.hide();
@@ -223,13 +227,20 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     });
   }
 
-  function deleteStudent(student: StudentWithFetchedTeam) {
-    deleteStudentRequest(student.id)
-      .then(() => {
-        setStudents(students.filter(u => u.id !== student.id));
-        enqueueSnackbar('Student wurde erfolgreich gelöscht.', { variant: 'success' });
-      })
-      .finally(() => dialog.hide());
+  async function deleteStudent(student: StudentWithFetchedTeam) {
+    try {
+      await deleteStudentRequest(student.id);
+      const teams = await getTeamsOfTutorial(tutorialId);
+
+      setStudents(students.filter(u => u.id !== student.id));
+      setTeams(teams);
+
+      enqueueSnackbar('Student/in wurde erfolgreich gelöscht.', { variant: 'success' });
+    } catch {
+      enqueueSnackbar('Student/in konnte nicht gelöscht werden.', { variant: 'error' });
+    } finally {
+      dialog.hide();
+    }
   }
 
   return (
