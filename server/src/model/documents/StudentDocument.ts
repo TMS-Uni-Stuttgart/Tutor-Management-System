@@ -63,6 +63,9 @@ export class StudentSchema extends Typegoose
   @prop({ default: {} })
   scheinExamResults!: PointMapDTO;
 
+  @prop({ default: 0 })
+  cakeCount!: number;
+
   @instanceMethod
   async getTeam(): Promise<TeamDocument> {
     if (!this.team) {

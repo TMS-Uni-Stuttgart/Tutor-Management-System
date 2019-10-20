@@ -12,6 +12,7 @@ export interface Student extends NamedElement {
   scheinExamResults: PointMapDTO;
   team?: string;
   tutorial: string;
+  cakeCount: number;
 }
 
 export interface StudentDTO {
@@ -27,4 +28,8 @@ export interface StudentDTO {
 export interface PresentationPointsDTO {
   points: number;
   sheetId: string;
+}
+
+export interface CakeCountDTO {
+  cakeCount: number;
 }
