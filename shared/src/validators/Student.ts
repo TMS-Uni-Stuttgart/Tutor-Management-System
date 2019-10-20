@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { ValidationErrorsWrapper } from '../model/errors/Errors';
 import { validateSchema, YupIdShape } from './helper';
-import { StudentDTO, PresentationPointsDTO } from '../model/Student';
+import { StudentDTO, PresentationPointsDTO, CakeCountDTO } from '../model/Student';
 
 const StudentDTOSchema = Yup.object().shape<StudentDTO>({
   courseOfStudies: Yup.string(),
@@ -15,9 +15,15 @@ const StudentDTOSchema = Yup.object().shape<StudentDTO>({
 
 const PresentationPointsDTOSchema = Yup.object().shape<PresentationPointsDTO>({
   points: Yup.number()
+    .required()
+    .min(0),
+  sheetId: Yup.string().required(),
+});
+
+const CakeCountDTOSchema = Yup.object().shape<CakeCountDTO>({
+  cakeCount: Yup.number()
     .min(0)
     .required(),
-  sheetId: Yup.string().required(),
 });
 
 export function validateAgainstStudentDTO(
@@ -30,4 +36,10 @@ export function validateAgainstPresentationPointsDTO(
   obj: any
 ): Yup.Shape<object, PresentationPointsDTO> | ValidationErrorsWrapper {
   return validateSchema(PresentationPointsDTOSchema, obj);
+}
+
+export function validateAgainstCakeCountDTO(
+  obj: any
+): Yup.Shape<object, CakeCountDTO> | ValidationErrorsWrapper {
+  return validateSchema(CakeCountDTOSchema, obj);
 }

@@ -26,6 +26,7 @@ import PaperTableRow from '../../../components/PaperTableRow';
 import { useLogin } from '../../../hooks/LoginService';
 import { FormikSubmitCallback } from '../../../types';
 import { StudentWithFetchedTeam } from '../../../typings/types';
+import CakeCount from './CakeCount';
 
 const ATTENDANCE_COLORS: { [K in keyof typeof AttendanceState]: string } = {
   [AttendanceState.PRESENT]: GREEN[600],
@@ -107,6 +108,9 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) =>
     popperButton: {
       marginLeft: theme.spacing(1),
     },
+    cakeIcon: {
+      marginLeft: theme.spacing(0.5),
+    },
   })
 );
 
@@ -125,6 +129,7 @@ interface Props {
   attendance: Attendance | undefined;
   onAttendanceSelection: (state?: AttendanceState) => void;
   onNoteSave: NoteFormCallback;
+  onCakeCountChanged?: (cakeCount: number) => void;
 }
 
 interface AttendanceButtonProps extends Omit<ButtonProps, 'variant' | 'color'> {
@@ -157,6 +162,7 @@ function StudentAttendanceRow({
   attendance,
   onAttendanceSelection,
   onNoteSave,
+  onCakeCountChanged,
   ...rest
 }: Props): JSX.Element {
   const attendanceState: AttendanceState | undefined = attendance ? attendance.state : undefined;
@@ -200,6 +206,12 @@ function StudentAttendanceRow({
       colorOfBottomBar={attendanceState ? ATTENDANCE_COLORS[attendanceState] : undefined}
     >
       {/* {attendanceState && <td className={classes.underline} />} */}
+
+      {onCakeCountChanged && (
+        <TableCell>
+          <CakeCount cakeCount={student.cakeCount} onCakeCountChanged={onCakeCountChanged} />
+        </TableCell>
+      )}
 
       <TableCell className={classes.noteTableCell}>
         {/* TODO: Add Tooltip (to show longer texts!) */}

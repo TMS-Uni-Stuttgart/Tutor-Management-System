@@ -5,6 +5,7 @@ import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { validateAgainstAttendanceDTO } from 'shared/dist/validators/Attendance';
 import { validateAgainstUpdatePointsDTO } from 'shared/dist/validators/Sheet';
+import { validateAgainstCakeCountDTO } from 'shared/dist/validators/Student';
 import {
   validateAgainstPresentationPointsDTO,
   validateAgainstStudentDTO,
@@ -141,6 +142,24 @@ studentRouter.put(
     const dto = req.body;
 
     await studentService.setPresentationPoints(id, dto);
+
+    res.status(204).send();
+  }
+);
+
+studentRouter.put(
+  '/:id/cakecount',
+  ...checkAccess(
+    hasUserOneOfRoles(Role.ADMIN),
+    isUserTutorOfStudent,
+    isUserSubstituteTutorOfStudent
+  ),
+  validateRequestBody(validateAgainstCakeCountDTO, 'Not a valid CakeCountDTO.'),
+  async (req, res) => {
+    const id = req.params.id;
+    const dto = req.body;
+
+    await studentService.setCakeCount(id, dto);
 
     res.status(204).send();
   }

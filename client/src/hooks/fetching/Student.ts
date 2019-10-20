@@ -1,7 +1,12 @@
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { UpdatePointsDTO } from 'shared/dist/model/Points';
-import { PresentationPointsDTO, Student, StudentDTO } from 'shared/dist/model/Student';
+import {
+  PresentationPointsDTO,
+  Student,
+  StudentDTO,
+  CakeCountDTO,
+} from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import axios from './Axios';
@@ -115,6 +120,14 @@ export async function setPresentationPointsOfStudent(
 
 export async function setExamPointsOfStudent(studentId: string, points: UpdatePointsDTO) {
   const response = await axios.put(`student/${studentId}/examresult`, points);
+
+  if (response.status !== 204) {
+    return Promise.reject(`Wrong response code (${response.status}).`);
+  }
+}
+
+export async function setCakeCountForStudent(studentId: string, cakeCountDTO: CakeCountDTO) {
+  const response = await axios.put(`student/${studentId}/cakecount`, cakeCountDTO);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong response code (${response.status}).`);
