@@ -93,13 +93,14 @@ class StudentService {
 
   public async deleteStudent(id: string): Promise<Student> {
     const student: StudentDocument = await this.getDocumentWithId(id);
+
+    if (student.team) {
+      await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: true });
+    }
+
     const tutorial: TutorialDocument = await tutorialService.getDocumentWithID(
       getIdOfDocumentRef(student.tutorial)
     );
-
-    if (student.team) {
-      await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
-    }
 
     tutorial.students = tutorial.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
     await tutorial.save();
