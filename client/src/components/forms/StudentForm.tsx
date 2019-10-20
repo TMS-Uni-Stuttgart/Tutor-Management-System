@@ -129,21 +129,33 @@ function StudentForm({
   ...other
 }: Props): JSX.Element {
   const classes = useStyles();
+  const firstnameInputRef = useRef<HTMLElement>();
   const initialFormState = getInitialStudentFormState(teamsFromProps, student);
 
   const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...teamsFromProps];
 
+  async function handleSubmit(
+    values: StudentFormState,
+    formikHelpers: FormikHelpers<StudentFormState>
+  ) {
+    // onSubmit might be a promise so we wrap it here with the promise library. This handles Promises and non-Promises alike.
+    await Promise.resolve(onSubmit(values, formikHelpers));
+
+    if (firstnameInputRef.current) {
+      firstnameInputRef.current.focus();
+    }
+  }
 
   return (
     <FormikBaseForm
       {...other}
       initialValues={initialFormState}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       {({ values }) => (
         <>
-          <FormikTextField name='firstname' label='Vorname' required />
+          <FormikTextField name='firstname' label='Vorname' inputRef={firstnameInputRef} required />
 
           <FormikTextField name='lastname' label='Nachname' required />
 
