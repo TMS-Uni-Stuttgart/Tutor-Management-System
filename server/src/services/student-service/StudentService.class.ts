@@ -3,7 +3,12 @@ import { Types } from 'mongoose';
 import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
-import { PresentationPointsDTO, Student, StudentDTO, CakeCountDTO } from 'shared/dist/model/Student';
+import {
+  PresentationPointsDTO,
+  Student,
+  StudentDTO,
+  CakeCountDTO,
+} from 'shared/dist/model/Student';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import {

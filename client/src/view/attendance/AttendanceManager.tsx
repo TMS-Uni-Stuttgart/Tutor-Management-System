@@ -90,6 +90,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const { enqueueSnackbar } = useSnackbar();
   const {
     setAttendanceOfStudent,
+    setCakeCountForStudent,
     getAllTutorialsAndFetchStudents,
     fetchTeamsOfStudents,
     getTutorInfoOfTutorial,
@@ -241,6 +242,28 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     }
   }
 
+  function handleCakeCountChange(student: StudentWithFetchedTeam) {
+    return async (cakeCount: number) => {
+      // TODO: Implement me!!!
+      try {
+        await setCakeCountForStudent(student.id, { cakeCount });
+
+        setStudents(students =>
+          students.map(s => {
+            if (s.id === student.id) {
+              s.cakeCount = cakeCount;
+            }
+
+            return s;
+          })
+        );
+        enqueueSnackbar('Anzahll Kuchen wurde aktualisiert.', { variant: 'success' });
+      } catch {
+        enqueueSnackbar('Anzahl Kuchen konnte nicht aktualisert werden.', { variant: 'error' });
+      }
+    };
+  }
+
   return (
     <div className={classes.root}>
       {isLoading ? (
@@ -309,6 +332,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
                     attendance={attendance}
                     onAttendanceSelection={state => handleStudentAttendanceChange(student, state)}
                     onNoteSave={handleStudentNoteChange(student)}
+                    onCakeCountChanged={handleCakeCountChange(student)}
                   />
                 );
               }}
