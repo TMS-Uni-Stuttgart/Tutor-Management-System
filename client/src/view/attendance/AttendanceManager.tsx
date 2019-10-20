@@ -244,7 +244,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
   function handleCakeCountChange(student: StudentWithFetchedTeam) {
     return async (cakeCount: number) => {
-      // TODO: Implement me!!!
       try {
         await setCakeCountForStudent(student.id, { cakeCount });
 
