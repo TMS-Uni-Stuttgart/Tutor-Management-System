@@ -9,6 +9,7 @@ import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,13 +26,20 @@ const validationSchema = Yup.object().shape({
   lastname: Yup.string().required('Benötigt'),
   firstname: Yup.string().required('Benötigt'),
   email: Yup.string().email('Keine gültige E-Mailadresse'),
-  matriculationNo: Yup.number().test({
-    test: function(this, matriculationNo: number | undefined) {
-      if (matriculationNo === undefined) {
+  matriculationNo: Yup.string().test({
+    test: function(this, matriculationNo: string | undefined) {
+      if (matriculationNo === undefined || matriculationNo === '') {
         return true;
       }
 
-      return matriculationNo.toString().length >= 6;
+      if (Number.isNaN(Number.parseInt(matriculationNo))) {
+        return this.createError({
+          path: 'matriculationNo',
+          message: 'Muss eine Zahl sein',
+        });
+      }
+
+      return matriculationNo.length >= 6;
     },
     message: 'Muss mind. 6 Stellen haben',
   }),
@@ -51,6 +59,7 @@ interface StudentFormState {
 interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsedFormProps> {
   onSubmit: StudentFormSubmitCallback;
   student?: StudentWithFetchedTeam;
+  students: StudentWithFetchedTeam[];
   teams: Team[];
   disableTeamDropdown?: boolean;
 }
@@ -125,6 +134,7 @@ function StudentForm({
   onSubmit,
   className,
   student,
+  students,
   disableTeamDropdown,
   ...other
 }: Props): JSX.Element {
@@ -163,6 +173,21 @@ function StudentForm({
             name='matriculationNo'
             label='Matrikelnummer'
             type='number'
+            FormikFieldProps={{
+              validate: (value: any) => {
+                if (!value) {
+                  return undefined;
+                }
+
+                for (const s of students) {
+                  if (s.matriculationNo && value === s.matriculationNo) {
+                    return `Matrikelnummer wird bereits von ${getNameOfEntity(s)} verwendet.`;
+                  }
+                }
+
+                return undefined;
+              },
+            }}
             inputProps={{
               min: 0,
             }}

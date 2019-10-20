@@ -1,5 +1,6 @@
 {
   "private": true,
+  "version": "1.5.0",
   "workspaces": [
     "client",
     "server",
@@ -20,12 +21,8 @@
     "ts:check:server": "echo Type checking server && cd ./server && yarn ts:check",
     "ts:check:shared": "echo Type checking shared && cd ./shared && yarn ts:check",
     "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/app",
-    "docker:build": "yarn docker:image:build && yarn docker:image:tar",
-    "docker:image:build": "docker build --tag=tutor-management-system:latest .",
-    "docker:image:tar": "docker save -o Tutor-Management-System.tar tutor-management-system:latest",
-    "docker:build:pre": "yarn docker:image:build:pre && yarn docker:image:tar:pre",
-    "docker:image:build:pre": "docker build --tag=tutor-management-system:pre .",
-    "docker:image:tar:pre": "docker save -o Tutor-Management-System_pre.tar tutor-management-system:pre",
+    "docker:build": "yarn version && ts-node ./build-docker-image.ts",
+    "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre",
     "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server && yarn upgrade-pgk:shared",
     "upgrade-pgk:client": "cd ./client && npm-upgrade",
     "upgrade-pgk:server": "cd ./server && npm-upgrade",

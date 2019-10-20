@@ -108,17 +108,8 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
 
   const editStudent: (student: StudentWithFetchedTeam) => StudentFormSubmitCallback = student => (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team },
-    { setSubmitting, setFieldError }
+    { setSubmitting }
   ) => {
-    const studentWithSameMatrNo: StudentWithFetchedTeam | undefined = students.find(
-      s => s.id !== student.id && s.matriculationNo === matriculationNo.toString()
-    );
-
-    if (studentWithSameMatrNo) {
-      setFieldError('matriculationNo', 'Matrikelnummer bereits verwendet.');
-      return;
-    }
-
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
@@ -178,12 +169,16 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       content: (
         <StudentForm
           student={student}
+          students={students}
           teams={student.team ? [student.team] : []}
           onSubmit={editStudent(student)}
           onCancelClicked={() => dialog.hide()}
           disableTeamDropdown={true}
         />
       ),
+      DialogProps: {
+        maxWidth: 'lg',
+      },
     });
   }
 

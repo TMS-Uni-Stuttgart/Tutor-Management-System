@@ -100,17 +100,8 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
 
   const handleCreateStudent: StudentFormSubmitCallback = async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team },
-    { setSubmitting, resetForm, setFieldError }
+    { setSubmitting, resetForm }
   ) => {
-    const studentWithSameMatrNo: StudentWithFetchedTeam | undefined = students.find(
-      student => student.matriculationNo === matriculationNo.toString()
-    );
-
-    if (studentWithSameMatrNo) {
-      setFieldError('matriculationNo', 'Matrikelnummer bereits verwendet.');
-      return;
-    }
-
     const teamId = await createTeamIfNeccessary(team);
 
     const studentDTO: StudentDTO = {
@@ -144,17 +135,8 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     student: StudentWithFetchedTeam
   ) => StudentFormSubmitCallback = student => async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team },
-    { setSubmitting, setFieldError }
+    { setSubmitting }
   ) => {
-    const studentWithSameMatrNo: StudentWithFetchedTeam | undefined = students.find(
-      s => s.id !== student.id && s.matriculationNo === matriculationNo.toString()
-    );
-
-    if (studentWithSameMatrNo) {
-      setFieldError('matriculationNo', 'Matrikelnummer bereits verwendet.');
-      return;
-    }
-
     const teamId = await createTeamIfNeccessary(team);
 
     const studentDTO: StudentDTO = {
@@ -219,11 +201,15 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       content: (
         <StudentForm
           student={student}
+          students={students}
           teams={teams}
           onSubmit={editStudent(student)}
           onCancelClicked={() => dialog.hide()}
         />
       ),
+      DialogProps: {
+        maxWidth: 'lg',
+      },
     });
   }
 
@@ -251,7 +237,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
         <TableWithForm
           title='Neuen Studierenden anlegen'
           placeholder='Keine Studierenden vorhanden.'
-          form={<StudentForm teams={teams} onSubmit={handleCreateStudent} />}
+          form={<StudentForm teams={teams} students={students} onSubmit={handleCreateStudent} />}
           items={students}
           createRowFromItem={student => (
             <ExtendableStudentRow

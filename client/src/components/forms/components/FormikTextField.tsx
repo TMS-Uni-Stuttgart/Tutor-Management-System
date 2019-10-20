@@ -1,10 +1,11 @@
-import { TextField, InputAdornment, StyledComponentProps } from '@material-ui/core';
+import { InputAdornment, StyledComponentProps, TextField } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField';
-import { Field, FieldProps } from 'formik';
+import { Field, FieldAttributes, FieldProps } from 'formik';
 import React from 'react';
 
 interface Props {
   name: string;
+  FormikFieldProps?: Omit<FieldAttributes<any>, 'name'>;
   isPercentage?: boolean;
 }
 
@@ -18,6 +19,7 @@ function FormikTextField({
   name,
   children,
   isPercentage,
+  FormikFieldProps,
   helperText,
   InputProps,
   ...textfieldProps
@@ -33,7 +35,7 @@ function FormikTextField({
   }
 
   return (
-    <Field name={name}>
+    <Field {...FormikFieldProps} name={name}>
       {({ field, form, meta: { error, touched } }: FieldProps) => (
         <TextField
           fullWidth
