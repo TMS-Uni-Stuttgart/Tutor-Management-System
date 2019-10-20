@@ -1,13 +1,14 @@
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { UpdatePointsDTO } from 'shared/dist/model/Points';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import {
+  CakeCountDTO,
   PresentationPointsDTO,
   Student,
   StudentDTO,
-  CakeCountDTO,
 } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
+import { sortByName } from 'shared/dist/util/helpers';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import axios from './Axios';
 import { getTeamOfTutorial } from './Team';
@@ -16,7 +17,7 @@ async function getAllStudents(): Promise<Student[]> {
   const response = await axios.get<Student[]>('student');
 
   if (response.status === 200) {
-    return response.data;
+    return response.data.sort(sortByName);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
