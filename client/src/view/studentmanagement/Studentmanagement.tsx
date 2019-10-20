@@ -6,8 +6,11 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { StudentDTO } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
-import StudentForm, { StudentFormSubmitCallback } from '../../components/forms/StudentForm';
+import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
+import StudentForm, {
+  CREATE_NEW_TEAM_ID,
+  StudentFormSubmitCallback,
+} from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
@@ -43,30 +46,35 @@ type PropType = WithSnackbarProps & RouteComponentProps<Params>;
 
 function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.Element {
   const classes = useStyles();
+
   const [isLoading, setIsLoading] = useState(false);
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [summaries, setSummaries] = useState<{ [studentId: string]: ScheinCriteriaSummary }>({});
+
+  const dialog = useDialog();
   const {
     getTeamsOfTutorial,
     getStudentsOfTutorialAndFetchTeams,
     createStudentAndFetchTeam,
+    createTeam,
     editStudentAndFetchTeam: editStudentRequest,
     deleteStudent: deleteStudentRequest,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
   } = useAxios();
-  const dialog = useDialog();
+
+  const tutorialId: string = params.tutorialId;
 
   useEffect(() => {
     setIsLoading(true);
 
     (async function() {
       const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorialAndFetchTeams(params.tutorialId),
-        getTeamsOfTutorial(params.tutorialId),
+        getStudentsOfTutorialAndFetchTeams(tutorialId),
+        getTeamsOfTutorial(tutorialId),
       ]);
 
-      getScheinCriteriaSummariesOfAllStudentsOfTutorial(params.tutorialId).then(response =>
+      getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId).then(response =>
         setSummaries(response)
       );
       setStudents(studentsResponse);
@@ -77,8 +85,17 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     getStudentsOfTutorialAndFetchTeams,
     getTeamsOfTutorial,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-    params.tutorialId,
+    tutorialId,
   ]);
+
+  async function createTeamIfNeccessary(team: string | undefined): Promise<string | undefined> {
+    if (team === CREATE_NEW_TEAM_ID) {
+      const createdTeam = await createTeam(tutorialId, { students: [] });
+      return createdTeam.id;
+    } else {
+      return team;
+    }
+  }
 
   const handleCreateStudent: StudentFormSubmitCallback = async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team },
@@ -93,6 +110,8 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       return;
     }
 
+    const teamId = await createTeamIfNeccessary(team);
+
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
@@ -100,16 +119,16 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
-      team: !team ? undefined : team,
+      team: teamId || undefined,
     };
 
     try {
       const response = await createStudentAndFetchTeam(studentDTO);
-      setStudents(
-        [...students, response].sort((a, b) =>
-          `${a.lastname}, ${a.firstname}`.localeCompare(`${b.lastname}, ${b.firstname}`)
-        )
-      );
+      const teams = await getTeamsOfTutorial(tutorialId);
+
+      setStudents([...students, response].sort(sortByName));
+      setTeams(teams);
+
       resetForm();
       enqueueSnackbar('Student wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
@@ -135,6 +154,8 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       return;
     }
 
+    const teamId = await createTeamIfNeccessary(team);
+
     const studentDTO: StudentDTO = {
       lastname,
       firstname,
@@ -142,7 +163,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       email,
       courseOfStudies,
       tutorial: params.tutorialId,
-      team: !team ? undefined : team,
+      team: !teamId ? undefined : teamId,
     };
 
     try {
