@@ -59,7 +59,7 @@ interface StudentFormState {
 interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsedFormProps> {
   onSubmit: StudentFormSubmitCallback;
   student?: StudentWithFetchedTeam;
-  students: StudentWithFetchedTeam[];
+  otherStudents: StudentWithFetchedTeam[];
   teams: Team[];
   disableTeamDropdown?: boolean;
 }
@@ -134,7 +134,7 @@ function StudentForm({
   onSubmit,
   className,
   student,
-  students,
+  otherStudents,
   disableTeamDropdown,
   ...other
 }: Props): JSX.Element {
@@ -179,7 +179,7 @@ function StudentForm({
                   return undefined;
                 }
 
-                for (const s of students) {
+                for (const s of otherStudents) {
                   if (s.matriculationNo && value === s.matriculationNo) {
                     return `Matrikelnummer wird bereits von ${getNameOfEntity(s)} verwendet.`;
                   }
