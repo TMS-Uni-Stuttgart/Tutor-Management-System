@@ -237,7 +237,9 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
         <TableWithForm
           title='Neuen Studierenden anlegen'
           placeholder='Keine Studierenden vorhanden.'
-          form={<StudentForm teams={teams} otherStudents={students} onSubmit={handleCreateStudent} />}
+          form={
+            <StudentForm teams={teams} otherStudents={students} onSubmit={handleCreateStudent} />
+          }
           items={students}
           createRowFromItem={student => (
             <ExtendableStudentRow

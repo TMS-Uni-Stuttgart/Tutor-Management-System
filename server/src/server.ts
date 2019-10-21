@@ -7,13 +7,19 @@ import ConnectMongo, {
 } from 'connect-mongo';
 import express from 'express';
 import session from 'express-session';
+import { Server } from 'http';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import path from 'path';
 import uuid from 'uuid/v4';
 import databaseConfig from './helpers/database';
+import Logger from './helpers/Logger';
 import initPassport from './helpers/passport';
-import { handleError, EndpointNotFoundError, StartUpError } from './model/Errors';
+import { EndpointNotFoundError, handleError, StartUpError } from './model/Errors';
+import excelRouter from './services/excel-service/ExcelService.routes';
+import languageRouter from './services/language-service/LanguageService.routes';
+import mailRouter from './services/mail-service/MailService.routes';
+import pdfRouter from './services/pdf-service/PdfService.routes';
 import scheincriteriaRouter from './services/scheincriteria-service/ScheincriteriaService.routes';
 import scheinexamRouter from './services/scheinexam-service/ScheinexamService.routes';
 import sheetRouter from './services/sheet-service/SheetService.routes';
@@ -22,11 +28,6 @@ import tutorialRouter from './services/tutorial-service/TutorialService.routes';
 import authenticationRouter from './services/user-service/authentication.routes';
 import userService from './services/user-service/UserService.class';
 import userRouter from './services/user-service/UserService.routes';
-import languageRouter from './services/language-service/LanguageService.routes';
-import mailRouter from './services/mail-service/MailService.routes';
-import Logger from './helpers/Logger';
-import pdfRouter from './services/pdf-service/PdfService.routes';
-import excelRouter from './services/excel-service/ExcelService.routes';
 
 const BASE_API_PATH = '/api';
 const app = express();
@@ -155,6 +156,11 @@ function initEndpoints() {
   registerAPIEndpoint(`${BASE_API_PATH}/excel`, excelRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/locales`, languageRouter);
 
+  // FIXME: REMOVE ME!
+  app.use(`${BASE_API_PATH}/superlongrequest`, (req, res) => {
+    setTimeout(() => res.status(204).send(), 10000);
+  });
+
   // If there's a request which starts with the BASE_API_PATH which did not get handled yet, throw a not found error.
   app.use(BASE_API_PATH, req => {
     throw new EndpointNotFoundError(`Endpoint ${req.url}@${req.method} was not found.`);
@@ -200,7 +206,19 @@ async function startServer() {
 
     await initAdmin();
 
-    app.listen(8080, () => Logger.info('Server started on port 8080.'));
+    const server = app.listen(8080, () => Logger.info('Server started on port 8080.'));
+
+    // Mark every active request so the server can be gracefully stopped.
+    server.on('request', (req, res) => {
+      req.socket._isIdle = false;
+
+      res.on('finish', () => {
+        req.socket._isIdle = true;
+      });
+    });
+
+    process.on('SIGTERM', () => gracefullyStopServer(server));
+    process.on('SIGINT', () => gracefullyStopServer(server));
   } catch (err) {
     if (err.message) {
       Logger.error(`Server start failed. Error: ${err.message}`, { error: err });
@@ -210,6 +228,15 @@ async function startServer() {
 
     process.exit(1);
   }
+}
+
+function gracefullyStopServer(server: Server) {
+  Logger.info('Termination signal received.');
+  Logger.info('Closing HTTP server...');
+  server.close(() => {
+    Logger.info('HTTP server closed.');
+    Logger.info('Waiting for pending requests...');
+  });
 }
 
 startServer();

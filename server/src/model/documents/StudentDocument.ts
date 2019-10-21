@@ -1,11 +1,11 @@
 import {
   instanceMethod,
+  InstanceType,
   mapProp,
   plugin,
   prop,
   Ref,
   Typegoose,
-  InstanceType,
 } from '@hasezoey/typegoose';
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
@@ -18,7 +18,7 @@ import Logger from '../../helpers/Logger';
 import teamService from '../../services/team-service/TeamService.class';
 import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
-import { TeamDocument, TeamSchema } from './TeamDocument';
+import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
 
 @plugin(fieldEncryption, {
