@@ -1,4 +1,12 @@
-import { instanceMethod, mapProp, plugin, prop, Ref, Typegoose } from '@hasezoey/typegoose';
+import {
+  instanceMethod,
+  InstanceType,
+  mapProp,
+  plugin,
+  prop,
+  Ref,
+  Typegoose,
+} from '@hasezoey/typegoose';
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';
@@ -6,6 +14,7 @@ import { Sheet } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import databaseConfig from '../../helpers/database';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import Logger from '../../helpers/Logger';
 import teamService from '../../services/team-service/TeamService.class';
 import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
@@ -67,26 +76,38 @@ export class StudentSchema extends Typegoose
   cakeCount!: number;
 
   @instanceMethod
-  async getTeam(): Promise<TeamDocument> {
+  async getTeam(this: InstanceType<StudentSchema>): Promise<TeamDocument | undefined> {
     if (!this.team) {
-      throw new Error('Can not get team because this student does not belong to a team.');
+      return undefined;
     }
 
-    const [team] = await teamService.getDocumentWithId(
-      getIdOfDocumentRef(this.tutorial),
-      getIdOfDocumentRef(this.team)
-    );
+    try {
+      const [team] = await teamService.getDocumentWithId(
+        getIdOfDocumentRef(this.tutorial),
+        getIdOfDocumentRef(this.team)
+      );
 
-    return team;
+      return team;
+    } catch {
+      Logger.error(
+        `[StudentDocument] Team with ID ${this.team.toString()} does not exist in the DB (anymore). It gets removed from the student.`
+      );
+
+      this.team = undefined;
+      await this.save();
+
+      return undefined;
+    }
   }
 
   @instanceMethod
-  async getPoints(): Promise<PointMap> {
-    if (!this.team) {
+  async getPoints(this: InstanceType<StudentSchema>): Promise<PointMap> {
+    const team = await this.getTeam();
+
+    if (!team) {
       return new PointMap(this.points);
     }
 
-    const team = await this.getTeam();
     const points = new PointMap();
     const pointsOfTeam = new PointMap(team.points);
     const ownPoints = new PointMap(this.points);
@@ -103,7 +124,10 @@ export class StudentSchema extends Typegoose
   }
 
   @instanceMethod
-  async getPointEntry(id: PointId): Promise<PointMapEntry | undefined> {
+  async getPointEntry(
+    this: InstanceType<StudentSchema>,
+    id: PointId
+  ): Promise<PointMapEntry | undefined> {
     const ownMap = new PointMap(this.points);
     const entry = ownMap.getPointEntry(id);
 
@@ -111,18 +135,19 @@ export class StudentSchema extends Typegoose
       return entry;
     }
 
-    if (!this.team) {
+    const team = await this.getTeam();
+
+    if (!team) {
       return undefined;
     }
 
-    const team = await this.getTeam();
     const teamEntry = new PointMap(team.points).getPointEntry(id);
 
     return teamEntry;
   }
 
   @instanceMethod
-  async getPointsOfExercise(id: PointId): Promise<number> {
+  async getPointsOfExercise(this: InstanceType<StudentSchema>, id: PointId): Promise<number> {
     const entry = await this.getPointEntry(id);
 
     return entry ? PointMap.getPointsOfEntry(entry) : 0;

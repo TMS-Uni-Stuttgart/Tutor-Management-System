@@ -201,7 +201,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       content: (
         <StudentForm
           student={student}
-          students={students}
+          otherStudents={students.filter(s => s.id !== student.id)}
           teams={teams}
           onSubmit={editStudent(student)}
           onCancelClicked={() => dialog.hide()}
@@ -237,7 +237,9 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
         <TableWithForm
           title='Neuen Studierenden anlegen'
           placeholder='Keine Studierenden vorhanden.'
-          form={<StudentForm teams={teams} students={students} onSubmit={handleCreateStudent} />}
+          form={
+            <StudentForm teams={teams} otherStudents={students} onSubmit={handleCreateStudent} />
+          }
           items={students}
           createRowFromItem={student => (
             <ExtendableStudentRow

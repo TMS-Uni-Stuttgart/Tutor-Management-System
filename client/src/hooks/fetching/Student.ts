@@ -153,7 +153,14 @@ export async function fetchTeamsOfStudents(students: Student[]): Promise<Student
   const promises: Promise<StudentWithFetchedTeam>[] = [];
 
   for (const student of students) {
-    promises.push(getTeamOfStudent(student).then(team => ({ ...student, team })));
+    promises.push(
+      getTeamOfStudent(student)
+        .then(team => ({ ...student, team }))
+        .catch(() => {
+          console.log('Could not load team of student.');
+          return { ...student, team: undefined };
+        })
+    );
   }
 
   return Promise.all(promises);

@@ -11,6 +11,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+    volumes: 
+      - db_data:/data/db
 
   mongo-express:
     container_name: mongo_express
@@ -40,7 +42,7 @@ services:
       - ./server/config:/tms/server/config
 
 volumes:
-  db-data:
+  db_data:
 
 networks:
   tms_db:

@@ -169,7 +169,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       content: (
         <StudentForm
           student={student}
-          students={students}
+          otherStudents={students.filter(s => s.id !== student.id)}
           teams={student.team ? [student.team] : []}
           onSubmit={editStudent(student)}
           onCancelClicked={() => dialog.hide()}
