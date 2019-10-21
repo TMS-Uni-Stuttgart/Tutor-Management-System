@@ -1,8 +1,15 @@
 import * as childProcess from 'child_process';
 import { ExecSyncOptions } from 'child_process';
-import packageInfo from './package.json';
+import * as fs from 'fs';
+
+function getPackageInfo(): any {
+  const content = fs.readFileSync('./package.json').toString();
+
+  return JSON.parse(content);
+}
 
 const IMAGE_NAME = 'dudrie/tutor-management-system';
+const packageInfo = getPackageInfo();
 
 function getLatestOrPre(): 'pre' | 'latest' {
   const args = process.argv;
