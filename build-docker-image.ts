@@ -2,6 +2,8 @@ import * as childProcess from 'child_process';
 import { ExecSyncOptions } from 'child_process';
 import packageInfo from './package.json';
 
+const IMAGE_NAME = 'dudrie/tutor-management-system';
+
 function getLatestOrPre(): 'pre' | 'latest' {
   const args = process.argv;
   const preArgument = args.find(arg => arg.includes('--pre') || arg.includes('-p'));
@@ -37,9 +39,9 @@ function getBuildCommand(): string {
   const preOrLatest = getLatestOrPre();
 
   if (preOrLatest === 'latest') {
-    return `docker build -t=tutor-management-system:latest -t=tutor-management-system:${version} .`;
+    return `docker build -t=${IMAGE_NAME}:latest -t=${IMAGE_NAME}:${version} .`;
   } else {
-    return `docker build -t=tutor-management-system:${version}-pre .`;
+    return `docker build -t=${IMAGE_NAME}:${version}-pre .`;
   }
 }
 
@@ -48,9 +50,9 @@ function getBundleCommand(): string {
   const preOrLatest = getLatestOrPre();
 
   if (preOrLatest === 'latest') {
-    return `docker save -o Tutor-Management-System.tar tutor-management-system:latest tutor-management-system:${version}`;
+    return `docker save -o Tutor-Management-System_v${version}.tar ${IMAGE_NAME}:latest ${IMAGE_NAME}:${version}`;
   } else {
-    return `docker save -o Tutor-Management-System.tar tutor-management-system:${version}-pre`;
+    return `docker save -o Tutor-Management-System_v${version}-pre.tar ${IMAGE_NAME}:${version}-pre`;
   }
 }
 
