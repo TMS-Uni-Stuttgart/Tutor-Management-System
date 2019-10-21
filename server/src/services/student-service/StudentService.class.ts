@@ -101,7 +101,7 @@ class StudentService {
   public async deleteStudent(id: string): Promise<Student> {
     const student: StudentDocument = await this.getDocumentWithId(id);
 
-    if (student.team) {
+    if (await student.getTeam()) {
       await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: true });
     }
 
@@ -219,7 +219,6 @@ class StudentService {
       email,
       courseOfStudies,
       tutorial,
-      team,
       attendance,
       presentationPoints,
       scheinExamResults,
@@ -234,6 +233,7 @@ class StudentService {
       }
     }
 
+    const team = await student.getTeam();
     const points: Student['points'] = (await student.getPoints()).toDTO();
 
     return {
@@ -244,7 +244,7 @@ class StudentService {
       email,
       courseOfStudies,
       tutorial: getIdOfDocumentRef(tutorial),
-      team: team ? getIdOfDocumentRef(team) : undefined,
+      team: team ? team.id : undefined,
       attendance: parsedAttendances,
       points,
       presentationPoints: presentationPoints
@@ -338,14 +338,11 @@ class StudentService {
   }
 
   public async movePointsFromTeamToStudent(student: StudentDocument) {
-    if (!student.team) {
+    const team = await student.getTeam();
+
+    if (!team) {
       return;
     }
-
-    const [team] = await teamService.getDocumentWithId(
-      getIdOfDocumentRef(student.tutorial),
-      student.team.toString()
-    );
 
     const pointsOfTeam = new PointMap(team.points);
     const pointsOfStudent = new PointMap(student.points);
