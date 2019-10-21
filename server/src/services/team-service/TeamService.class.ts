@@ -217,7 +217,7 @@ class TeamService {
       return;
     }
 
-    if (student.team) {
+    if (await student.getTeam()) {
       await this.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
 
@@ -235,14 +235,15 @@ class TeamService {
     student: StudentDocument,
     { saveStudent }: { saveStudent?: boolean } = {}
   ) {
-    if (!student.team) {
+    const oldTeam = await student.getTeam();
+
+    if (!oldTeam) {
       return;
     }
 
-    const [oldTeam, tutorial] = await this.getDocumentWithId(
-      getIdOfDocumentRef(student.tutorial),
-      getIdOfDocumentRef(student.team)
-    );
+    const tutorial = isDocument(oldTeam.tutorial)
+      ? oldTeam.tutorial
+      : await tutorialService.getDocumentWithID(oldTeam.tutorial.toString());
 
     await studentService.movePointsFromTeamToStudent(student);
 
