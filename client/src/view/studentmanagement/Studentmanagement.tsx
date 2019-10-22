@@ -71,7 +71,13 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
 
     (async function() {
       const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorialAndFetchTeams(tutorialId),
+        getStudentsOfTutorialAndFetchTeams(tutorialId).catch(() => {
+          enqueueSnackbar('Konnte Ergebnisse der Scheinkriterien nicht abrufen.', {
+            variant: 'error',
+          });
+
+          return [];
+        }),
         getTeamsOfTutorial(tutorialId),
       ]);
 
