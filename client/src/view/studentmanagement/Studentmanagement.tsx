@@ -71,19 +71,20 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
 
     (async function() {
       const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorialAndFetchTeams(tutorialId).catch(() => {
+        getStudentsOfTutorialAndFetchTeams(tutorialId),
+        getTeamsOfTutorial(tutorialId),
+      ]);
+
+      getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
+        .then(response => setSummaries(response))
+        .catch(() => {
           enqueueSnackbar('Konnte Ergebnisse der Scheinkriterien nicht abrufen.', {
             variant: 'error',
           });
 
           return [];
-        }),
-        getTeamsOfTutorial(tutorialId),
-      ]);
+        });
 
-      getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId).then(response =>
-        setSummaries(response)
-      );
       setStudents(studentsResponse);
       setTeams(teams);
       setIsLoading(false);

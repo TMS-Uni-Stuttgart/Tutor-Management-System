@@ -83,6 +83,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       setStudents(response);
       setIsLoading(false);
     });
+
     getScheinCriteriaSummaryOfAllStudents()
       .then(response => setSummaries(response))
       .catch(() =>
@@ -90,6 +91,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
           variant: 'error',
         })
       );
+
     getAllTutorials().then(response => setTutorials(response));
   }, [
     fetchTeamsOfStudents,
