@@ -13,14 +13,14 @@ const packageInfo = getPackageInfo();
 
 function getLatestOrPre(): 'pre' | 'latest' {
   const args = process.argv;
-  const preArgument = args.find(arg => arg.includes('--pre') || arg.includes('-p'));
+  const preArgument = args.find(arg => arg === '--pre');
 
   return preArgument ? 'pre' : 'latest';
 }
 
 function getVersion(): string {
   const args = process.argv;
-  const versionArgument = args.find(arg => arg.includes('--version') || arg.includes('-v'));
+  const versionArgument = args.find(arg => arg.includes('--version=') || arg.includes('-v='));
 
   if (versionArgument === undefined) {
     return packageInfo.version;
@@ -34,9 +34,16 @@ function getVersion(): string {
   }
 }
 
+function isVersionInTar(): boolean {
+  const args = process.argv;
+  const versionArgument = args.find(arg => arg == '--no-version-in-tar-name');
+
+  return !versionArgument;
+}
+
 function isSkipBundleStep(): boolean {
   const args = process.argv;
-  const isSkipBundleArgument = args.find(arg => arg.includes('--skip-bundle'));
+  const isSkipBundleArgument = args.find(arg => arg === '--skip-bundle');
 
   return !!isSkipBundleArgument;
 }
@@ -52,14 +59,32 @@ function getBuildCommand(): string {
   }
 }
 
+function getTarName(): string {
+  const version = getVersion();
+  const preOrLatest = getLatestOrPre();
+  const isVersionInTarName = isVersionInTar();
+
+  let tarName = `Tutor-Management-System`;
+
+  if (isVersionInTarName) {
+    tarName += `_v${version}`;
+  }
+
+  if (preOrLatest === 'pre') {
+    tarName += `-pre`;
+  }
+
+  return `${tarName}.tar`;
+}
+
 function getBundleCommand(): string {
   const version = getVersion();
   const preOrLatest = getLatestOrPre();
 
   if (preOrLatest === 'latest') {
-    return `docker save -o Tutor-Management-System_v${version}.tar ${IMAGE_NAME}:latest ${IMAGE_NAME}:${version}`;
+    return `docker save -o ${getTarName()} ${IMAGE_NAME}:latest ${IMAGE_NAME}:${version}`;
   } else {
-    return `docker save -o Tutor-Management-System_v${version}-pre.tar ${IMAGE_NAME}:${version}-pre`;
+    return `docker save -o ${getTarName()} ${IMAGE_NAME}:${version}-pre`;
   }
 }
 
