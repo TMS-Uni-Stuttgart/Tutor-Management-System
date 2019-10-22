@@ -75,9 +75,16 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
         getTeamsOfTutorial(tutorialId),
       ]);
 
-      getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId).then(response =>
-        setSummaries(response)
-      );
+      getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
+        .then(response => setSummaries(response))
+        .catch(() => {
+          enqueueSnackbar('Konnte Ergebnisse der Scheinkriterien nicht abrufen.', {
+            variant: 'error',
+          });
+
+          return [];
+        });
+
       setStudents(studentsResponse);
       setTeams(teams);
       setIsLoading(false);

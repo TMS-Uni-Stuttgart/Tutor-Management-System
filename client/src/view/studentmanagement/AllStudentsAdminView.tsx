@@ -83,7 +83,15 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       setStudents(response);
       setIsLoading(false);
     });
-    getScheinCriteriaSummaryOfAllStudents().then(response => setSummaries(response));
+
+    getScheinCriteriaSummaryOfAllStudents()
+      .then(response => setSummaries(response))
+      .catch(() =>
+        enqueueSnackbar('Konnte Ergebnisse der Scheinkriterien nicht abrufen.', {
+          variant: 'error',
+        })
+      );
+
     getAllTutorials().then(response => setTutorials(response));
   }, [
     fetchTeamsOfStudents,
