@@ -57,7 +57,7 @@ class TeamService {
     };
     tutorial.teams.push(team);
 
-    await tutorial.save();
+    await this.saveTutorialWithChangedTeams(tutorial);
 
     const createdTeam = tutorial.teams[tutorial.teams.length - 1];
 
@@ -95,7 +95,7 @@ class TeamService {
       await this.makeStudentMemberOfTeam(student, team.id, { saveStudent: true });
     }
 
-    await tutorial.save();
+    await this.saveTutorialWithChangedTeams(tutorial);
 
     return this.getTeamOrReject(team);
   }
@@ -113,7 +113,7 @@ class TeamService {
 
     tutorial.teams.pull({ _id: team.id });
 
-    await tutorial.save();
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   public async setPoints(
@@ -140,10 +140,7 @@ class TeamService {
 
     team.points = pointMapOfTeam.toDTO();
 
-    // Mongoose is not able to detect the change so we tell it that the teams array has changed...
-    // See: https://mongoosejs.com/docs/schematypes.html#mixed
-    tutorial.markModified('teams');
-    await tutorial.save();
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   /**
@@ -225,9 +222,9 @@ class TeamService {
     student.team = newTeam;
 
     if (saveStudent) {
-      await Promise.all([tutorial.save(), student.save()]);
+      await Promise.all([this.saveTutorialWithChangedTeams(tutorial), student.save()]);
     } else {
-      await tutorial.save();
+      await this.saveTutorialWithChangedTeams(tutorial);
     }
   }
 
@@ -250,16 +247,28 @@ class TeamService {
     oldTeam.students = oldTeam.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
     student.team = undefined;
 
+    const idx = tutorial.teams.findIndex(team => team.id === oldTeam.id);
+    tutorial.teams.set(idx, oldTeam);
+
     if (saveStudent) {
-      await Promise.all([tutorial.save(), student.save()]);
+      await Promise.all([this.saveTutorialWithChangedTeams(tutorial), student.save()]);
     } else {
-      await tutorial.save();
+      await this.saveTutorialWithChangedTeams(tutorial);
     }
 
     // TODO: Delete team if empty?! Maybe better UX: Add "delete all empty team"-Button to frontend. This will prevent "unintentional" deletions.
     // if (oldTeam.students.length === 0) {
     //   await this.deleteTeam(getIdOfDocumentRef(oldTeam.tutorial), oldTeam.id);
     // }
+  }
+
+  private async saveTutorialWithChangedTeams(
+    tutorial: TutorialDocument
+  ): Promise<TutorialDocument> {
+    // Mongoose is not able to detect the change so we tell it that the teams array has changed...
+    // See: https://mongoosejs.com/docs/schematypes.html#mixed
+    tutorial.markModified('teams');
+    return tutorial.save();
   }
 
   private isStudentMemberOfTeam(student: StudentDocument, team: TeamDocument): boolean {
