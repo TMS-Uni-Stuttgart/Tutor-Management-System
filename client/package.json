@@ -41,7 +41,7 @@
     "lodash": "^4.17.15",
     "mdi-material-ui": "^6.8.0",
     "notistack": "^0.9.5",
-    "react": "^16.10.2",
+    "react": "^16.11.0",
     "react-dom": "^16.10.2",
     "react-google-charts": "^3.0.15",
     "react-i18next": "^10.13.1",
