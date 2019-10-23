@@ -1,5 +1,4 @@
 branchName: full
-branchName: full
 branches:
   - label: enhancement
     name: dev
