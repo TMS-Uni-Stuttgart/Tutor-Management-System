@@ -18,6 +18,7 @@ import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import Logger from '../../helpers/Logger';
 
 export interface PointInformation {
   id: string;
@@ -55,9 +56,9 @@ class TeamService {
       points: new PointMap().toDTO(),
       teamNo,
     };
-    tutorial.teams.push(team);
 
-    await tutorial.save();
+    tutorial.teams.push(team);
+    await this.saveTutorialWithChangedTeams(tutorial);
 
     const createdTeam = tutorial.teams[tutorial.teams.length - 1];
 
@@ -75,14 +76,15 @@ class TeamService {
     { students }: TeamDTO
   ): Promise<Team> {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+    const studentsOfTeam = await this.getStudentsOfTeam(team);
 
     const studentsToRemove: StudentDocument[] = await Promise.all(
-      _.difference(team.students.map(getIdOfDocumentRef), students).map(stud =>
+      _.difference(studentsOfTeam.map(getIdOfDocumentRef), students).map(stud =>
         studentService.getDocumentWithId(stud)
       )
     );
     const studentsToAdd: StudentDocument[] = await Promise.all(
-      _.difference(students, team.students.map(getIdOfDocumentRef)).map(stud =>
+      _.difference(students, studentsOfTeam.map(getIdOfDocumentRef)).map(stud =>
         studentService.getDocumentWithId(stud)
       )
     );
@@ -95,25 +97,22 @@ class TeamService {
       await this.makeStudentMemberOfTeam(student, team.id, { saveStudent: true });
     }
 
-    await tutorial.save();
+    await this.saveTutorialWithChangedTeams(tutorial);
 
     return this.getTeamOrReject(team);
   }
 
   public async deleteTeam(tutorialId: string, teamId: string) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+    const studentsOfTeam = await this.getStudentsOfTeam(team);
 
-    for (const student of team.students) {
-      const doc: StudentDocument = isDocument(student)
-        ? student
-        : await studentService.getDocumentWithId(student.toString());
-
-      await this.removeStudentAsMemberFromTeam(doc, { saveStudent: true });
+    for (const student of studentsOfTeam) {
+      await this.removeStudentAsMemberFromTeam(student, { saveStudent: true });
     }
 
     tutorial.teams.pull({ _id: team.id });
 
-    await tutorial.save();
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   public async setPoints(
@@ -140,10 +139,7 @@ class TeamService {
 
     team.points = pointMapOfTeam.toDTO();
 
-    // Mongoose is not able to detect the change so we tell it that the teams array has changed...
-    // See: https://mongoosejs.com/docs/schematypes.html#mixed
-    tutorial.markModified('teams');
-    await tutorial.save();
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   /**
@@ -221,9 +217,10 @@ class TeamService {
       await this.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
 
-    newTeam.students.push(student);
     student.team = newTeam;
+    newTeam.students.push(student);
 
+    // We can NOT use this.saveTutorialWithChangedTeams() here because - for some reason - mongoose will throw an error that the versions of the documents within the array don't match.
     if (saveStudent) {
       await Promise.all([tutorial.save(), student.save()]);
     } else {
@@ -246,30 +243,87 @@ class TeamService {
       : await tutorialService.getDocumentWithID(oldTeam.tutorial.toString());
 
     await studentService.movePointsFromTeamToStudent(student);
+    const studentsOfOldTeam = await this.getStudentsOfTeam(oldTeam);
 
-    oldTeam.students = oldTeam.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
+    oldTeam.students = studentsOfOldTeam.filter(stud => getIdOfDocumentRef(stud) !== student.id);
     student.team = undefined;
 
-    if (saveStudent) {
-      await Promise.all([tutorial.save(), student.save()]);
-    } else {
-      await tutorial.save();
-    }
+    const idx = tutorial.teams.findIndex(team => team.id === oldTeam.id);
+    tutorial.teams.set(idx, oldTeam);
 
-    // TODO: Delete team if empty?! Maybe better UX: Add "delete all empty team"-Button to frontend. This will prevent "unintentional" deletions.
-    // if (oldTeam.students.length === 0) {
-    //   await this.deleteTeam(getIdOfDocumentRef(oldTeam.tutorial), oldTeam.id);
-    // }
+    if (saveStudent) {
+      await Promise.all([this.saveTutorialWithChangedTeams(tutorial), student.save()]);
+    } else {
+      await this.saveTutorialWithChangedTeams(tutorial);
+    }
   }
 
+  /**
+   * Returns all existing documents of students in the given team.
+   *
+   * Retrieves all `StudentDocuments` from all students of the given team. If a `StudentDocument` does not exist (anymore) it will be removed from the given team. Afterwards them given team's tutorial will be updated accordingly. All of this is done if necessary before the documents are finally returned.
+   *
+   * @returns `StudentDocuments` of all students which still exist in the DB.
+   */
+  public async getStudentsOfTeam(team: TeamDocument): Promise<StudentDocument[]> {
+    const studentDocs: StudentDocument[] = [];
+    const studentsToRemove: string[] = [];
+
+    for (const student of team.students) {
+      try {
+        if (isDocument(student)) {
+          studentDocs.push(student);
+        } else {
+          studentDocs.push(await studentService.getDocumentWithId(student.toString()));
+        }
+      } catch {
+        Logger.error(
+          `[TeamDocument] Student with id ${getIdOfDocumentRef(
+            student
+          )} does not exist in the DB (anymore). It gets removed from the team.`
+        );
+        studentsToRemove.push(getIdOfDocumentRef(student));
+      }
+    }
+
+    if (studentsToRemove.length > 0) {
+      team.students = team.students.filter(s => !studentsToRemove.includes(getIdOfDocumentRef(s)));
+
+      const tutorial = isDocument(team.tutorial)
+        ? team.tutorial
+        : await tutorialService.getDocumentWithID(team.tutorial.toString());
+      const idx = tutorial.teams.findIndex(t => t.id === team.id);
+
+      tutorial.teams.set(idx, team);
+      tutorial.save();
+    }
+
+    return studentDocs;
+  }
+
+  /**
+   * Checks if the given student is a member of the given team.
+   *
+   * @param student Student to check.
+   * @returns Is student a member of the given team?
+   */
   private isStudentMemberOfTeam(student: StudentDocument, team: TeamDocument): boolean {
-    for (const doc of team.students) {
-      if (getIdOfDocumentRef(doc) === student.id) {
+    for (const s of team.students) {
+      if (getIdOfDocumentRef(s) === student.id) {
         return true;
       }
     }
 
     return false;
+  }
+
+  private async saveTutorialWithChangedTeams(
+    tutorial: TutorialDocument
+  ): Promise<TutorialDocument> {
+    // Mongoose is not able to detect the change so we tell it that the teams array has changed...
+    // See: https://mongoosejs.com/docs/schematypes.html#mixed
+    tutorial.markModified('teams');
+    return tutorial.save();
   }
 
   private getFirstAvailableTeamNo(tutorial: TutorialDocument): number {
@@ -296,15 +350,12 @@ class TeamService {
       return this.rejectTeamNotFound();
     }
 
-    const { _id, teamNo, tutorial, students: studentDocs, points } = team;
+    const { _id, teamNo, tutorial, points } = team;
     const studentPromises: Promise<Student>[] = [];
+    const studentDocs = await this.getStudentsOfTeam(team);
 
     for (const doc of studentDocs) {
-      if (isDocument(doc)) {
-        studentPromises.push(studentService.getStudentOrReject(doc));
-      } else {
-        studentPromises.push(studentService.getStudentWithId(doc.toString()));
-      }
+      studentPromises.push(studentService.getStudentOrReject(doc));
     }
 
     const students = await Promise.all(studentPromises);
