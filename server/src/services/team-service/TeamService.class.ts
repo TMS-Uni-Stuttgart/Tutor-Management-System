@@ -56,8 +56,8 @@ class TeamService {
       points: new PointMap().toDTO(),
       teamNo,
     };
-    tutorial.teams.push(team);
 
+    tutorial.teams.push(team);
     await this.saveTutorialWithChangedTeams(tutorial);
 
     const createdTeam = tutorial.teams[tutorial.teams.length - 1];
@@ -217,13 +217,14 @@ class TeamService {
       await this.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
 
-    newTeam.students.push(student);
     student.team = newTeam;
+    newTeam.students.push(student);
 
+    // We can NOT use this.saveTutorialWithChangedTeams() here because - for some reason - mongoose will throw an error that the versions of the documents within the array don't match.
     if (saveStudent) {
-      await Promise.all([this.saveTutorialWithChangedTeams(tutorial), student.save()]);
+      await Promise.all([tutorial.save(), student.save()]);
     } else {
-      await this.saveTutorialWithChangedTeams(tutorial);
+      await tutorial.save();
     }
   }
 
