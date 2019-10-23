@@ -20,6 +20,9 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
+import { TutorialDocument } from '../../model/documents/TutorialDocument';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import { StudentDocument } from '../../model/documents/StudentDocument';
 
 interface StudentData {
   matriculationNo: string;
@@ -56,7 +59,7 @@ class PdfService {
   public generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
       try {
-        const tutorial = await tutorialService.getTutorialWithID(tutorialId);
+        const tutorial = await tutorialService.getDocumentWithID(tutorialId);
 
         const body: string = await this.generateAttendanceHTML(tutorial, date);
         const html = this.putBodyInHtml(body);
@@ -228,7 +231,7 @@ class PdfService {
     }
   }
 
-  private async generateAttendanceHTML(tutorial: Tutorial, date: Date): Promise<string> {
+  private async generateAttendanceHTML(tutorial: TutorialDocument, date: Date): Promise<string> {
     if (!tutorial.tutor) {
       throw new BadRequestError(
         'Tutorial which attendance list should be generated does NOT have a tutor assigned.'
@@ -237,10 +240,9 @@ class PdfService {
 
     const template = this.getAttendanceTemplate();
 
-    const tutor = await userService.getUserWithId(tutorial.tutor);
-    const students: Student[] = await Promise.all(
-      tutorial.students.map(student => studentService.getStudentWithId(student))
-    );
+    const tutor = await userService.getUserWithId(getIdOfDocumentRef(tutorial.tutor));
+    const students: StudentDocument[] = await tutorial.getStudents();
+
     students.sort(sortByName);
     // const substitutePart = isSubstituteTutor(tutorial, userData)
     //   ? `, Ersatztutor: ${getNameOfEntity(userData)}`
