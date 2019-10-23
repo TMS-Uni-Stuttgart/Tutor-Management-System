@@ -14,6 +14,8 @@ import { StudentDocument } from './StudentDocument';
 import { TeamDocument, TeamSchema } from './TeamDocument';
 import { UserDocument } from './UserDocument';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import studentService from '../../services/student-service/StudentService.class';
+import Logger from '../../helpers/Logger';
 
 export class TutorialSchema extends Typegoose
   implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams' | 'substitutes'> {
@@ -77,6 +79,37 @@ export class TutorialSchema extends Typegoose
     }
 
     return false;
+  }
+
+  @instanceMethod
+  async getStudents(this: InstanceType<TutorialDocument>): Promise<StudentDocument[]> {
+    const studentDocs: StudentDocument[] = [];
+    const studentsToRemove: string[] = [];
+
+    await Promise.all(
+      this.students.map(student =>
+        studentService
+          .getDocumentWithId(getIdOfDocumentRef(student))
+          .then(doc => studentDocs.push(doc))
+          .catch(() => {
+            Logger.error(
+              `[TutorialDocument] Student with ID ${getIdOfDocumentRef(
+                student
+              )} does not exist in the DB (anymore). It gets removed from the tutorial.`
+            );
+
+            studentsToRemove.push(getIdOfDocumentRef(student));
+          })
+      )
+    );
+
+    if (studentsToRemove.length > 0) {
+      this.students = this.students.filter(s => !studentsToRemove.includes(getIdOfDocumentRef(s)));
+
+      await this.save();
+    }
+
+    return studentDocs;
   }
 }
 

@@ -110,6 +110,8 @@ class StudentService {
     );
 
     tutorial.students = tutorial.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
+
+    tutorial.markModified('students');
     await tutorial.save();
 
     return this.getStudentOrReject(await student.remove());
