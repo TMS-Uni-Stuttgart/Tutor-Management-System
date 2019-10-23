@@ -3,12 +3,13 @@ import fs from 'fs';
 import JSZip from 'jszip';
 import path from 'path';
 import puppeteer from 'puppeteer';
+import { PointMap } from 'shared/dist/model/Points';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
+import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
 import showdown, { ShowdownExtension } from 'showdown';
-import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
 import { TeamDocument } from '../../model/documents/TeamDocument';
 import { BadRequestError } from '../../model/Errors';
@@ -19,8 +20,6 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
-import { PointMap } from 'shared/dist/model/Points';
-import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
 
 interface StudentData {
   matriculationNo: string;
@@ -172,7 +171,7 @@ class PdfService {
     sheetId: string;
   }): Promise<TeamCommentData> {
     const entries = await teamService.getPoints(tutorialId, team.id, sheetId);
-    const students = await team.getStudents();
+    const students = await teamService.getStudentsOfTeam(team);
 
     const teamName = students.map(s => s.lastname).join('');
     const pointInfo = { achieved: 0, total: 0 };
