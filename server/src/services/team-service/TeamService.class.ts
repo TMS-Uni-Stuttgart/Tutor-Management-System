@@ -75,14 +75,15 @@ class TeamService {
     { students }: TeamDTO
   ): Promise<Team> {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+    const studentsOfTeam = await team.getStudents();
 
     const studentsToRemove: StudentDocument[] = await Promise.all(
-      _.difference(team.students.map(getIdOfDocumentRef), students).map(stud =>
+      _.difference(studentsOfTeam.map(getIdOfDocumentRef), students).map(stud =>
         studentService.getDocumentWithId(stud)
       )
     );
     const studentsToAdd: StudentDocument[] = await Promise.all(
-      _.difference(students, team.students.map(getIdOfDocumentRef)).map(stud =>
+      _.difference(students, studentsOfTeam.map(getIdOfDocumentRef)).map(stud =>
         studentService.getDocumentWithId(stud)
       )
     );
@@ -102,13 +103,10 @@ class TeamService {
 
   public async deleteTeam(tutorialId: string, teamId: string) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+    const studentsOfTeam = await team.getStudents();
 
-    for (const student of team.students) {
-      const doc: StudentDocument = isDocument(student)
-        ? student
-        : await studentService.getDocumentWithId(student.toString());
-
-      await this.removeStudentAsMemberFromTeam(doc, { saveStudent: true });
+    for (const student of studentsOfTeam) {
+      await this.removeStudentAsMemberFromTeam(student, { saveStudent: true });
     }
 
     tutorial.teams.pull({ _id: team.id });
@@ -210,7 +208,7 @@ class TeamService {
       teamId
     );
 
-    if (this.isStudentMemberOfTeam(student, newTeam)) {
+    if (newTeam.isStudentMember(student)) {
       return;
     }
 
@@ -243,8 +241,9 @@ class TeamService {
       : await tutorialService.getDocumentWithID(oldTeam.tutorial.toString());
 
     await studentService.movePointsFromTeamToStudent(student);
+    const studentsOfOldTeam = await oldTeam.getStudents();
 
-    oldTeam.students = oldTeam.students.filter(stud => getIdOfDocumentRef(stud) !== student.id);
+    oldTeam.students = studentsOfOldTeam.filter(stud => getIdOfDocumentRef(stud) !== student.id);
     student.team = undefined;
 
     const idx = tutorial.teams.findIndex(team => team.id === oldTeam.id);
@@ -255,11 +254,6 @@ class TeamService {
     } else {
       await this.saveTutorialWithChangedTeams(tutorial);
     }
-
-    // TODO: Delete team if empty?! Maybe better UX: Add "delete all empty team"-Button to frontend. This will prevent "unintentional" deletions.
-    // if (oldTeam.students.length === 0) {
-    //   await this.deleteTeam(getIdOfDocumentRef(oldTeam.tutorial), oldTeam.id);
-    // }
   }
 
   private async saveTutorialWithChangedTeams(
@@ -269,16 +263,6 @@ class TeamService {
     // See: https://mongoosejs.com/docs/schematypes.html#mixed
     tutorial.markModified('teams');
     return tutorial.save();
-  }
-
-  private isStudentMemberOfTeam(student: StudentDocument, team: TeamDocument): boolean {
-    for (const doc of team.students) {
-      if (getIdOfDocumentRef(doc) === student.id) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   private getFirstAvailableTeamNo(tutorial: TutorialDocument): number {
@@ -305,15 +289,12 @@ class TeamService {
       return this.rejectTeamNotFound();
     }
 
-    const { _id, teamNo, tutorial, students: studentDocs, points } = team;
+    const { _id, teamNo, tutorial, points } = team;
     const studentPromises: Promise<Student>[] = [];
+    const studentDocs = await team.getStudents();
 
     for (const doc of studentDocs) {
-      if (isDocument(doc)) {
-        studentPromises.push(studentService.getStudentOrReject(doc));
-      } else {
-        studentPromises.push(studentService.getStudentWithId(doc.toString()));
-      }
+      studentPromises.push(studentService.getStudentOrReject(doc));
     }
 
     const students = await Promise.all(studentPromises);

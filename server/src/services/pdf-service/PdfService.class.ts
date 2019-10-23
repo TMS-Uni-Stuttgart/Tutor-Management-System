@@ -172,9 +172,7 @@ class PdfService {
     sheetId: string;
   }): Promise<TeamCommentData> {
     const entries = await teamService.getPoints(tutorialId, team.id, sheetId);
-    const students = await Promise.all(
-      team.students.map(s => studentService.getDocumentWithId(getIdOfDocumentRef(s)))
-    );
+    const students = await team.getStudents();
 
     const teamName = students.map(s => s.lastname).join('');
     const pointInfo = { achieved: 0, total: 0 };
