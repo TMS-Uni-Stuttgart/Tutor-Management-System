@@ -6,12 +6,14 @@ import puppeteer from 'puppeteer';
 import { PointMap } from 'shared/dist/model/Points';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
-import { Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
 import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
 import showdown, { ShowdownExtension } from 'showdown';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
+import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument } from '../../model/documents/TeamDocument';
+import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { BadRequestError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../sheet-service/SheetService.class';
@@ -20,9 +22,6 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
-import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import { StudentDocument } from '../../model/documents/StudentDocument';
 
 interface StudentData {
   matriculationNo: string;
