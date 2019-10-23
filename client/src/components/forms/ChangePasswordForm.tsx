@@ -71,12 +71,19 @@ function ChangePasswordForm({ onSubmit, onCancel, className, ...other }: Props):
   const onFormSubmit: FormikSubmitCallback<ChangePasswordFormState> = async (values, actions) => {
     const { password, repeatedPassword } = values;
 
+    if (password.includes(':')) {
+      setError('Passwörter dürfen keinen Doppelpunkt enthalten.');
+      actions.setSubmitting(false);
+      return;
+    }
+
     if (password !== repeatedPassword) {
       setError('Passwörter stimmen nicht überein.');
       actions.setSubmitting(false);
-    } else {
-      return onSubmit(values, actions);
+      return;
     }
+
+    onSubmit(values, actions);
   };
 
   return (
