@@ -1,6 +1,1 @@
 branchName: full
-branches:
-  - label: enhancement
-    name: dev
-  - label: bug
-    name: dev
