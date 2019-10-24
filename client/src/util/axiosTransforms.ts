@@ -22,11 +22,10 @@ export function transformLoggedInUserResponse(responseJSON: string): LoggedInUse
 
   substituteTutorials.forEach(tutorial => {
     const { dates, ...other } = tutorial;
-    const parsedDates: Date[] = dates.map(d => new Date(d));
 
     parsedSubstituteTutorials.push({
       ...other,
-      dates: parsedDates,
+      dates,
     });
   });
 

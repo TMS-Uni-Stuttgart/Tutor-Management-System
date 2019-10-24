@@ -31,5 +31,5 @@ export interface LoggedInUserTutorial extends HasId {
 }
 
 export interface LoggedInUserSubstituteTutorial extends LoggedInUserTutorial {
-  dates: Date[];
+  dates: string[];
 }
