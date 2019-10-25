@@ -61,13 +61,16 @@ function getAvailableDates(
     const substituteTutorial = user.substituteTutorials.find(sub => sub.id === tutorial.id);
 
     if (substituteTutorial) {
-      return tutorial.dates.filter(
-        date => substituteTutorial.dates.findIndex(d => isSameDay(date, new Date(d))) !== -1
-      );
+      return tutorial.dates
+        .filter(
+          date =>
+            substituteTutorial.dates.findIndex(d => isSameDay(new Date(date), new Date(d))) !== -1
+        )
+        .map(d => new Date(d));
     }
   }
 
-  return tutorial.dates;
+  return tutorial.dates.map(d => new Date(d));
 }
 
 function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element {

@@ -86,10 +86,14 @@ function getInitialValues(tutorial?: Tutorial): TutorialSubstituteFormState {
     };
   }
 
-  const dates = tutorial.dates.sort((a, b) => compareAsc(a, b)).map(date => date.toDateString());
+  const dates = tutorial.dates
+    .sort((a, b) => compareAsc(new Date(a), new Date(b)))
+    .map(date => new Date(date).toDateString());
+
   const substitutes: { [key: string]: string } = {};
 
-  tutorial.dates.forEach(date => {
+  tutorial.dates.forEach(d => {
+    const date = new Date(d);
     substitutes[date.toDateString()] = tutorial.substitutes[parseDateToMapKey(date)] || '';
   });
 
