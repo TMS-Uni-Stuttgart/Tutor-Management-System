@@ -24,7 +24,7 @@ RUN yarn build
 # Create the image which runs the server
 #
 # =============================================
-FROM alpine:edge
+FROM alpine:3
 
 # Installs latest Chromium (76) package.
 RUN apk add --no-cache \
@@ -36,7 +36,7 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont \
       terminus-font \
-      nodejs \
+      nodejs-current \
       yarn 
 
 COPY --from=build tms/server/build tms/server
