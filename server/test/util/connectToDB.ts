@@ -2,7 +2,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import userService from '../../src/services/user-service/UserService.class';
 
-let mongod: MongoMemoryServer | undefined = undefined;
+let mongod: MongoMemoryServer | undefined;
 
 export async function connectToDB(done: jest.DoneCallback) {
   mongod = new MongoMemoryServer({
