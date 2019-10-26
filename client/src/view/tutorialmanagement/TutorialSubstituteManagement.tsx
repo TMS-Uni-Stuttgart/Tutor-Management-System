@@ -150,7 +150,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
 
     const noSubDTO: SubstituteDTO = {
       tutorId: undefined,
-      dates: datesWithoutSubstitute.map(d => new Date(d).toISOString()),
+      dates: datesWithoutSubstitute.map(d => new Date(d).toDateString()),
     };
 
     let response: Tutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
@@ -158,7 +158,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
     for (const [tutor, dates] of Object.entries(datesOfSubstitutes)) {
       const dto: SubstituteDTO = {
         tutorId: tutor,
-        dates: dates.map(d => new Date(d).toISOString()),
+        dates: dates.map(d => new Date(d).toDateString()),
       };
 
       response = await setSubstituteTutor(tutorial.id, dto);
