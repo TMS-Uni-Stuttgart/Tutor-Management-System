@@ -42,7 +42,7 @@
     "mdi-material-ui": "^6.8.0",
     "notistack": "^0.9.5",
     "react": "^16.10.2",
-    "react-dom": "^16.10.2",
+    "react-dom": "^16.11.0",
     "react-google-charts": "^3.0.15",
     "react-i18next": "^11.0.0",
     "react-markdown": "^4.2.2",
