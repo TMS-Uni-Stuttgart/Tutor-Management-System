@@ -35,8 +35,8 @@ const defaultDialog: DialogOptions = {
   actions: [],
 };
 
-let showDialogGlobal: CreateDialogFunction | undefined = undefined;
-let closeDialogGlobal: (() => void) | undefined = undefined;
+let showDialogGlobal: CreateDialogFunction | undefined;
+let closeDialogGlobal: (() => void) | undefined;
 
 function DialogService({ children }: PropsWithChildren<{}>): JSX.Element {
   const [dialog, setDialog] = useState<DialogOptions | undefined>(undefined);

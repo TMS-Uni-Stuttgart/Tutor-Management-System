@@ -197,7 +197,7 @@ class PdfService {
   private async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {
     const html = this.generateHTMLFromMarkdown(markdown);
 
-    return await this.getPDFFromHTML(html);
+    return this.getPDFFromHTML(html);
   }
 
   private generateHTMLFromMarkdown(markdown: string): string {
@@ -416,7 +416,7 @@ class PdfService {
   }
 
   private async getPDFFromHTML(html: string): Promise<Buffer> {
-    let browser: puppeteer.Browser | undefined = undefined;
+    let browser: puppeteer.Browser | undefined;
 
     Logger.debug('Starting browser...');
     Logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);

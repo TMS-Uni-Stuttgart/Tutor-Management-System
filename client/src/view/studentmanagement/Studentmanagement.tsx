@@ -94,6 +94,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     getTeamsOfTutorial,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
     tutorialId,
+    enqueueSnackbar,
   ]);
 
   async function createTeamIfNeccessary(team: string | undefined): Promise<string | undefined> {

@@ -358,7 +358,7 @@ function assertUserWithIdInRequest(req: Request): UserDocument {
  * Returns the roles of the user in the request if possible.
  *
  * Checks if the request contains a user and if that user has a `roles` property.
- * 
+ *
  * If any of the above preconditions is false a `PermissionDeniedError` is thrown.
 
  * @param req Request to check

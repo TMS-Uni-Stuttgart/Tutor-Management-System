@@ -130,7 +130,9 @@ export function getInitialTutorialFormValues(
     };
   }
 
-  const sortedDates: Date[] = tutorial.dates.sort((a, b) => a.getTime() - b.getTime());
+  const sortedDates: Date[] = tutorial.dates
+    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+    .map(d => new Date(d));
 
   return {
     slot: tutorial.slot,
@@ -142,7 +144,7 @@ export function getInitialTutorialFormValues(
     startTime: tutorial.startTime.toISOString(),
     endTime: tutorial.endTime.toISOString(),
     correctors: tutorial.correctors.map(corrector => corrector.id),
-    selectedDates: tutorial.dates.map(date => date.toDateString()),
+    selectedDates: tutorial.dates.map(date => new Date(date).toDateString()),
   };
 }
 

@@ -64,7 +64,7 @@ function TutorialStatsCard({ value }: TutorialStatsCardProps): JSX.Element {
             <TableRow>
               <TableCell className={classes.tableTitle}>Wochentag: </TableCell>
               <TableCell>
-                {value.tutorial.dates[0].toLocaleString('de-de', { weekday: 'long' })}
+                {new Date(value.tutorial.dates[0]).toLocaleString('de-de', { weekday: 'long' })}
               </TableCell>
             </TableRow>
           </>

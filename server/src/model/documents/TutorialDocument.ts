@@ -18,7 +18,8 @@ import studentService from '../../services/student-service/StudentService.class'
 import Logger from '../../helpers/Logger';
 
 export class TutorialSchema extends Typegoose
-  implements Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams' | 'substitutes'> {
+  implements
+    Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams' | 'substitutes' | 'dates'> {
   @prop({ required: true })
   slot!: string;
 

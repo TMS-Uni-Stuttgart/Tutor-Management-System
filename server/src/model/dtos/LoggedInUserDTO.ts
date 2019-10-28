@@ -16,12 +16,12 @@ export class LoggedInUserTutorialDTO implements LoggedInUserTutorial {
 
 export class LoggedInUserSubstituteTutorialDTO extends LoggedInUserTutorialDTO
   implements LoggedInUserSubstituteTutorial {
-  readonly dates: Date[];
+  readonly dates: string[];
 
   constructor(tutorial: Pick<TutorialDocument, 'id' | 'slot'>, dates: Date[]) {
     super(tutorial);
 
-    this.dates = dates;
+    this.dates = dates.map(date => date.toDateString());
   }
 }
 

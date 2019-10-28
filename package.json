@@ -22,7 +22,7 @@
     "ts:check:shared": "echo Type checking shared && cd ./shared && yarn ts:check",
     "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/app",
     "docker:build": "yarn version && ts-node ./build-docker-image.ts",
-    "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre",
+    "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre --skip-bundle",
     "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server && yarn upgrade-pgk:shared",
     "upgrade-pgk:client": "cd ./client && npm-upgrade",
     "upgrade-pgk:server": "cd ./server && npm-upgrade",
@@ -31,8 +31,8 @@
   "devDependencies": {
     "@types/node": "^12.11.1",
     "@types/yup": "^0.26.24",
-    "@typescript-eslint/eslint-plugin": "^2.4.0",
-    "@typescript-eslint/parser": "^2.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.5.0",
+    "@typescript-eslint/parser": "^2.5.0",
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-prettier": "^3.1.1",
@@ -42,7 +42,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "date-fns": "^2.5.1",
+    "date-fns": "^2.6.0",
     "yup": "^0.27.0"
   }
 }
