@@ -209,7 +209,7 @@ class UserService {
       }
     }
 
-    return await Promise.all(tutorials);
+    return Promise.all(tutorials);
   }
 
   public async setTutorialsOfUser(id: string, tutorialIds: string[]) {

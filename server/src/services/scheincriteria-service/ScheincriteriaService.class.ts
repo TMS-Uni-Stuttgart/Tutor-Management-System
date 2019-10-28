@@ -311,7 +311,7 @@ export class ScheincriteriaService {
       return new FormEnumFieldData(enumValues);
     }
 
-    let fieldData: FormFieldData | undefined = undefined;
+    let fieldData: FormFieldData | undefined;
 
     switch (type) {
       case 'string':

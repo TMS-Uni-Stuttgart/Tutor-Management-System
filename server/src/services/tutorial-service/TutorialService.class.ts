@@ -284,7 +284,7 @@ class TutorialService {
   }
 
   private async getTutorDocumentOfTutorial(tutor: Ref<UserDocument>): Promise<UserDocument> {
-    return isDocument(tutor) ? tutor : await userService.getDocumentWithId(tutor.toString());
+    return isDocument(tutor) ? tutor : userService.getDocumentWithId(tutor.toString());
   }
 
   private async filterTutorials(
