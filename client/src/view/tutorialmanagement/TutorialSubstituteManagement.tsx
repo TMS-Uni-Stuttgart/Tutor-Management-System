@@ -86,10 +86,14 @@ function getInitialValues(tutorial?: Tutorial): TutorialSubstituteFormState {
     };
   }
 
-  const dates = tutorial.dates.sort((a, b) => compareAsc(a, b)).map(date => date.toDateString());
+  const dates = tutorial.dates
+    .sort((a, b) => compareAsc(new Date(a), new Date(b)))
+    .map(date => new Date(date).toDateString());
+
   const substitutes: { [key: string]: string } = {};
 
-  tutorial.dates.forEach(date => {
+  tutorial.dates.forEach(d => {
+    const date = new Date(d);
     substitutes[date.toDateString()] = tutorial.substitutes[parseDateToMapKey(date)] || '';
   });
 
@@ -146,7 +150,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
 
     const noSubDTO: SubstituteDTO = {
       tutorId: undefined,
-      dates: datesWithoutSubstitute.map(d => new Date(d).toISOString()),
+      dates: datesWithoutSubstitute.map(d => new Date(d).toDateString()),
     };
 
     let response: Tutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
@@ -154,7 +158,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
     for (const [tutor, dates] of Object.entries(datesOfSubstitutes)) {
       const dto: SubstituteDTO = {
         tutorId: tutor,
-        dates: dates.map(d => new Date(d).toISOString()),
+        dates: dates.map(d => new Date(d).toDateString()),
       };
 
       response = await setSubstituteTutor(tutorial.id, dto);

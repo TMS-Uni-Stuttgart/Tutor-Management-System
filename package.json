@@ -22,7 +22,7 @@
     "ts:check:shared": "echo Type checking shared && cd ./shared && yarn ts:check",
     "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/app",
     "docker:build": "yarn version && ts-node ./build-docker-image.ts",
-    "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre",
+    "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre --skip-bundle",
     "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server && yarn upgrade-pgk:shared",
     "upgrade-pgk:client": "cd ./client && npm-upgrade",
     "upgrade-pgk:server": "cd ./server && npm-upgrade",

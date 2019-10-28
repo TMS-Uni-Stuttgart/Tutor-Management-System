@@ -12,7 +12,7 @@ export interface TutorialDTO {
 export interface Tutorial extends HasId {
   slot: string;
   tutor?: string;
-  dates: Date[];
+  dates: string[];
   startTime: Date;
   endTime: Date;
   students: string[];
@@ -31,5 +31,5 @@ export interface LoggedInUserTutorial extends HasId {
 }
 
 export interface LoggedInUserSubstituteTutorial extends LoggedInUserTutorial {
-  dates: Date[];
+  dates: string[];
 }
