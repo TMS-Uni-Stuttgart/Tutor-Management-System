@@ -4,7 +4,7 @@ import userService from '../../src/services/user-service/UserService.class';
 
 let mongod: MongoMemoryServer | undefined;
 
-export async function connectToDB(done: jest.DoneCallback) {
+export async function connectToDB() {
   mongod = new MongoMemoryServer({
     instance: {
       dbName: 'tms',
@@ -23,8 +23,6 @@ export async function connectToDB(done: jest.DoneCallback) {
   } catch (err) {
     throw err;
   }
-
-  done();
 }
 
 export async function disconnectFromDB(done: jest.DoneCallback) {
