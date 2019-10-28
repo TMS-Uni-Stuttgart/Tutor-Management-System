@@ -98,6 +98,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
     getAllStudentsAndFetchTeams,
     getAllTutorials,
     getScheinCriteriaSummaryOfAllStudents,
+    enqueueSnackbar,
   ]);
 
   async function printOverviewSheet() {

@@ -24,7 +24,7 @@ RUN yarn build
 # Create the image which runs the server
 #
 # =============================================
-FROM alpine:edge
+FROM alpine:3
 
 # Installs latest Chromium (76) package.
 RUN apk add --no-cache \
@@ -36,7 +36,7 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont \
       terminus-font \
-      nodejs \
+      nodejs-current \
       yarn 
 
 COPY --from=build tms/server/build tms/server
@@ -53,8 +53,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 # Tell the PDFService where to find the Chrome executable.
 ENV TMS_PUPPETEER_EXEC_PATH "/usr/bin/chromium-browser"
 
-# Puppeteer v1.17.0 works with Chromium 76.
-RUN yarn add puppeteer@1.17.0
+# Puppeteer v1.17.0 works with Chromium 77.
+RUN yarn add puppeteer@1.19.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \

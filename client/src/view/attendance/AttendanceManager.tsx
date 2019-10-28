@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import GREEN from '@material-ui/core/colors/green';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { compareAsc, format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
@@ -61,13 +61,16 @@ function getAvailableDates(
     const substituteTutorial = user.substituteTutorials.find(sub => sub.id === tutorial.id);
 
     if (substituteTutorial) {
-      return tutorial.dates.filter(
-        date => substituteTutorial.dates.findIndex(d => compareAsc(date, d) === 0) !== -1
-      );
+      return tutorial.dates
+        .filter(
+          date =>
+            substituteTutorial.dates.findIndex(d => isSameDay(new Date(date), new Date(d))) !== -1
+        )
+        .map(d => new Date(d));
     }
   }
 
-  return tutorial.dates;
+  return tutorial.dates.map(d => new Date(d));
 }
 
 function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element {

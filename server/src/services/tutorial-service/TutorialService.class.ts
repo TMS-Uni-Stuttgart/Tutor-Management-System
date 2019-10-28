@@ -1,11 +1,10 @@
+import { isDocument, Ref } from '@hasezoey/typegoose';
 import { parse } from 'date-fns';
 import _ from 'lodash';
 import { Types } from 'mongoose';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
-import { User, TutorInfo } from 'shared/dist/model/User';
-import { Ref } from '@hasezoey/typegoose';
-import { isDocument } from '@hasezoey/typegoose';
+import { TutorInfo, User } from 'shared/dist/model/User';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
@@ -270,10 +269,10 @@ class TutorialService {
       id: _id,
       slot,
       tutor: tutor ? getIdOfDocumentRef(tutor) : undefined,
-      dates: dates.map(d => new Date(d)),
+      dates: dates.map(d => d.toDateString()),
       correctors: correctors.map(getIdOfDocumentRef),
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
+      startTime,
+      endTime,
       students: students.map(getIdOfDocumentRef),
       teams: teams.map(getIdOfDocumentRef),
       substitutes: parsedSubstitutes,

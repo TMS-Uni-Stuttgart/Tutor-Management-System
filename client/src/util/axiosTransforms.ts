@@ -22,11 +22,10 @@ export function transformLoggedInUserResponse(responseJSON: string): LoggedInUse
 
   substituteTutorials.forEach(tutorial => {
     const { dates, ...other } = tutorial;
-    const parsedDates: Date[] = dates.map(d => new Date(d));
 
     parsedSubstituteTutorials.push({
       ...other,
-      dates: parsedDates,
+      dates,
     });
   });
 
@@ -52,19 +51,16 @@ export function transformMultipleTutorialResponse(responseJSON: string): Tutoria
 }
 
 export function transformTutorialResponse(responseJSON: string): Tutorial {
-  // FIXME: Crashed if responseJSON is empty.
+  // FIXME: Crashes if responseJSON is empty.
   const {
-    dates: dateStrings,
+    dates,
     startTime: startTimeString,
     endTime: endTimeString,
     ...rest
   }: TutorialResponse = JSON.parse(responseJSON);
-  const dates: Date[] = [];
 
   const startTime = new Date(startTimeString);
   const endTime = new Date(endTimeString);
-
-  dateStrings.forEach(date => dates.push(new Date(date)));
 
   return {
     ...rest,
