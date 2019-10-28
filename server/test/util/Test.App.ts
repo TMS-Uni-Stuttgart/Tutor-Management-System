@@ -1,4 +1,4 @@
-import initApp from '../src/app';
+import initApp from '../../src/app';
 
 const app = initApp();
 
