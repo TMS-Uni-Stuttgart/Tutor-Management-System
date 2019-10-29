@@ -11,11 +11,11 @@ database:
 
 mailing:
   testingMode: false
-  templates: 
-  # Replacements:
-  # {{name}}: Name of user
-  # {{username}}: Username of user
-  # {{password}}: Temporary password of user
+  templates:
+    # Replacements:
+    # {{name}}: Name of user
+    # {{username}}: Username of user
+    # {{password}}: Temporary password of user
     credentials: "Hallo {{name}},\n
       \n
       hier sind deine Zugangsdaten zum Tutor-Management-System:\n
