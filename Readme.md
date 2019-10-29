@@ -2,6 +2,7 @@
 
 ![](https://github.com/Dudrie/Tutor-Management-System/workflows/Code%20Quality/badge.svg)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=Dudrie/Tutor-Management-System)](https://dependabot.com)
+[![CodeFactor](https://www.codefactor.io/repository/github/dudrie/tutor-management-system/badge)](https://www.codefactor.io/repository/github/dudrie/tutor-management-system)
 
 The Tutor Management System (short _TMS_) aims to be a tool used at universitites (in Germany). It can be used to track the requirements which a student has to fulfill to be allowed to write the exam. It can (among other things) track the points gained by the students in their homeworks, how often a student attended the tutorial and how often a student presented a solution.
 
