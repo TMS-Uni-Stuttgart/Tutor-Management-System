@@ -248,7 +248,7 @@ class TutorialService {
     }
 
     const {
-      _id,
+      id,
       slot,
       tutor,
       dates,
@@ -266,7 +266,7 @@ class TutorialService {
     }
 
     return {
-      id: _id,
+      id,
       slot,
       tutor: tutor ? getIdOfDocumentRef(tutor) : undefined,
       dates: dates.map(d => d.toDateString()),
