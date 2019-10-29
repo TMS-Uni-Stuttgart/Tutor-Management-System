@@ -38,11 +38,7 @@ describe('POST /user', () => {
       email: 'some@mail.com',
     };
 
-    return agent
-      .post('/api/user')
-      .send(userToCreate)
-      .expect(201, done)
-      .expect(assertUserToMatchCreateUserDTO(userToCreate), done);
+    addUserToDatabase(userToCreate, done);
   });
 
   test('Create a user with one tutorial', async done => {
@@ -66,11 +62,7 @@ describe('POST /user', () => {
       email: 'some@mail.com',
     };
 
-    agent
-      .post('/api/user')
-      .send(userToCreate)
-      .expect(201, done)
-      .expect(assertUserToMatchCreateUserDTO(userToCreate), done);
+    addUserToDatabase(userToCreate, done);
   });
 
   test('Create a user with multiple tutorials', async done => {
@@ -100,10 +92,14 @@ describe('POST /user', () => {
       email: 'some@mail.com',
     };
 
-    agent
-      .post('/api/user')
-      .send(userToCreate)
-      .expect(201, done)
-      .expect(assertUserToMatchCreateUserDTO(userToCreate), done);
+    addUserToDatabase(userToCreate, done);
   });
 });
+
+async function addUserToDatabase(userToCreate: CreateUserDTO, done: jest.DoneCallback) {
+  agent
+    .post('/api/user')
+    .send(userToCreate)
+    .expect(201, done)
+    .expect(assertUserToMatchCreateUserDTO(userToCreate), done);
+}
