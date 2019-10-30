@@ -4,7 +4,7 @@ import { fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
 import { arrayProp, plugin, pre, prop, Ref, Typegoose } from '@hasezoey/typegoose';
-import databaseConfig from '../../helpers/database';
+import { databaseConfig } from '../../helpers/config';
 import { CollectionName } from '../CollectionName';
 import { TutorialDocument } from './TutorialDocument';
 

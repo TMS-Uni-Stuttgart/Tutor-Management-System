@@ -67,6 +67,8 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
 USER pptruser
 
 WORKDIR /tms
+ENV NODE_ENV 'production'
+
 RUN yarn install --production
 
 # Set up container entrypoint to be the server file.

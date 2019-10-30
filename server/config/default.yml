@@ -1,3 +1,6 @@
+# Session timeout after inactivity in minutes.
+sessionTimeout: 120
+
 database:
   databaseURL: 'mongodb://localhost:27017/tms'
   secret: 'keyboard cat'
@@ -11,11 +14,11 @@ database:
 
 mailing:
   testingMode: false
-  templates: 
-  # Replacements:
-  # {{name}}: Name of user
-  # {{username}}: Username of user
-  # {{password}}: Temporary password of user
+  templates:
+    # Replacements:
+    # {{name}}: Name of user
+    # {{username}}: Username of user
+    # {{password}}: Temporary password of user
     credentials: "Hallo {{name}},\n
       \n
       hier sind deine Zugangsdaten zum Tutor-Management-System:\n
