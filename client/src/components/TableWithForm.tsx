@@ -9,7 +9,6 @@ const useStyles = makeStyles((theme: Theme) =>
     topBar: {
       display: 'flex',
       width: '100%',
-      height: 48,
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(-8),
     },
