@@ -306,6 +306,24 @@ describe('DELETE /user/:id', () => {
   });
 });
 
+describe('GET /user/:id/tutorial', () => {
+  test.todo('Get all tutorials if user has none');
+
+  test.todo('Get all tutorials if user has some');
+});
+
+describe('PUT /user/:id/tutorial', () => {
+  test.todo('Change tutorial of a user.');
+});
+
+describe('POST /user/:id/password', () => {
+  test.todo('Change password of a user');
+});
+
+describe('POST /user/:id/temporaryPassword', () => {
+  test.todo('Change temporary password of a user');
+});
+
 /**
  * Sends a POST request to create a user with the given information.
  *
