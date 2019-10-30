@@ -1,9 +1,10 @@
-import { Theme } from '@material-ui/core';
+import { TextField, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { format } from 'date-fns';
 import fastcsv from 'fast-csv';
 import { Row, RowMap } from 'fast-csv/build/src/parser';
 import FileSaver from 'file-saver';
+import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { Attendance } from 'shared/dist/model/Attendance';
@@ -29,6 +30,7 @@ import {
 } from '../../util/helperFunctions';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
 import { getPointsOfEntityAsString } from '../pointsmanagement/util/helper';
+import { getFilteredStudents } from './Studentmanagement';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,12 +44,16 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.error.main,
     },
     printButton: {
-      marginRight: theme.spacing(1),
+      marginRight: theme.spacing(2),
       height: '56px',
     },
     topBar: {
       display: 'flex',
       justifyContent: 'flex-end',
+    },
+    searchField: {
+      flex: 1,
+      marginRight: theme.spacing(2),
     },
   })
 );
@@ -64,6 +70,8 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [summaries, setSummaries] = useState<{ [studentId: string]: ScheinCriteriaSummary }>({});
+
+  const [filterText, setFilterText] = useState<string>('');
 
   const {
     fetchTeamsOfStudents,
@@ -301,6 +309,16 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       ) : (
         <>
           <div className={classes.topBar}>
+            <TextField
+              variant='outlined'
+              label='Suche'
+              onChange={e => setFilterText(e.target.value)}
+              className={classes.searchField}
+              InputProps={{
+                startAdornment: <SearchIcon color='disabled' />,
+              }}
+            />
+
             <SubmitButton
               variant='contained'
               color='primary'
@@ -326,7 +344,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
 
           <TableWithPadding
             placeholder='Keine Studierenden vorhanden'
-            items={students}
+            items={getFilteredStudents(students, filterText)}
             createRowFromItem={student => (
               <ExtendableStudentRow
                 student={student}
