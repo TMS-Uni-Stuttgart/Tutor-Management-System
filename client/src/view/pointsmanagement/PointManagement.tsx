@@ -205,11 +205,11 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       const student = students.find(s => s.id === studentId);
 
       if (student) {
-        const teamId = student.team;
+        const team = student.team;
 
-        if (teamId && !fetchedTeamIds.includes(teamId)) {
-          fetchedTeamIds.push(teamId);
-          updatedTeamPromises.push(getTeamOfTutorial(tutorialId, teamId));
+        if (team && !fetchedTeamIds.includes(team.id)) {
+          fetchedTeamIds.push(team.id);
+          updatedTeamPromises.push(getTeamOfTutorial(tutorialId, team.id));
         }
       }
 

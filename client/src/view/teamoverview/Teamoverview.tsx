@@ -49,6 +49,7 @@ function updateStudentsArray(
       updatedStudents[ind] = student;
     }
   });
+
   setStudents(updatedStudents);
 }
 
@@ -60,9 +61,9 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   const [teams, setTeams] = useState<Team[]>([]);
   const dialog = useDialog();
   const {
+    getStudent,
     getTeamsOfTutorial,
-    getStudentsOfTutorialAndFetchTeams,
-    fetchTeamsOfStudents,
+    getStudentsOfTutorial,
     createTeam,
     editTeam: editTeamRequest,
     deleteTeam: deleteTeamRequest,
@@ -73,7 +74,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
 
     (async function() {
       const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorialAndFetchTeams(params.tutorialId),
+        getStudentsOfTutorial(params.tutorialId),
         getTeamsOfTutorial(params.tutorialId),
       ]);
 
@@ -81,7 +82,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       setTeams(teams);
       setIsLoading(false);
     })();
-  }, [getStudentsOfTutorialAndFetchTeams, getTeamsOfTutorial, params.tutorialId]);
+  }, [getStudentsOfTutorial, getTeamsOfTutorial, params.tutorialId]);
 
   const handleCreateTeam: TeamFormSubmitCallback = async (
     { students: studentsFromForm },
@@ -91,10 +92,9 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
 
     try {
       const response = await createTeam(params.tutorialId, teamDTO);
-      const studentsFromUpdatedTeam = await fetchTeamsOfStudents(response.students);
 
       setTeams([...teams, response]);
-      updateStudentsArray(studentsFromUpdatedTeam, students, setStudents);
+      updateStudentsArray(response.students, students, setStudents);
       resetForm();
       enqueueSnackbar('Team wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
@@ -126,15 +126,14 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
 
   function deleteTeam(team: Team) {
     deleteTeamRequest(params.tutorialId, team.id)
-      .then(() => {
+      .then(async () => {
         setTeams(teams.filter(u => u.id !== team.id));
-        const studentsWithoutDeletedTeam = team.students;
-        studentsWithoutDeletedTeam.forEach(student => {
-          student.team = '';
-        });
-        fetchTeamsOfStudents(studentsWithoutDeletedTeam).then(fetchedStudentsWithoutDeletedTeam => {
-          updateStudentsArray(fetchedStudentsWithoutDeletedTeam, students, setStudents);
-        });
+
+        const studentsWithoutDeletedTeam = await Promise.all(
+          team.students.map(stud => getStudent(stud.id))
+        );
+
+        updateStudentsArray(studentsWithoutDeletedTeam, students, setStudents);
       })
       .finally(() => {
         dialog.hide();

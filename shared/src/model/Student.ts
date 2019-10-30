@@ -1,6 +1,10 @@
-import { NamedElement } from './Common';
 import { Attendance } from './Attendance';
+import { HasId, NamedElement } from './Common';
 import { PointMapDTO } from './Points';
+
+interface TeamInStudent extends HasId {
+  teamNo: number;
+}
 
 export interface Student extends NamedElement {
   attendance: { [index: string]: Attendance };
@@ -10,7 +14,7 @@ export interface Student extends NamedElement {
   points: PointMapDTO;
   presentationPoints: { [index: string]: number };
   scheinExamResults: PointMapDTO;
-  team?: string;
+  team?: TeamInStudent;
   tutorial: string;
   cakeCount: number;
 }

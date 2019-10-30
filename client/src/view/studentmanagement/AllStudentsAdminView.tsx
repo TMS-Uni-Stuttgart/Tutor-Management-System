@@ -74,10 +74,9 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
   const [filterText, setFilterText] = useState<string>('');
 
   const {
-    fetchTeamsOfStudents,
-    editStudentAndFetchTeam: editStudentRequest,
+    editStudent: editStudentRequest,
     deleteStudent: deleteStudentRequest,
-    getAllStudentsAndFetchTeams,
+    getAllStudents,
     getAllScheinExams,
     getAllTutorials,
     getScheinCriteriaSummaryOfAllStudents,
@@ -87,7 +86,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
 
   useEffect(() => {
     setIsLoading(true);
-    getAllStudentsAndFetchTeams().then(response => {
+    getAllStudents().then(response => {
       setStudents(response);
       setIsLoading(false);
     });
@@ -101,13 +100,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       );
 
     getAllTutorials().then(response => setTutorials(response));
-  }, [
-    fetchTeamsOfStudents,
-    getAllStudentsAndFetchTeams,
-    getAllTutorials,
-    getScheinCriteriaSummaryOfAllStudents,
-    enqueueSnackbar,
-  ]);
+  }, [getAllStudents, getAllTutorials, getScheinCriteriaSummaryOfAllStudents, enqueueSnackbar]);
 
   async function printOverviewSheet() {
     setCreatingScheinStatus(true);
@@ -187,10 +180,9 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
         <StudentForm
           student={student}
           otherStudents={students.filter(s => s.id !== student.id)}
-          teams={student.team ? [student.team] : []}
+          teams={undefined}
           onSubmit={editStudent(student)}
           onCancelClicked={() => dialog.hide()}
-          disableTeamDropdown={true}
         />
       ),
       DialogProps: {

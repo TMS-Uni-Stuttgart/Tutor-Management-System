@@ -76,10 +76,10 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
   const dialog = useDialog();
   const {
     getTeamsOfTutorial,
-    getStudentsOfTutorialAndFetchTeams,
-    createStudentAndFetchTeam,
+    getStudentsOfTutorial,
+    createStudent,
     createTeam,
-    editStudentAndFetchTeam: editStudentRequest,
+    editStudent: editStudentRequest,
     deleteStudent: deleteStudentRequest,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
   } = useAxios();
@@ -91,7 +91,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
 
     (async function() {
       const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorialAndFetchTeams(tutorialId),
+        getStudentsOfTutorial(tutorialId),
         getTeamsOfTutorial(tutorialId),
       ]);
 
@@ -110,7 +110,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       setIsLoading(false);
     })();
   }, [
-    getStudentsOfTutorialAndFetchTeams,
+    getStudentsOfTutorial,
     getTeamsOfTutorial,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
     tutorialId,
@@ -143,7 +143,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     };
 
     try {
-      const response = await createStudentAndFetchTeam(studentDTO);
+      const response = await createStudent(studentDTO);
       const teams = await getTeamsOfTutorial(tutorialId);
 
       setStudents([...students, response].sort(sortByName));
