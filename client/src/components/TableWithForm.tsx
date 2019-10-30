@@ -43,15 +43,7 @@ interface Props<T> extends TableWithPaddingProps<T> {
   topBarContent?: React.ReactNode;
 }
 
-function TableWithForm<T>({
-  title,
-  form,
-  topBarContent,
-  items,
-  createRowFromItem,
-  placeholder,
-  ...other
-}: Props<T>): JSX.Element {
+function TableWithForm<T>({ title, form, topBarContent, ...other }: Props<T>): JSX.Element {
   const classes = useStyles();
   const [isEditorOpen, setEditorOpen] = useState(false);
 
@@ -75,12 +67,7 @@ function TableWithForm<T>({
           [classes.listWithClosedEditor]: !isEditorOpen,
         })}
       >
-        <TableWithPadding
-          items={items}
-          createRowFromItem={createRowFromItem}
-          placeholder={placeholder}
-          {...other}
-        />
+        <TableWithPadding {...other} />
       </div>
     </>
   );
