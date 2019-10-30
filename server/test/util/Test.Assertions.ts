@@ -1,4 +1,4 @@
-import { CreateUserDTO } from 'shared/dist/model/User';
+import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
 
 /**
  * Checks if the response of the API call matches the given CreateUserDTO.
@@ -12,11 +12,18 @@ import { CreateUserDTO } from 'shared/dist/model/User';
 export function assertUserToMatchCreateUserDTO(expectedUser: CreateUserDTO, actualUser: any) {
   assertNotUndefinedOrNull(actualUser);
 
+  assertUserToMatchUserDTO(expectedUser, actualUser);
+
+  expect(actualUser.temporaryPassword).toBe(expectedUser.password);
+}
+
+export function assertUserToMatchUserDTO(expectedUser: UserDTO, actualUser: any) {
+  assertNotUndefinedOrNull(actualUser);
+
   expect(actualUser.firstname).toBe(expectedUser.firstname);
   expect(actualUser.lastname).toBe(expectedUser.lastname);
   expect(actualUser.email).toBe(expectedUser.email);
   expect(actualUser.username).toBe(expectedUser.username);
-  expect(actualUser.temporaryPassword).toBe(expectedUser.password);
 
   expect(actualUser.roles).toEqual(expectedUser.roles);
   expect(actualUser.tutorials).toEqual(expectedUser.tutorials);
