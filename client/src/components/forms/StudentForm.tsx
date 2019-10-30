@@ -60,8 +60,7 @@ interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsed
   onSubmit: StudentFormSubmitCallback;
   student?: StudentWithFetchedTeam;
   otherStudents: StudentWithFetchedTeam[];
-  teams: Team[];
-  disableTeamDropdown?: boolean;
+  teams?: Team[];
 }
 
 export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
@@ -85,7 +84,7 @@ function getNextTeamWithSlot(teams: Team[]): string {
 }
 
 export function getInitialStudentFormState(
-  teams: Team[],
+  teams?: Team[],
   student?: StudentWithFetchedTeam
 ): StudentFormState {
   if (student) {
@@ -105,7 +104,7 @@ export function getInitialStudentFormState(
     matriculationNo: '',
     email: '',
     courseOfStudies: '',
-    team: getNextTeamWithSlot(teams),
+    team: teams ? getNextTeamWithSlot(teams) : '',
   };
 }
 
@@ -135,14 +134,14 @@ function StudentForm({
   className,
   student,
   otherStudents,
-  disableTeamDropdown,
   ...other
 }: Props): JSX.Element {
   const classes = useStyles();
   const firstnameInputRef = useRef<HTMLElement>();
   const initialFormState = getInitialStudentFormState(teamsFromProps, student);
 
-  const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...teamsFromProps];
+  const disableTeamDropdown = !teamsFromProps;
+  const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...(teamsFromProps || [])];
 
   async function handleSubmit(
     values: StudentFormState,

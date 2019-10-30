@@ -1,11 +1,10 @@
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
+import { TutorInfo, User } from 'shared/dist/model/User';
 import { sortByName } from 'shared/dist/util/helpers';
-import { User, TutorInfo } from 'shared/dist/model/User';
 import {
   StudentByTutorialSlotSummaryMap,
   StudentScheinCriteriaSummaryMap,
-  StudentWithFetchedTeam,
   TutorialWithFetchedCorrectors,
   TutorialWithFetchedStudents,
   TutorialWithFetchedTutor,
@@ -15,7 +14,7 @@ import {
   transformTutorialResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
-import { fetchTeamsOfStudents, getScheinCriteriaSummaryOfAllStudents } from './Student';
+import { getScheinCriteriaSummaryOfAllStudents } from './Student';
 import { getUser } from './User';
 
 export async function getAllTutorials(): Promise<Tutorial[]> {
@@ -189,14 +188,6 @@ export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
-}
-
-export async function getStudentsOfTutorialAndFetchTeams(
-  id: string
-): Promise<StudentWithFetchedTeam[]> {
-  const students = await getStudentsOfTutorial(id);
-
-  return fetchTeamsOfStudents(students);
 }
 
 export async function getScheinCriteriaSummariesOfAllStudentsOfTutorial(

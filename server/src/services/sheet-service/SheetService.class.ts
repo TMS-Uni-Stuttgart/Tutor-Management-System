@@ -77,7 +77,7 @@ class SheetService {
     let pointsOfTeam = new PointMap();
 
     if (student.team) {
-      const team = await teamService.getTeamWithId(student.tutorial, student.team);
+      const team = await teamService.getTeamWithId(student.tutorial, student.team.id);
       pointsOfTeam = new PointMap(team.points);
     }
 

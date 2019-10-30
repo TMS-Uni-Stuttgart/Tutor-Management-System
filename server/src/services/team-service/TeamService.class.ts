@@ -345,7 +345,7 @@ class TeamService {
     return tutorial.teams.length + 1;
   }
 
-  private async getTeamOrReject(team: TeamDocument | null): Promise<Team> {
+  public async getTeamOrReject(team: TeamDocument | null): Promise<Team> {
     if (!team) {
       return this.rejectTeamNotFound();
     }

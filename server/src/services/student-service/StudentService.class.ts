@@ -246,7 +246,7 @@ class StudentService {
       email,
       courseOfStudies,
       tutorial: getIdOfDocumentRef(tutorial),
-      team: team ? team.id : undefined,
+      team: team ? { id: team.id, teamNo: team.teamNo } : undefined,
       attendance: parsedAttendances,
       points,
       presentationPoints: presentationPoints
