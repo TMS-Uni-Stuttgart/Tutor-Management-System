@@ -1,4 +1,4 @@
-import { Theme } from '@material-ui/core';
+import { Theme, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -257,6 +257,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
               onDeleteStudentClicked={handleDeleteStudent}
             />
           )}
+          topBarContent={<TextField variant='outlined' label='Suche' />}
         />
       )}
     </div>
