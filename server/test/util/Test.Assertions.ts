@@ -1,4 +1,5 @@
-import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
+import { CreateUserDTO, UserDTO, User } from 'shared/dist/model/User';
+import { Role } from 'shared/dist/model/Role';
 
 /**
  * Checks if the response of the API call matches the given CreateUserDTO.
@@ -9,7 +10,7 @@ import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
  *
  * @param expectedUser User to check response against
  */
-export function assertUserToMatchCreateUserDTO(expectedUser: CreateUserDTO, actualUser: any) {
+export function assertUserToMatchCreateUserDTO(expectedUser: CreateUserDTO, actualUser: User) {
   assertNotUndefinedOrNull(actualUser);
 
   assertUserToMatchUserDTO(expectedUser, actualUser);
@@ -17,13 +18,16 @@ export function assertUserToMatchCreateUserDTO(expectedUser: CreateUserDTO, actu
   expect(actualUser.temporaryPassword).toBe(expectedUser.password);
 }
 
-export function assertUserToMatchUserDTO(expectedUser: UserDTO, actualUser: any) {
+export function assertUserToMatchUserDTO(expectedUser: UserDTO, actualUser: User) {
   assertNotUndefinedOrNull(actualUser);
 
   expect(actualUser.firstname).toBe(expectedUser.firstname);
   expect(actualUser.lastname).toBe(expectedUser.lastname);
   expect(actualUser.email).toBe(expectedUser.email);
   expect(actualUser.username).toBe(expectedUser.username);
+
+  sortArraysInUser(actualUser);
+  sortArraysInUser(expectedUser);
 
   expect(actualUser.roles).toEqual(expectedUser.roles);
   expect(actualUser.tutorials).toEqual(expectedUser.tutorials);
@@ -38,4 +42,10 @@ export function assertUserToMatchUserDTO(expectedUser: UserDTO, actualUser: any)
 export function assertNotUndefinedOrNull(obj: any) {
   expect(obj).not.toBeUndefined();
   expect(obj).not.toBeNull();
+}
+
+function sortArraysInUser(user: User | UserDTO) {
+  user.roles.sort((a, b) => a.localeCompare(b));
+  user.tutorials.sort((a, b) => a.localeCompare(b));
+  user.tutorialsToCorrect.sort((a, b) => a.localeCompare(b));
 }
