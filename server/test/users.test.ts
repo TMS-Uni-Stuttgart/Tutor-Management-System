@@ -6,6 +6,7 @@ import userService from '../src/services/user-service/UserService.class';
 import app from './util/Test.App';
 import { assertUserToMatchCreateUserDTO, assertUserToMatchUserDTO } from './util/Test.Assertions';
 import { connectToDB, disconnectFromDB } from './util/Test.connectToDB';
+import { Tutorial } from 'shared/dist/model/Tutorial';
 
 const agent = request.agent(app);
 
@@ -307,9 +308,66 @@ describe('DELETE /user/:id', () => {
 });
 
 describe('GET /user/:id/tutorial', () => {
-  test.todo('Get all tutorials if user has none');
+  test('Get all tutorials if user has none', async done => {
+    const user = await userService.createUser({
+      firstname: 'Simon',
+      lastname: 'Batman',
+      roles: [Role.TUTOR],
+      username: `batmansn`,
+      password: 'password',
+      tutorials: [],
+      tutorialsToCorrect: [],
+      email: 'some@mail.com',
+    });
 
-  test.todo('Get all tutorials if user has some');
+    const response = await agent.get(`/api/user/${user.id}/tutorial`).send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(0);
+
+    done();
+  });
+
+  test('Get all tutorials if user has some', async done => {
+    const tutorialIds: string[] = [];
+
+    for (let i = 0; i < 2; i++) {
+      const tutorial = await tutorialService.createTutorial({
+        slot: `MultiTGet${i}`,
+        dates: [new Date().toDateString()],
+        startTime: '09:45:00',
+        endTime: '11:15:00',
+        correctorIds: [],
+        tutorId: undefined,
+      });
+
+      tutorialIds.push(tutorial.id);
+    }
+
+    const user = await userService.createUser({
+      firstname: 'Simone',
+      lastname: 'Greenlantern',
+      roles: [Role.TUTOR],
+      username: `greenlse`,
+      password: 'password',
+      tutorials: [...tutorialIds],
+      tutorialsToCorrect: [],
+      email: 'some@mail.com',
+    });
+
+    const response = await agent.get(`/api/user/${user.id}/tutorial`).send();
+    const responseTutorials = (response.body as Tutorial[]).map(t => t.id);
+
+    expect(response.status).toBe(200);
+    expect(responseTutorials.length).toBe(tutorialIds.length);
+
+    responseTutorials.sort((a, b) => a.localeCompare(b));
+    tutorialIds.sort((a, b) => a.localeCompare(b));
+
+    expect(responseTutorials).toEqual(tutorialIds);
+
+    done();
+  });
 });
 
 describe('PUT /user/:id/tutorial', () => {
