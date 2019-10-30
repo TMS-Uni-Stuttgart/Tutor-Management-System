@@ -5,7 +5,7 @@
 # This also copies the builded frontend into the server.
 #
 # =============================================
-FROM node:10 as build
+FROM node:12 as build
 
 COPY client/ tms/client/
 COPY server/ tms/server/
