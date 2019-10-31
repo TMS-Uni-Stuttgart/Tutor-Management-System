@@ -269,7 +269,7 @@ class TutorialService {
       id: _id,
       slot,
       tutor: tutor ? getIdOfDocumentRef(tutor) : undefined,
-      dates: dates.map(d => d.toDateString()),
+      dates: dates.map(d => d.toISOString()),
       correctors: correctors.map(getIdOfDocumentRef),
       startTime,
       endTime,
