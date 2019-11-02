@@ -1,3 +1,6 @@
+# Session timeout after inactivity in minutes.
+sessionTimeout: 120
+
 database:
   databaseURL: 'mongodb://localhost:27017/tms'
   secret: 'keyboard cat'

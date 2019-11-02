@@ -7,13 +7,10 @@ import {
   Student,
   StudentDTO,
 } from 'shared/dist/model/Student';
-import { Team } from 'shared/dist/model/Team';
 import { sortByName } from 'shared/dist/util/helpers';
-import { StudentWithFetchedTeam } from '../../typings/types';
 import axios from './Axios';
-import { getTeamOfTutorial } from './Team';
 
-async function getAllStudents(): Promise<Student[]> {
+export async function getAllStudents(): Promise<Student[]> {
   const response = await axios.get<Student[]>('student');
 
   if (response.status === 200) {
@@ -33,12 +30,6 @@ export async function getStudent(studentId: string): Promise<Student> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getAllStudentsAndFetchTeams(): Promise<StudentWithFetchedTeam[]> {
-  const students = await getAllStudents();
-
-  return fetchTeamsOfStudents(students);
-}
-
 export async function createStudent(studentInfo: StudentDTO): Promise<Student> {
   const response = await axios.post<Student>('student', studentInfo);
 
@@ -49,14 +40,6 @@ export async function createStudent(studentInfo: StudentDTO): Promise<Student> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createStudentAndFetchTeam(
-  studentInfo: StudentDTO
-): Promise<StudentWithFetchedTeam> {
-  const student = await createStudent(studentInfo);
-
-  return fetchTeamOfStudent(student);
-}
-
 export async function editStudent(id: string, studentInfo: StudentDTO): Promise<Student> {
   const response = await axios.patch<Student>(`student/${id}`, studentInfo);
 
@@ -65,15 +48,6 @@ export async function editStudent(id: string, studentInfo: StudentDTO): Promise<
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
-}
-
-export async function editStudentAndFetchTeam(
-  id: string,
-  studentInfo: StudentDTO
-): Promise<StudentWithFetchedTeam> {
-  const student = await editStudent(id, studentInfo);
-
-  return fetchTeamOfStudent(student);
 }
 
 export async function deleteStudent(id: string): Promise<void> {
@@ -135,36 +109,36 @@ export async function setCakeCountForStudent(studentId: string, cakeCountDTO: Ca
   }
 }
 
-export async function getTeamOfStudent(student: Student): Promise<Team | undefined> {
-  if (!student.team) {
-    return undefined;
-  }
+// export async function getTeamOfStudent(student: Student): Promise<Team | undefined> {
+//   if (!student.team) {
+//     return undefined;
+//   }
 
-  return getTeamOfTutorial(student.tutorial, student.team);
-}
+//   return getTeamOfTutorial(student.tutorial, student.team.id);
+// }
 
-export async function fetchTeamOfStudent(student: Student): Promise<StudentWithFetchedTeam> {
-  const team = await getTeamOfStudent(student);
+// export async function fetchTeamOfStudent(student: Student): Promise<StudentWithFetchedTeam> {
+//   const team = await getTeamOfStudent(student);
 
-  return { ...student, team };
-}
+//   return { ...student, team };
+// }
 
-export async function fetchTeamsOfStudents(students: Student[]): Promise<StudentWithFetchedTeam[]> {
-  const promises: Promise<StudentWithFetchedTeam>[] = [];
+// export async function fetchTeamsOfStudents(students: Student[]): Promise<StudentWithFetchedTeam[]> {
+//   const promises: Promise<StudentWithFetchedTeam>[] = [];
 
-  for (const student of students) {
-    promises.push(
-      getTeamOfStudent(student)
-        .then(team => ({ ...student, team }))
-        .catch(() => {
-          console.log('Could not load team of student.');
-          return { ...student, team: undefined };
-        })
-    );
-  }
+//   for (const student of students) {
+//     promises.push(
+//       getTeamOfStudent(student)
+//         .then(team => ({ ...student, team }))
+//         .catch(() => {
+//           console.log('Could not load team of student.');
+//           return { ...student, team: undefined };
+//         })
+//     );
+//   }
 
-  return Promise.all(promises);
-}
+//   return Promise.all(promises);
+// }
 
 export async function getScheinCriteriaSummaryOfStudent(
   studentId: string

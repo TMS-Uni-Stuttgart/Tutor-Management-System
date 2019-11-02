@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import path from 'path';
 import uuid from 'uuid/v4';
-import databaseConfig from './helpers/database';
+import { databaseConfig } from './helpers/config';
 import Logger from './helpers/Logger';
 import initPassport from './helpers/passport';
 import { EndpointNotFoundError, handleError } from './model/Errors';

@@ -1,5 +1,7 @@
-import { Theme } from '@material-ui/core';
+import { TextField, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
+import _ from 'lodash';
+import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -9,8 +11,8 @@ import { Team } from 'shared/dist/model/Team';
 import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
 import StudentForm, {
   CREATE_NEW_TEAM_VALUE,
-  StudentFormSubmitCallback,
   getInitialStudentFormState,
+  StudentFormSubmitCallback,
 } from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
@@ -30,11 +32,8 @@ const useStyles = makeStyles((theme: Theme) =>
     dialogDeleteButton: {
       color: theme.palette.error.main,
     },
-    printButton: {
-      marginRight: theme.spacing(1),
-    },
-    topBar: {
-      display: 'flex',
+    searchField: {
+      width: '75%',
     },
   })
 );
@@ -45,6 +44,25 @@ interface Params {
 
 type PropType = WithSnackbarProps & RouteComponentProps<Params>;
 
+function unifyFilterableText(text: string): string {
+  return _.deburr(text).toLowerCase();
+}
+
+export function getFilteredStudents(
+  students: StudentWithFetchedTeam[],
+  filterText: string
+): StudentWithFetchedTeam[] {
+  if (!filterText) {
+    return students;
+  }
+
+  return students.filter(s => {
+    const name = getNameOfEntity(s, { lastNameFirst: false });
+
+    return unifyFilterableText(name).includes(unifyFilterableText(filterText));
+  });
+}
+
 function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.Element {
   const classes = useStyles();
 
@@ -53,13 +71,15 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
   const [teams, setTeams] = useState<Team[]>([]);
   const [summaries, setSummaries] = useState<{ [studentId: string]: ScheinCriteriaSummary }>({});
 
+  const [filterText, setFilterText] = useState<string>('');
+
   const dialog = useDialog();
   const {
     getTeamsOfTutorial,
-    getStudentsOfTutorialAndFetchTeams,
-    createStudentAndFetchTeam,
+    getStudentsOfTutorial,
+    createStudent,
     createTeam,
-    editStudentAndFetchTeam: editStudentRequest,
+    editStudent: editStudentRequest,
     deleteStudent: deleteStudentRequest,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
   } = useAxios();
@@ -71,7 +91,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
 
     (async function() {
       const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorialAndFetchTeams(tutorialId),
+        getStudentsOfTutorial(tutorialId),
         getTeamsOfTutorial(tutorialId),
       ]);
 
@@ -90,7 +110,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
       setIsLoading(false);
     })();
   }, [
-    getStudentsOfTutorialAndFetchTeams,
+    getStudentsOfTutorial,
     getTeamsOfTutorial,
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
     tutorialId,
@@ -123,7 +143,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
     };
 
     try {
-      const response = await createStudentAndFetchTeam(studentDTO);
+      const response = await createStudent(studentDTO);
       const teams = await getTeamsOfTutorial(tutorialId);
 
       setStudents([...students, response].sort(sortByName));
@@ -248,7 +268,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
           form={
             <StudentForm teams={teams} otherStudents={students} onSubmit={handleCreateStudent} />
           }
-          items={students}
+          items={getFilteredStudents(students, filterText)}
           createRowFromItem={student => (
             <ExtendableStudentRow
               student={student}
@@ -257,6 +277,17 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
               onDeleteStudentClicked={handleDeleteStudent}
             />
           )}
+          topBarContent={
+            <TextField
+              variant='outlined'
+              label='Suche'
+              onChange={e => setFilterText(e.target.value)}
+              className={classes.searchField}
+              InputProps={{
+                startAdornment: <SearchIcon color='disabled' />,
+              }}
+            />
+          }
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import initApp from './app';
-import databaseConfig from './helpers/database';
+import { databaseConfig } from './helpers/config';
 import Logger from './helpers/Logger';
 import { StartUpError } from './model/Errors';
 import userService from './services/user-service/UserService.class';

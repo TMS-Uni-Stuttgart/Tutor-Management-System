@@ -12,7 +12,7 @@ import { fieldEncryption } from 'mongoose-field-encryption';
 import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
-import databaseConfig from '../../helpers/database';
+import { databaseConfig } from '../../helpers/config';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
 import teamService from '../../services/team-service/TeamService.class';

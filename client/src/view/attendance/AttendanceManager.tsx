@@ -95,7 +95,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     setAttendanceOfStudent,
     setCakeCountForStudent,
     getAllTutorialsAndFetchStudents,
-    fetchTeamsOfStudents,
     getTutorInfoOfTutorial,
     getAttendancePDF,
   } = useAxios();
@@ -106,14 +105,14 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
   useEffect(() => {
     if (tutorial) {
-      fetchTeamsOfStudents(tutorial.students).then(response => setStudents(response));
+      setStudents(tutorial.students);
       getTutorInfoOfTutorial(tutorial.id).then(info => setTutorInfo(info));
     } else {
       setStudents([]);
     }
 
     setDate(undefined);
-  }, [tutorial, fetchTeamsOfStudents, getTutorInfoOfTutorial]);
+  }, [tutorial, getTutorInfoOfTutorial]);
 
   useEffect(() => {
     if (!tutorialFromProps) {

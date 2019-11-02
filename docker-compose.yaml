@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 services:
   mongo:
     image: mongo
@@ -11,13 +11,13 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-    volumes: 
+    volumes:
       - db_data:/data/db
 
   mongo-express:
     container_name: mongo_express
     image: mongo-express
-    depends_on: 
+    depends_on:
       - mongo
     restart: always
     networks:
@@ -35,10 +35,10 @@ services:
     depends_on:
       - mongo
     ports:
-      - "8080:8080"
+      - '8080:8080'
     networks:
       - tms_db
-    volumes: 
+    volumes:
       - ./server/config:/tms/server/config
 
 volumes:
