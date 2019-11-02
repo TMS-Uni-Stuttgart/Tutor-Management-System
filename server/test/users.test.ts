@@ -1,5 +1,5 @@
 import { Role } from 'shared/dist/model/Role';
-import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
+import { CreateUserDTO, User, UserDTO, NewPasswordDTO } from 'shared/dist/model/User';
 import request from 'supertest';
 import tutorialService from '../src/services/tutorial-service/TutorialService.class';
 import userService from '../src/services/user-service/UserService.class';
@@ -7,6 +7,7 @@ import app from './util/Test.App';
 import { assertUserToMatchCreateUserDTO, assertUserToMatchUserDTO } from './util/Test.Assertions';
 import { connectToDB, disconnectFromDB } from './util/Test.connectToDB';
 import { Tutorial } from 'shared/dist/model/Tutorial';
+import bcrypt from 'bcryptjs';
 
 const agent = request.agent(app);
 
@@ -371,15 +372,71 @@ describe('GET /user/:id/tutorial', () => {
 });
 
 describe('PUT /user/:id/tutorial', () => {
-  test.todo('Change tutorial of a user.');
+  test.todo('Set tutorials of a user which had none.');
+
+  test.todo('Replace all tutorials of a user.');
+
+  test.todo('Replace only one of all tutorials of a user.');
 });
 
 describe('POST /user/:id/password', () => {
-  test.todo('Change password of a user');
+  test('Change password of a user', async done => {
+    const user = await userService.createUser({
+      firstname: 'Linda',
+      lastname: 'Lantern',
+      roles: [Role.TUTOR],
+      username: 'lanterla',
+      password: 'password',
+      tutorials: [],
+      tutorialsToCorrect: [],
+      email: 'some@mail.com',
+    });
+
+    const newPassword: NewPasswordDTO = {
+      password: 'newPassword',
+    };
+
+    const response = await agent.post(`/api/user/${user.id}/password`).send(newPassword);
+    const newUserData = await userService.getDocumentWithId(user.id);
+    const isPasswordCorrect = await bcrypt.compare(newPassword.password, newUserData.password);
+
+    expect(response.status).toBe(204);
+    expect(isPasswordCorrect).toBeTruthy();
+    expect(newUserData.temporaryPassword).toBe('');
+
+    done();
+  });
 });
 
 describe('POST /user/:id/temporaryPassword', () => {
-  test.todo('Change temporary password of a user');
+  test('Change temporary password of a user', async done => {
+    const user = await userService.createUser({
+      firstname: 'Sarah',
+      lastname: 'Samplegirl',
+      roles: [Role.TUTOR],
+      username: 'samplesh',
+      password: 'oldPassword',
+      tutorials: [],
+      tutorialsToCorrect: [],
+      email: 'some@mail.com',
+    });
+
+    const newTmpPassword: NewPasswordDTO = {
+      password: 'newPassword',
+    };
+
+    const response = await agent
+      .post(`/api/user/${user.id}/temporaryPassword`)
+      .send(newTmpPassword);
+    const newUserData = await userService.getDocumentWithId(user.id);
+    const isPasswordCorrect = await bcrypt.compare(newTmpPassword.password, newUserData.password);
+
+    expect(response.status).toBe(204);
+    expect(isPasswordCorrect).toBeTruthy();
+    expect(newUserData.temporaryPassword).toBe(newTmpPassword.password);
+
+    done();
+  });
 });
 
 /**
