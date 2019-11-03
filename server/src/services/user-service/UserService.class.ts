@@ -273,7 +273,7 @@ class UserService {
     user.password = newPassword;
     user.temporaryPassword = undefined;
 
-    user.save();
+    await user.save();
   }
 
   public async setTemporaryPasswordOfUser(id: string, newTempPassword: string) {
@@ -282,7 +282,7 @@ class UserService {
     user.password = newTempPassword;
     user.temporaryPassword = newTempPassword;
 
-    user.save();
+    await user.save();
   }
 
   /**

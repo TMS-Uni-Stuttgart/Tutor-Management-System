@@ -400,10 +400,6 @@ describe('POST /user/:id/password', () => {
     const newUserData = await userService.getDocumentWithId(user.id);
     const isPasswordCorrect = await bcrypt.compare(newPassword.password, newUserData.password);
 
-    // FIXME: REMOVE LINES!
-    console.log(newPassword.password);
-    console.log(newUserData.password);
-
     expect(response.status).toBe(204);
     expect(isPasswordCorrect).toBeTruthy();
     expect(newUserData.temporaryPassword).toBe('');
