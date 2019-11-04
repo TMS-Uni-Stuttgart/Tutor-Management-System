@@ -8,7 +8,7 @@ import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteri
 import { Student } from 'shared/dist/model/Student';
 import { User } from 'shared/dist/model/User';
 import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
-import showdown, { ShowdownExtension } from 'showdown';
+import showdown from 'showdown';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
@@ -22,6 +22,7 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
+import { MARKDOWN_OPTIONS } from './PdfService.utils';
 
 interface StudentData {
   matriculationNo: string;
@@ -37,20 +38,7 @@ class PdfService {
   private markdownConverter: showdown.Converter;
 
   constructor() {
-    const noMoreParagraphs: ShowdownExtension = {
-      type: 'output',
-      filter: text => {
-        const regex = /<\/?p>/gi;
-
-        return text.replace(regex, '');
-      },
-    };
-
-    this.markdownConverter = new showdown.Converter({
-      ghCodeBlocks: true,
-      omitExtraWLInCodeBlocks: true,
-      extensions: [noMoreParagraphs],
-    });
+    this.markdownConverter = new showdown.Converter(MARKDOWN_OPTIONS);
 
     this.markdownConverter.setFlavor('github');
   }
