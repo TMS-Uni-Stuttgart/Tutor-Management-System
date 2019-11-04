@@ -1,0 +1,35 @@
+name: Unit Tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-server:
+    name: Serverside unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install node packages
+        run: |
+          yarn install
+        env:
+          CI: true
+      - name: Build shared
+        run: yarn build:shared
+        env:
+          CI: true
+      - name: Run tests on server
+        working-directory: server/
+        run: |
+          yarn test
+        env:
+          CI: true
