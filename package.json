@@ -29,6 +29,7 @@
     "upgrade-pgk:shared": "cd ./shared && npm-upgrade"
   },
   "devDependencies": {
+    "@types/markdown-it": "^0.0.9",
     "@types/node": "^12.11.1",
     "@types/yup": "^0.26.24",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
@@ -43,6 +44,7 @@
   },
   "dependencies": {
     "date-fns": "^2.6.0",
+    "markdown-it": "^10.0.0",
     "yup": "^0.27.0"
   }
 }
