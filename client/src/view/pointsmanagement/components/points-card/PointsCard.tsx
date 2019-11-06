@@ -17,6 +17,8 @@ import {
   PointMapEntry,
   PointsOfSubexercises,
   UpdatePointsDTO,
+  ExercisePointInfo,
+  convertExercisePointInfoToString,
 } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
 import CollapseButton from '../../../../components/CollapseButton';
@@ -212,7 +214,17 @@ function PointsCard<T extends EntityWithPoints>({
 
   const exercises: Exercise[] = entityWithExercises.exercises;
 
-  const totalPoints: number = exercises.reduce((pts, ex) => pts + getPointsOfExercise(ex), 0);
+  const totalPoints = exercises.reduce<ExercisePointInfo>(
+    (pts, ex) => {
+      const pointsOfExercise = getPointsOfExercise(ex);
+
+      return {
+        must: pts.must + pointsOfExercise.must,
+        bonus: pts.bonus + pointsOfExercise.bonus,
+      };
+    },
+    { must: 0, bonus: 0 }
+  );
   const initialValues: PointsCardFormState = getInitialPointsCardValues(
     entity.points,
     entityWithExercises
@@ -224,6 +236,9 @@ function PointsCard<T extends EntityWithPoints>({
   }
 
   function Header({ values }: { values: PointsCardFormState }) {
+    const achieved = getAchievedPointsFromState(values);
+    const total: string = convertExercisePointInfoToString(totalPoints);
+
     return (
       <CustomCardHeader
         onClick={handleCollapseChange}
@@ -231,7 +246,7 @@ function PointsCard<T extends EntityWithPoints>({
         avatar={avatar}
         title={title}
         subheader={subtitle}
-        midText={`Gesamt: ${getAchievedPointsFromState(values)} / ${totalPoints} Punkte`}
+        midText={`Gesamt: ${achieved} / ${total} Punkte`}
         action={
           <>
             {onPreviewPdf && (

@@ -1,11 +1,12 @@
 import { Typography } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import React from 'react';
+import { ExercisePointInfo } from 'shared/dist/model/Points';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
 
 interface PointsTextFieldProps extends Omit<TextFieldProps, 'variant' | 'type'> {
   name: string;
-  maxPoints: number;
+  maxPoints: ExercisePointInfo;
 }
 
 function PointsTextField({
@@ -14,6 +15,8 @@ function PointsTextField({
   InputProps,
   ...other
 }: PointsTextFieldProps): JSX.Element {
+  const maxPointsString = `${maxPoints.must + maxPoints.bonus}`;
+
   return (
     <FormikTextField
       {...other}
@@ -27,7 +30,7 @@ function PointsTextField({
       }}
       InputProps={{
         ...InputProps,
-        endAdornment: <Typography variant='body1' noWrap>{`/ ${maxPoints} Pkt.`}</Typography>,
+        endAdornment: <Typography variant='body1' noWrap>{`/ ${maxPointsString} Pkt.`}</Typography>,
       }}
     />
   );

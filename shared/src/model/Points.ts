@@ -157,13 +157,28 @@ export class PointMap {
   }
 }
 
-// FIXME: Does NOT handle bonus points.
-export function getPointsOfExercise(exercise: Exercise): number {
+export type ExercisePointInfo = { must: number; bonus: number };
+
+export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo): string {
+  return exPointInfo.bonus ? `${exPointInfo.must} + ${exPointInfo.bonus}` : `${exPointInfo.must}`;
+}
+
+export function getPointsOfExercise(exercise: Exercise): ExercisePointInfo {
+  const points: ExercisePointInfo = { must: 0, bonus: 0 };
+
   if (exercise.subexercises.length === 0) {
-    return exercise.maxPoints;
+    if (exercise.bonus) {
+      return { must: 0, bonus: exercise.maxPoints };
+    } else {
+      return { must: exercise.maxPoints, bonus: 0 };
+    }
   }
 
   return exercise.subexercises.reduce((pts, subEx) => {
-    return pts + getPointsOfExercise(subEx);
-  }, 0);
+    if (subEx.bonus) {
+      return { ...pts, bonus: pts.bonus + subEx.maxPoints };
+    } else {
+      return { ...pts, must: pts.must + subEx.maxPoints };
+    }
+  }, points);
 }
