@@ -1,4 +1,4 @@
-import { createMuiTheme, Theme } from '@material-ui/core';
+import { createMuiTheme, Theme, PaletteType } from '@material-ui/core';
 import ORANGE from '@material-ui/core/colors/orange';
 
 declare module '@material-ui/core/styles/createPalette' {
@@ -15,11 +15,12 @@ declare module '@material-ui/core/styles/createPalette' {
   }
 }
 
-export function createTheme(): Theme {
+export function createTheme(type: PaletteType): Theme {
   return createMuiTheme({
     palette: {
+      type,
       primary: {
-        main: '#004191',
+        main: type === 'light' ? '#004191' : '#00beff',
       },
       secondary: {
         main: '#00beff',

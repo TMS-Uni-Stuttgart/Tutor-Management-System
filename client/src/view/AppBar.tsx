@@ -5,8 +5,12 @@ import {
   Theme,
   Toolbar,
   Typography,
+  useTheme,
+  PaletteType,
+  Tooltip,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
+import { Brightness7 as DarkIcon, Brightness5 as LightIcon } from '@material-ui/icons';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { Location } from 'history';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
@@ -15,6 +19,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { useLogin } from '../hooks/LoginService';
 import { getTutorialRelatedPath, ROUTES, RouteType } from '../util/RoutingPath';
 import { GithubCircle as GitHubIcon } from 'mdi-material-ui';
+import { useChangeTheme } from '../components/ContextWrapper';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,15 +33,18 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: -12,
       marginRight: 20,
     },
-    githubButton: {
+    iconButton: {
       color: 'inherit',
-      marginLeft: theme.spacing(2),
+      marginLeft: theme.spacing(0),
+    },
+    logoutButton: {
+      marginRight: theme.spacing(2),
     },
     loggedInAsArea: {
       display: 'flex',
       flexDirection: 'column',
       marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(3),
+      marginRight: theme.spacing(1),
       textAlign: 'right',
     },
   })
@@ -92,8 +100,15 @@ function AppBar(props: PropType): JSX.Element {
   const classes = useStyles();
   const { logout, isLoggedIn, userData } = useLogin();
   const userIsLoggedIn: boolean = isLoggedIn();
+  const theme = useTheme();
+  const changeTheme = useChangeTheme();
 
-  function onLogBtnClicked() {
+  function handleThemeChangeClicked() {
+    const newType: PaletteType = theme.palette.type === 'light' ? 'dark' : 'light';
+    changeTheme(newType);
+  }
+
+  function handleLogBtnClicked() {
     logout().then(() => enqueueSnackbar('Erfolgreich ausgeloggt', { variant: 'success' }));
   }
 
@@ -126,14 +141,20 @@ function AppBar(props: PropType): JSX.Element {
               </Typography>
             </div>
 
-            <Button color='inherit' onClick={onLogBtnClicked}>
+            <Button color='inherit' onClick={handleLogBtnClicked} className={classes.logoutButton}>
               Abmelden
             </Button>
           </>
         )}
 
+        <Tooltip title='Zwischen hellem & dunklem Design wechseln.'>
+          <IconButton onClick={handleThemeChangeClicked} className={classes.iconButton}>
+            {theme.palette.type === 'light' ? <LightIcon /> : <DarkIcon />}
+          </IconButton>
+        </Tooltip>
+
         <IconButton
-          className={classes.githubButton}
+          className={classes.iconButton}
           href='https://github.com/Dudrie/Tutor-Management-System/issues'
           target='_blank'
         >

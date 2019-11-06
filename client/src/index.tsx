@@ -1,16 +1,12 @@
-import { Theme } from '@material-ui/core';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import ContextWrapper from './components/ContextWrapper';
 import * as serviceWorker from './serviceWorker';
-import { createTheme } from './util/styles';
 import App from './view/App';
 
-const theme: Theme = createTheme();
-
 ReactDOM.render(
-  <ContextWrapper theme={theme} Router={BrowserRouter}>
+  <ContextWrapper Router={BrowserRouter}>
     <App />
   </ContextWrapper>,
   document.getElementById('root')
