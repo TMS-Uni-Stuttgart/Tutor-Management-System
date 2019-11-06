@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/styles';
 import 'github-markdown-css/github-markdown.css';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import Markdown from 'react-markdown';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { PointMap, PointMapEntry, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
@@ -27,6 +26,7 @@ import PointsCard, {
 import StudentPresentationRow, {
   StudentPresentationPointsCallback,
 } from './components/StudentPresentationRow';
+import Markdown from '../../components/Markdown';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -341,24 +341,14 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
       },
       title: 'Markdown-Vorschau',
       content: (
-        <div>
+        <div className='markdown-body'>
           <Markdown
-            source={markdownSource}
-            parserOptions={{ gfm: true }}
-            renderers={{
-              /* This fixes an 'remark' library issue: remark renders ('[<some text>]' as real links even though - following the markdown specs - it should not change it and just render '[<some text>]').
-               * Thanks to the comment from 'taylor-verys' on github:
-               * https://github.com/rexxars/react-markdown/issues/276#issuecomment-486875119
-               */
-              linkReference: (reference): React.ReactElement => {
-                if (!reference.href) {
-                  return <>[{reference.children[0]}]</>;
-                }
-
-                return <a href={reference.$ref}>{reference.children}</a>;
-              },
-            }}
-            className='markdown-body'
+            markdown={markdownSource}
+            // markup={markdownSource}
+            // ghCodeBlocks
+            // omitExtraWLInCodeBlocks
+            // simpleLineBreaks
+            // emoji
           />
         </div>
       ),

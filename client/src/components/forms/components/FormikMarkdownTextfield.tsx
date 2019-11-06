@@ -3,8 +3,8 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useField } from 'formik';
 import 'github-markdown-css/github-markdown.css';
 import React, { useState } from 'react';
-import Markdown from 'react-markdown';
 import FormikTextField, { FormikTextFieldProps } from './FormikTextField';
+import Markdown from '../../Markdown';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,7 +48,7 @@ function FormikMarkdownTextfield({ name, ...other }: FormikTextFieldProps): JSX.
 
       {isPreview ? (
         <div className={classes.markdownContainer}>
-          <Markdown source={value} className='markdown-body' />
+          <Markdown markdown={value} />
         </div>
       ) : (
         <FormikTextField name={name} multiline {...other} />

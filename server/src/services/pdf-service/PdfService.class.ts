@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import fs from 'fs';
 import JSZip from 'jszip';
+import MarkdownIt from 'markdown-it';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import { PointMap } from 'shared/dist/model/Points';
@@ -8,7 +9,6 @@ import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteri
 import { Student } from 'shared/dist/model/Student';
 import { User } from 'shared/dist/model/User';
 import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
-import showdown, { ShowdownExtension } from 'showdown';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
@@ -34,27 +34,6 @@ interface TeamCommentData {
 }
 
 class PdfService {
-  private markdownConverter: showdown.Converter;
-
-  constructor() {
-    const noMoreParagraphs: ShowdownExtension = {
-      type: 'output',
-      filter: text => {
-        const regex = /<\/?p>/gi;
-
-        return text.replace(regex, '');
-      },
-    };
-
-    this.markdownConverter = new showdown.Converter({
-      ghCodeBlocks: true,
-      omitExtraWLInCodeBlocks: true,
-      extensions: [noMoreParagraphs],
-    });
-
-    this.markdownConverter.setFlavor('github');
-  }
-
   public generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
     return new Promise(async (resolve, reject) => {
       try {
@@ -201,7 +180,9 @@ class PdfService {
   }
 
   private generateHTMLFromMarkdown(markdown: string): string {
-    const body = this.markdownConverter.makeHtml(markdown);
+    const parser = new MarkdownIt();
+    const body = parser.render(markdown);
+    // const body = this.markdownConverter.makeHtml(markdown);
 
     return this.putBodyInHtml(body);
   }
