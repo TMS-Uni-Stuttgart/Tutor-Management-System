@@ -160,7 +160,14 @@ export class PointMap {
 export type ExercisePointInfo = { must: number; bonus: number };
 
 export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo): string {
-  return exPointInfo.bonus ? `${exPointInfo.must} + ${exPointInfo.bonus}` : `${exPointInfo.must}`;
+  if (exPointInfo.must > 0 && exPointInfo.bonus > 0) {
+    return `${exPointInfo.must} + ${exPointInfo.bonus}`;
+  } else if (exPointInfo.bonus === 0) {
+    return `${exPointInfo.must}`;
+  } else {
+    return `${exPointInfo.bonus} Bonus`;
+  }
+  // return exPointInfo.bonus ? `${exPointInfo.must} + ${exPointInfo.bonus}` : `${exPointInfo.must}`;
 }
 
 export function getPointsOfExercise(exercise: Exercise): ExercisePointInfo {
