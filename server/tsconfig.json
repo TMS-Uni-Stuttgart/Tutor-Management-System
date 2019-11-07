@@ -17,5 +17,5 @@
     "resolveJsonModule": true
   },
   "references": [{ "path": "../shared" }],
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*"]
 }
