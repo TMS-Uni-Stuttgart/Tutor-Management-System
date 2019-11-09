@@ -75,7 +75,7 @@ class TeamService {
     teamId: string,
     { students }: TeamDTO
   ): Promise<Team> {
-    const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+    const [team] = await this.getDocumentWithId(tutorialId, teamId);
     const studentsOfTeam = await this.getStudentsOfTeam(team);
 
     const studentsToRemove: StudentDocument[] = await Promise.all(
@@ -97,9 +97,9 @@ class TeamService {
       await this.makeStudentMemberOfTeam(student, team.id, { saveStudent: true });
     }
 
-    await this.saveTutorialWithChangedTeams(tutorial);
+    const [updatedTeam] = await this.getDocumentWithId(tutorialId, team.id);
 
-    return this.getTeamOrReject(team);
+    return this.getTeamOrReject(updatedTeam);
   }
 
   public async deleteTeam(tutorialId: string, teamId: string) {
@@ -220,12 +220,11 @@ class TeamService {
     student.team = newTeam;
     newTeam.students.push(student);
 
-    // We can NOT use this.saveTutorialWithChangedTeams() here because - for some reason - mongoose will throw an error that the versions of the documents within the array don't match.
     if (saveStudent) {
-      await Promise.all([tutorial.save(), student.save()]);
-    } else {
-      await tutorial.save();
+      await student.save();
     }
+
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   public async removeStudentAsMemberFromTeam(
@@ -252,10 +251,10 @@ class TeamService {
     tutorial.teams.set(idx, oldTeam);
 
     if (saveStudent) {
-      await Promise.all([this.saveTutorialWithChangedTeams(tutorial), student.save()]);
-    } else {
-      await this.saveTutorialWithChangedTeams(tutorial);
+      await student.save();
     }
+
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   /**
