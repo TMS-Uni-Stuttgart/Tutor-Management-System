@@ -47,12 +47,12 @@ function TeamTableRow({
       >
         <TableCell>
           <div className={classes.infoBlock}>
-            {/* <Typography>Bestanden:</Typography>
-            <Typography>ANZAHL</Typography> */}
             <Typography>
-              {`Mitglieder: ${team.students
-                .map(student => `${student.firstname} ${student.lastname}`)
-                .join(', ')}`}
+              {team.students.length > 0
+                ? `Mitglieder: ${team.students
+                    .map(student => `${student.firstname} ${student.lastname}`)
+                    .join(', ')}`
+                : 'Keine Mitglieder.'}
             </Typography>
           </div>
         </TableCell>
