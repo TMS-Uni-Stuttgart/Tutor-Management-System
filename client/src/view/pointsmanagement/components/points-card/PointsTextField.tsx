@@ -30,7 +30,7 @@ function PointsTextField({
       }}
       InputProps={{
         ...InputProps,
-        endAdornment: <Typography variant='body1' noWrap>{`/ ${maxPointsString} Pkt.`}</Typography>,
+        endAdornment: <Typography variant='body1' noWrap>{`/ ${maxPointsString}`}</Typography>,
       }}
     />
   );
