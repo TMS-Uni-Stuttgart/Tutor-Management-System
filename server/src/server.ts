@@ -5,7 +5,6 @@ import { databaseConfig } from './helpers/config';
 import Logger from './helpers/Logger';
 import { StartUpError } from './model/Errors';
 import userService from './services/user-service/UserService.class';
-import pkg from '../../package.json';
 
 /**
  * Tries to establish a conection to the database.
@@ -63,8 +62,6 @@ async function initAdmin() {
  * Runs the server start up routines.
  */
 async function startServer() {
-  console.log(pkg.version);
-
   try {
     await connectToDB();
 

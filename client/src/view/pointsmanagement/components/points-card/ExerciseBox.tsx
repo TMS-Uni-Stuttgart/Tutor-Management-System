@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useField } from 'formik';
 import React, { useState } from 'react';
-import { getPointsOfExercise } from 'shared/dist/model/Points';
+import { getPointsOfExercise, convertExercisePointInfoToString } from 'shared/dist/model/Points';
 import { Exercise } from 'shared/dist/model/Sheet';
 import CollapseButton from '../../../../components/CollapseButton';
 import { PointsCardFormExerciseState } from './PointsCard';
@@ -90,8 +90,9 @@ function ExerciseBox({ name, exercise }: Props): JSX.Element | null {
   }
 
   const { subexercises } = exercise;
+  const pointsOfExercise = getPointsOfExercise(exercise);
   const achievedPoints = getPointsFromBoxValue(value);
-  const totalPoints = getPointsOfExercise(exercise);
+  const totalPoints = convertExercisePointInfoToString(pointsOfExercise);
 
   return (
     <div className={classes.exerciseBox}>
