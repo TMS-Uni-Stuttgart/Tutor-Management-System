@@ -4,7 +4,7 @@ import JSZip from 'jszip';
 import MarkdownIt from 'markdown-it';
 import path from 'path';
 import puppeteer from 'puppeteer';
-import { PointMap } from 'shared/dist/model/Points';
+import { PointMap, convertExercisePointInfoToString } from 'shared/dist/model/Points';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { User } from 'shared/dist/model/User';
@@ -31,6 +31,11 @@ interface StudentData {
 interface TeamCommentData {
   teamName: string;
   markdown: string;
+}
+
+interface SheetPointInfo {
+  achieved: number;
+  total: { must: number; bonus: number };
 }
 
 class PdfService {
@@ -155,20 +160,22 @@ class PdfService {
     const students = await teamService.getStudentsOfTeam(team);
 
     const teamName = students.map(s => s.lastname).join('');
-    const pointInfo = { achieved: 0, total: 0 };
+    const pointInfo: SheetPointInfo = { achieved: 0, total: { must: 0, bonus: 0 } };
     let exerciseMarkdown: string = '';
 
-    entries.forEach(({ exName, entry, exMaxPoints }) => {
+    entries.forEach(({ exName, entry, exPoints }) => {
       const achievedPts = PointMap.getPointsOfEntry(entry);
+      const exMaxPoints: string = convertExercisePointInfoToString(exPoints);
 
       pointInfo.achieved += achievedPts;
-      pointInfo.total += exMaxPoints;
+      pointInfo.total.must += exPoints.must;
+      pointInfo.total.bonus += exPoints.bonus;
 
-      exerciseMarkdown += `## Aufgabe ${exName} [${achievedPts}/${exMaxPoints}]  \n\n${entry.comment}\n\n`;
+      exerciseMarkdown += `## Aufgabe ${exName} [${achievedPts} / ${exMaxPoints}]  \n\n${entry.comment}\n\n`;
     });
 
-    const totalPointInfo = `**Gesamt: ${pointInfo.achieved} / ${pointInfo.total}**`;
-    const markdown = `# ${teamName}\n\n${totalPointInfo}\n\n${exerciseMarkdown}`;
+    const totalPointInfo = convertExercisePointInfoToString(pointInfo.total);
+    const markdown = `# ${teamName}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**\n\n${exerciseMarkdown}`;
 
     return { teamName, markdown };
   }
@@ -182,7 +189,6 @@ class PdfService {
   private generateHTMLFromMarkdown(markdown: string): string {
     const parser = new MarkdownIt();
     const body = parser.render(markdown);
-    // const body = this.markdownConverter.makeHtml(markdown);
 
     return this.putBodyInHtml(body);
   }

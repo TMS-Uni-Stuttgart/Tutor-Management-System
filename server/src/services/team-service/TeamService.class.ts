@@ -5,6 +5,7 @@ import {
   PointMapEntry,
   PointId,
   getPointsOfExercise,
+  ExercisePointInfo,
 } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
@@ -23,7 +24,7 @@ import Logger from '../../helpers/Logger';
 export interface PointInformation {
   id: string;
   exName: string;
-  exMaxPoints: number;
+  exPoints: ExercisePointInfo;
   entry: PointMapEntry;
 }
 
@@ -159,7 +160,7 @@ class TeamService {
     sheetId: string
   ): Promise<PointInformation[]> {
     const [team] = await this.getDocumentWithId(tutorialId, teamId);
-    const sheet = await sheetService.getSheetWithId(sheetId);
+    const sheet = await sheetService.getDocumentWithId(sheetId);
 
     const pointMap = new PointMap(team.points);
     const entries: PointInformation[] = [];
@@ -168,7 +169,7 @@ class TeamService {
       const entry = pointMap.getPointEntry(new PointId(sheetId, ex));
 
       if (entry) {
-        entries.push({ id: ex.id, exName: ex.exName, entry, exMaxPoints: getPointsOfExercise(ex) });
+        entries.push({ id: ex.id, exName: ex.exName, entry, exPoints: getPointsOfExercise(ex) });
       }
     });
 
