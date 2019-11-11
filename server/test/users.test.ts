@@ -1,13 +1,13 @@
+import bcrypt from 'bcryptjs';
 import { Role } from 'shared/dist/model/Role';
-import { CreateUserDTO, User, UserDTO, NewPasswordDTO } from 'shared/dist/model/User';
+import { Tutorial } from 'shared/dist/model/Tutorial';
+import { CreateUserDTO, NewPasswordDTO, User, UserDTO } from 'shared/dist/model/User';
 import request from 'supertest';
 import tutorialService from '../src/services/tutorial-service/TutorialService.class';
 import userService from '../src/services/user-service/UserService.class';
 import app from './util/Test.App';
 import { assertUserToMatchCreateUserDTO, assertUserToMatchUserDTO } from './util/Test.Assertions';
 import { connectToDB, disconnectFromDB } from './util/Test.connectToDB';
-import { Tutorial } from 'shared/dist/model/Tutorial';
-import bcrypt from 'bcryptjs';
 
 const agent = request.agent(app);
 
