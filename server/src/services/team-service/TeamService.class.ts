@@ -205,18 +205,24 @@ class TeamService {
     teamId: string,
     { saveStudent }: { saveStudent?: boolean } = {}
   ) {
-    const [newTeam, tutorial] = await this.getDocumentWithId(
+    const [newTeamToCheck] = await this.getDocumentWithId(
       getIdOfDocumentRef(student.tutorial),
       teamId
     );
 
-    if (this.isStudentMemberOfTeam(student, newTeam)) {
+    if (this.isStudentMemberOfTeam(student, newTeamToCheck)) {
       return;
     }
 
     if (await student.getTeam()) {
       await this.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
+
+    // Get the new team bc the team (and the tutorial) could have changed until now.
+    const [newTeam, tutorial] = await this.getDocumentWithId(
+      getIdOfDocumentRef(student.tutorial),
+      teamId
+    );
 
     student.team = newTeam;
     newTeam.students.push(student);
