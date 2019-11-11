@@ -36,7 +36,6 @@ function TeamTableRow({
       <PaperTableRow
         {...rest}
         label={`Team #${team.teamNo.toString().padStart(2, '0')}`}
-        subText={team.students.length === 0 ? 'Keine Mitglieder' : undefined}
         icon={GroupIcon}
         buttonCellContent={
           <ListItemMenu
