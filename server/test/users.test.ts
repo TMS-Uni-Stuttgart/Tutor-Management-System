@@ -269,7 +269,7 @@ describe('DELETE /user/:id', () => {
 
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
-    expect(newUserList).not.toContain(user);
+    expect(newUserList).not.toContainEqual(user);
 
     done();
   });
@@ -300,7 +300,7 @@ describe('DELETE /user/:id', () => {
 
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
-    expect(newUserList).not.toContain(user);
+    expect(newUserList).not.toContainEqual(user);
 
     expect(tutorialAfterDel.tutor).toBeUndefined();
 
