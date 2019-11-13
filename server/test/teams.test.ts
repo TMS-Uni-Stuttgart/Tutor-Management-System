@@ -23,8 +23,8 @@ beforeAll(async done => {
     .auth('admin', 'admin', { type: 'basic' });
 
   const tutorialToCreate: TutorialDTO = {
-    startTime: new Date().toLocaleTimeString(),
-    endTime: new Date().toLocaleTimeString(),
+    startTime: '09:45:00',
+    endTime: '11:15:00',
     slot: 'T1',
     dates: [new Date(Date.now()).toDateString()],
     correctorIds: [],
