@@ -147,7 +147,7 @@ function AppBar(props: PropType): JSX.Element {
           </>
         )}
 
-        <Tooltip title='Zwischen hellem & dunklem Design wechseln.'>
+        <Tooltip title='Zwischen hellem & dunklem Design wechseln (Beta).'>
           <IconButton onClick={handleThemeChangeClicked} className={classes.iconButton}>
             {theme.palette.type === 'light' ? <LightIcon /> : <DarkIcon />}
           </IconButton>
