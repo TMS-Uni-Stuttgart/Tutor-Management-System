@@ -262,7 +262,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
             return s;
           })
         );
-        enqueueSnackbar('Anzahll Kuchen wurde aktualisiert.', { variant: 'success' });
+        enqueueSnackbar('Anzahl Kuchen wurde aktualisiert.', { variant: 'success' });
       } catch {
         enqueueSnackbar('Anzahl Kuchen konnte nicht aktualisert werden.', { variant: 'error' });
       }
