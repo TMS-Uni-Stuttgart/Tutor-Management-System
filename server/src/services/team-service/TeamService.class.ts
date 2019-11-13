@@ -356,7 +356,7 @@ class TeamService {
       return this.rejectTeamNotFound();
     }
 
-    const { _id, teamNo, tutorial, points } = team;
+    const { id, teamNo, tutorial, points } = team;
     const studentPromises: Promise<Student>[] = [];
     const studentDocs = await this.getStudentsOfTeam(team);
 
@@ -367,7 +367,7 @@ class TeamService {
     const students = await Promise.all(studentPromises);
 
     return {
-      id: _id,
+      id,
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
       students,

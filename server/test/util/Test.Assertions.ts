@@ -37,10 +37,10 @@ export function assertUserToMatchUserDTO(expectedUser: UserDTO, actualUser: User
 export function assertTeamToMatchTeamDTO(
   {
     expectedTeam,
-    expectedTutorialId,
+    tutorialId,
   }: {
     expectedTeam: TeamDTO;
-    expectedTutorialId: string;
+    tutorialId: string;
   },
   actualTeam: Team
 ) {
@@ -52,7 +52,7 @@ export function assertTeamToMatchTeamDTO(
     .sort((a, b) => a.localeCompare(b));
 
   assertNotUndefinedOrNull(actualTeam.teamNo);
-  expect(expectedTutorialId).toBe(actualTeam.tutorial);
+  expect(tutorialId).toBe(actualTeam.tutorial);
   expect(expectedTeam.students).toEqual(actualTeamStudentIds);
 }
 
