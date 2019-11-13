@@ -20,7 +20,7 @@ export function getSessionTimeout(): number {
     }
 
     if (typeof timeoutSetting === 'string') {
-      const timeout = Number.parseInt(timeoutSetting);
+      const timeout = Number.parseInt(timeoutSetting, 10);
 
       if (!Number.isNaN(timeout)) {
         return timeout;

@@ -49,7 +49,7 @@ function FormikTextField({
           value={getValue(field.value)}
           onChange={e => {
             if (isPercentage) {
-              form.setFieldValue(name, Number.parseInt(e.target.value) / 100);
+              form.setFieldValue(name, Number.parseInt(e.target.value, 10) / 100);
             } else {
               form.setFieldValue(name, e.target.value);
             }
