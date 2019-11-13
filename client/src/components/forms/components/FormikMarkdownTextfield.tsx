@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(0.75),
     },
     markdownContainer: {
+      background: theme.palette.common.white,
       border: `1px solid ${theme.palette.divider}`,
       borderRadius: theme.shape.borderRadius,
       padding: theme.spacing(2),
