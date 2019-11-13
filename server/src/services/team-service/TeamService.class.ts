@@ -5,6 +5,7 @@ import {
   PointMapEntry,
   PointId,
   getPointsOfExercise,
+  ExercisePointInfo,
 } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
@@ -23,7 +24,7 @@ import Logger from '../../helpers/Logger';
 export interface PointInformation {
   id: string;
   exName: string;
-  exMaxPoints: number;
+  exPoints: ExercisePointInfo;
   entry: PointMapEntry;
 }
 
@@ -75,7 +76,7 @@ class TeamService {
     teamId: string,
     { students }: TeamDTO
   ): Promise<Team> {
-    const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
+    const [team] = await this.getDocumentWithId(tutorialId, teamId);
     const studentsOfTeam = await this.getStudentsOfTeam(team);
 
     const studentsToRemove: StudentDocument[] = await Promise.all(
@@ -97,9 +98,9 @@ class TeamService {
       await this.makeStudentMemberOfTeam(student, team.id, { saveStudent: true });
     }
 
-    await this.saveTutorialWithChangedTeams(tutorial);
+    const [updatedTeam] = await this.getDocumentWithId(tutorialId, team.id);
 
-    return this.getTeamOrReject(team);
+    return this.getTeamOrReject(updatedTeam);
   }
 
   public async deleteTeam(tutorialId: string, teamId: string) {
@@ -159,7 +160,7 @@ class TeamService {
     sheetId: string
   ): Promise<PointInformation[]> {
     const [team] = await this.getDocumentWithId(tutorialId, teamId);
-    const sheet = await sheetService.getSheetWithId(sheetId);
+    const sheet = await sheetService.getDocumentWithId(sheetId);
 
     const pointMap = new PointMap(team.points);
     const entries: PointInformation[] = [];
@@ -168,7 +169,7 @@ class TeamService {
       const entry = pointMap.getPointEntry(new PointId(sheetId, ex));
 
       if (entry) {
-        entries.push({ id: ex.id, exName: ex.exName, entry, exMaxPoints: getPointsOfExercise(ex) });
+        entries.push({ id: ex.id, exName: ex.exName, entry, exPoints: getPointsOfExercise(ex) });
       }
     });
 
@@ -204,12 +205,12 @@ class TeamService {
     teamId: string,
     { saveStudent }: { saveStudent?: boolean } = {}
   ) {
-    const [newTeam, tutorial] = await this.getDocumentWithId(
+    const [newTeamToCheck] = await this.getDocumentWithId(
       getIdOfDocumentRef(student.tutorial),
       teamId
     );
 
-    if (this.isStudentMemberOfTeam(student, newTeam)) {
+    if (this.isStudentMemberOfTeam(student, newTeamToCheck)) {
       return;
     }
 
@@ -217,15 +218,20 @@ class TeamService {
       await this.removeStudentAsMemberFromTeam(student, { saveStudent: false });
     }
 
+    // Get the new team bc the team (and the tutorial) could have changed until now.
+    const [newTeam, tutorial] = await this.getDocumentWithId(
+      getIdOfDocumentRef(student.tutorial),
+      teamId
+    );
+
     student.team = newTeam;
     newTeam.students.push(student);
 
-    // We can NOT use this.saveTutorialWithChangedTeams() here because - for some reason - mongoose will throw an error that the versions of the documents within the array don't match.
     if (saveStudent) {
-      await Promise.all([tutorial.save(), student.save()]);
-    } else {
-      await tutorial.save();
+      await student.save();
     }
+
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   public async removeStudentAsMemberFromTeam(
@@ -252,10 +258,10 @@ class TeamService {
     tutorial.teams.set(idx, oldTeam);
 
     if (saveStudent) {
-      await Promise.all([this.saveTutorialWithChangedTeams(tutorial), student.save()]);
-    } else {
-      await this.saveTutorialWithChangedTeams(tutorial);
+      await student.save();
     }
+
+    await this.saveTutorialWithChangedTeams(tutorial);
   }
 
   /**
@@ -350,7 +356,7 @@ class TeamService {
       return this.rejectTeamNotFound();
     }
 
-    const { _id, teamNo, tutorial, points } = team;
+    const { id, teamNo, tutorial, points } = team;
     const studentPromises: Promise<Student>[] = [];
     const studentDocs = await this.getStudentsOfTeam(team);
 
@@ -361,7 +367,7 @@ class TeamService {
     const students = await Promise.all(studentPromises);
 
     return {
-      id: _id,
+      id,
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
       students,

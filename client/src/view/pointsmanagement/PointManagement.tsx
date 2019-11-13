@@ -340,18 +340,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
         maxWidth: 'lg',
       },
       title: 'Markdown-Vorschau',
-      content: (
-        <div className='markdown-body'>
-          <Markdown
-            markdown={markdownSource}
-            // markup={markdownSource}
-            // ghCodeBlocks
-            // omitExtraWLInCodeBlocks
-            // simpleLineBreaks
-            // emoji
-          />
-        </div>
-      ),
+      content: <Markdown markdown={markdownSource} />,
       onClose: () => dialog.hide(),
     });
   };
@@ -366,10 +355,11 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     try {
       const blob = await getSingleCorrectionCommentPDF(tutorialId, currentSheet.id, team.id);
       const teamName = team.students.map(s => s.lastname).join('');
+      const sheetNo = currentSheet.sheetNo.toString().padStart(2, '0');
 
-      saveBlob(blob, `Bewertung_${currentSheet.sheetNo.toString().padStart(2, '0')}_${teamName}`);
+      saveBlob(blob, `Bewertung_${sheetNo}_${teamName}.pdf`);
     } catch {
-      enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
+      enqueueSnackbar('PDF konnte nicht erstellt werden.', { variant: 'error' });
     }
 
     setGeneratingPDFs(PDFGeneratingState.NONE);
@@ -385,7 +375,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
     try {
       const blob = await getCorrectionCommentPDFs(tutorialId, currentSheet.id);
 
-      saveBlob(blob, `Bewertungen_${currentSheet.sheetNo.toString().padStart(2, '0')}`);
+      saveBlob(blob, `Bewertungen_${currentSheet.sheetNo.toString().padStart(2, '0')}.zip`);
     } catch {
       enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
     }
@@ -433,21 +423,23 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
             {
               [TabValue.POINTS]:
                 teams.length > 0 ? (
-                  teams.map(team => (
-                    <PointsCard
-                      key={team.id}
-                      className={classes.pointCard}
-                      avatar={<TeamIcon />}
-                      title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
-                      subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
-                      entity={{ id: team.id, points: new PointMap(team.points) }}
-                      entityWithExercises={currentSheet}
-                      onPointsSave={handleSavePoints(team)}
-                      onEditPoints={handleEditPointsOfStudents(team)}
-                      onGeneratePdf={handleGenerateSinglePdf(team)}
-                      onPreviewPdf={handleSingleMarkdownPreview(team)}
-                    />
-                  ))
+                  teams
+                    .sort((a, b) => a.teamNo - b.teamNo)
+                    .map(team => (
+                      <PointsCard
+                        key={team.id}
+                        className={classes.pointCard}
+                        avatar={<TeamIcon />}
+                        title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
+                        subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
+                        entity={{ id: team.id, points: new PointMap(team.points) }}
+                        entityWithExercises={currentSheet}
+                        onPointsSave={handleSavePoints(team)}
+                        onEditPoints={handleEditPointsOfStudents(team)}
+                        onGeneratePdf={handleGenerateSinglePdf(team)}
+                        onPreviewPdf={handleSingleMarkdownPreview(team)}
+                      />
+                    ))
                 ) : (
                   <Typography variant='h6' className={classes.placeholder}>
                     Keine Teams verfügbar.

@@ -214,7 +214,7 @@ class StudentService {
     (student as EncryptedDocument<StudentDocument>).decryptFieldsSync();
 
     const {
-      _id,
+      id,
       firstname,
       lastname,
       matriculationNo,
@@ -239,7 +239,7 @@ class StudentService {
     const points: Student['points'] = (await student.getPoints()).toDTO();
 
     return {
-      id: _id,
+      id,
       firstname,
       lastname,
       matriculationNo,

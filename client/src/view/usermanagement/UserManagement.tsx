@@ -287,7 +287,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     try {
       const blob = await getCredentialsPDF();
 
-      saveBlob(blob, 'Zugangsdaten');
+      saveBlob(blob, 'Zugangsdaten.pdf');
     } catch {
       enqueueSnackbar('Zugangsdaten PDF konnte nicht erzeugt werden.', { variant: 'error' });
     }

@@ -36,7 +36,6 @@ function TeamTableRow({
       <PaperTableRow
         {...rest}
         label={`Team #${team.teamNo.toString().padStart(2, '0')}`}
-        subText={team.students.length === 0 ? 'Keine Mitglieder' : undefined}
         icon={GroupIcon}
         buttonCellContent={
           <ListItemMenu
@@ -47,12 +46,12 @@ function TeamTableRow({
       >
         <TableCell>
           <div className={classes.infoBlock}>
-            {/* <Typography>Bestanden:</Typography>
-            <Typography>ANZAHL</Typography> */}
             <Typography>
-              {`Mitglieder: ${team.students
-                .map(student => `${student.firstname} ${student.lastname}`)
-                .join(', ')}`}
+              {team.students.length > 0
+                ? `Mitglieder: ${team.students
+                    .map(student => `${student.firstname} ${student.lastname}`)
+                    .join(', ')}`
+                : 'Keine Mitglieder.'}
             </Typography>
           </div>
         </TableCell>

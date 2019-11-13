@@ -26,12 +26,13 @@ export const ExerciseModel: Model<ExerciseDocument> = new ExerciseSchema().getMo
 
 export function convertDocumentToExercise(doc: ExerciseDocument): Exercise {
   const { id, exName, bonus, subexercises } = doc;
+  const points = getPointsOfExercise(doc);
 
   return {
     id,
     exName,
     bonus,
-    maxPoints: getPointsOfExercise(doc),
+    maxPoints: points.must + points.bonus,
     subexercises: subexercises.map(doc => convertDocumentToExercise(doc)),
   };
 }

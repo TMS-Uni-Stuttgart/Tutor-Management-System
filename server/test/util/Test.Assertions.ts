@@ -1,5 +1,5 @@
-import { CreateUserDTO, UserDTO, User } from 'shared/dist/model/User';
-import { Role } from 'shared/dist/model/Role';
+import { CreateUserDTO, User, UserDTO } from 'shared/dist/model/User';
+import { TeamDTO, Team } from 'shared/dist/model/Team';
 
 /**
  * Checks if the response of the API call matches the given CreateUserDTO.
@@ -32,6 +32,28 @@ export function assertUserToMatchUserDTO(expectedUser: UserDTO, actualUser: User
   expect(actualUser.roles).toEqual(expectedUser.roles);
   expect(actualUser.tutorials).toEqual(expectedUser.tutorials);
   expect(actualUser.tutorialsToCorrect).toEqual(expectedUser.tutorialsToCorrect);
+}
+
+export function assertTeamToMatchTeamDTO(
+  {
+    expectedTeam,
+    tutorialId,
+  }: {
+    expectedTeam: TeamDTO;
+    tutorialId: string;
+  },
+  actualTeam: Team
+) {
+  assertNotUndefinedOrNull(actualTeam);
+
+  expectedTeam.students.sort((a, b) => a.localeCompare(b));
+  const actualTeamStudentIds = actualTeam.students
+    .map(s => s.id)
+    .sort((a, b) => a.localeCompare(b));
+
+  assertNotUndefinedOrNull(actualTeam.teamNo);
+  expect(tutorialId).toBe(actualTeam.tutorial);
+  expect(expectedTeam.students).toEqual(actualTeamStudentIds);
 }
 
 /**
