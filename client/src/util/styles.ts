@@ -3,15 +3,17 @@ import ORANGE from '@material-ui/core/colors/orange';
 
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette {
-    warning: Omit<SimplePaletteColorOptions, 'contrastText'>;
-    red: Omit<SimplePaletteColorOptions, 'contrastText'>;
     green: Omit<SimplePaletteColorOptions, 'contrastText'>;
+    orange: Omit<SimplePaletteColorOptions, 'contrastText'>;
+    red: Omit<SimplePaletteColorOptions, 'contrastText'>;
+    warning: Omit<SimplePaletteColorOptions, 'contrastText'>;
   }
 
   interface PaletteOptions {
     warning: Palette['warning'];
-    red: Palette['red'];
     green: Palette['green'];
+    orange: Palette['orange'];
+    red: Palette['red'];
   }
 }
 
@@ -25,16 +27,29 @@ export function createTheme(type: PaletteType): Theme {
       secondary: {
         main: '#00beff',
       },
-      red: {
-        light: '#ef9a9a',
-        main: '#ef5350',
-        dark: '#e53935',
-      },
-      green: {
-        light: '#a5d6a7',
-        main: '#66bb6a',
-        dark: '#43a047',
-      },
+      red:
+        type === 'light'
+          ? {
+              light: '#ef9a9a',
+              main: '#ef5350',
+              dark: '#e53935',
+            }
+          : {
+              // light: '',
+              main: '#ff6561',
+              // dark: '',
+            },
+      green:
+        type === 'light'
+          ? {
+              light: '#a5d6a7',
+              main: '#66bb6a',
+              dark: '#43a047',
+            }
+          : {
+              main: '#7ae07e',
+            },
+      orange: type === 'light' ? { main: '#ef6c00' } : { main: '#ff8e00' },
       warning: {
         light: ORANGE[300],
         main: ORANGE[500],

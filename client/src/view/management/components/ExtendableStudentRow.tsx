@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     warningAvatar: {
-      backgroundColor: theme.palette.warning.dark,
+      backgroundColor: theme.palette.warning.main,
     },
     infoBlock: {
       display: 'grid',
