@@ -8,10 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ButtonProps } from '@material-ui/core/Button';
-import GREEN from '@material-ui/core/colors/green';
-import ORANGE from '@material-ui/core/colors/orange';
-import RED from '@material-ui/core/colors/red';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { Person as PersonIcon } from '@material-ui/icons';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
@@ -28,11 +25,15 @@ import { FormikSubmitCallback } from '../../../types';
 import { StudentWithFetchedTeam } from '../../../typings/types';
 import CakeCount from './CakeCount';
 
-const ATTENDANCE_COLORS: { [K in keyof typeof AttendanceState]: string } = {
-  [AttendanceState.PRESENT]: GREEN[600],
-  [AttendanceState.EXCUSED]: ORANGE[600],
-  [AttendanceState.UNEXCUSED]: RED[600],
-};
+function getAttendanceColor(state: AttendanceState, theme: Theme): string {
+  const ATTENDANCE_COLORS: { [K in keyof typeof AttendanceState]: string } = {
+    [AttendanceState.PRESENT]: theme.palette.green.main,
+    [AttendanceState.EXCUSED]: theme.palette.orange.main,
+    [AttendanceState.UNEXCUSED]: theme.palette.red.main,
+  };
+
+  return ATTENDANCE_COLORS[state];
+}
 
 interface StyleProps {
   attendanceState: AttendanceState | undefined;
@@ -46,44 +47,23 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) =>
 
       if (props.attendanceState) {
         if (props.isContained) {
-          css.background = ATTENDANCE_COLORS[props.attendanceState];
-          css.color = theme.palette.getContrastText(ATTENDANCE_COLORS[props.attendanceState]);
+          css.background = getAttendanceColor(props.attendanceState, theme);
+          css.color = theme.palette.getContrastText(css.background);
 
           css['&:hover'] = {
             background: theme.palette.augmentColor({
-              main: ATTENDANCE_COLORS[props.attendanceState],
+              main: getAttendanceColor(props.attendanceState, theme),
             }).dark,
           };
         } else {
-          css.color = ATTENDANCE_COLORS[props.attendanceState];
-          css.borderColor = ATTENDANCE_COLORS[props.attendanceState];
+          css.color = getAttendanceColor(props.attendanceState, theme);
+          css.borderColor = css.color;
         }
       }
 
       return css;
     },
-    // underline: props => {
-    //   if (props.attendanceState) {
-    //     return {
-    //       borderBottom: `4px solid ${ATTENDANCE_COLORS[props.attendanceState]}`,
-    //       // position: 'absolute',
-    //       // left: 0,
-    //       // bottom: 0,
-    //       // width: '100%',
-    //       // height: 4,
-    //       // background: ATTENDANCE_COLORS[props.attendanceState],
-    //       // borderRadius: 0,
-    //       borderBottomLeftRadius: 4,
-    //       borderBottomRightRadius: 4,
-    //     };
-    //   }
-
-    //   return {
-    //     // display: 'none',
-    //   };
-    // },
     row: {
-      // position: 'relative',
       height: 76,
     },
     noteTableCell: {
@@ -175,6 +155,9 @@ function StudentAttendanceRow({
     isContained: false,
   });
 
+  const theme = useTheme();
+  const { userData } = useLogin();
+
   function handleAttendanceClick(newState: AttendanceState) {
     if (attendanceState !== newState) {
       onAttendanceSelection(newState);
@@ -191,8 +174,6 @@ function StudentAttendanceRow({
     onNoteSave(values, actions, handleCloseNotePopper);
   };
 
-  const { userData } = useLogin();
-
   return (
     <PaperTableRow
       label={`${student.lastname}, ${student.firstname}`}
@@ -203,10 +184,8 @@ function StudentAttendanceRow({
       SubTextProps={!student.team ? { color: 'error' } : undefined}
       {...rest}
       className={clsx(classes.row)}
-      colorOfBottomBar={attendanceState ? ATTENDANCE_COLORS[attendanceState] : undefined}
+      colorOfBottomBar={attendanceState ? getAttendanceColor(attendanceState, theme) : undefined}
     >
-      {/* {attendanceState && <td className={classes.underline} />} */}
-
       {onCakeCountChanged && (
         <TableCell>
           <CakeCount cakeCount={student.cakeCount} onCakeCountChanged={onCakeCountChanged} />

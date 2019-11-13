@@ -32,7 +32,7 @@ const validationSchema = Yup.object().shape({
         return true;
       }
 
-      if (Number.isNaN(Number.parseInt(matriculationNo))) {
+      if (Number.isNaN(Number.parseInt(matriculationNo, 10))) {
         return this.createError({
           path: 'matriculationNo',
           message: 'Muss eine Zahl sein',

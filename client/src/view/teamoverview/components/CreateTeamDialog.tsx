@@ -67,7 +67,7 @@ function CreateTeamDialog({ open, onSave, onClose, students, ...other }: Props):
   function handleCreateTeam() {
     const teamData = {
       selectedStudents: selected,
-      teamNr: Number.parseInt(teamNr),
+      teamNr: Number.parseInt(teamNr, 10),
     };
 
     onSave(teamData);

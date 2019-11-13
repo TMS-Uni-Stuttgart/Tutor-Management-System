@@ -40,6 +40,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(2),
       backgroundColor: GREEN[600],
       color: theme.palette.getContrastText(GREEN[600]),
+      '&:hover': {
+        backgroundColor: GREEN[800],
+        color: theme.palette.getContrastText(GREEN[800]),
+      },
     },
   })
 );
@@ -258,7 +262,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
             return s;
           })
         );
-        enqueueSnackbar('Anzahll Kuchen wurde aktualisiert.', { variant: 'success' });
+        enqueueSnackbar('Anzahl Kuchen wurde aktualisiert.', { variant: 'success' });
       } catch {
         enqueueSnackbar('Anzahl Kuchen konnte nicht aktualisert werden.', { variant: 'error' });
       }
@@ -296,7 +300,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
             <SubmitButton
               variant='contained'
-              color='primary'
+              // color='primary'
               isSubmitting={isSettingPresent}
               className={classes.allPresentButton}
               onClick={handleAllStudentPresent}

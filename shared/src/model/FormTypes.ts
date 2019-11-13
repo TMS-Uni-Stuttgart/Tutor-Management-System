@@ -12,7 +12,7 @@ export class FormSelectValue<T> {
   readonly value: T;
   readonly displayValue?: string;
 
-  constructor(identifier: string, value: T, displayValue: string | undefined = undefined) {
+  constructor(identifier: string, value: T, displayValue?: string) {
     this.identifier = identifier;
     this.value = value;
     this.displayValue = displayValue;

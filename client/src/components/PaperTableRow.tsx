@@ -15,7 +15,8 @@ const useStyles = makeStyles<Theme, StyleProps>(theme =>
   createStyles({
     content: {
       '&:hover': {
-        background: theme.palette.grey[200],
+        background: theme.palette.action.hover,
+        // background: theme.palette.grey[200],
       },
       '& td': {
         // This prevents table-cells from getting too small if other cells take up more space.
