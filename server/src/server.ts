@@ -5,6 +5,7 @@ import initApp from './app';
 import { databaseConfig } from './helpers/config';
 import Logger from './helpers/Logger';
 import { StartUpError } from './model/Errors';
+import { initScheincriteriaBlueprints } from './model/scheincriteria/Scheincriteria';
 import userService from './services/user-service/UserService.class';
 
 /**
@@ -67,6 +68,8 @@ async function startServer() {
     Logger.info(`Starting server with version ${pkgInfo.version}...`);
 
     await connectToDB();
+
+    initScheincriteriaBlueprints();
 
     const app = initApp();
 

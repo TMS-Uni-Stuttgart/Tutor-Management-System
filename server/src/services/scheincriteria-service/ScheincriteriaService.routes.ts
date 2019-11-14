@@ -7,14 +7,13 @@ import {
 } from 'shared/dist/model/ScheinCriteria';
 import { validateAgainstScheincriteriaDTO } from 'shared/dist/validators/Scheincriteria';
 import {
-  checkRoleAccess,
   checkAccess,
+  checkRoleAccess,
   hasUserOneOfRoles,
   isUserTutorOfTutorial,
 } from '../../middleware/AccessControl';
 import { validateRequestBody } from '../../middleware/Validation';
 import { ValidationError } from '../../model/Errors';
-import { initScheincriteriaBlueprints } from '../../model/scheincriteria/Scheincriteria';
 import scheincriteriaService from './ScheincriteriaService.class';
 
 function validateScheincriteriaDTOData(req: Request, res: Response, next: NextFunction) {
@@ -26,8 +25,6 @@ function validateScheincriteriaDTOData(req: Request, res: Response, next: NextFu
 
   next();
 }
-
-initScheincriteriaBlueprints();
 
 const scheincriteriaRouter = Router();
 
