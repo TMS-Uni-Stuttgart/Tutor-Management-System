@@ -115,11 +115,6 @@ function initEndpoints() {
   registerAPIEndpoint(`${BASE_API_PATH}/excel`, excelRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/locales`, languageRouter);
 
-  // FIXME: REMOVE ME!
-  app.use(`${BASE_API_PATH}/superlongrequest`, (req, res) => {
-    setTimeout(() => res.status(204).send(), 1000);
-  });
-
   // If there's a request which starts with the BASE_API_PATH which did not get handled yet, throw a not found error.
   app.use(BASE_API_PATH, req => {
     throw new EndpointNotFoundError(`Endpoint ${req.url}@${req.method} was not found.`);
