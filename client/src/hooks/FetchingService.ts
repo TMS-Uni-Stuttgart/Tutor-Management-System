@@ -6,6 +6,7 @@ import * as tutorialFunctions from './fetching/Tutorial';
 import * as userFunctions from './fetching/User';
 import * as scheinExamFunctions from './fetching/ScheinExam';
 import * as pdfFunctions from './fetching/Files';
+import * as informationFunctions from './fetching/Information';
 
 export function useAxios() {
   return {
@@ -17,5 +18,6 @@ export function useAxios() {
     ...scheincriteriaFunctions,
     ...scheinExamFunctions,
     ...pdfFunctions,
+    ...informationFunctions,
   };
 }

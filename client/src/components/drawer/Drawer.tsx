@@ -1,13 +1,22 @@
-import { Divider, Drawer as MuiDrawer, List, ListSubheader } from '@material-ui/core';
+import {
+  Divider,
+  Drawer as MuiDrawer,
+  List,
+  ListSubheader,
+  Typography,
+  Link,
+} from '@material-ui/core';
 import { DrawerProps } from '@material-ui/core/Drawer';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { OpenInNew as ExternalLinkIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useLogin } from '../../hooks/LoginService';
 import { ROUTES, RouteType } from '../../util/RoutingPath';
 import DrawerListItem from './components/DrawerListItem';
 import TutorialSubList from './components/TutorialSubList';
 import { Role } from 'shared/dist/model/Role';
+import { getVersionOfApp } from '../../hooks/fetching/Information';
 
 const DRAWER_WIDTH_OPEN = 240;
 const DRAWER_WIDTH_CLOSED = 56;
@@ -42,6 +51,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     toolbar: {
       ...theme.mixins.toolbar,
+    },
+    version: {
+      position: 'absolute',
+      bottom: theme.spacing(1),
+      left: theme.spacing(1),
+      right: theme.spacing(1),
+      textAlign: 'center',
     },
   })
 );
@@ -108,6 +124,7 @@ function Drawer({
 }: DrawerProps): JSX.Element {
   const classes = useStyles();
   const { userData } = useLogin();
+  const [version, setVersion] = useState<string | undefined>(undefined);
 
   if (!userData) {
     throw new Error('Drawer without a user should be rendered. This is forbidden.');
@@ -120,6 +137,12 @@ function Drawer({
     substituteRoutes,
     managementRoutes,
   } = useMemo(() => filterRoutes(userData.roles), [userData.roles]);
+
+  useEffect(() => {
+    getVersionOfApp()
+      .then(version => setVersion(version))
+      .catch(() => setVersion(undefined));
+  });
 
   return (
     <MuiDrawer
@@ -207,6 +230,22 @@ function Drawer({
           </>
         )}
       </List>
+
+      {version && (
+        <Typography className={classes.version} variant='caption'>
+          {open && <>Version: </>}
+
+          <Link
+            color='inherit'
+            href={`https://github.com/Dudrie/Tutor-Management-System/releases/tag/v${version}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            {version}
+            <ExternalLinkIcon fontSize='inherit' />
+          </Link>
+        </Typography>
+      )}
     </MuiDrawer>
   );
 }
