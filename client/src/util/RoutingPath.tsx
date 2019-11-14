@@ -123,7 +123,7 @@ export const ROUTES: readonly RouteType[] = [
   },
   {
     path: RoutingPath.STUDENTOVERVIEW,
-    title: 'Studentenübersicht',
+    title: 'Studierendenübersicht',
     component: Studentoverview,
     icon: PersonIcon,
     roles: [Role.TUTOR],
@@ -171,7 +171,7 @@ export const ROUTES: readonly RouteType[] = [
   },
   {
     path: RoutingPath.MANAGE_ALL_STUDENTS,
-    title: 'Studentenübersicht',
+    title: 'Studierendenübersicht',
     component: AllStudentsAdminView,
     icon: PersonIcon,
     roles: [Role.ADMIN],
