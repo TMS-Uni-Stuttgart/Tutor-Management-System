@@ -26,6 +26,7 @@ import studentRouter from './services/student-service/StudentService.routes';
 import tutorialRouter from './services/tutorial-service/TutorialService.routes';
 import authenticationRouter from './services/user-service/authentication.routes';
 import userRouter from './services/user-service/UserService.routes';
+import informationRouter from './services/information-service/InformationServcive.routes';
 
 const BASE_API_PATH = '/api';
 const app = express();
@@ -113,6 +114,7 @@ function initEndpoints() {
   registerAPIEndpoint(`${BASE_API_PATH}/mail`, mailRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/pdf`, pdfRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/excel`, excelRouter);
+  registerAPIEndpoint(`${BASE_API_PATH}/information`, informationRouter);
   registerAPIEndpoint(`${BASE_API_PATH}/locales`, languageRouter);
 
   // If there's a request which starts with the BASE_API_PATH which did not get handled yet, throw a not found error.
