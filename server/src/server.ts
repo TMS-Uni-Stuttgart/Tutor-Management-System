@@ -1,5 +1,6 @@
 import { Server } from 'http';
 import mongoose from 'mongoose';
+import pkgInfo from '../package.json';
 import initApp from './app';
 import { databaseConfig } from './helpers/config';
 import Logger from './helpers/Logger';
@@ -63,13 +64,17 @@ async function initAdmin() {
  */
 async function startServer() {
   try {
+    Logger.info(`Starting server with version ${pkgInfo.version}...`);
+
     await connectToDB();
 
     const app = initApp();
 
     await initAdmin();
 
-    const server = app.listen(8080, () => Logger.info('Server started on port 8080.'));
+    const server = app.listen(8080, () =>
+      Logger.info(`Server (v${pkgInfo.version}) started on port 8080.`)
+    );
 
     // Mark every active request so the server can be gracefully stopped.
     server.on('request', (req, res) => {
