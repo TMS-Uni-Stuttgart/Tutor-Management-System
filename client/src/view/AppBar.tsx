@@ -157,6 +157,7 @@ function AppBar(props: PropType): JSX.Element {
           className={classes.iconButton}
           href='https://github.com/Dudrie/Tutor-Management-System/issues'
           target='_blank'
+          rel='noopener noreferrer'
         >
           <GitHubIcon fontSize='default' />
         </IconButton>
