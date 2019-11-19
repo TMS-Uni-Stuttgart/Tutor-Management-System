@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { ValidationErrorsWrapper } from '../model/errors/Errors';
 import { validateSchema, YupIdShape } from './helper';
-import { StudentDTO, PresentationPointsDTO, CakeCountDTO } from '../model/Student';
+import { StudentDTO, PresentationPointsDTO, CakeCountDTO, StudentStatus } from '../model/Student';
 
 const StudentDTOSchema = Yup.object().shape<StudentDTO>({
   courseOfStudies: Yup.string(),
@@ -11,6 +11,7 @@ const StudentDTOSchema = Yup.object().shape<StudentDTO>({
   matriculationNo: Yup.string(),
   team: YupIdShape.notRequired(),
   tutorial: YupIdShape.required(),
+  status: Yup.mixed<StudentStatus>().required(),
 });
 
 const PresentationPointsDTOSchema = Yup.object().shape<PresentationPointsDTO>({

@@ -6,6 +6,12 @@ interface TeamInStudent extends HasId {
   teamNo: number;
 }
 
+export enum StudentStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  NO_SCHEIN_REQUIRED = 'NO_SCHEIN_REQUIRED',
+}
+
 export interface Student extends NamedElement {
   attendance: { [index: string]: Attendance };
   courseOfStudies?: string;
@@ -14,6 +20,7 @@ export interface Student extends NamedElement {
   points: PointMapDTO;
   presentationPoints: { [index: string]: number };
   scheinExamResults: PointMapDTO;
+  status: StudentStatus;
   team?: TeamInStudent;
   tutorial: string;
   cakeCount: number;
@@ -25,6 +32,7 @@ export interface StudentDTO {
   firstname: string;
   lastname: string;
   matriculationNo?: string;
+  status: StudentStatus;
   team?: string;
   tutorial: string;
 }
