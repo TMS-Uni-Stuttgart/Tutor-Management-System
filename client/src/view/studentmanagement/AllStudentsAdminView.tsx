@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { Attendance } from 'shared/dist/model/Attendance';
 import { PointMap } from 'shared/dist/model/Points';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
-import { StudentDTO } from 'shared/dist/model/Student';
+import { StudentDTO, StudentStatus } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import SubmitButton from '../../components/forms/components/SubmitButton';
 import StudentForm, { StudentFormSubmitCallback } from '../../components/forms/StudentForm';
@@ -128,6 +128,7 @@ function AllStudentsAdminView({ enqueueSnackbar }: PropType): JSX.Element {
       courseOfStudies,
       tutorial: student.tutorial,
       team: !team ? undefined : team,
+      status: StudentStatus.ACTIVE,
     };
 
     editStudentRequest(student.id, studentDTO)
