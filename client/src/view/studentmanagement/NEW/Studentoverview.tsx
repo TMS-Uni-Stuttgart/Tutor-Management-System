@@ -6,16 +6,15 @@ import React, { useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student, StudentStatus } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import StudentForm, { StudentFormSubmitCallback } from '../../../components/forms/StudentForm';
+import StudentForm, { StudentFormSubmitCallback, getInitialStudentFormState } from '../../../components/forms/StudentForm';
 import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
 import ExtendableStudentRow from '../../management/components/ExtendableStudentRow';
-import {
-  StudentStateActionType,
-  StudentStateDispatcher,
-  useStudentContext,
-} from './Studentoverview.Context';
 import { getFilteredStudents } from './Studentoverview.helpers';
+import { useStudentStore, StudentStoreDispatcher } from './StudentStore';
+import { StudentStoreActionType } from './StudentStore.actions';
+import LoadingSpinner from '../../../components/LoadingSpinner';
+import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,7 +27,6 @@ const useStyles = makeStyles((theme: Theme) =>
 type SummariesByStudent = { [studentId: string]: ScheinCriteriaSummary };
 
 interface Props {
-  tutorialId?: string;
   tutorials?: Tutorial[];
   summaries: SummariesByStudent;
   allowChangeTutorial?: boolean;
@@ -40,17 +38,17 @@ interface Props {
 
 function handleCreateStudent(
   tutorialId: string,
-  dispatch: StudentStateDispatcher,
+  dispatch: StudentStoreDispatcher,
   enqueueSnackbar: WithSnackbarProps['enqueueSnackbar']
 ): StudentFormSubmitCallback {
   return async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team },
-    { setSubmitting }
+    { setSubmitting, resetForm }
   ) => {
     setSubmitting(true);
     try {
       await dispatch({
-        type: StudentStateActionType.CREATE,
+        type: StudentStoreActionType.CREATE,
         data: {
           firstname,
           lastname,
@@ -62,7 +60,9 @@ function handleCreateStudent(
           tutorial: tutorialId,
         },
       });
+      const teams = await getTeamsOfTutorial(tutorialId);
 
+      resetForm({ values: getInitialStudentFormState(teams) });
       enqueueSnackbar('Student wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
       console.error(reason);
@@ -85,15 +85,10 @@ function handleChangeTutorial() {
   console.error('[handleChangeTutorial] -- Not implemented');
 }
 
-function Studentoverview({
-  tutorialId,
-  tutorials,
-  summaries,
-  allowChangeTutorial,
-}: Props): JSX.Element {
+function Studentoverview({ tutorials, summaries, allowChangeTutorial }: Props): JSX.Element {
   const classes = useStyles();
   const [filterText, setFilterText] = useState<string>('');
-  const [{ students, teams }, dispatch] = useStudentContext();
+  const [{ students, teams, tutorialId, isInitialized }, dispatch] = useStudentStore();
   const { enqueueSnackbar } = useSnackbar();
 
   const TopBarContent = (
@@ -119,6 +114,10 @@ function Studentoverview({
       onChangeTutorialClicked={allowChangeTutorial ? handleChangeTutorial : undefined}
     />
   );
+
+  if (!isInitialized) {
+    return <LoadingSpinner />;
+  }
 
   return !!tutorialId ? (
     <TableWithForm

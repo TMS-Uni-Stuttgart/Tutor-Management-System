@@ -20,13 +20,13 @@ import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
-import StudentoverviewContextProvider from './NEW/Studentoverview.Context';
 import NEWStudentoverview from './NEW/Studentoverview';
 import {
   getStudentsOfTutorial,
   getScheinCriteriaSummariesOfAllStudentsOfTutorial,
 } from '../../hooks/fetching/Tutorial';
 import { getTeamsOfTutorial } from '../../hooks/fetching/Team';
+import StudentoverviewStoreProvider from './NEW/StudentStore';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,13 +80,13 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
   const tutorialId: string = params.tutorialId;
 
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
 
     (async function() {
-      const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorial(tutorialId),
-        getTeamsOfTutorial(tutorialId), // TODO: Remove me??
-      ]);
+      // const [studentsResponse, teams] = await Promise.all([
+      //   getStudentsOfTutorial(tutorialId),
+      //   getTeamsOfTutorial(tutorialId), // TODO: Remove me??
+      // ]);
 
       getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
         .then(response => setSummaries(response))
@@ -98,9 +98,9 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
           return [];
         });
 
-      setStudents(studentsResponse);
+      // setStudents(studentsResponse);
       // setTeams(teams);
-      setIsLoading(false);
+      // setIsLoading(false);
     })();
   }, [
     getStudentsOfTutorial,
@@ -111,15 +111,9 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
   ]);
 
   return (
-    <StudentoverviewContextProvider students={students}>
-      <div className={classes.root}>
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <NEWStudentoverview tutorialId={tutorialId} summaries={summaries} />
-        )}
-      </div>
-    </StudentoverviewContextProvider>
+    <StudentoverviewStoreProvider tutorialId={tutorialId}>
+      <div className={classes.root}>{<NEWStudentoverview summaries={summaries} />}</div>
+    </StudentoverviewStoreProvider>
   );
   // const [teams, setTeams] = useState<Team[]>([]);
 
