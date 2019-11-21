@@ -23,7 +23,7 @@ import { TutorialDocument } from './TutorialDocument';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
-  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo'],
+  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
 export class StudentSchema extends Typegoose
   implements
