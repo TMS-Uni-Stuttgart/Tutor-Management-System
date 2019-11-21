@@ -42,7 +42,7 @@ function handleCreateStudent(
   enqueueSnackbar: WithSnackbarProps['enqueueSnackbar']
 ): StudentFormSubmitCallback {
   return async (
-    { firstname, lastname, matriculationNo, email, courseOfStudies, team },
+    { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
     { setSubmitting, resetForm }
   ) => {
     setSubmitting(true);
@@ -55,7 +55,7 @@ function handleCreateStudent(
           matriculationNo,
           email,
           courseOfStudies,
-          status: StudentStatus.ACTIVE, // TODO: Add field in form.
+          status,
           team,
           tutorial: tutorialId,
         },
