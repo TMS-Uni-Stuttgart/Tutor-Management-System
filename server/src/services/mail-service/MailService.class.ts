@@ -119,7 +119,7 @@ class MailService {
     const options = config.get<TransportOptions>('mailing');
 
     if (options.testingMode) {
-      const auth = options.auth as (AuthenticationTypeLogin | undefined);
+      const auth = options.auth as AuthenticationTypeLogin | undefined;
 
       if (!auth || !auth.user || !auth.pass) {
         throw new InvalidConfigurationError(

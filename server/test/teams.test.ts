@@ -8,6 +8,7 @@ import teamService from '../src/services/team-service/TeamService.class';
 import app from './util/Test.App';
 import { assertTeamToMatchTeamDTO } from './util/Test.Assertions';
 import { connectToDB, disconnectFromDB } from './util/Test.connectToDB';
+import { StudentStatus } from 'shared/dist/model/Student';
 
 const agent = request.agent(app);
 const chance = new Chance();
@@ -289,6 +290,7 @@ async function generateStudents(count: number, team?: string): Promise<string[]>
       email,
       matriculationNo,
       team,
+      status: StudentStatus.ACTIVE,
     });
 
     students.push(student.id);

@@ -51,7 +51,8 @@ function initSecurityMiddleware() {
     | MongoUrlOptions
     | MongooseConnectionOptions
     | NativeMongoOptions
-    | NativeMongoPromiseOptions) = {
+    | NativeMongoPromiseOptions
+  ) = {
     mongooseConnection: mongoose.connection,
     secret: databaseConfig.secret,
   };
