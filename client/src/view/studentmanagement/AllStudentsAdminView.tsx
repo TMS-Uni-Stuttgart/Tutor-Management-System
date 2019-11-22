@@ -33,20 +33,12 @@ const useStyles = makeStyles((theme: Theme) =>
       maxHeight: '100%',
       position: 'relative',
     },
-    dialogDeleteButton: {
-      color: theme.palette.error.main,
-    },
     printButton: {
-      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(1.5),
       height: '56px',
     },
     topBar: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
-    searchField: {
-      flex: 1,
-      marginRight: theme.spacing(2),
+      justifySelf: 'flex-end',
     },
   })
 );
@@ -59,7 +51,7 @@ function AdminStudentManagement(): JSX.Element {
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [summaries, setSummaries] = useState<{ [studentId: string]: ScheinCriteriaSummary }>({});
 
-  const [{ students }, dispatch] = useStudentStore();
+  const [{ students }] = useStudentStore();
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -72,7 +64,7 @@ function AdminStudentManagement(): JSX.Element {
       );
 
     getAllTutorials().then(response => setTutorials(response));
-  }, [getAllTutorials, enqueueSnackbar]);
+  }, [enqueueSnackbar]);
 
   async function printOverviewSheet() {
     setCreatingScheinStatus(true);
@@ -144,33 +136,36 @@ function AdminStudentManagement(): JSX.Element {
   }
 
   return (
-    <>
-      <div className={classes.topBar}>
-        <SubmitButton
-          variant='contained'
-          color='primary'
-          isSubmitting={isCreatingScheinStatus}
-          className={classes.printButton}
-          onClick={printOverviewSheet}
-          disabled={students.length === 0}
-        >
-          Scheinliste ausdrucken
-        </SubmitButton>
+    <Studentoverview
+      summaries={summaries}
+      tutorials={tutorials}
+      allowChangeTutorial
+      additionalTopBarItem={
+        <div className={classes.topBar}>
+          <SubmitButton
+            variant='contained'
+            color='primary'
+            isSubmitting={isCreatingScheinStatus}
+            className={classes.printButton}
+            onClick={printOverviewSheet}
+            disabled={students.length === 0}
+          >
+            Scheinliste ausdrucken
+          </SubmitButton>
 
-        <SubmitButton
-          variant='contained'
-          color='primary'
-          className={classes.printButton}
-          onClick={generateCSVFile}
-          isSubmitting={isCreatingCSVFile}
-          disabled={students.length === 0}
-        >
-          CSV Datei
-        </SubmitButton>
-      </div>
-
-      <Studentoverview summaries={summaries} tutorials={tutorials} allowChangeTutorial />
-    </>
+          <SubmitButton
+            variant='contained'
+            color='primary'
+            className={classes.printButton}
+            onClick={generateCSVFile}
+            isSubmitting={isCreatingCSVFile}
+            disabled={students.length === 0}
+          >
+            CSV Datei
+          </SubmitButton>
+        </div>
+      }
+    />
   );
 }
 

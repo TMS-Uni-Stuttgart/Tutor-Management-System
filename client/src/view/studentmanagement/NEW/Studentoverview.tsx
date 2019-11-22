@@ -27,10 +27,14 @@ import TutorialChangeForm, {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     searchField: {
-      width: '75%',
+      // width: '75%',
+      flex: 1,
     },
     dialogDeleteButton: {
       color: theme.palette.error.main,
+    },
+    topBar: {
+      display: 'flex',
     },
   })
 );
@@ -47,6 +51,7 @@ interface Props {
   tutorials?: Tutorial[];
   summaries: SummariesByStudent;
   allowChangeTutorial?: boolean;
+  additionalTopBarItem?: React.ReactNode;
 }
 
 function handleCreateStudent({
@@ -188,7 +193,12 @@ function handleChangeTutorial({
   };
 }
 
-function Studentoverview({ tutorials, summaries, allowChangeTutorial }: Props): JSX.Element {
+function Studentoverview({
+  tutorials,
+  summaries,
+  allowChangeTutorial,
+  additionalTopBarItem,
+}: Props): JSX.Element {
   const classes = useStyles();
   const [filterText, setFilterText] = useState<string>('');
 
@@ -267,15 +277,19 @@ function Studentoverview({ tutorials, summaries, allowChangeTutorial }: Props): 
   }
 
   const TopBarContent = (
-    <TextField
-      variant='outlined'
-      label='Suche'
-      onChange={e => setFilterText(e.target.value)}
-      className={classes.searchField}
-      InputProps={{
-        startAdornment: <SearchIcon color='disabled' />,
-      }}
-    />
+    <>
+      <TextField
+        variant='outlined'
+        label='Suche'
+        onChange={e => setFilterText(e.target.value)}
+        className={classes.searchField}
+        InputProps={{
+          startAdornment: <SearchIcon color='disabled' />,
+        }}
+      />
+
+      {additionalTopBarItem}
+    </>
   );
 
   const createRowFromItem = (student: Student) => (
@@ -306,11 +320,15 @@ function Studentoverview({ tutorials, summaries, allowChangeTutorial }: Props): 
       topBarContent={TopBarContent}
     />
   ) : (
-    <TableWithPadding
-      placeholder='Keine Studierenden vorhanden'
-      items={getFilteredStudents(students, filterText)}
-      createRowFromItem={createRowFromItem}
-    />
+    <>
+      <div className={classes.topBar}>{TopBarContent}</div>
+
+      <TableWithPadding
+        placeholder='Keine Studierenden vorhanden'
+        items={getFilteredStudents(students, filterText)}
+        createRowFromItem={createRowFromItem}
+      />
+    </>
   );
 }
 
