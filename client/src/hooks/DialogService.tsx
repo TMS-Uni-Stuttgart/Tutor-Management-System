@@ -23,6 +23,11 @@ interface DialogOptions {
   DialogProps?: Omit<DialogProps, 'open' | 'onClose'>;
 }
 
+export interface DialogHelpers {
+  show: (dialogOptions: Partial<DialogOptions>) => void;
+  hide: () => void;
+}
+
 type CreateDialogFunction = (dialog: DialogOptions | undefined) => void;
 
 const DialogContext = React.createContext<CreateDialogFunction>(() => {
@@ -107,7 +112,7 @@ function hideDialogOutsideContext() {
   closeDialogGlobal();
 }
 
-function useDialog() {
+function useDialog(): DialogHelpers {
   const createDialogFunction = useContext(DialogContext);
 
   return {
