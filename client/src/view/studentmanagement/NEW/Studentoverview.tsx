@@ -20,6 +20,9 @@ import { StudentStoreDispatcher, useStudentStore } from './StudentStore';
 import { StudentStoreActionType } from './StudentStore.actions';
 import { useDialog, DialogHelpers } from '../../../hooks/DialogService';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
+import TutorialChangeForm, {
+  TutorialChangeFormSubmitCallback,
+} from '../../../components/forms/TutorialChangeForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -98,10 +101,6 @@ function handleEditStudent({
     { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
     { setSubmitting }
   ) => {
-    if (!tutorialId) {
-      return;
-    }
-
     try {
       setSubmitting(true);
       await dispatch({
@@ -116,7 +115,7 @@ function handleEditStudent({
             courseOfStudies,
             status,
             team,
-            tutorial: tutorialId,
+            tutorial: tutorialId || student.tutorial,
           },
         },
       });
@@ -156,8 +155,37 @@ function handleDeleteStudent({
   };
 }
 
-function handleChangeTutorial() {
-  console.error('[handleChangeTutorial] -- Not implemented');
+function handleChangeTutorial({
+  student,
+  dialog,
+  dispatch,
+  enqueueSnackbar,
+}: HandlerParams & { student: Student; dialog: DialogHelpers }): TutorialChangeFormSubmitCallback {
+  return async ({ tutorial }) => {
+    if (tutorial === student.tutorial) {
+      return;
+    }
+
+    try {
+      await dispatch({
+        type: StudentStoreActionType.UPDATE,
+        data: {
+          studentId: student.id,
+          dto: {
+            ...student,
+            team: student.team ? student.team.id : undefined,
+            tutorial,
+          },
+        },
+      });
+
+      enqueueSnackbar('Tutorium wurde erfolgreich geändert.', { variant: 'success' });
+      dialog.hide();
+    } catch (reason) {
+      console.error(reason);
+      enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
+    }
+  };
 }
 
 function Studentoverview({ tutorials, summaries, allowChangeTutorial }: Props): JSX.Element {
@@ -214,6 +242,30 @@ function Studentoverview({ tutorials, summaries, allowChangeTutorial }: Props): 
     });
   }
 
+  function openChangeTutorialDialog(student: Student) {
+    if (!tutorials) {
+      return;
+    }
+
+    dialog.show({
+      title: 'In folgendes Tutorium wechseln',
+      content: (
+        <TutorialChangeForm
+          allTutorials={tutorials}
+          tutorial={student.tutorial}
+          onSubmit={handleChangeTutorial({
+            student,
+            enqueueSnackbar,
+            dialog,
+            dispatch,
+            tutorialId,
+          })}
+          onCancel={() => dialog.hide()}
+        />
+      ),
+    });
+  }
+
   const TopBarContent = (
     <TextField
       variant='outlined'
@@ -234,7 +286,7 @@ function Studentoverview({ tutorials, summaries, allowChangeTutorial }: Props): 
       showTutorial={!!tutorials}
       tutorials={tutorials}
       onDeleteStudentClicked={openDeleteDialog}
-      onChangeTutorialClicked={allowChangeTutorial ? handleChangeTutorial : undefined}
+      onChangeTutorialClicked={allowChangeTutorial ? openChangeTutorialDialog : undefined}
     />
   );
 

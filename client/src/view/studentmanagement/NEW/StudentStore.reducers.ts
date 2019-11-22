@@ -1,7 +1,12 @@
 import { StudentDTO } from 'shared/dist/model/Student';
 import { sortByName } from 'shared/dist/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
-import { createStudent, deleteStudent, editStudent } from '../../../hooks/fetching/Student';
+import {
+  createStudent,
+  deleteStudent,
+  editStudent,
+  getAllStudents,
+} from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { AsyncDispatch } from './AsyncReducer';
@@ -112,10 +117,13 @@ async function reduceReinitializeStore(
     students.sort(sortByName);
     teams.sort((a, b) => a.teamNo - b.teamNo);
 
-    return { students, teams, isInitialized: true, tutorialId };
+    return { ...state, students, teams, isInitialized: true, tutorialId };
   } else {
-    // TODO: Implement me.
-    return state;
+    const students = await getAllStudents();
+
+    students.sort(sortByName);
+
+    return { ...state, students, teams: undefined, tutorialId: undefined, isInitialized: true };
   }
 }
 
