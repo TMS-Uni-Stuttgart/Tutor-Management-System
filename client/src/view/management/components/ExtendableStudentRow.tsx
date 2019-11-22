@@ -23,9 +23,9 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
     },
-    margin: {
+    statusProgress: {
       maxWidth: '200px',
-      width: '50%',
+      // width: '50%',
       margin: theme.spacing(1),
     },
     content: {
@@ -199,7 +199,7 @@ function ExtendableStudentRow({
       >
         <TableCell className={classes.progressBarCell}>
           <StatusProgress
-            className={classes.margin}
+            className={classes.statusProgress}
             status={
               summary && {
                 achieved: calculateProgress(summary),
