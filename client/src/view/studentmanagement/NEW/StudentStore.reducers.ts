@@ -3,18 +3,17 @@ import { sortByName } from 'shared/dist/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import { createStudent, deleteStudent, editStudent } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
+import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
+import { AsyncDispatch } from './AsyncReducer';
+import { StudentStore } from './StudentStore';
 import {
-  StudentStoreActionType,
   StudentCreateAction,
-  StudentUpdateAction,
   StudentDeleteAction,
   StudentReinitializeAction,
+  StudentStoreAction,
+  StudentStoreActionType,
+  StudentUpdateAction,
 } from './StudentStore.actions';
-import { AsyncDispatch } from './AsyncReducer';
-import { StudentStoreAction } from './StudentStore.actions';
-import { StudentStore } from './StudentStore';
-import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { stringTypeAnnotation } from '@babel/types';
 
 export type StudentStateDispatcher = AsyncDispatch<StudentStoreAction>;
 
@@ -109,6 +108,9 @@ async function reduceReinitializeStore(
       getStudentsOfTutorial(tutorialId),
       getTeamsOfTutorial(tutorialId),
     ]);
+
+    students.sort(sortByName);
+    teams.sort((a, b) => a.teamNo - b.teamNo);
 
     return { students, teams, isInitialized: true, tutorialId };
   } else {
