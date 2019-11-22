@@ -56,9 +56,10 @@ function StudentoverviewStoreProvider({
     }
 
     dispatch({
-      type: StudentStoreActionType.REINITIALIZE,
+      type: StudentStoreActionType.REINITIALIZE_START,
       data: {
         tutorialId,
+        dispatch,
       },
     });
   }, [tutorialId, dispatch, store.tutorialId]);

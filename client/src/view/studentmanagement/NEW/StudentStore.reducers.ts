@@ -9,7 +9,7 @@ import { StudentStore } from './StudentStore';
 import {
   StudentCreateAction,
   StudentDeleteAction,
-  StudentReinitializeAction,
+  StudentReinitializeStartAction,
   StudentStoreAction,
   StudentStoreActionType,
   StudentUpdateAction,
@@ -93,7 +93,7 @@ async function reduceDeleteStudent(
 
 async function reduceReinitializeStore(
   state: StudentStore,
-  action: StudentReinitializeAction
+  action: StudentReinitializeStartAction
 ): Promise<StudentStore> {
   const {
     data: { tutorialId },
@@ -133,8 +133,18 @@ async function studentStoreReducer(
     case StudentStoreActionType.DELETE:
       return reduceDeleteStudent(state, action);
 
-    case StudentStoreActionType.REINITIALIZE:
-      return reduceReinitializeStore(state, action);
+    case StudentStoreActionType.REINITIALIZE_START:
+      reduceReinitializeStore(state, action).then(state => {
+        action.data.dispatch({
+          type: StudentStoreActionType.REINITIALIZE_FINISHED,
+          data: state,
+        });
+      });
+
+      return { ...state, isInitialized: false, tutorialId: action.data.tutorialId };
+
+    case StudentStoreActionType.REINITIALIZE_FINISHED:
+      return { ...action.data, isInitialized: true };
 
     default:
       return state;

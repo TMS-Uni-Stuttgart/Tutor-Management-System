@@ -7,7 +7,7 @@ export type AsyncDispatch<A> = (action: A) => Promise<void>;
 export function useAsyncReducer<S, A>(
   reducer: AsyncReducer<S, A>,
   initialState: S
-): [S, (action: A) => Promise<void>] {
+): [S, AsyncDispatch<A>] {
   const [state, setState] = useState<S>(initialState);
 
   const dispatch = async (action: A) => {
