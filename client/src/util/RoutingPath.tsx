@@ -24,7 +24,7 @@ import PointManagement from '../view/pointsmanagement/PointManagement';
 import Login from '../view/Login';
 import ScheinCriteriaManagement from '../view/scheincriteriamanagement/ScheinCriteriaManagement';
 import SheetManagement from '../view/sheetmanagement/SheetManagement';
-import Studentoverview from '../view/studentmanagement/Studentmanagement';
+import TutorStudentmanagement from '../view/studentmanagement/TutorStudentmanagement';
 import Teamoverview from '../view/teamoverview/Teamoverview';
 import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
 import UserManagement from '../view/usermanagement/UserManagement';
@@ -124,7 +124,7 @@ export const ROUTES: readonly RouteType[] = [
   {
     path: RoutingPath.STUDENTOVERVIEW,
     title: 'Studierendenübersicht',
-    component: Studentoverview,
+    component: TutorStudentmanagement,
     icon: PersonIcon,
     roles: [Role.TUTOR],
     isInDrawer: true,

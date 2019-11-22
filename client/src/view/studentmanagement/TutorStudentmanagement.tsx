@@ -20,7 +20,7 @@ import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
-import NEWStudentoverview from './NEW/Studentoverview';
+import Studentoverview from './NEW/Studentoverview';
 import {
   getStudentsOfTutorial,
   getScheinCriteriaSummariesOfAllStudentsOfTutorial,
@@ -70,7 +70,7 @@ export function getFilteredStudents(
   });
 }
 
-function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.Element {
+function TutorStudentmanagement({ match: { params }, enqueueSnackbar }: PropType): JSX.Element {
   const classes = useStyles();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -112,7 +112,7 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
 
   return (
     <StudentoverviewStoreProvider tutorialId={tutorialId}>
-      <div className={classes.root}>{<NEWStudentoverview summaries={summaries} />}</div>
+      <div className={classes.root}>{<Studentoverview summaries={summaries} />}</div>
     </StudentoverviewStoreProvider>
   );
   // const [teams, setTeams] = useState<Team[]>([]);
@@ -307,4 +307,4 @@ function Studentoverview({ match: { params }, enqueueSnackbar }: PropType): JSX.
   // );
 }
 
-export default withRouter(withSnackbar(Studentoverview));
+export default withRouter(withSnackbar(TutorStudentmanagement));

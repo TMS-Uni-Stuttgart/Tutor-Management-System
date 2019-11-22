@@ -30,7 +30,7 @@ import {
 } from '../../util/helperFunctions';
 import ExtendableStudentRow from '../management/components/ExtendableStudentRow';
 import { getPointsOfEntityAsString } from '../pointsmanagement/util/helper';
-import { getFilteredStudents } from './Studentmanagement';
+import { getFilteredStudents } from './TutorStudentmanagement';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
