@@ -1,6 +1,6 @@
 import { StudentDTO } from 'shared/dist/model/Student';
 import { StudentStore } from './StudentStore';
-import { AsyncDispatch } from './AsyncReducer';
+import { AsyncDispatch } from '../../../util/AsyncReducer';
 
 export enum StudentStoreActionType {
   CREATE,

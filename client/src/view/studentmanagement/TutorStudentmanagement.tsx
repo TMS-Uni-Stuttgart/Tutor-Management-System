@@ -8,8 +8,8 @@ import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import { getScheinCriteriaSummariesOfAllStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
 import { StudentWithFetchedTeam } from '../../typings/types';
-import Studentoverview from './NEW/Studentoverview';
-import StudentoverviewStoreProvider from './NEW/StudentStore';
+import Studentoverview from './Studentoverview/Studentoverview';
+import StudentoverviewStoreProvider from './StudentStore/StudentStore';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

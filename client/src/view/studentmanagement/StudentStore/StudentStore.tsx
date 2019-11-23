@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, createContext, useContext, useEffect } from 'react';
 import { Student } from 'shared/dist/model/Student';
-import { useAsyncReducer, AsyncDispatch } from './AsyncReducer';
+import { useAsyncReducer, AsyncDispatch } from '../../../util/AsyncReducer';
 import { StudentStoreAction, StudentStoreActionType } from './StudentStore.actions';
 import { Team } from 'shared/dist/model/Team';
 import studentStoreReducer from './StudentStore.reducers';

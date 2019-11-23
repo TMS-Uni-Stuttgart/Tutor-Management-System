@@ -9,7 +9,7 @@ import {
 } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { AsyncDispatch } from './AsyncReducer';
+import { AsyncDispatch } from '../../../util/AsyncReducer';
 import { StudentStore } from './StudentStore';
 import {
   StudentCreateAction,

@@ -16,8 +16,8 @@ import TableWithPadding from '../../../components/TableWithPadding';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import ExtendableStudentRow from '../../management/components/ExtendableStudentRow';
 import { getFilteredStudents } from './Studentoverview.helpers';
-import { StudentStoreDispatcher, useStudentStore } from './StudentStore';
-import { StudentStoreActionType } from './StudentStore.actions';
+import { StudentStoreDispatcher, useStudentStore } from '../StudentStore/StudentStore';
+import { StudentStoreActionType } from '../StudentStore/StudentStore.actions';
 import { useDialog, DialogHelpers } from '../../../hooks/DialogService';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import TutorialChangeForm, {
