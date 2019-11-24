@@ -5,6 +5,7 @@ import { format, isSameDay } from 'date-fns';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
+import { Student, StudentStatus } from 'shared/dist/model/Student';
 import { LoggedInUser, TutorInfo } from 'shared/dist/model/User';
 import CustomSelect from '../../components/CustomSelect';
 import DateOfTutorialSelection from '../../components/DateOfTutorialSelection';
@@ -13,10 +14,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
-import {
-  StudentWithFetchedTeam,
-  TutorialWithFetchedStudents as Tutorial,
-} from '../../typings/types';
+import { TutorialWithFetchedStudents as Tutorial } from '../../typings/types';
 import { parseDateToMapKey, saveBlob } from '../../util/helperFunctions';
 import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
 
@@ -52,6 +50,12 @@ interface Props {
   tutorial?: Tutorial;
 }
 
+enum FilterOption {
+  ACTIVE_ONLY = 'Nur aktive Studierende',
+  ACTIVE_AND_NO_SCHEIN_REQUIRED = 'Aktive & mit Schein',
+  ALL = 'Alle (aktiv & inaktiv)',
+}
+
 function getAvailableDates(
   tutorial: Tutorial | undefined,
   user: LoggedInUser | undefined,
@@ -77,6 +81,26 @@ function getAvailableDates(
   return tutorial.dates.map(d => new Date(d));
 }
 
+function getFilteredStudents(allStudents: Student[], filterOption: FilterOption): Student[] {
+  return allStudents.filter(stud => {
+    switch (filterOption) {
+      case FilterOption.ACTIVE_ONLY:
+        return stud.status === StudentStatus.ACTIVE;
+
+      case FilterOption.ACTIVE_AND_NO_SCHEIN_REQUIRED:
+        return (
+          stud.status === StudentStatus.ACTIVE || stud.status === StudentStatus.NO_SCHEIN_REQUIRED
+        );
+
+      case FilterOption.ALL:
+        return true;
+
+      default:
+        return false;
+    }
+  });
+}
+
 function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element {
   const classes = useStyles();
   const { userData } = useLogin();
@@ -86,11 +110,15 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const [isSettingPresent, setSettingsPresent] = useState(false);
 
   const [date, setDate] = useState<Date | undefined>(undefined);
-  const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
 
   const [tutorInfo, setTutorInfo] = useState<TutorInfo | undefined>();
   const [tutorial, setTutorial] = useState<Tutorial | undefined>();
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+
+  const [fetchedStudents, setFetchedStudents] = useState<Student[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
+
+  const [filterOption, setFilterOption] = useState<FilterOption>(FilterOption.ACTIVE_ONLY);
 
   const availableDates = getAvailableDates(tutorial, userData, !tutorialFromProps);
 
@@ -108,15 +136,20 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   }, [tutorialFromProps]);
 
   useEffect(() => {
+    let students: Student[] = [];
+
     if (tutorial) {
-      setStudents(tutorial.students);
+      students = tutorial.students;
       getTutorInfoOfTutorial(tutorial.id).then(info => setTutorInfo(info));
-    } else {
-      setStudents([]);
     }
 
+    setFetchedStudents(students);
     setDate(undefined);
   }, [tutorial, getTutorInfoOfTutorial]);
+
+  useEffect(() => {
+    setFilteredStudents(getFilteredStudents(fetchedStudents, filterOption));
+  }, [fetchedStudents, filterOption]);
 
   useEffect(() => {
     if (!tutorialFromProps) {
@@ -138,11 +171,11 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     setDate(undefined);
   }
 
-  const handlePutAttendanceResponse = (student: StudentWithFetchedTeam, attendance: Attendance) => {
+  const handlePutAttendanceResponse = (student: Student, attendance: Attendance) => {
     const date = new Date(attendance.date);
     const dateKey = parseDateToMapKey(date);
 
-    setStudents(
+    setFetchedStudents(students =>
       students.map(innerStudent => {
         if (innerStudent.id === student.id) {
           innerStudent.attendance = {
@@ -159,7 +192,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   };
 
   async function handleStudentAttendanceChange(
-    student: StudentWithFetchedTeam,
+    student: Student,
     attendanceState?: AttendanceState
   ) {
     if (!date) {
@@ -181,7 +214,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     }
   }
 
-  function handleStudentNoteChange(student: StudentWithFetchedTeam): NoteFormCallback {
+  function handleStudentNoteChange(student: Student): NoteFormCallback {
     return async ({ note }, { setSubmitting }, closeDialog) => {
       if (!date) {
         return;
@@ -206,6 +239,26 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     };
   }
 
+  function handleFilteroptionChange(e: ChangeEvent<{ name?: string; value: unknown }>) {
+    if (typeof e.target.value !== 'string') {
+      return;
+    }
+
+    if (e.target.value === filterOption) {
+      return;
+    }
+
+    const selectedOption: FilterOption | undefined = Object.values(FilterOption).find(
+      op => op === e.target.value
+    );
+
+    if (!selectedOption) {
+      throw new Error('Selected filter option is not a valid one.');
+    }
+
+    setFilterOption(selectedOption);
+  }
+
   async function handleAllStudentPresent() {
     if (!date) {
       return;
@@ -216,7 +269,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     const dateKey = parseDateToMapKey(date);
     const promises: Promise<void>[] = [];
 
-    for (const student of students) {
+    for (const student of filteredStudents) {
       const attendance: Attendance | undefined = student.attendance[dateKey];
 
       if (!attendance || !attendance.state) {
@@ -248,12 +301,12 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     }
   }
 
-  function handleCakeCountChange(student: StudentWithFetchedTeam) {
+  function handleCakeCountChange(student: Student) {
     return async (cakeCount: number) => {
       try {
         await setCakeCountForStudent(student.id, { cakeCount });
 
-        setStudents(students =>
+        setFetchedStudents(students =>
           students.map(s => {
             if (s.id === student.id) {
               s.cakeCount = cakeCount;
@@ -298,6 +351,18 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               value={date ? date.toISOString() : ''}
             />
 
+            <CustomSelect
+              label='Filtern nach...'
+              emptyPlaceholder='Keine Filteroption vorhanden.'
+              className={classes.barItem}
+              value={filterOption}
+              items={Object.values(FilterOption)}
+              itemToString={option => option}
+              itemToValue={option => option}
+              onChange={handleFilteroptionChange}
+              disabled={!tutorial || !date}
+            />
+
             <SubmitButton
               variant='contained'
               // color='primary'
@@ -325,7 +390,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
           {date ? (
             <TableWithPadding
-              items={students}
+              items={filteredStudents}
               createRowFromItem={student => {
                 const dateKey: string = parseDateToMapKey(date);
                 const attendance: Attendance | undefined = student.attendance[dateKey];
