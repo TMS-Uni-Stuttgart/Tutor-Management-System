@@ -27,8 +27,8 @@ import TutorialChangeForm, {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     searchField: {
-      // width: '75%',
       flex: 1,
+      maxWidth: 'calc(100% - 120px)',
     },
     dialogDeleteButton: {
       color: theme.palette.error.main,
