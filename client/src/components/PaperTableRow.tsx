@@ -59,12 +59,13 @@ const useStyles = makeStyles<Theme, StyleProps>(theme =>
 interface Props {
   label: string;
   subText?: string;
-  avatarTooltip?: string;
-  icon?: SvgIconComponent;
   LabelProps?: TypographyProps;
   SubTextProps?: TypographyProps;
   buttonCellContent?: React.ReactNode;
   colorOfBottomBar?: string;
+  Avatar?: React.ReactNode;
+  icon?: SvgIconComponent;
+  avatarTooltip?: string;
   AvatarProps?: AvatarProps;
 }
 
@@ -82,14 +83,19 @@ function PaperTableRow({
   SubTextProps,
   buttonCellContent: ButtonCellContent,
   colorOfBottomBar,
+  Avatar: AvatarFromProps,
   AvatarProps,
   ...rest
 }: PropType): JSX.Element {
   const classes = useStyles({ colorOfBottomBar: colorOfBottomBar });
-  const AvatarComp = Icon && (
-    <Avatar {...AvatarProps}>
-      <Icon />
-    </Avatar>
+  const AvatarComp: React.ReactElement | undefined = !!AvatarFromProps ? (
+    <>{AvatarFromProps}</>
+  ) : (
+    Icon && (
+      <Avatar {...AvatarProps}>
+        <Icon />
+      </Avatar>
+    )
   );
 
   return (
