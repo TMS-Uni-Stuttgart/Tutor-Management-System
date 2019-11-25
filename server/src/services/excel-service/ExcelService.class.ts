@@ -9,6 +9,7 @@ import sheetService from '../sheet-service/SheetService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { AttendanceState } from 'shared/dist/model/Attendance';
+import { utcToZonedTime } from 'date-fns-tz';
 
 interface HeaderData {
   name: string;
@@ -62,8 +63,6 @@ class ExcelService {
     sheets.sort((a, b) => a.sheetNo - b.sheetNo);
 
     this.createMemberWorksheet(workbook, students);
-
-    // TODO: Add sheet with attendances of students (by date as headers).
     this.createAttendanceWorksheet(workbook, tutorial, students);
 
     for (const sheet of sheets) {
@@ -218,16 +217,19 @@ class ExcelService {
 
     let column = 3;
     for (const date of tutorial.dates) {
-      const dateKey = date.toISOString();
+      // FIXME: Remove this hotfix after fixing all date related stuff (probably in v2).
+      const parsedDate = utcToZonedTime(date, 'Europe/Berlin');
+      const dateKey = parsedDate.toISOString();
+
       headers[dateKey] = {
-        name: date.toDateString(),
+        name: parsedDate.toDateString(),
         column,
       };
       data[dateKey] = [];
 
       let row = 2;
       for (const student of students) {
-        const attendance = student.getAttendanceOfDay(date);
+        const attendance = student.getAttendanceOfDay(parsedDate);
         data['firstname'].push({
           content: student.firstname,
           row,
