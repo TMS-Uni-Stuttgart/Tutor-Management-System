@@ -21,11 +21,14 @@ import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import Logger from '../../helpers/Logger';
 
+type SubExPointInformation = Omit<PointInformation, 'entry'>;
+
 export interface PointInformation {
   id: string;
   exName: string;
   exPoints: ExercisePointInfo;
   entry: PointMapEntry;
+  subexercises: SubExPointInformation[];
 }
 
 class TeamService {
@@ -167,9 +170,25 @@ class TeamService {
 
     sheet.exercises.forEach(ex => {
       const entry = pointMap.getPointEntry(new PointId(sheetId, ex));
+      const subexercises: SubExPointInformation[] = [];
+
+      ex.subexercises.forEach(subex => {
+        subexercises.push({
+          id: subex.id,
+          exName: subex.exName,
+          exPoints: getPointsOfExercise(subex),
+          subexercises: [],
+        });
+      });
 
       if (entry) {
-        entries.push({ id: ex.id, exName: ex.exName, entry, exPoints: getPointsOfExercise(ex) });
+        entries.push({
+          id: ex.id,
+          exName: ex.exName,
+          entry,
+          exPoints: getPointsOfExercise(ex),
+          subexercises,
+        });
       }
     });
 
