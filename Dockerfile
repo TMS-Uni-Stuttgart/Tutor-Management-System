@@ -39,7 +39,7 @@ RUN apk add --no-cache \
       nodejs-current \
       yarn 
 
-COPY --from=build tms/server/build tms/server
+COPY --from=build tms/server/build/src tms/server
 COPY --from=build tms/shared/dist tms/shared/dist
 
 COPY package.json /tms
