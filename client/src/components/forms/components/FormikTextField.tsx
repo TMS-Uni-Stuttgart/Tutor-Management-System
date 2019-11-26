@@ -7,6 +7,7 @@ interface Props {
   name: string;
   FormikFieldProps?: Omit<FieldAttributes<any>, 'name'>;
   isPercentage?: boolean;
+  disableSelectAllOnFocus?: boolean;
 }
 
 type OutlineTextFieldClassKeys = 'root' | 'notchedOutline';
@@ -22,6 +23,7 @@ function FormikTextField({
   FormikFieldProps,
   helperText,
   InputProps,
+  disableSelectAllOnFocus,
   ...textfieldProps
 }: FormikTextFieldProps): JSX.Element {
   function getValue(fieldValue: any): any {
@@ -32,6 +34,12 @@ function FormikTextField({
     }
 
     return fieldValue;
+  }
+
+  function handleFocus(event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    if (!disableSelectAllOnFocus) {
+      event.target.select();
+    }
   }
 
   return (
@@ -56,7 +64,7 @@ function FormikTextField({
           }}
           helperText={(!!touched && error) || helperText}
           error={touched && !!error}
-          onFocus={e => e.target.select()}
+          onFocus={handleFocus}
         >
           {children}
         </TextField>
