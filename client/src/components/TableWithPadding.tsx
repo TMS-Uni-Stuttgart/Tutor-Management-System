@@ -7,6 +7,7 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     tableWithoutBorders: {
+      marginBottom: theme.spacing(2),
       '& td': {
         borderBottom: 'none',
       },
