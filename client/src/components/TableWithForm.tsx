@@ -48,7 +48,7 @@ function TableWithForm<T>({ title, form, topBarContent, ...other }: Props<T>): J
   return (
     <>
       <div className={classes.topBar}>
-        {topBarContent && (!isEditorOpen && !isAnimating) && topBarContent}
+        {topBarContent && !isEditorOpen && !isAnimating && topBarContent}
 
         <OpenableFormWithFab title={title} onOpenChange={newState => setEditorState(newState)}>
           {form}
