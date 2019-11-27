@@ -89,30 +89,36 @@ function OpenableFormWithFab({
   });
   const classes = useStyles();
 
-  useEffect(() => {
-    if (onOpenChange) {
-      onOpenChange({ ...openState });
-    }
-  }, [openState, onOpenChange]);
-
   function handleAddIconClicked(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
 
     setIsEditorOpen(!openState.isEditorOpen);
   }
 
+  function setEditorState(newState: EditorOpenState) {
+    setOpenState(newState);
+
+    if (onOpenChange) {
+      onOpenChange(newState);
+    }
+  }
+
   function setIsEditorOpen(isEditorOpen: boolean) {
-    setOpenState({
+    const newState: EditorOpenState = {
       isEditorOpen,
       isAnimating: true,
-    });
+    };
+
+    setEditorState(newState);
   }
 
   function setAnimating(isAnimating: boolean) {
-    setOpenState({
+    const newState: EditorOpenState = {
       ...openState,
       isAnimating,
-    });
+    };
+
+    setEditorState(newState);
   }
 
   return (
