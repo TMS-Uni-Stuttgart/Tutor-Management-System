@@ -2,33 +2,36 @@ import { TextField } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import { useSnackbar, WithSnackbarProps } from 'notistack';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
+import CustomSelect from '../../../components/CustomSelect';
 import StudentForm, {
   getInitialStudentFormState,
   StudentFormSubmitCallback,
 } from '../../../components/forms/StudentForm';
-import LoadingSpinner from '../../../components/LoadingSpinner';
-import TableWithForm from '../../../components/TableWithForm';
-import TableWithPadding from '../../../components/TableWithPadding';
-import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import ExtendableStudentRow from '../../management/components/ExtendableStudentRow';
-import { getFilteredStudents } from './Studentoverview.helpers';
-import { StudentStoreDispatcher, useStudentStore } from '../StudentStore/StudentStore';
-import { StudentStoreActionType } from '../StudentStore/StudentStore.actions';
-import { useDialog, DialogHelpers } from '../../../hooks/DialogService';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
 import TutorialChangeForm, {
   TutorialChangeFormSubmitCallback,
 } from '../../../components/forms/TutorialChangeForm';
+import LoadingSpinner from '../../../components/LoadingSpinner';
+import TableWithForm from '../../../components/TableWithForm';
+import TableWithPadding from '../../../components/TableWithPadding';
+import { DialogHelpers, useDialog } from '../../../hooks/DialogService';
+import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
+import ExtendableStudentRow from '../../management/components/ExtendableStudentRow';
+import { StudentStoreDispatcher, useStudentStore } from '../StudentStore/StudentStore';
+import { StudentStoreActionType } from '../StudentStore/StudentStore.actions';
+import { getFilteredStudents, StudentSortOption } from './Studentoverview.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     searchField: {
       flex: 1,
-      maxWidth: 'calc(100% - 120px)',
+    },
+    sortSelect: {
+      marginLeft: theme.spacing(2),
     },
     dialogDeleteButton: {
       color: theme.palette.error.main,
@@ -200,7 +203,9 @@ function Studentoverview({
   additionalTopBarItem,
 }: Props): JSX.Element {
   const classes = useStyles();
+
   const [filterText, setFilterText] = useState<string>('');
+  const [sortOption, setSortOption] = useState<StudentSortOption>(StudentSortOption.ALPHABETICAL);
 
   const dialog = useDialog();
   const [{ students, teams, tutorialId, isInitialized }, dispatch] = useStudentStore();
@@ -276,6 +281,26 @@ function Studentoverview({
     });
   }
 
+  function handleSortOptionChange(e: ChangeEvent<{ name?: string; value: unknown }>) {
+    if (typeof e.target.value !== 'string') {
+      return;
+    }
+
+    if (e.target.value === sortOption) {
+      return;
+    }
+
+    const selectedOption: StudentSortOption | undefined = Object.values(StudentSortOption).find(
+      op => op === e.target.value
+    );
+
+    if (!selectedOption) {
+      throw new Error('Selected filter option is not a valid one.');
+    }
+
+    setSortOption(selectedOption);
+  }
+
   const TopBarContent = (
     <>
       <TextField
@@ -286,6 +311,17 @@ function Studentoverview({
         InputProps={{
           startAdornment: <SearchIcon color='disabled' />,
         }}
+      />
+
+      <CustomSelect
+        label='Sortieren nach...'
+        emptyPlaceholder='Keine Sortieroptionen vorhanden.'
+        className={classes.sortSelect}
+        value={sortOption}
+        items={Object.values(StudentSortOption)}
+        itemToString={option => option}
+        itemToValue={option => option}
+        onChange={handleSortOptionChange}
       />
 
       {additionalTopBarItem}
@@ -315,7 +351,7 @@ function Studentoverview({
           onSubmit={handleCreateStudent(handlerParams)}
         />
       }
-      items={getFilteredStudents(students, filterText)}
+      items={getFilteredStudents(students, filterText, sortOption)}
       createRowFromItem={createRowFromItem}
       topBarContent={TopBarContent}
     />
@@ -325,7 +361,7 @@ function Studentoverview({
 
       <TableWithPadding
         placeholder='Keine Studierenden vorhanden'
-        items={getFilteredStudents(students, filterText)}
+        items={getFilteredStudents(students, filterText, sortOption)}
         createRowFromItem={createRowFromItem}
       />
     </>
