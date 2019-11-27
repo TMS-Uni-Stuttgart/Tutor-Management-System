@@ -62,7 +62,12 @@ function StudentAvatar({ student }: StudentAvatarProps): JSX.Element {
   const tooltip: string | undefined = getStudentTooltip(student);
 
   const AvatarComp = (
-    <Avatar className={clsx({ [classes.warningAvatar]: !student.matriculationNo })}>
+    <Avatar
+      className={clsx({
+        [classes.warningAvatar]:
+          student.status === StudentStatus.ACTIVE && !student.matriculationNo,
+      })}
+    >
       <Icon />
     </Avatar>
   );
