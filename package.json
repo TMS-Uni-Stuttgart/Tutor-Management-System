@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.5.4",
+  "version": "1.6.0",
   "workspaces": [
     "client",
     "server",
@@ -19,7 +19,7 @@
     "ts:check:client": "echo Type checking client && cd ./client && yarn ts:check",
     "ts:check:server": "echo Type checking server && cd ./server && yarn ts:check",
     "ts:check:shared": "echo Type checking shared && cd ./shared && yarn ts:check",
-    "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/app",
+    "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/src/app",
     "docker:build": "yarn version && ts-node ./build-docker-image.ts",
     "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre --skip-bundle",
     "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server && yarn upgrade-pgk:shared",

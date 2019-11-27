@@ -319,6 +319,8 @@ class StudentService {
       return;
     }
 
+    await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: true });
+
     const oldTutorial = isDocument(student.tutorial)
       ? student.tutorial
       : await tutorialService.getDocumentWithID(student.tutorial.toString());
@@ -328,8 +330,6 @@ class StudentService {
     oldTutorial.students = oldTutorial.students.filter(
       stud => studentId !== getIdOfDocumentRef(stud)
     );
-
-    await teamService.removeStudentAsMemberFromTeam(student, { saveStudent: false });
 
     newTutorial.students.push(student);
     student.tutorial = newTutorial;

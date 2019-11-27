@@ -193,10 +193,7 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
 
                   const dates: Date[] = getAllWeeklyDatesBetween(date, endDate);
 
-                  setFieldValue(
-                    'selectedDates',
-                    dates.map(date => date.toDateString())
-                  );
+                  setFieldValue('selectedDates', dates.map(date => date.toDateString()));
                 }
               }}
             />
@@ -209,10 +206,7 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
                 if (date) {
                   const dates: Date[] = getAllWeeklyDatesBetween(new Date(values.startDate), date);
 
-                  setFieldValue(
-                    'selectedDates',
-                    dates.map(date => date.toDateString())
-                  );
+                  setFieldValue('selectedDates', dates.map(date => date.toDateString()));
                 }
               }}
             />
