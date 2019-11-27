@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useState } from 'react';
-import OpenableFormWithFab from './OpenableFormWithFab';
+import OpenableFormWithFab, { EditorOpenState } from './OpenableFormWithFab';
 import TableWithPadding, { TableWithPaddingProps } from './TableWithPadding';
 import clsx from 'clsx';
 
@@ -10,13 +10,9 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       width: '100%',
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(-8),
     },
     list: {
       marginBottom: theme.spacing(1),
-    },
-    listWithClosedEditor: {
-      marginTop: theme.spacing(8),
     },
     listWithOpenEditor: {
       marginTop: 0,
@@ -44,26 +40,24 @@ interface Props<T> extends TableWithPaddingProps<T> {
 
 function TableWithForm<T>({ title, form, topBarContent, ...other }: Props<T>): JSX.Element {
   const classes = useStyles();
-  const [isEditorOpen, setEditorOpen] = useState(false);
+  const [{ isEditorOpen, isAnimating }, setEditorState] = useState<EditorOpenState>({
+    isEditorOpen: false,
+    isAnimating: false,
+  });
 
   return (
     <>
-      <OpenableFormWithFab
-        title={title}
-        GrowProps={{
-          onEnter: () => setEditorOpen(true),
-          onExited: () => setEditorOpen(false),
-        }}
-      >
-        {form}
-      </OpenableFormWithFab>
+      <div className={classes.topBar}>
+        {topBarContent && (!isEditorOpen && !isAnimating) && topBarContent}
 
-      {topBarContent && !isEditorOpen && <div className={classes.topBar}>{topBarContent}</div>}
+        <OpenableFormWithFab title={title} onOpenChange={newState => setEditorState(newState)}>
+          {form}
+        </OpenableFormWithFab>
+      </div>
 
       <div
         className={clsx(classes.list, {
           [classes.listWithOpenEditor]: isEditorOpen,
-          [classes.listWithClosedEditor]: !isEditorOpen,
         })}
       >
         <TableWithPadding {...other} />

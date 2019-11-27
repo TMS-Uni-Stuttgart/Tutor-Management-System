@@ -4,7 +4,7 @@ import { PaperProps } from '@material-ui/core/Paper';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Add as AddIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,10 +28,13 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(1),
     },
     actionButton: {
+      marginLeft: theme.spacing(2),
+    },
+    actionButtonFloat: {
       zIndex: 1,
       marginLeft: 'unset',
       position: 'absolute',
-      top: theme.spacing(3),
+      top: theme.spacing(4),
       right: theme.spacing(3),
     },
     actionButtonNew: {
@@ -60,20 +63,56 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+export interface EditorOpenState {
+  isEditorOpen: boolean;
+  isAnimating: boolean;
+}
+
 interface Props extends PaperProps {
   title: string;
   children: React.ReactNode;
   GrowProps?: GrowProps;
+  onOpenChange?: (openState: EditorOpenState) => void;
 }
 
-function OpenableFormWithFab({ className, GrowProps, title, children, ...other }: Props) {
-  const [showEditBox, setShowEditBox] = useState(false);
+function OpenableFormWithFab({
+  className,
+  GrowProps,
+  title,
+  onOpenChange,
+  children,
+  ...other
+}: Props) {
+  const [openState, setOpenState] = useState<EditorOpenState>({
+    isEditorOpen: false,
+    isAnimating: false,
+  });
   const classes = useStyles();
+
+  useEffect(() => {
+    if (onOpenChange) {
+      onOpenChange({ ...openState });
+    }
+  }, [openState, onOpenChange]);
 
   function handleAddIconClicked(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
 
-    setShowEditBox(!showEditBox);
+    setIsEditorOpen(!openState.isEditorOpen);
+  }
+
+  function setIsEditorOpen(isEditorOpen: boolean) {
+    setOpenState({
+      isEditorOpen,
+      isAnimating: true,
+    });
+  }
+
+  function setAnimating(isAnimating: boolean) {
+    setOpenState({
+      ...openState,
+      isAnimating,
+    });
   }
 
   return (
@@ -81,16 +120,26 @@ function OpenableFormWithFab({ className, GrowProps, title, children, ...other }
       <Fab
         className={clsx(
           classes.actionButton,
-          showEditBox ? classes.actionButtonCancel : classes.actionButtonNew
+          openState.isEditorOpen ? classes.actionButtonCancel : classes.actionButtonNew,
+          (openState.isEditorOpen || openState.isAnimating) && classes.actionButtonFloat
         )}
         onClick={handleAddIconClicked}
         variant='extended'
       >
-        <AddIcon className={clsx(classes.addIcon, showEditBox && classes.addIconIsOpen)} />
-        {showEditBox ? 'Abbrechen' : 'Neu'}
+        <AddIcon
+          className={clsx(classes.addIcon, openState.isEditorOpen && classes.addIconIsOpen)}
+        />
+        {openState.isEditorOpen ? 'Abbrechen' : 'Neu'}
       </Fab>
 
-      <Grow in={showEditBox} unmountOnExit style={{ transformOrigin: 'top right' }} {...GrowProps}>
+      <Grow
+        in={openState.isEditorOpen}
+        unmountOnExit
+        style={{ transformOrigin: 'top right' }}
+        onEntered={() => setAnimating(false)}
+        onExited={() => setAnimating(false)}
+        {...GrowProps}
+      >
         <Paper {...other} className={clsx(className, classes.paper)}>
           <div className={classes.paperTopRow}>
             <Typography variant='h6'>{title}</Typography>
