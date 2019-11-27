@@ -4,7 +4,7 @@ import { PaperProps } from '@material-ui/core/Paper';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Add as AddIcon } from '@material-ui/icons';
 import clsx from 'clsx';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
