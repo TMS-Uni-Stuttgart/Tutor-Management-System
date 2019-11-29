@@ -13,7 +13,7 @@ assignees: ''
 <!-- Provide a description on what should happen -->
 
 # ⚡ Actual behaviour 
-<!-- Descripe whats happening instead -->
+<!-- Describe whats happening instead -->
 
 # :joystick: Steps to reproduce
 <!-- Provide a step by step list on how to reproduces the issue -->

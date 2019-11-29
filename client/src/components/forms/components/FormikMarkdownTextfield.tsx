@@ -52,7 +52,7 @@ function FormikMarkdownTextfield({ name, ...other }: FormikTextFieldProps): JSX.
           <Markdown markdown={value} />
         </div>
       ) : (
-        <FormikTextField name={name} multiline {...other} />
+        <FormikTextField name={name} multiline disableSelectAllOnFocus {...other} />
       )}
     </div>
   );
