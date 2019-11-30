@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     sortSelect: {
       marginLeft: theme.spacing(2),
+      minWidth: '20%',
     },
     dialogDeleteButton: {
       color: theme.palette.error.main,
