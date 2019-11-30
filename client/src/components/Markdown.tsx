@@ -1,7 +1,18 @@
-import React from 'react';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import 'github-markdown-css/github-markdown.css';
-import MarkdownIt from 'markdown-it';
 import HTMLParser from 'html-react-parser';
+import MarkdownIt from 'markdown-it';
+import React from 'react';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    background: {
+      padding: theme.spacing(1),
+      background: theme.palette.common.white,
+    },
+  })
+);
 
 interface Props {
   markdown: string;
@@ -17,10 +28,11 @@ function convertHTMLToJSX(html: string): React.ReactNode {
 }
 
 function Markdown({ markdown }: Props): JSX.Element {
+  const classes = useStyles();
   const html: string = convertMarkdownToHTML(markdown);
   const reactEl: React.ReactNode = convertHTMLToJSX(html);
 
-  return <div className='markdown-body'>{reactEl}</div>;
+  return <div className={clsx('markdown-body', classes.background)}>{reactEl}</div>;
 }
 
 export default Markdown;
