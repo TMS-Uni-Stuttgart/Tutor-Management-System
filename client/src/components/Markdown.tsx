@@ -8,6 +8,7 @@ import React from 'react';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     background: {
+      padding: theme.spacing(1),
       background: theme.palette.common.white,
     },
   })
