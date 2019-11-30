@@ -18,7 +18,7 @@ import TutorialSubList from './components/TutorialSubList';
 import { Role } from 'shared/dist/model/Role';
 import { getVersionOfApp } from '../../hooks/fetching/Information';
 
-const DRAWER_WIDTH_OPEN = 240;
+const DRAWER_WIDTH_OPEN = 260;
 const DRAWER_WIDTH_CLOSED = 56;
 
 const useStyles = makeStyles((theme: Theme) =>

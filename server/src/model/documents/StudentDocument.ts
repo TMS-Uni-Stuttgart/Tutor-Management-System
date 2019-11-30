@@ -11,7 +11,7 @@ import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
-import { Student } from 'shared/dist/model/Student';
+import { Student, StudentStatus } from 'shared/dist/model/Student';
 import { databaseConfig } from '../../helpers/config';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
@@ -23,7 +23,7 @@ import { TutorialDocument } from './TutorialDocument';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
-  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo'],
+  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
 export class StudentSchema extends Typegoose
   implements
@@ -59,6 +59,9 @@ export class StudentSchema extends Typegoose
 
   @prop({ ref: { name: 'TeamSchema' } })
   team?: Ref<TeamDocument>;
+
+  @prop({ default: StudentStatus.ACTIVE })
+  status!: StudentStatus;
 
   @mapProp({ of: AttendanceSchema })
   attendance?: Types.Map<AttendanceDocument>;

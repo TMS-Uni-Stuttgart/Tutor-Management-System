@@ -4,10 +4,10 @@ import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import {
+  CakeCountDTO,
   PresentationPointsDTO,
   Student,
   StudentDTO,
-  CakeCountDTO,
 } from 'shared/dist/model/Student';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
@@ -222,6 +222,7 @@ class StudentService {
       courseOfStudies,
       tutorial,
       attendance,
+      status,
       presentationPoints,
       scheinExamResults,
       cakeCount,
@@ -247,6 +248,7 @@ class StudentService {
       courseOfStudies,
       tutorial: getIdOfDocumentRef(tutorial),
       team: team ? { id: team.id, teamNo: team.teamNo } : undefined,
+      status,
       attendance: parsedAttendances,
       points,
       presentationPoints: presentationPoints

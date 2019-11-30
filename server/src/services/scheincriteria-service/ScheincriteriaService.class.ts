@@ -181,7 +181,7 @@ export class ScheincriteriaService {
     }
 
     // Get the constructor of the blueprint. The type needs to be set here because 'constructor' is only typed as 'Function' and therefore cannot be used with 'new' in front of it.
-    const prototype = bluePrintData.blueprint.constructor as (new () => Scheincriteria);
+    const prototype = bluePrintData.blueprint.constructor as new () => Scheincriteria;
     const criteria: Scheincriteria = Object.assign(new prototype(), data);
 
     return criteria;

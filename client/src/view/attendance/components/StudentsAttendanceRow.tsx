@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import { ButtonProps } from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import { Person as PersonIcon } from '@material-ui/icons';
 import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
 import { Formik, FormikHelpers } from 'formik';
@@ -20,6 +19,7 @@ import { Role } from 'shared/dist/model/Role';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import SubmitButton from '../../../components/forms/components/SubmitButton';
 import PaperTableRow from '../../../components/PaperTableRow';
+import StudentAvatar from '../../../components/student-icon/StudentAvatar';
 import { useLogin } from '../../../hooks/LoginService';
 import { FormikSubmitCallback } from '../../../types';
 import { StudentWithFetchedTeam } from '../../../typings/types';
@@ -180,7 +180,7 @@ function StudentAttendanceRow({
       subText={
         student.team ? `Team: #${student.team.teamNo.toString().padStart(2, '0')}` : 'Kein Team'
       }
-      icon={PersonIcon}
+      Avatar={<StudentAvatar student={student} />}
       SubTextProps={!student.team ? { color: 'error' } : undefined}
       {...rest}
       className={clsx(classes.row)}
