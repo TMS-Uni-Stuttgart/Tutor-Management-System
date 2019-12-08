@@ -125,8 +125,19 @@ export class ScheincriteriaService {
     const summaries: ScheincriteriaSummaryByStudents = {};
     const criterias = await this.getAllCriteriaObjects();
 
-    for (const student of students) {
-      summaries[student.id] = await this.calculateCriteriaResultOfStudent(student, criterias);
+    const summariesByStudent = await Promise.all(
+      students.map(async student => {
+        const result = await this.calculateCriteriaResultOfStudent(student, criterias);
+
+        return {
+          id: student.id,
+          result,
+        };
+      })
+    );
+
+    for (const summary of summariesByStudent) {
+      summaries[summary.id] = summary.result;
     }
 
     return summaries;
