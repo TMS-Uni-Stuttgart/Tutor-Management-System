@@ -1,7 +1,7 @@
 import { startOfDay } from 'date-fns';
 import { Document, Model } from 'mongoose';
 import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
-import { prop, Typegoose } from '@hasezoey/typegoose';
+import { prop, Typegoose } from '@typegoose/typegoose';
 import { TypegooseDocument } from '../../helpers/typings';
 
 export class AttendanceSchema extends Typegoose implements Omit<Attendance, 'id'> {

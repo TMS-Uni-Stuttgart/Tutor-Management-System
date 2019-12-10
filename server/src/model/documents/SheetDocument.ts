@@ -1,6 +1,6 @@
 import { Document, Model } from 'mongoose';
 import { Sheet } from 'shared/dist/model/Sheet';
-import { arrayProp, prop, Typegoose } from '@hasezoey/typegoose';
+import { arrayProp, prop, Typegoose } from '@typegoose/typegoose';
 import { CollectionName } from '../CollectionName';
 import { ExerciseDocument, ExerciseSchema } from './ExerciseDocument';
 
