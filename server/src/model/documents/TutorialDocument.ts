@@ -1,23 +1,22 @@
-import { Document, Model, Schema, Types } from 'mongoose';
-import { Tutorial } from 'shared/dist/model/Tutorial';
 import {
   arrayProp,
+  DocumentType,
+  getModelForClass,
   mapProp,
   prop,
   Ref,
-  Typegoose,
-  instanceMethod,
-  InstanceType,
 } from '@typegoose/typegoose';
+import { Model, Schema, Types } from 'mongoose';
+import { Tutorial } from 'shared/dist/model/Tutorial';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import Logger from '../../helpers/Logger';
+import studentService from '../../services/student-service/StudentService.class';
 import { CollectionName } from '../CollectionName';
 import { StudentDocument } from './StudentDocument';
 import { TeamDocument, TeamSchema } from './TeamDocument';
 import { UserDocument } from './UserDocument';
-import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
-import studentService from '../../services/student-service/StudentService.class';
-import Logger from '../../helpers/Logger';
 
-export class TutorialSchema extends Typegoose
+export class TutorialSchema
   implements
     Omit<Tutorial, 'id' | 'tutor' | 'correctors' | 'students' | 'teams' | 'substitutes' | 'dates'> {
   @prop({ required: true })
@@ -47,8 +46,7 @@ export class TutorialSchema extends Typegoose
   @mapProp({ of: String, default: {} })
   substitutes?: Types.Map<string>;
 
-  @instanceMethod
-  isTutor(this: InstanceType<TutorialSchema>, user: UserDocument): boolean {
+  isTutor(this: DocumentType<TutorialSchema>, user: UserDocument): boolean {
     if (!this.tutor) {
       return false;
     }
@@ -56,8 +54,7 @@ export class TutorialSchema extends Typegoose
     return getIdOfDocumentRef(this.tutor) === user.id;
   }
 
-  @instanceMethod
-  isSubstitute(this: InstanceType<TutorialSchema>, user: UserDocument): boolean {
+  isSubstitute(this: DocumentType<TutorialSchema>, user: UserDocument): boolean {
     if (!this.substitutes) {
       return false;
     }
@@ -71,8 +68,7 @@ export class TutorialSchema extends Typegoose
     return false;
   }
 
-  @instanceMethod
-  isCorrector(this: InstanceType<TutorialSchema>, user: UserDocument): boolean {
+  isCorrector(this: DocumentType<TutorialSchema>, user: UserDocument): boolean {
     for (const corrector of this.correctors) {
       if (getIdOfDocumentRef(corrector) === user.id) {
         return true;
@@ -82,8 +78,7 @@ export class TutorialSchema extends Typegoose
     return false;
   }
 
-  @instanceMethod
-  async getStudents(this: InstanceType<TutorialDocument>): Promise<StudentDocument[]> {
+  async getStudents(this: DocumentType<TutorialDocument>): Promise<StudentDocument[]> {
     const studentDocs: StudentDocument[] = [];
     const studentsToRemove: string[] = [];
 
@@ -114,11 +109,10 @@ export class TutorialSchema extends Typegoose
   }
 }
 
-export interface TutorialDocument extends TutorialSchema, Document {}
+export type TutorialDocument = DocumentType<TutorialSchema>;
 
-const TutorialModel: Model<TutorialDocument> = new TutorialSchema().getModelForClass(
-  TutorialSchema,
-  { schemaOptions: { collection: CollectionName.TUTORIAL } }
-);
+const TutorialModel: Model<TutorialDocument> = getModelForClass(TutorialSchema, {
+  schemaOptions: { collection: CollectionName.TUTORIAL },
+});
 
 export default TutorialModel;

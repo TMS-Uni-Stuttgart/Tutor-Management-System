@@ -1,13 +1,5 @@
-import {
-  instanceMethod,
-  InstanceType,
-  mapProp,
-  plugin,
-  prop,
-  Ref,
-  Typegoose,
-} from '@typegoose/typegoose';
-import { Document, Model, Types } from 'mongoose';
+import { DocumentType, getModelForClass, mapProp, plugin, prop, Ref } from '@typegoose/typegoose';
+import { Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
@@ -25,7 +17,7 @@ import { TutorialDocument } from './TutorialDocument';
   secret: databaseConfig.secret,
   fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
-export class StudentSchema extends Typegoose
+export class StudentSchema
   implements
     Omit<
       Student,
@@ -78,8 +70,7 @@ export class StudentSchema extends Typegoose
   @prop({ default: 0 })
   cakeCount!: number;
 
-  @instanceMethod
-  async getTeam(this: InstanceType<StudentSchema>): Promise<TeamDocument | undefined> {
+  async getTeam(this: DocumentType<StudentSchema>): Promise<TeamDocument | undefined> {
     if (!this.team) {
       return undefined;
     }
@@ -103,8 +94,7 @@ export class StudentSchema extends Typegoose
     }
   }
 
-  @instanceMethod
-  async getPoints(this: InstanceType<StudentSchema>): Promise<PointMap> {
+  async getPoints(this: DocumentType<StudentSchema>): Promise<PointMap> {
     const team = await this.getTeam();
 
     if (!team) {
@@ -126,9 +116,8 @@ export class StudentSchema extends Typegoose
     return points;
   }
 
-  @instanceMethod
   async getPointEntry(
-    this: InstanceType<StudentSchema>,
+    this: DocumentType<StudentSchema>,
     id: PointId
   ): Promise<PointMapEntry | undefined> {
     const ownMap = new PointMap(this.points);
@@ -149,14 +138,12 @@ export class StudentSchema extends Typegoose
     return teamEntry;
   }
 
-  @instanceMethod
-  async getPointsOfExercise(this: InstanceType<StudentSchema>, id: PointId): Promise<number> {
+  async getPointsOfExercise(this: DocumentType<StudentSchema>, id: PointId): Promise<number> {
     const entry = await this.getPointEntry(id);
 
     return entry ? PointMap.getPointsOfEntry(entry) : 0;
   }
 
-  @instanceMethod
   getPresentationPointsOfSheet(sheet: Sheet): number {
     if (!this.presentationPoints) {
       return 0;
@@ -167,7 +154,6 @@ export class StudentSchema extends Typegoose
     return pts || 0;
   }
 
-  @instanceMethod
   setAttendance(attendance: AttendanceDocument) {
     if (!this.attendance) {
       this.attendance = new Types.Map();
@@ -177,7 +163,6 @@ export class StudentSchema extends Typegoose
     this.attendance.set(date.toDateString(), attendance);
   }
 
-  @instanceMethod
   getAttendanceOfDay(date: Date): AttendanceDocument | undefined {
     if (!this.attendance) {
       return undefined;
@@ -187,9 +172,9 @@ export class StudentSchema extends Typegoose
   }
 }
 
-export interface StudentDocument extends StudentSchema, Document {}
+export type StudentDocument = DocumentType<StudentSchema>;
 
-const StudentModel: Model<StudentDocument> = new StudentSchema().getModelForClass(StudentSchema, {
+const StudentModel: Model<StudentDocument> = getModelForClass(StudentSchema, {
   schemaOptions: { collection: CollectionName.STUDENT },
 });
 

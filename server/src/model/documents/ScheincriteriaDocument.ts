@@ -1,9 +1,9 @@
-import { Document, Model } from 'mongoose';
-import { prop, Typegoose } from '@typegoose/typegoose';
+import { DocumentType, getModelForClass, prop } from '@typegoose/typegoose';
+import { Model } from 'mongoose';
 import { CollectionName } from '../CollectionName';
 import { Scheincriteria } from '../scheincriteria/Scheincriteria';
 
-export class ScheincriteriaSchema extends Typegoose {
+export class ScheincriteriaSchema {
   @prop({ required: true })
   name!: string;
 
@@ -11,13 +11,10 @@ export class ScheincriteriaSchema extends Typegoose {
   criteria!: Scheincriteria;
 }
 
-export interface ScheincriteriaDocument extends ScheincriteriaSchema, Document {}
+export type ScheincriteriaDocument = DocumentType<ScheincriteriaSchema>;
 
-const ScheincriteriaModel: Model<ScheincriteriaDocument> = new ScheincriteriaSchema().getModelForClass(
-  ScheincriteriaSchema,
-  {
-    schemaOptions: { collection: CollectionName.SCHEINCRITERIA },
-  }
-);
+const ScheincriteriaModel: Model<ScheincriteriaDocument> = getModelForClass(ScheincriteriaSchema, {
+  schemaOptions: { collection: CollectionName.SCHEINCRITERIA },
+});
 
 export default ScheincriteriaModel;
