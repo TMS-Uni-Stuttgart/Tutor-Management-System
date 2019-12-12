@@ -22,7 +22,7 @@ export function createTheme(type: PaletteType): Theme {
     palette: {
       type,
       primary: {
-        main: type === 'light' ? '#004191' : '#00beff',
+        main: type === 'light' ? '#004191' : '#00a5fe',
       },
       secondary: {
         main: '#00beff',
