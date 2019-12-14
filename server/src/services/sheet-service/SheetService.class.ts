@@ -8,7 +8,7 @@ import {
 import SheetModel, { SheetDocument } from '../../model/documents/SheetDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import teamService from '../team-service/TeamService.class';
-import { PointId, PointMap } from 'shared/dist/model/Points';
+import { PointId, PointMap, getPointsOfExercise } from 'shared/dist/model/Points';
 
 class SheetService {
   public async getAllSheets(): Promise<Sheet[]> {
@@ -98,7 +98,7 @@ class SheetService {
 
   public getSheetTotalPoints(sheet: Sheet): number {
     return sheet.exercises.reduce(
-      (points, exercise) => points + (exercise.bonus ? 0 : exercise.maxPoints),
+      (points, exercise) => points + getPointsOfExercise(exercise).must,
       0
     );
   }
