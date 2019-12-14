@@ -2,7 +2,7 @@
 sessionTimeout: 120
 
 database:
-  databaseURL: 'mongodb://localhost:27017/tms'
+  databaseURL: 'mongodb://localhost:27017/tms-big'
   secret: 'keyboard cat'
   config:
     # This is needed bc of the docker-compose file
