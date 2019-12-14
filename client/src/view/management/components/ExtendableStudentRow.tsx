@@ -1,31 +1,33 @@
 import { Button, IconButton, TableCell, TableRow } from '@material-ui/core';
+import { AvatarProps } from '@material-ui/core/Avatar';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { TableRowProps } from '@material-ui/core/TableRow';
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   MailOutline as MailIcon,
-  Person as PersonIcon,
+  SvgIconComponent,
 } from '@material-ui/icons';
 import clsx from 'clsx';
-import { AccountSwitch, MessageAlert as WarningIcon } from 'mdi-material-ui';
+import { AccountSwitch } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import ListItemMenu from '../../../components/ListItemMenu';
 import PaperTableRow from '../../../components/PaperTableRow';
+import StudentAvatar from '../../../components/student-icon/StudentAvatar';
 import { StudentWithFetchedTeam } from '../../../typings/types';
+import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 import ScheinCriteriaStatusTable from './ScheinCriteriaStatusTable';
 import StatusProgress from './StatusProgress';
-import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
     },
-    margin: {
+    statusProgress: {
       maxWidth: '200px',
-      width: '50%',
+      // width: '50%',
       margin: theme.spacing(1),
     },
     content: {
@@ -40,9 +42,6 @@ const useStyles = makeStyles((theme: Theme) =>
           width: '100%',
         },
       },
-    },
-    warningAvatar: {
-      backgroundColor: theme.palette.warning.main,
     },
     infoBlock: {
       display: 'grid',
@@ -99,6 +98,12 @@ interface Props extends TableRowProps {
   onEditStudentClicked: (student: StudentWithFetchedTeam) => void;
   onDeleteStudentClicked: (student: StudentWithFetchedTeam) => void;
   onChangeTutorialClicked?: (student: StudentWithFetchedTeam) => void;
+}
+
+interface CustomAvatarProps {
+  icon?: SvgIconComponent;
+  AvatarProps?: AvatarProps;
+  avatarTooltip?: string;
 }
 
 function calculateProgress(summary: ScheinCriteriaSummary) {
@@ -158,13 +163,7 @@ function ExtendableStudentRow({
               }`
             : `${team ? `Team: #${team.teamNo.toString().padStart(2, '0')}` : 'Kein Team'}`
         }
-        icon={!!student.matriculationNo ? PersonIcon : WarningIcon}
-        avatarTooltip={
-          !student.matriculationNo ? 'Student/in hat keine hinterlegte Matrikelnummer.' : undefined
-        }
-        AvatarProps={{
-          className: clsx(!student.matriculationNo && classes.warningAvatar),
-        }}
+        Avatar={<StudentAvatar student={student} />}
         className={clsx(classes.content, className, showInfoBox && classes.noBottomBorder)}
         onClick={() => {
           setShowInfoBox(!showInfoBox);
@@ -199,7 +198,7 @@ function ExtendableStudentRow({
       >
         <TableCell className={classes.progressBarCell}>
           <StatusProgress
-            className={classes.margin}
+            className={classes.statusProgress}
             status={
               summary && {
                 achieved: calculateProgress(summary),

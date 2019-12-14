@@ -13,10 +13,11 @@ export class ScheincriteriaSchema extends Typegoose {
 
 export interface ScheincriteriaDocument extends ScheincriteriaSchema, Document {}
 
-const ScheincriteriaModel: Model<
-  ScheincriteriaDocument
-> = new ScheincriteriaSchema().getModelForClass(ScheincriteriaSchema, {
-  schemaOptions: { collection: CollectionName.SCHEINCRITERIA },
-});
+const ScheincriteriaModel: Model<ScheincriteriaDocument> = new ScheincriteriaSchema().getModelForClass(
+  ScheincriteriaSchema,
+  {
+    schemaOptions: { collection: CollectionName.SCHEINCRITERIA },
+  }
+);
 
 export default ScheincriteriaModel;

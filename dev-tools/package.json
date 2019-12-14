@@ -1,0 +1,17 @@
+{
+  "name": "dev-tools",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "eslint:check": "eslint \"src/**/*.ts?(x)\"",
+    "format": "eslint --fix \"src/**/*.ts?(x)\"",
+    "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
+    "ts:check": "tsc --project . --noEmit",
+    "ts:check:watch": "tsc --project . --noEmit -w"
+  },
+  "dependencies": {
+    "shared": "1.0.0"
+  }
+}

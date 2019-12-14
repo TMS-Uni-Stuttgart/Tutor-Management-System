@@ -61,8 +61,7 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
 
   return (
     <Paper className={classes.statsPaper}>
-      {/* <AspectRatio ratio='16-9'> */}
-      <Typography className={classes.title}>Aktueller Scheinstatus aller Studierende</Typography>
+      <Typography className={classes.title}>Aktueller Scheinstatus aller Studierenden</Typography>
       <Chart
         className={classes.chart}
         chartType='PieChart'
@@ -71,14 +70,12 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
         options={{
           fontName: theme.typography.fontFamily,
           fontSize: theme.typography.fontSize,
-          //title: 'Aktueller Scheinstatus aller Studierende',
           slices: {
             0: { color: GREEN[600] },
             1: { color: RED[600] },
           },
         }}
       />
-      {/* </AspectRatio> */}
     </Paper>
   );
 }

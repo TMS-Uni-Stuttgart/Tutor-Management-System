@@ -125,8 +125,19 @@ export class ScheincriteriaService {
     const summaries: ScheincriteriaSummaryByStudents = {};
     const criterias = await this.getAllCriteriaObjects();
 
-    for (const student of students) {
-      summaries[student.id] = await this.calculateCriteriaResultOfStudent(student, criterias);
+    const summariesByStudent = await Promise.all(
+      students.map(async student => {
+        const result = await this.calculateCriteriaResultOfStudent(student, criterias);
+
+        return {
+          id: student.id,
+          result,
+        };
+      })
+    );
+
+    for (const summary of summariesByStudent) {
+      summaries[summary.id] = summary.result;
     }
 
     return summaries;
@@ -181,7 +192,7 @@ export class ScheincriteriaService {
     }
 
     // Get the constructor of the blueprint. The type needs to be set here because 'constructor' is only typed as 'Function' and therefore cannot be used with 'new' in front of it.
-    const prototype = bluePrintData.blueprint.constructor as (new () => Scheincriteria);
+    const prototype = bluePrintData.blueprint.constructor as new () => Scheincriteria;
     const criteria: Scheincriteria = Object.assign(new prototype(), data);
 
     return criteria;

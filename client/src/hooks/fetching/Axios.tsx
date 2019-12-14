@@ -47,24 +47,9 @@ function RelogForm(): JSX.Element {
     try {
       const userData = await login(username, password);
       if (userData && !userData.hasTemporaryPassword) {
-        // TODO: Abstract Login component??
         window.location.reload();
-        // enqueueSnackbar('Erfolgreich eingeloggt', { variant: 'success' });
       }
     } catch (reason) {
-      // TODO: Abstract Login component??
-      // if (reason.message === 'Network Error') {
-      //   setError('Der Loginserver ist aktuell nicht erreichbar.');
-      // } else if (
-      //   reason.message &&
-      //   typeof reason.message === 'string' &&
-      //   (reason.message as string).indexOf('401') > -1
-      // ) {
-      //   setError('Nutzername und Passwort stimmen nicht überein.');
-      // } else {
-      //   setError('Ein unbekannter Fehler ist aufgetreten.');
-      // }
-
       setSubmitting(false);
     }
   };

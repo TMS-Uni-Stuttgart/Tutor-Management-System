@@ -11,4 +11,4 @@ assignees: ''
 <!-- Provide a short summary of the feature request -->
 
 # :ticket: Description
-<!-- Descripe the feature request -->
+<!-- Describe the feature request -->

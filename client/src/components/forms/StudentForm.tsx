@@ -10,6 +10,7 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { StudentStatus } from 'shared/dist/model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -53,6 +54,7 @@ interface StudentFormState {
   matriculationNo: string;
   email: string;
   courseOfStudies: string;
+  status: StudentStatus;
   team?: string;
 }
 
@@ -95,6 +97,7 @@ export function getInitialStudentFormState(
       email: student.email || '',
       courseOfStudies: student.courseOfStudies || '',
       team: student.team ? student.team.id : '',
+      status: student.status,
     };
   }
 
@@ -104,6 +107,7 @@ export function getInitialStudentFormState(
     matriculationNo: '',
     email: '',
     courseOfStudies: '',
+    status: StudentStatus.ACTIVE,
     team: teams ? getNextTeamWithSlot(teams) : '',
   };
 }
@@ -126,6 +130,22 @@ function teamItemToValue(team: ItemType): string {
   }
 
   return team.id;
+}
+
+function statusToString(status: StudentStatus): string {
+  switch (status) {
+    case StudentStatus.ACTIVE:
+      return 'Aktiv';
+
+    case StudentStatus.INACTIVE:
+      return 'Inaktiv';
+
+    case StudentStatus.NO_SCHEIN_REQUIRED:
+      return 'Hat bereits einen Schein';
+
+    default:
+      return 'NO_STRING_FOR_STATUS_FOUND';
+  }
 }
 
 function StudentForm({
@@ -155,12 +175,15 @@ function StudentForm({
     }
   }
 
+  const availableStatuses = Object.values(StudentStatus);
+
   return (
     <FormikBaseForm
       {...other}
       initialValues={initialFormState}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
+      enableDebug
     >
       {({ values }) => (
         <>
@@ -230,6 +253,15 @@ function StudentForm({
             itemToString={teamItemToString}
             itemToValue={teamItemToValue}
             disabled={disableTeamDropdown}
+          />
+
+          <FormikSelect
+            name='status'
+            label='Status'
+            emptyPlaceholder='Keine Status vorhanden.'
+            items={availableStatuses}
+            itemToString={statusToString}
+            itemToValue={s => s}
           />
         </>
       )}
