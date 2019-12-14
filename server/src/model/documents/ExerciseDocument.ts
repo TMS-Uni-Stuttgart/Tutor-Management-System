@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, getModelForClass, prop, mongoose } from '@typegoose/typegoose';
+import { arrayProp, DocumentType, getModelForClass, prop } from '@typegoose/typegoose';
 import { ObjectID } from 'bson';
 import { Model, Types } from 'mongoose';
 import { getPointsOfExercise } from 'shared/dist/model/Points';
@@ -20,10 +20,7 @@ export class ExerciseSchema implements Omit<Exercise, 'id' | 'subexercises'> {
 
 export type ExerciseDocument = DocumentType<ExerciseSchema>;
 
-export const ExerciseModel: Model<ExerciseDocument> = getModelForClass(
-  ExerciseSchema
-);
-
+export const ExerciseModel: Model<ExerciseDocument> = getModelForClass(ExerciseSchema);
 
 export function convertDocumentToExercise(doc: ExerciseDocument): Exercise {
   const { id, exName, bonus, subexercises } = doc;
