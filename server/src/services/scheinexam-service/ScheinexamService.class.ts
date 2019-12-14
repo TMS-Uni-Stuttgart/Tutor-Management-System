@@ -7,7 +7,7 @@ import {
 import ScheinexamModel, { ScheinexamDocument } from '../../model/documents/ScheinexamDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import { Student } from 'shared/dist/model/Student';
-import { PointId, PointMap } from 'shared/dist/model/Points';
+import { PointId, PointMap, getPointsOfExercise } from 'shared/dist/model/Points';
 
 class ScheinExamService {
   public async getAllScheinExams(): Promise<ScheinExam[]> {
@@ -96,7 +96,7 @@ class ScheinExamService {
 
   public getScheinExamTotalPoints(exam: ScheinExam): number {
     return exam.exercises.reduce(
-      (points, exercise) => points + (exercise.bonus ? 0 : exercise.maxPoints),
+      (points, exercise) => points + getPointsOfExercise(exercise).must,
       0
     );
   }
