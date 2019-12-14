@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -b",
-    "postbuild": "copyfiles -E \"config/**/*\" build/",
+    "postbuild": "copyfiles -E \"config/**/*\" build/src/",
     "build:watch": "tsc -b -w",
     "start": "ts-node-dev --no-notify . --no-lazy",
     "test": "jest --detectOpenHandles --runInBand",

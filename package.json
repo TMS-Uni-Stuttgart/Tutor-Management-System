@@ -4,7 +4,8 @@
   "workspaces": [
     "client",
     "server",
-    "shared"
+    "shared",
+    "dev-tools"
   ],
   "scripts": {
     "format": "yarn format:client && yarn format:server && yarn format:shared",
