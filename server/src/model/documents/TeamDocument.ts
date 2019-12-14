@@ -1,11 +1,12 @@
-import { arrayProp, prop, Ref, DocumentType } from '@typegoose/typegoose';
+import { arrayProp, prop, Ref, Typegoose } from '@typegoose/typegoose';
 import { Document } from 'mongoose';
 import { PointMapDTO } from 'shared/dist/model/Points';
 import { Team } from 'shared/dist/model/Team';
 import { StudentDocument } from './StudentDocument';
 import { TutorialDocument } from './TutorialDocument';
 
-export class TeamSchema implements Omit<Team, 'id' | 'tutorial' | 'students' | 'points'> {
+export class TeamSchema extends Typegoose
+  implements Omit<Team, 'id' | 'tutorial' | 'students' | 'points'> {
   @prop({ required: true })
   teamNo!: number;
 
@@ -19,4 +20,4 @@ export class TeamSchema implements Omit<Team, 'id' | 'tutorial' | 'students' | '
   points!: PointMapDTO;
 }
 
-export type TeamDocument = DocumentType<TeamSchema>;
+export interface TeamDocument extends TeamSchema, Document {}

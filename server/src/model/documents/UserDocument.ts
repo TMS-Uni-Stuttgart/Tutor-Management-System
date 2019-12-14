@@ -1,17 +1,9 @@
-import {
-  arrayProp,
-  DocumentType,
-  getModelForClass,
-  plugin,
-  pre,
-  prop,
-  Ref,
-} from '@typegoose/typegoose';
 import bcrypt from 'bcryptjs';
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'shared/dist/model/Role';
 import { User } from 'shared/dist/model/User';
+import { arrayProp, plugin, pre, prop, Ref, Typegoose } from '@typegoose/typegoose';
 import { databaseConfig } from '../../helpers/config';
 import { CollectionName } from '../CollectionName';
 import { TutorialDocument } from './TutorialDocument';
@@ -41,7 +33,8 @@ export class UserCredentials {
   this.password = hashedPassword;
   next();
 })
-export class UserSchema implements Omit<User, 'id' | 'tutorials' | 'tutorialsToCorrect'> {
+export class UserSchema extends Typegoose
+  implements Omit<User, 'id' | 'tutorials' | 'tutorialsToCorrect'> {
   @prop({ required: true })
   firstname!: string;
 
@@ -70,9 +63,9 @@ export class UserSchema implements Omit<User, 'id' | 'tutorials' | 'tutorialsToC
   password!: string;
 }
 
-export type UserDocument = DocumentType<UserSchema>;
+export interface UserDocument extends UserSchema, Document {}
 
-const UserModel: Model<UserDocument> = getModelForClass(UserSchema, {
+const UserModel: Model<UserDocument> = new UserSchema().getModelForClass(UserSchema, {
   schemaOptions: { collection: CollectionName.USER },
 });
 

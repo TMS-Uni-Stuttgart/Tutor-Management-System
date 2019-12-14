@@ -1,10 +1,10 @@
-import { arrayProp, DocumentType, getModelForClass, prop } from '@typegoose/typegoose';
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { Sheet } from 'shared/dist/model/Sheet';
+import { arrayProp, prop, Typegoose } from '@typegoose/typegoose';
 import { CollectionName } from '../CollectionName';
 import { ExerciseDocument, ExerciseSchema } from './ExerciseDocument';
 
-export class SheetSchema implements Omit<Sheet, 'id'> {
+export class SheetSchema extends Typegoose implements Omit<Sheet, 'id'> {
   @prop({ required: true })
   sheetNo!: number;
 
@@ -15,9 +15,9 @@ export class SheetSchema implements Omit<Sheet, 'id'> {
   exercises!: ExerciseDocument[];
 }
 
-export type SheetDocument = DocumentType<SheetSchema>;
+export interface SheetDocument extends SheetSchema, Document {}
 
-const SheetModel: Model<SheetDocument> = getModelForClass(SheetSchema, {
+const SheetModel: Model<SheetDocument> = new SheetSchema().getModelForClass(SheetSchema, {
   schemaOptions: { collection: CollectionName.SHEET },
 });
 
