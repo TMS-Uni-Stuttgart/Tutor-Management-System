@@ -41,8 +41,6 @@ function Dashboard(): JSX.Element {
 
   const [summaries, setSummaries] = useState<StudentByTutorialSlotSummaryMap>({});
 
-  useEffect(() => {}, [getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots]);
-
   useEffect(() => {
     setIsLoading(true);
 
