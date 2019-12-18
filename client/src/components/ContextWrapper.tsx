@@ -1,10 +1,10 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { PaletteType } from '@material-ui/core';
+import { PaletteType, useMediaQuery } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { ThemeProvider } from '@material-ui/styles';
 import deLocale from 'date-fns/locale/de';
 import { SnackbarProvider } from 'notistack';
-import React, { PropsWithChildren, useState, useContext } from 'react';
+import React, { PropsWithChildren, useState, useContext, useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouterProps } from 'react-router';
 import { BrowserRouterProps } from 'react-router-dom';
@@ -26,9 +26,13 @@ const ThemeTypeContext = React.createContext<ChangeThemeTypeFunction>(() => {
 });
 
 function CustomThemeProvider({ children }: PropsWithChildren<{}>): JSX.Element {
-  // TODO: Get user preferences via media query
-  const [themeType, setThemeType] = useState<PaletteType>('light');
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [themeType, setThemeType] = useState<PaletteType>(prefersDarkMode ? 'dark' : 'light');
   const theme = createTheme(themeType);
+
+  useEffect(() => {
+    setThemeType(prefersDarkMode ? 'dark' : 'light');
+  }, [prefersDarkMode]);
 
   return (
     <ThemeTypeContext.Provider value={setThemeType}>
