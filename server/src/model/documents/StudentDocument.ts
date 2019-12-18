@@ -58,7 +58,7 @@ export class StudentSchema extends Typegoose
   courseOfStudies?: string;
 
   @prop({ ref: { name: 'TeamSchema' } })
-  team?: Ref<TeamDocument>;
+  team?: Ref<TeamDocument> | null;
 
   @prop({ default: StudentStatus.ACTIVE })
   status!: StudentStatus;
