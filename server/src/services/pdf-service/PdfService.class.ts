@@ -18,7 +18,7 @@ import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument } from '../../model/documents/TeamDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import { BadRequestError } from '../../model/Errors';
+import { BadRequestError, TemplatesNotFoundError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
@@ -149,6 +149,32 @@ class PdfService {
     });
 
     return markdown;
+  }
+
+  /**
+   * Checks if all required templates can be found.
+   *
+   * If at least one template file cannnot be found a corresponding error is thrown listing all missing template files. If _all_ template files could be found the function ends without an error.
+   */
+  public checkIfAllTemplatesArePresent() {
+    const notFound: string[] = [];
+    const templatesToCheck: { getTemplate: () => string; name: string }[] = [
+      { name: 'Attendance', getTemplate: this.getAttendanceTemplate.bind(this) },
+      { name: 'Schein status', getTemplate: this.getScheinStatusTemplate.bind(this) },
+      { name: 'Credentials', getTemplate: this.getCredentialsTemplate.bind(this) },
+    ];
+
+    for (const template of templatesToCheck) {
+      try {
+        template.getTemplate();
+      } catch (err) {
+        notFound.push(template.name);
+      }
+    }
+
+    if (notFound.length > 0) {
+      throw new TemplatesNotFoundError(notFound);
+    }
   }
 
   private async generateMarkdownFromTeamComment({
