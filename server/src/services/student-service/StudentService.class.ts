@@ -82,7 +82,7 @@ class StudentService {
       email: email || '',
       courseOfStudies: courseOfStudies || '',
       tutorial: student.tutorial,
-      team: student.team,
+      team: student.team || null,
       points: student.points,
       scheinExamResults: student.scheinExamResults,
       cakeCount: student.cakeCount,
