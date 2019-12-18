@@ -38,6 +38,18 @@ export class ValidationError {
   constructor(readonly message: string, readonly errors: ValidationErrorExtract[]) {}
 }
 
+export class TemplatesNotFoundError {
+  get message(): string {
+    return this.toString();
+  }
+
+  constructor(readonly notFoundTemplateNames: string[]) {}
+
+  private toString(): string {
+    return `Could not find the following template files: ${this.notFoundTemplateNames.join(', ')}`;
+  }
+}
+
 class ErrorResponse {
   constructor(readonly status: number, readonly message: string) {}
 }
