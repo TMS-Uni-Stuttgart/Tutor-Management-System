@@ -1,12 +1,10 @@
-import { createStyles, makeStyles, Paper, Theme, Typography, IconButton } from '@material-ui/core';
+import { createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import React from 'react';
+import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 import { TutorialSummaryInfo } from '../Dashboard';
 import ScheinCriteriaStatsCard from './ScheinCrtieriaStatsCard';
 import ScheinPassedStatsCard from './ScheinPassedStatsCard';
 import TutorialStatsCard from './TutorialStatsCard';
-import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-import { Download as DownloadIcon } from 'mdi-material-ui';
-import { Tutorial } from 'shared/dist/model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,10 +29,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface TutorialStatisticsProps {
   value: TutorialSummaryInfo;
-  onDownloadClicked: (tutorial: Tutorial) => void;
 }
 
-function TutorialStatistics({ value, onDownloadClicked }: TutorialStatisticsProps): JSX.Element {
+function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
   const classes = useStyles();
   const activeCriteria: string[] = [];
 
@@ -50,14 +47,6 @@ function TutorialStatistics({ value, onDownloadClicked }: TutorialStatisticsProp
     <>
       <Paper className={classes.tutorialHeading}>
         <Typography variant='h5'>{getDisplayStringForTutorial(value.tutorial)}</Typography>
-
-        <IconButton
-          size='small'
-          className={classes.iconButton}
-          onClick={() => onDownloadClicked(value.tutorial)}
-        >
-          <DownloadIcon />
-        </IconButton>
       </Paper>
       <div className={classes.cardsContainer}>
         <TutorialStatsCard value={value} />
