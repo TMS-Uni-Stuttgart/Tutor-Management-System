@@ -13,8 +13,6 @@ import {
 import AdminStatsCard from './components/AdminStatsCard';
 import AllTutorialStatistics from './components/AllTutorialStatistics';
 import TutorialStatistics from './components/TutorialStatistics';
-import { useSnackbar } from 'notistack';
-import { saveBlob } from '../../util/helperFunctions';
 
 export interface TutorialSummaryInfo {
   tutorial: Tutorial;
@@ -27,11 +25,9 @@ function isAdmin(userData: LoggedInUser | undefined): boolean {
 
 function Dashboard(): JSX.Element {
   const { userData } = useLogin();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const {
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
     getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
-    getTutorialXLSX,
   } = useAxios();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -40,8 +36,6 @@ function Dashboard(): JSX.Element {
   >([]);
 
   const [summaries, setSummaries] = useState<StudentByTutorialSlotSummaryMap>({});
-
-  useEffect(() => {}, [getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -79,20 +73,6 @@ function Dashboard(): JSX.Element {
     userData,
   ]);
 
-  async function handleDownloadXLSX(tutorial: Tutorial) {
-    const snackId = enqueueSnackbar('Erstelle XLSX...', { variant: 'info', persist: true });
-
-    try {
-      const blob = await getTutorialXLSX(tutorial.id);
-
-      saveBlob(blob, `Tutorium_${tutorial.slot}.xlsx`);
-    } catch {
-      enqueueSnackbar('XLSX konnte nicht erstellt werden.', { variant: 'error' });
-    } finally {
-      closeSnackbar(snackId || undefined);
-    }
-  }
-
   return (
     <div>
       {isLoading ? (
@@ -107,9 +87,7 @@ function Dashboard(): JSX.Element {
 
           <AllTutorialStatistics
             items={tutorialsWithScheinCriteriaSummaries}
-            createRowFromItem={item => (
-              <TutorialStatistics value={item} onDownloadClicked={handleDownloadXLSX} />
-            )}
+            createRowFromItem={item => <TutorialStatistics value={item} />}
             placeholder='Keine Tutorien vorhanden'
           />
         </>

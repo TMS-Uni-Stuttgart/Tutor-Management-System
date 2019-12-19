@@ -4,6 +4,7 @@ import {
   checkAccess,
   hasUserOneOfRoles,
   isUserTutorOfTutorial,
+  isUserCorrectorOfTutorial,
 } from '../../middleware/AccessControl';
 import excelService from './ExcelService.class';
 
@@ -11,7 +12,7 @@ const excelRouter = Router();
 
 excelRouter.get(
   '/tutorial/:id',
-  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial),
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
   async (req, res) => {
     const tutorialId = req.params.id;
     const excelBuffer = await excelService.generateXLSXForTutorial(tutorialId);
