@@ -1,25 +1,31 @@
 import {
   AppBar as MuiAppBar,
   Button,
+  ButtonGroup,
   IconButton,
+  PaletteType,
+  Popover,
   Theme,
   Toolbar,
+  Tooltip,
   Typography,
   useTheme,
-  PaletteType,
-  Tooltip,
 } from '@material-ui/core';
+import { Brightness5 as LightIcon, Brightness7 as DarkIcon } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Brightness7 as DarkIcon, Brightness5 as LightIcon } from '@material-ui/icons';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { Location } from 'history';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
-import React from 'react';
+import { Download as DownloadIcon, GithubCircle as GitHubIcon } from 'mdi-material-ui';
+import { useSnackbar } from 'notistack';
+import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { useLogin } from '../hooks/LoginService';
-import { getTutorialRelatedPath, ROUTES, RouteType } from '../util/RoutingPath';
-import { GithubCircle as GitHubIcon } from 'mdi-material-ui';
+import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
 import { useChangeTheme } from '../components/ContextWrapper';
+import { getTutorialXLSX } from '../hooks/fetching/Files';
+import { useLogin } from '../hooks/LoginService';
+import { getDisplayStringForTutorial, saveBlob } from '../util/helperFunctions';
+import { getTutorialRelatedPath, ROUTES, RouteType } from '../util/RoutingPath';
+import SubmitButton from '../components/forms/components/SubmitButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,6 +53,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
       textAlign: 'right',
     },
+    popoverRoot: {
+      margin: theme.spacing(2),
+    },
   })
 );
 
@@ -56,7 +65,11 @@ interface Props {
   onMenuButtonClicked: (ev: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-type PropType = Props & WithSnackbarProps & RouteComponentProps;
+interface CreatingState {
+  [tutorialSlot: string]: boolean;
+}
+
+type PropType = Props & RouteComponentProps;
 
 function getTitleFromLocation(location: Location): string {
   const title: string | undefined = titleText.get(location.pathname);
@@ -95,13 +108,17 @@ function getTitleFromLocation(location: Location): string {
 }
 
 function AppBar(props: PropType): JSX.Element {
-  const { enqueueSnackbar, onMenuButtonClicked, location } = props;
+  const { onMenuButtonClicked, location } = props;
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const classes = useStyles();
   const { logout, isLoggedIn, userData } = useLogin();
   const userIsLoggedIn: boolean = isLoggedIn();
   const theme = useTheme();
   const changeTheme = useChangeTheme();
+
+  const [backupAnchor, setBackupAnchor] = useState<HTMLElement | undefined>(undefined);
+  const [creatingXLSX, setCreatingXLSX] = useState<CreatingState>({});
 
   function handleThemeChangeClicked() {
     const newType: PaletteType = theme.palette.type === 'light' ? 'dark' : 'light';
@@ -110,6 +127,22 @@ function AppBar(props: PropType): JSX.Element {
 
   function handleLogBtnClicked() {
     logout().then(() => enqueueSnackbar('Erfolgreich ausgeloggt', { variant: 'success' }));
+  }
+
+  async function handleDownloadXLSX(tutorial: LoggedInUserTutorial) {
+    const snackId = enqueueSnackbar('Erstelle XLSX...', { variant: 'info', persist: true });
+    setCreatingXLSX(state => ({ ...state, [tutorial.slot]: true }));
+
+    try {
+      const blob = await getTutorialXLSX(tutorial.id);
+
+      saveBlob(blob, `Tutorium_${tutorial.slot}.xlsx`);
+    } catch {
+      enqueueSnackbar('XLSX konnte nicht erstellt werden.', { variant: 'error' });
+    } finally {
+      setCreatingXLSX(state => ({ ...state, [tutorial.slot]: false }));
+      closeSnackbar(snackId || undefined);
+    }
   }
 
   return (
@@ -131,6 +164,47 @@ function AppBar(props: PropType): JSX.Element {
 
         {userIsLoggedIn && (
           <>
+            <Button
+              color='inherit'
+              endIcon={<DownloadIcon />}
+              onClick={e => setBackupAnchor(e.currentTarget)}
+            >
+              Backup
+            </Button>
+
+            <Popover
+              open={!!backupAnchor}
+              anchorEl={backupAnchor}
+              onClose={() => setBackupAnchor(undefined)}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              {userData && (
+                <ButtonGroup
+                  className={classes.popoverRoot}
+                  orientation='vertical'
+                  color='default'
+                  variant='text'
+                >
+                  {[...userData.tutorials, ...userData.tutorialsToCorrect].map(tutorial => (
+                    <SubmitButton
+                      key={tutorial.slot}
+                      onClick={() => handleDownloadXLSX(tutorial)}
+                      isSubmitting={!!creatingXLSX[tutorial.slot]}
+                    >
+                      {getDisplayStringForTutorial(tutorial)}
+                    </SubmitButton>
+                  ))}
+                </ButtonGroup>
+              )}
+            </Popover>
+
             <div className={classes.loggedInAsArea}>
               <Typography variant='caption' color='inherit'>
                 Angemeldet als:
@@ -166,4 +240,4 @@ function AppBar(props: PropType): JSX.Element {
   );
 }
 
-export default withRouter(withSnackbar(AppBar));
+export default withRouter(AppBar);
