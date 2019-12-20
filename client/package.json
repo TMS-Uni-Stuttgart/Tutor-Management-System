@@ -15,12 +15,19 @@
     "ts:check": "tsc --project . --noEmit",
     "ts:check:watch": "tsc --project . --noEmit -w"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ]
+  },
   "dependencies": {
     "@date-io/date-fns": "^1.3.11",
     "@material-ui/core": "^4.8.0",
