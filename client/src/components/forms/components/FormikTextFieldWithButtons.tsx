@@ -3,9 +3,9 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import { ErrorMessage, Field, FieldProps } from 'formik';
 import React from 'react';
-import { SvgIconComponent } from '@material-ui/icons';
 import { ButtonBaseProps } from '@material-ui/core/ButtonBase';
 import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
+import { SvgIconComponent } from '../../../typings/SvgIconComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

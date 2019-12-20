@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 import { DrawerProps } from '@material-ui/core/Drawer';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { OpenInNew as ExternalLinkIcon } from '@material-ui/icons';
+import { OpenInNew as ExternalLinkIcon } from 'mdi-material-ui';
 import clsx from 'clsx';
 import React, { useMemo, useState, useEffect } from 'react';
 import { useLogin } from '../../hooks/LoginService';

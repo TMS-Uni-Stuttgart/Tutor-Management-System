@@ -3,9 +3,9 @@ import Paper, { PaperProps } from '@material-ui/core/Paper';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
-import { SvgIconComponent } from '@material-ui/icons';
 import { TypographyProps } from '@material-ui/core/Typography';
 import { AvatarProps } from '@material-ui/core/Avatar';
+import { SvgIconComponent } from '../typings/SvgIconComponent';
 
 interface StyleProps {
   colorOfBottomBar?: string;

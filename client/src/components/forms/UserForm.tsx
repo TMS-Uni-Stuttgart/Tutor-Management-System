@@ -1,8 +1,8 @@
 import {
-  RemoveRedEyeOutlined as RemoveRedEyeOutlinedIcon,
-  RestoreOutlined as RestoreOutlinedIcon,
+  Eye as RemoveRedEyeOutlinedIcon,
+  Restore as RestoreOutlinedIcon,
   Shuffle as ShuffleIcon,
-} from '@material-ui/icons';
+} from 'mdi-material-ui';
 import { FormikHelpers } from 'formik';
 import pwGenerator from 'generate-password';
 import React, { useState } from 'react';

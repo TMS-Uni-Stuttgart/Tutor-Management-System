@@ -1,10 +1,10 @@
 import React, { useState, ComponentType, MouseEventHandler } from 'react';
 import {
   Delete as DeleteIcon,
-  Edit as EditIcon,
-  Info as InfoIcon,
-  MoreVert as MoreVertIcon,
-} from '@material-ui/icons';
+  Pencil as EditIcon,
+  Information as InfoIcon,
+  DotsVertical as MoreVertIcon,
+} from 'mdi-material-ui';
 import { ListItemIcon, ListItemText, MenuItem, Tooltip } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import Menu, { MenuProps } from '@material-ui/core/Menu';

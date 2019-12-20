@@ -1,6 +1,6 @@
 import { Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { ChevronLeft as BackIcon } from '@material-ui/icons';
+import { ChevronLeft as BackIcon } from 'mdi-material-ui';
 import { compareAsc, format } from 'date-fns';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';

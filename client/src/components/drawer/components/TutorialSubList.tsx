@@ -1,6 +1,6 @@
 import { Collapse, List, ListItem, ListItemText } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { ChevronUp as ExpandLessIcon, ChevronDown as ExpandMoreIcon } from 'mdi-material-ui';
 import {
   AccountConvert as SubstituteTutorialIcon,
   CheckboxMarkedCircleOutline as TutorialToCorrectIcon,
