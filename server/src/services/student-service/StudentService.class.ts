@@ -142,6 +142,8 @@ class StudentService {
     pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
     student.points = pointMapOfStudent.toDTO();
 
+    student.markModified('points');
+
     await student.save();
   }
 
