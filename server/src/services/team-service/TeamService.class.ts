@@ -9,7 +9,7 @@ import {
 } from 'shared/dist/model/Points';
 import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
-import { isDocument } from '@hasezoey/typegoose';
+import { isDocument } from '@typegoose/typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';

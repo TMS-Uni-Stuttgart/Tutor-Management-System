@@ -82,7 +82,7 @@ function getPointsFromBoxValue({ points }: PointsCardFormExerciseState): number 
 
 function ExerciseBox({ name, exercise }: Props): JSX.Element | null {
   const classes = useStyles();
-  const [{ value }] = useField(name);
+  const [{ value }] = useField<PointsCardFormExerciseState>(name);
   const [isCommentCollapsed, setCommentCollapsed] = useState(false);
 
   if (!value) {

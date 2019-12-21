@@ -1,4 +1,4 @@
-import { isDocument, Ref } from '@hasezoey/typegoose';
+import { isDocument, Ref } from '@typegoose/typegoose';
 import { parse } from 'date-fns';
 import _ from 'lodash';
 import { Types } from 'mongoose';
