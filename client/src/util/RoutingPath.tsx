@@ -21,6 +21,7 @@ import AttendanceAdminView from '../view/attendance/AttendanceAdminView';
 import AttendanceView from '../view/attendance/AttendanceView';
 import Dashboard from '../view/dashboard/Dashboard';
 import PointManagement from '../view/pointsmanagement/PointManagement';
+import EnterPointsView from '../view/enter-points-view/EnterPointsView';
 import Login from '../view/Login';
 import ScheinCriteriaManagement from '../view/scheincriteriamanagement/ScheinCriteriaManagement';
 import SheetManagement from '../view/sheetmanagement/SheetManagement';
@@ -104,7 +105,7 @@ export const ROUTES: readonly RouteType[] = [
   {
     path: RoutingPath.ENTER_POINTS,
     title: 'Punkte verwalten',
-    component: PointManagement,
+    component: EnterPointsView,
     icon: BookIcon,
     roles: [Role.TUTOR, Role.CORRECTOR],
     isInDrawer: true,
