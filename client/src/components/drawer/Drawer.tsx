@@ -44,7 +44,21 @@ const useStyles = makeStyles((theme: Theme) =>
       }),
     },
     drawerList: {
+      paddingBottom: theme.spacing(4),
       overflowY: 'auto',
+      overflowX: 'hidden',
+      '&::-webkit-scrollbar': {
+        width: 4,
+      },
+      '&::-webkit-scrollbar-track': {
+        background: theme.palette.background.paper,
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: '#888',
+      },
+      '&::-webkit-scrollbar-thumb:hover': {
+        background: '#555',
+      },
     },
     displayNone: {
       display: 'none',
