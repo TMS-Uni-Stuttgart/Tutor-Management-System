@@ -6,11 +6,9 @@ declare module '@material-ui/core/styles/createPalette' {
     green: Omit<SimplePaletteColorOptions, 'contrastText'>;
     orange: Omit<SimplePaletteColorOptions, 'contrastText'>;
     red: Omit<SimplePaletteColorOptions, 'contrastText'>;
-    warning: Omit<SimplePaletteColorOptions, 'contrastText'>;
   }
 
   interface PaletteOptions {
-    warning: Palette['warning'];
     green: Palette['green'];
     orange: Palette['orange'];
     red: Palette['red'];
