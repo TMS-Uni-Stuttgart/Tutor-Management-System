@@ -2,6 +2,7 @@ import React from 'react';
 import { Team } from 'shared/dist/model/Team';
 import TeamCard from './TeamCard';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { Sheet } from 'shared/dist/model/Sheet';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,15 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   teams: Team[];
+  sheet: Sheet;
 }
 
-function TeamCardList({ teams }: Props): JSX.Element {
+function TeamCardList({ teams, sheet }: Props): JSX.Element {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       {teams.map(team => (
-        <TeamCard key={team.id} team={team} />
+        <TeamCard key={team.id} team={team} sheet={sheet} />
       ))}
     </div>
   );
