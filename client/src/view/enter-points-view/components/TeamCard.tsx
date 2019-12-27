@@ -1,17 +1,17 @@
-import { Card, CardActions, CardContent, Typography } from '@material-ui/core';
+import { Card, CardActions, CardContent, CardHeader } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { AccountMultiple as TeamIcon, FileFind as PdfPreviewIcon, PdfBox as PdfIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
+import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import SplitButton from './SplitButton';
 import TeamCardPointsTable from './TeamCardPointsTable';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    points: {
-      marginTop: theme.spacing(2),
-    },
+    points: {}, // FIXME: REMOVE ME LATER!
     actions: {
       justifyContent: 'flex-end',
     },
@@ -37,13 +37,32 @@ function TeamCard({ team, sheet }: Props): JSX.Element {
 
   return (
     <Card variant='outlined'>
+      <CardHeader
+        avatar={<TeamIcon />}
+        action={
+          <EntityListItemMenu
+            additionalItems={[
+              {
+                primary: 'PDF Vorschau',
+                Icon: PdfPreviewIcon,
+                onClick: () => {},
+              },
+              {
+                primary: 'PDF herunterladen',
+                Icon: PdfIcon,
+                onClick: () => {},
+              },
+            ]}
+          />
+          // <IconButton>
+          //   <MoreVertIcon />
+          // </IconButton>
+        }
+        title={teamToString(team)}
+        subheader={studentsInTeam}
+      />
+
       <CardContent>
-        <Typography gutterBottom variant='h5' component='h2'>
-          {teamToString(team)}
-        </Typography>
-
-        <Typography>{studentsInTeam}</Typography>
-
         <TeamCardPointsTable team={team} sheet={sheet} className={classes.points} />
       </CardContent>
 

@@ -1,16 +1,16 @@
 import { Switch } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import { Sheet } from 'shared/dist/model/Sheet';
+import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../components/CustomSelect';
 import SubmitButton from '../../components/forms/components/SubmitButton';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
-import Placeholder from './components/Placeholder';
-import { useParams } from 'react-router';
-import TeamCardList from './components/TeamCardList';
-import { Team } from 'shared/dist/model/Team';
 import { getTeamsOfTutorial } from '../../hooks/fetching/Team';
+import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
+import Placeholder from './components/Placeholder';
+import TeamCardList from './components/TeamCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,8 +57,8 @@ function duplicateArray<T>(array: T[], times: number = 5): T[] {
 function EnterPointsView(): JSX.Element {
   const classes = useStyles();
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { tutorialId } = useParams<RouteParams>();
+  const { setError } = useErrorSnackbar();
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -71,28 +71,23 @@ function EnterPointsView(): JSX.Element {
 
   useEffect(() => {
     if (!tutorialId) {
-      const snackbar = enqueueSnackbar('Es wurde keine Tutoriums ID über den Pfad mitgegeben.', {
-        variant: 'error',
-        persist: true,
-      });
+      setError('Es wurde keine Tutoriums ID über den Pfad mitgegeben.');
 
-      return () => {
-        if (!!snackbar) {
-          closeSnackbar(snackbar);
-        }
-      };
+      return;
     }
 
     Promise.all([getAllSheets(), getTeamsOfTutorial(tutorialId)])
       .then(([sheetResponse, teamResponse]) => {
+        setError(undefined);
+
         setSheets(sheetResponse);
         setTeams(teamResponse);
 
         // FIXME: REMOVE ME -- DEBUG CODE!
-        setCurrentSheet(sheetResponse[0]);
+        setCurrentSheet(sheetResponse[sheetResponse.length - 1]);
       })
-      .catch(() => enqueueSnackbar('Daten konnten nicht abgerufen werden', { variant: 'error' }));
-  }, [tutorialId, enqueueSnackbar, closeSnackbar]);
+      .catch(() => setError('Daten konnten nicht abgerufen werden.'));
+  }, [tutorialId, setError]);
 
   function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
     if (typeof e.target.value !== 'string') {
@@ -141,7 +136,7 @@ function EnterPointsView(): JSX.Element {
 
       <Placeholder placeholderText='Kein Blatt ausgewählt.' showPlaceholder={!currentSheet}>
         {/* FIXME: REMOVE DUPLICATES! */}
-        {currentSheet && <TeamCardList teams={duplicateArray(teams, 8)} sheet={currentSheet} />}
+        {currentSheet && <TeamCardList teams={duplicateArray(teams, 1)} sheet={currentSheet} />}
       </Placeholder>
     </div>
   );
