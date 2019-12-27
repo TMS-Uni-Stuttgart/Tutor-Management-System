@@ -189,3 +189,14 @@ export function getPointsOfExercise(exercise: Exercise): ExercisePointInfo {
     }
   }, points);
 }
+
+export function getPointsOfAllExercises({ exercises }: HasExercises): ExercisePointInfo {
+  return exercises.reduce(
+    (pts, ex) => {
+      const { must, bonus } = getPointsOfExercise(ex);
+
+      return { must: pts.must + must, bonus: pts.bonus + bonus };
+    },
+    { must: 0, bonus: 0 }
+  );
+}
