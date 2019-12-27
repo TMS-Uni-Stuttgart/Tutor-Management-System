@@ -1,7 +1,7 @@
 import { TableCell, Typography } from '@material-ui/core';
 import React from 'react';
 import { Sheet } from 'shared/dist/model/Sheet';
-import ListItemMenu from '../../../components/ListItemMenu';
+import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { getPointsOfEntityAsString } from '../../pointsmanagement/util/helper';
 
@@ -22,7 +22,7 @@ function SheetRow({
       label={`Blattnummer: #${sheet.sheetNo.toString().padStart(2, '0')}`}
       subText={sheet.bonusSheet ? 'Bonusblatt' : undefined}
       buttonCellContent={
-        <ListItemMenu
+        <EntityListItemMenu
           onEditClicked={() => onEditSheetClicked(sheet)}
           onDeleteClicked={() => onDeleteSheetClicked(sheet)}
         />

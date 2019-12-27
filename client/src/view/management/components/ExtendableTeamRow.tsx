@@ -16,7 +16,7 @@ import {
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { Team } from 'shared/dist/model/Team';
-import ListItemMenu from '../../../components/ListItemMenu';
+import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -136,7 +136,7 @@ function ExtendableTeamRow({ team, className, onClick, ...rest }: Props): JSX.El
             <KeyboardArrowDownIcon />
           </IconButton>
 
-          <ListItemMenu />
+          <EntityListItemMenu />
         </TableCell>
       </TableRow>
 

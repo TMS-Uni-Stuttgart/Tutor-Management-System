@@ -2,7 +2,7 @@ import { Button, Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { format } from 'date-fns';
 import React from 'react';
-import ListItemMenu from '../../../components/ListItemMenu';
+import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { TutorialWithFetchedCorrectors } from '../../../typings/types';
 import { renderLink } from '../../../components/drawer/components/renderLink';
@@ -63,7 +63,7 @@ function TutorialTableRow({
             Vertretungen
           </Button>
 
-          <ListItemMenu
+          <EntityListItemMenu
             onEditClicked={() => onEditTutorialClicked(tutorial)}
             onDeleteClicked={() => onDeleteTutorialClicked(tutorial)}
             disableDelete={disableDelete}

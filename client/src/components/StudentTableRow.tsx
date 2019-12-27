@@ -10,7 +10,7 @@ import { lighten } from '@material-ui/core/styles';
 import { Person as PersonIcon } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { StudentWithFetchedTeam } from '../typings/types';
-import ListItemMenu from './ListItemMenu';
+import EntityListItemMenu from './list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
 import { useAxios } from '../hooks/FetchingService';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
@@ -70,7 +70,7 @@ function StudentTableRow({
         icon={PersonIcon}
         SubTextProps={!team ? { color: 'error' } : undefined}
         buttonCellContent={
-          <ListItemMenu
+          <EntityListItemMenu
             onEditClicked={() => onEditStudentClicked(student)}
             onDeleteClicked={() => onDeleteStudentClicked(student)}
           />

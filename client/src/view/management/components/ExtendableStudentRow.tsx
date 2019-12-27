@@ -12,7 +12,7 @@ import { AccountSwitch } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import ListItemMenu from '../../../components/ListItemMenu';
+import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow from '../../../components/PaperTableRow';
 import StudentAvatar from '../../../components/student-icon/StudentAvatar';
 import { StudentWithFetchedTeam } from '../../../typings/types';
@@ -179,7 +179,7 @@ function ExtendableStudentRow({
             >
               <KeyboardArrowDownIcon />
             </IconButton>
-            <ListItemMenu
+            <EntityListItemMenu
               onEditClicked={() => onEditStudentClicked(student)}
               onDeleteClicked={() => onDeleteStudentClicked(student)}
               stopClickPropagation
