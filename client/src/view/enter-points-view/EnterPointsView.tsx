@@ -141,7 +141,7 @@ function EnterPointsView(): JSX.Element {
 
       <Placeholder placeholderText='Kein Blatt ausgewählt.' showPlaceholder={!currentSheet}>
         {/* FIXME: REMOVE DUPLICATES! */}
-        <TeamCardList teams={duplicateArray(teams, 8)} />
+        {currentSheet && <TeamCardList teams={duplicateArray(teams, 8)} sheet={currentSheet} />}
       </Placeholder>
     </div>
   );
