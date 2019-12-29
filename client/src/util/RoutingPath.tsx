@@ -42,6 +42,7 @@ export enum RoutingPath {
   TEAMOVERVIEW = '/teamoverview',
   ATTENDANCE = '/attendance',
   ENTER_POINTS = '/enterpoints',
+  ENTER_POINTS_OLD = '/enterpoints/old',
   SCHEIN_EXAMS = '/scheinexams',
   DASHBOARD = '/dashboard',
   MANAGE_USERS = '/admin/usermanagement',
@@ -101,6 +102,17 @@ export const ROUTES: readonly RouteType[] = [
     isPrivate: true,
     isTutorialRelated: true,
     isAccessibleBySubstitute: true,
+  },
+  {
+    // FIXME: REMOVE ME? OR LEAVE ME IN AS ESCAPE HATCH?
+    path: RoutingPath.ENTER_POINTS_OLD,
+    title: 'Punkte verwalten (alt)',
+    component: PointManagement,
+    icon: BookIcon,
+    roles: [Role.TUTOR, Role.CORRECTOR],
+    isInDrawer: false,
+    isPrivate: true,
+    isTutorialRelated: true,
   },
   {
     path: RoutingPath.ENTER_POINTS,
