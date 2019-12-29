@@ -1,6 +1,10 @@
 import { Card, CardActions, CardContent, CardHeader } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { AccountMultiple as TeamIcon, FileFind as PdfPreviewIcon, PdfBox as PdfIcon } from 'mdi-material-ui';
+import {
+  AccountMultiple as TeamIcon,
+  FileFind as PdfPreviewIcon,
+  PdfBox as PdfIcon,
+} from 'mdi-material-ui';
 import React from 'react';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
@@ -21,13 +25,15 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   team: Team;
   sheet: Sheet;
+  onPdfPreviewClicked: (team: Team) => void;
+  onGeneratePdfClicked: (team: Team) => void;
 }
 
 function teamToString(team: Team): string {
   return `Team #${team.teamNo.toString().padStart(2, '0')}`;
 }
 
-function TeamCard({ team, sheet }: Props): JSX.Element {
+function TeamCard({ team, sheet, onPdfPreviewClicked, onGeneratePdfClicked }: Props): JSX.Element {
   const classes = useStyles();
 
   const studentsInTeam: string =
@@ -45,12 +51,12 @@ function TeamCard({ team, sheet }: Props): JSX.Element {
               {
                 primary: 'PDF Vorschau',
                 Icon: PdfPreviewIcon,
-                onClick: () => {},
+                onClick: () => onPdfPreviewClicked(team),
               },
               {
                 primary: 'PDF herunterladen',
                 Icon: PdfIcon,
-                onClick: () => {},
+                onClick: () => onGeneratePdfClicked(team),
               },
             ]}
           />

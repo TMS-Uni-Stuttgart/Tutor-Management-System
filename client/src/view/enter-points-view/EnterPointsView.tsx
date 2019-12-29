@@ -11,6 +11,8 @@ import { getTeamsOfTutorial } from '../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
 import Placeholder from './components/Placeholder';
 import TeamCardList from './components/TeamCardList';
+import { usePDFs } from './hooks/usePDFs';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,9 +58,11 @@ function duplicateArray<T>(array: T[], times: number = 5): T[] {
 
 function EnterPointsView(): JSX.Element {
   const classes = useStyles();
+  const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
   const { tutorialId } = useParams<RouteParams>();
   const { setError } = useErrorSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -98,11 +102,49 @@ function EnterPointsView(): JSX.Element {
     setCurrentSheet(sheet);
   }
 
+  async function handlePdfPreviewClicked(team: Team) {
+    if (!currentSheet || !tutorialId) {
+      return;
+    }
+
+    try {
+      await showSinglePdfPreview({ tutorialId, sheet: currentSheet, team });
+    } catch {
+      enqueueSnackbar('Preview konnte nicht geladen werden.', { variant: 'error' });
+    }
+  }
+
+  async function handleGenerateSinglePdf(team: Team) {
+    if (!currentSheet || !tutorialId) {
+      return;
+    }
+
+    setGeneratingPDFs(PDFGeneratingState.SINGLE);
+
+    try {
+      await generateSinglePdf({ tutorialId, sheet: currentSheet, team });
+    } catch {
+      enqueueSnackbar('PDF konnte nicht erstellt werden.', { variant: 'error' });
+    } finally {
+      setGeneratingPDFs(PDFGeneratingState.NONE);
+    }
+  }
+
   async function handleGeneratingAllPDFs() {
     // FIXME: Implement me!
+    if (!currentSheet || !tutorialId) {
+      return;
+    }
+
     setGeneratingPDFs(PDFGeneratingState.MULTIPLE);
 
-    setTimeout(() => setGeneratingPDFs(PDFGeneratingState.NONE), 5000);
+    try {
+      await generateAllPdfs({ tutorialId, sheet: currentSheet });
+    } catch {
+      enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
+    } finally {
+      setGeneratingPDFs(PDFGeneratingState.NONE);
+    }
   }
 
   return (
@@ -126,7 +168,9 @@ function EnterPointsView(): JSX.Element {
           className={classes.createPdfsButton}
           onClick={handleGeneratingAllPDFs}
           disabled={!currentSheet}
-          modalText={PDFGeneratingState.SINGLE ? 'Erstelle PDF...' : 'Erstelle PDFs...'}
+          modalText={
+            isGeneratingPDFs === PDFGeneratingState.SINGLE ? 'Erstelle PDF...' : 'Erstelle PDFs...'
+          }
         >
           PDFs erstellen
         </SubmitButton>
@@ -136,7 +180,14 @@ function EnterPointsView(): JSX.Element {
 
       <Placeholder placeholderText='Kein Blatt ausgewählt.' showPlaceholder={!currentSheet}>
         {/* FIXME: REMOVE DUPLICATES! */}
-        {currentSheet && <TeamCardList teams={duplicateArray(teams, 1)} sheet={currentSheet} />}
+        {currentSheet && (
+          <TeamCardList
+            teams={duplicateArray(teams, 1)}
+            sheet={currentSheet}
+            onPdfPreviewClicked={handlePdfPreviewClicked}
+            onGeneratePdfClicked={handleGenerateSinglePdf}
+          />
+        )}
       </Placeholder>
     </div>
   );

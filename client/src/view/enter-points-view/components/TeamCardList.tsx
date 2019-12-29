@@ -31,15 +31,28 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   teams: Team[];
   sheet: Sheet;
+  onPdfPreviewClicked: (team: Team) => void;
+  onGeneratePdfClicked: (team: Team) => void;
 }
 
-function TeamCardList({ teams, sheet }: Props): JSX.Element {
+function TeamCardList({
+  teams,
+  sheet,
+  onPdfPreviewClicked,
+  onGeneratePdfClicked,
+}: Props): JSX.Element {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       {teams.map(team => (
-        <TeamCard key={team.id} team={team} sheet={sheet} />
+        <TeamCard
+          key={team.id}
+          team={team}
+          sheet={sheet}
+          onPdfPreviewClicked={onPdfPreviewClicked}
+          onGeneratePdfClicked={onGeneratePdfClicked}
+        />
       ))}
     </div>
   );
