@@ -34,6 +34,7 @@ import ScheinExamPointEntry from '../../view/pointsmanagement/ScheinExamPointEnt
 import ScheinExamManagement from '../../view/pointsmanagement/ScheinExamManagement';
 import TutorialSubstituteManagement from '../../view/tutorialmanagement/TutorialSubstituteManagement';
 import { Role } from 'shared/dist/model/Role';
+import EnterPointsForm from '../../view/enter-points-view/EnterPointsForm';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -118,7 +119,7 @@ export const ROUTES: readonly RouteType[] = [
   {
     path: RoutingPath.ENTER_POINTS_FORM,
     title: 'Punkte eintragen',
-    component: () => <div>HI</div>,
+    component: EnterPointsForm,
     icon: BookIcon,
     roles: [Role.TUTOR, Role.CORRECTOR],
     isInDrawer: false,

@@ -76,9 +76,6 @@ function EnterPointsView(): JSX.Element {
 
         setSheets(sheetResponse);
         setTeams(teamResponse);
-
-        // FIXME: REMOVE ME -- DEBUG CODE!
-        setCurrentSheet(sheetResponse[sheetResponse.length - 1]);
       })
       .catch(() => setError('Daten konnten nicht abgerufen werden.'));
   }, [tutorialId, setError]);

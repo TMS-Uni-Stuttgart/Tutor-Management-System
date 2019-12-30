@@ -1,4 +1,4 @@
-import { RouteType } from './Routing.routes';
+import { RouteType, RoutingPath } from './Routing.routes';
 
 interface EnterPointsFormParams {
   tutorialId: string;
@@ -11,7 +11,11 @@ export function getTutorialRelatedPath(route: RouteType, tutorialId: string): st
     return route.path;
   }
 
-  return `/tutorial/${tutorialId}/${route.path}`.replace(/\/\/+/, '/');
+  return getPathOfRouteWithTutorial(route.path, tutorialId);
+}
+
+export function getPathOfRouteWithTutorial(routingPath: RoutingPath, tutorialId: string): string {
+  return `/tutorial/${tutorialId}/${routingPath}`.replace(/\/\/+/, '/');
 }
 
 export function getEnterPointsFormPath({
