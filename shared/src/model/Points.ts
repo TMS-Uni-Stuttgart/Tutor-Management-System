@@ -16,26 +16,78 @@ export interface PointMapEntry {
   points: number | PointsOfSubexercises;
 }
 
+export interface SheetMapEntry {
+  // passedState: PassedState;
+  comment: string;
+  additionalPoints: number;
+  exercises: {
+    [exercise: string]: PointMapEntry | undefined;
+  };
+}
+
 export interface UpdatePointsDTO {
   exercises: PointMapDTO;
   id: string;
 }
 
-export type PointMapDTO = {
+export type PointMapDTO = OldPointMapDTO | NewPointMapDTO;
+
+export type OldPointMapDTO = {
   [exercise: string]: PointMapEntry | undefined;
 };
 
-export class PointId {
-  private readonly exerciseIdentifier: string;
-  private readonly sheetId: string;
+export type NewPointMapDTO = {
+  [sheetId: string]: SheetMapEntry | undefined;
+};
 
-  constructor(sheetId: string, exercise: Exercise) {
+/**
+ * Checks if the given DTO conforms to the NewPointMapDTO structure.
+ *
+ * @param dto DTO to check
+ * @returns `true` if it is a NewPointMapDTO, `false` otherwise.
+ */
+function isNewPointMapDTO(dto: PointMapDTO): dto is NewPointMapDTO {
+  const entries = Object.entries(dto);
+
+  if (entries.length === 0) {
+    // An empty object is considered a NewPointMapDTO bc it does not matter.
+    return true;
+  }
+
+  const [, value] = entries[0];
+
+  return 'exercises' in value;
+}
+
+export class PointId {
+  static fromString(key: string): PointId {
+    const regex = /ID::([a-f\d]{24})--Ex::([a-f\d]{24})/;
+    const result = key.match(regex);
+
+    if (!result || result.length < 3) {
+      throw new Error(
+        `Not a valid string representation of a PointId ("${key}"). The string must match the form "ID::{ObjectId}--Ex::{ObjectId}."`
+      );
+    }
+
+    return new PointId(result[1], result[2]);
+  }
+
+  public readonly exerciseId: string;
+  public readonly sheetId: string;
+
+  constructor(sheetId: string, exercise: Exercise | string) {
     this.sheetId = sheetId;
-    this.exerciseIdentifier = exercise.id;
+
+    if (typeof exercise === 'string') {
+      this.exerciseId = exercise;
+    } else {
+      this.exerciseId = exercise.id;
+    }
   }
 
   public toString(): string {
-    return `ID::${this.sheetId}--Ex::${this.exerciseIdentifier}`;
+    return `ID::${this.sheetId}--Ex::${this.exerciseId}`;
   }
 }
 
@@ -85,24 +137,48 @@ export class PointMap {
     return Object.values(entry.points).reduce((sum, pts) => sum + pts, 0);
   }
 
-  private points: PointMapDTO;
+  private points: NewPointMapDTO = {};
 
   constructor(dto: PointMapDTO = {}) {
-    this.points = dto;
+    this.setPointMap(dto);
+  }
+
+  private setPointMap(dto: PointMapDTO) {
+    if (!isNewPointMapDTO(dto)) {
+      // TODO: Implement me.
+    } else {
+      this.points = dto;
+    }
   }
 
   setPoints(pointId: PointId, points: PointMapEntry) {
-    this.setPointsByKey(pointId.toString(), points);
+    const { sheetId, exerciseId } = pointId;
+    const prevEntry: SheetMapEntry = this.points[sheetId] ?? {
+      additionalPoints: 0,
+      comment: '',
+      exercises: {},
+    };
+
+    this.points[sheetId] = {
+      ...prevEntry,
+      exercises: {
+        ...prevEntry.exercises,
+        [exerciseId]: points,
+      },
+    };
   }
 
+  /**
+   * @deprecated
+   */
   setPointsByKey(key: string, points: PointMapEntry) {
-    this.points[key] = points;
+    this.setPoints(PointId.fromString(key), points);
   }
 
   getPointEntry(id: string | PointId): PointMapEntry | undefined {
-    const key = id instanceof PointId ? id.toString() : id;
+    const { sheetId, exerciseId }: PointId = id instanceof PointId ? id : PointId.fromString(id);
 
-    return this.points[key];
+    return this.points[sheetId]?.exercises[exerciseId];
   }
 
   adjustPoints(pointsGained: PointMap) {
@@ -133,25 +209,25 @@ export class PointMap {
     return entries;
   }
 
-  getSumOfPoints({ id, exercises }: HasExercises): number {
+  getSumOfPoints({ id: sheetId, exercises }: HasExercises): number {
     return exercises.reduce((sum, ex) => {
-      const pts = this.getPoints(new PointId(id, ex)) || 0;
+      const pts = this.getPoints(new PointId(sheetId, ex)) || 0;
 
       return sum + pts;
     }, 0);
   }
 
   has(id: string | PointId): boolean {
-    const key = id instanceof PointId ? id.toString() : id;
+    const entry = this.getPointEntry(id);
 
-    return !!this.points[key];
+    return entry !== undefined;
   }
 
   isEmpty(): boolean {
     return Object.entries(this.points).length === 0;
   }
 
-  toDTO(): PointMapDTO {
+  toDTO(): NewPointMapDTO {
     // TODO: Deep copy!
     return this.points;
   }
@@ -167,7 +243,6 @@ export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo)
   } else {
     return `${exPointInfo.bonus} Bonus`;
   }
-  // return exPointInfo.bonus ? `${exPointInfo.must} + ${exPointInfo.bonus}` : `${exPointInfo.must}`;
 }
 
 export function getPointsOfExercise(exercise: Exercise): ExercisePointInfo {
