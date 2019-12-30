@@ -1,20 +1,20 @@
 import {
   Button,
   ButtonGroup,
-  Grow,
-  Popper,
-  Paper,
-  ClickAwayListener,
-  MenuList,
-  MenuItem,
   ButtonProps,
+  ClickAwayListener,
+  Grow,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
 } from '@material-ui/core';
 import { MenuDown as ArrowDropDownIcon } from 'mdi-material-ui';
-import React, { MouseEventHandler } from 'react';
+import React from 'react';
 
 interface ButtonOption {
   label: string;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  ButtonProps?: ButtonProps & { component?: React.ElementType; to?: string };
 }
 
 interface Props {
@@ -28,9 +28,7 @@ function SplitButton({ options, variant, color }: Props): JSX.Element {
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    options[selectedIndex].onClick(e);
-  };
+  const { ButtonProps: buttonProps } = options[selectedIndex];
 
   const handleMenuItemClick = (
     event: React.MouseEvent<HTMLLIElement, MouseEvent>,
@@ -55,7 +53,7 @@ function SplitButton({ options, variant, color }: Props): JSX.Element {
   return (
     <>
       <ButtonGroup variant={variant} color={color} ref={anchorRef} aria-label='split button'>
-        <Button onClick={handleClick}>{options[selectedIndex].label}</Button>
+        <Button {...buttonProps}>{options[selectedIndex].label}</Button>
         <Button
           size='small'
           aria-controls={open ? 'split-button-menu' : undefined}

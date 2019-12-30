@@ -6,12 +6,14 @@ import {
   PdfBox as PdfIcon,
 } from 'mdi-material-ui';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import SplitButton from './SplitButton';
 import TeamCardPointsTable from './TeamCardPointsTable';
+import { getEnterPointsFormPath } from '../../../util/routing/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  tutorialId: string;
   team: Team;
   sheet: Sheet;
   onPdfPreviewClicked: (team: Team) => void;
@@ -33,7 +36,7 @@ function teamToString(team: Team): string {
   return `Team #${team.teamNo.toString().padStart(2, '0')}`;
 }
 
-function TeamCard({ team, sheet, onPdfPreviewClicked, onGeneratePdfClicked }: Props): JSX.Element {
+function TeamCard({ tutorialId, team, sheet, onPdfPreviewClicked, onGeneratePdfClicked }: Props): JSX.Element {
   const classes = useStyles();
 
   const studentsInTeam: string =
@@ -60,9 +63,6 @@ function TeamCard({ team, sheet, onPdfPreviewClicked, onGeneratePdfClicked }: Pr
               },
             ]}
           />
-          // <IconButton>
-          //   <MoreVertIcon />
-          // </IconButton>
         }
         title={teamToString(team)}
         subheader={studentsInTeam}
@@ -79,15 +79,13 @@ function TeamCard({ team, sheet, onPdfPreviewClicked, onGeneratePdfClicked }: Pr
           options={[
             {
               label: 'Punkte eintragen',
-              onClick: () => {
-                // FIXME: IMPLEMENT ME
+              ButtonProps: {
+                component: Link,
+                to: getEnterPointsFormPath({tutorialId, sheetId: sheet.id, teamId: team.id}),
               },
             },
             {
               label: 'Einzeln für Studierende',
-              onClick: () => {
-                // FIXME: IMPLEMENT ME
-              },
             },
           ]}
         />

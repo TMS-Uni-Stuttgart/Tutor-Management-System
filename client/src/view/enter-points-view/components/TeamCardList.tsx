@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
+  tutorialId: string;
   teams: Team[];
   sheet: Sheet;
   onPdfPreviewClicked: (team: Team) => void;
@@ -36,6 +37,7 @@ interface Props {
 }
 
 function TeamCardList({
+  tutorialId,
   teams,
   sheet,
   onPdfPreviewClicked,
@@ -48,6 +50,7 @@ function TeamCardList({
       {teams.map(team => (
         <TeamCard
           key={team.id}
+          tutorialId={tutorialId}
           team={team}
           sheet={sheet}
           onPdfPreviewClicked={onPdfPreviewClicked}
