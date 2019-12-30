@@ -11,7 +11,7 @@ import { getTeamsOfTutorial } from '../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
 import Placeholder from './components/Placeholder';
 import TeamCardList from './components/TeamCardList';
-import { usePDFs } from './hooks/usePDFs';
+import { usePDFs } from '../../hooks/usePDFs';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>

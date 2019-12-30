@@ -1,15 +1,15 @@
 import React from 'react';
-import { useDialog, DialogHelpers } from '../../../hooks/DialogService';
-import Markdown from '../../../components/Markdown';
+import { useDialog, DialogHelpers } from './DialogService';
+import Markdown from '../components/Markdown';
 import {
   getSingleCorrectionCommentMarkdown,
   getSingleCorrectionCommentPDF,
   getCorrectionCommentPDFs,
-} from '../../../hooks/fetching/Files';
+} from './fetching/Files';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
-import { saveBlob } from '../../../util/helperFunctions';
-import { getTutorial } from '../../../hooks/fetching/Tutorial';
+import { saveBlob } from '../util/helperFunctions';
+import { getTutorial } from './fetching/Tutorial';
 
 interface DialogOption {
   dialog: DialogHelpers;
