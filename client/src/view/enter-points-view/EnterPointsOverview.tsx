@@ -46,16 +46,6 @@ enum PDFGeneratingState {
   MULTIPLE,
 }
 
-function duplicateArray<T>(array: T[], times: number = 5): T[] {
-  const duplicatedArray: T[] = [];
-
-  for (let i = 0; i < times; i++) {
-    duplicatedArray.push(...array);
-  }
-
-  return duplicatedArray;
-}
-
 function EnterPointsView(): JSX.Element {
   const classes = useStyles();
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
@@ -119,9 +109,9 @@ function EnterPointsView(): JSX.Element {
       return;
     }
 
-    setGeneratingPDFs(PDFGeneratingState.SINGLE);
-
     try {
+      setGeneratingPDFs(PDFGeneratingState.SINGLE);
+
       await generateSinglePdf({ tutorialId, sheet: currentSheet, team });
     } catch {
       enqueueSnackbar('PDF konnte nicht erstellt werden.', { variant: 'error' });
@@ -131,14 +121,13 @@ function EnterPointsView(): JSX.Element {
   }
 
   async function handleGeneratingAllPDFs() {
-    // FIXME: Implement me!
     if (!currentSheet || !tutorialId) {
       return;
     }
 
-    setGeneratingPDFs(PDFGeneratingState.MULTIPLE);
-
     try {
+      setGeneratingPDFs(PDFGeneratingState.MULTIPLE);
+
       await generateAllPdfs({ tutorialId, sheet: currentSheet });
     } catch {
       enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
@@ -179,10 +168,10 @@ function EnterPointsView(): JSX.Element {
       </div>
 
       <Placeholder placeholderText='Kein Blatt ausgewählt.' showPlaceholder={!currentSheet}>
-        {/* FIXME: REMOVE DUPLICATES! */}
-        {currentSheet && (
+        {currentSheet && tutorialId && (
           <TeamCardList
-            teams={duplicateArray(teams, 1)}
+            tutorialId={tutorialId}
+            teams={teams}
             sheet={currentSheet}
             onPdfPreviewClicked={handlePdfPreviewClicked}
             onGeneratePdfClicked={handleGenerateSinglePdf}
