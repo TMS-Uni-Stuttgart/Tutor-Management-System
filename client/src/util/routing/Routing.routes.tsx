@@ -17,22 +17,22 @@ import {
 } from 'mdi-material-ui';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import AttendanceAdminView from '../view/attendance/AttendanceAdminView';
-import AttendanceView from '../view/attendance/AttendanceView';
-import Dashboard from '../view/dashboard/Dashboard';
-import PointManagement from '../view/pointsmanagement/PointManagement';
-import EnterPointsView from '../view/enter-points-view/EnterPointsView';
-import Login from '../view/Login';
-import ScheinCriteriaManagement from '../view/scheincriteriamanagement/ScheinCriteriaManagement';
-import SheetManagement from '../view/sheetmanagement/SheetManagement';
-import TutorStudentmanagement from '../view/studentmanagement/TutorStudentmanagement';
-import Teamoverview from '../view/teamoverview/Teamoverview';
-import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
-import UserManagement from '../view/usermanagement/UserManagement';
-import AllStudentsAdminView from '../view/studentmanagement/AllStudentsAdminView';
-import ScheinExamPointEntry from '../view/pointsmanagement/ScheinExamPointEntry';
-import ScheinExamManagement from '../view/pointsmanagement/ScheinExamManagement';
-import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
+import AttendanceAdminView from '../../view/attendance/AttendanceAdminView';
+import AttendanceView from '../../view/attendance/AttendanceView';
+import Dashboard from '../../view/dashboard/Dashboard';
+import PointManagement from '../../view/pointsmanagement/PointManagement';
+import EnterPointsView from '../../view/enter-points-view/EnterPointsOverview';
+import Login from '../../view/Login';
+import ScheinCriteriaManagement from '../../view/scheincriteriamanagement/ScheinCriteriaManagement';
+import SheetManagement from '../../view/sheetmanagement/SheetManagement';
+import TutorStudentmanagement from '../../view/studentmanagement/TutorStudentmanagement';
+import Teamoverview from '../../view/teamoverview/Teamoverview';
+import TutorialManagement from '../../view/tutorialmanagement/TutorialManagement';
+import UserManagement from '../../view/usermanagement/UserManagement';
+import AllStudentsAdminView from '../../view/studentmanagement/AllStudentsAdminView';
+import ScheinExamPointEntry from '../../view/pointsmanagement/ScheinExamPointEntry';
+import ScheinExamManagement from '../../view/pointsmanagement/ScheinExamManagement';
+import TutorialSubstituteManagement from '../../view/tutorialmanagement/TutorialSubstituteManagement';
 import { Role } from 'shared/dist/model/Role';
 
 export enum RoutingPath {
@@ -41,7 +41,8 @@ export enum RoutingPath {
   STUDENTOVERVIEW = '/studentoverview',
   TEAMOVERVIEW = '/teamoverview',
   ATTENDANCE = '/attendance',
-  ENTER_POINTS = '/enterpoints',
+  ENTER_POINTS_OVERVIEW = '/enterpoints',
+  ENTER_POINTS_FORM = '/enterpoints/:sheetId/:teamId',
   ENTER_POINTS_OLD = '/enterpoints/old',
   SCHEIN_EXAMS = '/scheinexams',
   DASHBOARD = '/dashboard',
@@ -115,7 +116,17 @@ export const ROUTES: readonly RouteType[] = [
     isTutorialRelated: true,
   },
   {
-    path: RoutingPath.ENTER_POINTS,
+    path: RoutingPath.ENTER_POINTS_FORM,
+    title: 'Punkte eintragen',
+    component: () => <div>HI</div>,
+    icon: BookIcon,
+    roles: [Role.TUTOR, Role.CORRECTOR],
+    isInDrawer: false,
+    isPrivate: true,
+    isTutorialRelated: true,
+  },
+  {
+    path: RoutingPath.ENTER_POINTS_OVERVIEW,
     title: 'Punkte verwalten',
     component: EnterPointsView,
     icon: BookIcon,
@@ -228,11 +239,3 @@ export const ROUTES: readonly RouteType[] = [
     isPrivate: true,
   },
 ];
-
-export function getTutorialRelatedPath(route: RouteType, tutorialId: string): string {
-  if (!route.isTutorialRelated) {
-    return route.path;
-  }
-
-  return `/tutorial/${tutorialId}/${route.path}`.replace(/\/\/+/, '/');
-}

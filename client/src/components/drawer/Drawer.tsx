@@ -12,7 +12,7 @@ import { OpenInNew as ExternalLinkIcon } from '@material-ui/icons';
 import clsx from 'clsx';
 import React, { useMemo, useState, useEffect } from 'react';
 import { useLogin } from '../../hooks/LoginService';
-import { ROUTES, RouteType } from '../../util/RoutingPath';
+import { ROUTES, RouteType } from '../../util/routing/Routing.routes';
 import DrawerListItem from './components/DrawerListItem';
 import TutorialSubList from './components/TutorialSubList';
 import { Role } from 'shared/dist/model/Role';

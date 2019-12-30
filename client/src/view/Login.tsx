@@ -9,7 +9,7 @@ import ChangePasswordForm, {
 import LoginForm, { LoginFormState } from '../components/forms/LoginForm';
 import { useLogin } from '../hooks/LoginService';
 import { FormikSubmitCallback } from '../types';
-import { PATH_REDIRECT_AFTER_LOGIN } from '../util/RoutingPath';
+import { PATH_REDIRECT_AFTER_LOGIN } from '../util/routing/Routing.routes';
 import { Info as InfoIcon } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
