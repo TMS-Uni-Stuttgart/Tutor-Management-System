@@ -175,6 +175,10 @@ export class PointMap {
     this.setPoints(PointId.fromString(key), points);
   }
 
+  private setSheetEntry(sheetId: string, entry: SheetMapEntry) {
+    this.points[sheetId] = entry;
+  }
+
   getPointEntry(id: string | PointId): PointMapEntry | undefined {
     const { sheetId, exerciseId }: PointId = id instanceof PointId ? id : PointId.fromString(id);
 
@@ -183,7 +187,7 @@ export class PointMap {
 
   adjustPoints(pointsGained: PointMap) {
     pointsGained.getEntries().forEach(([key, entry]) => {
-      this.setPointsByKey(key, entry);
+      this.setSheetEntry(key, entry);
     });
   }
 
@@ -197,8 +201,8 @@ export class PointMap {
     return PointMap.getPointsOfEntry(pointEntry);
   }
 
-  getEntries(): [string, PointMapEntry][] {
-    const entries: [string, PointMapEntry][] = [];
+  getEntries(): [string, SheetMapEntry][] {
+    const entries: [string, SheetMapEntry][] = [];
 
     Object.entries(this.points).forEach(([key, entry]) => {
       if (!!entry) {
