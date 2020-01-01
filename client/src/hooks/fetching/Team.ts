@@ -73,7 +73,7 @@ export async function setPointsOfTeam(
   teamId: string,
   points: UpdatePointsDTO
 ): Promise<void> {
-  const response = await axios.put(`tutorial/${tutorialId}/team/${teamId}/points`, points);
+  const response = await axios.put(`tutorial/${tutorialId}/team/${teamId}/point`, points);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong status code (${response.status}).`);

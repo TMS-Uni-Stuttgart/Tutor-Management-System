@@ -102,7 +102,7 @@ studentRouter.put(
 );
 
 studentRouter.put(
-  '/:id/points', // TODO: Rename to /point
+  '/:id/point',
   ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfStudent, isUserCorrectorOfStudent),
   validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO.'),
   async (req, res) => {

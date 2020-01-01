@@ -87,7 +87,7 @@ teamRouter.delete(
 );
 
 teamRouter.put(
-  '/:id/team/:teamId/points', // TODO: Renam to /point
+  '/:id/team/:teamId/point',
   ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
   validateRequestBody(validateAgainstUpdatePointsDTO, 'Not a valid UpdatePointsDTO'),
   async (req, res) => {
