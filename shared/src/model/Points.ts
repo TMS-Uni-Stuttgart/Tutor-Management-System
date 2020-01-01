@@ -26,7 +26,8 @@ export interface SheetMapEntry {
 }
 
 export interface UpdatePointsDTO {
-  exercises: PointMapDTO;
+  points: NewPointMapDTO;
+  // exercises: PointMapDTO;
   id: string;
 }
 

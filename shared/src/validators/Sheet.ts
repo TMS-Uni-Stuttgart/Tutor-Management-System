@@ -19,7 +19,7 @@ const SheetDTOSchema = Yup.object().shape<SheetDTO>({
 
 const UpdatePointsDTOSchema = Yup.object().shape<UpdatePointsDTO>({
   id: YupIdShape.required(),
-  exercises: Yup.mixed().required(),
+  points: Yup.mixed().required(),
 });
 
 export function validateAgainstSheetDTO(
