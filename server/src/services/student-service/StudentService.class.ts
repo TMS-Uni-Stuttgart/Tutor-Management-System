@@ -355,7 +355,7 @@ class StudentService {
 
     pointsOfTeam.getEntries().forEach(([key, entry]) => {
       if (!pointsOfStudent.has(key)) {
-        pointsOfStudent.setPointsByKey(key, entry);
+        pointsOfStudent.setPointEntryByKey(key, entry);
       }
     });
 

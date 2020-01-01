@@ -127,7 +127,7 @@ export function convertPointsCardFormStateToDTO(
   const exercises: PointMap = new PointMap();
 
   Object.entries(values).forEach(([key, entry]) => {
-    exercises.setPointsByKey(key, convertPointsCardExerciseToPointMapEntry(entry));
+    exercises.setPointEntryByKey(key, convertPointsCardExerciseToPointMapEntry(entry));
   });
 
   return {

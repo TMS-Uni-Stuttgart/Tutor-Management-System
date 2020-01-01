@@ -151,7 +151,7 @@ export class PointMap {
     }
   }
 
-  setPoints(pointId: PointId, points: PointMapEntry) {
+  setPointEntry(pointId: PointId, points: PointMapEntry) {
     const { sheetId, exerciseId } = pointId;
     const prevEntry: SheetMapEntry = this.points[sheetId] ?? {
       additionalPoints: 0,
@@ -171,8 +171,8 @@ export class PointMap {
   /**
    * @deprecated
    */
-  setPointsByKey(key: string, points: PointMapEntry) {
-    this.setPoints(PointId.fromString(key), points);
+  setPointEntryByKey(key: string, points: PointMapEntry) {
+    this.setPointEntry(PointId.fromString(key), points);
   }
 
   private setSheetEntry(sheetId: string, entry: SheetMapEntry) {
@@ -185,6 +185,13 @@ export class PointMap {
     return this.points[sheetId]?.exercises[exerciseId];
   }
 
+  /**
+   * Adds all entries of the given map.
+   *
+   * If the key is already in use the old entry will be overriden if not a new one will be added. All keys which are NOT specified in the given map will NOT be touched.
+   *
+   * @param pointsGained PointMap containing the entries which should be added / overriden.
+   */
   adjustPoints(pointsGained: PointMap) {
     pointsGained.getEntries().forEach(([key, entry]) => {
       this.setSheetEntry(key, entry);

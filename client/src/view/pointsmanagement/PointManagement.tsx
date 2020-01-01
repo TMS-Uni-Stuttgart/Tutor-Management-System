@@ -183,7 +183,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
         const prevEntry = pointsOfStudent.getPointEntry(exIdentifier);
 
         if (!prevEntry || !PointMap.arePointMapEntriesEqual(prevEntry, exerciseEntry)) {
-          changedExercises.setPointsByKey(exIdentifier, exerciseEntry);
+          changedExercises.setPointEntryByKey(exIdentifier, exerciseEntry);
         }
       });
 
