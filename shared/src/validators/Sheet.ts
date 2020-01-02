@@ -18,7 +18,6 @@ const SheetDTOSchema = Yup.object().shape<SheetDTO>({
 });
 
 const UpdatePointsDTOSchema = Yup.object().shape<UpdatePointsDTO>({
-  id: YupIdShape.required(),
   points: Yup.mixed().required(),
 });
 

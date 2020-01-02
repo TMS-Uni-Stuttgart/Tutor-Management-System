@@ -27,8 +27,6 @@ export interface SheetMapEntry {
 
 export interface UpdatePointsDTO {
   points: NewPointMapDTO;
-  // exercises: PointMapDTO;
-  id: string;
 }
 
 export type PointMapDTO = OldPointMapDTO | NewPointMapDTO;
@@ -57,7 +55,8 @@ function isNewPointMapDTO(dto: PointMapDTO): dto is NewPointMapDTO {
 
   const [, value] = entries[0];
 
-  return 'exercises' in value;
+  // We check for 'additionalPoints' here because 'exercises' could be left out by mongoose and 'comment' also exists on the entries of the old PointMap.
+  return 'additionalPoints' in value;
 }
 
 export class PointId {
@@ -157,8 +156,6 @@ export class PointMap {
     this.points = {};
 
     if (!isNewPointMapDTO(dto)) {
-      console.log('Transforming old DTO');
-
       Object.entries(dto).forEach(([key, entry]) => {
         if (!entry) {
           return;

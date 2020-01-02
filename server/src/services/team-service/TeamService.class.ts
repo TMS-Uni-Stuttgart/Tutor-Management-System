@@ -122,14 +122,18 @@ class TeamService {
   public async setPoints(
     tutorialId: string,
     teamId: string,
-    { id: sheetId, points: pointsGained }: UpdatePointsDTO
+    { points: pointsGained }: UpdatePointsDTO
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
-    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
-      return Promise.reject(
-        new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
-      );
+    const sheetIds = Object.keys(pointsGained);
+
+    for (const sheetId of sheetIds) {
+      if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+        return Promise.reject(
+          new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
+        );
+      }
     }
 
     const pointMapOfTeam: PointMap = new PointMap(team.points);
@@ -375,21 +379,17 @@ class TeamService {
     }
 
     const { id, teamNo, tutorial, points } = team;
-    const studentPromises: Promise<Student>[] = [];
     const studentDocs = await this.getStudentsOfTeam(team);
-
-    for (const doc of studentDocs) {
-      studentPromises.push(studentService.getStudentOrReject(doc));
-    }
-
-    const students = await Promise.all(studentPromises);
+    const students = await Promise.all(
+      studentDocs.map(doc => studentService.getStudentOrReject(doc))
+    );
 
     return {
       id,
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
       students,
-      points,
+      points: new PointMap(points).toDTO(),
     };
   }
 
