@@ -122,7 +122,7 @@ class TeamService {
   public async setPoints(
     tutorialId: string,
     teamId: string,
-    { id: sheetId, exercises: pointsGained }: UpdatePointsDTO
+    { id: sheetId, points: pointsGained }: UpdatePointsDTO
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
@@ -140,7 +140,6 @@ class TeamService {
     }
 
     pointMapOfTeam.adjustPoints(new PointMap(pointsGained));
-
     team.points = pointMapOfTeam.toDTO();
 
     await this.saveTutorialWithChangedTeams(tutorial);

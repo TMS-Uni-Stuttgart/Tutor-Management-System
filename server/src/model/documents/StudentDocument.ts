@@ -115,13 +115,8 @@ export class StudentSchema extends Typegoose
     const pointsOfTeam = new PointMap(team.points);
     const ownPoints = new PointMap(this.points);
 
-    pointsOfTeam.getEntries().forEach(([key, entry]) => {
-      points.setPointEntryByKey(key, entry);
-    });
-
-    ownPoints.getEntries().forEach(([key, entry]) => {
-      points.setPointEntryByKey(key, entry);
-    });
+    points.adjustPoints(pointsOfTeam);
+    points.adjustPoints(ownPoints);
 
     return points;
   }

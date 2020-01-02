@@ -144,9 +144,30 @@ export class PointMap {
     this.setPointMap(dto);
   }
 
+  /**
+   * Sets the internal points according to the given dto.
+   *
+   * The information from the DTO will completely replace all previously saved information.
+   *
+   * If the DTO still conforms to the old representation the information will get converted to match the new one (the DTO does NOT get touched).
+   *
+   * @param dto DTO of the PointMap
+   */
   private setPointMap(dto: PointMapDTO) {
+    this.points = {};
+
     if (!isNewPointMapDTO(dto)) {
-      // TODO: Implement me.
+      console.log('Transforming old DTO');
+
+      Object.entries(dto).forEach(([key, entry]) => {
+        if (!entry) {
+          return;
+        }
+
+        const pointId = PointId.fromString(key);
+
+        this.setPointEntry(pointId, entry);
+      });
     } else {
       this.points = dto;
     }
@@ -176,14 +197,39 @@ export class PointMap {
     this.setPointEntry(PointId.fromString(key), points);
   }
 
-  private setSheetEntry(sheetId: string, entry: SheetMapEntry) {
+  /**
+   * Sets the entry if the given sheet id to the given one.
+   *
+   * If there was a previous entry for this sheed id that entry will be overriden.
+   *
+   * @param sheetId Id of the sheet.
+   * @param entry Entry which belongs to the sheet id.
+   */
+  setSheetEntry(sheetId: string, entry: SheetMapEntry) {
     this.points[sheetId] = entry;
   }
 
+  /**
+   * Returns the point entry for the given id if there is one.
+   *
+   * @param id Id as PointId or string in the format "ID::{ObjectId}--Ex::{ObjectId}."
+   * @return PointMapEntry if there is one saved for that id, `undefined` else.
+   * @throws An error is thrown if the string id does NOT match the required format.
+   */
   getPointEntry(id: string | PointId): PointMapEntry | undefined {
     const { sheetId, exerciseId }: PointId = id instanceof PointId ? id : PointId.fromString(id);
 
     return this.points[sheetId]?.exercises[exerciseId];
+  }
+
+  /**
+   * Returns the entry of the given sheet id if there is one saved.
+   *
+   * @param sheetId Id of the sheet
+   * @return SheetMapEntry if there is one saved for that id, `undefined` else.
+   */
+  getEntry(sheetId: string): SheetMapEntry | undefined {
+    return this.points[sheetId];
   }
 
   /**
@@ -229,7 +275,11 @@ export class PointMap {
     }, 0);
   }
 
-  has(id: string | PointId): boolean {
+  has(sheetId: string): boolean {
+    return this.getEntry(sheetId) !== undefined;
+  }
+
+  hasPointEntry(id: string | PointId): boolean {
     const entry = this.getPointEntry(id);
 
     return entry !== undefined;

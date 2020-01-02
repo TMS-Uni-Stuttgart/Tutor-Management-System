@@ -128,7 +128,7 @@ class StudentService {
     return this.getAttendanceFromDocument(attendanceDocument);
   }
 
-  public async setPoints(id: string, { id: sheetId, exercises: pointsGained }: UpdatePointsDTO) {
+  public async setPoints(id: string, { id: sheetId, points: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
 
     if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
@@ -147,10 +147,7 @@ class StudentService {
     await student.save();
   }
 
-  public async setExamResults(
-    id: string,
-    { id: examId, exercises: pointsGained }: UpdatePointsDTO
-  ) {
+  public async setExamResults(id: string, { id: examId, points: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
 
     if (!(await scheinexamService.doesScheinexamWithIdExist(examId))) {
@@ -353,11 +350,7 @@ class StudentService {
     const pointsOfTeam = new PointMap(team.points);
     const pointsOfStudent = new PointMap(student.points);
 
-    pointsOfTeam.getEntries().forEach(([key, entry]) => {
-      if (!pointsOfStudent.has(key)) {
-        pointsOfStudent.setPointEntryByKey(key, entry);
-      }
-    });
+    pointsOfStudent.adjustPoints(pointsOfTeam);
 
     student.points = pointsOfStudent.toDTO();
   }
