@@ -10,10 +10,10 @@ import { Link } from 'react-router-dom';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
-import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
+import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import SplitButton from './SplitButton';
 import TeamCardPointsTable from './TeamCardPointsTable';
-import { getEnterPointsFormPath } from '../../../util/routing/Routing.helpers';
+import { getEnterPointsFormPath } from '../../../../util/routing/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,7 +36,13 @@ function teamToString(team: Team): string {
   return `Team #${team.teamNo.toString().padStart(2, '0')}`;
 }
 
-function TeamCard({ tutorialId, team, sheet, onPdfPreviewClicked, onGeneratePdfClicked }: Props): JSX.Element {
+function TeamCard({
+  tutorialId,
+  team,
+  sheet,
+  onPdfPreviewClicked,
+  onGeneratePdfClicked,
+}: Props): JSX.Element {
   const classes = useStyles();
 
   const studentsInTeam: string =
@@ -81,7 +87,7 @@ function TeamCard({ tutorialId, team, sheet, onPdfPreviewClicked, onGeneratePdfC
               label: 'Punkte eintragen',
               ButtonProps: {
                 component: Link,
-                to: getEnterPointsFormPath({tutorialId, sheetId: sheet.id, teamId: team.id}),
+                to: getEnterPointsFormPath({ tutorialId, sheetId: sheet.id, teamId: team.id }),
               },
             },
             {

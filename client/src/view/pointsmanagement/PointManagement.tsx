@@ -187,9 +187,9 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
         }
       });
 
+      // FIXME: REMOVE ME (or complete file!)
       const pointsDTO: UpdatePointsDTO = {
-        id: currentSheet.id,
-        exercises: changedExercises.toDTO(),
+        points: {},
       };
 
       promises.push(setPointsOfStudent(studentId, pointsDTO));

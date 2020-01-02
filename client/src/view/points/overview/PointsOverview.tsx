@@ -4,14 +4,14 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
-import CustomSelect from '../../components/CustomSelect';
-import SubmitButton from '../../components/forms/components/SubmitButton';
-import { getAllSheets } from '../../hooks/fetching/Sheet';
-import { getTeamsOfTutorial } from '../../hooks/fetching/Team';
-import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
+import CustomSelect from '../../../components/CustomSelect';
+import SubmitButton from '../../../components/forms/components/SubmitButton';
+import { getAllSheets } from '../../../hooks/fetching/Sheet';
+import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
+import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import Placeholder from './components/Placeholder';
 import TeamCardList from './components/TeamCardList';
-import { usePDFs } from '../../hooks/usePDFs';
+import { usePDFs } from '../../../hooks/usePDFs';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -46,7 +46,7 @@ enum PDFGeneratingState {
   MULTIPLE,
 }
 
-function EnterPointsView(): JSX.Element {
+function PointsOverview(): JSX.Element {
   const classes = useStyles();
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
@@ -179,4 +179,4 @@ function EnterPointsView(): JSX.Element {
   );
 }
 
-export default EnterPointsView;
+export default PointsOverview;

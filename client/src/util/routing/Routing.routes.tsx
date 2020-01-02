@@ -20,8 +20,7 @@ import { RouteComponentProps } from 'react-router';
 import AttendanceAdminView from '../../view/attendance/AttendanceAdminView';
 import AttendanceView from '../../view/attendance/AttendanceView';
 import Dashboard from '../../view/dashboard/Dashboard';
-import PointManagement from '../../view/pointsmanagement/PointManagement';
-import EnterPointsView from '../../view/enter-points-view/EnterPointsOverview';
+import PointsOverview from '../../view/points/overview/PointsOverview';
 import Login from '../../view/Login';
 import ScheinCriteriaManagement from '../../view/scheincriteriamanagement/ScheinCriteriaManagement';
 import SheetManagement from '../../view/sheetmanagement/SheetManagement';
@@ -34,7 +33,7 @@ import ScheinExamPointEntry from '../../view/pointsmanagement/ScheinExamPointEnt
 import ScheinExamManagement from '../../view/pointsmanagement/ScheinExamManagement';
 import TutorialSubstituteManagement from '../../view/tutorialmanagement/TutorialSubstituteManagement';
 import { Role } from 'shared/dist/model/Role';
-import EnterPointsForm from '../../view/enter-points-view/EnterPointsForm';
+import EnterPoints from '../../view/points/enter-form/EnterPoints';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -44,7 +43,6 @@ export enum RoutingPath {
   ATTENDANCE = '/attendance',
   ENTER_POINTS_OVERVIEW = '/enterpoints',
   ENTER_POINTS_FORM = '/enterpoints/:sheetId/:teamId',
-  ENTER_POINTS_OLD = '/enterpoints/old',
   SCHEIN_EXAMS = '/scheinexams',
   DASHBOARD = '/dashboard',
   MANAGE_USERS = '/admin/usermanagement',
@@ -106,20 +104,9 @@ export const ROUTES: readonly RouteType[] = [
     isAccessibleBySubstitute: true,
   },
   {
-    // FIXME: REMOVE ME? OR LEAVE ME IN AS ESCAPE HATCH?
-    path: RoutingPath.ENTER_POINTS_OLD,
-    title: 'Punkte verwalten (alt)',
-    component: PointManagement,
-    icon: BookIcon,
-    roles: [Role.TUTOR, Role.CORRECTOR],
-    isInDrawer: false,
-    isPrivate: true,
-    isTutorialRelated: true,
-  },
-  {
     path: RoutingPath.ENTER_POINTS_FORM,
     title: 'Punkte eintragen',
-    component: EnterPointsForm,
+    component: EnterPoints,
     icon: BookIcon,
     roles: [Role.TUTOR, Role.CORRECTOR],
     isInDrawer: false,
@@ -129,7 +116,7 @@ export const ROUTES: readonly RouteType[] = [
   {
     path: RoutingPath.ENTER_POINTS_OVERVIEW,
     title: 'Punkte verwalten',
-    component: EnterPointsView,
+    component: PointsOverview,
     icon: BookIcon,
     roles: [Role.TUTOR, Role.CORRECTOR],
     isInDrawer: true,

@@ -130,9 +130,9 @@ export function convertPointsCardFormStateToDTO(
     exercises.setPointEntryByKey(key, convertPointsCardExerciseToPointMapEntry(entry));
   });
 
+  // FIXME: REMOVE ME (or this complete file!).
   return {
-    id: exerciseContainer.id,
-    exercises: exercises.toDTO(),
+    points: {},
   };
 }
 
