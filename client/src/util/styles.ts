@@ -1,5 +1,6 @@
 import { createMuiTheme, Theme, PaletteType } from '@material-ui/core';
 import ORANGE from '@material-ui/core/colors/orange';
+import { CSSProperties } from '@material-ui/styles';
 
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette {
@@ -13,6 +14,34 @@ declare module '@material-ui/core/styles/createPalette' {
     orange: Palette['orange'];
     red: Palette['red'];
   }
+}
+
+declare module '@material-ui/core/styles/createMixins' {
+  interface Mixins {
+    scrollbar: (width: number) => CSSProperties;
+  }
+}
+
+interface ScrollbarCSSOptions {
+  type: PaletteType;
+  width: number;
+}
+
+function generateScrollbarCSS({ type, width }: ScrollbarCSSOptions): CSSProperties {
+  return {
+    '&::-webkit-scrollbar': {
+      width,
+    },
+    '&::-webkit-scrollbar-track': {
+      background: type === 'light' ? '#fff' : '#424242',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: '#888',
+    },
+    '&::-webkit-scrollbar-thumb:hover': {
+      background: '#555',
+    },
+  };
 }
 
 export function createTheme(type: PaletteType): Theme {
@@ -53,6 +82,11 @@ export function createTheme(type: PaletteType): Theme {
         main: ORANGE[500],
         dark: ORANGE[700],
       },
+    },
+    mixins: {
+      scrollbar: width => ({
+        ...generateScrollbarCSS({ type, width }),
+      }),
     },
   });
 }

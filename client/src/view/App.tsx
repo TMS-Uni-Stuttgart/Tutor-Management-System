@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flex: '1 1 auto',
       overflowY: 'auto',
+      ...theme.mixins.scrollbar(12),
     },
     content: {
       width: 0,
