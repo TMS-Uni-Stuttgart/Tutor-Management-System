@@ -11,6 +11,7 @@ import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import { StudentStatus } from 'shared/dist/model/Student';
+import { teamItemToString } from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -112,16 +113,12 @@ export function getInitialStudentFormState(
   };
 }
 
-function teamItemToString(team: ItemType): string {
+function parseTeamItemToString(team: ItemType): string {
   if ('type' in team) {
     return 'Neues Team erstellen';
   }
 
-  const studentsInTeam = team.students.length
-    ? `(${team.students.map(student => student.lastname).join(', ')})`
-    : '';
-
-  return `#${team.teamNo.toString().padStart(2, '0')} ${studentsInTeam}`;
+  return teamItemToString(team);
 }
 
 function teamItemToValue(team: ItemType): string {
@@ -250,7 +247,7 @@ function StudentForm({
             emptyPlaceholder='Keine Teams vorhanden.'
             nameOfNoneItem='Kein Team'
             items={teams}
-            itemToString={teamItemToString}
+            itemToString={parseTeamItemToString}
             itemToValue={teamItemToValue}
             disabled={disableTeamDropdown}
           />
