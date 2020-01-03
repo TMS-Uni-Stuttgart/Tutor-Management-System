@@ -2,11 +2,19 @@ import React from 'react';
 import { FormikSubmitCallback } from '../../../../types';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { Team } from 'shared/dist/model/Team';
+import { Exercise } from 'shared/dist/model/Sheet';
+import ExerciseBox from './ExerciseBox';
+import { Formik } from 'formik';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      background: 'red',
+      display: 'flex',
+      overflowY: 'auto',
+    },
+    exerciseBox: {
+      flex: 1,
     },
   })
 );
@@ -30,12 +38,25 @@ interface PointsFormState {
 
 export type PointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
-type Props = React.ComponentProps<'div'>;
+interface Props extends React.ComponentProps<'div'> {
+  team: Team;
+  exercise: Exercise;
+}
 
-function EnterPointsForm({ className, ...props }: Props): JSX.Element {
+function EnterPointsForm({ team, exercise, className, ...props }: Props): JSX.Element {
   const classes = useStyles();
 
-  return <div {...props} className={clsx(classes.root, className)}></div>;
+  return (
+    <div {...props} className={clsx(classes.root, className)}>
+      <Formik initialValues={{ derp: { points: 5, comment: '' } }} onSubmit={() => {}}>
+        {() => (
+          <>
+            <ExerciseBox className={classes.exerciseBox} name='derp' exercise={exercise} />
+          </>
+        )}
+      </Formik>
+    </div>
+  );
 }
 
 export default EnterPointsForm;

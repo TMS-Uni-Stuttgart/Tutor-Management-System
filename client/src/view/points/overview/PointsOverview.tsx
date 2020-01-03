@@ -1,5 +1,5 @@
-import { Switch } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Sheet } from 'shared/dist/model/Sheet';
@@ -9,10 +9,9 @@ import SubmitButton from '../../../components/forms/components/SubmitButton';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { usePDFs } from '../../../hooks/usePDFs';
 import Placeholder from './components/Placeholder';
 import TeamCardList from './components/TeamCardList';
-import { usePDFs } from '../../../hooks/usePDFs';
-import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -160,8 +159,6 @@ function PointsOverview(): JSX.Element {
         >
           PDFs erstellen
         </SubmitButton>
-
-        <Switch />
       </div>
 
       <Placeholder placeholderText='Kein Blatt ausgewählt.' showPlaceholder={!currentSheet}>

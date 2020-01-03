@@ -26,7 +26,7 @@ import CustomCardHeader from '../../../../components/CustomCardHeader';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
-import ExerciseBox from './ExerciseBox';
+import ExerciseBox from '../../../points/enter-form/components/ExerciseBox';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
