@@ -48,10 +48,10 @@ function AnimatedButton({
       variant='outlined'
       {...props}
       className={clsx(className, classes.root)}
-      startIcon={icon}
+      endIcon={icon}
       classes={{
         ...buttonClasses,
-        startIcon: !isHovered ? classes.unhoveredIcon : undefined,
+        endIcon: !isHovered ? classes.unhoveredIcon : undefined,
         label: clsx(classes.buttonLabel, !isHovered && classes.unhoveredLabel),
       }}
       onMouseEnter={() => setHovered(true)}
