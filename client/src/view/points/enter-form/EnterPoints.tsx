@@ -15,7 +15,7 @@ import {
   getPathOfRouteWithTutorial,
 } from '../../../util/routing/Routing.helpers';
 import { RoutingPath } from '../../../util/routing/Routing.routes';
-import EnterPointsForm from './components/EnterPointsForm';
+import EnterPointsForm, { PointsFormSubmitCallback } from './components/EnterPointsForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -127,6 +127,10 @@ function EnterPoints(): JSX.Element {
     history.push(getEnterPointsFormPath({ tutorialId, sheetId, teamId }));
   };
 
+  const handleSubmit: PointsFormSubmitCallback = async () => {
+    console.log('Submitting form');
+  };
+
   if (!tutorialId || !sheetId || !teamId) {
     return (
       <Typography color='error'>
@@ -184,6 +188,7 @@ function EnterPoints(): JSX.Element {
           team={selectedTeam}
           exercise={selectedExercise}
           className={classes.enterPointsForm}
+          onSubmit={handleSubmit}
         />
       )}
     </div>

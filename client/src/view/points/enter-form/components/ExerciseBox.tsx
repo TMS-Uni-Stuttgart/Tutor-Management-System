@@ -134,7 +134,7 @@ function ExerciseBox({ name, exercise, className, ...props }: Props): JSX.Elemen
       <div className={classes.commentBox}>
         <Typography className={classes.commentHeader}>Kommentar</Typography>
 
-        <FormikMarkdownTextfield name={`${name}.comment`} placeholder='Kommentar' />
+        <FormikMarkdownTextfield name={`${name}.comment`} placeholder='Kommentar eingeben...' />
       </div>
     </div>
   );
