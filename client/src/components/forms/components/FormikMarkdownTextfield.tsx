@@ -52,7 +52,7 @@ function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldP
   return (
     <div className={clsx(className, classes.root)}>
       <AnimatedButton
-        label={isPreview ? 'Schließen' : 'Preview'}
+        label={isPreview ? 'Schließen' : 'Vorschau'}
         icon={<PreviewIcon />}
         className={classes.button}
         onClick={() => setPreview(!isPreview)}

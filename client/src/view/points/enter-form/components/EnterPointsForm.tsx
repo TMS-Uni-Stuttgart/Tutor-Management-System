@@ -1,13 +1,16 @@
-import React from 'react';
-import { FormikSubmitCallback } from '../../../../types';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { Button, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { Formik, FormikHelpers } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { PointId, PointMap, PointMapEntry, PointsOfSubexercises } from 'shared/dist/model/Points';
+import { Exercise, Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
-import { Exercise } from 'shared/dist/model/Sheet';
-import ExerciseBox from './ExerciseBox';
-import { Formik } from 'formik';
+import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
-import { Button } from '@material-ui/core';
+import { useDialog } from '../../../../hooks/DialogService';
+import { FormikSubmitCallback } from '../../../../types';
+import ExerciseBox from './ExerciseBox';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,6 +18,10 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       overflowY: 'auto',
+    },
+    unsavedChangesText: {
+      marginLeft: theme.spacing(1),
+      marginBottom: theme.spacing(1),
     },
     exerciseBox: {
       overflowY: 'auto',
@@ -28,6 +35,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     cancelButton: {
       marginRight: theme.spacing(2),
+    },
+    dialogDeleteButton: {
+      color: theme.palette.error.main,
     },
   })
 );
@@ -51,40 +61,146 @@ interface PointsFormState {
 
 export type PointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
-interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
-  team: Team;
-  exercise: Exercise;
-  onSubmit: PointsFormSubmitCallback;
-}
-
 interface InitialValuesOptions {
   team: Team;
-  exercise: Exercise;
+  sheet: Sheet;
 }
 
-function generateInitialValues({ team, exercise }: InitialValuesOptions): PointsFormState {
-  // TODO: Implement me!
+interface GeneratePointsSubexerciseParams {
+  exercise: Exercise;
+  pointsOfTeam: PointMapEntry;
+}
+
+function getDefaultPointMapEntry(exercise: Exercise): PointMapEntry {
+  if (exercise.subexercises.length > 0) {
+    const points: PointsOfSubexercises = {};
+
+    exercise.subexercises.forEach(subEx => {
+      points[subEx.id] = 0;
+    });
+
+    return {
+      comment: '',
+      points,
+    };
+  } else {
+    return {
+      comment: '',
+      points: 0,
+    };
+  }
+}
+
+function generatePointStateWithSubexercises({
+  exercise,
+  pointsOfTeam,
+}: GeneratePointsSubexerciseParams): PointsFormSubExerciseState {
+  const { subexercises } = exercise;
+
+  return subexercises.reduce<PointsFormSubExerciseState>((prev, current) => {
+    if (typeof pointsOfTeam.points === 'number') {
+      return prev;
+    }
+
+    const pointsOfSubEx = pointsOfTeam.points[current.id];
+
+    return { ...prev, [current.id]: pointsOfSubEx?.toString() ?? '0' };
+  }, {});
+}
+
+function generateInitialValues({ team, sheet }: InitialValuesOptions): PointsFormState {
+  const pointMap = new PointMap(team.points);
+  const exercises: { [id: string]: PointsFormExerciseState } = {};
+
+  sheet.exercises.forEach(exercise => {
+    const pointsOfTeam =
+      pointMap.getPointEntry(new PointId(sheet.id, exercise.id)) ??
+      getDefaultPointMapEntry(exercise);
+
+    if (exercise.subexercises.length > 0) {
+      const points: PointsFormSubExerciseState = generatePointStateWithSubexercises({
+        exercise,
+        pointsOfTeam,
+      });
+
+      exercises[exercise.id] = {
+        comment: pointsOfTeam.comment ?? '',
+        points,
+      };
+    } else {
+      exercises[exercise.id] = {
+        comment: pointsOfTeam.comment ?? '',
+        points: pointsOfTeam.points.toString() ?? '0',
+      };
+    }
+  });
 
   return {
     comment: '',
     additionalPoints: '0',
-    exercises: {
-      [exercise.id]: {
-        comment: '',
-        points: '5',
-      },
-    },
+    exercises,
   };
 }
 
-function EnterPointsForm({ team, exercise, className, onSubmit, ...props }: Props): JSX.Element {
+interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
+  team: Team;
+  sheet: Sheet;
+  exercise: Exercise;
+  onSubmit: PointsFormSubmitCallback;
+}
+
+function EnterPointsForm({
+  team,
+  sheet,
+  exercise,
+  className,
+  onSubmit,
+  ...props
+}: Props): JSX.Element {
   const classes = useStyles();
-  const initialValues = generateInitialValues({ team, exercise });
+  const dialog = useDialog();
+
+  const [initialValues, setInitialValues] = useState<PointsFormState>(
+    generateInitialValues({ team, sheet })
+  );
+
+  useEffect(() => {
+    const values = generateInitialValues({ team, sheet });
+    setInitialValues(values);
+  }, [team, sheet]);
+
+  const handleReset = (resetForm: FormikHelpers<PointsFormState>['resetForm']) => () => {
+    dialog.show({
+      title: 'Eingaben zurücksetzen?',
+      content:
+        'Sollen die Eingaben für dieses Team und das aktuelle Übungsblatt zurückgesetzt werden? Dies kann nicht rückgängig gemacht werden.',
+      actions: [
+        {
+          label: 'Nicht zurücksetzen',
+          onClick: () => dialog.hide(),
+        },
+        {
+          label: 'Zurücksetzen',
+          onClick: () => {
+            resetForm();
+            dialog.hide();
+          },
+          buttonProps: {
+            className: classes.dialogDeleteButton,
+          },
+        },
+      ],
+    });
+  };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
-      {({ handleSubmit, isSubmitting }) => (
+    <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
+      {({ handleSubmit, isSubmitting, initialValues, values, errors, resetForm }) => (
         <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
+          <Typography className={classes.unsavedChangesText}>
+            {initialValues !== values && <>Es gibt ungespeicherte Änderungen.</>}
+          </Typography>
+
           <ExerciseBox
             className={classes.exerciseBox}
             name={`exercises.${exercise.id}`}
@@ -92,14 +208,20 @@ function EnterPointsForm({ team, exercise, className, onSubmit, ...props }: Prop
           />
 
           <div className={classes.buttonRow}>
-            <Button variant='outlined' onClick={() => {}} className={classes.cancelButton}>
-              Abbrechen
+            <Button
+              variant='outlined'
+              onClick={handleReset(resetForm)}
+              className={classes.cancelButton}
+            >
+              Zurücksetzen
             </Button>
 
             <SubmitButton color='primary' variant='outlined' isSubmitting={isSubmitting}>
               Speichern
             </SubmitButton>
           </div>
+
+          <FormikDebugDisplay values={values} errors={errors} />
         </form>
       )}
     </Formik>

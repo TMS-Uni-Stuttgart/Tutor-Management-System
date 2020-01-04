@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     topBar: {
       display: 'flex',
-      marginBottom: theme.spacing(4),
+      marginBottom: theme.spacing(3),
     },
     titleSpinner: {
       margin: theme.spacing(0, 1),
@@ -127,8 +127,9 @@ function EnterPoints(): JSX.Element {
     history.push(getEnterPointsFormPath({ tutorialId, sheetId, teamId }));
   };
 
-  const handleSubmit: PointsFormSubmitCallback = async () => {
+  const handleSubmit: PointsFormSubmitCallback = async (values, actions) => {
     console.log('Submitting form');
+    console.log(values);
   };
 
   if (!tutorialId || !sheetId || !teamId) {
@@ -183,9 +184,11 @@ function EnterPoints(): JSX.Element {
         />
       </div>
 
-      {selectedTeam && selectedExercise && (
+      {selectedTeam && sheet && selectedExercise && (
         <EnterPointsForm
+          key={sheet.id}
           team={selectedTeam}
+          sheet={sheet}
           exercise={selectedExercise}
           className={classes.enterPointsForm}
           onSubmit={handleSubmit}
