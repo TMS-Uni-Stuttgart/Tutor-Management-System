@@ -1,11 +1,12 @@
-import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import { useField } from 'formik';
 import 'github-markdown-css/github-markdown.css';
+import { FileFind as PreviewIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
-import FormikTextField, { FormikTextFieldProps } from './FormikTextField';
+import AnimatedButton from '../../AnimatedButton';
 import Markdown from '../../Markdown';
-import clsx from 'clsx';
+import FormikTextField, { FormikTextFieldProps } from './FormikTextField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,8 +24,8 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: 10,
       minWidth: 0,
       height: 32,
-      width: 32,
       marginLeft: theme.spacing(0.75),
+      overflow: 'hidden',
     },
     markdownContainer: {
       background: theme.palette.common.white,
@@ -44,20 +45,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldProps): JSX.Element {
   const classes = useStyles();
-  const [isPreview, setPreview] = useState(false);
   const [{ value }] = useField(name);
+
+  const [isPreview, setPreview] = useState(false);
 
   return (
     <div className={clsx(className, classes.root)}>
-      <Button
-        variant='outlined'
+      <AnimatedButton
+        label={isPreview ? 'Schließen' : 'Preview'}
+        icon={<PreviewIcon />}
         className={classes.button}
         onClick={() => setPreview(!isPreview)}
         color={isPreview ? 'secondary' : 'default'}
         disabled={!value}
-      >
-        P
-      </Button>
+      />
 
       {isPreview ? (
         <div className={classes.markdownContainer}>
