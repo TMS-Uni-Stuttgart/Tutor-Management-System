@@ -57,7 +57,7 @@ function AnimatedButton({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Fade in={isHovered} timeout={{ enter: 0, exit: 500 }} unmountOnExit>
+      <Fade in={isHovered} timeout={{ enter: 0, exit: 100 }} unmountOnExit >
         <span>{label}</span>
       </Fade>
     </Button>
