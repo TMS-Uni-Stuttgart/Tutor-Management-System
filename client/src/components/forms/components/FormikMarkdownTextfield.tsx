@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
       right: theme.spacing(2),
       top: theme.spacing(1),
       zIndex: 10,
-      minWidth: 0,
       height: 32,
       marginLeft: theme.spacing(0.75),
       overflow: 'hidden',

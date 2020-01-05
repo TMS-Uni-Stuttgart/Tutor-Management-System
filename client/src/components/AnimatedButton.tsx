@@ -1,29 +1,42 @@
-import { Button, ButtonProps, Fade } from '@material-ui/core';
+import { Button, ButtonProps } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      minWidth: 0,
       maxWidth: 32,
+      overflow: 'hidden',
       '&:hover': {
         maxWidth: '100%',
+        '& $label': {
+          opacity: 1,
+        },
+        '& $icon': {
+          marginRight: -4,
+        },
       },
       transition: theme.transitions.create('max-width', {
         duration: theme.transitions.duration.enteringScreen,
         easing: theme.transitions.easing.easeInOut,
       }),
+      transformOrigin: 'right',
     },
-    unhoveredIcon: {
-      marginLeft: -10,
-      marginRight: 0,
+    icon: {
+      marginRight: -10,
     },
     buttonLabel: {
-      alignItems: 'unset',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
     },
-    unhoveredLabel: {
-      justifyContent: 'unset',
+    text: {
+      opacity: 0,
+      transition: theme.transitions.create('opacity', {
+        duration: theme.transitions.duration.enteringScreen,
+        easing: theme.transitions.easing.easeInOut,
+      }),
     },
   })
 );
@@ -41,7 +54,6 @@ function AnimatedButton({
   ...props
 }: Props): JSX.Element {
   const classes = useStyles();
-  const [isHovered, setHovered] = useState(false);
 
   return (
     <Button
@@ -51,15 +63,11 @@ function AnimatedButton({
       endIcon={icon}
       classes={{
         ...buttonClasses,
-        endIcon: !isHovered ? classes.unhoveredIcon : undefined,
-        label: clsx(classes.buttonLabel, !isHovered && classes.unhoveredLabel),
+        endIcon: classes.icon,
+        label: classes.buttonLabel,
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <Fade in={isHovered} timeout={{ enter: 0, exit: 100 }} unmountOnExit >
-        <span>{label}</span>
-      </Fade>
+      <span className={classes.text}>{label}</span>
     </Button>
   );
 }
