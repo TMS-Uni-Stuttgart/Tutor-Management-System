@@ -1,8 +1,9 @@
 import { Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Formik, FormikHelpers } from 'formik';
+import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
+import { Prompt } from 'react-router';
 import { Exercise, Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
@@ -52,6 +53,25 @@ interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   onSubmit: PointsFormSubmitCallback;
 }
 
+function EnterPointsFormFormik(props: Props): JSX.Element {
+  const { team, sheet, onSubmit } = props;
+
+  const [initialValues, setInitialValues] = useState<PointsFormState>(
+    generateInitialValues({ team, sheet })
+  );
+
+  useEffect(() => {
+    const values = generateInitialValues({ team, sheet });
+    setInitialValues(values);
+  }, [team, sheet]);
+
+  return (
+    <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
+      <EnterPointsForm {...props} />
+    </Formik>
+  );
+}
+
 function EnterPointsForm({
   team,
   sheet,
@@ -63,16 +83,10 @@ function EnterPointsForm({
   const classes = useStyles();
   const dialog = useDialog();
 
-  const [initialValues, setInitialValues] = useState<PointsFormState>(
-    generateInitialValues({ team, sheet })
-  );
+  const formikContext = useFormikContext<PointsFormState>();
+  const { values, errors, handleSubmit, resetForm, isSubmitting, dirty } = formikContext;
 
-  useEffect(() => {
-    const values = generateInitialValues({ team, sheet });
-    setInitialValues(values);
-  }, [team, sheet]);
-
-  const handleReset = (resetForm: FormikHelpers<PointsFormState>['resetForm']) => () => {
+  const handleReset = () => {
     dialog.show({
       title: 'Eingaben zurücksetzen?',
       content:
@@ -97,38 +111,37 @@ function EnterPointsForm({
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
-      {({ handleSubmit, isSubmitting, initialValues, values, errors, resetForm }) => (
-        <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
-          <Typography className={classes.unsavedChangesText}>
-            {initialValues !== values && <>Es gibt ungespeicherte Änderungen.</>}
-          </Typography>
+    <>
+      <Prompt
+        when={dirty}
+        message='Es gibt ungespeichert Änderungen. Soll die Seite wirklich verlassen werden?'
+      />
 
-          <ExerciseBox
-            className={classes.exerciseBox}
-            name={`exercises.${exercise.id}`}
-            exercise={exercise}
-          />
+      <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
+        <Typography className={classes.unsavedChangesText}>
+          {dirty && <>Es gibt ungespeicherte Änderungen.</>}
+        </Typography>
 
-          <div className={classes.buttonRow}>
-            <Button
-              variant='outlined'
-              onClick={handleReset(resetForm)}
-              className={classes.cancelButton}
-            >
-              Zurücksetzen
-            </Button>
+        <ExerciseBox
+          className={classes.exerciseBox}
+          name={`exercises.${exercise.id}`}
+          exercise={exercise}
+        />
 
-            <SubmitButton color='primary' variant='outlined' isSubmitting={isSubmitting}>
-              Speichern
-            </SubmitButton>
-          </div>
+        <div className={classes.buttonRow}>
+          <Button variant='outlined' onClick={handleReset} className={classes.cancelButton}>
+            Zurücksetzen
+          </Button>
 
-          <FormikDebugDisplay values={values} errors={errors} />
-        </form>
-      )}
-    </Formik>
+          <SubmitButton color='primary' variant='outlined' isSubmitting={isSubmitting}>
+            Speichern
+          </SubmitButton>
+        </div>
+
+        <FormikDebugDisplay values={values} errors={errors} />
+      </form>
+    </>
   );
 }
 
-export default EnterPointsForm;
+export default EnterPointsFormFormik;
