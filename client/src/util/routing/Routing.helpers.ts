@@ -23,5 +23,10 @@ export function getEnterPointsFormPath({
   sheetId,
   teamId,
 }: EnterPointsFormParams): string {
-  return `/tutorial/${tutorialId}/enterpoints/${sheetId}/${teamId}`;
+  const path: string = getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_FORM, tutorialId);
+
+  return path
+    .replace(':sheetId', sheetId)
+    .replace(':teamId', teamId)
+    .replace(/\/\/+/, '/');
 }
