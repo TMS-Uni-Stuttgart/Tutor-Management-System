@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { useField } from 'formik';
+import { useField, useFormikContext } from 'formik';
 import 'github-markdown-css/github-markdown.css';
 import { FileFind as PreviewIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
@@ -44,9 +44,21 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldProps): JSX.Element {
   const classes = useStyles();
+  const { handleSubmit, dirty } = useFormikContext();
   const [{ value }] = useField(name);
 
   const [isPreview, setPreview] = useState(false);
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = event => {
+    if (event.ctrlKey && event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (dirty) {
+        handleSubmit();
+      }
+    }
+  };
 
   return (
     <div className={clsx(className, classes.root)}>
@@ -74,6 +86,7 @@ function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldP
             ...other.InputProps,
             className: classes.textField,
           }}
+          onKeyDown={handleKeyDown}
         />
       )}
     </div>
