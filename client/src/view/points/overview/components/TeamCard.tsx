@@ -15,9 +15,8 @@ import SplitButton from './SplitButton';
 import TeamCardPointsTable from './TeamCardPointsTable';
 import { getEnterPointsFormPath } from '../../../../util/routing/Routing.helpers';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    points: {}, // FIXME: REMOVE ME LATER!
     actions: {
       justifyContent: 'flex-end',
     },
@@ -75,7 +74,7 @@ function TeamCard({
       />
 
       <CardContent>
-        <TeamCardPointsTable team={team} sheet={sheet} className={classes.points} />
+        <TeamCardPointsTable team={team} sheet={sheet} />
       </CardContent>
 
       <CardActions className={classes.actions}>

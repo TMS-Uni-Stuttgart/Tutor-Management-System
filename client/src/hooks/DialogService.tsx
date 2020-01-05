@@ -129,7 +129,7 @@ function getDialogOutsideContext(): DialogHelpers {
   return {
     show: showDialogOutsideContext,
     hide: hideDialogOutsideContext,
-  }
+  };
 }
 
 export default DialogService;
