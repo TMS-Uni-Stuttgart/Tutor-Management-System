@@ -4,7 +4,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import clsx from 'clsx';
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useRouteMatch } from 'react-router';
 import { renderLink } from './renderLink';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -15,28 +15,28 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface DrawerListItemProps extends ListItemProps, RouteComponentProps {
+interface DrawerListItemProps extends ListItemProps {
   path: string;
   icon: React.ComponentType<SvgIconProps>;
   text: string;
 }
 
-function DrawerListItem({
-  path,
-  icon: Icon,
-  text,
-  history,
-  location,
-  match,
-  staticContext,
-  ...other
-}: DrawerListItemProps): JSX.Element {
+function getTargetLink(path: string): string {
+  if (!path.endsWith('?')) {
+    return path;
+  }
+
+  const idx = path.lastIndexOf('/');
+
+  return path.substring(0, idx);
+}
+
+function DrawerListItem({ path, icon: Icon, text, ...other }: DrawerListItemProps): JSX.Element {
   const classes = useStyles();
-  const currentPath = location.pathname;
-  const isCurrentPath = currentPath.includes(path);
+  const isCurrentPath = useRouteMatch(path);
 
   return (
-    <ListItem {...other} button component={renderLink(path)}>
+    <ListItem {...other} button component={renderLink(getTargetLink(path))}>
       <ListItemIcon className={clsx(isCurrentPath && classes.currentPath)}>
         <Icon />
       </ListItemIcon>
@@ -45,4 +45,4 @@ function DrawerListItem({
   );
 }
 
-export default withRouter(DrawerListItem);
+export default DrawerListItem;

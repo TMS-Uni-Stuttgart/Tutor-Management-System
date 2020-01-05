@@ -18,7 +18,7 @@ import { Location } from 'history';
 import { Download as DownloadIcon, GithubCircle as GitHubIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { RouteComponentProps, withRouter, matchPath, useLocation } from 'react-router';
 import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
 import { useChangeTheme } from '../components/ContextWrapper';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
@@ -70,8 +70,6 @@ interface CreatingState {
   [tutorialSlot: string]: boolean;
 }
 
-type PropType = Props & RouteComponentProps;
-
 function getTitleFromLocation(location: Location): string {
   const title: string | undefined = titleText.get(location.pathname);
 
@@ -80,36 +78,18 @@ function getTitleFromLocation(location: Location): string {
   }
 
   const matchingRoute: RouteType | undefined = ROUTES.find(route => {
-    let routePath: string = route.path;
+    const path = route.isTutorialRelated
+      ? getTutorialRelatedPath(route, ':tutorialId')
+      : route.path;
 
-    if (route.isTutorialRelated) {
-      routePath = getTutorialRelatedPath(route, ':tutorialId');
-    }
-
-    const locationParts: string[] = location.pathname.split(/\//);
-    const routePathParts: string[] = routePath.split(/\//);
-
-    if (locationParts.length !== routePathParts.length) {
-      return false;
-    }
-
-    const isPathMatching = routePathParts.reduce((prevValue, part, idx) => {
-      // Ignore parts of the route path which describe a parameter (ie start with ':').
-      if (!part.startsWith(':')) {
-        return prevValue && part === locationParts[idx];
-      }
-
-      return prevValue;
-    }, true);
-
-    return isPathMatching;
+    return !!matchPath(location.pathname, { path, exact: route.isExact });
   });
 
   return matchingRoute ? matchingRoute.title : 'TITLE_NOT_FOUND';
 }
 
-function AppBar(props: PropType): JSX.Element {
-  const { onMenuButtonClicked, location } = props;
+function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
+  const location = useLocation();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const classes = useStyles();
@@ -241,4 +221,4 @@ function AppBar(props: PropType): JSX.Element {
   );
 }
 
-export default withRouter(AppBar);
+export default AppBar;
