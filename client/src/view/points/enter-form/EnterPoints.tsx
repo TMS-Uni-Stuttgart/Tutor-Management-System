@@ -7,15 +7,24 @@ import { Team } from 'shared/dist/model/Team';
 import BackButton from '../../../components/BackButton';
 import CustomSelect from '../../../components/CustomSelect';
 import { getSheet } from '../../../hooks/fetching/Sheet';
-import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
+import {
+  getTeamsOfTutorial,
+  setPointsOfTeam,
+  getTeamOfTutorial,
+} from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { teamItemToString } from '../../../util/helperFunctions';
 import {
   getEnterPointsFormPath,
+  getPointOverviewPath,
   getPathOfRouteWithTutorial,
 } from '../../../util/routing/Routing.helpers';
 import { RoutingPath } from '../../../util/routing/Routing.routes';
-import EnterPointsForm, { PointsFormSubmitCallback } from './components/EnterPointsForm';
+import EnterPointsForm from './components/EnterPointsForm';
+import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
+import { UpdatePointsDTO, PointMap } from 'shared/dist/model/Points';
+import { convertFormStateToPointMap } from './EnterPoints.helpers';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,6 +64,7 @@ function EnterPoints(): JSX.Element {
   const history = useHistory();
 
   const { tutorialId, sheetId, teamId } = useParams<RouteParams>();
+  const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
   const [teams, setTeams] = useState<Team[]>([]);
@@ -68,8 +78,6 @@ function EnterPoints(): JSX.Element {
       return;
     }
 
-    console.log('Fetching teams');
-
     getTeamsOfTutorial(tutorialId)
       .then(response => {
         setTeams(response);
@@ -81,8 +89,6 @@ function EnterPoints(): JSX.Element {
     if (!sheetId) {
       return;
     }
-
-    console.log('Fetching sheet');
 
     getSheet(sheetId)
       .then(response => {
@@ -127,9 +133,40 @@ function EnterPoints(): JSX.Element {
     history.push(getEnterPointsFormPath({ tutorialId, sheetId, teamId }));
   };
 
-  const handleSubmit: PointsFormSubmitCallback = async (values, actions) => {
-    console.log('Submitting form');
-    console.log(values);
+  const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {
+    if (!sheet || !tutorialId || !teamId || !selectedTeam) {
+      return;
+    }
+
+    const points: PointMap = convertFormStateToPointMap({
+      values,
+      sheetId: sheet.id,
+    });
+    const updateDTO: UpdatePointsDTO = {
+      points: points.toDTO(),
+    };
+
+    try {
+      await setPointsOfTeam(tutorialId, teamId, updateDTO);
+      const updatedTeam = await getTeamOfTutorial(tutorialId, teamId);
+
+      setTeams(teams => teams.map(t => (t.id === teamId ? updatedTeam : t)));
+
+      resetForm({ values: { ...values } });
+      enqueueSnackbar(
+        `Punkte für Team #${selectedTeam.teamNo
+          .toString()
+          .padStart(2, '0')} erfolgreich eingetragen.`,
+        { variant: 'success' }
+      );
+    } catch {
+      enqueueSnackbar(
+        `Punkte für Team #${selectedTeam.teamNo
+          .toString()
+          .padStart(2, '0')} eintragen fehlgeschlagen.`,
+        { variant: 'error' }
+      );
+    }
   };
 
   if (!tutorialId || !sheetId || !teamId) {
@@ -145,7 +182,7 @@ function EnterPoints(): JSX.Element {
     <div className={classes.root}>
       <div className={classes.topBar}>
         <BackButton
-          to={getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_OVERVIEW, tutorialId)}
+          to={getPointOverviewPath({ tutorialId, sheetId })}
           className={classes.backButton}
         />
 
