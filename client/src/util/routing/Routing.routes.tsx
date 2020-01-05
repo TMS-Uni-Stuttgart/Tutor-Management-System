@@ -42,7 +42,7 @@ export enum RoutingPath {
   TEAMOVERVIEW = '/teamoverview',
   ATTENDANCE = '/attendance',
   ENTER_POINTS_OVERVIEW = '/enterpoints',
-  ENTER_POINTS_FORM = '/enterpoints/:sheetId/:teamId',
+  ENTER_POINTS_FORM = '/enterpoints/:sheetId/team/:teamId',
   SCHEIN_EXAMS = '/scheinexams',
   DASHBOARD = '/dashboard',
   MANAGE_USERS = '/admin/usermanagement',
