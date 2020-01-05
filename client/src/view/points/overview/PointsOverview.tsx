@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../../components/CustomSelect';
@@ -12,6 +12,7 @@ import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
 import Placeholder from './components/Placeholder';
 import TeamCardList from './components/TeamCardList';
+import { getPointOverviewPath } from '../../../util/routing/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,6 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface RouteParams {
+  sheetId?: string;
   tutorialId?: string;
 }
 
@@ -47,16 +49,19 @@ enum PDFGeneratingState {
 
 function PointsOverview(): JSX.Element {
   const classes = useStyles();
-  const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
-  const { tutorialId } = useParams<RouteParams>();
+  const history = useHistory();
+  const { tutorialId, sheetId } = useParams<RouteParams>();
+
   const { setError } = useErrorSnackbar();
   const { enqueueSnackbar } = useSnackbar();
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
 
-  const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>(undefined);
+  const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>();
+
+  const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
   const [isGeneratingPDFs, setGeneratingPDFs] = useState<PDFGeneratingState>(
     PDFGeneratingState.NONE
@@ -79,13 +84,25 @@ function PointsOverview(): JSX.Element {
       .catch(() => setError('Daten konnten nicht abgerufen werden.'));
   }, [tutorialId, setError]);
 
-  function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
-    if (typeof e.target.value !== 'string') {
+  useEffect(() => {
+    if (currentSheet?.id === sheetId) {
       return;
     }
 
-    const sheet: Sheet | undefined = sheets.find(s => s.id === e.target.value);
-    setCurrentSheet(sheet);
+    if (!!sheetId) {
+      setCurrentSheet(sheets.find(s => s.id === sheetId));
+    } else {
+      setCurrentSheet(undefined);
+    }
+  }, [sheets, sheetId]);
+
+  function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
+    if (!tutorialId || typeof e.target.value !== 'string') {
+      return;
+    }
+
+    const sheetId: string = e.target.value;
+    history.push(getPointOverviewPath({ tutorialId, sheetId }));
   }
 
   async function handlePdfPreviewClicked(team: Team) {
