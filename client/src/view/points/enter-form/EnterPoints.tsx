@@ -20,6 +20,7 @@ import {
   getEnterPointsFormPath,
   getPointOverviewPath,
 } from '../../../util/routing/Routing.helpers';
+import Placeholder from '../overview/components/Placeholder';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import { convertFormStateToPointMap } from './EnterPoints.helpers';
@@ -44,6 +45,9 @@ const useStyles = makeStyles((theme: Theme) =>
     topBarSelect: {
       marginRight: theme.spacing(1),
       flex: 1,
+      '&:last-of-type': {
+        marginRight: 0,
+      },
     },
     enterPointsForm: {
       flex: 1,
@@ -219,16 +223,22 @@ function EnterPoints(): JSX.Element {
         />
       </div>
 
-      {selectedTeam && sheet && selectedExercise && (
-        <EnterPointsForm
-          key={sheet.id}
-          team={selectedTeam}
-          sheet={sheet}
-          exercise={selectedExercise}
-          className={classes.enterPointsForm}
-          onSubmit={handleSubmit}
-        />
-      )}
+      <Placeholder
+        placeholderText='Es müssen zuerst Team und Aufgabe ausgwählt werden.'
+        showPlaceholder={!selectedTeam || !selectedExercise}
+        loading={!sheet}
+      >
+        {selectedTeam && sheet && selectedExercise && (
+          <EnterPointsForm
+            key={sheet.id}
+            team={selectedTeam}
+            sheet={sheet}
+            exercise={selectedExercise}
+            className={classes.enterPointsForm}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </Placeholder>
     </div>
   );
 }

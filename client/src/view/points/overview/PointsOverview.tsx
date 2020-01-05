@@ -60,6 +60,7 @@ function PointsOverview(): JSX.Element {
   const [teams, setTeams] = useState<Team[]>([]);
 
   const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>();
+  const [isLoadingSheet, setLoadingSheet] = useState(false);
 
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
@@ -74,6 +75,10 @@ function PointsOverview(): JSX.Element {
       return;
     }
 
+    if (!!sheetId) {
+      setLoadingSheet(true);
+    }
+
     Promise.all([getAllSheets(), getTeamsOfTutorial(tutorialId)])
       .then(([sheetResponse, teamResponse]) => {
         setError(undefined);
@@ -81,7 +86,8 @@ function PointsOverview(): JSX.Element {
         setSheets(sheetResponse);
         setTeams(teamResponse);
       })
-      .catch(() => setError('Daten konnten nicht abgerufen werden.'));
+      .catch(() => setError('Daten konnten nicht abgerufen werden.'))
+      .finally(() => setLoadingSheet(false));
   }, [tutorialId, setError]);
 
   useEffect(() => {
@@ -178,7 +184,11 @@ function PointsOverview(): JSX.Element {
         </SubmitButton>
       </div>
 
-      <Placeholder placeholderText='Kein Blatt ausgewählt.' showPlaceholder={!currentSheet}>
+      <Placeholder
+        placeholderText='Kein Blatt ausgewählt.'
+        showPlaceholder={!currentSheet}
+        loading={isLoadingSheet}
+      >
         {currentSheet && tutorialId && (
           <TeamCardList
             tutorialId={tutorialId}
