@@ -126,6 +126,12 @@ class TeamService {
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
+    const idxOfTeam = tutorial.teams.findIndex(doc => doc.id === team.id);
+
+    if (idxOfTeam === -1) {
+      throw new BadRequestError('Could not find Team in Tutorial.');
+    }
+
     const sheetIds = Object.keys(pointsGained);
 
     for (const sheetId of sheetIds) {
@@ -137,11 +143,6 @@ class TeamService {
     }
 
     const pointMapOfTeam: PointMap = new PointMap(team.points);
-    const idxOfTeam = tutorial.teams.findIndex(doc => doc.id === team.id);
-
-    if (idxOfTeam === -1) {
-      throw new BadRequestError('Could not find Team in Tutorial.');
-    }
 
     pointMapOfTeam.adjustPoints(new PointMap(pointsGained));
     team.points = pointMapOfTeam.toDTO();
