@@ -4,6 +4,7 @@ import {
   PointsOfSubexercises,
   PointMap,
   SheetMapEntry,
+  ExercisePointInfo,
 } from 'shared/dist/model/Points';
 
 /**
@@ -62,4 +63,21 @@ export function convertFormStateToPointMap({ values, sheetId }: ConvertParams): 
   points.setSheetEntry(sheetId, entry);
 
   return points;
+}
+
+interface ConvertedPoints {
+  achieved: number;
+  total: ExercisePointInfo;
+}
+
+export function getPointsFromState(values: PointsFormState): number {
+  return Object.values(values.exercises).reduce((sum, { points }) => {
+    if (typeof points === 'string') {
+      return sum + Number.parseFloat(points);
+    }
+
+    return Object.values(points).reduce((pts, value) => {
+      return pts + Number.parseFloat(value);
+    }, sum);
+  }, Number.parseFloat(values.additionalPoints));
 }

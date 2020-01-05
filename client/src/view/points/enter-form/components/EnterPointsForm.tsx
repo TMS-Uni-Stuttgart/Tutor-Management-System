@@ -15,6 +15,11 @@ import {
   PointsFormSubmitCallback,
 } from './EnterPointsForm.helpers';
 import ExerciseBox from './ExerciseBox';
+import {
+  convertExercisePointInfoToString,
+  getPointsOfAllExercises,
+} from 'shared/dist/model/Points';
+import { getPointsFromState as getAchievedPointsFromState } from '../EnterPoints.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,9 +28,15 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'column',
       overflowY: 'auto',
     },
+    textBox: {
+      display: 'flex',
+    },
     unsavedChangesText: {
       marginLeft: theme.spacing(1),
       marginBottom: theme.spacing(1),
+    },
+    pointsText: {
+      marginLeft: 'auto',
     },
     exerciseBox: {
       overflowY: 'auto',
@@ -86,6 +97,10 @@ function EnterPointsForm({
   const formikContext = useFormikContext<PointsFormState>();
   const { values, errors, handleSubmit, resetForm, isSubmitting, dirty } = formikContext;
 
+  const achieved = getAchievedPointsFromState(values);
+  const total = getPointsOfAllExercises(sheet);
+  const totalPoints = convertExercisePointInfoToString(total);
+
   const handleReset = () => {
     dialog.show({
       title: 'Eingaben zurücksetzen?',
@@ -118,9 +133,15 @@ function EnterPointsForm({
       />
 
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
-        <Typography className={classes.unsavedChangesText}>
-          {dirty && <>Es gibt ungespeicherte Änderungen.</>}
-        </Typography>
+        <div className={classes.textBox}>
+          <Typography className={classes.unsavedChangesText}>
+            {dirty && <>Es gibt ungespeicherte Änderungen.</>}
+          </Typography>
+
+          <Typography
+            className={classes.pointsText}
+          >{`Gesamt ${achieved} / ${totalPoints} Punkte`}</Typography>
+        </div>
 
         <ExerciseBox
           className={classes.exerciseBox}
