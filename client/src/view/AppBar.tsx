@@ -18,15 +18,15 @@ import { Location } from 'history';
 import { Download as DownloadIcon, GithubCircle as GitHubIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { RouteComponentProps, withRouter, matchPath, useLocation } from 'react-router';
+import { matchPath, useLocation } from 'react-router';
 import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
 import { useChangeTheme } from '../components/ContextWrapper';
+import SubmitButton from '../components/forms/components/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
 import { useLogin } from '../hooks/LoginService';
 import { getDisplayStringForTutorial, saveBlob } from '../util/helperFunctions';
-import { ROUTES, RouteType } from '../util/routing/Routing.routes';
-import SubmitButton from '../components/forms/components/SubmitButton';
 import { getTutorialRelatedPath } from '../util/routing/Routing.helpers';
+import { ROUTES, RouteType } from '../util/routing/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

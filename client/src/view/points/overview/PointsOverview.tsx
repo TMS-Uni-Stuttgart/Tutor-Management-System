@@ -94,7 +94,7 @@ function PointsOverview(): JSX.Element {
     } else {
       setCurrentSheet(undefined);
     }
-  }, [sheets, sheetId]);
+  }, [sheets, sheetId, currentSheet]);
 
   function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
     if (!tutorialId || typeof e.target.value !== 'string') {

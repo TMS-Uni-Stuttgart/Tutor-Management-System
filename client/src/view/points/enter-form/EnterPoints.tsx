@@ -1,30 +1,28 @@
 import { CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { Sheet, Exercise } from 'shared/dist/model/Sheet';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { Exercise, Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
 import BackButton from '../../../components/BackButton';
 import CustomSelect from '../../../components/CustomSelect';
 import { getSheet } from '../../../hooks/fetching/Sheet';
 import {
+  getTeamOfTutorial,
   getTeamsOfTutorial,
   setPointsOfTeam,
-  getTeamOfTutorial,
 } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { teamItemToString } from '../../../util/helperFunctions';
 import {
   getEnterPointsFormPath,
   getPointOverviewPath,
-  getPathOfRouteWithTutorial,
 } from '../../../util/routing/Routing.helpers';
-import { RoutingPath } from '../../../util/routing/Routing.routes';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
-import { UpdatePointsDTO, PointMap } from 'shared/dist/model/Points';
 import { convertFormStateToPointMap } from './EnterPoints.helpers';
-import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
