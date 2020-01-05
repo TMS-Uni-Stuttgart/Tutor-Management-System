@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) =>
       overflow: 'hidden',
       '&:hover': {
         maxWidth: '100%',
-        '& $label': {
+        '& $text': {
           opacity: 1,
         },
         '& $icon': {
@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     icon: {
       marginRight: -10,
+      transition: theme.transitions.create('margin-right', {
+        duration: theme.transitions.duration.enteringScreen,
+        easing: theme.transitions.easing.easeInOut,
+      }),
     },
     buttonLabel: {
       justifyContent: 'flex-end',
