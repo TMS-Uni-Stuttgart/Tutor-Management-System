@@ -1,5 +1,10 @@
 import { RouteType, RoutingPath } from './Routing.routes';
 
+interface PointsOverviewParams {
+  tutorialId: string;
+  sheetId?: string;
+}
+
 interface EnterPointsFormParams {
   tutorialId: string;
   sheetId: string;
@@ -16,6 +21,16 @@ export function getTutorialRelatedPath(route: RouteType, tutorialId: string): st
 
 export function getPathOfRouteWithTutorial(routingPath: RoutingPath, tutorialId: string): string {
   return `/tutorial/${tutorialId}/${routingPath}`.replace(/\/\/+/, '/');
+}
+
+export function getPointOverviewPath({ tutorialId, sheetId }: PointsOverviewParams): string {
+  const path = getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_OVERVIEW, tutorialId);
+
+  if (!!sheetId) {
+    return path.replace(':sheetId?', sheetId);
+  } else {
+    return path.replace('/:sheetId?', '');
+  }
 }
 
 export function getEnterPointsFormPath({
