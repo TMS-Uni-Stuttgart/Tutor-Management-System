@@ -129,11 +129,21 @@ function EnterPointsForm({
         />
 
         <div className={classes.buttonRow}>
-          <Button variant='outlined' onClick={handleReset} className={classes.cancelButton}>
+          <Button
+            variant='outlined'
+            onClick={handleReset}
+            className={classes.cancelButton}
+            disabled={!dirty}
+          >
             Zurücksetzen
           </Button>
 
-          <SubmitButton color='primary' variant='outlined' isSubmitting={isSubmitting}>
+          <SubmitButton
+            color='primary'
+            variant='outlined'
+            isSubmitting={isSubmitting}
+            disabled={!dirty}
+          >
             Speichern
           </SubmitButton>
         </div>
