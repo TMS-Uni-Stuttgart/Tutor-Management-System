@@ -14,6 +14,7 @@ import React from 'react';
 
 interface ButtonOption {
   label: string;
+  disabled?: boolean;
   ButtonProps?: ButtonProps & { component?: React.ElementType; to?: string };
 }
 
@@ -79,6 +80,7 @@ function SplitButton({ options, variant, color }: Props): JSX.Element {
                   {options.map((option, index) => (
                     <MenuItem
                       key={option.label}
+                      disabled={option.disabled ?? false}
                       selected={index === selectedIndex}
                       onClick={event => handleMenuItemClick(event, index)}
                     >
