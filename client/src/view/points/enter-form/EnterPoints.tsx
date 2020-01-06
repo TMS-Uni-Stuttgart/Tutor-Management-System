@@ -1,29 +1,16 @@
 import { CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
-import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Exercise, Sheet } from 'shared/dist/model/Sheet';
-import { Team } from 'shared/dist/model/Team';
 import BackButton from '../../../components/BackButton';
-import CustomSelect from '../../../components/CustomSelect';
+import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
 import { getSheet } from '../../../hooks/fetching/Sheet';
-import {
-  getTeamOfTutorial,
-  getTeamsOfTutorial,
-  setPointsOfTeam,
-} from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
-import { teamItemToString } from '../../../util/helperFunctions';
-import {
-  getEnterPointsFormPath,
-  getPointOverviewPath,
-} from '../../../util/routing/Routing.helpers';
+import { HasPoints } from '../../../typings/types';
+import { getPointOverviewPath } from '../../../util/routing/Routing.helpers';
 import Placeholder from '../overview/components/Placeholder';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
-import { convertFormStateToPointMap } from './EnterPoints.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,37 +42,38 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface RouteParams {
-  tutorialId?: string;
-  sheetId?: string;
-  teamId?: string;
+interface EntitySelectProps<T extends HasPoints> {
+  label: string;
+  emptyPlaceholder: string;
+  itemToString: CustomSelectProps<T>['itemToString'];
+  onChange?: CustomSelectProps<T>['onChange'];
 }
 
-function EnterPoints(): JSX.Element {
-  const classes = useStyles();
-  const history = useHistory();
+interface Props<T extends HasPoints> {
+  tutorialId: string;
+  sheetId: string;
+  entity?: T;
+  onSubmit: PointsFormSubmitCallback;
 
-  const { tutorialId, sheetId, teamId } = useParams<RouteParams>();
-  const { enqueueSnackbar } = useSnackbar();
+  allEntities: T[];
+  entitySelectProps: EntitySelectProps<T>;
+}
+
+function EnterPoints<T extends HasPoints>({
+  tutorialId,
+  sheetId,
+  entity,
+  onSubmit,
+  allEntities,
+  entitySelectProps,
+}:
+Props<T>): JSX.Element {
+  const classes = useStyles();
+
   const { setError } = useErrorSnackbar();
 
-  const [teams, setTeams] = useState<Team[]>([]);
   const [sheet, setSheet] = useState<Sheet>();
-
-  const [selectedTeam, setSelectedTeam] = useState<Team>();
   const [selectedExercise, setSelectedExercise] = useState<Exercise>();
-
-  useEffect(() => {
-    if (!tutorialId) {
-      return;
-    }
-
-    getTeamsOfTutorial(tutorialId)
-      .then(response => {
-        setTeams(response);
-      })
-      .catch(() => setError('Teams konnten nicht abgerufen werden.'));
-  }, [tutorialId, setError]);
 
   useEffect(() => {
     if (!sheetId) {
@@ -100,18 +88,6 @@ function EnterPoints(): JSX.Element {
       .catch(() => setError('Übungsblatt konnte nicht abgerufen werden.'));
   }, [sheetId, setError]);
 
-  useEffect(() => {
-    if (!teamId) {
-      return;
-    }
-
-    const newSelectedTeam = teams.find(t => t.id === teamId);
-
-    if (newSelectedTeam) {
-      setSelectedTeam(newSelectedTeam);
-    }
-  }, [teams, teamId]);
-
   const handleExerciseChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     if (!sheet) {
       return;
@@ -124,61 +100,6 @@ function EnterPoints(): JSX.Element {
       setSelectedExercise(exercise);
     }
   };
-
-  const handleTeamChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    if (!tutorialId || !sheetId) {
-      return;
-    }
-
-    const teamId: string = event.target.value as string;
-
-    history.push(getEnterPointsFormPath({ tutorialId, sheetId, teamId }));
-  };
-
-  const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {
-    if (!sheet || !tutorialId || !teamId || !selectedTeam) {
-      return;
-    }
-
-    const points: PointMap = convertFormStateToPointMap({
-      values,
-      sheetId: sheet.id,
-    });
-    const updateDTO: UpdatePointsDTO = {
-      points: points.toDTO(),
-    };
-
-    try {
-      await setPointsOfTeam(tutorialId, teamId, updateDTO);
-      const updatedTeam = await getTeamOfTutorial(tutorialId, teamId);
-
-      setTeams(teams => teams.map(t => (t.id === teamId ? updatedTeam : t)));
-
-      resetForm({ values: { ...values } });
-      enqueueSnackbar(
-        `Punkte für Team #${selectedTeam.teamNo
-          .toString()
-          .padStart(2, '0')} erfolgreich eingetragen.`,
-        { variant: 'success' }
-      );
-    } catch {
-      enqueueSnackbar(
-        `Punkte für Team #${selectedTeam.teamNo
-          .toString()
-          .padStart(2, '0')} eintragen fehlgeschlagen.`,
-        { variant: 'error' }
-      );
-    }
-  };
-
-  if (!tutorialId || !sheetId || !teamId) {
-    return (
-      <Typography color='error'>
-        At least one of the three required params <code>tutorialId, sheetId, teamId</code> was not
-        provided through path params.
-      </Typography>
-    );
-  }
 
   return (
     <div className={classes.root}>
@@ -213,29 +134,26 @@ function EnterPoints(): JSX.Element {
 
         <CustomSelect
           className={classes.topBarSelect}
-          label='Team'
-          emptyPlaceholder='Keine Teams verfügbar'
-          items={teams}
-          itemToString={teamItemToString}
-          itemToValue={team => team.id}
-          value={selectedTeam?.id ?? ''}
-          onChange={handleTeamChange}
+          items={allEntities}
+          itemToValue={item => item.id}
+          value={entity?.id ?? ''}
+          {...entitySelectProps}
         />
       </div>
 
       <Placeholder
-        placeholderText='Es müssen zuerst Team und Aufgabe ausgwählt werden.'
-        showPlaceholder={!selectedTeam || !selectedExercise}
-        loading={!sheet}
+        placeholderText='Es muss zuerst eine Aufgabe ausgewählt werden.'
+        showPlaceholder={!selectedExercise}
+        loading={!sheet || !entity}
       >
-        {selectedTeam && sheet && selectedExercise && (
+        {entity && sheet && selectedExercise && (
           <EnterPointsForm
             key={sheet.id}
-            team={selectedTeam}
+            entity={entity}
             sheet={sheet}
             exercise={selectedExercise}
             className={classes.enterPointsForm}
-            onSubmit={handleSubmit}
+            onSubmit={onSubmit}
           />
         )}
       </Placeholder>

@@ -4,22 +4,22 @@ import clsx from 'clsx';
 import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { Prompt } from 'react-router';
+import {
+  convertExercisePointInfoToString,
+  getPointsOfAllExercises,
+} from 'shared/dist/model/Points';
 import { Exercise, Sheet } from 'shared/dist/model/Sheet';
-import { Team } from 'shared/dist/model/Team';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';
+import { HasPoints } from '../../../../typings/types';
+import { getPointsFromState as getAchievedPointsFromState } from '../EnterPoints.helpers';
 import {
   generateInitialValues,
   PointsFormState,
   PointsFormSubmitCallback,
 } from './EnterPointsForm.helpers';
 import ExerciseBox from './ExerciseBox';
-import {
-  convertExercisePointInfoToString,
-  getPointsOfAllExercises,
-} from 'shared/dist/model/Points';
-import { getPointsFromState as getAchievedPointsFromState } from '../EnterPoints.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,23 +58,25 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
-  team: Team;
+  entity: HasPoints;
   sheet: Sheet;
   exercise: Exercise;
   onSubmit: PointsFormSubmitCallback;
 }
 
-function EnterPointsFormFormik(props: Props): JSX.Element {
-  const { team, sheet, onSubmit } = props;
+type FormProps = Omit<Props, 'entity'>;
+
+function EnterPointsFormFormik({ entity, ...props }: Props): JSX.Element {
+  const { sheet, onSubmit } = props;
 
   const [initialValues, setInitialValues] = useState<PointsFormState>(
-    generateInitialValues({ team, sheet })
+    generateInitialValues({ entity, sheet })
   );
 
   useEffect(() => {
-    const values = generateInitialValues({ team, sheet });
+    const values = generateInitialValues({ entity, sheet });
     setInitialValues(values);
-  }, [team, sheet]);
+  }, [entity, sheet]);
 
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
@@ -84,13 +86,12 @@ function EnterPointsFormFormik(props: Props): JSX.Element {
 }
 
 function EnterPointsForm({
-  team,
   sheet,
   exercise,
   className,
   onSubmit,
   ...props
-}: Props): JSX.Element {
+}: FormProps): JSX.Element {
   const classes = useStyles();
   const dialog = useDialog();
 

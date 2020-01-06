@@ -88,7 +88,7 @@ function PointsOverview(): JSX.Element {
       })
       .catch(() => setError('Daten konnten nicht abgerufen werden.'))
       .finally(() => setLoadingSheet(false));
-  }, [tutorialId, setError]);
+  }, [tutorialId, setError, sheetId]);
 
   useEffect(() => {
     if (currentSheet?.id === sheetId) {
