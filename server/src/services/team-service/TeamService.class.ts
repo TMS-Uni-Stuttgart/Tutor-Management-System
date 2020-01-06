@@ -1,25 +1,24 @@
+import { isDocument } from '@typegoose/typegoose';
 import _ from 'lodash';
 import {
-  PointMap,
-  UpdatePointsDTO,
-  PointMapEntry,
-  PointId,
-  getPointsOfExercise,
   ExercisePointInfo,
+  getPointsOfExercise,
+  PointId,
+  PointMap,
+  PointMapEntry,
+  UpdatePointsDTO,
 } from 'shared/dist/model/Points';
-import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
-import { isDocument } from '@typegoose/typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import Logger from '../../helpers/Logger';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
+import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import Logger from '../../helpers/Logger';
 
 type SubExPointInformation = Omit<PointInformation, 'entry'>;
 

@@ -66,8 +66,7 @@ function EnterPoints<T extends HasPoints>({
   onSubmit,
   allEntities,
   entitySelectProps,
-}:
-Props<T>): JSX.Element {
+}: Props<T>): JSX.Element {
   const classes = useStyles();
 
   const { setError } = useErrorSnackbar();
