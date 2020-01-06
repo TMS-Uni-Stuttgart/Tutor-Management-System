@@ -5,10 +5,16 @@ interface PointsOverviewParams {
   sheetId?: string;
 }
 
-interface EnterPointsFormParams {
+interface EnterPointsForTeamParams {
   tutorialId: string;
   sheetId: string;
   teamId: string;
+}
+
+interface EnterPointsForStudentParams {
+  tutorialId: string;
+  sheetId: string;
+  studentId: string;
 }
 
 export function getTutorialRelatedPath(route: RouteType, tutorialId: string): string {
@@ -33,15 +39,28 @@ export function getPointOverviewPath({ tutorialId, sheetId }: PointsOverviewPara
   }
 }
 
-export function getEnterPointsFormPath({
+export function getEnterPointsForTeamPath({
   tutorialId,
   sheetId,
   teamId,
-}: EnterPointsFormParams): string {
-  const path: string = getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_FORM, tutorialId);
+}: EnterPointsForTeamParams): string {
+  const path: string = getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_TEAM, tutorialId);
 
   return path
     .replace(':sheetId', sheetId)
     .replace(':teamId', teamId)
+    .replace(/\/\/+/, '/');
+}
+
+export function getEnterPointsForStudentPath({
+  tutorialId,
+  sheetId,
+  studentId,
+}: EnterPointsForStudentParams): string {
+  const path: string = getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_STUDENT, tutorialId);
+
+  return path
+    .replace(':sheetId', sheetId)
+    .replace(':studentId', studentId)
     .replace(/\/\/+/, '/');
 }

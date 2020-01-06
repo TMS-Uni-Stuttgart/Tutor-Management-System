@@ -33,7 +33,8 @@ import ScheinExamPointEntry from '../../view/pointsmanagement/ScheinExamPointEnt
 import ScheinExamManagement from '../../view/pointsmanagement/ScheinExamManagement';
 import TutorialSubstituteManagement from '../../view/tutorialmanagement/TutorialSubstituteManagement';
 import { Role } from 'shared/dist/model/Role';
-import EnterPoints from '../../view/points/enter-form/EnterPoints';
+import EnterTeamPoints from '../../view/points/enter-form/EnterTeamPoints';
+import EnterStudentPoints from '../../view/points/enter-form/EnterStudentPoints';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -42,7 +43,8 @@ export enum RoutingPath {
   TEAMOVERVIEW = '/teamoverview',
   ATTENDANCE = '/attendance',
   ENTER_POINTS_OVERVIEW = '/enterpoints/:sheetId?',
-  ENTER_POINTS_FORM = '/enterpoints/:sheetId/team/:teamId',
+  ENTER_POINTS_TEAM = '/enterpoints/:sheetId/team/:teamId',
+  ENTER_POINTS_STUDENT = '/enterpoints/:sheetId/student/:studentId',
   SCHEIN_EXAMS = '/scheinexams',
   DASHBOARD = '/dashboard',
   MANAGE_USERS = '/admin/usermanagement',
@@ -104,9 +106,19 @@ export const ROUTES: readonly RouteType[] = [
     isAccessibleBySubstitute: true,
   },
   {
-    path: RoutingPath.ENTER_POINTS_FORM,
+    path: RoutingPath.ENTER_POINTS_TEAM,
     title: 'Punkte eintragen',
-    component: EnterPoints,
+    component: EnterTeamPoints,
+    icon: BookIcon,
+    roles: [Role.TUTOR, Role.CORRECTOR],
+    isInDrawer: false,
+    isPrivate: true,
+    isTutorialRelated: true,
+  },
+  {
+    path: RoutingPath.ENTER_POINTS_STUDENT,
+    title: 'Punkte eintragen',
+    component: EnterStudentPoints,
     icon: BookIcon,
     roles: [Role.TUTOR, Role.CORRECTOR],
     isInDrawer: false,
