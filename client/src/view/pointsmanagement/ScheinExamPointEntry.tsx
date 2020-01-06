@@ -4,7 +4,7 @@ import { Person as PersonIcon } from '@material-ui/icons';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { UpdatePointsDTO } from 'shared/dist/model/Points';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
@@ -120,7 +120,7 @@ function ScheinExamPointEntry({ match, enqueueSnackbar }: Props): JSX.Element {
               className={classes.pointCard}
               title={getNameOfEntity(student)}
               avatar={<PersonIcon />}
-              entity={{ id: student.id, points: new PointMap(student.scheinExamResults) }}
+              entity={{ id: student.id, points: student.scheinExamResults }}
               entityWithExercises={currentExam}
               onPointsSave={handleSavePoints(student)}
             />

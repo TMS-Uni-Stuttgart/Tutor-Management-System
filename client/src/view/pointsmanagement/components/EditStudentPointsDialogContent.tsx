@@ -96,7 +96,7 @@ function EditStudentPointsDialogContent({
                 name={student.id}
                 className={classes.pointsCard}
                 title={getNameOfEntity(student)}
-                entity={{ id: student.id, points: new PointMap(student.points) }}
+                entity={{ id: student.id, points: student.points }}
                 entityWithExercises={sheet}
                 onPointsSave={() => console.log('SAVE POINTS!')}
               />

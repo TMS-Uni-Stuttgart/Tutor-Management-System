@@ -1,5 +1,5 @@
 import { HasId } from 'shared/dist/model/Common';
-import { PointMap } from 'shared/dist/model/Points';
+import { PointMap, PointMapDTO } from 'shared/dist/model/Points';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
@@ -28,7 +28,7 @@ export interface TutorialWithFetchedCorrectors extends Omit<Tutorial, 'tutor' | 
 export type StudentWithFetchedTeam = Student;
 
 export interface HasPoints extends HasId {
-  points: PointMap;
+  points: PointMapDTO;
 }
 
 export interface StudentScheinCriteriaSummaryMap {

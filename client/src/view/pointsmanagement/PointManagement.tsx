@@ -432,7 +432,7 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
                         avatar={<TeamIcon />}
                         title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
                         subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
-                        entity={{ id: team.id, points: new PointMap(team.points) }}
+                        entity={{ id: team.id, points: team.points }}
                         entityWithExercises={currentSheet}
                         onPointsSave={handleSavePoints(team)}
                         onEditPoints={handleEditPointsOfStudents(team)}

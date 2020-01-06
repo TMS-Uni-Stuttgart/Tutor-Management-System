@@ -226,7 +226,7 @@ function PointsCard<T extends EntityWithPoints>({
     { must: 0, bonus: 0 }
   );
   const initialValues: PointsCardFormState = getInitialPointsCardValues(
-    entity.points,
+    new PointMap(entity.points),
     entityWithExercises
   );
 
