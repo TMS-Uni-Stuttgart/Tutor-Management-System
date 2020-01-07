@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       width: '100%',
       marginTop: theme.spacing(1),
+      justifyContent: 'flex-end',
     },
     list: {
       marginBottom: theme.spacing(1),
