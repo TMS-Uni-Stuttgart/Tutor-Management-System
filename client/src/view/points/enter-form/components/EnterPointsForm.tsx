@@ -79,7 +79,7 @@ function EnterPointsFormFormik({ entity, ...props }: Props): JSX.Element {
   }, [entity, sheet]);
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
+    <Formik key={entity.id} initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
       <EnterPointsForm {...props} />
     </Formik>
   );
