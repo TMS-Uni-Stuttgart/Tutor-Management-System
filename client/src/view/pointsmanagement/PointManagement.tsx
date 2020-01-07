@@ -1,6 +1,6 @@
 import { createStyles, Tab, Tabs, Theme, Typography } from '@material-ui/core';
-import { People as TeamIcon } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/styles';
+import { AccountMultiple as TeamIcon } from 'mdi-material-ui';
+import { makeStyles } from '@material-ui/core/styles';
 import 'github-markdown-css/github-markdown.css';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';

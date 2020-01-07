@@ -13,7 +13,7 @@ import {
 import { FormControlProps } from '@material-ui/core/FormControl';
 import { SelectProps } from '@material-ui/core/Select';
 import React, { useRef, useState, useEffect } from 'react';
-import { makeStyles, createStyles } from '@material-ui/styles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) =>

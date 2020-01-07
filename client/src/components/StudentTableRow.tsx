@@ -7,7 +7,7 @@ import {
   withStyles,
 } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles';
-import { Person as PersonIcon } from '@material-ui/icons';
+import { Account as PersonIcon } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
 import { StudentWithFetchedTeam } from '../typings/types';
 import ListItemMenu from './ListItemMenu';

@@ -1,7 +1,7 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { PaletteType, useMediaQuery } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import deLocale from 'date-fns/locale/de';
 import { SnackbarProvider } from 'notistack';
 import React, { PropsWithChildren, useState, useContext, useEffect } from 'react';

@@ -12,7 +12,7 @@ import {
 import { amber } from '@material-ui/core/colors';
 import { SnackbarContentProps } from '@material-ui/core/SnackbarContent';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Close as CloseIcon, ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { Close as CloseIcon, ChevronDown as ExpandMoreIcon } from 'mdi-material-ui';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';

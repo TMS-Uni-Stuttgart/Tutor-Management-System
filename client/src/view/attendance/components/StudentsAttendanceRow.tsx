@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import { ButtonProps } from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import { CSSProperties } from '@material-ui/styles';
 import clsx from 'clsx';
 import { Formik, FormikHelpers } from 'formik';
 import { NoteText as NoteTextIcon } from 'mdi-material-ui';
@@ -24,6 +23,7 @@ import { useLogin } from '../../../hooks/LoginService';
 import { FormikSubmitCallback } from '../../../types';
 import { StudentWithFetchedTeam } from '../../../typings/types';
 import CakeCount from './CakeCount';
+import { CSSProperties } from '@material-ui/styles';
 
 function getAttendanceColor(state: AttendanceState, theme: Theme): string {
   const ATTENDANCE_COLORS: { [K in keyof typeof AttendanceState]: string } = {

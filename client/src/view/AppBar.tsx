@@ -11,9 +11,9 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { Brightness5 as LightIcon, Brightness7 as DarkIcon } from '@material-ui/icons';
-import MenuIcon from '@material-ui/icons/Menu';
-import { createStyles, makeStyles } from '@material-ui/styles';
+import { Brightness5 as LightIcon, Brightness7 as DarkIcon } from 'mdi-material-ui';
+import { Menu as MenuIcon } from 'mdi-material-ui';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Location } from 'history';
 import { Download as DownloadIcon, GithubCircle as GitHubIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
