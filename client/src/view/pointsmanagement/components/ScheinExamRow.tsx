@@ -4,7 +4,7 @@ import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { getDisplayStringOfScheinExam } from '../../../util/helperFunctions';
-import { getPointsOfEntityAsString } from '../util/helper';
+import { getPointsOfEntityAsString } from '../../points/util/helper';
 
 interface Props extends PaperTableRowProps {
   exam: ScheinExam;

@@ -3,7 +3,7 @@ import React from 'react';
 import { Sheet } from 'shared/dist/model/Sheet';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { getPointsOfEntityAsString } from '../../pointsmanagement/util/helper';
+import { getPointsOfEntityAsString } from '../../points/util/helper';
 
 interface Props extends PaperTableRowProps {
   sheet: Sheet;
