@@ -5,6 +5,11 @@ interface PointsOverviewParams {
   sheetId?: string;
 }
 
+interface ScheinexamPointsOverviewParams {
+  tutorialId: string;
+  examId?: string;
+}
+
 interface EnterPointsForTeamParams {
   tutorialId: string;
   sheetId: string;
@@ -38,6 +43,15 @@ export function getPointOverviewPath({ tutorialId, sheetId }: PointsOverviewPara
   } else {
     return path.replace('/:sheetId?', '');
   }
+}
+
+export function getScheinexamPointsOverviewPath({
+  tutorialId,
+  examId,
+}: ScheinexamPointsOverviewParams): string {
+  const path = getPathOfRouteWithTutorial(RoutingPath.SCHEIN_EXAMS_OVERVIEW, tutorialId);
+
+  return path.replace(':examId?', examId ?? '').replace(/\/\/+/, '/');
 }
 
 export function getEnterPointsForTeamPath({

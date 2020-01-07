@@ -7,7 +7,7 @@ import {
   File as FileIcon,
   FileDocumentBox as FileDocumentBoxIcon,
   FileDocumentBoxMultiple as FileDocumentBoxMultipleIcon,
-  Group as GroupIcon,
+  AccountMultiple as GroupIcon,
   Login as LoginIcon,
   ScriptText as ScriptTextIcon,
   Teach as TeachIcon,
