@@ -1,12 +1,10 @@
 import { connect, FormikProps, FormikValues } from 'formik';
 import React from 'react';
-import { FormikSubmitCallback } from '../../types';
 import GeneratedField from './components/GeneratedField';
 import { FormDataSet } from './types/FieldData';
 
 interface Props extends FormikProps<any> {
   formData: FormDataSet;
-  onSubmit: FormikSubmitCallback<any>;
 }
 
 function generateFormFields(formData: FormDataSet, values: FormikValues): JSX.Element {

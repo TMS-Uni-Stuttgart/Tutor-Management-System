@@ -6,7 +6,7 @@ import {
   prop,
   Ref,
   Typegoose,
-} from '@hasezoey/typegoose';
+} from '@typegoose/typegoose';
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';

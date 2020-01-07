@@ -144,7 +144,7 @@ function ExerciseDataFields({
 
 function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
   const classes = useStyles();
-  const [{ value }] = useField(name);
+  const [{ value }] = useField<ExerciseFormExercise[]>(name);
 
   const exercises: ExerciseFormExercise[] = value || [];
 

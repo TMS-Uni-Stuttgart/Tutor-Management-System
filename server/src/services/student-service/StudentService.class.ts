@@ -1,4 +1,4 @@
-import { isDocument } from '@hasezoey/typegoose';
+import { isDocument } from '@typegoose/typegoose';
 import { Types } from 'mongoose';
 import { EncryptedDocument } from 'mongoose-field-encryption';
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
@@ -141,6 +141,8 @@ class StudentService {
 
     pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
     student.points = pointMapOfStudent.toDTO();
+
+    student.markModified('points');
 
     await student.save();
   }

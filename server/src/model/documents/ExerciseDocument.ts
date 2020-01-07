@@ -1,6 +1,6 @@
 import { Document, Model, Types } from 'mongoose';
 import { Exercise, ExerciseDTO } from 'shared/dist/model/Sheet';
-import { prop, Typegoose, arrayProp } from '@hasezoey/typegoose';
+import { prop, Typegoose, arrayProp } from '@typegoose/typegoose';
 import { getPointsOfExercise } from 'shared/dist/model/Points';
 import { ObjectID } from 'bson';
 

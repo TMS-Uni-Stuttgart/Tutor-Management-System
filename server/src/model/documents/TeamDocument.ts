@@ -1,4 +1,4 @@
-import { arrayProp, prop, Ref, Typegoose } from '@hasezoey/typegoose';
+import { arrayProp, prop, Ref, Typegoose } from '@typegoose/typegoose';
 import { Document } from 'mongoose';
 import { PointMapDTO } from 'shared/dist/model/Points';
 import { Team } from 'shared/dist/model/Team';

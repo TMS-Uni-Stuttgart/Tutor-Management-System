@@ -1,4 +1,4 @@
-import { isDocument } from '@hasezoey/typegoose';
+import { isDocument } from '@typegoose/typegoose';
 import xl, { Workbook, Worksheet } from 'excel4node';
 import { PointId, PointMap } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';

@@ -82,7 +82,6 @@ function ScheinCriteriaForm({ onSubmit, formData, criteria, ...other }: Props): 
             <GeneratedForm
               key={values.identifier}
               formData={formData[values.identifier]}
-              onSubmit={() => {}}
               handleSubmit={handleSubmit}
               values={values}
               isSubmitting={isSubmitting}

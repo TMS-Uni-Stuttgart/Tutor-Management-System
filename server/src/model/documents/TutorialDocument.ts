@@ -8,7 +8,7 @@ import {
   Typegoose,
   instanceMethod,
   InstanceType,
-} from '@hasezoey/typegoose';
+} from '@typegoose/typegoose';
 import { CollectionName } from '../CollectionName';
 import { StudentDocument } from './StudentDocument';
 import { TeamDocument, TeamSchema } from './TeamDocument';

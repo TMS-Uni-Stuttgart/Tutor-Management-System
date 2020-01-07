@@ -1,5 +1,5 @@
 import { Document, Model } from 'mongoose';
-import { prop, Typegoose } from '@hasezoey/typegoose';
+import { prop, Typegoose } from '@typegoose/typegoose';
 import { CollectionName } from '../CollectionName';
 import { Scheincriteria } from '../scheincriteria/Scheincriteria';
 
