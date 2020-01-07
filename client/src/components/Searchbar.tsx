@@ -2,7 +2,7 @@ import { IconButton, InputBase, Paper } from '@material-ui/core';
 import { InputBaseProps } from '@material-ui/core/InputBase';
 import { PaperProps } from '@material-ui/core/Paper';
 import { Close as CloseIcon, Magnify as SearchIcon } from 'mdi-material-ui';
-import { createStyles, makeStyles } from '@material-ui/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
 
