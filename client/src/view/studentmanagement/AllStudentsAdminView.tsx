@@ -1,5 +1,5 @@
 import { Theme } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { format } from 'date-fns';
 import fastcsv from 'fast-csv';
 import { Row, RowMap } from 'fast-csv/build/src/parser';

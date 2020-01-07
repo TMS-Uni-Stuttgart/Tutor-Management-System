@@ -1,10 +1,10 @@
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import {
   Book as BookIcon,
-  Dashboard as DashboardIcon,
+  ViewDashboard as DashboardIcon,
   Group as GroupIcon,
-  Person as PersonIcon,
-} from '@material-ui/icons';
+  Account as PersonIcon,
+} from 'mdi-material-ui';
 import {
   AccountBadge as AccountBadgeIcon,
   AccountMultipleCheck as AccountMultipleCheckIcon,

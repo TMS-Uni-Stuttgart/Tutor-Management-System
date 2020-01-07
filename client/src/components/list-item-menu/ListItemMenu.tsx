@@ -1,5 +1,5 @@
 import React, { useState, ComponentType, MouseEventHandler } from 'react';
-import { MoreVert as MoreVertIcon } from '@material-ui/icons';
+import { DotsVertical as MoreVertIcon } from 'mdi-material-ui';
 import { ListItemIcon, ListItemText, MenuItem, Tooltip } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import Menu, { MenuProps } from '@material-ui/core/Menu';

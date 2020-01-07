@@ -2,7 +2,7 @@ import { Tooltip } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
-import { Person as PersonIcon } from '@material-ui/icons';
+import { Account as PersonIcon } from 'mdi-material-ui';
 import clsx from 'clsx';
 import {
   FileCheck as NoScheinRequiredIcon,

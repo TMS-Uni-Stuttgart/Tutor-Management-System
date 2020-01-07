@@ -2,19 +2,19 @@ import { Button, IconButton, TableCell, TableRow } from '@material-ui/core';
 import { AvatarProps } from '@material-ui/core/Avatar';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { TableRowProps } from '@material-ui/core/TableRow';
-import {
-  KeyboardArrowDown as KeyboardArrowDownIcon,
-  MailOutline as MailIcon,
-  SvgIconComponent,
-} from '@material-ui/icons';
 import clsx from 'clsx';
-import { AccountSwitch } from 'mdi-material-ui';
+import {
+  AccountSwitch,
+  ChevronDown as KeyboardArrowDownIcon,
+  EmailOutline as MailIcon,
+} from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow from '../../../components/PaperTableRow';
 import StudentAvatar from '../../../components/student-icon/StudentAvatar';
+import { SvgIconComponent } from '../../../typings/SvgIconComponent';
 import { StudentWithFetchedTeam } from '../../../typings/types';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 import ScheinCriteriaStatusTable from './ScheinCriteriaStatusTable';

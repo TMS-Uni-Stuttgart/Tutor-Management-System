@@ -1,6 +1,6 @@
 import { Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Person as PersonIcon, ContactMail as MailIcon } from '@material-ui/icons';
+import { Account as PersonIcon, ContactMail as MailIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Role } from 'shared/dist/model/Role';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';

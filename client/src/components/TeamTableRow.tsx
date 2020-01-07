@@ -1,6 +1,6 @@
 import { TableCell, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Group as GroupIcon } from '@material-ui/icons';
+import { Group as GroupIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Team } from 'shared/dist/model/Team';
 import EntityListItemMenu from './list-item-menu/EntityListItemMenu';

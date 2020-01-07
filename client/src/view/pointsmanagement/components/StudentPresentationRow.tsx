@@ -1,6 +1,6 @@
 import { CircularProgress, IconButton, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Person as PersonIcon } from '@material-ui/icons';
+import { Account as PersonIcon } from 'mdi-material-ui';
 import { Formik } from 'formik';
 import { Check as CheckIcon } from 'mdi-material-ui';
 import React from 'react';
