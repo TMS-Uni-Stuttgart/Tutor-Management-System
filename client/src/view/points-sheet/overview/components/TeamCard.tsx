@@ -26,8 +26,8 @@ import { useDialog } from '../../../../hooks/DialogService';
 import {
   getEnterPointsForTeamPath,
   getEnterPointsForStudentPath,
-} from '../../../../util/routing/Routing.helpers';
-import SplitButton from './SplitButton';
+} from '../../../../routes/Routing.helpers';
+import SplitButton from '../../../../components/SplitButton';
 import TeamCardPointsTable from './TeamCardPointsTable';
 import { renderLink } from '../../../../components/drawer/components/renderLink';
 

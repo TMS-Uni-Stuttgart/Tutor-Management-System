@@ -11,7 +11,7 @@ import {
 } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { teamItemToString } from '../../../util/helperFunctions';
-import { getEnterPointsForTeamPath } from '../../../util/routing/Routing.helpers';
+import { getEnterPointsForTeamPath } from '../../../routes/Routing.helpers';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToPointMap } from './EnterPoints.helpers';

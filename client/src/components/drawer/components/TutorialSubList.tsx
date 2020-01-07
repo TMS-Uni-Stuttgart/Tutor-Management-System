@@ -8,9 +8,9 @@ import {
 import React, { useEffect, useState } from 'react';
 import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-import { RouteType } from '../../../util/routing/Routing.routes';
+import { RouteType } from '../../../routes/Routing.routes';
 import DrawerListItem from './DrawerListItem';
-import { getTutorialRelatedPath } from '../../../util/routing/Routing.helpers';
+import { getTutorialRelatedPath } from '../../../routes/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

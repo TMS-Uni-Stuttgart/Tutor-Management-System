@@ -19,7 +19,7 @@ import SubmitButton from '../../components/forms/components/SubmitButton';
 import { useAxios } from '../../hooks/FetchingService';
 import { FormikSubmitCallback } from '../../types';
 import { getDisplayStringForTutorial, parseDateToMapKey } from '../../util/helperFunctions';
-import { RoutingPath } from '../../util/routing/Routing.routes';
+import { RoutingPath } from '../../routes/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

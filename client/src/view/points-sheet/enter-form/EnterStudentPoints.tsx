@@ -12,7 +12,7 @@ import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { convertFormStateToPointMap } from './EnterPoints.helpers';
 import { Team } from 'shared/dist/model/Team';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
-import { getEnterPointsForStudentPath } from '../../../util/routing/Routing.helpers';
+import { getEnterPointsForStudentPath } from '../../../routes/Routing.helpers';
 
 interface RouteParams {
   tutorialId?: string;

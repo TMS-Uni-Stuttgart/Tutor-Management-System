@@ -25,8 +25,8 @@ import SubmitButton from '../components/forms/components/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
 import { useLogin } from '../hooks/LoginService';
 import { getDisplayStringForTutorial, saveBlob } from '../util/helperFunctions';
-import { getTutorialRelatedPath } from '../util/routing/Routing.helpers';
-import { ROUTES, RouteType } from '../util/routing/Routing.routes';
+import { getTutorialRelatedPath } from '../routes/Routing.helpers';
+import { ROUTES, RouteType } from '../routes/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

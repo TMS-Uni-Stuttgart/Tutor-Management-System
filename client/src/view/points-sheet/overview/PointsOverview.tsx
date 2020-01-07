@@ -10,9 +10,9 @@ import { getAllSheets } from '../../../hooks/fetching/Sheet';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
-import Placeholder from './components/Placeholder';
+import Placeholder from '../../../components/Placeholder';
 import TeamCardList from './components/TeamCardList';
-import { getPointOverviewPath } from '../../../util/routing/Routing.helpers';
+import { getPointOverviewPath } from '../../../routes/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

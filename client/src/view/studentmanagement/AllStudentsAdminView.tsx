@@ -21,7 +21,7 @@ import {
   parseDateToMapKey,
   saveBlob,
 } from '../../util/helperFunctions';
-import { getPointsOfEntityAsString } from '../points/util/helper';
+import { getPointsOfEntityAsString } from '../points-sheet/util/helper';
 import Studentoverview from './Studentoverview/Studentoverview';
 import StudentoverviewStoreProvider, { useStudentStore } from './StudentStore/StudentStore';
 

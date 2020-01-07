@@ -5,7 +5,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import Drawer from '../components/drawer/Drawer';
 import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
-import { ROUTES, RouteType, RoutingPath } from '../util/routing/Routing.routes';
+import { ROUTES, RouteType, RoutingPath } from '../routes/Routing.routes';
 import AppBar from './AppBar';
 
 const useStyles = makeStyles((theme: Theme) =>

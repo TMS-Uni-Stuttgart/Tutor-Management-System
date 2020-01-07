@@ -6,7 +6,7 @@ import EntityListItemMenu from '../../../components/list-item-menu/EntityListIte
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { TutorialWithFetchedCorrectors } from '../../../typings/types';
 import { renderLink } from '../../../components/drawer/components/renderLink';
-import { RoutingPath } from '../../../util/routing/Routing.routes';
+import { RoutingPath } from '../../../routes/Routing.routes';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>

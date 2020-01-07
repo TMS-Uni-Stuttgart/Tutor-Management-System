@@ -7,8 +7,8 @@ import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelec
 import { getSheet } from '../../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { HasPoints } from '../../../typings/types';
-import { getPointOverviewPath } from '../../../util/routing/Routing.helpers';
-import Placeholder from '../overview/components/Placeholder';
+import { getPointOverviewPath } from '../../../routes/Routing.helpers';
+import Placeholder from '../../../components/Placeholder';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 

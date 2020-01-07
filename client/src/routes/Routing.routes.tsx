@@ -1,40 +1,38 @@
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import {
-  Book as BookIcon,
-  ViewDashboard as DashboardIcon,
-  Group as GroupIcon,
   Account as PersonIcon,
-} from 'mdi-material-ui';
-import {
   AccountBadge as AccountBadgeIcon,
   AccountMultipleCheck as AccountMultipleCheckIcon,
+  Book as BookIcon,
   File as FileIcon,
+  FileDocumentBox as FileDocumentBoxIcon,
+  FileDocumentBoxMultiple as FileDocumentBoxMultipleIcon,
+  Group as GroupIcon,
   Login as LoginIcon,
   ScriptText as ScriptTextIcon,
   Teach as TeachIcon,
-  FileDocumentBox as FileDocumentBoxIcon,
-  FileDocumentBoxMultiple as FileDocumentBoxMultipleIcon,
+  ViewDashboard as DashboardIcon,
 } from 'mdi-material-ui';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import AttendanceAdminView from '../../view/attendance/AttendanceAdminView';
-import AttendanceView from '../../view/attendance/AttendanceView';
-import Dashboard from '../../view/dashboard/Dashboard';
-import PointsOverview from '../../view/points/overview/PointsOverview';
-import Login from '../../view/Login';
-import ScheinCriteriaManagement from '../../view/scheincriteriamanagement/ScheinCriteriaManagement';
-import SheetManagement from '../../view/sheetmanagement/SheetManagement';
-import TutorStudentmanagement from '../../view/studentmanagement/TutorStudentmanagement';
-import Teamoverview from '../../view/teamoverview/Teamoverview';
-import TutorialManagement from '../../view/tutorialmanagement/TutorialManagement';
-import UserManagement from '../../view/usermanagement/UserManagement';
-import AllStudentsAdminView from '../../view/studentmanagement/AllStudentsAdminView';
-import ScheinExamPointEntry from '../../view/pointsmanagement/ScheinExamPointEntry';
-import ScheinExamManagement from '../../view/pointsmanagement/ScheinExamManagement';
-import TutorialSubstituteManagement from '../../view/tutorialmanagement/TutorialSubstituteManagement';
 import { Role } from 'shared/dist/model/Role';
-import EnterTeamPoints from '../../view/points/enter-form/EnterTeamPoints';
-import EnterStudentPoints from '../../view/points/enter-form/EnterStudentPoints';
+import AttendanceAdminView from '../view/attendance/AttendanceAdminView';
+import AttendanceView from '../view/attendance/AttendanceView';
+import Dashboard from '../view/dashboard/Dashboard';
+import Login from '../view/Login';
+import EnterStudentPoints from '../view/points-sheet/enter-form/EnterStudentPoints';
+import EnterTeamPoints from '../view/points-sheet/enter-form/EnterTeamPoints';
+import PointsOverview from '../view/points-sheet/overview/PointsOverview';
+import ScheinExamManagement from '../view/pointsmanagement/ScheinExamManagement';
+import ScheinCriteriaManagement from '../view/scheincriteriamanagement/ScheinCriteriaManagement';
+import SheetManagement from '../view/sheetmanagement/SheetManagement';
+import AllStudentsAdminView from '../view/studentmanagement/AllStudentsAdminView';
+import TutorStudentmanagement from '../view/studentmanagement/TutorStudentmanagement';
+import Teamoverview from '../view/teamoverview/Teamoverview';
+import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
+import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
+import UserManagement from '../view/usermanagement/UserManagement';
+import ScheinexamPointsOverview from '../view/points-scheinexam/ScheinexamPointsOverview';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -138,7 +136,7 @@ export const ROUTES: readonly RouteType[] = [
   {
     path: RoutingPath.SCHEIN_EXAMS,
     title: 'Scheinklausuren',
-    component: ScheinExamPointEntry,
+    component: ScheinexamPointsOverview,
     icon: FileDocumentBoxIcon,
     roles: [Role.TUTOR, Role.CORRECTOR],
     isInDrawer: true,
