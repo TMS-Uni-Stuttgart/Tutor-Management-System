@@ -32,7 +32,8 @@ import Teamoverview from '../view/teamoverview/Teamoverview';
 import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
 import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
 import UserManagement from '../view/usermanagement/UserManagement';
-import ScheinexamPointsOverview from '../view/points-scheinexam/ScheinexamPointsOverview';
+import ScheinexamPointsOverview from '../view/points-scheinexam/overview/ScheinexamPointsOverview';
+import EnterScheinexamPoints from '../view/points-scheinexam/enter-form/EnterScheinexamPoints';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -43,7 +44,8 @@ export enum RoutingPath {
   ENTER_POINTS_OVERVIEW = '/enterpoints/:sheetId?',
   ENTER_POINTS_TEAM = '/enterpoints/:sheetId/team/:teamId',
   ENTER_POINTS_STUDENT = '/enterpoints/:sheetId/team/:teamId/student/:studentId',
-  SCHEIN_EXAMS = '/scheinexams',
+  SCHEIN_EXAMS_OVERVIEW = '/scheinexams/:examId?',
+  SCHEIN_EXAMS_STUDENT = '/scheinexams/:examId/student/:studentId',
   DASHBOARD = '/dashboard',
   MANAGE_USERS = '/admin/usermanagement',
   MANAGE_TUTORIALS = '/admin/tutorialmanagement',
@@ -134,7 +136,17 @@ export const ROUTES: readonly RouteType[] = [
     isTutorialRelated: true,
   },
   {
-    path: RoutingPath.SCHEIN_EXAMS,
+    path: RoutingPath.SCHEIN_EXAMS_STUDENT,
+    title: 'Scheinklausuren',
+    component: EnterScheinexamPoints,
+    icon: FileDocumentBoxIcon,
+    roles: [Role.TUTOR, Role.CORRECTOR],
+    isInDrawer: false,
+    isPrivate: true,
+    isTutorialRelated: true,
+  },
+  {
+    path: RoutingPath.SCHEIN_EXAMS_OVERVIEW,
     title: 'Scheinklausuren',
     component: ScheinexamPointsOverview,
     icon: FileDocumentBoxIcon,
