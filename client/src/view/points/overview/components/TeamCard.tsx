@@ -84,6 +84,7 @@ function TeamCard({
                   getEnterPointsForStudentPath({
                     tutorialId,
                     sheetId: sheet.id,
+                    teamId: team.id,
                     studentId: student.id,
                   })
                 )}

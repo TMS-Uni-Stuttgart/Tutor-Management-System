@@ -10,19 +10,23 @@ import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { convertFormStateToPointMap } from './EnterPoints.helpers';
+import { Team } from 'shared/dist/model/Team';
+import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 
 interface RouteParams {
   tutorialId?: string;
   sheetId?: string;
+  teamId?: string;
   studentId?: string;
 }
 
 function EnterStudentPoints(): JSX.Element {
-  const { tutorialId, sheetId, studentId } = useParams<RouteParams>();
+  const { tutorialId, sheetId, teamId, studentId } = useParams<RouteParams>();
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
   const [student, setStudent] = useState<Student>();
+  const [team, setTeam] = useState<Team>();
 
   useEffect(() => {
     if (!studentId) {
@@ -35,6 +39,27 @@ function EnterStudentPoints(): JSX.Element {
       })
       .catch(() => setError('Studierende/r konnte nicht abgerufen werden.'));
   }, [studentId, setError]);
+
+  useEffect(() => {
+    if (!tutorialId || !teamId) {
+      return;
+    }
+
+    getTeamOfTutorial(tutorialId, teamId)
+      .then(response => {
+        setTimeout(() => setTeam(response), 10000);
+      })
+      .catch(() => setError('Team konnte nicht abgerufen werden.'));
+  });
+
+  if (!tutorialId || !sheetId || !studentId || !teamId) {
+    return (
+      <Typography color='error'>
+        At least one of the three required params <code>tutorialId, sheetId, studentId</code> was
+        not provided through path params.
+      </Typography>
+    );
+  }
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {
     if (!sheetId || !tutorialId || !studentId || !student) {
@@ -66,14 +91,7 @@ function EnterStudentPoints(): JSX.Element {
     }
   };
 
-  if (!tutorialId || !sheetId || !studentId) {
-    return (
-      <Typography color='error'>
-        At least one of the three required params <code>tutorialId, sheetId, studentId</code> was
-        not provided through path params.
-      </Typography>
-    );
-  }
+  const allStudents: Student[] = team ? team.students : student ? [student] : [];
 
   return (
     <EnterPoints
@@ -81,7 +99,7 @@ function EnterStudentPoints(): JSX.Element {
       sheetId={sheetId}
       entity={student}
       onSubmit={handleSubmit}
-      allEntities={!!student ? [student] : []}
+      allEntities={allStudents}
       entitySelectProps={{
         label: 'Student',
         emptyPlaceholder: 'Keine Studierenden verfügbar.',

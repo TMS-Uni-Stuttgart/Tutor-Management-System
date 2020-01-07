@@ -14,6 +14,7 @@ interface EnterPointsForTeamParams {
 interface EnterPointsForStudentParams {
   tutorialId: string;
   sheetId: string;
+  teamId: string;
   studentId: string;
 }
 
@@ -55,12 +56,14 @@ export function getEnterPointsForTeamPath({
 export function getEnterPointsForStudentPath({
   tutorialId,
   sheetId,
+  teamId,
   studentId,
 }: EnterPointsForStudentParams): string {
   const path: string = getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_STUDENT, tutorialId);
 
   return path
     .replace(':sheetId', sheetId)
+    .replace(':teamId', teamId)
     .replace(':studentId', studentId)
     .replace(/\/\/+/, '/');
 }
