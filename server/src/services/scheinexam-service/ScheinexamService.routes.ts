@@ -26,7 +26,7 @@ scheinexamRouter.post(
   }
 );
 
-scheinexamRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+scheinexamRouter.get('/:id', isAuthenticated, async (req, res) => {
   const id = req.params.id;
   const exam = await scheinexamService.getScheinExamWithId(id);
 
