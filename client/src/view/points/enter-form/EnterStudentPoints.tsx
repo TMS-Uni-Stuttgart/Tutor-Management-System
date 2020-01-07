@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { Student } from 'shared/dist/model/Student';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
@@ -12,6 +12,7 @@ import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { convertFormStateToPointMap } from './EnterPoints.helpers';
 import { Team } from 'shared/dist/model/Team';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
+import { getEnterPointsForStudentPath } from '../../../util/routing/Routing.helpers';
 
 interface RouteParams {
   tutorialId?: string;
@@ -21,7 +22,9 @@ interface RouteParams {
 }
 
 function EnterStudentPoints(): JSX.Element {
+  const history = useHistory();
   const { tutorialId, sheetId, teamId, studentId } = useParams<RouteParams>();
+
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
@@ -47,7 +50,7 @@ function EnterStudentPoints(): JSX.Element {
 
     getTeamOfTutorial(tutorialId, teamId)
       .then(response => {
-        setTimeout(() => setTeam(response), 10000);
+        setTeam(response);
       })
       .catch(() => setError('Team konnte nicht abgerufen werden.'));
   });
@@ -60,6 +63,16 @@ function EnterStudentPoints(): JSX.Element {
       </Typography>
     );
   }
+
+  const handleStudentChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    if (!tutorialId || !sheetId || !teamId) {
+      return;
+    }
+
+    const studentId: string = event.target.value as string;
+
+    history.push(getEnterPointsForStudentPath({ tutorialId, sheetId, teamId, studentId }));
+  };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {
     if (!sheetId || !tutorialId || !studentId || !student) {
@@ -104,6 +117,7 @@ function EnterStudentPoints(): JSX.Element {
         label: 'Student',
         emptyPlaceholder: 'Keine Studierenden verfügbar.',
         itemToString: s => getNameOfEntity(s),
+        onChange: handleStudentChange,
       }}
     />
   );
