@@ -1,11 +1,10 @@
-import { PointsFormExerciseState, PointsFormState } from './components/EnterPointsForm.helpers';
 import {
+  PointMap,
   PointMapEntry,
   PointsOfSubexercises,
-  PointMap,
   SheetMapEntry,
-  ExercisePointInfo,
 } from 'shared/dist/model/Points';
+import { PointsFormExerciseState, PointsFormState } from './components/EnterPointsForm.helpers';
 
 /**
  * Converts the given form state of __one__ exercise to a valid PointMapEntry.
@@ -63,11 +62,6 @@ export function convertFormStateToPointMap({ values, sheetId }: ConvertParams): 
   points.setSheetEntry(sheetId, entry);
 
   return points;
-}
-
-interface ConvertedPoints {
-  achieved: number;
-  total: ExercisePointInfo;
 }
 
 export function getPointsFromState(values: PointsFormState): number {

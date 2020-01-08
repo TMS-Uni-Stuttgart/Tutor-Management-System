@@ -64,9 +64,9 @@ interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   onSubmit: PointsFormSubmitCallback;
 }
 
-type FormProps = Omit<Props, 'entity'>;
+type FormProps = Omit<Props, 'entity' | 'onSubmit'>;
 
-function EnterPointsFormFormik({ entity, ...props }: Props): JSX.Element {
+function EnterPointsForm({ entity, ...props }: Props): JSX.Element {
   const { sheet, onSubmit } = props;
 
   const [initialValues, setInitialValues] = useState<PointsFormState>(
@@ -80,18 +80,12 @@ function EnterPointsFormFormik({ entity, ...props }: Props): JSX.Element {
 
   return (
     <Formik key={entity.id} initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
-      <EnterPointsForm {...props} />
+      <EnterPointsFormInner {...props} />
     </Formik>
   );
 }
 
-function EnterPointsForm({
-  sheet,
-  exercise,
-  className,
-  onSubmit,
-  ...props
-}: FormProps): JSX.Element {
+function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProps): JSX.Element {
   const classes = useStyles();
   const dialog = useDialog();
 
@@ -141,7 +135,7 @@ function EnterPointsForm({
 
           <Typography
             className={classes.pointsText}
-          >{`Gesamt ${achieved} / ${totalPoints} Punkte`}</Typography>
+          >{`Gesamt: ${achieved} / ${totalPoints} Punkte`}</Typography>
         </div>
 
         <ExerciseBox
@@ -176,4 +170,4 @@ function EnterPointsForm({
   );
 }
 
-export default EnterPointsFormFormik;
+export default EnterPointsForm;

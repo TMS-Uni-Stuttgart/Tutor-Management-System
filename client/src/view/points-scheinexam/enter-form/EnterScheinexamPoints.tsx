@@ -13,9 +13,16 @@ import {
 import Placeholder from '../../../components/Placeholder';
 import CustomSelect from '../../../components/CustomSelect';
 import { Student } from 'shared/dist/model/Student';
-import { getStudent } from '../../../hooks/fetching/Student';
+import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
+import ScheinexamPointsForm from './components/ScheinexamPointsForm';
+import {
+  ScheinexamPointsFormSubmitCallback,
+  convertFormStateToPointMap,
+} from './components/ScheinexamPointsForm.helpers';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -27,6 +34,9 @@ const useStyles = makeStyles(theme =>
       margin: theme.spacing(0, 1),
     },
     studentSelect: {
+      flex: 1,
+    },
+    form: {
       flex: 1,
     },
   })
@@ -44,6 +54,7 @@ function EnterScheinexamPoints(): JSX.Element {
   const history = useHistory();
   const { tutorialId, examId, studentId } = useParams<RouteParams>();
 
+  const { enqueueSnackbar } = useSnackbar();
   const { setError, isError } = useErrorSnackbar();
 
   const [exam, setExam] = useState<ScheinExam>();
@@ -90,6 +101,33 @@ function EnterScheinexamPoints(): JSX.Element {
     history.push(getEnterPointsForScheinexamPath({ tutorialId, examId, studentId }));
   };
 
+  const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {
+    if (!student) {
+      return;
+    }
+
+    const points: PointMap = convertFormStateToPointMap({ values, examId });
+    const updateDTO: UpdatePointsDTO = { points: points.toDTO() };
+
+    console.log(updateDTO);
+
+    try {
+      await setExamPointsOfStudent(studentId, updateDTO);
+      const updatedStudent = await getStudent(studentId);
+
+      setStudent(updatedStudent);
+
+      resetForm({ values: { ...values } });
+      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} erfolgreich eingetragen.`, {
+        variant: 'success',
+      });
+    } catch {
+      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} konnten nicht eingetragen werden.`, {
+        variant: 'error',
+      });
+    }
+  };
+
   return (
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={3}>
@@ -127,7 +165,15 @@ function EnterScheinexamPoints(): JSX.Element {
         showPlaceholder={!student}
         loading={!exam && !isError}
       >
-        <Typography>IMPLEMENT ME {`${isError}`}</Typography>
+        {exam && student && (
+          <ScheinexamPointsForm
+            key={exam.id}
+            className={classes.form}
+            exam={exam}
+            student={student}
+            onSubmit={handleSubmit}
+          />
+        )}
       </Placeholder>
     </Box>
   );
