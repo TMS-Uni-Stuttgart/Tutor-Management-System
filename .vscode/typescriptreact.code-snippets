@@ -36,9 +36,9 @@
     "prefix": "useStyles hook (MUI)",
     "description": "boilerplate code for the useStyles hook",
     "body": [
-      "import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';",
+      "import { makeStyles, createStyles } from '@material-ui/core/styles';",
       "",
-      "const useStyles = makeStyles((theme: Theme) =>",
+      "const useStyles = makeStyles(theme =>",
         "\tcreateStyles({",
           "\t\t$0",
         "\t})",
