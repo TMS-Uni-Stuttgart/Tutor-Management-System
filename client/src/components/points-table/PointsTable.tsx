@@ -17,10 +17,9 @@ import {
   PointMap,
 } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
-import { HasPoints } from '../../typings/types';
 
 interface Props extends React.ComponentProps<'div'> {
-  entity: HasPoints;
+  points: PointMap;
   sheet: HasExercises;
 }
 
@@ -38,8 +37,7 @@ function getPointStringOfExercise(exercise: Exercise): string {
   return convertExercisePointInfoToString(pointInfo);
 }
 
-function PointsTable({ entity, sheet, ...props }: Props): JSX.Element {
-  const points = new PointMap(entity.points);
+function PointsTable({ points, sheet, ...props }: Props): JSX.Element {
   const achieved = points.getSumOfPoints(sheet);
   const total = convertExercisePointInfoToString(getPointsOfAllExercises(sheet));
 

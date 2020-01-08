@@ -8,6 +8,7 @@ import { Student } from 'shared/dist/model/Student';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { getEnterPointsForScheinexamPath } from '../../../../routes/Routing.helpers';
+import { PointMap } from 'shared/dist/model/Points';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,7 +40,7 @@ function StudentCard({ student, exam, tutorialId }: Props): JSX.Element {
       />
 
       <CardContent>
-        <PointsTable entity={student} sheet={exam} />
+        <PointsTable points={new PointMap(student.scheinExamResults)} sheet={exam} />
       </CardContent>
 
       <CardActions className={classes.actions}>

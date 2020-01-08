@@ -30,6 +30,7 @@ import {
 import SplitButton from '../../../../components/SplitButton';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { renderLink } from '../../../../components/drawer/components/renderLink';
+import { PointMap } from 'shared/dist/model/Points';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -137,7 +138,7 @@ function TeamCard({
       />
 
       <CardContent>
-        <PointsTable entity={team} sheet={sheet} />
+        <PointsTable points={new PointMap(team.points)} sheet={sheet} />
       </CardContent>
 
       <CardActions className={classes.actions}>
