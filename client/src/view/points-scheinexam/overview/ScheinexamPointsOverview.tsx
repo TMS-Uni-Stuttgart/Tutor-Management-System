@@ -1,14 +1,14 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import React, { useEffect, useState, ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { Student } from 'shared/dist/model/Student';
+import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
-import CustomSelect from '../../../components/CustomSelect';
-import { getScheinexamPointsOverviewPath } from '../../../routes/Routing.helpers';
-import { Student } from 'shared/dist/model/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
+import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { getScheinexamPointsOverviewPath } from '../../../routes/Routing.helpers';
 import StudentCardList from './components/StudentCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -46,8 +46,6 @@ function ScheinexamPointsOverview(): JSX.Element {
   const [selectedExam, setSelectedExam] = useState<ScheinExam>();
 
   useEffect(() => {
-    console.log('FETCHING EXAMS'); // FIXME: REMOVE ME.
-
     getAllScheinExams()
       .then(response => {
         setExams(response);
@@ -102,7 +100,9 @@ function ScheinexamPointsOverview(): JSX.Element {
         showPlaceholder={!selectedExam}
         loading={(!!examId && !selectedExam) || (!!selectedExam && students.length === 0)}
       >
-        {selectedExam && <StudentCardList students={students} />}
+        {selectedExam && (
+          <StudentCardList students={students} exam={selectedExam} tutorialId={tutorialId} />
+        )}
       </Placeholder>
     </div>
   );
