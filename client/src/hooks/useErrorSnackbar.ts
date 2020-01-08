@@ -3,6 +3,7 @@ import { useSnackbar, OptionsObject } from 'notistack';
 
 interface UseErrorSnackbar {
   setError: React.Dispatch<React.SetStateAction<string | undefined>>;
+  isError: boolean;
 }
 
 /**
@@ -30,5 +31,6 @@ export function useErrorSnackbar(): UseErrorSnackbar {
 
   return {
     setError,
+    isError: !!error,
   };
 }
