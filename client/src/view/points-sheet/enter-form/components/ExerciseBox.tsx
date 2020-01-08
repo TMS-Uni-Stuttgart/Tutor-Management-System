@@ -41,13 +41,6 @@ const useStyles = makeStyles((theme: Theme) =>
     subexerciseName: {
       marginRight: theme.spacing(1),
     },
-    pointsTextField: {
-      '& input': {
-        width: 'unset',
-        flex: 1,
-        textAlign: 'right',
-      },
-    },
     commentBox: {
       display: 'flex',
       flexDirection: 'column',
@@ -115,7 +108,6 @@ function ExerciseBox({ name, exercise, className, ...props }: Props): JSX.Elemen
 
               <PointsTextField
                 name={`${name}.points.${subEx.id}`}
-                className={classes.pointsTextField}
                 placeholder='0'
                 maxPoints={getPointsOfExercise(subEx)}
               />
@@ -124,7 +116,6 @@ function ExerciseBox({ name, exercise, className, ...props }: Props): JSX.Elemen
         ) : (
           <PointsTextField
             name={`${name}.points`}
-            className={classes.pointsTextField}
             placeholder='0'
             maxPoints={getPointsOfExercise(exercise)}
           />
