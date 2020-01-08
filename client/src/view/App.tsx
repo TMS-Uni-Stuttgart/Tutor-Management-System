@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme: Theme) =>
         overflowY: 'hidden',
         maxWidth: '100vw',
         maxHeight: '100vh',
+        '& *': {
+          ...theme.mixins.scrollbar(8),
+        },
       },
     },
     root: {
