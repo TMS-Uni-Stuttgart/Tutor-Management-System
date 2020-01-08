@@ -16,12 +16,12 @@ import {
   PointId,
   PointMap,
 } from 'shared/dist/model/Points';
-import { Exercise, Sheet } from 'shared/dist/model/Sheet';
-import { Team } from 'shared/dist/model/Team';
+import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
+import { HasPoints } from '../../typings/types';
 
 interface Props extends React.ComponentProps<'div'> {
-  team: Team;
-  sheet: Sheet;
+  entity: HasPoints;
+  sheet: HasExercises;
 }
 
 function TablePaper({ children, ...props }: TableContainerBaseProps): JSX.Element {
@@ -38,8 +38,8 @@ function getPointStringOfExercise(exercise: Exercise): string {
   return convertExercisePointInfoToString(pointInfo);
 }
 
-function TeamCardPointsTable({ team, sheet, ...props }: Props): JSX.Element {
-  const points = new PointMap(team.points);
+function PointsTable({ entity, sheet, ...props }: Props): JSX.Element {
+  const points = new PointMap(entity.points);
   const achieved = points.getSumOfPoints(sheet);
   const total = convertExercisePointInfoToString(getPointsOfAllExercises(sheet));
 
@@ -70,4 +70,4 @@ function TeamCardPointsTable({ team, sheet, ...props }: Props): JSX.Element {
   );
 }
 
-export default TeamCardPointsTable;
+export default PointsTable;

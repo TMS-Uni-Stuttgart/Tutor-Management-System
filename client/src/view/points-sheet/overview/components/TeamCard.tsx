@@ -28,7 +28,7 @@ import {
   getEnterPointsForStudentPath,
 } from '../../../../routes/Routing.helpers';
 import SplitButton from '../../../../components/SplitButton';
-import TeamCardPointsTable from './TeamCardPointsTable';
+import PointsTable from '../../../../components/points-table/PointsTable';
 import { renderLink } from '../../../../components/drawer/components/renderLink';
 
 const useStyles = makeStyles(() =>
@@ -137,7 +137,7 @@ function TeamCard({
       />
 
       <CardContent>
-        <TeamCardPointsTable team={team} sheet={sheet} />
+        <PointsTable entity={team} sheet={sheet} />
       </CardContent>
 
       <CardActions className={classes.actions}>
