@@ -423,23 +423,21 @@ function PointManagement({ match, enqueueSnackbar }: Props): JSX.Element {
             {
               [TabValue.POINTS]:
                 teams.length > 0 ? (
-                  teams
-                    .sort((a, b) => a.teamNo - b.teamNo)
-                    .map(team => (
-                      <PointsCard
-                        key={team.id}
-                        className={classes.pointCard}
-                        avatar={<TeamIcon />}
-                        title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
-                        subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
-                        entity={{ id: team.id, points: team.points }}
-                        entityWithExercises={currentSheet}
-                        onPointsSave={handleSavePoints(team)}
-                        onEditPoints={handleEditPointsOfStudents(team)}
-                        onGeneratePdf={handleGenerateSinglePdf(team)}
-                        onPreviewPdf={handleSingleMarkdownPreview(team)}
-                      />
-                    ))
+                  teams.map(team => (
+                    <PointsCard
+                      key={team.id}
+                      className={classes.pointCard}
+                      avatar={<TeamIcon />}
+                      title={`Team #${team.teamNo.toString().padStart(2, '0')}`}
+                      subtitle={`${team.students.map(s => s.lastname).join(', ')}`}
+                      entity={{ id: team.id, points: team.points }}
+                      entityWithExercises={currentSheet}
+                      onPointsSave={handleSavePoints(team)}
+                      onEditPoints={handleEditPointsOfStudents(team)}
+                      onGeneratePdf={handleGenerateSinglePdf(team)}
+                      onPreviewPdf={handleSingleMarkdownPreview(team)}
+                    />
+                  ))
                 ) : (
                   <Typography variant='h6' className={classes.placeholder}>
                     Keine Teams verfügbar.

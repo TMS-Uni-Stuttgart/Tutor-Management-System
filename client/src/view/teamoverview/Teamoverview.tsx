@@ -198,7 +198,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
               className={classes.teamForm}
             />
           }
-          items={teams.sort((a, b) => a.teamNo - b.teamNo)}
+          items={teams}
           createRowFromItem={team => (
             <TeamTableRow
               team={team}

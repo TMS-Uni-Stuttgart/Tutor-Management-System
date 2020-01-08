@@ -13,6 +13,7 @@ export async function getTeamsOfTutorial(tutorialId: string): Promise<Team[]> {
 
   if (response.status === 200) {
     response.data.forEach(team => sortStudentsOfTeam(team));
+    response.data.sort((a, b) => a.teamNo - b.teamNo);
 
     return response.data;
   }

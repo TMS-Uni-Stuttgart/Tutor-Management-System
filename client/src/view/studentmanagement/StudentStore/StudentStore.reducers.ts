@@ -115,7 +115,6 @@ async function reduceReinitializeStore(
     ]);
 
     students.sort(sortByName);
-    teams.sort((a, b) => a.teamNo - b.teamNo);
 
     return { ...state, students, teams, isInitialized: true, tutorialId };
   } else {
