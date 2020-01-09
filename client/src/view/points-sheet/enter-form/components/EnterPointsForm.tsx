@@ -31,10 +31,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     textBox: {
       display: 'flex',
+      marginBottom: theme.spacing(1),
     },
     unsavedChangesText: {
       marginLeft: theme.spacing(1),
-      marginBottom: theme.spacing(1),
     },
     pointsText: {
       marginLeft: 'auto',

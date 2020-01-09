@@ -109,8 +109,6 @@ function EnterScheinexamPoints(): JSX.Element {
     const points: PointMap = convertFormStateToPointMap({ values, examId });
     const updateDTO: UpdatePointsDTO = { points: points.toDTO() };
 
-    console.log(updateDTO);
-
     try {
       await setExamPointsOfStudent(studentId, updateDTO);
       const updatedStudent = await getStudent(studentId);

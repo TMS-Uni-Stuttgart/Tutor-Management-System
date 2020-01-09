@@ -32,7 +32,6 @@ const useStyles = makeStyles(theme =>
     },
     unsavedChangesText: {
       marginLeft: theme.spacing(1),
-      marginBottom: theme.spacing(1),
     },
     pointsText: {
       marginLeft: 'auto',
@@ -144,7 +143,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
       />
 
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
-        <Box display='flex'>
+        <Box display='flex' marginBottom={1}>
           <Typography className={classes.unsavedChangesText}>
             {dirty && <>Es gibt ungespeicherte Änderungen.</>}
           </Typography>
