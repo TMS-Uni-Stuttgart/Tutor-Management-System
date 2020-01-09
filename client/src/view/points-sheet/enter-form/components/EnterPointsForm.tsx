@@ -20,6 +20,7 @@ import {
   PointsFormSubmitCallback,
 } from './EnterPointsForm.helpers';
 import ExerciseBox from './ExerciseBox';
+import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,7 +91,15 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
   const dialog = useDialog();
 
   const formikContext = useFormikContext<PointsFormState>();
-  const { values, errors, handleSubmit, resetForm, isSubmitting, dirty } = formikContext;
+  const {
+    values,
+    errors,
+    handleSubmit,
+    resetForm,
+    isSubmitting,
+    dirty,
+    submitForm,
+  } = formikContext;
 
   const achieved = getAchievedPointsFromState(values);
   const total = getPointsOfAllExercises(sheet);
@@ -119,6 +128,16 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
       ],
     });
   };
+
+  useKeyboardShortcut([{ key: 's', modifiers: { ctrlKey: true } }], e => {
+    e.preventDefault();
+
+    if (!dirty) {
+      return;
+    }
+
+    submitForm();
+  });
 
   return (
     <>

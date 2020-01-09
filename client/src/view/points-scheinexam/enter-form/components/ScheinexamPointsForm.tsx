@@ -21,6 +21,7 @@ import {
 import SubmitButton from '../../../../components/forms/components/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
+import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -84,13 +85,31 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
   const classes = useStyles();
 
   const formikContext = useFormikContext<ScheinexamPointsFormState>();
-  const { values, errors, handleSubmit, resetForm, isSubmitting, dirty } = formikContext;
+  const {
+    values,
+    errors,
+    handleSubmit,
+    resetForm,
+    isSubmitting,
+    dirty,
+    submitForm,
+  } = formikContext;
 
   const dialog = useDialog();
 
   const achieved = getPointsFromState(values);
   const total = getPointsOfAllExercises(exam);
   const totalPoints = convertExercisePointInfoToString(total);
+
+  useKeyboardShortcut([{ key: 's', modifiers: { ctrlKey: true } }], e => {
+    e.preventDefault();
+
+    if (!dirty) {
+      return;
+    }
+
+    submitForm();
+  });
 
   const handleReset = () => {
     dialog.show({
