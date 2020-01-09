@@ -23,7 +23,7 @@ import Login from '../view/Login';
 import EnterStudentPoints from '../view/points-sheet/enter-form/EnterStudentPoints';
 import EnterTeamPoints from '../view/points-sheet/enter-form/EnterTeamPoints';
 import PointsOverview from '../view/points-sheet/overview/PointsOverview';
-import ScheinExamManagement from '../view/pointsmanagement/ScheinExamManagement';
+import ScheinExamManagement from '../view/scheinexam-management/ScheinExamManagement';
 import ScheinCriteriaManagement from '../view/scheincriteriamanagement/ScheinCriteriaManagement';
 import SheetManagement from '../view/sheetmanagement/SheetManagement';
 import AllStudentsAdminView from '../view/studentmanagement/AllStudentsAdminView';

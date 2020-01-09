@@ -6,7 +6,7 @@ import React from 'react';
 import { convertExercisePointInfoToString, getPointsOfExercise } from 'shared/dist/model/Points';
 import { Exercise } from 'shared/dist/model/Sheet';
 import FormikMarkdownTextfield from '../../../../components/forms/components/FormikMarkdownTextfield';
-import PointsTextField from '../../../pointsmanagement/components/points-card/PointsTextField';
+import PointsTextField from '../../../../components/PointsTextField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

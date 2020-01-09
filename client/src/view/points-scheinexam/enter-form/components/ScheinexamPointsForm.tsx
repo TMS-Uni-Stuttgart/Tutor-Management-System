@@ -12,7 +12,7 @@ import { Prompt } from 'react-router';
 import clsx from 'clsx';
 import { Box, Paper, Typography, Grid, Button } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import PointsTextField from '../../../pointsmanagement/components/points-card/PointsTextField';
+import PointsTextField from '../../../../components/PointsTextField';
 import {
   getPointsOfExercise,
   getPointsOfAllExercises,
@@ -88,7 +88,6 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
 
   const dialog = useDialog();
 
-  // TODO: IMPLEMENT THIS!
   const achieved = getPointsFromState(values);
   const total = getPointsOfAllExercises(exam);
   const totalPoints = convertExercisePointInfoToString(total);
