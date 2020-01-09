@@ -42,6 +42,7 @@ const useStyles = makeStyles(theme =>
       flex: 1,
       background: theme.palette.background.default,
       overflowX: 'hidden',
+      overflowY: 'auto',
     },
     exerciseName: {
       marginRight: theme.spacing(1),
