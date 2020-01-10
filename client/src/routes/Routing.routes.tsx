@@ -34,11 +34,13 @@ import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSub
 import UserManagement from '../view/usermanagement/UserManagement';
 import ScheinexamPointsOverview from '../view/points-scheinexam/overview/ScheinexamPointsOverview';
 import EnterScheinexamPoints from '../view/points-scheinexam/enter-form/EnterScheinexamPoints';
+import StudentInfo from '../view/studentmanagement/student-info/StudentInfo';
 
 export enum RoutingPath {
   ROOT = '/',
   LOGIN = '/login',
   STUDENTOVERVIEW = '/studentoverview',
+  STUDENT_INFO = '/studentinfo/student/:studentId/:tutorialId?',
   TEAMOVERVIEW = '/teamoverview',
   ATTENDANCE = '/attendance',
   ENTER_POINTS_OVERVIEW = '/enterpoints/:sheetId?',
@@ -154,6 +156,16 @@ export const ROUTES: readonly RouteType[] = [
     isInDrawer: true,
     isPrivate: true,
     isTutorialRelated: true,
+  },
+  {
+    path: RoutingPath.STUDENT_INFO,
+    title: 'Studierendeninformation',
+    component: StudentInfo,
+    icon: PersonIcon,
+    roles: [Role.TUTOR, Role.ADMIN],
+    isInDrawer: false,
+    isPrivate: true,
+    isTutorialRelated: false,
   },
   {
     path: RoutingPath.STUDENTOVERVIEW,

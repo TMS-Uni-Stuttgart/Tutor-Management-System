@@ -29,6 +29,11 @@ interface EnterPointsForScheinexamParams {
   studentId: string;
 }
 
+interface StudentInfoParams {
+  studentId: string;
+  tutorialId?: string;
+}
+
 export function getTutorialRelatedPath(route: RouteType, tutorialId: string): string {
   if (!route.isTutorialRelated) {
     return route.path;
@@ -98,5 +103,14 @@ export function getEnterPointsForScheinexamPath({
   return path
     .replace(':examId', examId)
     .replace(':studentId', studentId)
+    .replace(/\/\/+/, '/');
+}
+
+export function getStudentInfoPath({ studentId, tutorialId }: StudentInfoParams): string {
+  const path = RoutingPath.STUDENT_INFO;
+
+  return path
+    .replace(':studentId', studentId)
+    .replace(':tutorialId?', tutorialId ?? '')
     .replace(/\/\/+/, '/');
 }
