@@ -145,7 +145,7 @@ function Drawer({
     getVersionOfApp()
       .then(version => setVersion(version))
       .catch(() => setVersion(undefined));
-  });
+  }, []);
 
   return (
     <MuiDrawer
