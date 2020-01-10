@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Account as PersonIcon, ContactMail as MailIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Role } from 'shared/dist/model/Role';
-import ListItemMenu from '../../../components/ListItemMenu';
+import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { UserWithFetchedTutorials } from '../../../typings/types';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
@@ -42,7 +42,7 @@ function UserTableRow({
       subText={getRolesAsString(user.roles)}
       icon={PersonIcon}
       buttonCellContent={
-        <ListItemMenu
+        <EntityListItemMenu
           onEditClicked={() => onEditUserClicked(user)}
           onDeleteClicked={() => onDeleteUserClicked(user)}
           additionalItems={[

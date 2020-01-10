@@ -1,9 +1,9 @@
 import { TableCell, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Group as GroupIcon } from 'mdi-material-ui';
+import { AccountMultiple as GroupIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Team } from 'shared/dist/model/Team';
-import ListItemMenu from './ListItemMenu';
+import EntityListItemMenu from './list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -38,7 +38,7 @@ function TeamTableRow({
         label={`Team #${team.teamNo.toString().padStart(2, '0')}`}
         icon={GroupIcon}
         buttonCellContent={
-          <ListItemMenu
+          <EntityListItemMenu
             onEditClicked={() => onEditTeamClicked(team)}
             onDeleteClicked={() => onDeleteTeamClicked(team)}
           />

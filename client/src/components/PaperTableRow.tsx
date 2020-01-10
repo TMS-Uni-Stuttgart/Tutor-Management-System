@@ -112,7 +112,6 @@ function PaperTableRow({
 
       <TableCell>
         <Typography
-          component='div'
           {...LabelProps}
           className={clsx(LabelProps && LabelProps.className, classes.labelCell)}
         >
@@ -121,7 +120,6 @@ function PaperTableRow({
 
         {subText && (
           <Typography
-            component='div'
             variant='body2'
             color='textSecondary'
             {...SubTextProps}

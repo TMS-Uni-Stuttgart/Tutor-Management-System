@@ -16,26 +16,78 @@ export interface PointMapEntry {
   points: number | PointsOfSubexercises;
 }
 
-export interface UpdatePointsDTO {
-  exercises: PointMapDTO;
-  id: string;
+export interface SheetMapEntry {
+  // passedState: PassedState;
+  comment: string;
+  additionalPoints: number;
+  exercises: {
+    [exercise: string]: PointMapEntry | undefined;
+  };
 }
 
-export type PointMapDTO = {
+export interface UpdatePointsDTO {
+  points: NewPointMapDTO;
+}
+
+export type PointMapDTO = OldPointMapDTO | NewPointMapDTO;
+
+export type OldPointMapDTO = {
   [exercise: string]: PointMapEntry | undefined;
 };
 
-export class PointId {
-  private readonly exerciseIdentifier: string;
-  private readonly sheetId: string;
+export type NewPointMapDTO = {
+  [sheetId: string]: SheetMapEntry | undefined;
+};
 
-  constructor(sheetId: string, exercise: Exercise) {
+/**
+ * Checks if the given DTO conforms to the NewPointMapDTO structure.
+ *
+ * @param dto DTO to check
+ * @returns `true` if it is a NewPointMapDTO, `false` otherwise.
+ */
+function isNewPointMapDTO(dto: PointMapDTO): dto is NewPointMapDTO {
+  const entries = Object.entries(dto);
+
+  if (entries.length === 0) {
+    // An empty object is considered a NewPointMapDTO bc it does not matter.
+    return true;
+  }
+
+  const [, value] = entries[0];
+
+  // We check for 'additionalPoints' here because 'exercises' could be left out by mongoose and 'comment' also exists on the entries of the old PointMap.
+  return 'additionalPoints' in value;
+}
+
+export class PointId {
+  static fromString(key: string): PointId {
+    const regex = /ID::([a-f\d]{24})--Ex::([a-f\d]{24})/;
+    const result = key.match(regex);
+
+    if (!result || result.length < 3) {
+      throw new Error(
+        `Not a valid string representation of a PointId ("${key}"). The string must match the form "ID::{ObjectId}--Ex::{ObjectId}."`
+      );
+    }
+
+    return new PointId(result[1], result[2]);
+  }
+
+  public readonly exerciseId: string;
+  public readonly sheetId: string;
+
+  constructor(sheetId: string, exercise: Exercise | string) {
     this.sheetId = sheetId;
-    this.exerciseIdentifier = exercise.id;
+
+    if (typeof exercise === 'string') {
+      this.exerciseId = exercise;
+    } else {
+      this.exerciseId = exercise.id;
+    }
   }
 
   public toString(): string {
-    return `ID::${this.sheetId}--Ex::${this.exerciseIdentifier}`;
+    return `ID::${this.sheetId}--Ex::${this.exerciseId}`;
   }
 }
 
@@ -85,29 +137,108 @@ export class PointMap {
     return Object.values(entry.points).reduce((sum, pts) => sum + pts, 0);
   }
 
-  private points: PointMapDTO;
+  private points: NewPointMapDTO = {};
 
   constructor(dto: PointMapDTO = {}) {
-    this.points = dto;
+    this.setPointMap(dto);
   }
 
-  setPoints(pointId: PointId, points: PointMapEntry) {
-    this.setPointsByKey(pointId.toString(), points);
+  /**
+   * Sets the internal points according to the given dto.
+   *
+   * The information from the DTO will completely replace all previously saved information.
+   *
+   * If the DTO still conforms to the old representation the information will get converted to match the new one (the DTO does NOT get touched).
+   *
+   * @param dto DTO of the PointMap
+   */
+  private setPointMap(dto: PointMapDTO) {
+    this.points = {};
+
+    if (!isNewPointMapDTO(dto)) {
+      Object.entries(dto).forEach(([key, entry]) => {
+        if (!entry) {
+          return;
+        }
+
+        const pointId = PointId.fromString(key);
+
+        this.setPointEntry(pointId, entry);
+      });
+    } else {
+      this.points = dto;
+    }
   }
 
-  setPointsByKey(key: string, points: PointMapEntry) {
-    this.points[key] = points;
+  setPointEntry(pointId: PointId, points: PointMapEntry) {
+    const { sheetId, exerciseId } = pointId;
+    const prevEntry: SheetMapEntry = this.points[sheetId] ?? {
+      additionalPoints: 0,
+      comment: '',
+      exercises: {},
+    };
+
+    this.points[sheetId] = {
+      ...prevEntry,
+      exercises: {
+        ...prevEntry.exercises,
+        [exerciseId]: points,
+      },
+    };
   }
 
+  /**
+   * @deprecated
+   */
+  setPointEntryByKey(key: string, points: PointMapEntry) {
+    this.setPointEntry(PointId.fromString(key), points);
+  }
+
+  /**
+   * Sets the entry if the given sheet id to the given one.
+   *
+   * If there was a previous entry for this sheed id that entry will be overriden.
+   *
+   * @param sheetId Id of the sheet.
+   * @param entry Entry which belongs to the sheet id.
+   */
+  setSheetEntry(sheetId: string, entry: SheetMapEntry) {
+    this.points[sheetId] = entry;
+  }
+
+  /**
+   * Returns the point entry for the given id if there is one.
+   *
+   * @param id Id as PointId or string in the format "ID::{ObjectId}--Ex::{ObjectId}."
+   * @return PointMapEntry if there is one saved for that id, `undefined` else.
+   * @throws An error is thrown if the string id does NOT match the required format.
+   */
   getPointEntry(id: string | PointId): PointMapEntry | undefined {
-    const key = id instanceof PointId ? id.toString() : id;
+    const { sheetId, exerciseId }: PointId = id instanceof PointId ? id : PointId.fromString(id);
 
-    return this.points[key];
+    return this.points[sheetId]?.exercises[exerciseId];
   }
 
+  /**
+   * Returns the entry of the given sheet id if there is one saved.
+   *
+   * @param sheetId Id of the sheet
+   * @return SheetMapEntry if there is one saved for that id, `undefined` else.
+   */
+  getEntry(sheetId: string): SheetMapEntry | undefined {
+    return this.points[sheetId];
+  }
+
+  /**
+   * Adds all entries of the given map.
+   *
+   * If the key is already in use the old entry will be overriden if not a new one will be added. All keys which are NOT specified in the given map will NOT be touched.
+   *
+   * @param pointsGained PointMap containing the entries which should be added / overriden.
+   */
   adjustPoints(pointsGained: PointMap) {
     pointsGained.getEntries().forEach(([key, entry]) => {
-      this.setPointsByKey(key, entry);
+      this.setSheetEntry(key, entry);
     });
   }
 
@@ -121,8 +252,8 @@ export class PointMap {
     return PointMap.getPointsOfEntry(pointEntry);
   }
 
-  getEntries(): [string, PointMapEntry][] {
-    const entries: [string, PointMapEntry][] = [];
+  getEntries(): [string, SheetMapEntry][] {
+    const entries: [string, SheetMapEntry][] = [];
 
     Object.entries(this.points).forEach(([key, entry]) => {
       if (!!entry) {
@@ -133,25 +264,29 @@ export class PointMap {
     return entries;
   }
 
-  getSumOfPoints({ id, exercises }: HasExercises): number {
+  getSumOfPoints({ id: sheetId, exercises }: HasExercises): number {
     return exercises.reduce((sum, ex) => {
-      const pts = this.getPoints(new PointId(id, ex)) || 0;
+      const pts = this.getPoints(new PointId(sheetId, ex)) || 0;
 
       return sum + pts;
     }, 0);
   }
 
-  has(id: string | PointId): boolean {
-    const key = id instanceof PointId ? id.toString() : id;
+  has(sheetId: string): boolean {
+    return this.getEntry(sheetId) !== undefined;
+  }
 
-    return !!this.points[key];
+  hasPointEntry(id: string | PointId): boolean {
+    const entry = this.getPointEntry(id);
+
+    return entry !== undefined;
   }
 
   isEmpty(): boolean {
     return Object.entries(this.points).length === 0;
   }
 
-  toDTO(): PointMapDTO {
+  toDTO(): NewPointMapDTO {
     // TODO: Deep copy!
     return this.points;
   }
@@ -167,7 +302,6 @@ export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo)
   } else {
     return `${exPointInfo.bonus} Bonus`;
   }
-  // return exPointInfo.bonus ? `${exPointInfo.must} + ${exPointInfo.bonus}` : `${exPointInfo.must}`;
 }
 
 export function getPointsOfExercise(exercise: Exercise): ExercisePointInfo {
@@ -188,4 +322,15 @@ export function getPointsOfExercise(exercise: Exercise): ExercisePointInfo {
       return { ...pts, must: pts.must + subEx.maxPoints };
     }
   }, points);
+}
+
+export function getPointsOfAllExercises({ exercises }: HasExercises): ExercisePointInfo {
+  return exercises.reduce(
+    (pts, ex) => {
+      const { must, bonus } = getPointsOfExercise(ex);
+
+      return { must: pts.must + must, bonus: pts.bonus + bonus };
+    },
+    { must: 0, bonus: 0 }
+  );
 }

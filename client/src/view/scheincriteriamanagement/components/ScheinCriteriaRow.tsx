@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/dist/model/ScheinCriteria';
-import ListItemMenu from '../../../components/ListItemMenu';
+import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { i18nNamespace } from '../../../util/lang/configI18N';
 
@@ -38,7 +38,7 @@ function ScheinCriteriaRow({
       label={criteria.name}
       subText={`Typ: ${t(criteria.identifier)}`}
       buttonCellContent={
-        <ListItemMenu
+        <EntityListItemMenu
           onEditClicked={() => onEditCriteriaClicked(criteria)}
           onDeleteClicked={() => onDeleteCriteriaClicked(criteria)}
         />

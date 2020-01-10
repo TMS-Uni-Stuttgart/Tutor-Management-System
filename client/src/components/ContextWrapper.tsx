@@ -8,7 +8,7 @@ import React, { PropsWithChildren, useState, useContext, useEffect } from 'react
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouterProps } from 'react-router';
 import { BrowserRouterProps } from 'react-router-dom';
-import DialogService from '../hooks/DialogService';
+import DialogService, { getDialogOutsideContext } from '../hooks/DialogService';
 import { LoginContextProvider } from '../hooks/LoginService';
 import i18n from '../util/lang/configI18N';
 import { createTheme } from '../util/styles';
@@ -41,24 +41,55 @@ function CustomThemeProvider({ children }: PropsWithChildren<{}>): JSX.Element {
   );
 }
 
+function handleUserConfirmation(message: string, callback: (ok: boolean) => void) {
+  const dialog = getDialogOutsideContext();
+
+  dialog.show({
+    title: 'Seite verlassen?',
+    content: message,
+    actions: [
+      {
+        label: 'Abbrechen',
+        onClick: () => {
+          dialog.hide();
+          callback(false);
+        },
+        buttonProps: {
+          color: 'primary',
+          variant: 'outlined',
+        },
+      },
+      {
+        label: 'Verlassen',
+        onClick: () => {
+          dialog.hide();
+          callback(true);
+        },
+        buttonProps: {
+          color: 'primary',
+          variant: 'contained',
+        },
+      },
+    ],
+    DialogProps: {},
+  });
+}
+
 function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Element {
   return (
-    <I18nextProvider i18n={i18n}>
-      <CustomThemeProvider>
-        <LoginContextProvider>
-          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={deLocale}>
-            <SnackbarProvider
-              maxSnack={3}
-              // anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            >
-              <DialogService>
-                <Router>{children}</Router>
-              </DialogService>
-            </SnackbarProvider>
-          </MuiPickersUtilsProvider>
-        </LoginContextProvider>
-      </CustomThemeProvider>
-    </I18nextProvider>
+    <Router getUserConfirmation={handleUserConfirmation}>
+      <I18nextProvider i18n={i18n}>
+        <CustomThemeProvider>
+          <LoginContextProvider>
+            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={deLocale}>
+              <SnackbarProvider maxSnack={3}>
+                <DialogService>{children}</DialogService>
+              </SnackbarProvider>
+            </MuiPickersUtilsProvider>
+          </LoginContextProvider>
+        </CustomThemeProvider>
+      </I18nextProvider>
+    </Router>
   );
 }
 

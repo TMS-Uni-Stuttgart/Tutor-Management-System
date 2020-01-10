@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
-import { validateSchema, YupIdShape } from './helper';
 import { ValidationErrorsWrapper } from '../model/errors/Errors';
-import { SheetDTO, ExerciseDTO } from '../model/Sheet';
 import { UpdatePointsDTO } from '../model/Points';
+import { ExerciseDTO, SheetDTO } from '../model/Sheet';
+import { validateSchema } from './helper';
 
 export const ExerciseDTOSchema = Yup.object().shape<ExerciseDTO>({
   exName: Yup.string().required(),
@@ -18,8 +18,7 @@ const SheetDTOSchema = Yup.object().shape<SheetDTO>({
 });
 
 const UpdatePointsDTOSchema = Yup.object().shape<UpdatePointsDTO>({
-  id: YupIdShape.required(),
-  exercises: Yup.mixed().required(),
+  points: Yup.mixed().required(),
 });
 
 export function validateAgainstSheetDTO(

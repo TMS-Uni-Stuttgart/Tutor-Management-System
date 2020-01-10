@@ -17,6 +17,16 @@ export async function getAllScheinExams(): Promise<ScheinExam[]> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
+export async function getScheinexam(examId: string): Promise<ScheinExam> {
+  const response = await axios.get<ScheinExam>(`scheinexam/${examId}`);
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
 export async function createScheinExam(exam: ScheinExamDTO): Promise<ScheinExam> {
   const response = await axios.post<ScheinExam>(`scheinexam`, exam, {
     transformResponse: transformScheinExamResponse,

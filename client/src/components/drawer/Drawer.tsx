@@ -12,7 +12,7 @@ import { OpenInNew as ExternalLinkIcon } from 'mdi-material-ui';
 import clsx from 'clsx';
 import React, { useMemo, useState, useEffect } from 'react';
 import { useLogin } from '../../hooks/LoginService';
-import { ROUTES, RouteType } from '../../util/RoutingPath';
+import { ROUTES, RouteType } from '../../routes/Routing.routes';
 import DrawerListItem from './components/DrawerListItem';
 import TutorialSubList from './components/TutorialSubList';
 import { Role } from 'shared/dist/model/Role';
@@ -44,7 +44,10 @@ const useStyles = makeStyles((theme: Theme) =>
       }),
     },
     drawerList: {
+      paddingBottom: theme.spacing(4),
       overflowY: 'auto',
+      overflowX: 'hidden',
+      ...theme.mixins.scrollbar(4),
     },
     displayNone: {
       display: 'none',

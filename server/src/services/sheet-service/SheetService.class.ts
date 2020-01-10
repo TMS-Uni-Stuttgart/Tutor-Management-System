@@ -86,9 +86,9 @@ class SheetService {
     for (const exercise of sheet.exercises) {
       const pointId = new PointId(sheet.id, exercise);
 
-      if (pointsOfStudent.has(pointId)) {
+      if (pointsOfStudent.hasPointEntry(pointId)) {
         result += pointsOfStudent.getPoints(pointId) || 0;
-      } else if (pointsOfTeam.has(pointId)) {
+      } else if (pointsOfTeam.hasPointEntry(pointId)) {
         result += pointsOfTeam.getPoints(pointId) || 0;
       }
     }

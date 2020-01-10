@@ -1,6 +1,6 @@
 import React from 'react';
 import Axios from 'axios';
-import { showDialogOutsideContext } from '../DialogService';
+import { getDialogOutsideContext } from '../DialogService';
 import { useLogin } from '../LoginService';
 import LoginForm, { LoginFormState } from '../../components/forms/LoginForm';
 import { FormikSubmitCallback } from '../../types';
@@ -21,8 +21,10 @@ function createBaseURL() {
 }
 
 function validateStatus(status: number): boolean {
+  const dialog = getDialogOutsideContext();
+
   if (status === 401) {
-    showDialogOutsideContext({
+    dialog.show({
       title: 'Erneut anmelden',
       content: <RelogForm />,
       DialogProps: {

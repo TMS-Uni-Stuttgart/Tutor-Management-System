@@ -5,7 +5,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import Drawer from '../components/drawer/Drawer';
 import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
-import { ROUTES, RouteType, RoutingPath } from '../util/RoutingPath';
+import { ROUTES, RouteType, RoutingPath } from '../routes/Routing.routes';
 import AppBar from './AppBar';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme: Theme) =>
         overflowY: 'hidden',
         maxWidth: '100vw',
         maxHeight: '100vh',
+        '& *': {
+          ...theme.mixins.scrollbar(8),
+        },
       },
     },
     root: {
@@ -26,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flex: '1 1 auto',
       overflowY: 'auto',
+      ...theme.mixins.scrollbar(12),
     },
     content: {
       width: 0,

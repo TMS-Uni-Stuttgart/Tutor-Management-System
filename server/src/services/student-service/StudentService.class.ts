@@ -128,13 +128,17 @@ class StudentService {
     return this.getAttendanceFromDocument(attendanceDocument);
   }
 
-  public async setPoints(id: string, { id: sheetId, exercises: pointsGained }: UpdatePointsDTO) {
+  public async setPoints(id: string, { points: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
 
-    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
-      return Promise.reject(
-        new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
-      );
+    const sheetIds = Object.keys(pointsGained);
+
+    for (const sheetId of sheetIds) {
+      if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+        return Promise.reject(
+          new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
+        );
+      }
     }
 
     const pointMapOfStudent = new PointMap(student.points);
@@ -147,22 +151,25 @@ class StudentService {
     await student.save();
   }
 
-  public async setExamResults(
-    id: string,
-    { id: examId, exercises: pointsGained }: UpdatePointsDTO
-  ) {
+  public async setExamResults(id: string, { points: pointsGained }: UpdatePointsDTO) {
     const student = await this.getDocumentWithId(id);
 
-    if (!(await scheinexamService.doesScheinexamWithIdExist(examId))) {
-      return Promise.reject(
-        new DocumentNotFoundError('Scheinexam with the given ID does not exist on the server.')
-      );
+    for (const examId of Object.keys(pointsGained)) {
+      if (!(await scheinexamService.doesScheinexamWithIdExist(examId))) {
+        return Promise.reject(
+          new DocumentNotFoundError(
+            `Scheinexam with the ID "${examId}" does not exist on the server.`
+          )
+        );
+      }
     }
 
     const pointMapOfStudent = new PointMap(student.scheinExamResults);
 
     pointMapOfStudent.adjustPoints(new PointMap(pointsGained));
     student.scheinExamResults = pointMapOfStudent.toDTO();
+
+    student.markModified('scheinExamResults');
 
     await student.save();
   }
@@ -353,11 +360,7 @@ class StudentService {
     const pointsOfTeam = new PointMap(team.points);
     const pointsOfStudent = new PointMap(student.points);
 
-    pointsOfTeam.getEntries().forEach(([key, entry]) => {
-      if (!pointsOfStudent.has(key)) {
-        pointsOfStudent.setPointsByKey(key, entry);
-      }
-    });
+    pointsOfStudent.adjustPoints(pointsOfTeam);
 
     student.points = pointsOfStudent.toDTO();
   }

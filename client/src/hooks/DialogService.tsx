@@ -125,5 +125,12 @@ function useDialog(): DialogHelpers {
   };
 }
 
+function getDialogOutsideContext(): DialogHelpers {
+  return {
+    show: showDialogOutsideContext,
+    hide: hideDialogOutsideContext,
+  };
+}
+
 export default DialogService;
-export { useDialog, showDialogOutsideContext, hideDialogOutsideContext };
+export { useDialog, getDialogOutsideContext };

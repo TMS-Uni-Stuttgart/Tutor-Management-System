@@ -13,7 +13,7 @@ import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
 import { getDisplayStringOfScheinExam } from '../../util/helperFunctions';
 import ScheinExamRow from './components/ScheinExamRow';
-import { getDuplicateExerciseName } from './util/helper';
+import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import { convertFormExercisesToDTOs } from '../../components/forms/SheetForm';
 
 const useStyles = makeStyles((theme: Theme) =>

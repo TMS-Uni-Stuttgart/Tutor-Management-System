@@ -3,6 +3,15 @@ import deLocale from 'date-fns/locale/de';
 import { PointMap } from 'shared/dist/model/Points';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
+import { Team } from 'shared/dist/model/Team';
+
+export function teamItemToString(team: Team): string {
+  const studentsInTeam = team.students.length
+    ? `(${team.students.map(student => student.lastname).join(', ')})`
+    : '(Keine Studierende)';
+
+  return `#${team.teamNo.toString().padStart(2, '0')} ${studentsInTeam}`;
+}
 
 export function getDisplayStringForTutorial(tutorial: { slot: string }): string {
   return `Tutorium ${tutorial.slot.padStart(2, '0')}`;

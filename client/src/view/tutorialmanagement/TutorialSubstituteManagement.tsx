@@ -1,6 +1,5 @@
 import { Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { ChevronLeft as BackIcon } from 'mdi-material-ui';
 import { compareAsc, format } from 'date-fns';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
@@ -9,7 +8,7 @@ import { Role } from 'shared/dist/model/Role';
 import { SubstituteDTO, Tutorial } from 'shared/dist/model/Tutorial';
 import { User } from 'shared/dist/model/User';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
-import { renderLink } from '../../components/drawer/components/renderLink';
+import BackButton from '../../components/BackButton';
 import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 import FormikMultipleDatesPicker, {
   DateClickedHandler,
@@ -20,19 +19,14 @@ import SubmitButton from '../../components/forms/components/SubmitButton';
 import { useAxios } from '../../hooks/FetchingService';
 import { FormikSubmitCallback } from '../../types';
 import { getDisplayStringForTutorial, parseDateToMapKey } from '../../util/helperFunctions';
-import { RoutingPath } from '../../util/RoutingPath';
+import { RoutingPath } from '../../routes/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
     },
-    backIcon: {
-      marginLeft: theme.spacing(-0.5),
-      marginRight: theme.spacing(0.5),
-    },
     backButton: {
-      width: 'max-content',
       marginBottom: theme.spacing(2),
     },
     formDiv: {
@@ -174,14 +168,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
   return (
     <div className={classes.root}>
       {/* TODO: Add dialog if there are unsaved changes and the user wants to go back. -- Move this component insied the Formik component to be able to do this? */}
-      <Button
-        variant='outlined'
-        component={renderLink(RoutingPath.MANAGE_TUTORIALS)}
-        className={classes.backButton}
-      >
-        <BackIcon className={classes.backIcon} />
-        Zurück
-      </Button>
+      <BackButton className={classes.backButton} to={RoutingPath.MANAGE_TUTORIALS} />
 
       {tutorial ? (
         <Formik initialValues={initialValues} onSubmit={handleSubmit}>

@@ -1,10 +1,5 @@
 import React, { useState, ComponentType, MouseEventHandler } from 'react';
-import {
-  Delete as DeleteIcon,
-  Pencil as EditIcon,
-  Information as InfoIcon,
-  DotsVertical as MoreVertIcon,
-} from 'mdi-material-ui';
+import { DotsVertical as MoreVertIcon } from 'mdi-material-ui';
 import { ListItemIcon, ListItemText, MenuItem, Tooltip } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import Menu, { MenuProps } from '@material-ui/core/Menu';
@@ -20,7 +15,7 @@ type UsedProps =
   | 'transformOrigin'
   | 'getContentAnchorEl';
 
-interface ListItem extends MenuItemProps {
+export interface ListItem extends MenuItemProps {
   primary: string;
   onClick: MouseEventHandler<HTMLLIElement>;
   Icon: ComponentType<SvgIconProps>;
@@ -30,15 +25,8 @@ interface ListItem extends MenuItemProps {
 }
 
 export interface ListItemMenuProps extends Omit<MenuProps, UsedProps> {
-  onEditClicked?: MouseEventHandler<HTMLLIElement>;
-  onMoreInfosClicked?: MouseEventHandler<HTMLLIElement>;
-  onDeleteClicked?: MouseEventHandler<HTMLLIElement>;
-  additionalItems?: ListItem[];
+  items: ListItem[];
   stopClickPropagation?: boolean;
-  disableDelete?: boolean;
-  editTooltip?: string;
-  moreInfosTooltip?: string;
-  deleteTooltip?: string;
 }
 
 function generateListItem({
@@ -69,18 +57,7 @@ function generateListItem({
   );
 }
 
-function ListItemMenu({
-  onEditClicked,
-  onMoreInfosClicked,
-  onDeleteClicked,
-  additionalItems,
-  stopClickPropagation,
-  disableDelete,
-  deleteTooltip,
-  moreInfosTooltip,
-  editTooltip,
-  ...other
-}: ListItemMenuProps): JSX.Element {
+function ListItemMenu({ items, stopClickPropagation, ...other }: ListItemMenuProps): JSX.Element {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | undefined>(undefined);
 
   return (
@@ -113,38 +90,7 @@ function ListItemMenu({
           setMenuAnchor(undefined);
         }}
       >
-        {onEditClicked &&
-          generateListItem({
-            primary: 'Bearbeiten',
-            onClick: onEditClicked,
-            Icon: EditIcon,
-            tooltip: editTooltip,
-          })}
-
-        {onMoreInfosClicked &&
-          generateListItem({
-            primary: 'Mehr Infos',
-            onClick: onMoreInfosClicked,
-            Icon: InfoIcon,
-            tooltip: moreInfosTooltip,
-          })}
-
-        {additionalItems && additionalItems.map(item => generateListItem(item))}
-
-        {onDeleteClicked &&
-          generateListItem({
-            primary: 'Entfernen',
-            onClick: onDeleteClicked,
-            disabled: disableDelete,
-            tooltip: deleteTooltip,
-            listItemTextProps: {
-              primaryTypographyProps: { color: 'error' },
-            },
-            Icon: DeleteIcon,
-            iconProps: {
-              color: 'error',
-            },
-          })}
+        {items.map(item => generateListItem(item))}
       </Menu>
     </>
   );

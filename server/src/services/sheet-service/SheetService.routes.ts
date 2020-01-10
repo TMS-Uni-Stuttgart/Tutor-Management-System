@@ -26,7 +26,7 @@ sheetRouter.post(
   }
 );
 
-sheetRouter.get('/:id', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+sheetRouter.get('/:id', isAuthenticated, async (req, res) => {
   const id = req.params.id;
   const sheet = await sheetService.getSheetWithId(id);
 

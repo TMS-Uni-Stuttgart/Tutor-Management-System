@@ -1,25 +1,24 @@
+import { isDocument } from '@typegoose/typegoose';
 import _ from 'lodash';
 import {
-  PointMap,
-  UpdatePointsDTO,
-  PointMapEntry,
-  PointId,
-  getPointsOfExercise,
   ExercisePointInfo,
+  getPointsOfExercise,
+  PointId,
+  PointMap,
+  PointMapEntry,
+  UpdatePointsDTO,
 } from 'shared/dist/model/Points';
-import { Student } from 'shared/dist/model/Student';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
-import { isDocument } from '@typegoose/typegoose';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
+import Logger from '../../helpers/Logger';
 import { TypegooseDocument } from '../../helpers/typings';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TeamDocument, TeamSchema } from '../../model/documents/TeamDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
-import { DocumentNotFoundError, BadRequestError } from '../../model/Errors';
+import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import Logger from '../../helpers/Logger';
 
 type SubExPointInformation = Omit<PointInformation, 'entry'>;
 
@@ -122,25 +121,29 @@ class TeamService {
   public async setPoints(
     tutorialId: string,
     teamId: string,
-    { id: sheetId, exercises: pointsGained }: UpdatePointsDTO
+    { points: pointsGained }: UpdatePointsDTO
   ) {
     const [team, tutorial] = await this.getDocumentWithId(tutorialId, teamId);
 
-    if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
-      return Promise.reject(
-        new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
-      );
-    }
-
-    const pointMapOfTeam: PointMap = new PointMap(team.points);
     const idxOfTeam = tutorial.teams.findIndex(doc => doc.id === team.id);
 
     if (idxOfTeam === -1) {
       throw new BadRequestError('Could not find Team in Tutorial.');
     }
 
-    pointMapOfTeam.adjustPoints(new PointMap(pointsGained));
+    const sheetIds = Object.keys(pointsGained);
 
+    for (const sheetId of sheetIds) {
+      if (!(await sheetService.doesSheetWithIdExist(sheetId))) {
+        return Promise.reject(
+          new DocumentNotFoundError('Sheet with the given ID does not exist on the server.')
+        );
+      }
+    }
+
+    const pointMapOfTeam: PointMap = new PointMap(team.points);
+
+    pointMapOfTeam.adjustPoints(new PointMap(pointsGained));
     team.points = pointMapOfTeam.toDTO();
 
     await this.saveTutorialWithChangedTeams(tutorial);
@@ -376,21 +379,17 @@ class TeamService {
     }
 
     const { id, teamNo, tutorial, points } = team;
-    const studentPromises: Promise<Student>[] = [];
     const studentDocs = await this.getStudentsOfTeam(team);
-
-    for (const doc of studentDocs) {
-      studentPromises.push(studentService.getStudentOrReject(doc));
-    }
-
-    const students = await Promise.all(studentPromises);
+    const students = await Promise.all(
+      studentDocs.map(doc => studentService.getStudentOrReject(doc))
+    );
 
     return {
       id,
       teamNo,
       tutorial: getIdOfDocumentRef(tutorial),
       students,
-      points,
+      points: new PointMap(points).toDTO(),
     };
   }
 

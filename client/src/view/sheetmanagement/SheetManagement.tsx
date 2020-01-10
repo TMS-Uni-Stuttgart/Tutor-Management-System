@@ -11,7 +11,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
-import { getDuplicateExerciseName } from '../pointsmanagement/util/helper';
+import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import SheetRow from './components/SheetRow';
 
 const useStyles = makeStyles((theme: Theme) =>

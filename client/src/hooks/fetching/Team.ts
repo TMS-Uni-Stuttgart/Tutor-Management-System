@@ -13,6 +13,7 @@ export async function getTeamsOfTutorial(tutorialId: string): Promise<Team[]> {
 
   if (response.status === 200) {
     response.data.forEach(team => sortStudentsOfTeam(team));
+    response.data.sort((a, b) => a.teamNo - b.teamNo);
 
     return response.data;
   }
@@ -73,7 +74,7 @@ export async function setPointsOfTeam(
   teamId: string,
   points: UpdatePointsDTO
 ): Promise<void> {
-  const response = await axios.put(`tutorial/${tutorialId}/team/${teamId}/points`, points);
+  const response = await axios.put(`tutorial/${tutorialId}/team/${teamId}/point`, points);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong status code (${response.status}).`);
