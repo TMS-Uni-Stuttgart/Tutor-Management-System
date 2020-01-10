@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { ValidationErrorExtract } from 'shared/dist/model/errors/Errors';
 import Logger from '../helpers/Logger';
+import { isDevelopment } from '../helpers/isDevelopment';
 
 export interface StatusErrorMessages {
   [status: number]: string;
@@ -100,6 +101,10 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
     return res
       .status(500)
       .send(new ErrorResponse(500, err.message || 'The configuration of the server is invalid.'));
+  }
+
+  if (isDevelopment()) {
+    Logger.error(err.stack);
   }
 
   return res.status(500).send(new ErrorResponse(500, err.message || 'Internal server error.'));
