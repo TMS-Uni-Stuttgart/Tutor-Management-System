@@ -77,7 +77,7 @@ export class PointId {
   public readonly sheetId: string;
 
   constructor(sheetId: string, exercise: Exercise | string) {
-    this.sheetId = sheetId;
+    this.sheetId = sheetId.toString();
 
     if (typeof exercise === 'string') {
       this.exerciseId = exercise;
@@ -215,8 +215,15 @@ export class PointMap {
    */
   getPointEntry(id: string | PointId): PointMapEntry | undefined {
     const { sheetId, exerciseId }: PointId = id instanceof PointId ? id : PointId.fromString(id);
+    const sheetEntry = this.points[sheetId];
 
-    return this.points[sheetId]?.exercises[exerciseId];
+    if (!!sheetEntry) {
+      const exercises = sheetEntry.exercises;
+
+      return !!exercises ? exercises[exerciseId] : undefined;
+    } else {
+      return undefined;
+    }
   }
 
   /**
