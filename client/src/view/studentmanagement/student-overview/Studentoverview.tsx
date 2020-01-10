@@ -1,4 +1,4 @@
-import { TextField, Box } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
@@ -15,7 +15,7 @@ import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
 import { useDialog } from '../../../hooks/DialogService';
 import { useStudentStore } from '../student-store/StudentStore';
-import ExtendableStudentRow from './components/ExtendableStudentRow';
+import StudentRow from './components/StudentRow';
 import {
   getFilteredStudents,
   handleChangeTutorial,
@@ -25,7 +25,6 @@ import {
   HandlerParams,
   StudentSortOption,
 } from './Studentoverview.helpers';
-import StudentRow from './components/StudentRow';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

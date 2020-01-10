@@ -3,12 +3,15 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { PointMap } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import BackButton from '../../../components/BackButton';
 import CustomSelect, { OnChangeHandler } from '../../../components/CustomSelect';
+import Markdown from '../../../components/Markdown';
 import Placeholder from '../../../components/Placeholder';
+import PointsTable from '../../../components/points-table/PointsTable';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
 import { getStudent } from '../../../hooks/fetching/Student';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
@@ -20,6 +23,23 @@ const useStyles = makeStyles(theme =>
     backButton: {
       marginRight: theme.spacing(2),
       alignSelf: 'center',
+    },
+    sheetSelect: {
+      marginLeft: theme.spacing(2),
+      flex: 1,
+    },
+    evaluationPaper: {
+      marginBottom: theme.spacing(1),
+    },
+    pointsTable: {
+      width: 'unset',
+    },
+    markdown: {
+      flex: 1,
+      marginLeft: theme.spacing(2),
+      border: `1px solid ${theme.palette.divider}`,
+      borderRadius: theme.shape.borderRadius,
+      padding: theme.spacing(1.5),
     },
   })
 );
@@ -37,8 +57,9 @@ function StudentInfo(): JSX.Element {
   const { setError } = useErrorSnackbar();
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
-  const [selectedSheet, setSelectedSheet] = useState('');
+  const [selectedSheet, setSelectedSheet] = useState<Sheet>();
   const [student, setStudent] = useState<Student>();
+  const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
 
   useEffect(() => {
     getAllSheets()
@@ -46,20 +67,31 @@ function StudentInfo(): JSX.Element {
       .catch(() => {
         enqueueSnackbar('Übungsblätter konnten nicht abgerufen werden.', { variant: 'error' });
       });
-  }, []);
+  }, [enqueueSnackbar]);
 
   useEffect(() => {
     getStudent(studentId)
       .then(response => setStudent(response))
       .catch(() => setError('Studierende/r konnte nicht abgerufen werden.'));
-  }, [studentId]);
+  }, [studentId, setError]);
+
+  useEffect(() => {
+    if (!!student) {
+      setPointsOfStudent(new PointMap(student.points));
+    } else {
+      setPointsOfStudent(undefined);
+    }
+  }, [student]);
 
   const handleSheetSelectionChange: OnChangeHandler = e => {
     if (typeof e.target.value !== 'string') {
       return;
     }
 
-    setSelectedSheet(e.target.value as string);
+    const sheetId = e.target.value as string;
+    const sheet = sheets.find(s => s.id === sheetId);
+
+    setSelectedSheet(sheet);
   };
 
   return (
@@ -75,21 +107,48 @@ function StudentInfo(): JSX.Element {
         showPlaceholder={false}
         loading={!student}
       >
-        <Paper variant='outlined'>
+        <Paper variant='outlined' className={classes.evaluationPaper}>
           <Box padding={2}>
-            <CustomSelect
-              label='Übungsblatt'
-              emptyPlaceholder='Keine Übungsblätter vorhanden.'
-              nameOfNoneItem='Kein Übungsblatt'
-              items={sheets}
-              itemToString={getDisplayStringOfSheet}
-              itemToValue={sheet => sheet.id}
-              onChange={handleSheetSelectionChange}
-              value={selectedSheet}
-            />
+            <Box display='flex' alignItems='center'>
+              <Typography variant='h6'>Bewertung für </Typography>
+
+              <CustomSelect
+                label='Übungsblatt'
+                emptyPlaceholder='Keine Übungsblätter vorhanden.'
+                nameOfNoneItem='Kein Übungsblatt'
+                className={classes.sheetSelect}
+                items={sheets}
+                itemToString={getDisplayStringOfSheet}
+                itemToValue={sheet => sheet.id}
+                onChange={handleSheetSelectionChange}
+                value={selectedSheet?.id ?? ''}
+              />
+            </Box>
+
+            <Placeholder
+              placeholderText='Kein Übungsblatt ausgewählt.'
+              showPlaceholder={!selectedSheet}
+              reduceMarginTop
+            >
+              {selectedSheet && pointsOfStudent && (
+                <Box marginTop={2} display='flex'>
+                  <PointsTable
+                    className={classes.pointsTable}
+                    points={pointsOfStudent}
+                    sheet={selectedSheet}
+                    size='medium'
+                    disablePaper
+                  />
+
+                  <Markdown
+                    markdown={'# Überschrift\n\nDies ist ein Testtext.'}
+                    className={classes.markdown}
+                  />
+                </Box>
+              )}
+            </Placeholder>
           </Box>
         </Paper>
-        <code style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(student, null, 2)}</code>
       </Placeholder>
     </Box>
   );
