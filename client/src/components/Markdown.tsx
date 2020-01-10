@@ -9,12 +9,12 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     background: {
       padding: theme.spacing(1),
-      background: theme.palette.common.white,
+      color: theme.palette.text.primary,
     },
   })
 );
 
-interface Props {
+interface Props extends React.ComponentProps<'div'> {
   markdown: string;
 }
 
@@ -27,12 +27,16 @@ function convertHTMLToJSX(html: string): React.ReactNode {
   return HTMLParser(html);
 }
 
-function Markdown({ markdown }: Props): JSX.Element {
+function Markdown({ markdown, className, ...props }: Props): JSX.Element {
   const classes = useStyles();
   const html: string = convertMarkdownToHTML(markdown);
   const reactEl: React.ReactNode = convertHTMLToJSX(html);
 
-  return <div className={clsx('markdown-body', classes.background)}>{reactEl}</div>;
+  return (
+    <div className={clsx('markdown-body', classes.background, className)} {...props}>
+      {reactEl}
+    </div>
+  );
 }
 
 export default Markdown;
