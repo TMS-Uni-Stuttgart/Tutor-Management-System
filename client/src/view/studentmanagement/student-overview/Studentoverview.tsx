@@ -1,29 +1,31 @@
-import { TextField } from '@material-ui/core';
+import { TextField, Box } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
-import { useSnackbar, WithSnackbarProps } from 'notistack';
+import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import CustomSelect from '../../../components/CustomSelect';
-import StudentForm, {
-  getInitialStudentFormState,
-  StudentFormSubmitCallback,
-} from '../../../components/forms/StudentForm';
-import TutorialChangeForm, {
-  TutorialChangeFormSubmitCallback,
-} from '../../../components/forms/TutorialChangeForm';
+import StudentForm from '../../../components/forms/StudentForm';
+import TutorialChangeForm from '../../../components/forms/TutorialChangeForm';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
-import { DialogHelpers, useDialog } from '../../../hooks/DialogService';
-import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
+import { useDialog } from '../../../hooks/DialogService';
+import { useStudentStore } from '../student-store/StudentStore';
 import ExtendableStudentRow from './components/ExtendableStudentRow';
-import { StudentStoreDispatcher, useStudentStore } from '../student-store/StudentStore';
-import { StudentStoreActionType } from '../student-store/StudentStore.actions';
-import { getFilteredStudents, StudentSortOption } from './Studentoverview.helpers';
+import {
+  getFilteredStudents,
+  handleChangeTutorial,
+  handleCreateStudent,
+  handleDeleteStudent,
+  handleEditStudent,
+  HandlerParams,
+  StudentSortOption,
+} from './Studentoverview.helpers';
+import StudentRow from './components/StudentRow';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,167 +36,22 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2),
       minWidth: '20%',
     },
+    studentRow: {
+      flexGrow: 1,
+    },
     dialogDeleteButton: {
       color: theme.palette.error.main,
-    },
-    topBar: {
-      display: 'flex',
     },
   })
 );
 
 type SummariesByStudent = { [studentId: string]: ScheinCriteriaSummary };
 
-interface HandlerParams {
-  tutorialId?: string;
-  dispatch: StudentStoreDispatcher;
-  enqueueSnackbar: WithSnackbarProps['enqueueSnackbar'];
-}
-
 interface Props {
   tutorials?: Tutorial[];
   summaries: SummariesByStudent;
   allowChangeTutorial?: boolean;
   additionalTopBarItem?: React.ReactNode;
-}
-
-function handleCreateStudent({
-  tutorialId,
-  dispatch,
-  enqueueSnackbar,
-}: HandlerParams): StudentFormSubmitCallback {
-  return async (
-    { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
-    { setSubmitting, resetForm }
-  ) => {
-    if (!tutorialId) {
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      await dispatch({
-        type: StudentStoreActionType.CREATE,
-        data: {
-          firstname,
-          lastname,
-          matriculationNo,
-          email,
-          courseOfStudies,
-          status,
-          team,
-          tutorial: tutorialId,
-        },
-      });
-      const teams = await getTeamsOfTutorial(tutorialId);
-
-      resetForm({ values: getInitialStudentFormState(teams) });
-      enqueueSnackbar('Student/in wurde erfolgreich erstellt.', { variant: 'success' });
-    } catch (reason) {
-      console.error(reason);
-      enqueueSnackbar('Student/in konnte nicht erstellt werden.', { variant: 'error' });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-}
-
-function handleEditStudent({
-  student,
-  dialog,
-  tutorialId,
-  dispatch,
-  enqueueSnackbar,
-}: HandlerParams & { student: Student; dialog: DialogHelpers }): StudentFormSubmitCallback {
-  return async (
-    { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
-    { setSubmitting }
-  ) => {
-    try {
-      setSubmitting(true);
-      await dispatch({
-        type: StudentStoreActionType.UPDATE,
-        data: {
-          studentId: student.id,
-          dto: {
-            firstname,
-            lastname,
-            matriculationNo,
-            email,
-            courseOfStudies,
-            status,
-            team,
-            tutorial: tutorialId || student.tutorial,
-          },
-        },
-      });
-
-      enqueueSnackbar('Student/in wurde erfolgreich gespeichert.', { variant: 'success' });
-      dialog.hide();
-    } catch (reason) {
-      console.error(reason);
-      enqueueSnackbar('Student/in konnte nicht gespeichert werden.', { variant: 'error' });
-      setSubmitting(false);
-    }
-  };
-}
-
-function handleDeleteStudent({
-  student,
-  dialog,
-  dispatch,
-  enqueueSnackbar,
-}: HandlerParams & { student: Student; dialog: DialogHelpers }) {
-  return async () => {
-    try {
-      await dispatch({
-        type: StudentStoreActionType.DELETE,
-        data: {
-          studentId: student.id,
-        },
-      });
-
-      enqueueSnackbar('Student/in wurde erfolgreich gelöscht.', { variant: 'success' });
-    } catch (reason) {
-      console.error(reason);
-      enqueueSnackbar('Student/in konnte nicht gelöscht werden.', { variant: 'error' });
-    } finally {
-      dialog.hide();
-    }
-  };
-}
-
-function handleChangeTutorial({
-  student,
-  dialog,
-  dispatch,
-  enqueueSnackbar,
-}: HandlerParams & { student: Student; dialog: DialogHelpers }): TutorialChangeFormSubmitCallback {
-  return async ({ tutorial }) => {
-    if (tutorial === student.tutorial) {
-      return;
-    }
-
-    try {
-      await dispatch({
-        type: StudentStoreActionType.UPDATE,
-        data: {
-          studentId: student.id,
-          dto: {
-            ...student,
-            team: student.team ? student.team.id : undefined,
-            tutorial,
-          },
-        },
-      });
-
-      enqueueSnackbar('Tutorium wurde erfolgreich geändert.', { variant: 'success' });
-      dialog.hide();
-    } catch (reason) {
-      console.error(reason);
-      enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
-    }
-  };
 }
 
 function Studentoverview({
@@ -330,14 +187,13 @@ function Studentoverview({
   );
 
   const createRowFromItem = (student: Student) => (
-    <ExtendableStudentRow
+    <StudentRow
+      className={classes.studentRow}
       student={student}
-      summary={summaries[student.id]}
-      onEditStudentClicked={openEditDialog}
-      showTutorial={!!tutorials}
-      tutorials={tutorials}
-      onDeleteStudentClicked={openDeleteDialog}
-      onChangeTutorialClicked={allowChangeTutorial ? openChangeTutorialDialog : undefined}
+      criteriaSummary={summaries[student.id]}
+      onEdit={openEditDialog}
+      onDelete={openDeleteDialog}
+      onChangeTutorial={allowChangeTutorial ? openChangeTutorialDialog : undefined}
     />
   );
 
@@ -358,7 +214,7 @@ function Studentoverview({
     />
   ) : (
     <>
-      <div className={classes.topBar}>{TopBarContent}</div>
+      <Box display='flex'>{TopBarContent}</Box>
 
       <TableWithPadding
         placeholder='Keine Studierenden vorhanden'
