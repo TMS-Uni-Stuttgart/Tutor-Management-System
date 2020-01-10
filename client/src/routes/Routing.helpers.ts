@@ -106,6 +106,14 @@ export function getEnterPointsForScheinexamPath({
     .replace(/\/\/+/, '/');
 }
 
+export function getStudentOverviewPath(tutorialId?: string): string {
+  if (!!tutorialId) {
+    return getPathOfRouteWithTutorial(RoutingPath.STUDENTOVERVIEW, tutorialId);
+  } else {
+    return RoutingPath.MANAGE_ALL_STUDENTS;
+  }
+}
+
 export function getStudentInfoPath({ studentId, tutorialId }: StudentInfoParams): string {
   const path = RoutingPath.STUDENT_INFO;
 
