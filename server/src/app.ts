@@ -32,6 +32,21 @@ const BASE_API_PATH = '/api';
 const app = express();
 
 /**
+ * Sets up the middleware which logs every request made.
+ *
+ * This has to be called __AFTER__ the security middleware got initialized because it relies on the `user` property of the request.
+ */
+function initRequestLogger() {
+  app.use((req, _, next) => {
+    const user: string = req.user?.id ?? 'Not identified user';
+
+    Logger.http(`Request: ${user} -> ${req.path}@${req.method}`);
+
+    next();
+  });
+}
+
+/**
  * Set up the middleware needed for support of JSON in requests.
  */
 function initJSONMiddleware() {
@@ -139,6 +154,8 @@ function initApp(): Express {
   initJSONMiddleware();
 
   initSecurityMiddleware();
+
+  initRequestLogger();
 
   initEndpoints();
 
