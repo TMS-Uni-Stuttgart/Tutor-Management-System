@@ -20,9 +20,9 @@ import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
 import { DialogHelpers, useDialog } from '../../../hooks/DialogService';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import ExtendableStudentRow from '../../management/components/ExtendableStudentRow';
-import { StudentStoreDispatcher, useStudentStore } from '../StudentStore/StudentStore';
-import { StudentStoreActionType } from '../StudentStore/StudentStore.actions';
+import ExtendableStudentRow from './components/ExtendableStudentRow';
+import { StudentStoreDispatcher, useStudentStore } from '../student-store/StudentStore';
+import { StudentStoreActionType } from '../student-store/StudentStore.actions';
 import { getFilteredStudents, StudentSortOption } from './Studentoverview.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>

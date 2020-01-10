@@ -11,14 +11,17 @@ import {
 import React, { useState } from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
-import PaperTableRow from '../../../components/PaperTableRow';
-import StudentAvatar from '../../../components/student-icon/StudentAvatar';
-import { SvgIconComponent } from '../../../typings/SvgIconComponent';
-import { StudentWithFetchedTeam } from '../../../typings/types';
-import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-import ScheinCriteriaStatusTable from './ScheinCriteriaStatusTable';
-import StatusProgress from './StatusProgress';
+import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
+import PaperTableRow from '../../../../components/PaperTableRow';
+import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
+import { SvgIconComponent } from '../../../../typings/SvgIconComponent';
+import { StudentWithFetchedTeam } from '../../../../typings/types';
+import { getDisplayStringForTutorial } from '../../../../util/helperFunctions';
+import ScheinCriteriaStatusTable from '../../../management/components/ScheinCriteriaStatusTable';
+import StatusProgress from '../../../management/components/StatusProgress';
+import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
+import { Link } from 'react-router-dom';
+import { getStudentInfoPath } from '../../../../routes/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -150,6 +153,24 @@ function ExtendableStudentRow({
   const [showInfoBox, setShowInfoBox] = useState(false);
 
   const tutorial = tutorials && tutorials.find(t => t.id === student.tutorial);
+  const additionalMenuItems: ListItem[] = [
+    {
+      primary: 'E-Mail',
+      Icon: MailIcon,
+      disabled: !student.email,
+      onClick: () => {
+        window.location.href = `mailto:${student.email}`;
+      },
+    },
+  ];
+
+  if (onChangeTutorialClicked) {
+    additionalMenuItems.push({
+      primary: 'Tutorium wechseln',
+      onClick: () => onChangeTutorialClicked(student),
+      Icon: AccountSwitch,
+    });
+  }
 
   return (
     <>
@@ -183,15 +204,7 @@ function ExtendableStudentRow({
               onEditClicked={() => onEditStudentClicked(student)}
               onDeleteClicked={() => onDeleteStudentClicked(student)}
               stopClickPropagation
-              additionalItems={
-                onChangeTutorialClicked && [
-                  {
-                    primary: 'Tutorium wechseln',
-                    onClick: () => onChangeTutorialClicked(student),
-                    Icon: AccountSwitch,
-                  },
-                ]
-              }
+              additionalItems={additionalMenuItems}
             />
           </>
         }
@@ -212,11 +225,13 @@ function ExtendableStudentRow({
         <TableCell align='right' className={classes.emailButton}>
           <Button
             variant='outlined'
-            href={`mailto:${student.email}`}
-            onClick={e => e.stopPropagation()}
-            disabled={!student.email}
+            component={Link}
+            to={getStudentInfoPath({
+              studentId: student.id,
+              tutorialId: tutorial?.id,
+            })}
           >
-            E-Mail
+            Informationen
             <MailIcon className={classes.emailIcon} />
           </Button>
         </TableCell>

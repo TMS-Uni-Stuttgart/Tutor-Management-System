@@ -22,8 +22,8 @@ import {
   saveBlob,
 } from '../../util/helperFunctions';
 import { getPointsOfEntityAsString } from '../points-sheet/util/helper';
-import Studentoverview from './Studentoverview/Studentoverview';
-import StudentoverviewStoreProvider, { useStudentStore } from './StudentStore/StudentStore';
+import Studentoverview from './student-overview/Studentoverview';
+import StudentoverviewStoreProvider, { useStudentStore } from './student-store/StudentStore';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
