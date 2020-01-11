@@ -1,24 +1,18 @@
-import { Box, Paper, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, CircularProgress, Paper, Typography, Grid } from '@material-ui/core';
+import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import Chart from 'react-google-charts';
 import { useParams } from 'react-router';
-import { PointMap } from 'shared/dist/model/Points';
-import { Sheet } from 'shared/dist/model/Sheet';
+import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
 import BackButton from '../../../components/BackButton';
-import CustomSelect, { OnChangeHandler } from '../../../components/CustomSelect';
-import Markdown from '../../../components/Markdown';
 import Placeholder from '../../../components/Placeholder';
-import PointsTable from '../../../components/points-table/PointsTable';
-import { getAllSheets } from '../../../hooks/fetching/Sheet';
-import { getStudent } from '../../../hooks/fetching/Student';
+import { getScheinCriteriaSummaryOfStudent, getStudent } from '../../../hooks/fetching/Student';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { getStudentOverviewPath } from '../../../routes/Routing.helpers';
-import { getDisplayStringOfSheet } from '../../../util/helperFunctions';
-import { getStudentCorrectionCommentMarkdown } from '../../../hooks/fetching/Files';
-import LoadingSpinner from '../../../components/LoadingSpinner';
+import EvaluationInformation from './components/EvaluationInformation';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -26,22 +20,28 @@ const useStyles = makeStyles(theme =>
       marginRight: theme.spacing(2),
       alignSelf: 'center',
     },
-    sheetSelect: {
-      marginLeft: theme.spacing(2),
+    criteriaGrid: {
+      marginBottom: theme.spacing(2),
+    },
+    summaryPaper: {
       flex: 1,
-    },
-    evaluationPaper: {
-      marginBottom: theme.spacing(1),
-    },
-    pointsTable: {
-      width: 'unset',
-    },
-    markdownBox: {
-      flex: 1,
-      marginLeft: theme.spacing(2),
-      border: `1px solid ${theme.palette.divider}`,
-      borderRadius: theme.shape.borderRadius,
+      background: theme.palette.background.default,
       padding: theme.spacing(1.5),
+    },
+    title: {
+      textAlign: 'center',
+    },
+    chart: {
+      width: '100%',
+      height: '100%',
+    },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+    },
+    evaluationInfo: {
+      marginBottom: theme.spacing(1),
     },
   })
 );
@@ -58,19 +58,11 @@ function StudentInfo(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
-  const [sheets, setSheets] = useState<Sheet[]>([]);
-  const [selectedSheet, setSelectedSheet] = useState<Sheet>();
   const [student, setStudent] = useState<Student>();
-  const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
-  const [studentMarkdown, setStudentMarkdown] = useState<string>();
+  const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
 
-  useEffect(() => {
-    getAllSheets()
-      .then(response => setSheets(response))
-      .catch(() => {
-        enqueueSnackbar('Übungsblätter konnten nicht abgerufen werden.', { variant: 'error' });
-      });
-  }, [enqueueSnackbar]);
+  const theme = useTheme();
+  const { fontStyle } = theme.mixins.chart(theme);
 
   useEffect(() => {
     getStudent(studentId)
@@ -79,40 +71,19 @@ function StudentInfo(): JSX.Element {
   }, [studentId, setError]);
 
   useEffect(() => {
-    if (!!student) {
-      setPointsOfStudent(new PointMap(student.points));
-    } else {
-      setPointsOfStudent(undefined);
-    }
-  }, [student]);
-
-  useEffect(() => {
-    setStudentMarkdown(undefined);
-
-    if (!selectedSheet || !student) {
+    if (!student) {
+      setScheinStatus(undefined);
       return;
     }
 
-    getStudentCorrectionCommentMarkdown(selectedSheet.id, student.id)
+    getScheinCriteriaSummaryOfStudent(student.id)
       .then(response => {
-        setStudentMarkdown(response);
+        setScheinStatus(response);
       })
       .catch(() => {
-        enqueueSnackbar('Bewertungskommentar konnte nicht abgerufen werden.', { variant: 'error' });
-        setStudentMarkdown('');
+        enqueueSnackbar('Scheinstatus konnte nicht abgerufen werden.', { variant: 'error' });
       });
-  }, [selectedSheet, student, enqueueSnackbar]);
-
-  const handleSheetSelectionChange: OnChangeHandler = e => {
-    if (typeof e.target.value !== 'string') {
-      return;
-    }
-
-    const sheetId = e.target.value as string;
-    const sheet = sheets.find(s => s.id === sheetId);
-
-    setSelectedSheet(sheet);
-  };
+  }, [student, enqueueSnackbar]);
 
   return (
     <Box display='flex' flexDirection='column'>
@@ -127,51 +98,44 @@ function StudentInfo(): JSX.Element {
         showPlaceholder={false}
         loading={!student}
       >
-        <Paper variant='outlined' className={classes.evaluationPaper}>
-          <Box padding={2}>
-            <Box display='flex' alignItems='center'>
-              <Typography variant='h6'>Bewertung für </Typography>
+        <Box display='flex' flexDirection='column'>
+          <Grid container spacing={2} className={classes.criteriaGrid}>
+            {scheinStatus &&
+              Object.values(scheinStatus.scheinCriteriaSummary).map(summary => (
+                <Grid item key={summary.id} sm={12} md={6} lg={4}>
+                  <Paper key={summary.id} variant='outlined' className={classes.summaryPaper}>
+                    <Typography className={classes.title}>{summary.name}</Typography>
 
-              <CustomSelect
-                label='Übungsblatt'
-                emptyPlaceholder='Keine Übungsblätter vorhanden.'
-                nameOfNoneItem='Kein Übungsblatt'
-                className={classes.sheetSelect}
-                items={sheets}
-                itemToString={getDisplayStringOfSheet}
-                itemToValue={sheet => sheet.id}
-                onChange={handleSheetSelectionChange}
-                value={selectedSheet?.id ?? ''}
-              />
-            </Box>
+                    <Chart
+                      className={classes.chart}
+                      chartType='PieChart'
+                      loader={<CircularProgress className={classes.loader} />}
+                      data={[
+                        ['Status', 'Anzahl'],
+                        ['Erfüllt', summary.achieved],
+                        ['Nicht erfüllt', summary.total],
+                      ]}
+                      options={{
+                        backgroundColor: 'transparent',
+                        ...fontStyle,
+                        slices: {
+                          0: { color: theme.palette.green.dark },
+                          1: { color: theme.palette.red.dark },
+                        },
+                        legend: {
+                          ...fontStyle,
+                        },
+                      }}
+                    />
+                  </Paper>
+                </Grid>
+              ))}
+          </Grid>
 
-            <Placeholder
-              placeholderText='Kein Übungsblatt ausgewählt.'
-              showPlaceholder={!selectedSheet}
-              reduceMarginTop
-            >
-              {selectedSheet && pointsOfStudent && (
-                <Box marginTop={2} display='flex'>
-                  <PointsTable
-                    className={classes.pointsTable}
-                    points={pointsOfStudent}
-                    sheet={selectedSheet}
-                    size='medium'
-                    disablePaper
-                  />
-
-                  <Box className={classes.markdownBox}>
-                    {studentMarkdown === undefined ? (
-                      <LoadingSpinner />
-                    ) : (
-                      <Markdown markdown={studentMarkdown} />
-                    )}
-                  </Box>
-                </Box>
-              )}
-            </Placeholder>
-          </Box>
-        </Paper>
+          {student && (
+            <EvaluationInformation student={student} className={classes.evaluationInfo} />
+          )}
+        </Box>
       </Placeholder>
     </Box>
   );
