@@ -10,6 +10,10 @@ const useStyles = makeStyles((theme: Theme) =>
     background: {
       padding: theme.spacing(1),
       color: theme.palette.text.primary,
+      '& table tr': {
+        backgroundColor: 'transparent',
+      }
+      // TODO: Implement markdown with dark theme (take CSS and convert it to JSS).
     },
   })
 );
@@ -33,7 +37,7 @@ function Markdown({ markdown, className, ...props }: Props): JSX.Element {
   const reactEl: React.ReactNode = convertHTMLToJSX(html);
 
   return (
-    <div className={clsx('markdown-body', classes.background, className)} {...props}>
+    <div className={clsx(classes.background, className, 'markdown-body')} {...props}>
       {reactEl}
     </div>
   );
