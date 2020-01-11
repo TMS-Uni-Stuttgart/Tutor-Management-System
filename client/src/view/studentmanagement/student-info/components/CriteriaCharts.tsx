@@ -49,7 +49,7 @@ function CriteriaCharts({ scheinStatus, ...props }: Props): JSX.Element {
               data={[
                 ['Status', 'Anzahl'],
                 ['Erfüllt', summary.achieved],
-                ['Nicht erfüllt', summary.total],
+                ['Nicht erfüllt', summary.total - summary.achieved],
               ]}
               options={{
                 backgroundColor: 'transparent',
