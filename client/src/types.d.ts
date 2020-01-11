@@ -1,3 +1,3 @@
-import { FormikHelpers } from 'formik';
+import { FormikConfig } from 'formik';
 
-export type FormikSubmitCallback<VALUES> = (values: VALUES, actions: FormikHelpers<VALUES>) => void;
+export type FormikSubmitCallback<VALUES> = FormikConfig<VALUES>['onSubmit'];

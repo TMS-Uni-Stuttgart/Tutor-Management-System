@@ -16,7 +16,8 @@ import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
 import { TutorialWithFetchedStudents as Tutorial } from '../../typings/types';
 import { parseDateToMapKey, saveBlob } from '../../util/helperFunctions';
-import StudentAttendanceRow, { NoteFormCallback } from './components/StudentsAttendanceRow';
+import StudentAttendanceRow from './components/StudentsAttendanceRow';
+import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -215,7 +216,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   }
 
   function handleStudentNoteChange(student: Student): NoteFormCallback {
-    return async ({ note }, { setSubmitting }, closeDialog) => {
+    return async ({ note }) => {
       if (!date) {
         return;
       }
@@ -230,11 +231,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       try {
         const response = await setAttendanceOfStudent(student.id, attendanceDTO);
         handlePutAttendanceResponse(student, response);
-
-        closeDialog();
       } catch (reason) {
         console.error(reason);
-        setSubmitting(false);
       }
     };
   }
@@ -344,7 +342,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
             <DateOfTutorialSelection
               className={classes.barItem}
-              // tutorial={tutorial}
               availableDates={availableDates}
               onDateSelected={date => setDate(date)}
               disabled={!tutorial}
