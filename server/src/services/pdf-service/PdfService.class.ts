@@ -13,7 +13,7 @@ import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { BadRequestError, TemplatesNotFoundError } from '../../model/Errors';
-import markdownService, { TeamCommentData } from '../markdown-server/MarkdownService.class';
+import markdownService, { TeamCommentData } from '../markdown-service/MarkdownService.class';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
