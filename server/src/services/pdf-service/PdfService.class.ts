@@ -22,7 +22,7 @@ import { BadRequestError, TemplatesNotFoundError } from '../../model/Errors';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
-import teamService from '../team-service/TeamService.class';
+import teamService, { PointInformation } from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
@@ -151,6 +151,12 @@ class PdfService {
     return markdown;
   }
 
+  public async getMarkdownFromStudentComment(studentId: string, sheetId: string): Promise<string> {
+    const student = await studentService.getDocumentWithId(studentId);
+
+    throw new Error('Not implement yet');
+  }
+
   /**
    * Checks if all required templates can be found.
    *
@@ -188,8 +194,15 @@ class PdfService {
   }): Promise<TeamCommentData> {
     const entries = await teamService.getPoints(tutorialId, team.id, sheetId);
     const students = await teamService.getStudentsOfTeam(team);
-
     const teamName = students.map(s => s.lastname).join('');
+
+    return { teamName, markdown: this.generateMarkdownFromPointEntries(entries, teamName) };
+  }
+
+  private generateMarkdownFromPointEntries(
+    entries: PointInformation[],
+    nameOfEntity: string
+  ): string {
     const pointInfo: SheetPointInfo = { achieved: 0, total: { must: 0, bonus: 0 } };
     let exerciseMarkdown: string = '';
 
@@ -240,9 +253,9 @@ class PdfService {
     });
 
     const totalPointInfo = convertExercisePointInfoToString(pointInfo.total);
-    const markdown = `# ${teamName}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**\n\n${exerciseMarkdown}`;
+    const markdown = `# ${nameOfEntity}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**\n\n${exerciseMarkdown}`;
 
-    return { teamName, markdown };
+    return markdown;
   }
 
   private async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {

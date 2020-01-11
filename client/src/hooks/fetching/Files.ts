@@ -50,13 +50,9 @@ export async function getSingleCorrectionCommentMarkdown(
   sheetId: string,
   teamId: string
 ): Promise<string> {
-  const response = await axios.get(`/pdf/markdown/${tutorialId}/${sheetId}/${teamId}`);
-  // , {
-  //   responseType: 'arraybuffer',
-  //   headers: {
-  //     Accept: 'application/pdf',
-  //   },
-  // }
+  const response = await axios.get(
+    `/pdf/markdown/tutorial/${tutorialId}/sheet/${sheetId}/team/${teamId}`
+  );
 
   if (response.status === 200) {
     return response.data;

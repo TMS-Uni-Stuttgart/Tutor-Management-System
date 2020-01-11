@@ -7,6 +7,8 @@ import {
   hasUserOneOfRoles,
   isUserTutorOfTutorial,
   isUserCorrectorOfTutorial,
+  isUserTutorOfStudent,
+  isUserCorrectorOfStudent,
 } from '../../middleware/AccessControl';
 import { BadRequestError } from '../../model/Errors';
 import pdfService from './PdfService.class';
@@ -75,7 +77,7 @@ pdfRouter.get(
 );
 
 pdfRouter.get(
-  '/markdown/:tutorialId/:sheetId/:teamId',
+  '/markdown/tutorial/:tutorialId/sheet/:sheetId/team/:teamId',
   ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfTutorial, isUserCorrectorOfTutorial),
   async (req, res) => {
     const tutorialId = req.params.tutorialId;
@@ -83,6 +85,19 @@ pdfRouter.get(
     const sheetId = req.params.sheetId;
 
     const markdown = await pdfService.getMarkdownFromTeamComment(tutorialId, teamId, sheetId);
+
+    res.send(markdown);
+  }
+);
+
+pdfRouter.get(
+  '/markdown/sheet/:sheetId/student/:studentId',
+  ...checkAccess(hasUserOneOfRoles(Role.ADMIN), isUserTutorOfStudent, isUserCorrectorOfStudent),
+  async (req, res) => {
+    const studentId = req.params.studentId;
+    const sheetId = req.params.sheetId;
+
+    const markdown = await pdfService.getMarkdownFromStudentComment(studentId, sheetId);
 
     res.send(markdown);
   }
