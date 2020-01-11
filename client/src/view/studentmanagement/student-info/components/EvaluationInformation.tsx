@@ -1,4 +1,4 @@
-import { Box, Paper, PaperProps, Typography } from '@material-ui/core';
+import { Box, Paper, PaperProps, Typography, BoxProps } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -33,27 +33,19 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-interface Props extends PaperProps {
+interface Props extends BoxProps {
   student: Student;
+  sheets: Sheet[];
 }
 
-function EvaluationInformation({ student, ...props }: Props): JSX.Element {
+function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Element {
   const classes = useStyles();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
-  const [sheets, setSheets] = useState<Sheet[]>([]);
   const [selectedSheet, setSelectedSheet] = useState<Sheet>();
   const [studentMarkdown, setStudentMarkdown] = useState<string>();
-
-  useEffect(() => {
-    getAllSheets()
-      .then(response => setSheets(response))
-      .catch(() => {
-        enqueueSnackbar('Übungsblätter konnten nicht abgerufen werden.', { variant: 'error' });
-      });
-  }, [enqueueSnackbar]);
 
   useEffect(() => {
     if (!!student) {
@@ -92,51 +84,49 @@ function EvaluationInformation({ student, ...props }: Props): JSX.Element {
   };
 
   return (
-    <Paper variant='outlined' {...props}>
-      <Box padding={2}>
-        <Box display='flex' alignItems='center'>
-          <Typography variant='h6'>Bewertung für </Typography>
+    <Box {...props}>
+      <Box display='flex' alignItems='center'>
+        <Typography variant='h6'>Bewertung für </Typography>
 
-          <CustomSelect
-            label='Übungsblatt'
-            emptyPlaceholder='Keine Übungsblätter vorhanden.'
-            nameOfNoneItem='Kein Übungsblatt'
-            className={classes.sheetSelect}
-            items={sheets}
-            itemToString={getDisplayStringOfSheet}
-            itemToValue={sheet => sheet.id}
-            onChange={handleSheetSelectionChange}
-            value={selectedSheet?.id ?? ''}
-          />
-        </Box>
-
-        <Placeholder
-          placeholderText='Kein Übungsblatt ausgewählt.'
-          showPlaceholder={!selectedSheet}
-          reduceMarginTop
-        >
-          {selectedSheet && pointsOfStudent && (
-            <Box marginTop={2} display='flex'>
-              <PointsTable
-                className={classes.pointsTable}
-                points={pointsOfStudent}
-                sheet={selectedSheet}
-                size='medium'
-                disablePaper
-              />
-
-              <Box className={classes.markdownBox}>
-                {studentMarkdown === undefined ? (
-                  <LoadingSpinner />
-                ) : (
-                  <Markdown markdown={studentMarkdown} />
-                )}
-              </Box>
-            </Box>
-          )}
-        </Placeholder>
+        <CustomSelect
+          label='Übungsblatt'
+          emptyPlaceholder='Keine Übungsblätter vorhanden.'
+          nameOfNoneItem='Kein Übungsblatt'
+          className={classes.sheetSelect}
+          items={sheets}
+          itemToString={getDisplayStringOfSheet}
+          itemToValue={sheet => sheet.id}
+          onChange={handleSheetSelectionChange}
+          value={selectedSheet?.id ?? ''}
+        />
       </Box>
-    </Paper>
+
+      <Placeholder
+        placeholderText='Kein Übungsblatt ausgewählt.'
+        showPlaceholder={!selectedSheet}
+        reduceMarginTop
+      >
+        {selectedSheet && pointsOfStudent && (
+          <Box marginTop={2} display='flex'>
+            <PointsTable
+              className={classes.pointsTable}
+              points={pointsOfStudent}
+              sheet={selectedSheet}
+              size='medium'
+              disablePaper
+            />
+
+            <Box className={classes.markdownBox}>
+              {studentMarkdown === undefined ? (
+                <LoadingSpinner />
+              ) : (
+                <Markdown markdown={studentMarkdown} />
+              )}
+            </Box>
+          </Box>
+        )}
+      </Placeholder>
+    </Box>
   );
 }
 

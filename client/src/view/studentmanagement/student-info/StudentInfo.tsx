@@ -1,4 +1,4 @@
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Paper, Tabs, Tab, BoxProps } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +14,9 @@ import { getStudentOverviewPath } from '../../../routes/Routing.helpers';
 import CriteriaCharts from './components/CriteriaCharts';
 import EvaluationInformation from './components/EvaluationInformation';
 import ScheinStatusBox from './components/ScheinStatusBox';
+import TabPanel from '../../../components/TabPanel';
+import { getAllSheets } from '../../../hooks/fetching/Sheet';
+import { Sheet } from 'shared/dist/model/Sheet';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -44,7 +47,13 @@ function StudentInfo(): JSX.Element {
   const { setError } = useErrorSnackbar();
 
   const [student, setStudent] = useState<Student>();
+  const [sheets, setSheets] = useState<Sheet[]>([]);
   const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
+  const [selectedTab, setSelectedTab] = React.useState(0);
+
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setSelectedTab(newValue);
+  };
 
   useEffect(() => {
     getStudent(studentId)
@@ -67,6 +76,14 @@ function StudentInfo(): JSX.Element {
       });
   }, [student, enqueueSnackbar]);
 
+  useEffect(() => {
+    getAllSheets()
+      .then(response => setSheets(response))
+      .catch(() => {
+        enqueueSnackbar('Übungsblätter konnten nicht abgerufen werden.', { variant: 'error' });
+      });
+  }, [enqueueSnackbar]);
+
   return (
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={3}>
@@ -88,7 +105,24 @@ function StudentInfo(): JSX.Element {
           )}
 
           {student && (
-            <EvaluationInformation student={student} className={classes.evaluationInfo} />
+            <Paper variant='outlined'>
+              <Tabs value={selectedTab} onChange={handleTabChange}>
+                <Tab label='Bewertungen' />
+                <Tab label='Anwesenheiten' />
+              </Tabs>
+
+              <TabPanel value={selectedTab} index={0}>
+                <EvaluationInformation
+                  student={student}
+                  sheets={sheets}
+                  className={classes.evaluationInfo}
+                />
+              </TabPanel>
+
+              <TabPanel value={selectedTab} index={1}>
+                <pre>{JSON.stringify(student.attendance, null, 2)}</pre>
+              </TabPanel>
+            </Paper>
           )}
         </Box>
       </Placeholder>
