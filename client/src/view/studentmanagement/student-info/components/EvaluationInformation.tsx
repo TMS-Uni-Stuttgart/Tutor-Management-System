@@ -1,4 +1,4 @@
-import { Box, Paper, PaperProps, Typography, BoxProps } from '@material-ui/core';
+import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -11,7 +11,6 @@ import Markdown from '../../../../components/Markdown';
 import Placeholder from '../../../../components/Placeholder';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { getStudentCorrectionCommentMarkdown } from '../../../../hooks/fetching/Files';
-import { getAllSheets } from '../../../../hooks/fetching/Sheet';
 import { getDisplayStringOfSheet } from '../../../../util/helperFunctions';
 
 const useStyles = makeStyles(theme =>
