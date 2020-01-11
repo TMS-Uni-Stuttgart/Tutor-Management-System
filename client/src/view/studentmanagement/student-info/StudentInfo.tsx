@@ -17,6 +17,8 @@ import { getStudent } from '../../../hooks/fetching/Student';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { getStudentOverviewPath } from '../../../routes/Routing.helpers';
 import { getDisplayStringOfSheet } from '../../../util/helperFunctions';
+import { getStudentCorrectionCommentMarkdown } from '../../../hooks/fetching/Files';
+import LoadingSpinner from '../../../components/LoadingSpinner';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -34,7 +36,7 @@ const useStyles = makeStyles(theme =>
     pointsTable: {
       width: 'unset',
     },
-    markdown: {
+    markdownBox: {
       flex: 1,
       marginLeft: theme.spacing(2),
       border: `1px solid ${theme.palette.divider}`,
@@ -60,6 +62,7 @@ function StudentInfo(): JSX.Element {
   const [selectedSheet, setSelectedSheet] = useState<Sheet>();
   const [student, setStudent] = useState<Student>();
   const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
+  const [studentMarkdown, setStudentMarkdown] = useState<string>();
 
   useEffect(() => {
     getAllSheets()
@@ -82,6 +85,23 @@ function StudentInfo(): JSX.Element {
       setPointsOfStudent(undefined);
     }
   }, [student]);
+
+  useEffect(() => {
+    setStudentMarkdown(undefined);
+
+    if (!selectedSheet || !student) {
+      return;
+    }
+
+    getStudentCorrectionCommentMarkdown(selectedSheet.id, student.id)
+      .then(response => {
+        setStudentMarkdown(response);
+      })
+      .catch(() => {
+        enqueueSnackbar('Bewertungskommentar konnte nicht abgerufen werden.', { variant: 'error' });
+        setStudentMarkdown('');
+      });
+  }, [selectedSheet, student, enqueueSnackbar]);
 
   const handleSheetSelectionChange: OnChangeHandler = e => {
     if (typeof e.target.value !== 'string') {
@@ -140,10 +160,13 @@ function StudentInfo(): JSX.Element {
                     disablePaper
                   />
 
-                  <Markdown
-                    markdown={'# Überschrift\n\nDies ist ein Testtext.'}
-                    className={classes.markdown}
-                  />
+                  <Box className={classes.markdownBox}>
+                    {studentMarkdown === undefined ? (
+                      <LoadingSpinner />
+                    ) : (
+                      <Markdown markdown={studentMarkdown} />
+                    )}
+                  </Box>
                 </Box>
               )}
             </Placeholder>

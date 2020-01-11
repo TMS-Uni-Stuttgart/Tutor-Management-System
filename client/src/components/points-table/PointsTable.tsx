@@ -5,12 +5,12 @@ import {
   TableCell,
   TableContainer,
   TableContainerBaseProps,
-  TableHead,
-  TableRow,
-  PaperProps,
-  TableProps,
   TableContainerProps,
+  TableHead,
+  TableProps,
+  TableRow,
 } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
 import {
   convertExercisePointInfoToString,
@@ -20,7 +20,6 @@ import {
   PointMap,
 } from 'shared/dist/model/Points';
 import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
-import clsx from 'clsx';
 
 interface Props extends Omit<TableContainerProps, 'ref'> {
   points: PointMap;
