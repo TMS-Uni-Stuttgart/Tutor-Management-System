@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function LoadingSpinner(): JSX.Element {
   const classes = useStyles();
+
   return (
     <div className={classes.spinnerBox}>
       <CircularProgress className={classes.spinner} />

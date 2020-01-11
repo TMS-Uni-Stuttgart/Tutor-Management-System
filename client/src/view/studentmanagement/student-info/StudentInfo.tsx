@@ -1,5 +1,6 @@
-import { Box, CircularProgress, Paper, Typography, Grid } from '@material-ui/core';
+import { Box, CircularProgress, Grid, Paper, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-google-charts';
@@ -19,6 +20,15 @@ const useStyles = makeStyles(theme =>
     backButton: {
       marginRight: theme.spacing(2),
       alignSelf: 'center',
+    },
+    statusLoadingSpinner: {
+      marginRight: theme.spacing(1),
+    },
+    greenFont: {
+      color: theme.palette.green.main,
+    },
+    redFont: {
+      color: theme.palette.red.main,
     },
     criteriaGrid: {
       marginBottom: theme.spacing(2),
@@ -91,6 +101,40 @@ function StudentInfo(): JSX.Element {
         <BackButton to={getStudentOverviewPath(tutorialId)} className={classes.backButton} />
 
         <Typography variant='h4'>{student && getNameOfEntity(student)}</Typography>
+
+        <Box
+          display='flex'
+          alignItems='center'
+          textAlign='center'
+          border={1}
+          marginLeft='auto'
+          borderRadius={4}
+          borderColor={
+            scheinStatus
+              ? scheinStatus.passed
+                ? theme.palette.green.main
+                : theme.palette.red.main
+              : 'divider'
+          }
+          padding='5px 15px'
+        >
+          {scheinStatus ? (
+            <Typography
+              variant='button'
+              className={clsx({
+                [classes.greenFont]: scheinStatus.passed,
+                [classes.redFont]: !scheinStatus.passed,
+              })}
+            >
+              Schein {scheinStatus.passed ? 'bestanden' : 'nicht bestanden'}
+            </Typography>
+          ) : (
+            <>
+              <CircularProgress size='1rem' className={classes.statusLoadingSpinner} />
+              <Typography variant='button'>Lade Status...</Typography>
+            </>
+          )}
+        </Box>
       </Box>
 
       <Placeholder
