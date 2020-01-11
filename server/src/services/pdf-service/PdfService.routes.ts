@@ -12,6 +12,7 @@ import {
 } from '../../middleware/AccessControl';
 import { BadRequestError } from '../../model/Errors';
 import pdfService from './PdfService.class';
+import markdownService from '../markdown-service/MarkdownService.class';
 
 const pdfRouter = Router();
 
@@ -84,7 +85,7 @@ pdfRouter.get(
     const teamId = req.params.teamId;
     const sheetId = req.params.sheetId;
 
-    const markdown = await pdfService.getMarkdownFromTeamComment(tutorialId, teamId, sheetId);
+    const markdown = await markdownService.getMarkdownFromTeamComment(tutorialId, teamId, sheetId);
 
     res.send(markdown);
   }
@@ -97,7 +98,7 @@ pdfRouter.get(
     const studentId = req.params.studentId;
     const sheetId = req.params.sheetId;
 
-    const markdown = await pdfService.getMarkdownFromStudentComment(studentId, sheetId);
+    const markdown = await markdownService.getMarkdownFromStudentComment(studentId, sheetId);
 
     res.send(markdown);
   }

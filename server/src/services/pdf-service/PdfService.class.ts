@@ -83,7 +83,6 @@ class PdfService {
     const [team] = await teamService.getDocumentWithId(tutorialId, teamId);
     const { markdown } = await markdownService.generateMarkdownFromTeamComment({
       team,
-      tutorialId,
       sheetId,
     });
 
@@ -101,9 +100,7 @@ class PdfService {
     const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 
     for (const team of tutorial.teams) {
-      commentsByTeam.push(
-        await markdownService.generateMarkdownFromTeamComment({ team, tutorialId, sheetId })
-      );
+      commentsByTeam.push(await markdownService.generateMarkdownFromTeamComment({ team, sheetId }));
     }
 
     const files: { filename: string; payload: Buffer }[] = [];
@@ -122,28 +119,6 @@ class PdfService {
     });
 
     return zip.generateNodeStream({ type: 'nodebuffer' });
-  }
-
-  public async getMarkdownFromTeamComment(
-    tutorialId: string,
-    teamId: string,
-    sheetId: string
-  ): Promise<string> {
-    const [team] = await teamService.getDocumentWithId(tutorialId, teamId);
-
-    const { markdown } = await markdownService.generateMarkdownFromTeamComment({
-      team,
-      sheetId,
-      tutorialId,
-    });
-
-    return markdown;
-  }
-
-  public async getMarkdownFromStudentComment(studentId: string, sheetId: string): Promise<string> {
-    const student = await studentService.getDocumentWithId(studentId);
-
-    throw new Error('Not implement yet');
   }
 
   /**
