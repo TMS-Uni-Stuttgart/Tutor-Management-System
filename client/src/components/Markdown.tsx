@@ -33,7 +33,7 @@ interface Props extends React.ComponentProps<'div'> {
 
 function convertMarkdownToHTML(markdown: string): string {
   const parser = new MarkdownIt();
-  return parser.render(markdown);
+  return parser.render(markdown).replace(/>\r?\n|\r/g, '>');
 }
 
 function convertHTMLToJSX(html: string): React.ReactNode {
