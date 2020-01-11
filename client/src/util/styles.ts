@@ -93,27 +93,16 @@ export function createTheme(type: PaletteType): Theme {
     },
     red:
       type === 'light'
-        ? {
-            light: '#ef9a9a',
-            main: '#ef5350',
-            dark: '#e53935',
-          }
-        : {
-            // light: '',
-            main: '#ff6561',
-            // dark: '',
-          },
+        ? { light: '#ef9a9a', main: '#ef5350', dark: '#e53935' }
+        : { light: '#ff988f', main: '#ff6561', dark: '#c63037' },
     green:
       type === 'light'
-        ? {
-            light: '#a5d6a7',
-            main: '#66bb6a',
-            dark: '#43a047',
-          }
-        : {
-            main: '#7ae07e',
-          },
-    orange: type === 'light' ? { main: '#ef6c00' } : { main: '#ff8e00' },
+        ? { light: '#a5d6a7', main: '#66bb6a', dark: '#43a047' }
+        : { light: '#aeffae', main: '#7ae07e', dark: '#46ad50' },
+    orange:
+      type === 'light'
+        ? { light: '#ff9d3f', main: '#ef6c00', dark: '#b53d00' }
+        : { light: '#ffbf45', main: '#ff8e00', dark: '#c55f00' },
     warning: {
       light: ORANGE[300],
       main: ORANGE[500],
