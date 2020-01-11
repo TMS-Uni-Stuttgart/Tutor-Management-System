@@ -51,6 +51,8 @@ function ScheinCriteriaStatsCard({
   const theme = useTheme();
   const { t } = useTranslation('scheincriteria');
 
+  const { backgroundColor, colors, fontStyle } = theme.mixins.chart(theme);
+
   function filterSummaries(critId: string): ScheinCriteriaStatus[] {
     return Object.values(value.studentInfos)
       .filter(studentInfo => Object.keys(studentInfo.scheinCriteriaSummary).includes(critId))
@@ -145,12 +147,17 @@ function ScheinCriteriaStatsCard({
                     loader={<CircularProgress className={classes.loader} />}
                     data={getAdditionalStatusStats(critId)}
                     options={{
+                      backgroundColor,
+                      ...fontStyle,
+                      colors,
                       title: getName(critId),
                       hAxis: {
+                        ...fontStyle,
                         title: `${t('UNIT_LABEL_' + getUnit(critId) + '_plural')}`,
                         ticks: getAdditionlaStatusTicks(critId),
                       },
                       vAxis: {
+                        ...fontStyle,
                         title: `${t('UNIT_LABEL_' + getAdditionalStatusUnit(critId) + '_plural')}`,
                       },
                       legend: 'none',
@@ -164,17 +171,17 @@ function ScheinCriteriaStatsCard({
                     loader={<CircularProgress className={classes.loader} />}
                     data={getStatusStats(critId)}
                     options={{
-                      fontName: theme.typography.fontFamily,
-                      fontSize: theme.typography.fontSize,
+                      backgroundColor,
+                      ...fontStyle,
+                      colors,
                       title: getName(critId),
                       subtitle: 'based on hours studied',
                       hAxis: {
+                        ...fontStyle,
                         title: `${t('UNIT_LABEL_' + getUnit(critId) + '_plural')}`,
                         minValue: 0,
                       },
-                      vAxis: {
-                        title: 'Studierende',
-                      },
+                      vAxis: { ...fontStyle, title: 'Studierende' },
                       legend: 'none',
                     }}
                   />

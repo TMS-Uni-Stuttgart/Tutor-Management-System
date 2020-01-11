@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.text.primary,
       '& table tr': {
         backgroundColor: 'transparent',
-      }
+      },
       // TODO: Implement markdown with dark theme (take CSS and convert it to JSS).
     },
   })
