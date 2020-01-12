@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import path from 'path';
 import uuid from 'uuid/v4';
-import { databaseConfig } from './helpers/config';
+import { databaseConfig, getSessionTimeout } from './helpers/config';
 import Logger from './helpers/Logger';
 import initPassport from './helpers/passport';
 import { EndpointNotFoundError, handleError } from './model/Errors';
@@ -61,6 +61,7 @@ function initJSONMiddleware() {
  */
 function initSecurityMiddleware() {
   Logger.info('Setting up passport...');
+
   const MongoStore = ConnectMongo(session);
   const mongoStoreOptions: { secret: string } & (
     | MongoUrlOptions
@@ -71,6 +72,9 @@ function initSecurityMiddleware() {
     mongooseConnection: mongoose.connection,
     secret: databaseConfig.secret,
   };
+  const timeoutSetting = getSessionTimeout();
+
+  Logger.info(`\tSetting timeout to: ${timeoutSetting} minutes`);
 
   app.use(
     session({
@@ -85,7 +89,7 @@ function initSecurityMiddleware() {
       saveUninitialized: true,
       cookie: {
         httpOnly: true,
-        maxAge: 30 * 60 * 1000,
+        maxAge: timeoutSetting * 60 * 1000,
       },
     })
   );
