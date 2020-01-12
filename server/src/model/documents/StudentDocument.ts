@@ -19,7 +19,7 @@ import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
-import { PointMapDTO, PointMap, PointId, PointMapEntry } from 'shared/src/model/Points';
+import { PointMapDTO, PointMap, PointId, PointMapEntry } from 'shared/dist/model/Points';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,

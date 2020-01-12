@@ -5,13 +5,13 @@ import {
   PointId,
   PointMapEntry,
   getPointsOfExercise,
-} from 'shared/src/model/Points';
+} from 'shared/dist/model/Points';
 import { TeamDocument } from '../../model/documents/TeamDocument';
 import teamService from '../team-service/TeamService.class';
-import { HasExercises } from 'shared/src/model/Sheet';
+import { HasExercises } from 'shared/dist/model/Sheet';
 import sheetService from '../sheet-service/SheetService.class';
 import { StudentDocument } from '../../model/documents/StudentDocument';
-import { getNameOfEntity } from 'shared/src/util/helpers';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 import studentService from '../student-service/StudentService.class';
 
 export interface PointInformation {
