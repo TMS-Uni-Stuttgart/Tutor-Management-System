@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import path from 'path';
 import uuid from 'uuid/v4';
-import { databaseConfig } from './helpers/config';
+import { databaseConfig, getSessionTimeout } from './helpers/config';
 import Logger from './helpers/Logger';
 import initPassport from './helpers/passport';
 import { EndpointNotFoundError, handleError } from './model/Errors';
@@ -32,6 +32,21 @@ const BASE_API_PATH = '/api';
 const app = express();
 
 /**
+ * Sets up the middleware which logs every request made.
+ *
+ * This has to be called __AFTER__ the security middleware got initialized because it relies on the `user` property of the request.
+ */
+function initRequestLogger() {
+  app.use((req, _, next) => {
+    const user: string = req.user?.id ?? 'Not identified user';
+
+    Logger.http(`Request: ${user} -> ${req.path}@${req.method}`);
+
+    next();
+  });
+}
+
+/**
  * Set up the middleware needed for support of JSON in requests.
  */
 function initJSONMiddleware() {
@@ -46,6 +61,7 @@ function initJSONMiddleware() {
  */
 function initSecurityMiddleware() {
   Logger.info('Setting up passport...');
+
   const MongoStore = ConnectMongo(session);
   const mongoStoreOptions: { secret: string } & (
     | MongoUrlOptions
@@ -56,6 +72,9 @@ function initSecurityMiddleware() {
     mongooseConnection: mongoose.connection,
     secret: databaseConfig.secret,
   };
+  const timeoutSetting = getSessionTimeout();
+
+  Logger.info(`\tSetting timeout to: ${timeoutSetting} minutes`);
 
   app.use(
     session({
@@ -70,7 +89,7 @@ function initSecurityMiddleware() {
       saveUninitialized: true,
       cookie: {
         httpOnly: true,
-        maxAge: 30 * 60 * 1000,
+        maxAge: timeoutSetting * 60 * 1000,
       },
     })
   );
@@ -139,6 +158,8 @@ function initApp(): Express {
   initJSONMiddleware();
 
   initSecurityMiddleware();
+
+  initRequestLogger();
 
   initEndpoints();
 

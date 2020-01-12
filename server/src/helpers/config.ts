@@ -11,6 +11,13 @@ export interface DatabaseConfig {
 
 export const databaseConfig: DatabaseConfig = config.get('database');
 
+/**
+ * Returns the value of the `sessionTimeout` setting.
+ *
+ * If no `sessionTimeout` configuration was provided or if the provided configuration is invalid than a default value of 120 minutes is being return.
+ *
+ * @returns The specified session timeout in _minutes_.
+ */
 export function getSessionTimeout(): number {
   try {
     const timeoutSetting = config.get('sessionTimeout');
