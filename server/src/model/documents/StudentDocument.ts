@@ -9,7 +9,6 @@ import {
 } from '@typegoose/typegoose';
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
-import { PointId, PointMap, PointMapDTO, PointMapEntry } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Student, StudentStatus } from 'shared/dist/model/Student';
 import { databaseConfig } from '../../helpers/config';
@@ -20,6 +19,7 @@ import { CollectionName } from '../CollectionName';
 import { AttendanceDocument, AttendanceSchema } from './AttendanceDocument';
 import { TeamDocument } from './TeamDocument';
 import { TutorialDocument } from './TutorialDocument';
+import { PointMapDTO, PointMap, PointId, PointMapEntry } from 'shared/src/model/Points';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,

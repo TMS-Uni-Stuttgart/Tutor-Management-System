@@ -4,11 +4,9 @@ import {
   makeStyles,
   Paper,
   Theme,
-  useTheme,
   Typography,
+  useTheme,
 } from '@material-ui/core';
-import GREEN from '@material-ui/core/colors/green';
-import RED from '@material-ui/core/colors/red';
 import React from 'react';
 import Chart from 'react-google-charts';
 import { TutorialSummaryInfo } from '../Dashboard';
@@ -42,6 +40,8 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
   const classes = useStyles();
   const theme = useTheme();
 
+  const { backgroundColor, fontStyle } = theme.mixins.chart(theme);
+
   function getScheinPassedStats() {
     const heading = ['Status', 'Studenten'];
     let passedValue = 0;
@@ -68,11 +68,14 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
         loader={<CircularProgress className={classes.loader} />}
         data={getScheinPassedStats()}
         options={{
-          fontName: theme.typography.fontFamily,
-          fontSize: theme.typography.fontSize,
+          backgroundColor,
+          ...fontStyle,
           slices: {
-            0: { color: GREEN[600] },
-            1: { color: RED[600] },
+            0: { color: theme.palette.green.dark },
+            1: { color: theme.palette.red.dark },
+          },
+          legend: {
+            ...fontStyle,
           },
         }}
       />

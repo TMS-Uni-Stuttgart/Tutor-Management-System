@@ -32,6 +32,29 @@
       ""
     ]
   },
+  "React functional component with route": {
+    "prefix": "react func comp (with route params)",
+    "description": "Creates a functional component with route params from react-router.",
+    "body": [
+      "import React from 'react';",
+      "import { useParams } from 'react-router';",
+      "",
+      "interface RouteParams {",
+      "\t",
+      "}",
+      "",
+      "function $1(): JSX.Element {",
+        "\tconst {} = useParams<RouteParams>();",
+        "",
+        "\treturn (",
+          "\t\t$0",
+        "\t);",
+      "}",
+      "",
+      "export default $1;",
+      ""
+    ]
+  },
   "MUI useStyles hook": {
     "prefix": "useStyles hook (MUI)",
     "description": "boilerplate code for the useStyles hook",

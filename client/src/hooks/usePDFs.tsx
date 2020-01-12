@@ -2,8 +2,8 @@ import React from 'react';
 import { useDialog, DialogHelpers } from './DialogService';
 import Markdown from '../components/Markdown';
 import {
-  getSingleCorrectionCommentMarkdown,
-  getSingleCorrectionCommentPDF,
+  getTeamCorrectionCommentMarkdown,
+  getTeamCorrectionCommentPDF,
   getCorrectionCommentPDFs,
 } from './fetching/Files';
 import { Sheet } from 'shared/dist/model/Sheet';
@@ -32,7 +32,7 @@ async function showSinglePdfPreview({
   sheet,
   team,
 }: CorrectionPdfOptions & DialogOption) {
-  const markdownSource = await getSingleCorrectionCommentMarkdown(tutorialId, sheet.id, team.id);
+  const markdownSource = await getTeamCorrectionCommentMarkdown(tutorialId, sheet.id, team.id);
 
   dialog.show({
     actions: [
@@ -51,7 +51,7 @@ async function showSinglePdfPreview({
 }
 
 async function generateSinglePdf({ tutorialId, sheet, team }: CorrectionPdfOptions) {
-  const blob = await getSingleCorrectionCommentPDF(tutorialId, sheet.id, team.id);
+  const blob = await getTeamCorrectionCommentPDF(tutorialId, sheet.id, team.id);
   const teamName = team.students.map(s => s.lastname).join('');
   const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 

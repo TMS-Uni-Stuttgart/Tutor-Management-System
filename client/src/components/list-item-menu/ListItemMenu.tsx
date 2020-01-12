@@ -1,11 +1,10 @@
-import React, { useState, ComponentType, MouseEventHandler } from 'react';
-import { DotsVertical as MoreVertIcon } from 'mdi-material-ui';
-import { ListItemIcon, ListItemText, MenuItem, Tooltip } from '@material-ui/core';
+import { IconButton, ListItemIcon, ListItemText, MenuItem, Tooltip } from '@material-ui/core';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import Menu, { MenuProps } from '@material-ui/core/Menu';
 import { MenuItemProps } from '@material-ui/core/MenuItem';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
-import { IconButton } from '@material-ui/core';
+import { DotsVertical as MoreVertIcon } from 'mdi-material-ui';
+import React, { ComponentType, MouseEventHandler, useState } from 'react';
 
 type UsedProps =
   | 'open'
@@ -15,9 +14,9 @@ type UsedProps =
   | 'transformOrigin'
   | 'getContentAnchorEl';
 
-export interface ListItem extends MenuItemProps {
+export interface ListItem extends MenuItemProps<'button'> {
   primary: string;
-  onClick: MouseEventHandler<HTMLLIElement>;
+  onClick: MouseEventHandler<HTMLElement>;
   Icon: ComponentType<SvgIconProps>;
   listItemTextProps?: ListItemTextProps;
   iconProps?: SvgIconProps;
@@ -38,8 +37,9 @@ function generateListItem({
   disabled,
   tooltip,
 }: ListItem): JSX.Element {
+  // The href is added through a spreaded object due to the MenuItem typing not being aware of the href property existing on the ButtonBase.
   const menuItem = (
-    <MenuItem key={primary} onClick={onClick} disabled={disabled}>
+    <MenuItem button key={primary} onClick={onClick} disabled={disabled}>
       <ListItemIcon>
         <Icon {...iconProps} />
       </ListItemIcon>

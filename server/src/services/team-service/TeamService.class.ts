@@ -20,16 +20,6 @@ import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 
-type SubExPointInformation = Omit<PointInformation, 'entry'>;
-
-export interface PointInformation {
-  id: string;
-  exName: string;
-  exPoints: ExercisePointInfo;
-  entry: PointMapEntry;
-  subexercises: SubExPointInformation[];
-}
-
 class TeamService {
   public async getAllTeams(tutorialId: string): Promise<Team[]> {
     const { teams: teamDocs }: TutorialDocument = await tutorialService.getDocumentWithID(
@@ -147,57 +137,6 @@ class TeamService {
     team.points = pointMapOfTeam.toDTO();
 
     await this.saveTutorialWithChangedTeams(tutorial);
-  }
-
-  /**
-   * Returns a list of information about the PointEntries of a team for a sheet.
-   *
-   * Collects all information about PointEntries of the given team for the given sheet. Empty or non-present entries will be skipped and not added to the list.
-   *
-   * @param tutorialId ID of the tutorial.
-   * @param teamId ID of the team which infos to get.
-   * @param sheetId Sheet which infos to get.
-   *
-   * @returns Sorted list (ascending by exercise name) of point information.
-   */
-  public async getPoints(
-    tutorialId: string,
-    teamId: string,
-    sheetId: string
-  ): Promise<PointInformation[]> {
-    const [team] = await this.getDocumentWithId(tutorialId, teamId);
-    const sheet = await sheetService.getDocumentWithId(sheetId);
-
-    const pointMap = new PointMap(team.points);
-    const entries: PointInformation[] = [];
-
-    sheet.exercises.forEach(ex => {
-      const entry = pointMap.getPointEntry(new PointId(sheetId, ex));
-      const subexercises: SubExPointInformation[] = [];
-
-      ex.subexercises.forEach(subex => {
-        subexercises.push({
-          id: subex.id,
-          exName: subex.exName,
-          exPoints: getPointsOfExercise(subex),
-          subexercises: [],
-        });
-      });
-
-      if (entry) {
-        entries.push({
-          id: ex.id,
-          exName: ex.exName,
-          entry,
-          exPoints: getPointsOfExercise(ex),
-          subexercises,
-        });
-      }
-    });
-
-    entries.sort((a, b) => a.exName.localeCompare(b.exName));
-
-    return entries;
   }
 
   public async getTeamWithId(tutorialId: string, id: string): Promise<Team> {

@@ -2,7 +2,7 @@ import { Attendance } from './Attendance';
 import { HasId, NamedElement } from './Common';
 import { PointMapDTO } from './Points';
 
-interface TeamInStudent extends HasId {
+export interface TeamInStudent extends HasId {
   teamNo: number;
 }
 

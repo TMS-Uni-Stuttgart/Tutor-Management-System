@@ -4,6 +4,7 @@ import { PointMap } from 'shared/dist/model/Points';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
 import { Student } from 'shared/dist/model/Student';
 import { Team } from 'shared/dist/model/Team';
+import { Sheet } from 'shared/dist/model/Sheet';
 
 export function teamItemToString(team: Team): string {
   const studentsInTeam = team.students.length
@@ -15,6 +16,10 @@ export function teamItemToString(team: Team): string {
 
 export function getDisplayStringForTutorial(tutorial: { slot: string }): string {
   return `Tutorium ${tutorial.slot.padStart(2, '0')}`;
+}
+
+export function getDisplayStringOfSheet(sheet: Sheet): string {
+  return `Übungsblatt #${sheet.sheetNo.toString().padStart(2, '0')}`;
 }
 
 export function getDisplayStringOfScheinExam(exam: ScheinExam): string {

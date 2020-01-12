@@ -45,18 +45,14 @@ export async function getCredentialsPDF(): Promise<Blob> {
   return Promise.reject(`Wrong response code (${response.status})`);
 }
 
-export async function getSingleCorrectionCommentMarkdown(
+export async function getTeamCorrectionCommentMarkdown(
   tutorialId: string,
   sheetId: string,
   teamId: string
 ): Promise<string> {
-  const response = await axios.get(`/pdf/markdown/${tutorialId}/${sheetId}/${teamId}`);
-  // , {
-  //   responseType: 'arraybuffer',
-  //   headers: {
-  //     Accept: 'application/pdf',
-  //   },
-  // }
+  const response = await axios.get(
+    `/pdf/markdown/tutorial/${tutorialId}/sheet/${sheetId}/team/${teamId}`
+  );
 
   if (response.status === 200) {
     return response.data;
@@ -65,7 +61,7 @@ export async function getSingleCorrectionCommentMarkdown(
   return Promise.reject(`Wrong response code (${response.status})`);
 }
 
-export async function getSingleCorrectionCommentPDF(
+export async function getTeamCorrectionCommentPDF(
   tutorialId: string,
   sheetId: string,
   teamId: string
@@ -79,6 +75,19 @@ export async function getSingleCorrectionCommentPDF(
 
   if (response.status === 200) {
     return new Blob([response.data], { type: 'application/pdf' });
+  }
+
+  return Promise.reject(`Wrong response code (${response.status})`);
+}
+
+export async function getStudentCorrectionCommentMarkdown(
+  sheetId: string,
+  studentId: string
+): Promise<string> {
+  const response = await axios.get(`/pdf/markdown/sheet/${sheetId}/student/${studentId}`);
+
+  if (response.status === 200) {
+    return response.data;
   }
 
   return Promise.reject(`Wrong response code (${response.status})`);

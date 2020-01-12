@@ -181,8 +181,6 @@ export async function isUserCorrectorOfTutorial(req: Request, _: Response, next:
  * @param next Next function
  */
 export async function isUserTutorOfStudent(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserTutorOfStudent()');
-
   if (req.hasAccess) {
     return next();
   }
@@ -209,8 +207,6 @@ export async function isUserTutorOfStudent(req: Request, _: Response, next: Next
  * @param next Next function
  */
 export async function isUserCorrectorOfStudent(req: Request, _: Response, next: NextFunction) {
-  assertRequestHasIdParam(req, 'isUserCorrectorOfStudent()');
-
   if (req.hasAccess) {
     return next();
   }
@@ -241,8 +237,6 @@ export async function isUserSubstituteTutorOfStudent(
   _: Response,
   next: NextFunction
 ) {
-  assertRequestHasIdParam(req, 'isUserSubstituteTutorOfStudent()');
-
   if (req.hasAccess) {
     return next();
   }
@@ -315,9 +309,9 @@ async function getTutorialFromRequest(req: Request): Promise<TutorialDocument> {
 }
 
 async function getTutorialOfStudentFromRequest(req: Request): Promise<TutorialDocument> {
-  assertRequestHasIdParam(req, 'getTutorialOfStudentFromRequest()');
+  assertRequestStudentIdParam(req, 'getTutorialOfStudentFromRequest()');
 
-  const studentId = req.params.id;
+  const studentId = req.params.studentId || req.params.id;
   const student = req.student ? req.student : await studentService.getDocumentWithId(studentId);
   const tutorial = req.tutorial
     ? req.tutorial
@@ -393,6 +387,14 @@ function assertRequestHasTutorialParam(req: Request, middlewareName: string) {
   if (!req.params.tutorialId && !req.params.id) {
     throw new Error(
       `${middlewareName} middleware must only be used in paths which have a 'tutorialId' or an 'id' parameter.`
+    );
+  }
+}
+
+function assertRequestStudentIdParam(req: Request, middlewareName: string) {
+  if (!req.params.id && !req.params.studentId) {
+    throw new Error(
+      `${middlewareName} middleware must only be used in paths which have an 'studentId' or 'id' parameter.`
     );
   }
 }

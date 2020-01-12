@@ -1,20 +1,19 @@
 import {
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  Select,
-  MenuItem,
   Checkbox,
-  ListItemText,
   Chip,
-  Theme,
+  FormControl,
   FormHelperText,
+  InputLabel,
+  ListItemText,
+  MenuItem,
+  Select,
+  Theme,
 } from '@material-ui/core';
 import { FormControlProps } from '@material-ui/core/FormControl';
 import { SelectProps } from '@material-ui/core/Select';
-import React, { useRef, useState, useEffect } from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import React, { useEffect, useRef, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,6 +45,8 @@ export interface CustomSelectProps<T>
   isItemSelected?: (item: T) => boolean;
   FormControlProps?: Omit<FormControlProps, 'variant' | 'className'>;
 }
+
+export type OnChangeHandler = CustomSelectProps<{}>['onChange'];
 
 class EmptyItem {
   constructor(readonly id: string, readonly name: string) {}
@@ -133,7 +134,8 @@ function CustomSelect<T>({
         {...other}
         name={name}
         onChange={onChange}
-        input={<OutlinedInput labelWidth={labelWidth} />}
+        variant='outlined'
+        labelWidth={labelWidth}
         multiple={multiple}
         renderValue={
           multiple

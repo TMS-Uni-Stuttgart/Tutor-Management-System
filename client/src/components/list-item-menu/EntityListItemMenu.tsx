@@ -1,18 +1,6 @@
-import { ListItemTextProps } from '@material-ui/core/ListItemText';
-import { MenuItemProps } from '@material-ui/core/MenuItem';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
-import { Delete as DeleteIcon, Pencil as EditIcon, Information as InfoIcon } from 'mdi-material-ui';
-import React, { ComponentType, MouseEventHandler } from 'react';
-import ListItemMenu, { ListItemMenuProps } from './ListItemMenu';
-
-interface ListItem extends MenuItemProps {
-  primary: string;
-  onClick: MouseEventHandler<HTMLLIElement>;
-  Icon: ComponentType<SvgIconProps>;
-  listItemTextProps?: ListItemTextProps;
-  iconProps?: SvgIconProps;
-  tooltip?: string;
-}
+import { Delete as DeleteIcon, Information as InfoIcon, Pencil as EditIcon } from 'mdi-material-ui';
+import React, { MouseEventHandler } from 'react';
+import ListItemMenu, { ListItem, ListItemMenuProps } from './ListItemMenu';
 
 export interface EntityListItemMenuProps extends Omit<ListItemMenuProps, 'items'> {
   onEditClicked?: MouseEventHandler<HTMLLIElement>;
