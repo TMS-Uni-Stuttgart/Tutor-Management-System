@@ -11,7 +11,7 @@ export async function getAllScheinExams(): Promise<ScheinExam[]> {
   });
 
   if (response.status === 200) {
-    return response.data;
+    return response.data.sort((a, b) => a.scheinExamNo - b.scheinExamNo);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);

@@ -5,7 +5,7 @@ export async function getAllSheets(): Promise<Sheet[]> {
   const response = await axios.get<Sheet[]>('sheet');
 
   if (response.status === 200) {
-    return response.data;
+    return response.data.sort((a, b) => a.sheetNo - b.sheetNo);
   }
 
   return Promise.reject(`Wrong status code (${response.status}).`);
