@@ -123,6 +123,9 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       content: (
         <ScheinExamForm exam={exam} onSubmit={editExam(exam)} onCancelClicked={dialog.hide} />
       ),
+      DialogProps: {
+        maxWidth: 'lg',
+      },
     });
   }
 
