@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from './loading/LoadingSpinner';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) =>

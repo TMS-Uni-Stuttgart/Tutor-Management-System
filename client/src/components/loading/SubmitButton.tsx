@@ -1,9 +1,10 @@
-import { CircularProgress, Modal, Tooltip, Typography } from '@material-ui/core';
+import { CircularProgress, Tooltip } from '@material-ui/core';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import { CircularProgressProps } from '@material-ui/core/CircularProgress';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
+import LoadingModal from './LoadingModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,22 +73,13 @@ function SubmitButton({
         ButtomComp
       )}
 
-      <Modal open={!!modalText && isSubmitting} className={classes.modal}>
-        <div className={classes.modalContent} tabIndex={-1}>
-          <CircularProgress
-            size={56}
-            color='inherit'
-            className={clsx(
-              CircularProgressProps && CircularProgressProps.className,
-              classes.spinner
-            )}
-          />
-
-          <Typography variant='h4' className={classes.modalText}>
-            {modalText}
-          </Typography>
-        </div>
-      </Modal>
+      {modalText && (
+        <LoadingModal
+          modalText={modalText}
+          open={isSubmitting}
+          CircularProgressProps={CircularProgressProps}
+        />
+      )}
     </>
   );
 }

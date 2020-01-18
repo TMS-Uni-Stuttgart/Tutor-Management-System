@@ -83,7 +83,7 @@ class ScheinExamService {
   }
 
   public getScheinExamResult(student: Student, exam: ScheinExam): number {
-    const pointsOfStudent = new PointMap(student.points);
+    const pointsOfStudent = new PointMap(student.scheinExamResults);
     let result = 0;
 
     exam.exercises.forEach(exercise => {

@@ -41,6 +41,14 @@ pdfRouter.get('/scheinstatus', ...checkRoleAccess(Role.ADMIN), async (_, res) =>
   res.send(pdfBuffer);
 });
 
+pdfRouter.get('/scheinexam/:id/result', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+  const pdfBuffer = await pdfService.generateScheinexamResultPDF(id);
+
+  res.contentType('pdf');
+  res.send(pdfBuffer);
+});
+
 pdfRouter.get('/credentials', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
   const pdfBuffer = await pdfService.generateCredentialsPDF();
 

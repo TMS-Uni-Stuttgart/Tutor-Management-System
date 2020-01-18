@@ -9,7 +9,7 @@ import ScheinCriteriaForm, {
   ScheinCriteriaFormCallback,
 } from '../../components/forms/ScheinCriteriaForm';
 import { FormDataResponse } from '../../components/generatedForm/types/FieldData';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';

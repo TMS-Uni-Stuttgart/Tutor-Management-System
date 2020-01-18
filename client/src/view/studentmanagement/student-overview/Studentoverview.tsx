@@ -10,7 +10,7 @@ import { getNameOfEntity } from 'shared/dist/util/helpers';
 import CustomSelect from '../../../components/CustomSelect';
 import StudentForm from '../../../components/forms/StudentForm';
 import TutorialChangeForm from '../../../components/forms/TutorialChangeForm';
-import LoadingSpinner from '../../../components/LoadingSpinner';
+import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
 import { useDialog } from '../../../hooks/DialogService';

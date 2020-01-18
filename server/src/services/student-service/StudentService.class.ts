@@ -28,7 +28,7 @@ import tutorialService from '../tutorial-service/TutorialService.class';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
-    const studentDocs: StudentDocument[] = await StudentModel.find();
+    const studentDocs: StudentDocument[] = await this.getAllStudentsAsDocuments();
     const students: Student[] = [];
 
     for (const doc of studentDocs) {
@@ -36,6 +36,10 @@ class StudentService {
     }
 
     return students;
+  }
+
+  public async getAllStudentsAsDocuments(): Promise<StudentDocument[]> {
+    return StudentModel.find();
   }
 
   public async createStudent({ tutorial: tutorialId, ...dto }: StudentDTO): Promise<Student> {

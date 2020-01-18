@@ -5,7 +5,7 @@ import { useParams, useHistory } from 'react-router';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Team } from 'shared/dist/model/Team';
 import CustomSelect from '../../../components/CustomSelect';
-import SubmitButton from '../../../components/forms/components/SubmitButton';
+import SubmitButton from '../../../components/loading/SubmitButton';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';

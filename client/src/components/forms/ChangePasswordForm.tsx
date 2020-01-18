@@ -3,7 +3,7 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import { Paper, Typography, Button } from '@material-ui/core';
 import FormikTextField from './components/FormikTextField';
-import SubmitButton from './components/SubmitButton';
+import SubmitButton from '../loading/SubmitButton';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import clsx from 'clsx';

@@ -10,7 +10,7 @@ import { Attendance } from 'shared/dist/model/Attendance';
 import { PointMap } from 'shared/dist/model/Points';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
-import SubmitButton from '../../components/forms/components/SubmitButton';
+import SubmitButton from '../../components/loading/SubmitButton';
 import { getScheinStatusPDF } from '../../hooks/fetching/Files';
 import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../hooks/fetching/Sheet';

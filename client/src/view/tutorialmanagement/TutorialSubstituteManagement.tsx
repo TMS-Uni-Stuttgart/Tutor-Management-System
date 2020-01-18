@@ -15,7 +15,7 @@ import FormikMultipleDatesPicker, {
   getDateString,
 } from '../../components/forms/components/FormikMultipleDatesPicker';
 import FormikSelect from '../../components/forms/components/FormikSelect';
-import SubmitButton from '../../components/forms/components/SubmitButton';
+import SubmitButton from '../../components/loading/SubmitButton';
 import { useAxios } from '../../hooks/FetchingService';
 import { FormikSubmitCallback } from '../../types';
 import { getDisplayStringForTutorial, parseDateToMapKey } from '../../util/helperFunctions';

@@ -18,7 +18,7 @@ import {
 import React, { useState, useRef } from 'react';
 import { FormikSubmitCallback } from '../../../types';
 import FormikTextField from '../../forms/components/FormikTextField';
-import SubmitButton from '../../forms/components/SubmitButton';
+import SubmitButton from '../../loading/SubmitButton';
 import clsx from 'clsx';
 
 const useStyles = makeStyles(theme =>

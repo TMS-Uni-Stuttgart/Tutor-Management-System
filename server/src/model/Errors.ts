@@ -107,5 +107,5 @@ export function handleError(err: any, req: Request, res: Response, next: NextFun
     Logger.error(err.stack);
   }
 
-  return res.status(500).send(new ErrorResponse(500, err.message || 'Internal server error.'));
+  return res.status(500).send(new ErrorResponse(500, 'Internal server error.'));
 }

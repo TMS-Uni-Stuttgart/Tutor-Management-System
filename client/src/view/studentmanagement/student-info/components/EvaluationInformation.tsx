@@ -6,7 +6,7 @@ import { PointMap } from 'shared/dist/model/Points';
 import { Sheet } from 'shared/dist/model/Sheet';
 import { Student } from 'shared/dist/model/Student';
 import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
-import LoadingSpinner from '../../../../components/LoadingSpinner';
+import LoadingSpinner from '../../../../components/loading/LoadingSpinner';
 import Markdown from '../../../../components/Markdown';
 import Placeholder from '../../../../components/Placeholder';
 import PointsTable from '../../../../components/points-table/PointsTable';

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamForm';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import TeamTableRow from '../../components/TeamTableRow';
 import { useDialog } from '../../hooks/DialogService';
