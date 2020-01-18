@@ -7,7 +7,7 @@ import SheetForm, {
   getInitialSheetFormState,
   SheetFormSubmitCallback,
 } from '../../components/forms/SheetForm';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';

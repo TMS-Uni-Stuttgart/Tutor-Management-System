@@ -5,7 +5,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { useAxios } from '../../hooks/FetchingService';
 import { TutorialWithFetchedStudents } from '../../typings/types';
 import AttendanceManager from './AttendanceManager';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import LoadingSpinner from '../../components/loading/LoadingSpinner';
 
 const useStyles = makeStyles(() =>
   createStyles({

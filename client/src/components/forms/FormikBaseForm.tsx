@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { Formik, FormikConfig } from 'formik';
 import React from 'react';
 import FormikDebugDisplay from './components/FormikDebugDisplay';
-import SubmitButton from './components/SubmitButton';
+import SubmitButton from '../loading/SubmitButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

@@ -6,7 +6,7 @@ import React from 'react';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import FormikTextField from './components/FormikTextField';
-import SubmitButton from './components/SubmitButton';
+import SubmitButton from '../loading/SubmitButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

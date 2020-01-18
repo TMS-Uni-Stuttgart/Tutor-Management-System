@@ -18,7 +18,7 @@ import {
   getPointsOfAllExercises,
   convertExercisePointInfoToString,
 } from 'shared/dist/model/Points';
-import SubmitButton from '../../../../components/forms/components/SubmitButton';
+import SubmitButton from '../../../../components/loading/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';

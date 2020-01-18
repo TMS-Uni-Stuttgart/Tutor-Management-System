@@ -10,7 +10,7 @@ import {
 } from 'shared/dist/model/Points';
 import { Exercise, Sheet } from 'shared/dist/model/Sheet';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
-import SubmitButton from '../../../../components/forms/components/SubmitButton';
+import SubmitButton from '../../../../components/loading/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';
 import { HasPoints } from '../../../../typings/types';
 import { getPointsFromState as getAchievedPointsFromState } from '../EnterPoints.helpers';
