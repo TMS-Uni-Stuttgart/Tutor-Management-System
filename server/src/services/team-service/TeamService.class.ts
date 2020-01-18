@@ -1,13 +1,6 @@
 import { isDocument } from '@typegoose/typegoose';
 import _ from 'lodash';
-import {
-  ExercisePointInfo,
-  getPointsOfExercise,
-  PointId,
-  PointMap,
-  PointMapEntry,
-  UpdatePointsDTO,
-} from 'shared/dist/model/Points';
+import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';

@@ -1,8 +1,8 @@
 import { ScheinexamDocument } from '../../../model/documents/ScheinexamDocument';
 import { StudentDocument } from '../../../model/documents/StudentDocument';
 import { PDFWithStudentsModule } from './PDFWithStudentsModule';
-import { PointMap } from 'shared/src/model/Points';
-import { StudentStatus } from 'shared/src/model/Student';
+import { PointMap } from 'shared/dist/model/Points';
+import { StudentStatus } from 'shared/dist/model/Student';
 import Logger from '../../../helpers/Logger';
 
 enum ExamPassedState {

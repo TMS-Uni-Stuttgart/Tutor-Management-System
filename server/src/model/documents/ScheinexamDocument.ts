@@ -1,7 +1,7 @@
 import { arrayProp, instanceMethod, InstanceType, prop, Typegoose } from '@typegoose/typegoose';
 import { Document, Model } from 'mongoose';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { getPointsOfAllExercises, PointMap } from 'shared/src/model/Points';
+import { getPointsOfAllExercises, PointMap } from 'shared/dist/model/Points';
 import { CollectionName } from '../CollectionName';
 import { ExerciseDocument, ExerciseSchema } from './ExerciseDocument';
 import { StudentDocument } from './StudentDocument';

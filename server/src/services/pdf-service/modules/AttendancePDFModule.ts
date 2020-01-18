@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { getNameOfEntity, sortByName } from 'shared/src/util/helpers';
+import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
 import { getIdOfDocumentRef } from '../../../helpers/documentHelpers';
 import { TutorialDocument } from '../../../model/documents/TutorialDocument';
 import { BadRequestError } from '../../../model/Errors';
