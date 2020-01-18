@@ -7,17 +7,6 @@ import Logger from './helpers/Logger';
 import { StartUpError } from './model/Errors';
 import { initScheincriteriaBlueprints } from './model/scheincriteria/Scheincriteria';
 import userService from './services/user-service/UserService.class';
-import pdfService from './services/pdf-service/PdfService.class';
-
-/**
- * Perfoms several sanity checks on startup. If a check fails a corresponding error is thrown.
- *
- * Checks performed:
- * - Can all template files required by the PDF-service be found and loaded.
- */
-async function performStartupChecks() {
-  pdfService.checkIfAllTemplatesArePresent();
-}
 
 /**
  * Tries to establish a conection to the database.
@@ -77,8 +66,6 @@ async function initAdmin() {
 async function startServer() {
   try {
     Logger.info(`Starting server with version ${pkgInfo.version}...`);
-
-    await performStartupChecks();
 
     await connectToDB();
 

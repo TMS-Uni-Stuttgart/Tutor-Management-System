@@ -1,12 +1,9 @@
-import fs from 'fs';
 import JSZip from 'jszip';
 import MarkdownIt from 'markdown-it';
-import path from 'path';
 import puppeteer from 'puppeteer';
 import { User } from 'shared/dist/model/User';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
-import { BadRequestError, TemplatesNotFoundError } from '../../model/Errors';
 import markdownService, { TeamCommentData } from '../markdown-service/MarkdownService.class';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import scheinexamService from '../scheinexam-service/ScheinexamService.class';
@@ -17,22 +14,20 @@ import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
 import { AttendancePDFModule } from './modules/AttendancePDFModule';
+import { CredentialsPDFModule } from './modules/CredentialsPDFModule';
 import { ScheinexamResultPDFModule } from './modules/ScheinexamResultPDFModule';
 import { ScheinResultsPDFModule } from './modules/ScheinResultsPDFModule';
-
-interface StudentData {
-  matriculationNo: string;
-  schein: string;
-}
 
 class PdfService {
   private readonly attendancePDFModule: AttendancePDFModule;
   private readonly scheinResultsPDFModule: ScheinResultsPDFModule;
+  private readonly credentialsPDFModule: CredentialsPDFModule;
   private readonly scheinexamResultsPDFModule: ScheinexamResultPDFModule;
 
   constructor() {
     this.attendancePDFModule = new AttendancePDFModule();
     this.scheinResultsPDFModule = new ScheinResultsPDFModule();
+    this.credentialsPDFModule = new CredentialsPDFModule();
     this.scheinexamResultsPDFModule = new ScheinexamResultPDFModule();
   }
 
@@ -53,12 +48,8 @@ class PdfService {
 
   public async generateCredentialsPDF(): Promise<Buffer> {
     const users: User[] = await userService.getAllUsers();
-    const body = await this.generateCredentialsHTML(users);
-    const html = this.putBodyInHtml(body);
 
-    const buffer = await this.getPDFFromHTML(html);
-
-    return buffer;
+    return this.credentialsPDFModule.generatePDF({ users });
   }
 
   public async generatePDFFromSingleComment(
@@ -114,30 +105,6 @@ class PdfService {
     return zip.generateNodeStream({ type: 'nodebuffer' });
   }
 
-  /**
-   * Checks if all required templates can be found.
-   *
-   * If at least one template file cannnot be found a corresponding error is thrown listing all missing template files. If _all_ template files could be found the function ends without an error.
-   */
-  public checkIfAllTemplatesArePresent() {
-    const notFound: string[] = [];
-    const templatesToCheck: { getTemplate: () => string; name: string }[] = [
-      { name: 'Credentials', getTemplate: this.getCredentialsTemplate.bind(this) },
-    ];
-
-    for (const template of templatesToCheck) {
-      try {
-        template.getTemplate();
-      } catch (err) {
-        notFound.push(template.name);
-      }
-    }
-
-    if (notFound.length > 0) {
-      throw new TemplatesNotFoundError(notFound);
-    }
-  }
-
   private async generatePDFFromMarkdown(markdown: string): Promise<Buffer> {
     const html = this.generateHTMLFromMarkdown(markdown);
 
@@ -149,47 +116,6 @@ class PdfService {
     const body = parser.render(markdown);
 
     return this.putBodyInHtml(body);
-  }
-
-  private getCredentialsTemplate(): string {
-    return this.getTemplate('credentials.html');
-  }
-
-  private getTemplate(filename: string): string {
-    try {
-      const filePath = path.join(process.cwd(), 'config', 'html', filename);
-
-      return fs.readFileSync(filePath).toString();
-    } catch {
-      throw new BadRequestError(
-        `No template file present for filename '${filename}' in ./config/tms folder`
-      );
-    }
-  }
-
-  private async generateCredentialsHTML(users: User[]): Promise<string> {
-    const template = this.getCredentialsTemplate();
-    const rows: string[] = [];
-
-    users.forEach(user => {
-      const tempPwd = user.temporaryPassword || 'NO TMP PASSWORD';
-      const nameOfUser = `${user.lastname}, ${user.firstname}`;
-
-      rows.push(`<tr><td>${nameOfUser}</td><td>${user.username}</td><td>${tempPwd}</td></tr>`);
-    });
-
-    return this.fillCredentialsTemplate(template, rows.join(''));
-  }
-
-  private fillCredentialsTemplate(template: string, credentials: string): string {
-    return this.prepareTemplate(template).replace(/{{credentials}}/g, credentials);
-  }
-
-  private prepareTemplate(template: string): string {
-    return template
-      .replace(/{{\s+/g, '{{')
-      .replace(/\s+}}/g, '}}')
-      .replace(/(?=<!--)([\s\S]*?)-->/gim, '');
   }
 
   private putBodyInHtml(body: string): string {
