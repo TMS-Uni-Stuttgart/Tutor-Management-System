@@ -1,6 +1,6 @@
 import { PDFWithStudentsModule } from './PDFWithStudentsModule';
 import { StudentDocument } from '../../../model/documents/StudentDocument';
-import { ScheincriteriaSummaryByStudents } from 'shared/src/model/ScheinCriteria';
+import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 
 interface GeneratorOptions {
   students: StudentDocument[];

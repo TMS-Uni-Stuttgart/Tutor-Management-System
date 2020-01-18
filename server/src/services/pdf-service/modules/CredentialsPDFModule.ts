@@ -1,6 +1,6 @@
-import { User } from 'shared/src/model/User';
+import { User } from 'shared/dist/model/User';
 import { PDFModule } from './PDFModule';
-import { getNameOfEntity } from 'shared/src/util/helpers';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
 
 interface GeneratorOptions {
   users: User[];
