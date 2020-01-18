@@ -8,24 +8,21 @@ import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteri
 import { Student } from 'shared/dist/model/Student';
 import { User } from 'shared/dist/model/User';
 import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
+import { PointMap } from 'shared/src/model/Points';
 import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { BadRequestError, TemplatesNotFoundError } from '../../model/Errors';
-import markdownService, {
-  TeamCommentData,
-  PointInformation,
-} from '../markdown-service/MarkdownService.class';
+import markdownService, { TeamCommentData } from '../markdown-service/MarkdownService.class';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
+import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
-import scheinexamService from '../scheinexam-service/ScheinexamService.class';
-import { PointMap, getPointsOfAllExercises, ExercisePointInfo } from 'shared/src/model/Points';
 
 enum ExamPassedState {
   PASSED = 'PASSED',
@@ -110,8 +107,12 @@ class PdfService {
 
     students.forEach(student => {
       // FIXME: Use me as the code for the general schein exam result calculation
+      if (!student.matriculationNo) {
+        return;
+      }
+
       const scheinExamResults = new PointMap(student.scheinExamResults);
-      const hasAttended = scheinExamResults.hasPointEntry(exam.id);
+      const hasAttended = scheinExamResults.has(exam.id);
       const shortenedMatrNo = this.getShortenedMatrNo(student, students);
       let result: ExamPassedState = ExamPassedState.NOT_PASSED;
 
@@ -130,10 +131,44 @@ class PdfService {
     const rows: string[] = [];
     results
       .sort((a, b) => a.shortenedMatrNo.localeCompare(b.shortenedMatrNo))
+      .filter(result => result.passedState !== ExamPassedState.NOT_ATTENDED)
       .forEach(({ shortenedMatrNo, passedState }) => {
         rows.push(`<tr><td>${shortenedMatrNo}</td><td>{{${passedState}}}</td></tr>`);
       });
 
+    const template = this.getScheinexamResultTemplate();
+    const preparedHTML: string = this.prepareTemplate(template)
+      .replace(/{{scheinExamNo}}/g, exam.scheinExamNo.toString())
+      .replace(/{{statuses(?:,\s*(.*))?}}/g, (_, option) => {
+        let replacements = {
+          passed: 'Passed',
+          notPassed: 'Not passed',
+          notAttended: 'Not attended',
+        };
+
+        try {
+          replacements = { ...replacements, ...JSON.parse(option) };
+        } catch (err) {
+          Logger.warn(
+            `Could not parse option argument in schein exam html template. Falling back to defaults instead.`
+          );
+          Logger.warn(`\tProvided option: ${option}`);
+        }
+
+        console.log(rows);
+
+        return rows
+          .join('')
+          .replace(new RegExp(`{{${ExamPassedState.PASSED}}}`, 'g'), replacements.passed)
+          .replace(new RegExp(`{{${ExamPassedState.NOT_PASSED}}}`, 'g'), replacements.notPassed)
+          .replace(
+            new RegExp(`{{${ExamPassedState.NOT_ATTENDED}}}`, 'g'),
+            replacements.notAttended
+          );
+      });
+
+    const html = this.putBodyInHtml(preparedHTML);
+    return this.getPDFFromHTML(html);
   }
 
   public async generateZIPFromComments(
@@ -179,6 +214,7 @@ class PdfService {
       { name: 'Attendance', getTemplate: this.getAttendanceTemplate.bind(this) },
       { name: 'Schein status', getTemplate: this.getScheinStatusTemplate.bind(this) },
       { name: 'Credentials', getTemplate: this.getCredentialsTemplate.bind(this) },
+      { name: 'Schein exam result', getTemplate: this.getScheinexamResultTemplate.bind(this) },
     ];
 
     for (const template of templatesToCheck) {
@@ -217,6 +253,10 @@ class PdfService {
 
   private getCredentialsTemplate(): string {
     return this.getTemplate('credentials.html');
+  }
+
+  private getScheinexamResultTemplate(): string {
+    return this.getTemplate('scheinexam.html');
   }
 
   private getTemplate(filename: string): string {
