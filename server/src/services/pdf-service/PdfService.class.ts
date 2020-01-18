@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import fs from 'fs';
 import JSZip from 'jszip';
 import MarkdownIt from 'markdown-it';
@@ -7,11 +6,8 @@ import puppeteer from 'puppeteer';
 import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { User } from 'shared/dist/model/User';
-import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
-import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
-import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { BadRequestError, TemplatesNotFoundError } from '../../model/Errors';
 import markdownService, { TeamCommentData } from '../markdown-service/MarkdownService.class';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
@@ -22,6 +18,7 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
+import { AttendancePDFModule } from './modules/AttendancePDFModule';
 import { ScheinexamResultPDFModule } from './modules/ScheinexamResultPDFModule';
 
 interface StudentData {
@@ -30,27 +27,18 @@ interface StudentData {
 }
 
 class PdfService {
+  private readonly attendancePDFModule: AttendancePDFModule;
   private readonly scheinexamResultsPDFModule: ScheinexamResultPDFModule;
 
   constructor() {
+    this.attendancePDFModule = new AttendancePDFModule();
     this.scheinexamResultsPDFModule = new ScheinexamResultPDFModule();
   }
 
-  public generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const tutorial = await tutorialService.getDocumentWithID(tutorialId);
+  public async generateAttendancePDF(tutorialId: string, date: Date): Promise<Buffer> {
+    const tutorial = await tutorialService.getDocumentWithID(tutorialId);
 
-        const body: string = await this.generateAttendanceHTML(tutorial, date);
-        const html = this.putBodyInHtml(body);
-
-        const buffer = await this.getPDFFromHTML(html);
-
-        resolve(buffer);
-      } catch (err) {
-        reject(err);
-      }
-    });
+    return this.attendancePDFModule.generatePDF({ tutorial, date });
   }
 
   public generateStudentScheinOverviewPDF(): Promise<Buffer> {
@@ -144,7 +132,6 @@ class PdfService {
   public checkIfAllTemplatesArePresent() {
     const notFound: string[] = [];
     const templatesToCheck: { getTemplate: () => string; name: string }[] = [
-      { name: 'Attendance', getTemplate: this.getAttendanceTemplate.bind(this) },
       { name: 'Schein status', getTemplate: this.getScheinStatusTemplate.bind(this) },
       { name: 'Credentials', getTemplate: this.getCredentialsTemplate.bind(this) },
     ];
@@ -175,10 +162,6 @@ class PdfService {
     return this.putBodyInHtml(body);
   }
 
-  private getAttendanceTemplate(): string {
-    return this.getTemplate('attendance.html');
-  }
-
   private getScheinStatusTemplate(): string {
     return this.getTemplate('scheinstatus.html');
   }
@@ -197,37 +180,6 @@ class PdfService {
         `No template file present for filename '${filename}' in ./config/tms folder`
       );
     }
-  }
-
-  private async generateAttendanceHTML(tutorial: TutorialDocument, date: Date): Promise<string> {
-    if (!tutorial.tutor) {
-      throw new BadRequestError(
-        'Tutorial which attendance list should be generated does NOT have a tutor assigned.'
-      );
-    }
-
-    const template = this.getAttendanceTemplate();
-
-    const tutor = await userService.getUserWithId(getIdOfDocumentRef(tutorial.tutor));
-    const students: StudentDocument[] = await tutorial.getStudents();
-
-    students.sort(sortByName);
-    // const substitutePart = isSubstituteTutor(tutorial, userData)
-    //   ? `, Ersatztutor: ${getNameOfEntity(userData)}`
-    //   : '';
-
-    const tutorName = `${tutor.lastname}, ${tutor.firstname}`;
-
-    const rows: string = students
-      .map(
-        student =>
-          `<tr><td>${getNameOfEntity(student, {
-            lastNameFirst: true,
-          })}</td><td width="50%"></td></tr>`
-      )
-      .join('');
-
-    return this.fillAttendanceTemplate(template, tutorial.slot, tutorName, rows, date);
   }
 
   private async generateScheinStatusHTML(
@@ -258,32 +210,6 @@ class PdfService {
     });
 
     return this.fillCredentialsTemplate(template, rows.join(''));
-  }
-
-  private fillAttendanceTemplate(
-    template: string,
-    slot: string,
-    tutorName: string,
-    students: string,
-    date: Date
-  ): string {
-    return this.prepareTemplate(template)
-      .replace(/{{tutorialSlot}}/g, slot)
-      .replace(/{{tutorName}}/g, tutorName)
-      .replace(/{{students}}/g, students)
-      .replace(/{{date.*}}/g, substring => {
-        const dateFormat = substring.split(',').map(s => s.replace(/{{|}}/, ''))[1];
-
-        try {
-          if (dateFormat) {
-            return format(date, dateFormat);
-          } else {
-            return date.toDateString();
-          }
-        } catch {
-          return date.toDateString();
-        }
-      });
   }
 
   private fillScheinStatusTemplate(template: string, statuses: string): string {
