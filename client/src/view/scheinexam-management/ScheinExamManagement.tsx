@@ -7,14 +7,21 @@ import ScheinExamForm, {
   ScheinExamFormState,
   ScheinExamFormSubmitCallback,
 } from '../../components/forms/ScheinExamForm';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import { convertFormExercisesToDTOs } from '../../components/forms/SheetForm';
+import LoadingModal from '../../components/loading/LoadingModal';
+import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
-import { useAxios } from '../../hooks/FetchingService';
-import { getDisplayStringOfScheinExam } from '../../util/helperFunctions';
-import ScheinExamRow from './components/ScheinExamRow';
+import { getScheinexamResultPDF } from '../../hooks/fetching/Files';
+import {
+  createScheinExam,
+  deleteScheinExam,
+  editScheinExam,
+  getAllScheinExams,
+} from '../../hooks/fetching/ScheinExam';
+import { getDisplayStringOfScheinExam, saveBlob } from '../../util/helperFunctions';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
-import { convertFormExercisesToDTOs } from '../../components/forms/SheetForm';
+import ScheinExamRow from './components/ScheinExamRow';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,9 +51,9 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   const classes = useStyles();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingResults, setGeneratingResults] = useState(false);
   const [exams, setExams] = useState<ScheinExam[]>([]);
   const dialog = useDialog();
-  const { getAllScheinExams, createScheinExam, editScheinExam, deleteScheinExam } = useAxios();
 
   useEffect(() => {
     setIsLoading(true);
@@ -54,7 +61,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       setExams(exams);
       setIsLoading(false);
     });
-  }, [getAllScheinExams]);
+  }, []);
 
   const handleSubmit: ScheinExamFormSubmitCallback = async (
     values,
@@ -85,6 +92,15 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleGenerateResultPDF: (exam: ScheinExam) => void = async exam => {
+    setGeneratingResults(true);
+
+    const blob = await getScheinexamResultPDF(exam.id);
+    saveBlob(blob, `Scheinklausur_${exam.scheinExamNo}_Ergebnis`);
+
+    setGeneratingResults(false);
   };
 
   const editExam: (exam: ScheinExam) => ScheinExamFormSubmitCallback = exam => async (
@@ -156,20 +172,25 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <TableWithForm
-          title='Neue Scheinklausur erstellen'
-          form={<ScheinExamForm exams={exams} onSubmit={handleSubmit} />}
-          items={exams}
-          createRowFromItem={exam => (
-            <ScheinExamRow
-              key={exam.id}
-              exam={exam}
-              onEditExamClicked={handleEditExam}
-              onDeleteExamClicked={handleDeleteExam}
-            />
-          )}
-          placeholder='Keine Scheinklausuren vorhanden.'
-        />
+        <>
+          <TableWithForm
+            title='Neue Scheinklausur erstellen'
+            form={<ScheinExamForm exams={exams} onSubmit={handleSubmit} />}
+            items={exams}
+            createRowFromItem={exam => (
+              <ScheinExamRow
+                key={exam.id}
+                exam={exam}
+                onEditExamClicked={handleEditExam}
+                onHandleGenerateResultPDFClicked={handleGenerateResultPDF}
+                onDeleteExamClicked={handleDeleteExam}
+              />
+            )}
+            placeholder='Keine Scheinklausuren vorhanden.'
+          />
+
+          <LoadingModal modalText='Erstelle Ergebnisliste...' open={isGeneratingResults} />
+        </>
       )}
     </div>
   );
