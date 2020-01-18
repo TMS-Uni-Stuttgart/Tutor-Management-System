@@ -3,8 +3,6 @@ import JSZip from 'jszip';
 import MarkdownIt from 'markdown-it';
 import path from 'path';
 import puppeteer from 'puppeteer';
-import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
-import { Student } from 'shared/dist/model/Student';
 import { User } from 'shared/dist/model/User';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
@@ -20,6 +18,7 @@ import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
 import { AttendancePDFModule } from './modules/AttendancePDFModule';
 import { ScheinexamResultPDFModule } from './modules/ScheinexamResultPDFModule';
+import { ScheinResultsPDFModule } from './modules/ScheinResultsPDFModule';
 
 interface StudentData {
   matriculationNo: string;
@@ -28,10 +27,12 @@ interface StudentData {
 
 class PdfService {
   private readonly attendancePDFModule: AttendancePDFModule;
+  private readonly scheinResultsPDFModule: ScheinResultsPDFModule;
   private readonly scheinexamResultsPDFModule: ScheinexamResultPDFModule;
 
   constructor() {
     this.attendancePDFModule = new AttendancePDFModule();
+    this.scheinResultsPDFModule = new ScheinResultsPDFModule();
     this.scheinexamResultsPDFModule = new ScheinexamResultPDFModule();
   }
 
@@ -41,24 +42,13 @@ class PdfService {
     return this.attendancePDFModule.generatePDF({ tutorial, date });
   }
 
-  public generateStudentScheinOverviewPDF(): Promise<Buffer> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const [students, summaries] = await Promise.all([
-          studentService.getAllStudents(),
-          scheincriteriaService.getCriteriaResultsOfAllStudents(),
-        ]);
+  public async generateStudentScheinOverviewPDF(): Promise<Buffer> {
+    const [students, summaries] = await Promise.all([
+      studentService.getAllStudentsAsDocuments(),
+      scheincriteriaService.getCriteriaResultsOfAllStudents(),
+    ]);
 
-        const body = await this.generateScheinStatusHTML(students, summaries);
-        const html = this.putBodyInHtml(body);
-
-        const buffer = await this.getPDFFromHTML(html);
-
-        resolve(buffer);
-      } catch (err) {
-        reject(err);
-      }
-    });
+    return this.scheinResultsPDFModule.generatePDF({ students, summaries });
   }
 
   public async generateCredentialsPDF(): Promise<Buffer> {
@@ -132,7 +122,6 @@ class PdfService {
   public checkIfAllTemplatesArePresent() {
     const notFound: string[] = [];
     const templatesToCheck: { getTemplate: () => string; name: string }[] = [
-      { name: 'Schein status', getTemplate: this.getScheinStatusTemplate.bind(this) },
       { name: 'Credentials', getTemplate: this.getCredentialsTemplate.bind(this) },
     ];
 
@@ -162,10 +151,6 @@ class PdfService {
     return this.putBodyInHtml(body);
   }
 
-  private getScheinStatusTemplate(): string {
-    return this.getTemplate('scheinstatus.html');
-  }
-
   private getCredentialsTemplate(): string {
     return this.getTemplate('credentials.html');
   }
@@ -182,22 +167,6 @@ class PdfService {
     }
   }
 
-  private async generateScheinStatusHTML(
-    students: Student[],
-    summaries: ScheincriteriaSummaryByStudents
-  ): Promise<string> {
-    const template = this.getScheinStatusTemplate();
-    const studentDataToPrint: StudentData[] = this.getStudentDataToPrint(students, summaries);
-
-    const rows: string[] = [];
-
-    studentDataToPrint.forEach(data => {
-      rows.push(`<tr><td>${data.matriculationNo}</td><td>${data.schein}</td></tr>`);
-    });
-
-    return this.fillScheinStatusTemplate(template, rows.join(''));
-  }
-
   private async generateCredentialsHTML(users: User[]): Promise<string> {
     const template = this.getCredentialsTemplate();
     const rows: string[] = [];
@@ -212,94 +181,8 @@ class PdfService {
     return this.fillCredentialsTemplate(template, rows.join(''));
   }
 
-  private fillScheinStatusTemplate(template: string, statuses: string): string {
-    return this.prepareTemplate(template).replace(/{{statuses.*}}/g, substring => {
-      const wordArray = substring.match(/(\[(\w|\s)*,(\w|\s)*\])/g);
-      const replacements = { yes: 'yes', no: 'no' };
-
-      if (wordArray && wordArray[0]) {
-        const [yes, no] = wordArray[0]
-          .replace(/\[|\]|/g, '')
-          .replace(/,\s*/g, ',')
-          .split(',');
-
-        replacements.yes = yes || replacements.yes;
-        replacements.no = no || replacements.no;
-      }
-
-      return this.prepareTemplate(statuses)
-        .replace(/{{yes}}/g, replacements.yes)
-        .replace(/{{no}}/g, replacements.no);
-    });
-  }
-
   private fillCredentialsTemplate(template: string, credentials: string): string {
     return this.prepareTemplate(template).replace(/{{credentials}}/g, credentials);
-  }
-
-  private getStudentDataToPrint(
-    students: Student[],
-    summaries: ScheincriteriaSummaryByStudents
-  ): StudentData[] {
-    const studentDataToPrint: { matriculationNo: string; schein: string }[] = [];
-
-    students.forEach(student => {
-      try {
-        const matriculationNo = this.getShortenedMatrNo(student, students);
-
-        studentDataToPrint.push({
-          matriculationNo,
-          schein: summaries[student.id].passed ? '{{yes}}' : '{{no}}',
-        });
-      } catch {
-        Logger.warn(
-          `Student ${student.id} does NOT have a matriculation number. Therefore it can not be added to the list`
-        );
-      }
-    });
-
-    studentDataToPrint.sort((a, b) => a.matriculationNo.localeCompare(b.matriculationNo));
-
-    return studentDataToPrint;
-  }
-
-  private getShortenedMatrNo(
-    student: Student | StudentDocument,
-    students: (Student | StudentDocument)[]
-  ): string {
-    if (!student.matriculationNo) {
-      throw new Error(`Student ${student.id} does not have a matriculation number.`);
-    }
-
-    const otherStudents = students.filter(s => s.id !== student.id);
-    const lengthOfNo = student.matriculationNo.length;
-
-    for (let iteration = 1; iteration < lengthOfNo; iteration++) {
-      const shortStudent = student.matriculationNo.substr(lengthOfNo - iteration, iteration);
-      let isOkay = true;
-
-      for (const otherStudent of otherStudents) {
-        if (!otherStudent.matriculationNo) {
-          continue;
-        }
-
-        const shortOtherStudent = otherStudent.matriculationNo.substr(
-          lengthOfNo - iteration,
-          iteration
-        );
-
-        if (shortStudent === shortOtherStudent) {
-          isOkay = false;
-          break;
-        }
-      }
-
-      if (isOkay) {
-        return shortStudent.padStart(7, '*');
-      }
-    }
-
-    return student.matriculationNo;
   }
 
   private prepareTemplate(template: string): string {

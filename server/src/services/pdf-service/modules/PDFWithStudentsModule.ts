@@ -27,6 +27,12 @@ export abstract class PDFWithStudentsModule<T> extends PDFModule<T> {
     return result;
   }
 
+  protected sortShortenedMatriculationNumbers(
+    numbers: ShortenedMatriculationNumbers
+  ): [string, string][] {
+    return Object.entries(numbers).sort(([, matrA], [, matrB]) => matrA.localeCompare(matrB));
+  }
+
   /**
    * Generates a matriculation number with the form "***123" where the first digits get replaced with "*". All students in the `students` array get a unique matriculation number. Therefore these "shortened" numbers are still enough to identify a student.
    *

@@ -43,12 +43,12 @@ export class ScheinexamResultPDFModule extends PDFWithStudentsModule<PDFGenerato
     const results = this.getResultsOfAllStudents({ exam, students });
 
     const rows: string[] = [];
-    Object.entries(shortenedMatriculationNumbers)
-      .sort(([, matrA], [, matrB]) => matrA.localeCompare(matrB))
-      .forEach(([id, shortenedMatrNo]) => {
+    this.sortShortenedMatriculationNumbers(shortenedMatriculationNumbers).forEach(
+      ([id, shortenedMatrNo]) => {
         const passedState: ExamPassedState = results[id] ?? ExamPassedState.NOT_ATTENDED;
         rows.push(`<tr><td>${shortenedMatrNo}</td><td>{{${passedState}}}</td></tr>`);
-      });
+      }
+    );
 
     const body = this.replacePlaceholdersInTemplate(rows, exam);
 
