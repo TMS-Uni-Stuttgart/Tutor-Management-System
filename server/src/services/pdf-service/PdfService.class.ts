@@ -13,7 +13,10 @@ import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { TutorialDocument } from '../../model/documents/TutorialDocument';
 import { BadRequestError, TemplatesNotFoundError } from '../../model/Errors';
-import markdownService, { TeamCommentData } from '../markdown-service/MarkdownService.class';
+import markdownService, {
+  TeamCommentData,
+  PointInformation,
+} from '../markdown-service/MarkdownService.class';
 import scheincriteriaService from '../scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import studentService from '../student-service/StudentService.class';
@@ -21,6 +24,14 @@ import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
 import userService from '../user-service/UserService.class';
 import githubMarkdownCSS from './css/githubMarkdown';
+import scheinexamService from '../scheinexam-service/ScheinexamService.class';
+import { PointMap, getPointsOfAllExercises, ExercisePointInfo } from 'shared/src/model/Points';
+
+enum ExamPassedState {
+  PASSED = 'PASSED',
+  NOT_PASSED = 'NOT_PASSED',
+  NOT_ATTENDED = 'NOT_ATTENDED',
+}
 
 interface StudentData {
   matriculationNo: string;
@@ -87,6 +98,42 @@ class PdfService {
     });
 
     return this.generatePDFFromMarkdown(markdown);
+  }
+
+  public async generateScheinexamResultPDF(examId: string): Promise<Buffer> {
+    const exam = await scheinexamService.getDocumentWithId(examId);
+    const students: StudentDocument[] = await studentService.getAllStudentsAsDocuments();
+    const results: {
+      shortenedMatrNo: string;
+      passedState: ExamPassedState;
+    }[] = [];
+
+    students.forEach(student => {
+      // FIXME: Use me as the code for the general schein exam result calculation
+      const scheinExamResults = new PointMap(student.scheinExamResults);
+      const hasAttended = scheinExamResults.hasPointEntry(exam.id);
+      const shortenedMatrNo = this.getShortenedMatrNo(student, students);
+      let result: ExamPassedState = ExamPassedState.NOT_PASSED;
+
+      if (hasAttended) {
+        result = exam.hasPassed(student) ? ExamPassedState.PASSED : ExamPassedState.NOT_PASSED;
+      } else {
+        result = ExamPassedState.NOT_ATTENDED;
+      }
+
+      results.push({
+        shortenedMatrNo,
+        passedState: result,
+      });
+    });
+
+    const rows: string[] = [];
+    results
+      .sort((a, b) => a.shortenedMatrNo.localeCompare(b.shortenedMatrNo))
+      .forEach(({ shortenedMatrNo, passedState }) => {
+        rows.push(`<tr><td>${shortenedMatrNo}</td><td>{{${passedState}}}</td></tr>`);
+      });
+
   }
 
   public async generateZIPFromComments(
@@ -322,7 +369,10 @@ class PdfService {
     return studentDataToPrint;
   }
 
-  private getShortenedMatrNo(student: Student, students: Student[]): string {
+  private getShortenedMatrNo(
+    student: Student | StudentDocument,
+    students: (Student | StudentDocument)[]
+  ): string {
     if (!student.matriculationNo) {
       throw new Error(`Student ${student.id} does not have a matriculation number.`);
     }

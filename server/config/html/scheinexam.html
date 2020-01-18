@@ -1,0 +1,30 @@
+<!-- 
+  This is the HTML template used by the PdfService to create an schein exam overview sheet which contains the information if a student has passed the schein exam or not. 
+  
+  The head & body tags will be inserted by the service and must NOT be in this file.
+
+  The following replacement options are available (one can inlucde spaces after '{{' and before '}}'):
+  - {{ statuses, { passed: "Passed", notPassed: "Not passed" } }}: Generated table rows (2 columns: 'matriculation no', 'passed' / not passed') for all students. The inner object is optional but if provided one can customize the text for 'passed'/'not passed' ('passed' for 'passed', 'notPassed' for 'Not passed'). If it's not provided the literal strings 'passed'/'Not passed' will be used.
+ -->
+
+ <h3 style="text-align: center">Scheinklausur {{ scheinExamNo }}</h3>
+
+ <table>
+   <style scoped>
+     td {
+       padding: 0.5em 1em;
+       font-family: 'Courier New', Courier, monospace;
+     }
+   </style>
+ 
+   <thead>
+     <tr>
+       <th>Matrikelnummer</th>
+       <th>Bestanden / Nicht bestanden</th>
+     </tr>
+   </thead>
+   <tbody>
+     {{ statuses, { passed: "Bestanden", notPassed: "Nicht bestanden" } }}
+   </tbody>
+ </table>
+ 
