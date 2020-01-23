@@ -3,16 +3,18 @@ import { Student, StudentStatus } from 'shared/dist/model/Student';
 import studentService from '../../src/services/student-service/StudentService.class';
 
 interface GenerateSingleStudentParams {
-  tutorialId: string; 
+  tutorialId: string;
   team?: string;
-
 }
 
-interface GenerateStudentsParams extends GenerateSingleStudentParams{
-  count: number; 
+interface GenerateStudentsParams extends GenerateSingleStudentParams {
+  count: number;
 }
 
-export async function generateSingleStudent({ tutorialId, team }: GenerateSingleStudentParams): Promise<Student> {
+export async function generateSingleStudent({
+  tutorialId,
+  team,
+}: GenerateSingleStudentParams): Promise<Student> {
   const chance = new Chance();
   const [firstname, lastname] = chance.name().split(' ');
   const email = chance.email();
@@ -30,8 +32,11 @@ export async function generateSingleStudent({ tutorialId, team }: GenerateSingle
   });
 }
 
-export async function generateStudents(
-{ count, tutorialId, team }: GenerateStudentsParams): Promise<string[]> {
+export async function generateStudents({
+  count,
+  tutorialId,
+  team,
+}: GenerateStudentsParams): Promise<string[]> {
   const students: string[] = [];
 
   for (let i = 0; i < count; i++) {
