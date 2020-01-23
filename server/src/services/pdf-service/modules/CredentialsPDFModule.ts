@@ -21,7 +21,7 @@ export class CredentialsPDFModule extends PDFModule<GeneratorOptions> {
   public generatePDF({ users }: GeneratorOptions): Promise<Buffer> {
     const tableRows: string[] = users.map(user => {
       const tempPwd = user.temporaryPassword || 'NO TMP PASSWORD';
-      const nameOfUser = getNameOfEntity(user, { lastNameFirst: true });
+      const nameOfUser = getNameOfEntity(user);
 
       return `<tr><td>${nameOfUser}</td><td>${user.username}</td><td>${tempPwd}</td></tr>`;
     });
