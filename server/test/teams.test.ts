@@ -1,4 +1,3 @@
-import Chance from 'chance';
 import _ from 'lodash';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
 import request from 'supertest';
@@ -11,7 +10,6 @@ import { assertTeamToMatchTeamDTO } from './util/Test.Assertions';
 import { connectToDB, disconnectFromDB } from './util/Test.connectToDB';
 
 const agent = request.agent(app);
-const chance = new Chance();
 
 let tutorialId: string = 'NOT_GENERATED_YET';
 
@@ -25,18 +23,6 @@ beforeAll(async done => {
 
   const { id } = await generateTutorial();
   tutorialId = id;
-  // const tutorialToCreate: TutorialDTO = {
-  //   startTime: '09:45:00',
-  //   endTime: '11:15:00',
-  //   slot: 'T1',
-  //   dates: [new Date(Date.now()).toDateString()],
-  //   correctorIds: [],
-  //   tutorId: undefined,
-  // };
-
-  // const response = await agent.post('/api/tutorial').send(tutorialToCreate);
-
-  // tutorialId = response.body.id;
 
   done();
 }, 10 * 60 * 1000);
@@ -65,7 +51,7 @@ describe('GET /team[/:id]', () => {
   });
 
   test('Get a specific team in a tutorial', async done => {
-    const students = await generateStudents(3, tutorialId);
+    const students = await generateStudents({ count: 3, tutorialId });
     const teamDTO: TeamDTO = {
       students,
     };
@@ -88,7 +74,7 @@ describe('POST /team', () => {
   });
 
   test('Create a team with one or more students in a tutorial.', async done => {
-    const students = await generateStudents(3, tutorialId);
+    const students = await generateStudents({ count: 3, tutorialId });
     const expectedTeam: TeamDTO = { students };
 
     addTeamToDatabase(expectedTeam, tutorialId, done);
@@ -97,7 +83,7 @@ describe('POST /team', () => {
 
 describe('PATCH /team/:id', () => {
   test('Add students without a team to a team.', async done => {
-    const students = await generateStudents(2, tutorialId);
+    const students = await generateStudents({ count: 2, tutorialId });
     const team = await teamService.createTeam(tutorialId, { students: [] });
     const expectedTeam: TeamDTO = { students };
 
@@ -125,7 +111,7 @@ describe('PATCH /team/:id', () => {
   test('Add students with a team to a team.', async done => {
     // Generate students and add them to a team.
     const prevTeam = await teamService.createTeam(tutorialId, { students: [] });
-    const students = await generateStudents(2, prevTeam.id);
+    const students = await generateStudents({ count: 2, tutorialId, team: prevTeam.id });
 
     const team = await teamService.createTeam(tutorialId, { students: [] });
     const expectedTeam: TeamDTO = { students };
@@ -152,7 +138,7 @@ describe('PATCH /team/:id', () => {
   });
 
   test('Remove some (not all!) students from a team.', async done => {
-    const students = await generateStudents(4, tutorialId);
+    const students = await generateStudents({ count: 4, tutorialId });
     const team = await teamService.createTeam(tutorialId, { students });
 
     const studentsWithATeam = [students[0], students[3]];
@@ -187,7 +173,7 @@ describe('PATCH /team/:id', () => {
   });
 
   test('Remove all students from a team.', async done => {
-    const students = await generateStudents(4, tutorialId);
+    const students = await generateStudents({ count: 4, tutorialId });
     const team = await teamService.createTeam(tutorialId, { students });
 
     const expectedTeam: TeamDTO = { students: [] };
@@ -229,7 +215,7 @@ describe('DELETE /team/:id', () => {
   });
 
   test('Delete a team with students.', async done => {
-    const students = await generateStudents(2, tutorialId);
+    const students = await generateStudents({ count: 2, tutorialId });
     const team = await teamService.createTeam(tutorialId, { students });
 
     const response = await agent.delete(`/api/tutorial/${tutorialId}/team/${team.id}`);
