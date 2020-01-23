@@ -1,14 +1,14 @@
 import Chance from 'chance';
 import _ from 'lodash';
 import { Team, TeamDTO } from 'shared/dist/model/Team';
-import { TutorialDTO } from 'shared/dist/model/Tutorial';
 import request from 'supertest';
 import studentService from '../src/services/student-service/StudentService.class';
 import teamService from '../src/services/team-service/TeamService.class';
+import { generateStudents } from './generators/Test.Students';
+import { generateTutorial } from './generators/Test.Tutorials';
 import app from './util/Test.App';
 import { assertTeamToMatchTeamDTO } from './util/Test.Assertions';
 import { connectToDB, disconnectFromDB } from './util/Test.connectToDB';
-import { StudentStatus } from 'shared/dist/model/Student';
 
 const agent = request.agent(app);
 const chance = new Chance();
@@ -23,18 +23,20 @@ beforeAll(async done => {
     .send({})
     .auth('admin', 'admin', { type: 'basic' });
 
-  const tutorialToCreate: TutorialDTO = {
-    startTime: '09:45:00',
-    endTime: '11:15:00',
-    slot: 'T1',
-    dates: [new Date(Date.now()).toDateString()],
-    correctorIds: [],
-    tutorId: undefined,
-  };
+  const { id } = await generateTutorial();
+  tutorialId = id;
+  // const tutorialToCreate: TutorialDTO = {
+  //   startTime: '09:45:00',
+  //   endTime: '11:15:00',
+  //   slot: 'T1',
+  //   dates: [new Date(Date.now()).toDateString()],
+  //   correctorIds: [],
+  //   tutorId: undefined,
+  // };
 
-  const response = await agent.post('/api/tutorial').send(tutorialToCreate);
+  // const response = await agent.post('/api/tutorial').send(tutorialToCreate);
 
-  tutorialId = response.body.id;
+  // tutorialId = response.body.id;
 
   done();
 }, 10 * 60 * 1000);
@@ -63,7 +65,7 @@ describe('GET /team[/:id]', () => {
   });
 
   test('Get a specific team in a tutorial', async done => {
-    const students = await generateStudents(3);
+    const students = await generateStudents(3, tutorialId);
     const teamDTO: TeamDTO = {
       students,
     };
@@ -86,7 +88,7 @@ describe('POST /team', () => {
   });
 
   test('Create a team with one or more students in a tutorial.', async done => {
-    const students = await generateStudents(3);
+    const students = await generateStudents(3, tutorialId);
     const expectedTeam: TeamDTO = { students };
 
     addTeamToDatabase(expectedTeam, tutorialId, done);
@@ -95,7 +97,7 @@ describe('POST /team', () => {
 
 describe('PATCH /team/:id', () => {
   test('Add students without a team to a team.', async done => {
-    const students = await generateStudents(2);
+    const students = await generateStudents(2, tutorialId);
     const team = await teamService.createTeam(tutorialId, { students: [] });
     const expectedTeam: TeamDTO = { students };
 
@@ -150,7 +152,7 @@ describe('PATCH /team/:id', () => {
   });
 
   test('Remove some (not all!) students from a team.', async done => {
-    const students = await generateStudents(4);
+    const students = await generateStudents(4, tutorialId);
     const team = await teamService.createTeam(tutorialId, { students });
 
     const studentsWithATeam = [students[0], students[3]];
@@ -185,7 +187,7 @@ describe('PATCH /team/:id', () => {
   });
 
   test('Remove all students from a team.', async done => {
-    const students = await generateStudents(4);
+    const students = await generateStudents(4, tutorialId);
     const team = await teamService.createTeam(tutorialId, { students });
 
     const expectedTeam: TeamDTO = { students: [] };
@@ -227,7 +229,7 @@ describe('DELETE /team/:id', () => {
   });
 
   test('Delete a team with students.', async done => {
-    const students = await generateStudents(2);
+    const students = await generateStudents(2, tutorialId);
     const team = await teamService.createTeam(tutorialId, { students });
 
     const response = await agent.delete(`/api/tutorial/${tutorialId}/team/${team.id}`);
@@ -275,26 +277,26 @@ async function addTeamToDatabase(
   done();
 }
 
-async function generateStudents(count: number, team?: string): Promise<string[]> {
-  const students: string[] = [];
-  for (let i = 0; i < count; i++) {
-    const [firstname, lastname] = chance.name().split(' ');
-    const email = chance.email();
-    const matriculationNo = chance.natural({ min: 1000000, max: 9999999 }).toString();
+// async function generateStudents(count: number, team?: string): Promise<string[]> {
+//   const students: string[] = [];
+//   for (let i = 0; i < count; i++) {
+//     const [firstname, lastname] = chance.name().split(' ');
+//     const email = chance.email();
+//     const matriculationNo = chance.natural({ min: 1000000, max: 9999999 }).toString();
 
-    const student = await studentService.createStudent({
-      tutorial: tutorialId,
-      courseOfStudies: 'Computer science',
-      firstname,
-      lastname,
-      email,
-      matriculationNo,
-      team,
-      status: StudentStatus.ACTIVE,
-    });
+//     const student = await studentService.createStudent({
+//       tutorial: tutorialId,
+//       courseOfStudies: 'Computer science',
+//       firstname,
+//       lastname,
+//       email,
+//       matriculationNo,
+//       team,
+//       status: StudentStatus.ACTIVE,
+//     });
 
-    students.push(student.id);
-  }
+//     students.push(student.id);
+//   }
 
-  return students;
-}
+//   return students;
+// }
