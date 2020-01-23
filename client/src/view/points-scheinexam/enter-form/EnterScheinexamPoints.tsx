@@ -116,13 +116,21 @@ function EnterScheinexamPoints(): JSX.Element {
       setStudent(updatedStudent);
 
       resetForm({ values: { ...values } });
-      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} erfolgreich eingetragen.`, {
-        variant: 'success',
-      });
+      enqueueSnackbar(
+        `Punkte für ${getNameOfEntity(student, { firstNameFirst: true })} erfolgreich eingetragen.`,
+        {
+          variant: 'success',
+        }
+      );
     } catch {
-      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} konnten nicht eingetragen werden.`, {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        `Punkte für ${getNameOfEntity(student, {
+          firstNameFirst: true,
+        })} konnten nicht eingetragen werden.`,
+        {
+          variant: 'error',
+        }
+      );
     }
   };
 

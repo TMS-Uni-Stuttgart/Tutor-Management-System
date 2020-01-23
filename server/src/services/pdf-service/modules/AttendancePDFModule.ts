@@ -44,12 +44,9 @@ export class AttendancePDFModule extends PDFModule<GeneratorOptions> {
 
     students.sort(sortByName);
 
-    const tutorName = getNameOfEntity(tutor, { lastNameFirst: true });
+    const tutorName = getNameOfEntity(tutor);
     const tableRows: string[] = students.map(
-      student =>
-        `<tr><td>${getNameOfEntity(student, {
-          lastNameFirst: true,
-        })}</td><td width="50%"></td></tr>`
+      student => `<tr><td>${getNameOfEntity(student)}</td><td width="50%"></td></tr>`
     );
 
     const body = this.replacePlaceholdersInTemplate({

@@ -200,7 +200,9 @@ function StudentForm({
 
                 for (const s of otherStudents) {
                   if (s.matriculationNo && value === s.matriculationNo) {
-                    return `Matrikelnummer wird bereits von ${getNameOfEntity(s)} verwendet.`;
+                    return `Matrikelnummer wird bereits von ${getNameOfEntity(s, {
+                      firstNameFirst: true,
+                    })} verwendet.`;
                   }
                 }
 

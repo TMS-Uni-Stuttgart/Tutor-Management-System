@@ -47,7 +47,7 @@ export function getFilteredStudents(
   }
 
   return students.filter(s => {
-    const name = getNameOfEntity(s, { lastNameFirst: false });
+    const name = getNameOfEntity(s, { firstNameFirst: true });
 
     return unifyFilterableText(name).includes(unifyFilterableText(filterText));
   });

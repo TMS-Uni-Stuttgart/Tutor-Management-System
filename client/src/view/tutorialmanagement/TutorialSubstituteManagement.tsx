@@ -206,7 +206,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                         emptyPlaceholder='Keine Tutoren vorhanden.'
                         nameOfNoneItem='Keine Vertretung'
                         items={tutors}
-                        itemToString={tutor => getNameOfEntity(tutor, { lastNameFirst: true })}
+                        itemToString={tutor => getNameOfEntity(tutor)}
                         itemToValue={t => t.id}
                       />
                     </>
