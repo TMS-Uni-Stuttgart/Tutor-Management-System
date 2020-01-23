@@ -31,6 +31,7 @@ rules:
     - { allows: ['readonly'] }
   'constructor-super': 'error'
   'no-fallthrough': 'error'
+  'no-console': 'warn'
   'react/display-name': 'off'
   'react/jsx-no-duplicate-props':
     - 'warn'

@@ -25,7 +25,7 @@ export class ScheinexamSchema extends Typegoose implements Omit<ScheinExam, 'id'
     const achieved: number = points.getSumOfPoints(this);
     const { must: total } = getPointsOfAllExercises(this);
 
-    return achieved / total > this.percentageNeeded;
+    return achieved / total >= this.percentageNeeded;
   }
 }
 
