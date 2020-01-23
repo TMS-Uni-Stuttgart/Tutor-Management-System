@@ -213,9 +213,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
 
                   return {
                     date: new Date(date),
-                    name: tutor
-                      ? getNameOfEntity(tutor, { lastNameFirst: true })
-                      : 'TUTOR_NOT_FOUND',
+                    name: tutor ? getNameOfEntity(tutor) : 'TUTOR_NOT_FOUND',
                   };
                 })
                 .sort((a, b) => compareAsc(a.date, b.date))}

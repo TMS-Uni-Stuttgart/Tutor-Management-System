@@ -64,7 +64,7 @@ function TeamCard({
 
   const studentsInTeam: string =
     team.students.length > 0
-      ? team.students.map(student => getNameOfEntity(student)).join(', ')
+      ? team.students.map(student => getNameOfEntity(student, { firstNameFirst: true })).join(', ')
       : 'Keine Studierende in diesem Team.';
 
   const handleEnterStudents = () => {
