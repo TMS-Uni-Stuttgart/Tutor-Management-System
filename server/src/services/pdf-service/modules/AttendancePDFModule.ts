@@ -46,8 +46,7 @@ export class AttendancePDFModule extends PDFModule<GeneratorOptions> {
 
     const tutorName = getNameOfEntity(tutor);
     const tableRows: string[] = students.map(
-      student =>
-        `<tr><td>${getNameOfEntity(student)}</td><td width="50%"></td></tr>`
+      student => `<tr><td>${getNameOfEntity(student)}</td><td width="50%"></td></tr>`
     );
 
     const body = this.replacePlaceholdersInTemplate({
