@@ -31,7 +31,7 @@ afterAll(disconnectFromDB);
 
 describe('Student has correctly passed / not passed', () => {
   test('Student has MORE THAN the required points.', async done => {
-    const student = await generateSingleStudent(tutorialId);
+    const student = await generateSingleStudent({ tutorialId });
     const exam: ScheinExam = await generateScheinExam();
     const points = new PointMap();
 
@@ -70,7 +70,7 @@ describe('Student has correctly passed / not passed', () => {
   });
 
   test('Student has EXACTLY the required points.', async done => {
-    const student = await generateSingleStudent(tutorialId);
+    const student = await generateSingleStudent({ tutorialId });
     const exam: ScheinExam = await generateScheinExam();
     const points = new PointMap();
 
@@ -109,7 +109,7 @@ describe('Student has correctly passed / not passed', () => {
   });
 
   test('Studet has LESS THAN the required points.', async done => {
-    const student = await generateSingleStudent(tutorialId);
+    const student = await generateSingleStudent({ tutorialId });
     const exam: ScheinExam = await generateScheinExam();
     const points = new PointMap();
 
