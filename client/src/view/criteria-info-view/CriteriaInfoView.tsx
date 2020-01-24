@@ -198,7 +198,8 @@ function CriteriaInfoView(): JSX.Element {
                               {Object.entries(information.averages).map(([identifier, info]) => (
                                 <TableRow key={identifier} hover>
                                   <TableCell>{identifier}</TableCell>
-                                  <TableCell align='center'>{`${info.value} / ${info.value}`}</TableCell>
+                                  <TableCell align='center'>{`${Math.round(info.value * 100) /
+                                    100} / ${info.total}`}</TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
