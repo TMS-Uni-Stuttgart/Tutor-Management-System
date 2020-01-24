@@ -17,7 +17,9 @@ export abstract class Scheincriteria {
 
   abstract async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse>;
 
-  abstract async getInformation(students: StudentDocument[]): Promise<CriteriaInformationWithoutName>;
+  abstract async getInformation(
+    students: StudentDocument[]
+  ): Promise<CriteriaInformationWithoutName>;
 }
 
 export type ScheincriteriaYupSchema = Yup.Schema<any>;

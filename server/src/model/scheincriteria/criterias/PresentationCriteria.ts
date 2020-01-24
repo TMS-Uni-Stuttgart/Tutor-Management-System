@@ -3,7 +3,11 @@ import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 import { StudentDocument } from '../../documents/StudentDocument';
-import { CriteriaInformationWithoutName, Scheincriteria, StatusCheckResponse } from '../Scheincriteria';
+import {
+  CriteriaInformationWithoutName,
+  Scheincriteria,
+  StatusCheckResponse,
+} from '../Scheincriteria';
 import { ScheincriteriaNumber } from '../ScheincriteriaDecorators';
 
 export class PresentationCriteria extends Scheincriteria {
