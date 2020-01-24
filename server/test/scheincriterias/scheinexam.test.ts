@@ -64,7 +64,7 @@ describe('Student has correctly passed / not passed', () => {
     const studentDoc = await studentService.getDocumentWithId(student.id);
     const examDoc = await scheinexamService.getDocumentWithId(exam.id);
 
-    expect(examDoc.hasPassed(studentDoc)).toBeTruthy();
+    expect(examDoc.hasPassed(studentDoc).passed).toBeTruthy();
 
     done();
   });
@@ -103,7 +103,7 @@ describe('Student has correctly passed / not passed', () => {
     const studentDoc = await studentService.getDocumentWithId(student.id);
     const examDoc = await scheinexamService.getDocumentWithId(exam.id);
 
-    expect(examDoc.hasPassed(studentDoc)).toBeTruthy();
+    expect(examDoc.hasPassed(studentDoc).passed).toBeTruthy();
 
     done();
   });
@@ -142,7 +142,7 @@ describe('Student has correctly passed / not passed', () => {
     const studentDoc = await studentService.getDocumentWithId(student.id);
     const examDoc = await scheinexamService.getDocumentWithId(exam.id);
 
-    expect(examDoc.hasPassed(studentDoc)).toBeFalsy();
+    expect(examDoc.hasPassed(studentDoc).passed).toBeFalsy();
 
     done();
   });
