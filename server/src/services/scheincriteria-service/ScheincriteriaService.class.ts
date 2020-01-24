@@ -15,6 +15,9 @@ import {
   ScheinCriteriaResponse,
   ScheinCriteriaSummary,
   ScheincriteriaSummaryByStudents,
+  SingleScheincriteriaSummaryByStudents,
+  CriteriaInformation,
+  ScheinCriteriaStatus,
 } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { validateSchema } from 'shared/dist/validators/helper';
@@ -34,6 +37,7 @@ import {
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import { StudentDocument } from '../../model/documents/StudentDocument';
 
 interface ScheincriteriaWithId {
   criteriaId: string;
@@ -98,13 +102,67 @@ export class ScheincriteriaService {
     return this.getScheincriteriaOrReject(await criteria.remove());
   }
 
+  public async getCriteriaInformation(id: string): Promise<CriteriaInformation> {
+    const [criteriaDoc, students] = await Promise.all([
+      this.getDocumentWithId(id),
+      studentService.getAllStudentsAsDocuments(),
+    ]);
+    const criteria = this.generateCriteriaFromDocument(criteriaDoc);
+    const [criteriaInfo, studentSummaries] = await Promise.all([
+      criteria.getInformation(students),
+      this.getSingleCriteriaResultOfAllStudents(criteriaDoc, students),
+    ]);
+
+    return {
+      name: criteriaDoc.name,
+      studentSummaries,
+      ...criteriaInfo,
+    };
+  }
+
+  public async getSingleCriteriaResultOfAllStudents(
+    criteriaDoc: ScheincriteriaDocument,
+    students: StudentDocument[]
+  ): Promise<SingleScheincriteriaSummaryByStudents> {
+    // TODO: Clean me up.
+    const criteria = this.generateCriteriaFromDocument(criteriaDoc);
+    const results: Promise<ScheinCriteriaStatus>[] = [];
+    const studentSummaries: SingleScheincriteriaSummaryByStudents = {};
+
+    for (const student of students) {
+      results.push(
+        new Promise((resolve, reject) => {
+          criteria
+            .checkCriteriaStatus(student)
+            .then(status => {
+              resolve({
+                id: criteriaDoc.id,
+                name: criteriaDoc.name,
+                ...status,
+              });
+            })
+            .catch(err => reject(err));
+        })
+      );
+    }
+
+    (await Promise.all(results)).forEach((status, idx) => {
+      const student = students[idx];
+      studentSummaries[student.id] = status;
+    });
+
+    return studentSummaries;
+  }
+
   public async getCriteriaResultsOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
-    return this.calculateCriteriaResultOfMultipleStudents(await studentService.getAllStudents());
+    return this.calculateCriteriaResultOfMultipleStudents(
+      await studentService.getAllStudentsAsDocuments()
+    );
   }
 
   public async getCriteriaResultOfStudent(studentId: string): Promise<ScheinCriteriaSummary> {
     const [student, criterias] = await Promise.all([
-      studentService.getStudentWithId(studentId),
+      studentService.getDocumentWithId(studentId),
       this.getAllCriteriaObjects(),
     ]);
 
@@ -114,13 +172,15 @@ export class ScheincriteriaService {
   public async getCriteriaResultsOfStudentsOfTutorial(
     tutorialId: string
   ): Promise<ScheincriteriaSummaryByStudents> {
-    const students: Student[] = await tutorialService.getStudentsOfTutorial(tutorialId);
+    const students: StudentDocument[] = await tutorialService.getStudentsOfTutorialAsDocuments(
+      tutorialId
+    );
 
     return this.calculateCriteriaResultOfMultipleStudents(students);
   }
 
   private async calculateCriteriaResultOfMultipleStudents(
-    students: Student[]
+    students: StudentDocument[]
   ): Promise<ScheincriteriaSummaryByStudents> {
     const summaries: ScheincriteriaSummaryByStudents = {};
     const criterias = await this.getAllCriteriaObjects();
@@ -144,7 +204,7 @@ export class ScheincriteriaService {
   }
 
   private async calculateCriteriaResultOfStudent(
-    student: Student,
+    student: StudentDocument,
     criterias: ScheincriteriaWithId[]
   ): Promise<ScheinCriteriaSummary> {
     const criteriaSummaries: ScheinCriteriaSummary['scheinCriteriaSummary'] = {};

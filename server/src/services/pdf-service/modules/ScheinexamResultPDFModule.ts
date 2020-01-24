@@ -110,7 +110,7 @@ export class ScheinexamResultPDFModule extends PDFWithStudentsModule<PDFGenerato
       const hasAttended = examResults.has(exam.id);
 
       if (hasAttended) {
-        results[student.id] = exam.hasPassed(student)
+        results[student.id] = exam.hasPassed(student).passed
           ? ExamPassedState.PASSED
           : ExamPassedState.NOT_PASSED;
       } else {
