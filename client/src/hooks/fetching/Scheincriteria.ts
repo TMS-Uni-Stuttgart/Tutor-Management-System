@@ -1,9 +1,25 @@
 import axios from './Axios';
 import { FormDataResponse } from '../../components/generatedForm/types/FieldData';
-import { ScheinCriteriaResponse, ScheinCriteriaDTO } from 'shared/dist/model/ScheinCriteria';
+import {
+  ScheinCriteriaResponse,
+  ScheinCriteriaDTO,
+  CriteriaInformation,
+} from 'shared/dist/model/ScheinCriteria';
 
 export async function getAllScheinCriterias(): Promise<ScheinCriteriaResponse[]> {
   const response = await axios.get<ScheinCriteriaResponse[]>('scheincriteria');
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
+export async function getScheincriteriaInformation(
+  criteriaId: string
+): Promise<CriteriaInformation> {
+  const response = await axios.get<CriteriaInformation>(`scheincriteria/${criteriaId}/info`);
 
   if (response.status === 200) {
     return response.data;

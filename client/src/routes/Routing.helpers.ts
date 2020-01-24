@@ -122,3 +122,7 @@ export function getStudentInfoPath({ studentId, tutorialId }: StudentInfoParams)
     .replace(':tutorialId?', tutorialId ?? '')
     .replace(/\/\/+/, '/');
 }
+
+export function getScheincriteriaInfoPath(criteriaId: string): string {
+  return RoutingPath.SCHEIN_CRITERIAS_INFO.replace(':id', criteriaId).replace(/\/\/+/, '/');
+}

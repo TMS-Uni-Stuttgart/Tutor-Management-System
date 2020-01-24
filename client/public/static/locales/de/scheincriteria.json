@@ -30,5 +30,8 @@
   "UNIT_LABEL_PRESENTATION_plural" : "Präsentationen",
   "UNIT_LABEL_SHEET_plural" : "Blätter",
   "true" : "Ja",
-  "false" : "Nein"
+  "false" : "Nein",
+  "ACHIEVED_PIE_CHART_LABEL_achieved": "Bestanden",
+  "ACHIEVED_PIE_CHART_LABEL_notAchieved": "Nicht bestanden",
+  "ACHIEVED_PIE_CHART_LABEL_notPresent": "Abwesend"
 }

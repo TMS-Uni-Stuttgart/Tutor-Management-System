@@ -1,11 +1,14 @@
 import { TableCell, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { InformationOutline as InfoIcon } from 'mdi-material-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/dist/model/ScheinCriteria';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { i18nNamespace } from '../../../util/lang/configI18N';
+import { useHistory } from 'react-router';
+import { getScheincriteriaInfoPath } from '../../../routes/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,6 +34,7 @@ function ScheinCriteriaRow({
   ...rest
 }: Props): JSX.Element {
   const classes = useStyles();
+  const history = useHistory();
   const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
 
   return (
@@ -41,6 +45,15 @@ function ScheinCriteriaRow({
         <EntityListItemMenu
           onEditClicked={() => onEditCriteriaClicked(criteria)}
           onDeleteClicked={() => onDeleteCriteriaClicked(criteria)}
+          additionalItems={[
+            {
+              primary: 'Informationen',
+              Icon: InfoIcon,
+              onClick: () => {
+                history.push(getScheincriteriaInfoPath(criteria.id));
+              },
+            },
+          ]}
         />
       }
       {...rest}
