@@ -103,6 +103,7 @@ function StudentRow({
         <EntityListItemMenu
           onEditClicked={() => onEdit(student)}
           onDeleteClicked={() => onDelete(student)}
+          additionalItems={additionalMenuItems}
         />
       }
     >
