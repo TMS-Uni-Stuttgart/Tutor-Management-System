@@ -1,14 +1,15 @@
+import { getPointsOfExercise, PointId, PointMap } from 'shared/dist/model/Points';
 import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
-import { Student } from 'shared/dist/model/Student';
+import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import {
   convertDocumentToExercise,
   ExerciseDocument,
   generateExerciseDocumentsFromDTOs,
 } from '../../model/documents/ExerciseDocument';
 import SheetModel, { SheetDocument } from '../../model/documents/SheetDocument';
+import { StudentDocument } from '../../model/documents/StudentDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
 import teamService from '../team-service/TeamService.class';
-import { PointId, PointMap, getPointsOfExercise } from 'shared/dist/model/Points';
 
 class SheetService {
   public async getAllSheets(): Promise<Sheet[]> {
@@ -72,12 +73,15 @@ class SheetService {
     return !!sheet;
   }
 
-  public async getPointsOfStudent(student: Student, sheet: Sheet): Promise<number> {
+  public async getPointsOfStudent(student: StudentDocument, sheet: Sheet): Promise<number> {
     const pointsOfStudent = new PointMap(student.points);
     let pointsOfTeam = new PointMap();
 
     if (student.team) {
-      const team = await teamService.getTeamWithId(student.tutorial, student.team.id);
+      const team = await teamService.getTeamWithId(
+        getIdOfDocumentRef(student.tutorial),
+        getIdOfDocumentRef(student.team)
+      );
       pointsOfTeam = new PointMap(team.points);
     }
 

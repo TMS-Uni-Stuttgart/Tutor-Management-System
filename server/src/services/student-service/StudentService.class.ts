@@ -29,13 +29,13 @@ import tutorialService from '../tutorial-service/TutorialService.class';
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
     const studentDocs: StudentDocument[] = await this.getAllStudentsAsDocuments();
-    const students: Student[] = [];
+    const students: Promise<Student>[] = [];
 
     for (const doc of studentDocs) {
-      students.push(await this.getStudentOrReject(doc));
+      students.push(this.getStudentOrReject(doc));
     }
 
-    return students;
+    return Promise.all(students);
   }
 
   public async getAllStudentsAsDocuments(): Promise<StudentDocument[]> {
@@ -52,6 +52,8 @@ class StudentService {
       points: {},
       scheinExamResults: {},
       cakeCount: 0,
+      attendance: new Types.Map(),
+      presentationPoints: new Types.Map(),
     };
     const createdStudent = await StudentModel.create(studentData);
 
@@ -90,6 +92,8 @@ class StudentService {
       points: student.points,
       scheinExamResults: student.scheinExamResults,
       cakeCount: student.cakeCount,
+      attendance: student.attendance,
+      presentationPoints: student.presentationPoints,
     };
 
     // Encrypt the student manually due to the encryption library not supporting 'updateOne()'.

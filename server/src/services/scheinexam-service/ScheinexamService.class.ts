@@ -11,7 +11,7 @@ import { PointId, PointMap, getPointsOfExercise } from 'shared/dist/model/Points
 
 class ScheinExamService {
   public async getAllScheinExams(): Promise<ScheinExam[]> {
-    const examDocuments: ScheinexamDocument[] = await ScheinexamModel.find();
+    const examDocuments: ScheinexamDocument[] = await this.getAllScheinExamAsDocuments();
     const exams: ScheinExam[] = [];
 
     for (const doc of examDocuments) {
@@ -19,6 +19,10 @@ class ScheinExamService {
     }
 
     return exams;
+  }
+
+  public async getAllScheinExamAsDocuments(): Promise<ScheinexamDocument[]> {
+    return ScheinexamModel.find();
   }
 
   public async createScheinExam({
