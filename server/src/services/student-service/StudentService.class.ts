@@ -25,6 +25,7 @@ import scheinexamService from '../scheinexam-service/ScheinexamService.class';
 import sheetService from '../sheet-service/SheetService.class';
 import teamService from '../team-service/TeamService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import { TeamDocument } from '../../model/documents/TeamDocument';
 
 class StudentService {
   public async getAllStudents(): Promise<Student[]> {
@@ -253,8 +254,10 @@ class StudentService {
       }
     }
 
-    const team = await student.getTeam();
-    const points: Student['points'] = (await student.getPoints()).toDTO();
+    const [team, points] = await Promise.all<TeamDocument | undefined, PointMap>([
+      student.getTeam(),
+      student.getPoints(),
+    ]);
 
     return {
       id,
@@ -267,7 +270,7 @@ class StudentService {
       team: team ? { id: team.id, teamNo: team.teamNo } : undefined,
       status,
       attendance: parsedAttendances,
-      points,
+      points: points.toDTO(),
       presentationPoints: presentationPoints
         ? presentationPoints.toObject({ flattenMaps: true })
         : {},
