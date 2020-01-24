@@ -1,6 +1,5 @@
 import * as fs from 'fs';
-import { ScheinCriteriaStatus, CriteriaInformation } from 'shared/dist/model/ScheinCriteria';
-import { Student } from 'shared/dist/model/Student';
+import { CriteriaInformation, ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
 import * as Yup from 'yup';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../documents/StudentDocument';

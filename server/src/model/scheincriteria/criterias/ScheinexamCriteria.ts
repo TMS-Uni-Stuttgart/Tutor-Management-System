@@ -1,14 +1,15 @@
 import {
+  CriteriaDistributionInformation,
   CriteriaSheetOrExamInformation,
   PassedState,
   ScheinCriteriaUnit,
-  CriteriaDistributionInformation,
-  CriteriaAveragesInformation,
 } from 'shared/dist/model/ScheinCriteria';
+import { getPointsOfExercise, PointId, PointMap } from 'shared/dist/model/Points';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 import scheinexamService from '../../../services/scheinexam-service/ScheinexamService.class';
+import { convertDocumentToExercise } from '../../documents/ExerciseDocument';
 import { ScheinexamDocument } from '../../documents/ScheinexamDocument';
 import { StudentDocument } from '../../documents/StudentDocument';
 import {
@@ -17,9 +18,6 @@ import {
   StatusCheckResponse,
 } from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../ScheincriteriaDecorators';
-import { PointMap, getPointsOfExercise, PointId } from 'shared/src/model/Points';
-import { ExerciseDTOSchema } from 'shared/src/validators/Sheet';
-import { convertDocumentToExercise } from '../../documents/ExerciseDocument';
 
 export class ScheinexamCriteria extends Scheincriteria {
   readonly passAllExamsIndividually: boolean;

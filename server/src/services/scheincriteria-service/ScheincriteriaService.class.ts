@@ -11,15 +11,14 @@ import {
   FormStringFieldData,
 } from 'shared/dist/model/FormTypes';
 import {
+  CriteriaInformation,
   ScheinCriteriaDTO,
   ScheinCriteriaResponse,
+  ScheinCriteriaStatus,
   ScheinCriteriaSummary,
   ScheincriteriaSummaryByStudents,
   SingleScheincriteriaSummaryByStudents,
-  CriteriaInformation,
-  ScheinCriteriaStatus,
 } from 'shared/dist/model/ScheinCriteria';
-import { Student } from 'shared/dist/model/Student';
 import { validateSchema } from 'shared/dist/validators/helper';
 import * as Yup from 'yup';
 import Logger from '../../helpers/Logger';
@@ -28,6 +27,7 @@ import ScheincriteriaModel, {
   ScheincriteriaDocument,
   ScheincriteriaSchema,
 } from '../../model/documents/ScheincriteriaDocument';
+import { StudentDocument } from '../../model/documents/StudentDocument';
 import { BadRequestError, DocumentNotFoundError } from '../../model/Errors';
 import { Scheincriteria, ScheincriteriaYupSchema } from '../../model/scheincriteria/Scheincriteria';
 import { ScheincriteriaForm } from '../../model/scheincriteria/ScheincriteriaForm';
@@ -37,7 +37,6 @@ import {
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
-import { StudentDocument } from '../../model/documents/StudentDocument';
 
 interface ScheincriteriaWithId {
   criteriaId: string;
