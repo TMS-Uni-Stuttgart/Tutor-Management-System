@@ -1,10 +1,12 @@
 import * as fs from 'fs';
-import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaStatus, CriteriaInformation } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 import Logger from '../../helpers/Logger';
+import { StudentDocument } from '../documents/StudentDocument';
 
 export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;
+export type CriteriaInformationWithoutName = Omit<CriteriaInformation, 'name' | 'studentSummaries'>;
 
 export abstract class Scheincriteria {
   readonly identifier: string;
@@ -13,7 +15,9 @@ export abstract class Scheincriteria {
     this.identifier = identifier;
   }
 
-  abstract async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse>;
+  abstract async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse>;
+
+  abstract async getInformation(students: StudentDocument[]): Promise<CriteriaInformationWithoutName>;
 }
 
 export type ScheincriteriaYupSchema = Yup.Schema<any>;

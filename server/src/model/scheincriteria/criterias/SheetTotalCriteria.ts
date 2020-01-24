@@ -1,20 +1,20 @@
 import { PassedState, ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
-import { Student } from 'shared/dist/model/Student';
+import { Sheet } from 'shared/dist/model/Sheet';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../../../services/sheet-service/SheetService.class';
-import { StatusCheckResponse } from '../Scheincriteria';
+import { StudentDocument } from '../../documents/StudentDocument';
+import { CriteriaInformationWithoutName, StatusCheckResponse } from '../Scheincriteria';
 import {
   PossiblePercentageCriteria,
   possiblePercentageCriteriaSchema,
 } from './PossiblePercentageCriteria';
-import { Sheet } from 'shared/dist/model/Sheet';
 
 export class SheetTotalCriteria extends PossiblePercentageCriteria {
   constructor(percentage: boolean, valueNeeded: number) {
     super('sheetTotal', percentage, valueNeeded);
   }
 
-  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
+  async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse> {
     const sheets = await sheetService.getAllSheets();
     const infos: StatusCheckResponse['infos'] = {};
 
@@ -38,9 +38,13 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
     };
   }
 
+  async getInformation(students: StudentDocument[]): Promise<CriteriaInformationWithoutName> {
+    throw new Error('Method not implemented.');
+  }
+
   private async checkAllSheets(
     sheets: Sheet[],
-    student: Student,
+    student: StudentDocument,
     infos: StatusCheckResponse['infos']
   ) {
     let pointsAchieved = 0;
