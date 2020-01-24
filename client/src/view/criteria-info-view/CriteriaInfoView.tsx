@@ -167,14 +167,16 @@ function CriteriaInfoView(): JSX.Element {
                           chartType='ColumnChart'
                           data={[
                             ['Punkte', 'Anzahl', { role: 'style' }, { role: 'annotation' }],
-                            ...Object.entries(information.distribution).map(([key, info]) => [
-                              key,
-                              info.value,
-                              info.aboveThreshhold
-                                ? theme.palette.green.dark
-                                : theme.palette.red.dark,
-                              info.value,
-                            ]),
+                            ...Object.entries(information.distribution)
+                              .sort((a, b) => Number.parseInt(a[0]) - Number.parseInt(b[0]))
+                              .map(([key, info]) => [
+                                key,
+                                info.value,
+                                info.aboveThreshhold
+                                  ? theme.palette.green.dark
+                                  : theme.palette.red.dark,
+                                info.value,
+                              ]),
                           ]}
                           options={{
                             slices: {
