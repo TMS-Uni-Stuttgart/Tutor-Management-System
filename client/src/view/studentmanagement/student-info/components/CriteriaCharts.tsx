@@ -28,6 +28,10 @@ function CriteriaCharts({ scheinStatus, ...props }: Props): JSX.Element {
                 0: { color: theme.palette.green.dark },
                 1: { color: theme.palette.red.dark },
               },
+              legend: {
+                position: 'labeled',
+              },
+              pieSliceText: 'value',
             }}
           />
         </Grid>
