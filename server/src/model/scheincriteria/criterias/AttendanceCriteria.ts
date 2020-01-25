@@ -28,8 +28,8 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
     });
 
     const passed: boolean = this.percentage
-      ? visitedOrExcused / total > this.valueNeeded
-      : visitedOrExcused > this.valueNeeded;
+      ? visitedOrExcused / total >= this.valueNeeded
+      : visitedOrExcused >= this.valueNeeded;
 
     return {
       identifier: this.identifier,
