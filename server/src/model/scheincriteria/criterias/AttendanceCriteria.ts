@@ -21,7 +21,7 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
 
     let visitedOrExcused = 0;
 
-    Object.values(student.attendance).forEach(({ state }) => {
+    student.attendance.forEach(({ state }) => {
       if (state === AttendanceState.PRESENT || state === AttendanceState.EXCUSED) {
         visitedOrExcused += 1;
       }
