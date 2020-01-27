@@ -8,7 +8,6 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { Attendance } from 'shared/dist/model/Attendance';
 import { PointMap } from 'shared/dist/model/Points';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import SubmitButton from '../../components/loading/SubmitButton';
 import { getScheinStatusPDF } from '../../hooks/fetching/Files';
@@ -49,20 +48,11 @@ function AdminStudentManagement(): JSX.Element {
   const [isCreatingCSVFile, setCreatingCSVFile] = useState(false);
   const [isCreatingScheinStatus, setCreatingScheinStatus] = useState(false);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const [summaries, setSummaries] = useState<{ [studentId: string]: ScheinCriteriaSummary }>({});
 
   const [{ students }] = useStudentStore();
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    getScheinCriteriaSummaryOfAllStudents()
-      .then(response => setSummaries(response))
-      .catch(() =>
-        enqueueSnackbar('Konnte Ergebnisse der Scheinkriterien nicht abrufen.', {
-          variant: 'error',
-        })
-      );
-
     getAllTutorials().then(response => setTutorials(response));
   }, [enqueueSnackbar]);
 
@@ -82,6 +72,8 @@ function AdminStudentManagement(): JSX.Element {
 
   async function generateCSVFile() {
     setCreatingCSVFile(true);
+
+    const summaries = await getScheinCriteriaSummaryOfAllStudents();
     const dataArray: Row[] = [];
 
     for (const {
@@ -137,7 +129,6 @@ function AdminStudentManagement(): JSX.Element {
 
   return (
     <Studentoverview
-      summaries={summaries}
       tutorials={tutorials}
       allowChangeTutorial
       additionalTopBarItem={

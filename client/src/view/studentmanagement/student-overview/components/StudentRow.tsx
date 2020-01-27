@@ -1,23 +1,20 @@
-import React from 'react';
-import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
-import { Student, TeamInStudent } from 'shared/dist/model/Student';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
-import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
-import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
-import { TableCell, Button } from '@material-ui/core';
+import { Button, TableCell } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
+  AccountSwitch as ChangeTutorialIcon,
   InformationOutline as InfoIcon,
   Mail as MailIcon,
-  AccountSwitch as ChangeTutorialIcon,
 } from 'mdi-material-ui';
-import StatusProgress from '../../../management/components/StatusProgress';
-import { calculateProgress } from './StudenRow.helpers';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { getStudentInfoPath } from '../../../../routes/Routing.helpers';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { useStudentStore } from '../../student-store/StudentStore';
+import { Student, TeamInStudent } from 'shared/dist/model/Student';
+import { getNameOfEntity } from 'shared/dist/util/helpers';
+import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
+import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
+import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
+import { getStudentInfoPath } from '../../../../routes/Routing.helpers';
+import { useStudentStore } from '../../student-store/StudentStore';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -38,7 +35,6 @@ type StudentCallback = (student: Student) => void;
 
 interface Props extends PaperTableRowProps {
   student: Student;
-  criteriaSummary?: ScheinCriteriaSummary;
   onEdit: StudentCallback;
   onDelete: StudentCallback;
   onChangeTutorial?: StudentCallback;
@@ -62,7 +58,6 @@ function getSubtext({ team, prefix }: GetSubtextParams): string {
 
 function StudentRow({
   student,
-  criteriaSummary,
   subtextPrefix,
   className,
   onEdit,
@@ -107,19 +102,6 @@ function StudentRow({
         />
       }
     >
-      <TableCell className={classes.progressBarCell}>
-        <StatusProgress
-          className={classes.statusProgress}
-          status={
-            criteriaSummary && {
-              achieved: calculateProgress(criteriaSummary),
-              total: 100,
-              passed: criteriaSummary.passed,
-            }
-          }
-        />
-      </TableCell>
-
       <TableCell align='right' className={classes.infoButton}>
         <Button
           variant='outlined'
