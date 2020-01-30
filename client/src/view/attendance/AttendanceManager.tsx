@@ -6,18 +6,18 @@ import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
 import { Student, StudentStatus } from 'shared/dist/model/Student';
-import { LoggedInUser, TutorInfo } from 'shared/dist/model/User';
+import { LoggedInUser } from 'shared/dist/model/User';
+import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
 import CustomSelect from '../../components/CustomSelect';
 import DateOfTutorialSelection from '../../components/DateOfTutorialSelection';
-import SubmitButton from '../../components/loading/SubmitButton';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
+import SubmitButton from '../../components/loading/SubmitButton';
 import TableWithPadding from '../../components/TableWithPadding';
 import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
 import { TutorialWithFetchedStudents as Tutorial } from '../../typings/types';
 import { parseDateToMapKey, saveBlob } from '../../util/helperFunctions';
 import StudentAttendanceRow from './components/StudentsAttendanceRow';
-import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -112,7 +112,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
   const [date, setDate] = useState<Date | undefined>(undefined);
 
-  const [tutorInfo, setTutorInfo] = useState<TutorInfo | undefined>();
   const [tutorial, setTutorial] = useState<Tutorial | undefined>();
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
 
@@ -128,7 +127,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     setAttendanceOfStudent,
     setCakeCountForStudent,
     getAllTutorialsAndFetchStudents,
-    getTutorInfoOfTutorial,
     getAttendancePDF,
   } = useAxios();
 
@@ -137,16 +135,11 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   }, [tutorialFromProps]);
 
   useEffect(() => {
-    let students: Student[] = [];
-
-    if (tutorial) {
-      students = tutorial.students;
-      getTutorInfoOfTutorial(tutorial.id).then(info => setTutorInfo(info));
-    }
+    const students: Student[] = tutorial?.students ?? [];
 
     setFetchedStudents(students);
     setDate(undefined);
-  }, [tutorial, getTutorInfoOfTutorial]);
+  }, [tutorial]);
 
   useEffect(() => {
     setFilteredStudents(getFilteredStudents(fetchedStudents, filterOption));
@@ -378,7 +371,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               color='primary'
               isSubmitting={isLoadingPDF}
               onClick={printAttendanceSheet}
-              disabled={!tutorial || !date || !tutorInfo}
+              disabled={!tutorial || !date}
               tooltipText='Erstellt eine Unterschriftenliste für den ausgewählten Tag.'
             >
               Unterschriftenliste erstellen
