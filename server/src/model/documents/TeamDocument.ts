@@ -1,5 +1,5 @@
 import { arrayProp, prop, Ref, Typegoose } from '@typegoose/typegoose';
-import { Document } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { PointMapDTO } from 'shared/dist/model/Points';
 import { Team } from 'shared/dist/model/Team';
 import { StudentDocument } from './StudentDocument';
@@ -21,3 +21,8 @@ export class TeamSchema extends Typegoose
 }
 
 export interface TeamDocument extends TeamSchema, Document {}
+
+// Register the teamschema to be able to populate the corresponding fields in the other documents.
+new TeamSchema().getModelForClass(TeamSchema, {
+  schemaOptions: { collection: 'teams' },
+});
