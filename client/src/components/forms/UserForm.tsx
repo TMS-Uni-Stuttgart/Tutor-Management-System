@@ -132,6 +132,7 @@ function UserForm({
       initialValues={initialFormState}
       validationSchema={ValidationSchema}
       onSubmit={onSubmit}
+      enableDebug
       enableErrorsInDebug
     >
       {({ setFieldValue, values }) => (
