@@ -179,11 +179,17 @@ class TutorialService {
     return Promise.all(correctors.map(cor => userService.getUserOrReject(cor)));
   }
 
-  public async getStudentsOfTutorial(id: string): Promise<Student[]> {
+  public async getStudentsOfTutorialAsDocuments(id: string): Promise<StudentDocument[]> {
     const tutorial = await this.getDocumentWithID(id);
 
     await tutorial.populate('students').execPopulate();
     const students: StudentDocument[] = tutorial.students as StudentDocument[];
+
+    return students;
+  }
+
+  public async getStudentsOfTutorial(id: string): Promise<Student[]> {
+    const students: StudentDocument[] = await this.getStudentsOfTutorialAsDocuments(id);
 
     return Promise.all(students.map(stud => studentService.getStudentOrReject(stud)));
   }

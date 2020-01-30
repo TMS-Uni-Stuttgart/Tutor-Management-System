@@ -35,6 +35,7 @@ import UserManagement from '../view/usermanagement/UserManagement';
 import ScheinexamPointsOverview from '../view/points-scheinexam/overview/ScheinexamPointsOverview';
 import EnterScheinexamPoints from '../view/points-scheinexam/enter-form/EnterScheinexamPoints';
 import StudentInfo from '../view/studentmanagement/student-info/StudentInfo';
+import CriteriaInfoView from '../view/criteria-info-view/CriteriaInfoView';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -52,7 +53,8 @@ export enum RoutingPath {
   MANAGE_USERS = '/admin/usermanagement',
   MANAGE_TUTORIALS = '/admin/tutorialmanagement',
   MANAGE_TUTORIALS_SUBSTITUTES = '/admin/tutorialmanagement/:tutorialid/substitute',
-  MANAGE_SCHEIN_CRITERIAS = '/admin/scheincriteriamanagement',
+  MANAGE_SCHEIN_CRITERIAS = '/admin/scheincriterias',
+  SCHEIN_CRITERIAS_INFO = '/admin/scheincriterias/info/:id',
   MANAGE_ATTENDANCES = '/admin/attendances',
   MANAGE_SHEETS = '/admin/sheets',
   MANAGE_ALL_STUDENTS = '/admin/students',
@@ -222,6 +224,15 @@ export const ROUTES: readonly RouteType[] = [
     icon: PersonIcon,
     roles: [Role.ADMIN],
     isInDrawer: true,
+    isPrivate: true,
+  },
+  {
+    path: RoutingPath.SCHEIN_CRITERIAS_INFO,
+    title: 'Scheinkriterien',
+    component: CriteriaInfoView,
+    icon: ScriptTextIcon,
+    roles: [Role.ADMIN, Role.EMPLOYEE],
+    isInDrawer: false,
     isPrivate: true,
   },
   {

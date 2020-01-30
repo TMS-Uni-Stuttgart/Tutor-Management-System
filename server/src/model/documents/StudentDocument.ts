@@ -63,14 +63,14 @@ export class StudentSchema extends Typegoose
   @prop({ default: StudentStatus.ACTIVE })
   status!: StudentStatus;
 
-  @mapProp({ of: AttendanceSchema })
-  attendance?: Types.Map<AttendanceDocument>;
+  @mapProp({ of: AttendanceSchema, default: {} })
+  attendance!: Types.Map<AttendanceDocument>;
 
   @prop({ default: {} })
   points!: PointMapDTO;
 
-  @mapProp({ of: Number })
-  presentationPoints?: Types.Map<number>;
+  @mapProp({ of: Number, default: {} })
+  presentationPoints!: Types.Map<number>;
 
   @prop({ default: {} })
   scheinExamResults!: PointMapDTO;

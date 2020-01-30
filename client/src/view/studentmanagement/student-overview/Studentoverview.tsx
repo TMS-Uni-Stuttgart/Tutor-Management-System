@@ -48,14 +48,12 @@ type SummariesByStudent = { [studentId: string]: ScheinCriteriaSummary };
 
 interface Props {
   tutorials?: Tutorial[];
-  summaries: SummariesByStudent;
   allowChangeTutorial?: boolean;
   additionalTopBarItem?: React.ReactNode;
 }
 
 function Studentoverview({
   tutorials,
-  summaries,
   allowChangeTutorial,
   additionalTopBarItem,
 }: Props): JSX.Element {
@@ -189,7 +187,6 @@ function Studentoverview({
     <StudentRow
       className={classes.studentRow}
       student={student}
-      criteriaSummary={summaries[student.id]}
       onEdit={openEditDialog}
       onDelete={openDeleteDialog}
       onChangeTutorial={allowChangeTutorial ? openChangeTutorialDialog : undefined}

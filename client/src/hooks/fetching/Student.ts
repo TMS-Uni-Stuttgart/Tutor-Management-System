@@ -1,6 +1,9 @@
 import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
 import { UpdatePointsDTO } from 'shared/dist/model/Points';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import {
+  ScheinCriteriaSummary,
+  ScheincriteriaSummaryByStudents,
+} from 'shared/dist/model/ScheinCriteria';
 import {
   CakeCountDTO,
   PresentationPointsDTO,
@@ -152,12 +155,10 @@ export async function getScheinCriteriaSummaryOfStudent(
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function getScheinCriteriaSummaryOfAllStudents(): Promise<{
-  [studentId: string]: ScheinCriteriaSummary;
-}> {
-  const response = await axios.get<{ [studentId: string]: ScheinCriteriaSummary }>(
-    `/scheincriteria/student`
-  );
+export async function getScheinCriteriaSummaryOfAllStudents(): Promise<
+  ScheincriteriaSummaryByStudents
+> {
+  const response = await axios.get<ScheincriteriaSummaryByStudents>(`/scheincriteria/student`);
 
   if (response.status === 200) {
     return response.data;

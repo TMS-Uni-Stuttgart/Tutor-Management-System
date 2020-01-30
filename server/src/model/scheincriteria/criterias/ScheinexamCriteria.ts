@@ -1,11 +1,22 @@
-import { PassedState, ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { Student } from 'shared/dist/model/Student';
+import {
+  CriteriaDistributionInformation,
+  CriteriaSheetOrExamInformation,
+  PassedState,
+  ScheinCriteriaUnit,
+} from 'shared/dist/model/ScheinCriteria';
+import { getPointsOfExercise, PointId, PointMap } from 'shared/dist/model/Points';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 import scheinexamService from '../../../services/scheinexam-service/ScheinexamService.class';
-import { Scheincriteria, StatusCheckResponse } from '../Scheincriteria';
+import { convertDocumentToExercise } from '../../documents/ExerciseDocument';
+import { ScheinexamDocument } from '../../documents/ScheinexamDocument';
+import { StudentDocument } from '../../documents/StudentDocument';
+import {
+  CriteriaInformationWithoutName,
+  Scheincriteria,
+  StatusCheckResponse,
+} from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../ScheincriteriaDecorators';
 
 export class ScheinexamCriteria extends Scheincriteria {
@@ -21,8 +32,8 @@ export class ScheinexamCriteria extends Scheincriteria {
     this.percentageOfAllPointsNeeded = percentageOfAllPointsNeeded;
   }
 
-  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
-    const exams = await scheinexamService.getAllScheinExams();
+  async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse> {
+    const exams = await scheinexamService.getAllScheinExamAsDocuments();
     const infos: StatusCheckResponse['infos'] = {};
     const { examsPassed, pointsAchieved, pointsTotal } = this.checkAllExams(exams, student, infos);
 
@@ -44,9 +55,81 @@ export class ScheinexamCriteria extends Scheincriteria {
     };
   }
 
+  async getInformation(students: StudentDocument[]): Promise<CriteriaInformationWithoutName> {
+    const exams = await scheinexamService.getAllScheinExamAsDocuments();
+    const information: CriteriaInformationWithoutName['information'] = {};
+
+    exams.forEach(exam => {
+      const averages: { [exName: string]: number[] } = {};
+      const distribution: CriteriaDistributionInformation = {};
+      const achieved = { achieved: 0, notAchieved: 0, notPresent: 0 };
+
+      exam.exercises.forEach(exercise => {
+        averages[exercise.exName] = [];
+      });
+
+      students.forEach(student => {
+        const points = new PointMap(student.scheinExamResults);
+        const hasAttended = points.has(exam.id);
+
+        if (!hasAttended) {
+          achieved.notPresent += 1;
+          return;
+        }
+
+        const result = exam.hasPassed(student);
+        const distributionForThisResult = distribution[result.achieved] ?? {
+          value: 0,
+          aboveThreshhold: result.achieved / result.total.must >= exam.percentageNeeded,
+        };
+
+        exam.exercises.forEach(exercise => {
+          averages[exercise.exName].push(points.getPoints(new PointId(exam.id, exercise)) ?? 0);
+        });
+
+        distribution[result.achieved] = {
+          aboveThreshhold: distributionForThisResult.aboveThreshhold,
+          value: distributionForThisResult.value + 1,
+        };
+
+        if (result.passed) {
+          achieved.achieved += 1;
+        } else {
+          achieved.notAchieved += 1;
+        }
+      });
+
+      information[exam.id] = {
+        achieved,
+        total: achieved.achieved + achieved.notAchieved + achieved.notPresent,
+        averages: exam.exercises.reduce((avgInfo, exercise) => {
+          const total: number = getPointsOfExercise(exercise).must;
+          const achievedPoints = averages[exercise.exName];
+          const value: number =
+            achievedPoints.length > 0
+              ? achievedPoints.reduce((sum, current) => sum + current, 0) / achievedPoints.length
+              : 0;
+
+          return { ...avgInfo, [exercise.exName]: { value, total } };
+        }, {}),
+        distribution,
+      };
+    });
+
+    return {
+      identifier: this.identifier,
+      sheetsOrExams: exams.map<CriteriaSheetOrExamInformation>(exam => ({
+        id: exam.id,
+        no: exam.scheinExamNo,
+        exercises: exam.exercises.map(convertDocumentToExercise),
+      })),
+      information,
+    };
+  }
+
   private checkAllExams(
-    exams: ScheinExam[],
-    student: Student,
+    exams: ScheinexamDocument[],
+    student: StudentDocument,
     infos: StatusCheckResponse['infos']
   ): { examsPassed: number; pointsAchieved: number; pointsTotal: number } {
     // FIXME: DOES NOT WORK!!!
@@ -55,21 +138,19 @@ export class ScheinexamCriteria extends Scheincriteria {
     let examsPassed = 0;
 
     for (const exam of exams) {
-      const result = scheinexamService.getScheinExamResult(student, exam);
-      const maxPoints = scheinexamService.getScheinExamTotalPoints(exam);
-      let state: PassedState = PassedState.NOTPASSED;
+      const { passed, achieved, total } = exam.hasPassed(student);
+      const state: PassedState = passed ? PassedState.PASSED : PassedState.NOTPASSED;
 
-      if (result / maxPoints > this.percentageOfAllPointsNeeded) {
-        state = PassedState.PASSED;
+      if (passed) {
         examsPassed += 1;
       }
 
-      pointsAchieved += result;
-      pointsTotal += maxPoints;
+      pointsAchieved += achieved;
+      pointsTotal += total.must;
 
       infos[exam.id] = {
-        achieved: result,
-        total: maxPoints,
+        achieved: achieved,
+        total: total.must,
         no: exam.scheinExamNo,
         unit: ScheinCriteriaUnit.POINT,
         state,

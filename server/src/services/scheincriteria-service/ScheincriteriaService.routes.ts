@@ -4,6 +4,7 @@ import { Role } from 'shared/dist/model/Role';
 import {
   ScheinCriteriaResponse,
   ScheincriteriaSummaryByStudents,
+  CriteriaInformation,
 } from 'shared/dist/model/ScheinCriteria';
 import { validateAgainstScheincriteriaDTO } from 'shared/dist/validators/Scheincriteria';
 import {
@@ -47,6 +48,14 @@ scheincriteriaRouter.post(
     res.status(201).json(criteria);
   }
 );
+
+scheincriteriaRouter.get('/:id/info', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const id = req.params.id;
+
+  const information: CriteriaInformation = await scheincriteriaService.getCriteriaInformation(id);
+
+  res.json(information);
+});
 
 scheincriteriaRouter.patch(
   '/:id',

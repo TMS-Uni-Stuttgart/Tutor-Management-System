@@ -1,9 +1,13 @@
 import { ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
-import { Student } from 'shared/dist/model/Student';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { Scheincriteria, StatusCheckResponse } from '../Scheincriteria';
+import { StudentDocument } from '../../documents/StudentDocument';
+import {
+  CriteriaInformationWithoutName,
+  Scheincriteria,
+  StatusCheckResponse,
+} from '../Scheincriteria';
 import { ScheincriteriaNumber } from '../ScheincriteriaDecorators';
 
 export class PresentationCriteria extends Scheincriteria {
@@ -15,7 +19,7 @@ export class PresentationCriteria extends Scheincriteria {
     this.presentationsNeeded = presentationsNeeded;
   }
 
-  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
+  async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse> {
     const achieved = Object.values(student.presentationPoints).reduce(
       (prev, current) => prev + current,
       0
@@ -29,6 +33,10 @@ export class PresentationCriteria extends Scheincriteria {
       unit: ScheinCriteriaUnit.PRESENTATION,
       infos: {},
     };
+  }
+
+  async getInformation(students: StudentDocument[]): Promise<CriteriaInformationWithoutName> {
+    throw new Error('Method not implemented.');
   }
 }
 

@@ -1,16 +1,16 @@
-import { Student } from 'shared/dist/model/Student';
+import { PassedState, ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
+import { Sheet } from 'shared/dist/model/Sheet';
 import * as Yup from 'yup';
 import { CleanCriteriaShape } from '../../../helpers/typings';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
-import { StatusCheckResponse } from '../Scheincriteria';
+import sheetService from '../../../services/sheet-service/SheetService.class';
+import { StudentDocument } from '../../documents/StudentDocument';
+import { CriteriaInformationWithoutName, StatusCheckResponse } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../ScheincriteriaDecorators';
 import {
   PossiblePercentageCriteria,
   possiblePercentageCriteriaSchema,
 } from './PossiblePercentageCriteria';
-import sheetService from '../../../services/sheet-service/SheetService.class';
-import { PassedState, ScheinCriteriaUnit } from 'shared/dist/model/ScheinCriteria';
-import { Sheet } from 'shared/dist/model/Sheet';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
   @ScheincriteriaPossiblePercentage('percentagePerSheet')
@@ -29,7 +29,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     this.percentagePerSheet = percentagePerSheet;
   }
 
-  async checkCriteriaStatus(student: Student): Promise<StatusCheckResponse> {
+  async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse> {
     const sheets = await sheetService.getAllSheets();
     const infos: StatusCheckResponse['infos'] = {};
     const totalSheetCount = sheets.reduce((count, sheet) => count + (sheet.bonusSheet ? 0 : 1), 0);
@@ -53,9 +53,13 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     };
   }
 
+  async getInformation(students: StudentDocument[]): Promise<CriteriaInformationWithoutName> {
+    throw new Error('Method not implemented.');
+  }
+
   private async checkAllSheets(
     sheets: Sheet[],
-    student: Student,
+    student: StudentDocument,
     infos: StatusCheckResponse['infos']
   ) {
     let sheetsPassed = 0;
