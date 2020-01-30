@@ -19,10 +19,7 @@ export class ScheinResultsPDFModule extends PDFWithStudentsModule<GeneratorOptio
    *
    * @returns Buffer of a PDF containing the list with the schein status of all the given students.
    */
-  public async generatePDF({
-    students: givenStudents,
-    summaries,
-  }: GeneratorOptions): Promise<Buffer> {
+  public generatePDF({ students: givenStudents, summaries }: GeneratorOptions): Promise<Buffer> {
     const students = givenStudents.filter(student => !!student.matriculationNo);
     const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
 
