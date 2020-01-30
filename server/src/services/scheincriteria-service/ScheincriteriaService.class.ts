@@ -37,11 +37,29 @@ import {
 } from '../../model/scheincriteria/ScheincriteriaMetadata';
 import studentService from '../student-service/StudentService.class';
 import tutorialService from '../tutorial-service/TutorialService.class';
+import scheinexamService from '../scheinexam-service/ScheinexamService.class';
+import sheetService from '../sheet-service/SheetService.class';
+import { SheetDocument } from '../../model/documents/SheetDocument';
+import { ScheinexamDocument } from '../../model/documents/ScheinexamDocument';
 
 interface ScheincriteriaWithId {
   criteriaId: string;
   criteriaName: string;
   criteria: Scheincriteria;
+}
+
+interface SingleCriteriaResultOfAllStudentsParams {
+  criteriaDoc: ScheincriteriaDocument;
+  students: StudentDocument[];
+  sheets: SheetDocument[];
+  exams: ScheinexamDocument[];
+}
+
+interface CalculateCriteriaResultOfStudentParams {
+  student: StudentDocument;
+  sheets: SheetDocument[];
+  exams: ScheinexamDocument[];
+  criterias: ScheincriteriaWithId[];
 }
 
 export class ScheincriteriaService {
@@ -102,14 +120,23 @@ export class ScheincriteriaService {
   }
 
   public async getCriteriaInformation(id: string): Promise<CriteriaInformation> {
-    const [criteriaDoc, students] = await Promise.all([
+    const [criteriaDoc, students, sheets, exams] = await Promise.all([
       this.getDocumentWithId(id),
       studentService.getAllStudentsAsDocuments(),
+      sheetService.getAllSheetsAsDocuments(),
+      scheinexamService.getAllScheinExamAsDocuments(),
     ]);
+
     const criteria = this.generateCriteriaFromDocument(criteriaDoc);
+
     const [criteriaInfo, studentSummaries] = await Promise.all([
       criteria.getInformation(students),
-      this.getSingleCriteriaResultOfAllStudents(criteriaDoc, students),
+      this.getSingleCriteriaResultOfAllStudents({
+        criteriaDoc,
+        students,
+        sheets,
+        exams,
+      }),
     ]);
 
     return {
@@ -119,33 +146,23 @@ export class ScheincriteriaService {
     };
   }
 
-  public async getSingleCriteriaResultOfAllStudents(
-    criteriaDoc: ScheincriteriaDocument,
-    students: StudentDocument[]
-  ): Promise<SingleScheincriteriaSummaryByStudents> {
-    // TODO: Clean me up.
+  public getSingleCriteriaResultOfAllStudents({
+    criteriaDoc,
+    students,
+    sheets,
+    exams,
+  }: SingleCriteriaResultOfAllStudentsParams): SingleScheincriteriaSummaryByStudents {
     const criteria = this.generateCriteriaFromDocument(criteriaDoc);
-    const results: Promise<ScheinCriteriaStatus>[] = [];
+    const results: ScheinCriteriaStatus[] = [];
     const studentSummaries: SingleScheincriteriaSummaryByStudents = {};
 
     for (const student of students) {
-      results.push(
-        new Promise((resolve, reject) => {
-          criteria
-            .checkCriteriaStatus(student)
-            .then(status => {
-              resolve({
-                id: criteriaDoc.id,
-                name: criteriaDoc.name,
-                ...status,
-              });
-            })
-            .catch(err => reject(err));
-        })
-      );
+      const status = criteria.checkCriteriaStatus({ student, sheets, exams });
+
+      results.push({ id: criteriaDoc.id, name: criteriaDoc.name, ...status });
     }
 
-    (await Promise.all(results)).forEach((status, idx) => {
+    results.forEach((status, idx) => {
       const student = students[idx];
       studentSummaries[student.id] = status;
     });
@@ -160,12 +177,14 @@ export class ScheincriteriaService {
   }
 
   public async getCriteriaResultOfStudent(studentId: string): Promise<ScheinCriteriaSummary> {
-    const [student, criterias] = await Promise.all([
+    const [student, criterias, sheets, exams] = await Promise.all([
       studentService.getDocumentWithId(studentId),
       this.getAllCriteriaObjects(),
+      sheetService.getAllSheetsAsDocuments(),
+      scheinexamService.getAllScheinExamAsDocuments(),
     ]);
 
-    return this.calculateCriteriaResultOfStudent(student, criterias);
+    return this.calculateCriteriaResultOfStudent({ student, criterias, sheets, exams });
   }
 
   public async getCriteriaResultsOfStudentsOfTutorial(
@@ -182,18 +201,25 @@ export class ScheincriteriaService {
     students: StudentDocument[]
   ): Promise<ScheincriteriaSummaryByStudents> {
     const summaries: ScheincriteriaSummaryByStudents = {};
-    const criterias = await this.getAllCriteriaObjects();
+    const [criterias, sheets, exams] = await Promise.all([
+      this.getAllCriteriaObjects(),
+      sheetService.getAllSheetsAsDocuments(),
+      scheinexamService.getAllScheinExamAsDocuments(),
+    ]);
 
-    const summariesByStudent = await Promise.all(
-      students.map(async student => {
-        const result = await this.calculateCriteriaResultOfStudent(student, criterias);
+    const summariesByStudent = students.map(student => {
+      const result = this.calculateCriteriaResultOfStudent({
+        student,
+        criterias,
+        sheets,
+        exams,
+      });
 
-        return {
-          id: student.id,
-          result,
-        };
-      })
-    );
+      return {
+        id: student.id,
+        result,
+      };
+    });
 
     for (const summary of summariesByStudent) {
       summaries[summary.id] = summary.result;
@@ -202,15 +228,17 @@ export class ScheincriteriaService {
     return summaries;
   }
 
-  private async calculateCriteriaResultOfStudent(
-    student: StudentDocument,
-    criterias: ScheincriteriaWithId[]
-  ): Promise<ScheinCriteriaSummary> {
+  private calculateCriteriaResultOfStudent({
+    student,
+    criterias,
+    sheets,
+    exams,
+  }: CalculateCriteriaResultOfStudentParams): ScheinCriteriaSummary {
     const criteriaSummaries: ScheinCriteriaSummary['scheinCriteriaSummary'] = {};
     let isPassed: boolean = true;
 
     for (const { criteriaId, criteriaName, criteria } of criterias) {
-      const result = await criteria.checkCriteriaStatus(student);
+      const result = criteria.checkCriteriaStatus({ student, sheets, exams });
 
       criteriaSummaries[criteriaId] = { id: criteriaId, name: criteriaName, ...result };
 

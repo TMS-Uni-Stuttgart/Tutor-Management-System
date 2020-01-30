@@ -3,6 +3,14 @@ import { CriteriaInformation, ScheinCriteriaStatus } from 'shared/dist/model/Sch
 import * as Yup from 'yup';
 import Logger from '../../helpers/Logger';
 import { StudentDocument } from '../documents/StudentDocument';
+import { SheetDocument } from '../documents/SheetDocument';
+import { ScheinexamDocument } from '../documents/ScheinexamDocument';
+
+export interface CriteriaPayload {
+  student: StudentDocument;
+  sheets: SheetDocument[];
+  exams: ScheinexamDocument[];
+}
 
 export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;
 export type CriteriaInformationWithoutName = Omit<CriteriaInformation, 'name' | 'studentSummaries'>;
@@ -14,7 +22,7 @@ export abstract class Scheincriteria {
     this.identifier = identifier;
   }
 
-  abstract async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse>;
+  abstract checkCriteriaStatus(payload: CriteriaPayload): StatusCheckResponse;
 
   abstract async getInformation(
     students: StudentDocument[]

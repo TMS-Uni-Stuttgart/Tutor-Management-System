@@ -3,7 +3,11 @@ import { Sheet } from 'shared/dist/model/Sheet';
 import scheincriteriaService from '../../../services/scheincriteria-service/ScheincriteriaService.class';
 import sheetService from '../../../services/sheet-service/SheetService.class';
 import { StudentDocument } from '../../documents/StudentDocument';
-import { CriteriaInformationWithoutName, StatusCheckResponse } from '../Scheincriteria';
+import {
+  CriteriaInformationWithoutName,
+  CriteriaPayload,
+  StatusCheckResponse,
+} from '../Scheincriteria';
 import {
   PossiblePercentageCriteria,
   possiblePercentageCriteriaSchema,
@@ -14,11 +18,9 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
     super('sheetTotal', percentage, valueNeeded);
   }
 
-  async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse> {
-    const sheets = await sheetService.getAllSheets();
+  checkCriteriaStatus({ student, sheets }: CriteriaPayload): StatusCheckResponse {
     const infos: StatusCheckResponse['infos'] = {};
-
-    const { pointsAchieved, pointsTotal } = await this.checkAllSheets(sheets, student, infos);
+    const { pointsAchieved, pointsTotal } = this.checkAllSheets(sheets, student, infos);
 
     let passed: boolean = false;
 
@@ -42,7 +44,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
     throw new Error('Method not implemented.');
   }
 
-  private async checkAllSheets(
+  private checkAllSheets(
     sheets: Sheet[],
     student: StudentDocument,
     infos: StatusCheckResponse['infos']
@@ -51,7 +53,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
     let pointsTotal = 0;
 
     for (const sheet of sheets) {
-      const achieved = await sheetService.getPointsOfStudent(student, sheet);
+      const achieved = sheetService.getPointsOfStudent(student, sheet);
       const total = sheetService.getSheetTotalPoints(sheet);
       pointsAchieved += achieved;
 

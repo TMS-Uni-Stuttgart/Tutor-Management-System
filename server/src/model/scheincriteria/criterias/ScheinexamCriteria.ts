@@ -16,6 +16,7 @@ import {
   CriteriaInformationWithoutName,
   Scheincriteria,
   StatusCheckResponse,
+  CriteriaPayload,
 } from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../ScheincriteriaDecorators';
 
@@ -32,8 +33,7 @@ export class ScheinexamCriteria extends Scheincriteria {
     this.percentageOfAllPointsNeeded = percentageOfAllPointsNeeded;
   }
 
-  async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse> {
-    const exams = await scheinexamService.getAllScheinExamAsDocuments();
+  checkCriteriaStatus({ student, exams }: CriteriaPayload): StatusCheckResponse {
     const infos: StatusCheckResponse['infos'] = {};
     const { examsPassed, pointsAchieved, pointsTotal } = this.checkAllExams(exams, student, infos);
 

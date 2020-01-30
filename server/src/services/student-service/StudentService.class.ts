@@ -40,7 +40,9 @@ class StudentService {
   }
 
   public async getAllStudentsAsDocuments(): Promise<StudentDocument[]> {
-    return StudentModel.find();
+    return StudentModel.find()
+      .populate('team')
+      .exec();
   }
 
   public async createStudent({ tutorial: tutorialId, ...dto }: StudentDTO): Promise<Student> {
@@ -220,7 +222,7 @@ class StudentService {
       return this.rejectStudentNotFound();
     }
 
-    return student;
+    return student.populate('team').execPopulate();
   }
 
   public async getStudentOrReject(student: StudentDocument | null): Promise<Student> {

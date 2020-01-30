@@ -5,6 +5,7 @@ import scheincriteriaService from '../../../services/scheincriteria-service/Sche
 import { StudentDocument } from '../../documents/StudentDocument';
 import {
   CriteriaInformationWithoutName,
+  CriteriaPayload,
   Scheincriteria,
   StatusCheckResponse,
 } from '../Scheincriteria';
@@ -19,7 +20,7 @@ export class PresentationCriteria extends Scheincriteria {
     this.presentationsNeeded = presentationsNeeded;
   }
 
-  async checkCriteriaStatus(student: StudentDocument): Promise<StatusCheckResponse> {
+  checkCriteriaStatus({ student }: CriteriaPayload): StatusCheckResponse {
     const achieved = Object.values(student.presentationPoints).reduce(
       (prev, current) => prev + current,
       0

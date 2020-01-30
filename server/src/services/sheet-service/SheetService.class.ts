@@ -1,6 +1,6 @@
+import { isDocument } from '@typegoose/typegoose';
 import { getPointsOfExercise, PointId, PointMap } from 'shared/dist/model/Points';
 import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
-import { getIdOfDocumentRef } from '../../helpers/documentHelpers';
 import {
   convertDocumentToExercise,
   ExerciseDocument,
@@ -9,18 +9,23 @@ import {
 import SheetModel, { SheetDocument } from '../../model/documents/SheetDocument';
 import { StudentDocument } from '../../model/documents/StudentDocument';
 import { DocumentNotFoundError } from '../../model/Errors';
-import teamService from '../team-service/TeamService.class';
 
 class SheetService {
   public async getAllSheets(): Promise<Sheet[]> {
-    const sheetDocuments: SheetDocument[] = await SheetModel.find();
-    const sheets: Sheet[] = [];
+    const sheetDocuments = await this.getAllSheetsAsDocuments();
+    const sheets: Promise<Sheet>[] = [];
 
     for (const doc of sheetDocuments) {
-      sheets.push(await this.getSheetOrReject(doc));
+      sheets.push(this.getSheetOrReject(doc));
     }
 
-    return sheets;
+    return Promise.all(sheets);
+  }
+
+  public async getAllSheetsAsDocuments(): Promise<SheetDocument[]> {
+    const sheetDocuments: SheetDocument[] = await SheetModel.find();
+
+    return sheetDocuments;
   }
 
   public async createSheet({ sheetNo, exercises: exDTOs, bonusSheet }: SheetDTO): Promise<Sheet> {
@@ -73,16 +78,18 @@ class SheetService {
     return !!sheet;
   }
 
-  public async getPointsOfStudent(student: StudentDocument, sheet: Sheet): Promise<number> {
+  public getPointsOfStudent(student: StudentDocument, sheet: Sheet): number {
     const pointsOfStudent = new PointMap(student.points);
     let pointsOfTeam = new PointMap();
 
     if (student.team) {
-      const team = await teamService.getTeamWithId(
-        getIdOfDocumentRef(student.tutorial),
-        getIdOfDocumentRef(student.team)
-      );
-      pointsOfTeam = new PointMap(team.points);
+      if (!isDocument(student.team)) {
+        throw new Error(
+          '[SheetService] The team of a student must be a populated document if provided.'
+        );
+      }
+
+      pointsOfTeam = new PointMap(student.team.points);
     }
 
     let result = 0;
