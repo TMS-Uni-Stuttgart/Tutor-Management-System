@@ -1,4 +1,3 @@
-import { isDocument } from '@typegoose/typegoose';
 import { getPointsOfExercise, PointId, PointMap } from 'shared/dist/model/Points';
 import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
 import {
@@ -82,14 +81,8 @@ class SheetService {
     const pointsOfStudent = new PointMap(student.points);
     let pointsOfTeam = new PointMap();
 
-    if (student.team) {
-      if (!isDocument(student.team)) {
-        throw new Error(
-          '[SheetService] The team of a student must be a populated document if provided.'
-        );
-      }
-
-      pointsOfTeam = new PointMap(student.team.points);
+    if (student.teamDocument) {
+      pointsOfTeam = new PointMap(student.teamDocument.points);
     }
 
     let result = 0;

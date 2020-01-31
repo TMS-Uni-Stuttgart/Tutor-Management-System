@@ -79,6 +79,16 @@ export class StudentSchema extends Typegoose
   @prop({ default: 0 })
   cakeCount!: number;
 
+  private _teamDocument?: TeamDocument | undefined = undefined;
+
+  get teamDocument(): TeamDocument | undefined {
+    return this._teamDocument;
+  }
+
+  set teamDocument(document: TeamDocument | undefined) {
+    this._teamDocument = document;
+  }
+
   @instanceMethod
   async getTeam(this: InstanceType<StudentSchema>): Promise<TeamDocument | undefined> {
     if (!this.team) {

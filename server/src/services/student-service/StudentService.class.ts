@@ -60,6 +60,7 @@ class StudentService {
       cakeCount: 0,
       attendance: new Types.Map(),
       presentationPoints: new Types.Map(),
+      teamDocument: undefined,
     };
     const createdStudent = await StudentModel.create(studentData);
 
@@ -100,6 +101,7 @@ class StudentService {
       cakeCount: student.cakeCount,
       attendance: student.attendance,
       presentationPoints: student.presentationPoints,
+      teamDocument: undefined,
     };
 
     // Encrypt the student manually due to the encryption library not supporting 'updateOne()'.
@@ -301,6 +303,7 @@ class StudentService {
     }
 
     if (isDocument(student.team)) {
+      student.teamDocument = student.team;
       return student;
     }
 
@@ -309,7 +312,7 @@ class StudentService {
       getIdOfDocumentRef(student.team)
     );
 
-    student.team = team;
+    student.teamDocument = team;
 
     return student;
   }
