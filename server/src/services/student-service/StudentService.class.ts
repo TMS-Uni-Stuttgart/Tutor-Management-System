@@ -40,9 +40,12 @@ class StudentService {
   }
 
   public async getAllStudentsAsDocuments(): Promise<StudentDocument[]> {
-    return StudentModel.find()
-      .populate('team')
-      .exec();
+    const students = await StudentModel.find().exec();
+    const promises: Promise<StudentDocument>[] = students.map(student =>
+      this.populateTeam(student)
+    );
+
+    return Promise.all(promises);
   }
 
   public async createStudent({ tutorial: tutorialId, ...dto }: StudentDTO): Promise<Student> {
@@ -222,7 +225,7 @@ class StudentService {
       return this.rejectStudentNotFound();
     }
 
-    return student.populate('team').execPopulate();
+    return this.populateTeam(student);
   }
 
   public async getStudentOrReject(student: StudentDocument | null): Promise<Student> {
@@ -279,6 +282,36 @@ class StudentService {
       scheinExamResults: scheinExamResults,
       cakeCount,
     };
+  }
+
+  /**
+   * Populates the `team` field in the student.
+   *
+   * - If the student is NOT in a team the unchanged document is returned.
+   * - If the students is in a team and the `team` is already a document the unchanged student document is returned.
+   * - Else the team of the student gets fetched and the `team` property of the document gets set. The _changed_ document gets returned.
+   *
+   * @param student Student to populate the team of.
+   *
+   * @return StudentDocument with team. For more information see above.
+   */
+  private async populateTeam(student: StudentDocument): Promise<StudentDocument> {
+    if (!student.team) {
+      return student;
+    }
+
+    if (isDocument(student.team)) {
+      return student;
+    }
+
+    const [team] = await teamService.getDocumentWithId(
+      getIdOfDocumentRef(student.tutorial),
+      getIdOfDocumentRef(student.team)
+    );
+
+    student.team = team;
+
+    return student;
   }
 
   /**
