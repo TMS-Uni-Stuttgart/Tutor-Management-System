@@ -5,6 +5,9 @@ import githubMarkdownCSS from '../css/githubMarkdown';
 import Logger from '../../../helpers/Logger';
 import puppeteer from 'puppeteer';
 
+/**
+ * @param T Type of the options passed to `generatePDF`.
+ */
 export abstract class PDFModule<T> {
   private readonly filename: string;
 

@@ -34,17 +34,22 @@ export abstract class PDFWithStudentsModule<T> extends PDFModule<T> {
     matriculationNos.sort((a, b) => a.reversedNumber.localeCompare(b.reversedNumber));
 
     matriculationNos.forEach((current, idx) => {
-      let position: number;
+      let positionPrev: number = 0;
+      let positionNext: number = 0;
 
-      if (idx === matriculationNos.length) {
+      if (idx !== 0) {
         const prev = matriculationNos[idx - 1];
-        position = this.getFirstDifferentPosition(current.reversedNumber, prev.reversedNumber);
-      } else {
-        const next = matriculationNos[idx + 1];
-        position = this.getFirstDifferentPosition(current.reversedNumber, next.reversedNumber);
+        positionPrev = this.getFirstDifferentPosition(current.reversedNumber, prev.reversedNumber);
       }
 
+      if (idx !== matriculationNos.length - 1) {
+        const next = matriculationNos[idx + 1];
+        positionNext = this.getFirstDifferentPosition(current.reversedNumber, next.reversedNumber);
+      }
+
+      const position: number = Math.max(positionPrev, positionNext);
       const substring = this.reverseString(current.reversedNumber.substr(0, position + 1));
+
       result.push({
         studentId: current.id,
         shortenedNo: substring.padStart(7, '*'),
@@ -80,53 +85,5 @@ export abstract class PDFWithStudentsModule<T> extends PDFModule<T> {
       .split('')
       .reverse()
       .join('');
-  }
-
-  /**
-   * @deprecated // TODO: REMOVE ME
-   * Generates a matriculation number with the form "***123" where the first digits get replaced with "*". All students in the `students` array get a unique matriculation number. Therefore these "shortened" numbers are still enough to identify a student.
-   *
-   * @param student Student to generate the short matriculation number for.
-   * @param students All students to consider.
-   *
-   * @returns The shortened but still identifying number of the given student.
-   */
-  private shortOneMatriculationNumber(
-    student: StudentDocument,
-    students: StudentDocument[]
-  ): string {
-    if (!student.matriculationNo) {
-      throw new Error(`Student ${student.id} does not have a matriculation number.`);
-    }
-
-    const otherStudents = students.filter(s => s.id !== student.id);
-    const lengthOfNo = student.matriculationNo.length;
-
-    for (let iteration = 1; iteration < lengthOfNo; iteration++) {
-      const shortStudent = student.matriculationNo.substr(lengthOfNo - iteration, iteration);
-      let isOkay = true;
-
-      for (const otherStudent of otherStudents) {
-        if (!otherStudent.matriculationNo) {
-          continue;
-        }
-
-        const shortOtherStudent = otherStudent.matriculationNo.substr(
-          lengthOfNo - iteration,
-          iteration
-        );
-
-        if (shortStudent === shortOtherStudent) {
-          isOkay = false;
-          break;
-        }
-      }
-
-      if (isOkay) {
-        return shortStudent.padStart(7, '*');
-      }
-    }
-
-    return student.matriculationNo;
   }
 }
