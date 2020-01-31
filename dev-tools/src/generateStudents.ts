@@ -116,6 +116,43 @@ async function createSheets(): Promise<Sheet[]> {
   return sheets;
 }
 
+async function createStudent(i: number, tutorial: Tutorial, sheets: Sheet[]): Promise<Student> {
+  const studentDTO: StudentDTO = {
+    firstname: 'Test',
+    lastname: `Student #${i.toString().padStart(3, '0')}`,
+    status: StudentStatus.ACTIVE,
+    tutorial: tutorial.id,
+    matriculationNo: i.toString().padStart(7, '0'),
+    // TODO: Rest of properties?
+  };
+
+  const student = (await axios.post<Student>('/student', studentDTO)).data;
+  const pointMap = new PointMap();
+
+  for (const sheet of sheets) {
+    for (const exercise of sheet.exercises) {
+      if (exercise.subexercises.length > 0) {
+        const entry: PointsOfSubexercises = {};
+
+        exercise.subexercises.forEach(subEx => {
+          entry[subEx.id] = roundNumber(Math.random() * subEx.maxPoints);
+        });
+
+        pointMap.setPointEntry(new PointId(sheet.id, exercise), { comment: '', points: entry });
+      } else {
+        pointMap.setPointEntry(new PointId(sheet.id, exercise), {
+          comment: '',
+          points: roundNumber(Math.random() * exercise.maxPoints),
+        });
+      }
+    }
+  }
+
+  await setPointsOfStudent(student.id, { points: pointMap.toDTO() }, axios);
+
+  return student;
+}
+
 async function run() {
   try {
     await login('admin', 'admin');
@@ -123,48 +160,29 @@ async function run() {
     const tutorial = await createTutorial();
     const sheets = await createSheets();
 
+    const promises: Promise<Student>[] = [];
+
     for (let i = 0; i < 600; i++) {
-      const studentDTO: StudentDTO = {
-        firstname: 'Test',
-        lastname: `Student #${i.toString().padStart(3, '0')}`,
-        status: StudentStatus.ACTIVE,
-        tutorial: tutorial.id,
-        matriculationNo: i.toString().padStart(7, '0'),
-        // TODO: Rest of properties?
-      };
-
-      const student = (await axios.post<Student>('/student', studentDTO)).data;
-      const pointMap = new PointMap();
-
-      for (const sheet of sheets) {
-        for (const exercise of sheet.exercises) {
-          if (exercise.subexercises.length > 0) {
-            const entry: PointsOfSubexercises = {};
-
-            exercise.subexercises.forEach(subEx => {
-              entry[subEx.id] = roundNumber(Math.random() * subEx.maxPoints);
-            });
-
-            pointMap.setPointEntry(new PointId(sheet.id, exercise), { comment: '', points: entry });
-          } else {
-            pointMap.setPointEntry(new PointId(sheet.id, exercise), {
-              comment: '',
-              points: roundNumber(Math.random() * exercise.maxPoints),
-            });
-          }
+      if (i > 0 && i % 200 === 0) {
+        try {
+          console.log('Waiting for previous requests to finish...');
+          await Promise.all(promises);
+        } catch (err) {
+          console.log('[ERROR] Could not get response from some requests.');
+        } finally {
+          promises.splice(0, promises.length);
         }
       }
 
-      await setPointsOfStudent(student.id, { points: pointMap.toDTO() }, axios);
+      promises.push(createStudent(i, tutorial, sheets));
 
-      if (i % 50 === 0) {
-        console.log(`Created student #${i}`);
-      }
+      console.log(`Request to create student #${i} made...`);
     }
 
+    await Promise.all(promises);
     console.log('All students created.');
   } catch (err) {
-    console.log(err);
+    console.log(`[ERROR] -- ${err.message}`);
   }
 }
 
