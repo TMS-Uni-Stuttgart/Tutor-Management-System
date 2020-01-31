@@ -73,8 +73,16 @@ function AdminStudentManagement(): JSX.Element {
   async function generateCSVFile() {
     setCreatingCSVFile(true);
 
-    const summaries = await getScheinCriteriaSummaryOfAllStudents();
+    // const summaries = await getScheinCriteriaSummaryOfAllStudents();
+    // const exams = await getAllScheinExams();
+    // const sheets = await getAllSheets();
+
     const dataArray: Row[] = [];
+    const [summaries, sheets, exams] = await Promise.all([
+      getScheinCriteriaSummaryOfAllStudents(),
+      getAllSheets(),
+      getAllScheinExams(),
+    ]);
 
     for (const {
       id,
@@ -87,8 +95,6 @@ function AdminStudentManagement(): JSX.Element {
       points,
     } of students) {
       const criteriaResult = summaries[id];
-      const exams = await getAllScheinExams();
-      const sheets = await getAllSheets();
       const pointsOfStudent = new PointMap(points);
 
       const data: RowMap = {

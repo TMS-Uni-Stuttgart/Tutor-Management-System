@@ -6,6 +6,7 @@ import {
   prop,
   Ref,
   Typegoose,
+  isDocument,
 } from '@typegoose/typegoose';
 import { Document, Model, Types } from 'mongoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
@@ -78,10 +79,24 @@ export class StudentSchema extends Typegoose
   @prop({ default: 0 })
   cakeCount!: number;
 
+  private _teamDocument?: TeamDocument | undefined = undefined;
+
+  get teamDocument(): TeamDocument | undefined {
+    return this._teamDocument;
+  }
+
+  set teamDocument(document: TeamDocument | undefined) {
+    this._teamDocument = document;
+  }
+
   @instanceMethod
   async getTeam(this: InstanceType<StudentSchema>): Promise<TeamDocument | undefined> {
     if (!this.team) {
       return undefined;
+    }
+
+    if (isDocument(this.team)) {
+      return this.team;
     }
 
     try {
