@@ -25,12 +25,10 @@ export class ScheinResultsPDFModule extends PDFWithStudentsModule<GeneratorOptio
 
     const tableRows: string[] = [];
 
-    this.sortShortenedMatriculationNumbers(shortenedMatriculationNumbers).forEach(
-      ([id, shortenedMatrNo]) => {
-        const passedString = summaries[id].passed ? '{{yes}}' : '{{no}}';
-        tableRows.push(`<tr><td>${shortenedMatrNo}</td><td>${passedString}</td></tr>`);
-      }
-    );
+    shortenedMatriculationNumbers.forEach(({ studentId, shortenedNo }) => {
+      const passedString = summaries[studentId].passed ? '{{yes}}' : '{{no}}';
+      tableRows.push(`<tr><td>${shortenedNo}</td><td>${passedString}</td></tr>`);
+    });
 
     const body = this.replacePlaceholdersInTemplate(tableRows);
     return this.generatePDFFromBody(body);
