@@ -56,7 +56,7 @@ function PointsTable({
   const TableComp = (
     <Table size={size ?? 'small'} className={clsx(disablePaper && className)}>
       <TableHead>
-        <TableRow>
+        <TableRow hover>
           <TableCell>Gesamt:</TableCell>
           <TableCell align='right'>{achieved}</TableCell>
           <TableCell align='left'>/ {total}</TableCell>
@@ -65,7 +65,7 @@ function PointsTable({
 
       <TableBody>
         {sheet.exercises.map(ex => (
-          <TableRow key={ex.id}>
+          <TableRow key={ex.id} hover>
             <TableCell>Aufgabe {ex.exName}</TableCell>
             <TableCell align='right'>{points.getPoints(new PointId(sheet.id, ex)) ?? 0}</TableCell>
             <TableCell align='left'>/ {getPointStringOfExercise(ex)}</TableCell>
