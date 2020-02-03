@@ -25,7 +25,10 @@ import { parseDateToMapKey } from '../../../util/helperFunctions';
 import AttendanceInformation from './components/AttendanceInformation';
 import CriteriaCharts from './components/CriteriaCharts';
 import EvaluationInformation from './components/EvaluationInformation';
+import ScheinExamInformation from './components/ScheinExamInformation';
 import ScheinStatusBox from './components/ScheinStatusBox';
+import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
+import { ScheinExam } from 'shared/dist/model/Scheinexam';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -57,6 +60,7 @@ function StudentInfo(): JSX.Element {
 
   const [student, setStudent] = useState<Student>();
   const [sheets, setSheets] = useState<Sheet[]>([]);
+  const [exams, setExams] = useState<ScheinExam[]>([]);
   const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
   const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -95,6 +99,12 @@ function StudentInfo(): JSX.Element {
       .then(response => setSheets(response))
       .catch(() => {
         enqueueSnackbar('Übungsblätter konnten nicht abgerufen werden.', { variant: 'error' });
+      });
+
+    getAllScheinExams()
+      .then(response => setExams(response))
+      .catch(() => {
+        enqueueSnackbar('Scheinklausuren konnten nicht abgerufen werden.', { variant: 'error' });
       });
   }, [enqueueSnackbar]);
 
@@ -172,8 +182,9 @@ function StudentInfo(): JSX.Element {
           {student && (
             <Paper variant='outlined'>
               <Tabs value={selectedTab} onChange={handleTabChange}>
-                <Tab label='Bewertungen' />
+                <Tab label='Übungsblätter' />
                 <Tab label='Anwesenheiten' />
+                <Tab label='Scheinklausuren' />
               </Tabs>
 
               <TabPanel value={selectedTab} index={0}>
@@ -193,6 +204,14 @@ function StudentInfo(): JSX.Element {
                     onNoteChange={handleStudentNoteChange(student)}
                   />
                 )}
+              </TabPanel>
+
+              <TabPanel value={selectedTab} index={2}>
+                <ScheinExamInformation
+                  student={student}
+                  exams={exams}
+                  className={classes.evaluationInfo}
+                />
               </TabPanel>
             </Paper>
           )}
