@@ -1,4 +1,4 @@
-import { Grid, GridProps, Paper } from '@material-ui/core';
+import { Grid, GridProps } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import React from 'react';
 import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
@@ -16,7 +16,7 @@ function CriteriaCharts({ scheinStatus, firstCard, ...props }: Props): JSX.Eleme
     <Grid container spacing={2} {...props}>
       {firstCard && (
         <Grid item sm={12} md={6} lg={4}>
-          <Paper variant='outlined'>{firstCard}</Paper>
+          {firstCard}
         </Grid>
       )}
 

@@ -15,9 +15,6 @@ const useStyles = makeStyles(theme =>
       marginLeft: theme.spacing(2),
       flex: 1,
     },
-    pointsTable: {
-      width: 'unset',
-    },
   })
 );
 
@@ -77,7 +74,6 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
         {selectedSheet && pointsOfStudent && (
           <Box marginTop={2} display='flex'>
             <PointsTable
-              className={classes.pointsTable}
               points={pointsOfStudent}
               sheet={selectedSheet}
               size='medium'

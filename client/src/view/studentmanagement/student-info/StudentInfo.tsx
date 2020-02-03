@@ -29,12 +29,16 @@ import ScheinExamInformation from './components/ScheinExamInformation';
 import ScheinStatusBox from './components/ScheinStatusBox';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
 import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import StudentDetails from './components/StudentDetails';
 
 const useStyles = makeStyles(theme =>
   createStyles({
     backButton: {
       marginRight: theme.spacing(2),
       alignSelf: 'center',
+    },
+    studentDetails: {
+      height: '100%',
     },
     criteriaCharts: {
       marginBottom: theme.spacing(1),
@@ -178,7 +182,9 @@ function StudentInfo(): JSX.Element {
           {scheinStatus && (
             <CriteriaCharts
               scheinStatus={scheinStatus}
-              firstCard={<div>IMPLEMENT ME</div>}
+              firstCard={
+                student && <StudentDetails student={student} className={classes.studentDetails} />
+              }
               className={classes.criteriaCharts}
             />
           )}
