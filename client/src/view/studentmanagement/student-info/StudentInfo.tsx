@@ -176,7 +176,11 @@ function StudentInfo(): JSX.Element {
       >
         <Box display='flex' flexDirection='column' marginBottom={1}>
           {scheinStatus && (
-            <CriteriaCharts scheinStatus={scheinStatus} className={classes.criteriaCharts} />
+            <CriteriaCharts
+              scheinStatus={scheinStatus}
+              firstCard={<div>IMPLEMENT ME</div>}
+              className={classes.criteriaCharts}
+            />
           )}
 
           {student && (
