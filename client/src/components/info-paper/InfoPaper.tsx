@@ -17,12 +17,12 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-interface Props extends PaperProps {
+export interface InfoPaperProps extends PaperProps {
   title: string;
   children?: React.ReactNode;
 }
 
-function InfoPaper({ children, title, className, ...props }: Props): JSX.Element {
+function InfoPaper({ children, title, className, ...props }: InfoPaperProps): JSX.Element {
   const classes = useStyles();
 
   return (
