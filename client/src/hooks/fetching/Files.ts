@@ -30,6 +30,21 @@ export async function getScheinStatusPDF(): Promise<Blob> {
   return Promise.reject(`Wrong response code (${response.status})`);
 }
 
+export async function getClearScheinStatusPDF(): Promise<Blob> {
+  const response = await axios.get('/pdf/scheinoverview/', {
+    responseType: 'arraybuffer',
+    headers: {
+      Accept: 'application/pdf',
+    },
+  });
+
+  if (response.status === 200) {
+    return new Blob([response.data], { type: 'application/pdf' });
+  }
+
+  return Promise.reject(`Wrong response code (${response.status})`);
+}
+
 export async function getScheinexamResultPDF(examId: string): Promise<Blob> {
   const response = await axios.get(`/pdf/scheinexam/${examId}/result`, {
     responseType: 'arraybuffer',

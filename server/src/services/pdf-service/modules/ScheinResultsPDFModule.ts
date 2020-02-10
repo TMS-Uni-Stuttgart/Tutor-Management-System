@@ -5,6 +5,7 @@ import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteri
 interface GeneratorOptions {
   students: StudentDocument[];
   summaries: ScheincriteriaSummaryByStudents;
+  enableShortMatriculatinNo: boolean;
 }
 
 export class ScheinResultsPDFModule extends PDFWithStudentsModule<GeneratorOptions> {
@@ -19,7 +20,11 @@ export class ScheinResultsPDFModule extends PDFWithStudentsModule<GeneratorOptio
    *
    * @returns Buffer of a PDF containing the list with the schein status of all the given students.
    */
-  public generatePDF({ students: givenStudents, summaries }: GeneratorOptions): Promise<Buffer> {
+  public generatePDF({
+    students: givenStudents,
+    summaries,
+    enableShortMatriculatinNo,
+  }: GeneratorOptions): Promise<Buffer> {
     const students = givenStudents.filter(student => !!student.matriculationNo);
     const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
 
@@ -27,7 +32,15 @@ export class ScheinResultsPDFModule extends PDFWithStudentsModule<GeneratorOptio
 
     shortenedMatriculationNumbers.forEach(({ studentId, shortenedNo }) => {
       const passedString = summaries[studentId].passed ? '{{yes}}' : '{{no}}';
-      tableRows.push(`<tr><td>${shortenedNo}</td><td>${passedString}</td></tr>`);
+
+      if (enableShortMatriculatinNo) {
+        tableRows.push(`<tr><td>${shortenedNo}</td><td>${passedString}</td></tr>`);
+      } else {
+        const student = students.find(s => s.id === studentId);
+        tableRows.push(
+          `<tr><td>${student?.matriculationNo} (${shortenedNo})</td><td>${passedString}</td></tr>`
+        );
+      }
     });
 
     const body = this.replacePlaceholdersInTemplate(tableRows);

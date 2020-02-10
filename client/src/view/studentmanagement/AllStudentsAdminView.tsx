@@ -10,7 +10,7 @@ import { Attendance } from 'shared/dist/model/Attendance';
 import { PointMap } from 'shared/dist/model/Points';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import SubmitButton from '../../components/loading/SubmitButton';
-import { getScheinStatusPDF } from '../../hooks/fetching/Files';
+import { getScheinStatusPDF, getClearScheinStatusPDF } from '../../hooks/fetching/Files';
 import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { getScheinCriteriaSummaryOfAllStudents } from '../../hooks/fetching/Student';
@@ -23,6 +23,7 @@ import {
 import { getPointsOfEntityAsString } from '../points-sheet/util/helper';
 import Studentoverview from './student-overview/Studentoverview';
 import StudentoverviewStoreProvider, { useStudentStore } from './student-store/StudentStore';
+import SplitButton from '../../components/SplitButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,6 +64,20 @@ function AdminStudentManagement(): JSX.Element {
       const blob = await getScheinStatusPDF();
 
       saveBlob(blob, 'Scheinübersichtsliste.pdf');
+    } catch {
+      enqueueSnackbar('Scheinübersichtsliste konnte nicht erstellt werden', { variant: 'error' });
+    } finally {
+      setCreatingScheinStatus(false);
+    }
+  }
+
+  async function printUnshortenedOverviewSheet() {
+    setCreatingScheinStatus(true);
+
+    try {
+      const blob = await getClearScheinStatusPDF();
+
+      saveBlob(blob, 'Scheinübersichtsliste_ungekürzt.pdf');
     } catch {
       enqueueSnackbar('Scheinübersichtsliste konnte nicht erstellt werden', { variant: 'error' });
     } finally {
@@ -139,16 +154,26 @@ function AdminStudentManagement(): JSX.Element {
       allowChangeTutorial
       additionalTopBarItem={
         <div className={classes.topBar}>
-          <SubmitButton
+          <SplitButton
             variant='contained'
             color='primary'
-            isSubmitting={isCreatingScheinStatus}
             className={classes.printButton}
-            onClick={printOverviewSheet}
-            disabled={students.length === 0}
-          >
-            Scheinliste ausdrucken
-          </SubmitButton>
+            disabled={students.length === 0 || isCreatingScheinStatus}
+            options={[
+              {
+                label: 'Scheinliste ausdrucken',
+                ButtonProps: {
+                  onClick: printOverviewSheet,
+                },
+              },
+              {
+                label: 'Ungek. Liste ausdrucken',
+                ButtonProps: {
+                  onClick: printUnshortenedOverviewSheet,
+                },
+              },
+            ]}
+          />
 
           <SubmitButton
             variant='contained'

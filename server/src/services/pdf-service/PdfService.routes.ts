@@ -34,8 +34,15 @@ pdfRouter.get(
   }
 );
 
-pdfRouter.get('/scheinstatus', ...checkRoleAccess(Role.ADMIN), async (_, res) => {
-  const pdfBuffer = await pdfService.generateStudentScheinOverviewPDF();
+pdfRouter.get('/scheinstatus', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const pdfBuffer = await pdfService.getCensoredStudentScheinOverviewPDF();
+
+  res.contentType('pdf');
+  res.send(pdfBuffer);
+});
+
+pdfRouter.get('/scheinoverview', ...checkRoleAccess(Role.ADMIN), async (req, res) => {
+  const pdfBuffer = await pdfService.getClearTextStudentScheinOverviewPDF();
 
   res.contentType('pdf');
   res.send(pdfBuffer);
