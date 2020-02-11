@@ -1,10 +1,10 @@
+import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
 import { TutorInfo, User } from 'shared/dist/model/User';
 import { sortByName } from 'shared/dist/util/helpers';
 import {
   StudentByTutorialSlotSummaryMap,
-  StudentScheinCriteriaSummaryMap,
   TutorialWithFetchedCorrectors,
   TutorialWithFetchedStudents,
   TutorialWithFetchedTutor,
@@ -192,8 +192,8 @@ export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
 
 export async function getScheinCriteriaSummariesOfAllStudentsOfTutorial(
   id: string
-): Promise<StudentScheinCriteriaSummaryMap> {
-  const response = await axios.get<StudentScheinCriteriaSummaryMap>(
+): Promise<ScheincriteriaSummaryByStudents> {
+  const response = await axios.get<ScheincriteriaSummaryByStudents>(
     `scheincriteria/tutorial/${id}`
   );
 
