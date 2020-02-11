@@ -3,7 +3,6 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useState } from 'react';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
 import { Student } from 'shared/dist/model/Student';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { getNameOfEntity } from 'shared/dist/util/helpers';
@@ -44,8 +43,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type SummariesByStudent = { [studentId: string]: ScheinCriteriaSummary };
-
 interface Props {
   tutorials?: Tutorial[];
   allowChangeTutorial?: boolean;
@@ -63,7 +60,7 @@ function Studentoverview({
   const [sortOption, setSortOption] = useState<StudentSortOption>(StudentSortOption.ALPHABETICAL);
 
   const dialog = useDialog();
-  const [{ students, teams, tutorialId, isInitialized }, dispatch] = useStudentStore();
+  const [{ students, teams, tutorialId, isInitialized, summaries }, dispatch] = useStudentStore();
   const { enqueueSnackbar } = useSnackbar();
 
   const handlerParams: HandlerParams = { tutorialId, dispatch, enqueueSnackbar };
@@ -187,6 +184,7 @@ function Studentoverview({
     <StudentRow
       className={classes.studentRow}
       student={student}
+      scheinStatus={summaries[student.id]}
       onEdit={openEditDialog}
       onDelete={openDeleteDialog}
       onChangeTutorial={allowChangeTutorial ? openChangeTutorialDialog : undefined}

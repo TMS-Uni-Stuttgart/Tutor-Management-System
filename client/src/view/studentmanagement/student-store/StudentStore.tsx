@@ -4,12 +4,14 @@ import { useAsyncReducer, AsyncDispatch } from '../../../util/AsyncReducer';
 import { StudentStoreAction, StudentStoreActionType } from './StudentStore.actions';
 import { Team } from 'shared/dist/model/Team';
 import studentStoreReducer from './StudentStore.reducers';
+import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 
 export interface StudentStore {
   students: Student[];
   teams?: Team[];
   tutorialId?: string;
   isInitialized: boolean;
+  summaries: ScheincriteriaSummaryByStudents;
 }
 
 interface StudentContext {
@@ -22,6 +24,7 @@ const initialState: StudentStore = {
   teams: undefined,
   tutorialId: 'NOT_INITIALIZED',
   isInitialized: false,
+  summaries: {},
 };
 
 const StudentStoreContext = createContext<StudentContext>({

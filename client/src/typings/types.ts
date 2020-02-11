@@ -31,10 +31,6 @@ export interface HasPoints extends HasId {
   points: PointMapDTO;
 }
 
-export interface StudentScheinCriteriaSummaryMap {
-  [id: string]: ScheinCriteriaSummary;
-}
-
 export interface StudentByTutorialSlotSummaryMap {
   [tutorialSlot: string]: ScheinCriteriaSummary[];
 }

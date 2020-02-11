@@ -8,6 +8,7 @@ import {
   MenuList,
   Paper,
   Popper,
+  ButtonGroupProps,
 } from '@material-ui/core';
 import { MenuDown as ArrowDropDownIcon } from 'mdi-material-ui';
 import React from 'react';
@@ -18,13 +19,13 @@ interface ButtonOption {
   ButtonProps?: ButtonProps & { component?: React.ElementType; to?: string };
 }
 
-interface Props {
+interface Props extends ButtonGroupProps {
   options: ButtonOption[];
   variant?: ButtonProps['variant'];
   color?: ButtonProps['color'];
 }
 
-function SplitButton({ options, variant, color }: Props): JSX.Element {
+function SplitButton({ options, variant, color, ...props }: Props): JSX.Element {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -53,7 +54,13 @@ function SplitButton({ options, variant, color }: Props): JSX.Element {
 
   return (
     <>
-      <ButtonGroup variant={variant} color={color} ref={anchorRef} aria-label='split button'>
+      <ButtonGroup
+        variant={variant}
+        color={color}
+        ref={anchorRef}
+        aria-label='split button'
+        {...props}
+      >
         <Button {...buttonProps}>{options[selectedIndex].label}</Button>
         <Button
           size='small'

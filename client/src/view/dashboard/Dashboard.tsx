@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Role } from 'shared/dist/model/Role';
+import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
 import { Tutorial } from 'shared/dist/model/Tutorial';
 import { LoggedInUser } from 'shared/dist/model/User';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import { getTutorial } from '../../hooks/fetching/Tutorial';
 import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
-import {
-  StudentByTutorialSlotSummaryMap,
-  StudentScheinCriteriaSummaryMap,
-} from '../../typings/types';
+import { StudentByTutorialSlotSummaryMap } from '../../typings/types';
 import AdminStatsCard from './components/AdminStatsCard';
 import AllTutorialStatistics from './components/AllTutorialStatistics';
 import TutorialStatistics from './components/TutorialStatistics';
 
 export interface TutorialSummaryInfo {
   tutorial: Tutorial;
-  studentInfos: StudentScheinCriteriaSummaryMap;
+  studentInfos: ScheincriteriaSummaryByStudents;
 }
 
 function isAdmin(userData: LoggedInUser | undefined): boolean {

@@ -37,13 +37,25 @@ class PdfService {
     return this.attendancePDFModule.generatePDF({ tutorial, date });
   }
 
-  public async generateStudentScheinOverviewPDF(): Promise<Buffer> {
+  public async getCensoredStudentScheinOverviewPDF(): Promise<Buffer> {
+    return this.generateStudentScheinOverviewPDF(true);
+  }
+
+  public async getClearTextStudentScheinOverviewPDF(): Promise<Buffer> {
+    return this.generateStudentScheinOverviewPDF(false);
+  }
+
+  private async generateStudentScheinOverviewPDF(shortMatriculationNo: boolean): Promise<Buffer> {
     const [students, summaries] = await Promise.all([
       studentService.getAllStudentsAsDocuments(),
       scheincriteriaService.getCriteriaResultsOfAllStudents(),
     ]);
 
-    return this.scheinResultsPDFModule.generatePDF({ students, summaries });
+    return this.scheinResultsPDFModule.generatePDF({
+      students,
+      summaries,
+      enableShortMatriculatinNo: shortMatriculationNo,
+    });
   }
 
   public async generateCredentialsPDF(): Promise<Buffer> {
