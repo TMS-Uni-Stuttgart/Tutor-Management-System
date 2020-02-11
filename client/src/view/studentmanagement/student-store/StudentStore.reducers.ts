@@ -6,9 +6,13 @@ import {
   deleteStudent,
   editStudent,
   getAllStudents,
+  getScheinCriteriaSummaryOfAllStudents,
 } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
+import {
+  getStudentsOfTutorial,
+  getScheinCriteriaSummariesOfAllStudentsOfTutorial,
+} from '../../../hooks/fetching/Tutorial';
 import { AsyncDispatch } from '../../../util/AsyncReducer';
 import { StudentStore } from './StudentStore';
 import {
@@ -109,20 +113,31 @@ async function reduceReinitializeStore(
   }
 
   if (!!tutorialId) {
-    const [students, teams] = await Promise.all([
+    const [students, teams, summaries] = await Promise.all([
       getStudentsOfTutorial(tutorialId),
       getTeamsOfTutorial(tutorialId),
+      getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId),
     ]);
 
     students.sort(sortByName);
 
-    return { ...state, students, teams, isInitialized: true, tutorialId };
+    return { ...state, students, teams, isInitialized: true, tutorialId, summaries };
   } else {
-    const students = await getAllStudents();
+    const [students, summaries] = await Promise.all([
+      getAllStudents(),
+      getScheinCriteriaSummaryOfAllStudents(),
+    ]);
 
     students.sort(sortByName);
 
-    return { ...state, students, teams: undefined, tutorialId: undefined, isInitialized: true };
+    return {
+      ...state,
+      students,
+      teams: undefined,
+      tutorialId: undefined,
+      isInitialized: true,
+      summaries,
+    };
   }
 }
 
