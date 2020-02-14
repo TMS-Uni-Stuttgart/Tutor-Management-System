@@ -1,11 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TutorialService } from './tutorial.service';
 import { TutorialController } from './tutorial.controller';
-import { TypegooseModule } from 'nestjs-typegoose';
-import { TutorialModel } from './tutorial.model';
+import { TutorialService } from './tutorial.service';
 
 @Module({
-  imports: [TypegooseModule.forFeature([TutorialModel])],
   providers: [TutorialService],
   controllers: [TutorialController],
 })

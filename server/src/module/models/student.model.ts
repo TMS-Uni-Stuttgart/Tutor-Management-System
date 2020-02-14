@@ -1,12 +1,12 @@
 import { DocumentType, modelOptions, plugin, prop, mapProp } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
-import { CollectionName } from '../../../helpers/CollectionName';
-import { StudentStatus } from '../../../shared/model/Student';
-import { TutorialDocument } from '../../tutorial/tutorial.model';
+import { CollectionName } from '../../helpers/CollectionName';
+import { StudentStatus } from '../../shared/model/Student';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { TeamModel, TeamDocument } from './team.model';
 import { GradingModel, GradingDocument } from './points.model';
-import { HasExercises } from '../../../shared/model/Sheet';
+import { HasExercises } from '../../shared/model/Sheet';
+import { TutorialDocument } from './tutorial.model';
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })

@@ -4,7 +4,7 @@ import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'src/shared/model/Role';
 import { databaseConfig } from '../../helpers/config';
-import { TutorialDocument } from '../tutorial/tutorial.model';
+import { TutorialDocument } from './tutorial.model';
 import { CollectionName } from '../../helpers/CollectionName';
 
 @plugin(fieldEncryption, {
