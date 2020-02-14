@@ -7,7 +7,7 @@
     "dev-tools"
   ],
   "scripts": {
-    "format": "yarn format:client && yarn format:server && yarn format:shared",
+    "format": "yarn workspaces run format",
     "format:client": "echo Formatting client && cd ./client && yarn format",
     "format:server": "echo Formatting server && cd ./server && yarn format",
     "format:shared": "echo Formatting shared && cd ./shared && yarn format",

@@ -9,6 +9,7 @@
     "build": "nest build",
     "format": "eslint --fix \"src/**/*.ts?(x)\"",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
+    "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
     "start": "cross-env NODE_ENV=development nest start --debug --watch",
     "start:timezone": "cross-env TZ='Europe/Berlin' yarn start",
     "start:nowatch": "cross-env NODE_ENV=development nest start",

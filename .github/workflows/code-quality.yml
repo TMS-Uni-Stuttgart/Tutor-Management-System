@@ -9,8 +9,8 @@ on:
       - master
 
 jobs:
-  type-check:
-    name: Type Checks
+  type-check-client:
+    name: Type Check Client
     runs-on: ubuntu-latest
 
     steps:
@@ -24,79 +24,35 @@ jobs:
           yarn install
         env:
           CI: true
-      - name: Build shared package
-        run: yarn build:shared
-        env:
-          CI: true
-      - name: Type check shared
-        run: yarn run ts:check:shared
-        env:
-          CI: true
       - name: Type check client
-        run: yarn ts:check:client
+        working-directory: client/
+        run: yarn ts:check
+        env:
+          CI: true
+
+  type-check-server:
+    name: Type Check Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install node packages
+        run: |
+          yarn install
         env:
           CI: true
       - name: Type check server
-        run: yarn ts:check:server
-        env:
-          CI: true
-
-  code-quality-client:
-    name: Code Quality Client
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.x
-      - name: Install node packages
-        run: |
-          yarn install
-        env:
-          CI: true
-      - name: Build shared
-        run: yarn build:shared
-        env:
-          CI: true
-      - name: Check code quality on client
-        working-directory: client/
-        run: |
-          yarn prettier:check
-          yarn eslint:check
-        env:
-          CI: true
-
-  code-quality-server:
-    name: Code Quality Server
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.x
-      - name: Install node packages
-        run: |
-          yarn install
-        env:
-          CI: true
-      - name: Build shared
-        run: yarn build:shared
-        env:
-          CI: true
-      - name: Check code quality on server
         working-directory: server/
-        run: |
-          yarn prettier:check
-          yarn eslint:check
+        run: yarn ts:check
         env:
           CI: true
 
-  code-quality-shared:
-    name: Code Quality Shared
+  code-quality:
+    name: Code Quality
     runs-on: ubuntu-latest
 
     steps:
@@ -104,16 +60,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: 12.x
       - name: Install node packages
         run: |
           yarn install
         env:
           CI: true
-      - name: Check code quality on shared package
-        working-directory: shared/
+      - name: Check code quality in workspace
         run: |
-          yarn prettier:check
-          yarn eslint:check
+          yarn workspaces run prettier:check
+          yarn workspaces run eslint:check
         env:
           CI: true

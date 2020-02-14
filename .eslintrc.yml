@@ -28,7 +28,7 @@ rules:
     - { functions: false, classes: true, variables: true, typedefs: true }
   '@typescript-eslint/no-parameter-properties':
     - 'error'
-    - { allows: ['readonly'] }
+    - { allows: ['private', 'readonly', 'private readonly'] }
   'constructor-super': 'error'
   'no-fallthrough': 'error'
   'no-console': 'warn'
