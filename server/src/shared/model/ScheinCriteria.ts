@@ -1,3 +1,5 @@
+import { HasExercises } from './Sheet';
+
 export interface ScheinCriteriaResponse {
   id: string;
   identifier: string;
@@ -12,6 +14,8 @@ export interface ScheinCriteriaDTO {
 }
 
 export type ScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCriteriaSummary };
+
+export type SingleScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCriteriaStatus };
 
 export interface ScheinCriteriaSummary {
   passed: boolean;
@@ -56,4 +60,43 @@ export enum ScheinCriteriaUnit {
   EXAM = 'EXAM',
   PRESENTATION = 'PRESENTATION',
   DATE = 'DATE',
+}
+
+export interface CriteriaAchievedInformation {
+  achieved: number;
+  notAchieved: number;
+  [other: string]: number;
+}
+
+export interface CriteriaDistributionInformation {
+  [key: string]: {
+    value: number;
+    aboveThreshhold: boolean;
+  };
+}
+
+export interface CriteriaAveragesInformation {
+  [identifier: string]: {
+    value: number;
+    total: number;
+  };
+}
+
+export interface CriteriaSheetOrExamInformation extends HasExercises {
+  no: number;
+}
+
+export interface CriteriaInformationItem {
+  achieved: CriteriaAchievedInformation;
+  total: number;
+  distribution?: CriteriaDistributionInformation;
+  averages?: CriteriaAveragesInformation;
+}
+
+export interface CriteriaInformation {
+  identifier: string;
+  name: string;
+  studentSummaries: SingleScheincriteriaSummaryByStudents;
+  sheetsOrExams?: CriteriaSheetOrExamInformation[];
+  information: { [id: string]: CriteriaInformationItem };
 }
