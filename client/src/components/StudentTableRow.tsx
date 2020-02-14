@@ -13,7 +13,7 @@ import { StudentWithFetchedTeam } from '../typings/types';
 import EntityListItemMenu from './list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
 import { useAxios } from '../hooks/FetchingService';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
 interface Props extends PaperTableRowProps {
   student: StudentWithFetchedTeam;

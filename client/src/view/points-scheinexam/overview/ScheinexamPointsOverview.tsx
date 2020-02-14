@@ -1,8 +1,8 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { Student } from 'shared/dist/model/Student';
+import { ScheinExam } from 'shared/model/Scheinexam';
+import { Student } from 'shared/model/Student';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';

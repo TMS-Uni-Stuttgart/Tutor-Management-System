@@ -1,4 +1,4 @@
-import { StudentDTO } from 'shared/dist/model/Student';
+import { StudentDTO } from 'shared/model/Student';
 import { StudentStore } from './StudentStore';
 import { AsyncDispatch } from '../../../util/AsyncReducer';
 

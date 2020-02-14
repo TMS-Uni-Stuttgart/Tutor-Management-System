@@ -1,7 +1,7 @@
 import { FormikSubmitCallback } from '../../../../types';
-import { Student } from 'shared/dist/model/Student';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { PointMap, PointId, SheetMapEntry } from 'shared/dist/model/Points';
+import { Student } from 'shared/model/Student';
+import { ScheinExam } from 'shared/model/Scheinexam';
+import { PointMap, PointId, SheetMapEntry } from 'shared/model/Points';
 
 export interface ScheinexamPointsFormState {
   [exerciseId: string]: {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Student } from 'shared/dist/model/Student';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { Student } from 'shared/model/Student';
+import { ScheinExam } from 'shared/model/Scheinexam';
 import {
   ScheinexamPointsFormSubmitCallback,
   generateInitialValues,
@@ -17,7 +17,7 @@ import {
   getPointsOfExercise,
   getPointsOfAllExercises,
   convertExercisePointInfoToString,
-} from 'shared/dist/model/Points';
+} from 'shared/model/Points';
 import SubmitButton from '../../../../components/loading/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';

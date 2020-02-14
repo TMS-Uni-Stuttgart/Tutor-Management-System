@@ -1,6 +1,6 @@
 import { TableCell, Typography } from '@material-ui/core';
 import React from 'react';
-import { Sheet } from 'shared/dist/model/Sheet';
+import { Sheet } from 'shared/model/Sheet';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { getPointsOfEntityAsString } from '../../points-sheet/util/helper';

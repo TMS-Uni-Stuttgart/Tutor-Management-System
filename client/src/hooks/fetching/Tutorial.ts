@@ -1,8 +1,8 @@
-import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
-import { Student } from 'shared/dist/model/Student';
-import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/dist/model/Tutorial';
-import { TutorInfo, User } from 'shared/dist/model/User';
-import { sortByName } from 'shared/dist/util/helpers';
+import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
+import { Student } from 'shared/model/Student';
+import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/model/Tutorial';
+import { TutorInfo, User } from 'shared/model/User';
+import { sortByName } from 'shared/util/helpers';
 import {
   StudentByTutorialSlotSummaryMap,
   TutorialWithFetchedCorrectors,

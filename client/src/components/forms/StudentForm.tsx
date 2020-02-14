@@ -2,15 +2,15 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { FormikHelpers } from 'formik';
 import { AlertOutline as AlertIcon } from 'mdi-material-ui';
 import React, { useRef } from 'react';
-import { Team } from 'shared/dist/model/Team';
+import { Team } from 'shared/model/Team';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
-import { StudentStatus } from 'shared/dist/model/Student';
+import { getNameOfEntity } from 'shared/util/helpers';
+import { StudentStatus } from 'shared/model/Student';
 import { teamItemToString } from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>

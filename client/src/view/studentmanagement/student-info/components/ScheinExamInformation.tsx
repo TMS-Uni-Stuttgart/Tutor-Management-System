@@ -1,9 +1,9 @@
 import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { PointMap } from 'shared/dist/model/Points';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { Student } from 'shared/dist/model/Student';
+import { PointMap } from 'shared/model/Points';
+import { ScheinExam } from 'shared/model/Scheinexam';
+import { Student } from 'shared/model/Student';
 import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
 import Placeholder from '../../../../components/Placeholder';
 import PointsTable from '../../../../components/points-table/PointsTable';

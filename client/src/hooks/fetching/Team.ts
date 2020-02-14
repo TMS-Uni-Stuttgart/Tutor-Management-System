@@ -1,5 +1,5 @@
-import { UpdatePointsDTO } from 'shared/dist/model/Points';
-import { Team, TeamDTO } from 'shared/dist/model/Team';
+import { UpdatePointsDTO } from 'shared/model/Points';
+import { Team, TeamDTO } from 'shared/model/Team';
 import axios from './Axios';
 
 function sortStudentsOfTeam(team: Team) {

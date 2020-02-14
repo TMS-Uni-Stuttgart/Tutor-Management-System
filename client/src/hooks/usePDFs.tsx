@@ -6,8 +6,8 @@ import {
   getTeamCorrectionCommentPDF,
   getCorrectionCommentPDFs,
 } from './fetching/Files';
-import { Sheet } from 'shared/dist/model/Sheet';
-import { Team } from 'shared/dist/model/Team';
+import { Sheet } from 'shared/model/Sheet';
+import { Team } from 'shared/model/Team';
 import { saveBlob } from '../util/helperFunctions';
 import { getTutorial } from './fetching/Tutorial';
 

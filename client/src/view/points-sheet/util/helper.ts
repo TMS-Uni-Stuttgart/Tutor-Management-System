@@ -1,4 +1,4 @@
-import { HasExercises } from 'shared/dist/model/Sheet';
+import { HasExercises } from 'shared/model/Sheet';
 import { ExerciseFormExercise } from '../../../components/forms/components/FormikExerciseEditor';
 
 export function getPointsOfEntityAsString(sheet: HasExercises): string {

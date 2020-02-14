@@ -1,9 +1,9 @@
-import { HasId } from 'shared/dist/model/Common';
-import { PointMapDTO } from 'shared/dist/model/Points';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
-import { Student } from 'shared/dist/model/Student';
-import { Tutorial } from 'shared/dist/model/Tutorial';
-import { User } from 'shared/dist/model/User';
+import { HasId } from 'shared/model/Common';
+import { PointMapDTO } from 'shared/model/Points';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
+import { Student } from 'shared/model/Student';
+import { Tutorial } from 'shared/model/Tutorial';
+import { User } from 'shared/model/User';
 
 export interface UserWithFetchedTutorials extends Omit<User, 'tutorials' | 'tutorialsToCorrect'> {
   tutorials: Tutorial[];

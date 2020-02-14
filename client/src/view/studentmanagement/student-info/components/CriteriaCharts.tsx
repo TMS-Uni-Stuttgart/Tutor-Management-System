@@ -1,7 +1,7 @@
 import { Grid, GridProps } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import React from 'react';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import ChartPaper from '../../../../components/info-paper/ChartPaper';
 
 interface Props extends GridProps {

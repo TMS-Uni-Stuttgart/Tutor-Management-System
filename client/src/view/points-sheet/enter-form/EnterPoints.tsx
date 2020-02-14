@@ -1,7 +1,7 @@
 import { CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { Exercise, Sheet } from 'shared/dist/model/Sheet';
+import { Exercise, Sheet } from 'shared/model/Sheet';
 import BackButton from '../../../components/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
 import { getSheet } from '../../../hooks/fetching/Sheet';

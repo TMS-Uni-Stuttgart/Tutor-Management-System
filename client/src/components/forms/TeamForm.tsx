@@ -1,5 +1,5 @@
 import React from 'react';
-import { Team } from 'shared/dist/model/Team';
+import { Team } from 'shared/model/Team';
 import { FormikSubmitCallback } from '../../types';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikFilterableSelect from './components/FormikFilterableSelect';

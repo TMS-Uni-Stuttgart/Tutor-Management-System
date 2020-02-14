@@ -3,12 +3,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Account as StudentIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { Student } from 'shared/dist/model/Student';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { ScheinExam } from 'shared/model/Scheinexam';
+import { Student } from 'shared/model/Student';
+import { getNameOfEntity } from 'shared/util/helpers';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { getEnterPointsForScheinexamPath } from '../../../../routes/Routing.helpers';
-import { PointMap } from 'shared/dist/model/Points';
+import { PointMap } from 'shared/model/Points';
 
 const useStyles = makeStyles(() =>
   createStyles({

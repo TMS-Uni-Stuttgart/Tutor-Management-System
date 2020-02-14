@@ -1,5 +1,5 @@
 import React from 'react';
-import { Student, StudentStatus } from 'shared/dist/model/Student';
+import { Student, StudentStatus } from 'shared/model/Student';
 import InfoPaper, { InfoPaperProps } from '../../../../components/info-paper/InfoPaper';
 import { Table, TableBody, TableRow, TableCell } from '@material-ui/core';
 

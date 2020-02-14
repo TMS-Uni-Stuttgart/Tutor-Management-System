@@ -2,7 +2,7 @@ import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { ScheinExam } from 'shared/model/Scheinexam';
 import BackButton from '../../../components/BackButton';
 import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
@@ -12,16 +12,16 @@ import {
 } from '../../../routes/Routing.helpers';
 import Placeholder from '../../../components/Placeholder';
 import CustomSelect from '../../../components/CustomSelect';
-import { Student } from 'shared/dist/model/Student';
+import { Student } from 'shared/model/Student';
 import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { getNameOfEntity } from 'shared/util/helpers';
 import ScheinexamPointsForm from './components/ScheinexamPointsForm';
 import {
   ScheinexamPointsFormSubmitCallback,
   convertFormStateToPointMap,
 } from './components/ScheinexamPointsForm.helpers';
-import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
+import { PointMap, UpdatePointsDTO } from 'shared/model/Points';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(theme =>

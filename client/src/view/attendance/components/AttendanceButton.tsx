@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import clsx from 'clsx';
 import React from 'react';
-import { AttendanceState } from 'shared/dist/model/Attendance';
+import { AttendanceState } from 'shared/model/Attendance';
 
 export function getAttendanceColor(state: AttendanceState, theme: Theme): string {
   const ATTENDANCE_COLORS: { [K in keyof typeof AttendanceState]: string } = {

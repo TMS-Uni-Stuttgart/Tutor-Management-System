@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { ScheinExam, ScheinExamDTO } from 'shared/dist/model/Scheinexam';
+import { ScheinExam, ScheinExamDTO } from 'shared/model/Scheinexam';
 import ScheinExamForm, {
   getInitialExamFormState,
   ScheinExamFormState,

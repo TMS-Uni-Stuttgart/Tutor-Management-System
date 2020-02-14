@@ -4,10 +4,10 @@ import { compareAsc, format } from 'date-fns';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { Role } from 'shared/dist/model/Role';
-import { SubstituteDTO, Tutorial } from 'shared/dist/model/Tutorial';
-import { User } from 'shared/dist/model/User';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { Role } from 'shared/model/Role';
+import { SubstituteDTO, Tutorial } from 'shared/model/Tutorial';
+import { User } from 'shared/model/User';
+import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../components/BackButton';
 import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 import FormikMultipleDatesPicker, {

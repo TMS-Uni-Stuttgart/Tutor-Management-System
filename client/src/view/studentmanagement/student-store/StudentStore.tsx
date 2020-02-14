@@ -1,10 +1,10 @@
 import React, { PropsWithChildren, createContext, useContext, useEffect } from 'react';
-import { Student } from 'shared/dist/model/Student';
+import { Student } from 'shared/model/Student';
 import { useAsyncReducer, AsyncDispatch } from '../../../util/AsyncReducer';
 import { StudentStoreAction, StudentStoreActionType } from './StudentStore.actions';
-import { Team } from 'shared/dist/model/Team';
+import { Team } from 'shared/model/Team';
 import studentStoreReducer from './StudentStore.reducers';
-import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
+import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 
 export interface StudentStore {
   students: Student[];

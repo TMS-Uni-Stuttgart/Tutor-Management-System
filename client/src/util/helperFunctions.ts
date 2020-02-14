@@ -1,10 +1,10 @@
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
-import { PointMap } from 'shared/dist/model/Points';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { Student } from 'shared/dist/model/Student';
-import { Team } from 'shared/dist/model/Team';
-import { Sheet } from 'shared/dist/model/Sheet';
+import { PointMap } from 'shared/model/Points';
+import { ScheinExam } from 'shared/model/Scheinexam';
+import { Student } from 'shared/model/Student';
+import { Team } from 'shared/model/Team';
+import { Sheet } from 'shared/model/Sheet';
 
 export function teamItemToString(team: Team): string {
   const studentsInTeam = team.students.length

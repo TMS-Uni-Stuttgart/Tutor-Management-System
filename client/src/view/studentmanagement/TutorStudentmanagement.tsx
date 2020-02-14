@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { getNameOfEntity } from 'shared/util/helpers';
 import { StudentWithFetchedTeam } from '../../typings/types';
 import Studentoverview from './student-overview/Studentoverview';
 import StudentoverviewStoreProvider from './student-store/StudentStore';

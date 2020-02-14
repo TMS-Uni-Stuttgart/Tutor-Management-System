@@ -14,7 +14,7 @@ import {
 import { DialogProps } from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useState } from 'react';
-import { Student } from 'shared/dist/model/Student';
+import { Student } from 'shared/model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

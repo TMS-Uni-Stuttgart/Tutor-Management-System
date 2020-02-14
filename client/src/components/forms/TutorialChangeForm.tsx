@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Tutorial } from 'shared/dist/model/Tutorial';
+import { Tutorial } from 'shared/model/Tutorial';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import { getDisplayStringForTutorial } from '../../util/helperFunctions';

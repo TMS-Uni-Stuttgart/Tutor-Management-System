@@ -18,8 +18,8 @@ import {
   getPointsOfExercise,
   PointId,
   PointMap,
-} from 'shared/dist/model/Points';
-import { Exercise, HasExercises } from 'shared/dist/model/Sheet';
+} from 'shared/model/Points';
+import { Exercise, HasExercises } from 'shared/model/Sheet';
 
 interface Props extends Omit<TableContainerProps, 'ref'> {
   points: PointMap;

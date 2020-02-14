@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import React from 'react';
-import { ExercisePointInfo, convertExercisePointInfoToString } from 'shared/dist/model/Points';
+import { ExercisePointInfo, convertExercisePointInfoToString } from 'shared/model/Points';
 import FormikTextField from './forms/components/FormikTextField';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 

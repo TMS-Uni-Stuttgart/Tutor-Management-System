@@ -1,5 +1,5 @@
-import { PointId, PointMap, PointMapEntry, PointsOfSubexercises } from 'shared/dist/model/Points';
-import { Exercise, Sheet } from 'shared/dist/model/Sheet';
+import { PointId, PointMap, PointMapEntry, PointsOfSubexercises } from 'shared/model/Points';
+import { Exercise, Sheet } from 'shared/model/Sheet';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
 

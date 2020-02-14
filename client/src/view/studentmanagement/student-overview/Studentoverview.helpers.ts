@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import { getNameOfEntity, sortByName } from 'shared/dist/util/helpers';
+import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import { StudentWithFetchedTeam } from '../../../typings/types';
-import { StudentStatus, Student } from 'shared/dist/model/Student';
+import { StudentStatus, Student } from 'shared/model/Student';
 import { StudentStoreDispatcher } from '../student-store/StudentStore';
 import { WithSnackbarProps } from 'notistack';
 import {

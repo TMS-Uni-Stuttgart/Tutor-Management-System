@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { InformationOutline as InfoIcon } from 'mdi-material-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/model/ScheinCriteria';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { i18nNamespace } from '../../../util/lang/configI18N';

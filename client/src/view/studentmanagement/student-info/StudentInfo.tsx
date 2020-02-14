@@ -3,12 +3,12 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Attendance, AttendanceDTO, AttendanceState } from 'shared/dist/model/Attendance';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
-import { Sheet } from 'shared/dist/model/Sheet';
-import { Student } from 'shared/dist/model/Student';
-import { Tutorial } from 'shared/dist/model/Tutorial';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { Attendance, AttendanceDTO, AttendanceState } from 'shared/model/Attendance';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
+import { Sheet } from 'shared/model/Sheet';
+import { Student } from 'shared/model/Student';
+import { Tutorial } from 'shared/model/Tutorial';
+import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../../components/BackButton';
 import Placeholder from '../../../components/Placeholder';
 import TabPanel from '../../../components/TabPanel';
@@ -28,7 +28,7 @@ import EvaluationInformation from './components/EvaluationInformation';
 import ScheinExamInformation from './components/ScheinExamInformation';
 import ScheinStatusBox from './components/ScheinStatusBox';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { ScheinExam } from 'shared/model/Scheinexam';
 import StudentDetails from './components/StudentDetails';
 
 const useStyles = makeStyles(theme =>

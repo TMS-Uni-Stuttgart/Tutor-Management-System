@@ -11,8 +11,8 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { User } from 'shared/dist/model/User';
-import { Role } from 'shared/dist/model/Role';
+import { User } from 'shared/model/User';
+import { Role } from 'shared/model/Role';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
