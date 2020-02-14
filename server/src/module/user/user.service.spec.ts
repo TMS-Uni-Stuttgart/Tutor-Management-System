@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongooseModelProvider } from '../helpers/test/test.provider';
+import { MongooseModelProvider } from '../../helpers/test/test.provider';
 import { UserModel } from './user.model';
 import { UserService } from './user.service';
 

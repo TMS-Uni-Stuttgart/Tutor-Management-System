@@ -2,10 +2,11 @@ import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@t
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { UserDocument } from '../user/user.model';
-import { StudentDocument } from '../student/student.model';
+import { StudentDocument } from '../student/models/student.model';
+import { CollectionName } from '../../helpers/CollectionName';
 
 @plugin(mongooseAutoPopulate)
-@modelOptions({ schemaOptions: { collection: 'tutorials' } })
+@modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })
 export class TutorialModel {
   @prop({ required: true })
   slot!: string;
