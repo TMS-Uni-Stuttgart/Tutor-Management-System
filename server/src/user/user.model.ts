@@ -1,12 +1,4 @@
-import {
-  arrayProp,
-  DocumentType,
-  modelOptions,
-  plugin,
-  pre,
-  prop,
-  Ref,
-} from '@typegoose/typegoose';
+import { arrayProp, DocumentType, modelOptions, plugin, pre, prop } from '@typegoose/typegoose';
 import bcrypt from 'bcryptjs';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
