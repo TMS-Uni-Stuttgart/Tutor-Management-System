@@ -1,8 +1,5 @@
-import { DocumentType, modelOptions, plugin, prop, mapProp } from '@typegoose/typegoose';
-import mongooseAutoPopulate from 'mongoose-autopopulate';
+import { DocumentType, mapProp, modelOptions, prop } from '@typegoose/typegoose';
 
-// TODO: If not needed remove the plugin.
-@plugin(mongooseAutoPopulate)
 @modelOptions({})
 export class GradingModel {
   @prop()
