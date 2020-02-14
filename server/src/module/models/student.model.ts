@@ -4,7 +4,7 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { StudentStatus } from '../../shared/model/Student';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { TeamModel, TeamDocument } from './team.model';
-import { GradingModel, GradingDocument } from './points.model';
+import { GradingModel, GradingDocument } from './grading.model';
 import { HasExercises } from '../../shared/model/Sheet';
 import { TutorialDocument } from './tutorial.model';
 
