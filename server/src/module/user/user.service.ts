@@ -3,7 +3,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { User, UserDTO } from 'src/shared/model/User';
 import { UserDocument, UserModel } from './user.model';
-import { UserCredentials } from '../auth/auth.model';
+import { UserCredentials } from '../../auth/auth.model';
 
 @Injectable()
 export class UserService {

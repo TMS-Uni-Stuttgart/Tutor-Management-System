@@ -3,8 +3,9 @@ import bcrypt from 'bcryptjs';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'src/shared/model/Role';
-import { databaseConfig } from '../helpers/config';
+import { databaseConfig } from '../../helpers/config';
 import { TutorialDocument } from '../tutorial/tutorial.model';
+import { CollectionName } from '../../helpers/CollectionName';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
@@ -28,7 +29,7 @@ import { TutorialDocument } from '../tutorial/tutorial.model';
   this.password = hashedPassword;
   next();
 })
-@modelOptions({ schemaOptions: { collection: 'users' } })
+@modelOptions({ schemaOptions: { collection: CollectionName.USER } })
 export class UserModel {
   @prop({ required: true })
   firstname!: string;
