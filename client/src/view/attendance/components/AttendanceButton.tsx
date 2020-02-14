@@ -1,9 +1,9 @@
-import React from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { ButtonProps, Button } from '@material-ui/core';
-import { AttendanceState } from 'shared/dist/model/Attendance';
+import { Button, ButtonProps } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
 import clsx from 'clsx';
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import React from 'react';
+import { AttendanceState } from 'shared/dist/model/Attendance';
 
 export function getAttendanceColor(state: AttendanceState, theme: Theme): string {
   const ATTENDANCE_COLORS: { [K in keyof typeof AttendanceState]: string } = {
@@ -23,7 +23,7 @@ interface StyleProps {
 const useStyles = makeStyles<Theme, StyleProps>(theme =>
   createStyles({
     button: props => {
-      const css: CSSProperties = { marginLeft: theme.spacing(2) };
+      const css: CreateCSSProperties = { marginLeft: theme.spacing(2) };
 
       if (props.attendanceState) {
         if (props.isContained) {
