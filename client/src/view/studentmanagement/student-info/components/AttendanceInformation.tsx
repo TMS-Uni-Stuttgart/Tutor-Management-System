@@ -2,9 +2,9 @@ import { Table, TableBody, TableCell, TableHead, TableProps, TableRow } from '@m
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
 import React from 'react';
-import { Attendance, AttendanceState } from 'shared/dist/model/Attendance';
-import { Student } from 'shared/dist/model/Student';
-import { Tutorial } from 'shared/dist/model/Tutorial';
+import { Attendance, AttendanceState } from 'shared/model/Attendance';
+import { Student } from 'shared/model/Student';
+import { Tutorial } from 'shared/model/Tutorial';
 import AttendanceControls from '../../../../components/attendance-controls/AttendanceControls';
 import { parseDateToMapKey } from '../../../../util/helperFunctions';
 

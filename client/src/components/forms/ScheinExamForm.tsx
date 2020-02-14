@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { ScheinExam } from 'shared/model/Scheinexam';
 import { FormikSubmitCallback } from '../../types';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikExerciseEditor, {

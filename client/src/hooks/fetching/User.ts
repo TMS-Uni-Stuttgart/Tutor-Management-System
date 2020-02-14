@@ -1,12 +1,12 @@
 import { UserWithFetchedTutorials } from '../../typings/types';
 import { transformMultipleTutorialResponse } from '../../util/axiosTransforms';
 import axios from './Axios';
-import { User, CreateUserDTO, UserDTO, NewPasswordDTO } from 'shared/dist/model/User';
-import { Role } from 'shared/dist/model/Role';
-import { Tutorial } from 'shared/dist/model/Tutorial';
-import { MailingStatus } from 'shared/dist/model/Mail';
+import { User, CreateUserDTO, UserDTO, NewPasswordDTO } from 'shared/model/User';
+import { Role } from 'shared/model/Role';
+import { Tutorial } from 'shared/model/Tutorial';
+import { MailingStatus } from 'shared/model/Mail';
 import { getTutorial } from './Tutorial';
-import { sortByName } from 'shared/dist/util/helpers';
+import { sortByName } from 'shared/util/helpers';
 
 async function fetchTutorialsOfUser(user: User): Promise<UserWithFetchedTutorials> {
   const tutorials = await getTutorialsOfUser(user.id);

@@ -1,5 +1,5 @@
-import { StudentDTO } from 'shared/dist/model/Student';
-import { sortByName } from 'shared/dist/util/helpers';
+import { StudentDTO } from 'shared/model/Student';
+import { sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
   createStudent,

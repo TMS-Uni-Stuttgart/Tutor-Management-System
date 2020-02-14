@@ -6,8 +6,8 @@ import {
 import { FormikHelpers } from 'formik';
 import pwGenerator from 'generate-password';
 import React, { useState } from 'react';
-import { Role } from 'shared/dist/model/Role';
-import { Tutorial } from 'shared/dist/model/Tutorial';
+import { Role } from 'shared/model/Role';
+import { Tutorial } from 'shared/model/Tutorial';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import { UserWithFetchedTutorials } from '../../typings/types';

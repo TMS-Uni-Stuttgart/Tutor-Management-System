@@ -2,11 +2,11 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { compareAsc } from 'date-fns';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { HasId } from 'shared/dist/model/Common';
-import { Role } from 'shared/dist/model/Role';
-import { TutorialDTO } from 'shared/dist/model/Tutorial';
-import { User } from 'shared/dist/model/User';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { HasId } from 'shared/model/Common';
+import { Role } from 'shared/model/Role';
+import { TutorialDTO } from 'shared/model/Tutorial';
+import { User } from 'shared/model/User';
+import { getNameOfEntity } from 'shared/util/helpers';
 import TutorialForm, {
   getInitialTutorialFormValues,
   TutorialFormState,

@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { Sheet, SheetDTO } from 'shared/dist/model/Sheet';
+import { Sheet, SheetDTO } from 'shared/model/Sheet';
 import SheetForm, {
   convertFormExercisesToDTOs,
   getInitialSheetFormState,

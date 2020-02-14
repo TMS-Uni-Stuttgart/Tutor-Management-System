@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import Chart from 'react-google-charts';
-import { ScheinCriteriaStatus } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';
 import { useTranslation } from '../../../util/lang/configI18N';
 import { TutorialSummaryInfo } from '../Dashboard';
 

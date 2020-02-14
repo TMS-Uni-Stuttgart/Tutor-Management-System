@@ -1,4 +1,4 @@
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
 export function calculateProgress(summary: ScheinCriteriaSummary) {
   let achieved = 0;

@@ -1,9 +1,4 @@
-import {
-  PointMap,
-  PointMapEntry,
-  PointsOfSubexercises,
-  SheetMapEntry,
-} from 'shared/dist/model/Points';
+import { PointMap, PointMapEntry, PointsOfSubexercises, SheetMapEntry } from 'shared/model/Points';
 import { PointsFormExerciseState, PointsFormState } from './components/EnterPointsForm.helpers';
 
 /**

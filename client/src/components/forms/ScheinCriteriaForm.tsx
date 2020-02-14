@@ -9,7 +9,7 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 import * as Yup from 'yup';
-import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/model/ScheinCriteria';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Benötigt'),

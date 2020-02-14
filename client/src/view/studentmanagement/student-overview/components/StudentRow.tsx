@@ -7,9 +7,9 @@ import {
 } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
-import { Student, TeamInStudent } from 'shared/dist/model/Student';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
+import { Student, TeamInStudent } from 'shared/model/Student';
+import { getNameOfEntity } from 'shared/util/helpers';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';

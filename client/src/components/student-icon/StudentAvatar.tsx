@@ -10,7 +10,7 @@ import {
   Sleep as InactiveIcon,
 } from 'mdi-material-ui';
 import React from 'react';
-import { Student, StudentStatus } from 'shared/dist/model/Student';
+import { Student, StudentStatus } from 'shared/model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

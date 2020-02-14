@@ -1,11 +1,11 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { MailingStatus } from 'shared/dist/model/Mail';
-import { Role } from 'shared/dist/model/Role';
-import { Tutorial } from 'shared/dist/model/Tutorial';
-import { CreateUserDTO, UserDTO } from 'shared/dist/model/User';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { MailingStatus } from 'shared/model/Mail';
+import { Role } from 'shared/model/Role';
+import { Tutorial } from 'shared/model/Tutorial';
+import { CreateUserDTO, UserDTO } from 'shared/model/User';
+import { getNameOfEntity } from 'shared/util/helpers';
 import SubmitButton from '../../components/loading/SubmitButton';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';

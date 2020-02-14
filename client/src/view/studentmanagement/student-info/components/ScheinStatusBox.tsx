@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, createStyles, useTheme } from '@material-ui/core/styles';
 import { Box, Typography, CircularProgress, BoxProps } from '@material-ui/core';
 import clsx from 'clsx';
-import { ScheinCriteriaSummary } from 'shared/dist/model/ScheinCriteria';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
 const useStyles = makeStyles(theme =>
   createStyles({

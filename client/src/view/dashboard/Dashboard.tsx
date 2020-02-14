@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Role } from 'shared/dist/model/Role';
-import { ScheincriteriaSummaryByStudents } from 'shared/dist/model/ScheinCriteria';
-import { Tutorial } from 'shared/dist/model/Tutorial';
-import { LoggedInUser } from 'shared/dist/model/User';
+import { Role } from 'shared/model/Role';
+import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
+import { Tutorial } from 'shared/model/Tutorial';
+import { LoggedInUser } from 'shared/model/User';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import { getTutorial } from '../../hooks/fetching/Tutorial';
 import { useAxios } from '../../hooks/FetchingService';

@@ -1,6 +1,6 @@
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
-import { LoggedInUserSubstituteTutorial, Tutorial } from 'shared/dist/model/Tutorial';
-import { LoggedInUser } from 'shared/dist/model/User';
+import { ScheinExam } from 'shared/model/Scheinexam';
+import { LoggedInUserSubstituteTutorial, Tutorial } from 'shared/model/Tutorial';
+import { LoggedInUser } from 'shared/model/User';
 
 interface TutorialResponse extends Omit<Tutorial, 'dates' | 'startTime' | 'endTime'> {
   dates: string[];

@@ -18,9 +18,9 @@ import {
 } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sheet } from 'shared/dist/model/Sheet';
-import { Team } from 'shared/dist/model/Team';
-import { getNameOfEntity } from 'shared/dist/util/helpers';
+import { Sheet } from 'shared/model/Sheet';
+import { Team } from 'shared/model/Team';
+import { getNameOfEntity } from 'shared/util/helpers';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { useDialog } from '../../../../hooks/DialogService';
 import {
@@ -30,7 +30,7 @@ import {
 import SplitButton from '../../../../components/SplitButton';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { renderLink } from '../../../../components/drawer/components/renderLink';
-import { PointMap } from 'shared/dist/model/Points';
+import { PointMap } from 'shared/model/Points';
 
 const useStyles = makeStyles(() =>
   createStyles({

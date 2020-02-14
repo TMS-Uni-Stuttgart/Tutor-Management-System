@@ -1,5 +1,5 @@
 import { transformLoggedInUserResponse } from './axiosTransforms';
-import { LoggedInUser } from 'shared/dist/model/User';
+import { LoggedInUser } from 'shared/model/User';
 
 export function saveUser(user: LoggedInUser) {
   sessionStorage.setItem('user', JSON.stringify(user));

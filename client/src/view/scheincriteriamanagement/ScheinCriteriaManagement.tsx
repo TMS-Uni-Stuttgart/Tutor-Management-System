@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ScheinCriteriaResponse as ScheinCriteria,
   ScheinCriteriaDTO,
-} from 'shared/dist/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
 import ScheinCriteriaForm, {
   ScheinCriteriaFormCallback,
 } from '../../components/forms/ScheinCriteriaForm';

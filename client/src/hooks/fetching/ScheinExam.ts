@@ -1,4 +1,4 @@
-import { ScheinExam, ScheinExamDTO } from 'shared/dist/model/Scheinexam';
+import { ScheinExam, ScheinExamDTO } from 'shared/model/Scheinexam';
 import {
   transformMultipleScheinExamResponse,
   transformScheinExamResponse,

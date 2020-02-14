@@ -1,16 +1,11 @@
-import { Attendance, AttendanceDTO } from 'shared/dist/model/Attendance';
-import { UpdatePointsDTO } from 'shared/dist/model/Points';
+import { Attendance, AttendanceDTO } from 'shared/model/Attendance';
+import { UpdatePointsDTO } from 'shared/model/Points';
 import {
   ScheinCriteriaSummary,
   ScheincriteriaSummaryByStudents,
-} from 'shared/dist/model/ScheinCriteria';
-import {
-  CakeCountDTO,
-  PresentationPointsDTO,
-  Student,
-  StudentDTO,
-} from 'shared/dist/model/Student';
-import { sortByName } from 'shared/dist/util/helpers';
+} from 'shared/model/ScheinCriteria';
+import { CakeCountDTO, PresentationPointsDTO, Student, StudentDTO } from 'shared/model/Student';
+import { sortByName } from 'shared/util/helpers';
 import axios from './Axios';
 
 export async function getAllStudents(): Promise<Student[]> {

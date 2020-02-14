@@ -4,7 +4,7 @@ import {
   ScheinCriteriaResponse,
   ScheinCriteriaDTO,
   CriteriaInformation,
-} from 'shared/dist/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
 
 export async function getAllScheinCriterias(): Promise<ScheinCriteriaResponse[]> {
   const response = await axios.get<ScheinCriteriaResponse[]>('scheincriteria');

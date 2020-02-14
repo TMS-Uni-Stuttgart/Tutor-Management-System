@@ -1,8 +1,8 @@
 import React from 'react';
 import CardList from '../../../../components/cardlist/CardList';
-import { Student } from 'shared/dist/model/Student';
+import { Student } from 'shared/model/Student';
 import StudentCard from './StudentCard';
-import { ScheinExam } from 'shared/dist/model/Scheinexam';
+import { ScheinExam } from 'shared/model/Scheinexam';
 
 interface Props {
   tutorialId: string;

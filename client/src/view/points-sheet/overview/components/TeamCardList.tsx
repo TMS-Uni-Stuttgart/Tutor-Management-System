@@ -1,6 +1,6 @@
 import React from 'react';
-import { Sheet } from 'shared/dist/model/Sheet';
-import { Team } from 'shared/dist/model/Team';
+import { Sheet } from 'shared/model/Sheet';
+import { Team } from 'shared/model/Team';
 import CardList from '../../../../components/cardlist/CardList';
 import TeamCard from './TeamCard';
 

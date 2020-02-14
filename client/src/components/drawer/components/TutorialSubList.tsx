@@ -6,7 +6,7 @@ import {
   CheckboxMarkedCircleOutline as TutorialToCorrectIcon,
 } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
-import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
+import { LoggedInUserTutorial } from 'shared/model/Tutorial';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 import { RouteType } from '../../../routes/Routing.routes';
 import DrawerListItem from './DrawerListItem';

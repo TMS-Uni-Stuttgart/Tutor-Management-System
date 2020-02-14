@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import React, { useContext, useState } from 'react';
-import { LoggedInUser } from 'shared/dist/model/User';
+import { LoggedInUser } from 'shared/model/User';
 import { transformLoggedInUserResponse } from '../util/axiosTransforms';
 import { getUser, removeUser, saveUser } from '../util/userStorage';
 import axios from './fetching/Axios';

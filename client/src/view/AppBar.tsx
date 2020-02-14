@@ -19,7 +19,7 @@ import { Download as DownloadIcon, GithubCircle as GitHubIcon } from 'mdi-materi
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { matchPath, useLocation } from 'react-router';
-import { LoggedInUserTutorial } from 'shared/dist/model/Tutorial';
+import { LoggedInUserTutorial } from 'shared/model/Tutorial';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';

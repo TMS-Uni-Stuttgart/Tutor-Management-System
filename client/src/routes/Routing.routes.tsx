@@ -15,7 +15,7 @@ import {
 } from 'mdi-material-ui';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Role } from 'shared/dist/model/Role';
+import { Role } from 'shared/model/Role';
 import AttendanceAdminView from '../view/attendance/AttendanceAdminView';
 import AttendanceView from '../view/attendance/AttendanceView';
 import Dashboard from '../view/dashboard/Dashboard';

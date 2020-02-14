@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sheet, ExerciseDTO } from 'shared/dist/model/Sheet';
+import { Sheet, ExerciseDTO } from 'shared/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
 import FormikExerciseEditor, {

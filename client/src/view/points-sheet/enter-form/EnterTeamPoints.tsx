@@ -2,8 +2,8 @@ import { Typography } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { PointMap, UpdatePointsDTO } from 'shared/dist/model/Points';
-import { Team } from 'shared/dist/model/Team';
+import { PointMap, UpdatePointsDTO } from 'shared/model/Points';
+import { Team } from 'shared/model/Team';
 import {
   getTeamOfTutorial,
   getTeamsOfTutorial,
