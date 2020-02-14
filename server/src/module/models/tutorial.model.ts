@@ -1,8 +1,8 @@
 import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
-import { UserDocument } from '../user/user.model';
-import { StudentDocument } from '../student/models/student.model';
+import { UserDocument } from './user.model';
+import { StudentDocument } from './student.model';
 import { CollectionName } from '../../helpers/CollectionName';
 
 @plugin(mongooseAutoPopulate)

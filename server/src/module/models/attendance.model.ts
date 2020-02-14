@@ -1,5 +1,5 @@
 import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
-import { AttendanceState } from '../../../shared/model/Attendance';
+import { AttendanceState } from '../../shared/model/Attendance';
 
 @modelOptions({})
 export class AttendanceModel {

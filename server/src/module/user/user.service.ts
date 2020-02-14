@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { User, UserDTO } from 'src/shared/model/User';
-import { UserDocument, UserModel } from './user.model';
+import { UserDocument, UserModel } from '../models/user.model';
 import { UserCredentials } from '../../auth/auth.model';
 
 @Injectable()

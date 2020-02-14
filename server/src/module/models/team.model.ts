@@ -1,7 +1,7 @@
 import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
-import { CollectionName } from '../../../helpers/CollectionName';
-import { TutorialModel, TutorialDocument } from '../../tutorial/tutorial.model';
+import { CollectionName } from '../../helpers/CollectionName';
+import { TutorialModel, TutorialDocument } from './tutorial.model';
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })
