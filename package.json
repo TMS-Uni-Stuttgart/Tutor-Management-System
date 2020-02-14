@@ -4,6 +4,7 @@
   "workspaces": [
     "client",
     "server",
+    "server_express",
     "shared",
     "dev-tools"
   ],
