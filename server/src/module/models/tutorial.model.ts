@@ -1,7 +1,7 @@
 import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
-import { UserDocument } from './user.model';
+import { UserDocument, UserModel } from './user.model';
 import { StudentDocument } from './student.model';
 import { CollectionName } from '../../helpers/CollectionName';
 
@@ -29,7 +29,7 @@ export class TutorialModel {
   @prop({ ref: 'UserModel', autopopulate: true, default: [] })
   correctors!: UserDocument[];
 
-  @mapProp({ of: 'UserModel', autopopulate: true, default: new Map() })
+  @mapProp({ of: UserModel, autopopulate: true, default: new Map() })
   private substitutes!: Map<string, UserDocument>;
 
   /**

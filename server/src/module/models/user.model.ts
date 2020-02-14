@@ -6,6 +6,8 @@ import { Role } from 'src/shared/model/Role';
 import { databaseConfig } from '../../helpers/config';
 import { TutorialDocument } from './tutorial.model';
 import { CollectionName } from '../../helpers/CollectionName';
+import { User } from '../../shared/model/User';
+import { NoFunctions } from '../../helpers/NoFunctions';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
@@ -31,6 +33,10 @@ import { CollectionName } from '../../helpers/CollectionName';
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.USER } })
 export class UserModel {
+  constructor(fields: NoFunctions<UserModel>) {
+    Object.assign(this, fields);
+  }
+
   @prop({ required: true })
   firstname!: string;
 
@@ -57,6 +63,23 @@ export class UserModel {
 
   @arrayProp({ default: [], autopopulate: true, ref: 'TutorialModel' })
   tutorialsToCorrect!: TutorialDocument[];
+
+  toDTO(this: UserDocument): User {
+    this.decryptFieldsSync();
+
+    const { id, username, firstname, lastname, roles, email, tutorials, tutorialsToCorrect } = this;
+
+    return {
+      id,
+      username,
+      firstname,
+      lastname,
+      roles,
+      email,
+      tutorials: tutorials.map(tutorial => tutorial.id),
+      tutorialsToCorrect: tutorialsToCorrect.map(tutorial => tutorial.id),
+    };
+  }
 }
 
 export type UserDocument = EncryptedDocument<DocumentType<UserModel>>;

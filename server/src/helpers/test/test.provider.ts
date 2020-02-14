@@ -4,7 +4,7 @@ import mockingoose from 'mockingoose';
 import mongoose from 'mongoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
 
-type Mock = ReturnType<typeof mockingoose>;
+export type Mock = ReturnType<typeof mockingoose>;
 
 interface ProviderOptions {
   modelClass: TypegooseClass;

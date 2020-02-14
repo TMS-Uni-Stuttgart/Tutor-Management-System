@@ -1,4 +1,10 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  Global,
+  OnModuleInit,
+  OnApplicationBootstrap,
+  DynamicModule,
+} from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { AttendanceModel } from './attendance.model';
 import { GradingModel } from './grading.model';
@@ -9,9 +15,11 @@ import { UserModel } from './user.model';
 import { ExerciseModel, SubexerciseModel } from './exercise.model';
 import { SheetModel } from './sheet.model';
 
-@Module({
-  imports: [
-    TypegooseModule.forFeature([
+@Global()
+@Module({})
+export class ModelsModule {
+  static init(): DynamicModule {
+    const moduleWithModels = TypegooseModule.forFeature([
       AttendanceModel,
       GradingModel,
       StudentModel,
@@ -21,7 +29,12 @@ import { SheetModel } from './sheet.model';
       SheetModel,
       ExerciseModel,
       SubexerciseModel, // TODO: Needed?
-    ]),
-  ],
-})
-export class ModelsModule {}
+    ]);
+
+    return {
+      module: ModelsModule,
+      imports: [moduleWithModels],
+      exports: [moduleWithModels],
+    };
+  }
+}

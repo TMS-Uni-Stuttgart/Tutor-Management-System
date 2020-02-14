@@ -3,6 +3,7 @@ import mongoose, { Connection } from 'mongoose';
 import { getConnectionToken } from 'nestjs-typegoose';
 import { TYPEGOOSE_CONNECTION_NAME } from 'nestjs-typegoose/dist/typegoose.constants';
 import { databaseConfig } from '../helpers/config';
+import { ModelsModule } from '../module/models/models.module';
 
 @Global()
 @Module({})
