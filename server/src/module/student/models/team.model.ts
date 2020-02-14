@@ -11,8 +11,6 @@ export class TeamModel {
 
   @prop({ required: true, autopopulate: true, ref: TutorialModel })
   tutorial!: TutorialDocument;
-
-  // TODO: Points
 }
 
 export type TeamDocument = DocumentType<TeamModel>;

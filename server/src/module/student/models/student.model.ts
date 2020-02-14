@@ -5,6 +5,8 @@ import { StudentStatus } from '../../../shared/model/Student';
 import { TutorialDocument } from '../../tutorial/tutorial.model';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { TeamModel, TeamDocument } from './team.model';
+import { GradingModel, GradingDocument } from './points.model';
+import { HasExercises } from '../../../shared/model/Sheet';
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
@@ -39,14 +41,60 @@ export class StudentModel {
   @mapProp({ of: AttendanceModel, autopopulate: true, default: new Map() })
   private attendances!: Map<string, AttendanceDocument>;
 
-  // TODO: Points, Scheinexam results (merged with points) & Presentations
+  @mapProp({ of: GradingModel, autopopulate: true, default: new Map() })
+  private gradings!: Map<string, GradingDocument>;
 
-  setAttendance(attendance: AttendanceDocument) {
+  /**
+   * Saves the given attendance in the student.
+   *
+   * The attendance will be saved for it's date. If there is already an attendance saved for that date it will be overriden.
+   *
+   * This function marks the corresponding path as modified.
+   *
+   * @param attendance Attendance to set.
+   */
+  setAttendance(this: StudentDocument, attendance: AttendanceDocument) {
     this.attendances.set(this.getDateKey(attendance.date), attendance);
+
+    // TODO: Needed?
+    this.markModified('attendances');
   }
 
+  /**
+   * Returns the attendance of the given date if there is one saved. If not `undefined` is returned.
+   *
+   * @param date Date to look up
+   * @returns Returns the attendance of the date or `undefined`.
+   */
   getAttendance(date: Date): AttendanceDocument | undefined {
     return this.attendances.get(this.getDateKey(date));
+  }
+
+  /**
+   * Saves the given grading for the given sheet.
+   *
+   * If there is already a saved grading for the given sheet the old one will get overridden.
+   *
+   * This function marks the corresponding path as modified.
+   *
+   * @param sheet Sheet to save grading for.
+   * @param grading Grading so save.
+   */
+  setGrading(this: StudentDocument, sheet: HasExercises, grading: GradingDocument) {
+    this.gradings.set(sheet.id, grading);
+
+    // TODO: Needed?
+    this.markModified('gradings');
+  }
+
+  /**
+   * Returns the grading for the given sheet if one is saved. If not `undefined` is returned.
+   *
+   * @param sheet Sheet to get grading for.
+   * @returns Grading for the given sheet or `undefined`
+   */
+  getGrading(sheet: HasExercises): GradingDocument | undefined {
+    return this.gradings.get(sheet.id);
   }
 
   private getDateKey(date: Date): string {
