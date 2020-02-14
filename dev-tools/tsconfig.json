@@ -10,12 +10,12 @@
     "outDir": "build",
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*"],
+      "shared/src/*": ["../../server/src/shared/*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true
   },
-  "references": [{ "path": "../shared" }],
   "include": ["src/**/*"]
 }
