@@ -29,22 +29,22 @@
   },
   "devDependencies": {
     "@types/markdown-it": "^0.0.9",
-    "@types/node": "^12.12.17",
-    "@types/yup": "^0.26.26",
-    "@typescript-eslint/eslint-plugin": "^2.11.0",
-    "@typescript-eslint/parser": "^2.11.0",
+    "@types/node": "^13.7.1",
+    "@types/yup": "^0.26.30",
+    "@typescript-eslint/eslint-plugin": "^2.19.2",
+    "@typescript-eslint/parser": "^2.19.2",
     "cross-env": "^7.0.0",
-    "eslint": "^6.7.2",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-react": "^7.17.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
     "prettier": "^1.19.1",
-    "ts-node": "^8.5.4",
-    "typescript": "^3.7.3"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
-    "date-fns": "^2.8.1",
+    "date-fns": "^2.9.0",
     "markdown-it": "^10.0.0",
-    "yup": "^0.27.0"
+    "yup": "^0.28.1"
   }
 }
