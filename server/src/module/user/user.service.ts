@@ -1,12 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
-import { UserCredentials } from '../../auth/auth.model';
+import { UserCredentialsWithPassword } from '../../auth/auth.model';
+import { Role } from '../../shared/model/Role';
 import { TutorialDocument } from '../models/tutorial.model';
 import { UserDocument, UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { Role } from '../../shared/model/Role';
 
 @Injectable()
 export class UserService {
@@ -35,7 +35,7 @@ export class UserService {
    *
    * @throws `NotFoundException` - If no user could be found
    */
-  async findWithUsername(username: string): Promise<UserCredentials> {
+  async findWithUsername(username: string): Promise<UserCredentialsWithPassword> {
     const user = await this.getUserWithUsername(username);
 
     return { _id: user.id, username: user.username, password: user.password };
