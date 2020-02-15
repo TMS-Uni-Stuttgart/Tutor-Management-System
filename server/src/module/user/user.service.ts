@@ -106,16 +106,15 @@ export class UserService {
    */
   private async getUserWithUsername(username: string): Promise<UserDocument> {
     // The username field could be encrypted so we create a dummy document which will have the username encrypted (if the 'original' ones have it encrypted aswell).
-    const docWithEncryptedUsername: UserDocument = new this.userModel({
-      username,
-    }) as UserDocument;
+    // const docWithEncryptedUsername: UserDocument = new this.userModel({
+    //   username,
+    // }) as UserDocument;
 
-    docWithEncryptedUsername.encryptFieldsSync();
+    // docWithEncryptedUsername.encryptFieldsSync();
 
-    // The find query is done with the encrypted version of the username.
     const userDoc = await this.userModel
       .findOne({
-        username: docWithEncryptedUsername.username,
+        username,
       })
       .exec();
 
