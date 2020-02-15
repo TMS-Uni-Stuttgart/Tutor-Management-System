@@ -256,4 +256,74 @@ describe('UserService', () => {
 
     await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
   });
+
+  it('create user with ONE tutorial to correct', async () => {
+    const userToCreate: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.CORRECTOR],
+      tutorials: [],
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0].id],
+    };
+
+    const createdUser: User = await service.create(userToCreate);
+    const { password, ...expected } = userToCreate;
+    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+
+    expect(actual).toEqual(expected);
+    expect(temporaryPassword).toBe(password);
+  });
+
+  it('create user with multiple tutorials to correct', async () => {
+    const userToCreate: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.CORRECTOR],
+      tutorials: [],
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0].id, TUTORIAL_DOCUMENTS[1].id],
+    };
+
+    const createdUser: User = await service.create(userToCreate);
+    const { password, ...expected } = userToCreate;
+    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+
+    expect(actual).toEqual(expected);
+    expect(temporaryPassword).toBe(password);
+  });
+
+  it('fail on creating non-tutor with tutorials', async () => {
+    const userToCreate: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.ADMIN],
+      tutorials: [TUTORIAL_DOCUMENTS[0].id, TUTORIAL_DOCUMENTS[1].id],
+      tutorialsToCorrect: [],
+    };
+
+    await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+  });
+
+  it('fail on creating non-corrector with tutorials to correct', async () => {
+    const userToCreate: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.EMPLOYEE],
+      tutorials: [],
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0].id, TUTORIAL_DOCUMENTS[1].id],
+    };
+
+    await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+  });
 });
