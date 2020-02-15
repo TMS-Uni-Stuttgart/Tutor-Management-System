@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { CreateUserDTO, User } from 'src/shared/model/User';
+import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { UserCredentials } from '../../auth/auth.model';
 import { TutorialDocument } from '../models/tutorial.model';
 import { UserDocument, UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
+import { Role } from '../../shared/model/Role';
 
 @Injectable()
 export class UserService {
@@ -56,9 +57,7 @@ export class UserService {
       ...dto
     } = user;
 
-    if (await this.doesUserWithUsernameExist(username)) {
-      throw new BadRequestException(`A user with the username '${username}' already exists.`);
-    }
+    await this.checkCreateUserDTO(user);
 
     const tutorials = await this.getAllTutorials(tutorialIds);
     const tutorialsToCorrect = await this.getAllTutorials(toCorrectIds);
@@ -83,14 +82,14 @@ export class UserService {
    * @param username Username to check
    * @returns Is there already a user with that username?
    */
-  private async doesUserWithUsernameExist(username: string): Promise<boolean> {
-    try {
-      const user = await this.getUserWithUsername(username);
+  private async doesUserWithUsernameExist(username: string, user?: UserDocument): Promise<boolean> {
+    const usersWithUsername: UserDocument[] = (await this.userModel
+      .find({ username })
+      .exec()) as UserDocument[];
 
-      return !!user;
-    } catch {
-      return false;
-    }
+    // TODO: Does not work if the username got changed during the request. This needs some other logic!
+
+    return !!user ? usersWithUsername.length > 1 : usersWithUsername.length !== 0;
   }
 
   /**
@@ -136,5 +135,38 @@ export class UserService {
    */
   private async getAllTutorials(ids: string[]): Promise<TutorialDocument[]> {
     return Promise.all(ids.map(id => this.tutorialService.findById(id)));
+  }
+
+  /**
+   * Checks if the some more complex conditions apply to the given DTO:
+   *
+   * - There is no _other_ user with the `username`.
+   * - If the user has `tutorials` he/she needs the TUTOR role aswell.
+   * - If the user has `tutorialsToCorrect` he/she needs the CORRECTOR role aswell.
+   *
+   * If all conditions apply nothing happens else an exception is thrown.
+   *
+   * @param dto DTO with information to create / update a user
+   * @param user (optional) User with the same username as the one to check. Should be provided to prevent false positives on updating an already existing user.
+   *
+   * @throws `BadRequestException` - If _any_ of the above conditions is violated a `BadRequestException` is thrown.
+   */
+  private async checkCreateUserDTO(
+    { tutorials, tutorialsToCorrect, username, roles }: UserDTO,
+    user?: UserDocument
+  ) {
+    if (await this.doesUserWithUsernameExist(username, user)) {
+      throw new BadRequestException(`A user with the username '${username}' already exists.`);
+    }
+
+    if (tutorials.length > 0 && !roles.includes(Role.TUTOR)) {
+      throw new BadRequestException(`A user with tutorials needs to have the 'TUTOR' role`);
+    }
+
+    if (tutorialsToCorrect.length > 0 && !roles.includes(Role.CORRECTOR)) {
+      throw new BadRequestException(
+        `A user with tutorials to correct needs to have the 'CORRECTOR' role`
+      );
+    }
   }
 }
