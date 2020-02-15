@@ -1,51 +1,62 @@
 import { Provider } from '@nestjs/common';
-import { buildSchema } from '@typegoose/typegoose';
 import mockingoose from 'mockingoose';
-import mongoose from 'mongoose';
+import { getModelToken } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
 
 export type Mock = ReturnType<typeof mockingoose>;
 
-interface ProviderOptions {
+type AdditionalProperties = { [key: string]: any };
+
+interface ProviderOptions<T> {
   modelClass: TypegooseClass;
-  provide: string;
-  factory: (mock: Mock) => void;
+  documents: T[];
+  additionalDocProperties?: AdditionalProperties;
 }
 
-export class MongooseModelProvider {
-  /**
-   * Generates a provider for a test which mocks the mongoose model of the given class.
-   *
-   * This function takes in three options:
-   * - `modelClass`: The class which model should be mocked.
-   * - `provide`: The value of the `provide` field in the returned provider.
-   * - `factory`: A function that takes in the generated _mocked_ model. Should be used to define the values returned by the mocked model by calling `toReturn` (example: https://github.com/alonronin/mockingoose#mockingoosemodeltoreturnobj-operation--find)
-   *
-   * @param options Options to create the provider. More information see above.
-   * @returns The generated provider which provides the mocked model.
-   */
-  static create({ modelClass, provide, factory }: ProviderOptions): Provider {
-    const model = this.getModelOrGenerate(modelClass.name, modelClass);
-    const mock = mockingoose(model);
-
-    factory(mock);
+export class MongooseMockModelProvider {
+  static create<T>({
+    modelClass,
+    documents,
+    additionalDocProperties: additionalProperties,
+  }: ProviderOptions<T>): Provider {
+    const alteredDocuments = documents.map(doc => this.adjustDocument(doc, additionalProperties));
 
     return {
-      provide,
-      useValue: model,
+      provide: getModelToken(modelClass.name),
+      useValue: {
+        find: () => ({
+          exec: () => [...alteredDocuments],
+        }),
+        findOne: (conditions: any) => ({
+          exec: () => {
+            for (const doc of alteredDocuments) {
+              let found = true;
+              for (const [key, value] of Object.entries(conditions)) {
+                if ((doc as any)[key] !== value) {
+                  found = false;
+                  break;
+                }
+              }
+
+              if (found) {
+                return doc;
+              }
+            }
+
+            return null;
+          },
+        }),
+        create: (doc: T) => this.adjustDocument(doc, additionalProperties),
+      },
     };
   }
 
-  private static getModelOrGenerate(
-    name: string,
-    modelClass: TypegooseClass
-  ): mongoose.Model<mongoose.Document> {
-    const model = mongoose.models[name];
+  private static adjustDocument<T>(document: T, additionalProperties?: AdditionalProperties): T {
+    const id = '_id' in document ? (document as any)._id : undefined;
 
-    if (!!model) {
-      return model;
-    } else {
-      return mongoose.model(modelClass.name, buildSchema(modelClass));
-    }
+    return Object.assign(document, {
+      id,
+      ...additionalProperties,
+    });
   }
 }

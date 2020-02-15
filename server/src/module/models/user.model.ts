@@ -13,7 +13,7 @@ import { NoFunctions } from '../../helpers/NoFunctions';
   secret: databaseConfig.secret,
   fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email'],
   // saltGenerator: function(secret: string) {
-  // TODO: Make deterministic salt generator to be able to encrypt username?!
+  // TODO: Make deterministic salt generator to be able to encrypt username?! If so, change `getUserWithUsername()` in UserService
   //   return "1234567890123456"; // should ideally use the secret to return a string of length 16
   // }
 })
@@ -67,7 +67,17 @@ export class UserModel {
   toDTO(this: UserDocument): User {
     this.decryptFieldsSync();
 
-    const { id, username, firstname, lastname, roles, email, tutorials, tutorialsToCorrect } = this;
+    const {
+      id,
+      username,
+      firstname,
+      lastname,
+      roles,
+      email,
+      temporaryPassword,
+      tutorials,
+      tutorialsToCorrect,
+    } = this;
 
     return {
       id,
@@ -76,6 +86,7 @@ export class UserModel {
       lastname,
       roles,
       email,
+      temporaryPassword,
       tutorials: tutorials.map(tutorial => tutorial.id),
       tutorialsToCorrect: tutorialsToCorrect.map(tutorial => tutorial.id),
     };
