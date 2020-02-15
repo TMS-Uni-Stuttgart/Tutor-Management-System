@@ -1,9 +1,6 @@
 import { Provider } from '@nestjs/common';
-import mockingoose from 'mockingoose';
 import { getModelToken } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
-
-export type Mock = ReturnType<typeof mockingoose>;
 
 type AdditionalProperties = { [key: string]: any };
 
