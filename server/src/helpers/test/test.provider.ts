@@ -21,21 +21,27 @@ export class MongooseMockModelProvider {
     return {
       provide: getModelToken(modelClass.name),
       useValue: {
-        find: () => ({
-          exec: () => [...alteredDocuments],
+        find: (conditions?: any) => ({
+          exec: () => {
+            if (!conditions) {
+              return [...alteredDocuments];
+            }
+
+            const docsToReturn: T[] = [];
+
+            for (const doc of alteredDocuments) {
+              if (this.checkConditions(doc, conditions)) {
+                docsToReturn.push(doc);
+              }
+            }
+
+            return docsToReturn;
+          },
         }),
         findOne: (conditions: any) => ({
           exec: () => {
             for (const doc of alteredDocuments) {
-              let found = true;
-              for (const [key, value] of Object.entries(conditions)) {
-                if ((doc as any)[key] !== value) {
-                  found = false;
-                  break;
-                }
-              }
-
-              if (found) {
+              if (this.checkConditions(doc, conditions)) {
                 return doc;
               }
             }
@@ -46,6 +52,16 @@ export class MongooseMockModelProvider {
         create: (doc: T) => this.adjustDocument(doc, additionalProperties),
       },
     };
+  }
+
+  private static checkConditions<T>(doc: T, conditions: any): boolean {
+    for (const [key, value] of Object.entries(conditions)) {
+      if ((doc as any)[key] !== value) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private static adjustDocument<T>(document: T, additionalProperties?: AdditionalProperties): T {
