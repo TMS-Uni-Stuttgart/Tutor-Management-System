@@ -10,7 +10,7 @@ import { UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
 
-type MockedUserModel = UserModel & { _id: string; decryptFieldsSync: () => void };
+export type MockedUserModel = UserModel & { _id: string; decryptFieldsSync: () => void };
 
 interface AssertUserParam {
   expected: MockedUserModel;
@@ -80,7 +80,7 @@ const USER_DOCUMENTS: MockedUserModel[] = [
   ),
 ];
 
-function createUserMockModel(model: UserModel): MockedUserModel {
+export function createUserMockModel(model: UserModel): MockedUserModel {
   const mocked = Object.assign(model, {
     _id: generateObjectId(),
     decryptFieldsSync,

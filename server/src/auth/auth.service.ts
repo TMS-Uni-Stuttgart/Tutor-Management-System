@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../module/user/user.service';
-import { UserCredentials } from './auth.model';
+import { UserCredentials, UserCredentialsWithPassword } from './auth.model';
 
 @Injectable()
 export class AuthService {
@@ -9,10 +9,14 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<UserCredentials> {
     try {
-      const user: UserCredentials = await this.userService.findWithUsername(username);
-      const isCorrectPassword = await bcrypt.compare(password, user.password);
+      const {
+        password: savedPassword,
+        ...user
+      }: UserCredentialsWithPassword = await this.userService.findWithUsername(username);
+      const isCorrectPassword = await bcrypt.compare(password, savedPassword);
 
       if (isCorrectPassword) {
+        console.log(user);
         return user;
       } else {
         throw new UnauthorizedException();
