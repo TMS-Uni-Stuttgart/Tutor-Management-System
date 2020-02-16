@@ -3,11 +3,11 @@ import bcrypt from 'bcryptjs';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'src/shared/model/Role';
-import { databaseConfig } from '../../helpers/config';
-import { TutorialDocument } from './tutorial.model';
 import { CollectionName } from '../../helpers/CollectionName';
-import { User } from '../../shared/model/User';
+import { databaseConfig } from '../../helpers/config';
 import { NoFunctions } from '../../helpers/NoFunctions';
+import { User } from '../../shared/model/User';
+import { TutorialDocument } from './tutorial.model';
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
@@ -64,6 +64,9 @@ export class UserModel {
   @arrayProp({ default: [], autopopulate: true, ref: 'TutorialModel' })
   tutorialsToCorrect!: TutorialDocument[];
 
+  /**
+   * @returns The DTO representation of the document.
+   */
   toDTO(this: UserDocument): User {
     this.decryptFieldsSync();
 
