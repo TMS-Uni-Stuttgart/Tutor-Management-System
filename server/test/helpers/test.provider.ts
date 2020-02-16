@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { getModelToken } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
+import { generateObjectId } from './test.helpers';
 
 type AdditionalProperties = { [key: string]: any };
 
@@ -49,7 +50,8 @@ export class MongooseMockModelProvider {
             return null;
           },
         }),
-        create: (doc: T) => this.adjustDocument(doc, additionalProperties),
+        create: (doc: T) =>
+          this.adjustDocument(doc, { id: generateObjectId(), ...additionalProperties }),
       },
     };
   }

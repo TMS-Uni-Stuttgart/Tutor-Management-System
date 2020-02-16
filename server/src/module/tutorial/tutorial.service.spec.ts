@@ -1,15 +1,14 @@
-import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
+import { DateTime } from 'luxon';
+import { createMockModel } from '../../../test/helpers/test.create-mock-model';
 import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
 import { MockedModel } from '../../../test/helpers/testdocument';
-import { Tutorial } from '../../shared/model/Tutorial';
+import { MockedUserService, USER_DOCUMENTS } from '../../../test/mocks/user.service.mock';
+import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import { TutorialModel } from '../models/tutorial.model';
+import { UserDocument } from '../models/user.model';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
-import { MockedUserService, USER_DOCUMENTS } from '../../../test/mocks/user.service.mock';
-import { createMockModel } from '../../../test/helpers/test.create-mock-model';
-import { UserDocument } from '../models/user.model';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
@@ -119,4 +118,66 @@ describe('TutorialService', () => {
 
     assertTutorialList({ expected: TUTORIAL_DOCUMENTS, actual: allTutorials });
   });
+
+  it('create a tutorial without a tutor', async () => {
+    const dto: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorial(),
+      correctorIds: [],
+    };
+
+    const tutorial = await service.create(dto);
+    const {
+      id,
+      tutor,
+      startTime,
+      endTime,
+      students,
+      correctors,
+      substitutes,
+      teams,
+      ...actual
+    } = tutorial;
+    const {
+      tutorId,
+      startTime: expectedStart,
+      endTime: expectedEnd,
+      correctorIds,
+      ...expected
+    } = dto;
+
+    expect(id).toBeDefined();
+    expect(tutor).toBeUndefined();
+
+    expect(startTime.toJSON()).toEqual(expectedStart);
+    expect(endTime.toJSON()).toEqual(expectedEnd);
+
+    expect(teams).toEqual([]);
+    expect(students).toEqual([]);
+    expect(correctors).toEqual([]);
+    expect(substitutes).toEqual([]);
+
+    expect(actual).toEqual(expected);
+  });
 });
+
+/**
+ * Creates a few days each one week apart starting at 2020-02-17 (utc time zone).
+ *
+ * Those days are returned in their JSON string format.
+ *
+ * @returns 10 days in JSON string format.
+ */
+function createDatesForTutorial(): string[] {
+  const baseDate = DateTime.fromISO('2020-02-17', { zone: 'utc' });
+  const dates: DateTime[] = [];
+
+  for (let i = 0; i < 10; i++) {
+    dates.push(baseDate.plus({ weeks: i }));
+  }
+
+  return dates.map(date => date.toJSON());
+}
