@@ -62,16 +62,16 @@ export class UserService implements OnModuleInit {
    *
    * If no user with that username exists a `NotFoundException` is thrown.
    *
-   * @param username Username to search
+   * @param usernameToFind Username to search
    *
    * @returns UserCredentials of the user.
    *
    * @throws `NotFoundException` - If no user could be found
    */
-  async findWithUsername(username: string): Promise<UserCredentialsWithPassword> {
-    const user = await this.getUserWithUsername(username);
+  async findWithUsername(usernameToFind: string): Promise<UserCredentialsWithPassword> {
+    const { id, username, password, roles } = await this.getUserWithUsername(usernameToFind);
 
-    return { _id: user.id, username: user.username, password: user.password };
+    return { _id: id, username, password, roles };
   }
 
   /**

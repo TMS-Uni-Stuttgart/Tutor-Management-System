@@ -2,6 +2,13 @@ import { Injectable, ExecutionContext, BadRequestException } from '@nestjs/commo
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
+/**
+ * Checks if the provided credentials match any user in the database.
+ *
+ * If the credentials match access is granted, a session for that user is created. If there is no user matching the credentials access if refused.
+ *
+ * Furthermore, if the request body does not contain an `username` and a `password` a `BadRequestException` is thrown.
+ */
 @Injectable()
 export class LoginGuard extends AuthGuard('local') {
   constructor() {
