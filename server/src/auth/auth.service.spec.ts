@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { UserService } from '../module/user/user.service';
-import { TutorialService } from '../module/tutorial/tutorial.service';
-import { MongooseMockModelProvider } from '../helpers/test/test.provider';
-import { UserModel } from '../module/models/user.model';
-import { createUserMockModel, MockedUserModel } from '../module/user/user.service.spec';
-import { Role } from '../shared/model/Role';
 import { UnauthorizedException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import bcrypt from 'bcryptjs';
+import { createUserMockModel, MockedUserModel } from '../../test/helpers/test.create-mock-model';
+import { MongooseMockModelProvider } from '../../test/helpers/test.provider';
+import { UserModel } from '../module/models/user.model';
+import { TutorialService } from '../module/tutorial/tutorial.service';
+import { UserService } from '../module/user/user.service';
+import { Role } from '../shared/model/Role';
+import { AuthService } from './auth.service';
 
 const USER_DOCUMENTS: MockedUserModel[] = [
   createUserMockModel(
@@ -60,6 +60,10 @@ describe('AuthService', () => {
   it('login user', async () => {
     const credentials = await service.validateUser('potterhy', 'harrysPassword');
 
-    expect(credentials).toEqual({ _id: USER_DOCUMENTS[0]._id, username: 'potterhy' });
+    expect(credentials).toEqual({
+      _id: USER_DOCUMENTS[0]._id,
+      username: 'potterhy',
+      roles: [Role.TUTOR],
+    });
   });
 });

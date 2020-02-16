@@ -1,16 +1,18 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { generateObjectId, sanitizeObject } from '../../helpers/test/test.helpers';
-import { MongooseMockModelProvider } from '../../helpers/test/test.provider';
-import { TestDocument } from '../../helpers/test/testdocument';
+import { createUserMockModel, MockedUserModel } from '../../../test/helpers/test.create-mock-model';
+import { sanitizeObject } from '../../../test/helpers/test.helpers';
+import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
+import {
+  MockedTutorialService,
+  TUTORIAL_DOCUMENTS,
+} from '../../../test/mocks/tutorial.service.mock';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, User } from '../../shared/model/User';
-import { TutorialDocument, TutorialModel } from '../models/tutorial.model';
+import { TutorialDocument } from '../models/tutorial.model';
 import { UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
-
-export type MockedUserModel = UserModel & { _id: string; decryptFieldsSync: () => void };
 
 interface AssertUserParam {
   expected: MockedUserModel;
@@ -21,29 +23,6 @@ interface AssertUserListParam {
   expected: MockedUserModel[];
   actual: User[];
 }
-
-const TUTORIAL_DOCUMENTS: TestDocument<TutorialModel>[] = [
-  {
-    id: generateObjectId(),
-    tutor: undefined,
-    slot: 'Test 1',
-    students: [],
-    correctors: [],
-    dates: [new Date()],
-    startTime: new Date(),
-    endTime: new Date(),
-  },
-  {
-    id: generateObjectId(),
-    tutor: undefined,
-    slot: 'Test 2',
-    students: [],
-    correctors: [],
-    dates: [new Date()],
-    startTime: new Date(),
-    endTime: new Date(),
-  },
-];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 function decryptFieldsSync(this: MockedUserModel) {}
@@ -79,25 +58,6 @@ const USER_DOCUMENTS: MockedUserModel[] = [
     })
   ),
 ];
-
-export function createUserMockModel(model: UserModel): MockedUserModel {
-  const mocked = Object.assign(model, {
-    _id: generateObjectId(),
-    decryptFieldsSync,
-  });
-
-  return mocked;
-}
-
-function mockFindTutorial(id: string): TestDocument<TutorialModel> {
-  for (const tutorial of TUTORIAL_DOCUMENTS) {
-    if (tutorial.id === id) {
-      return tutorial;
-    }
-  }
-
-  throw new Error(`Mocked tutorial with ID '${id} could not be found.'`);
-}
 
 /**
  * Checks if the given user representations are considered equal.
@@ -154,9 +114,7 @@ describe('UserService', () => {
         UserService,
         {
           provide: TutorialService,
-          useValue: {
-            findById: mockFindTutorial,
-          },
+          useClass: MockedTutorialService,
         },
         MongooseMockModelProvider.create({
           modelClass: UserModel,
