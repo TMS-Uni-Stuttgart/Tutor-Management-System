@@ -1,19 +1,13 @@
-import {
-  Module,
-  Global,
-  OnModuleInit,
-  OnApplicationBootstrap,
-  DynamicModule,
-} from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { AttendanceModel } from './attendance.model';
+import { ExerciseModel, SubexerciseModel } from './exercise.model';
 import { GradingModel } from './grading.model';
+import { SheetModel } from './sheet.model';
 import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
 import { TutorialModel } from './tutorial.model';
 import { UserModel } from './user.model';
-import { ExerciseModel, SubexerciseModel } from './exercise.model';
-import { SheetModel } from './sheet.model';
 
 @Global()
 @Module({})
