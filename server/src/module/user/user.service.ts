@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+  Logger,
+} from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
@@ -9,11 +15,38 @@ import { UserDocument, UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
   constructor(
     private readonly tutorialService: TutorialService,
     @InjectModel(UserModel) private readonly userModel: ReturnModelType<typeof UserModel>
   ) {}
+
+  /**
+   * Creates a new administrator on application start if there are no users present in the DB.
+   */
+  async onModuleInit() {
+    const users = await this.findAll();
+
+    if (users.length === 0) {
+      Logger.log(
+        'No user present in the database. Creating a default administrator user...',
+        UserService.name
+      );
+
+      await this.create({
+        firstname: 'admin',
+        lastname: 'admin',
+        username: 'admin',
+        password: 'admin',
+        roles: [Role.ADMIN],
+        tutorials: [],
+        tutorialsToCorrect: [],
+        email: '',
+      });
+
+      Logger.log('Default administrator created.', UserService.name);
+    }
+  }
 
   /**
    * Returns all users saved in the database.
