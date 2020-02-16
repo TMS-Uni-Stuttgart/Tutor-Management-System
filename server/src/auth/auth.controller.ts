@@ -1,6 +1,6 @@
-import { Controller, Post, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, UseGuards, Req, Get, Res } from '@nestjs/common';
 import { LoginGuard } from '../guards/login.guard';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -10,5 +10,11 @@ export class AuthController {
     // TODO: Return correct user data.
 
     return req.user;
+  }
+
+  @Get('/logout')
+  logout(@Req() req: Request, @Res() res: Response) {
+    req.logout();
+    res.clearCookie('connect.sid').send('Successfully logged out.');
   }
 }
