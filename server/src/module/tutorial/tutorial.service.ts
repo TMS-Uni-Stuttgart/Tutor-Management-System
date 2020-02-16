@@ -1,9 +1,17 @@
-import { forwardRef, Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotImplementedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import { TutorialDocument, TutorialModel } from '../models/tutorial.model';
 import { UserService } from '../user/user.service';
+import { Role } from '../../shared/model/Role';
+import { UserDocument } from '../models/user.model';
 
 @Injectable()
 export class TutorialService {
@@ -29,7 +37,8 @@ export class TutorialService {
    *
    * @param dto Information about the tutorial to create.
    *
-   * @throws `NotFoundException` If the tutor or any of the correctors could not be found.
+   * @throws `NotFoundException` - If the tutor or any of the correctors could not be found.
+   * @throws `BadRequestExpcetion` - If the tutor to be assigned does not have the TUTOR role or if any of the correctors to be assigned does not have the CORRECTOR role.
    *
    * @returns Created tutorial.
    */
@@ -41,6 +50,9 @@ export class TutorialService {
       tutorId ? this.userService.findById(tutorId) : undefined,
       Promise.all(correctorIds.map(id => this.userService.findById(id))),
     ]);
+
+    this.assertTutorHasTutorRole(tutor);
+    this.assertCorrectorsHaveCorrectorRole(correctors);
 
     const startDate = new Date(startTime);
     const endDate = new Date(endTime);
@@ -63,5 +75,21 @@ export class TutorialService {
 
   async findById(id: string): Promise<TutorialDocument> {
     throw new NotImplementedException();
+  }
+
+  private assertTutorHasTutorRole(tutor?: UserDocument) {
+    if (tutor && !tutor.roles.includes(Role.TUTOR)) {
+      throw new BadRequestException('The tutor of a tutorial needs to have the TUTOR role.');
+    }
+  }
+
+  private assertCorrectorsHaveCorrectorRole(correctors: UserDocument[]) {
+    for (const doc of correctors) {
+      if (!doc.roles.includes(Role.CORRECTOR)) {
+        throw new BadRequestException(
+          'The corrector of a tutorial needs to have the CORRECTOR role.'
+        );
+      }
+    }
   }
 }

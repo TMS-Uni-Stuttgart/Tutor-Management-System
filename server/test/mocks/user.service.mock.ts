@@ -6,6 +6,18 @@ import { TestDocument } from '../helpers/testdocument';
 export const USER_DOCUMENTS: readonly TestDocument<UserModel>[] = [
   {
     id: generateObjectId(),
+    firstname: 'Albus',
+    lastname: 'Dumbledore',
+    email: 'dumbledore@hogwarts.com',
+    username: 'dumbleas',
+    password: 'albusPassword',
+    temporaryPassword: undefined,
+    roles: [Role.ADMIN],
+    tutorials: [],
+    tutorialsToCorrect: [],
+  },
+  {
+    id: generateObjectId(),
     firstname: 'Harry',
     lastname: 'Potter',
     email: 'harrypotter@hogwarts.com',
@@ -24,11 +36,79 @@ export const USER_DOCUMENTS: readonly TestDocument<UserModel>[] = [
     username: 'weaslern',
     password: 'ronsPassword',
     temporaryPassword: undefined,
-    roles: [Role.TUTOR],
+    roles: [Role.EMPLOYEE],
+    tutorials: [],
+    tutorialsToCorrect: [],
+  },
+  {
+    id: generateObjectId(),
+    firstname: 'Hermine',
+    lastname: 'Granger',
+    email: 'granger_hermine@hogwarts.com',
+    username: 'grangehe',
+    password: 'herminesPassword',
+    temporaryPassword: undefined,
+    roles: [Role.CORRECTOR],
+    tutorials: [],
+    tutorialsToCorrect: [],
+  },
+  {
+    id: generateObjectId(),
+    firstname: 'Ginny',
+    lastname: 'Weasley',
+    email: 'weasley_ginny@hogwarts.com',
+    username: 'weaslegy',
+    password: 'ginnysPassword',
+    temporaryPassword: undefined,
+    roles: [Role.TUTOR, Role.CORRECTOR],
     tutorials: [],
     tutorialsToCorrect: [],
   },
 ];
+
+/**
+ * Searches a user document with the given role which is available to the MockedUserService.
+ *
+ * @param role Role to search.
+ *
+ * @returns User with the given role.
+ *
+ * @throws `Error` - If no user with such role could be found.
+ */
+export function getUserDocWithRole(role: Role): TestDocument<UserModel> {
+  for (const doc of USER_DOCUMENTS) {
+    if (doc.roles.includes(role)) {
+      return doc;
+    }
+  }
+
+  throw new Error(`There is no user with the '${role} role present in the USER_DOCUMENTS.'`);
+}
+
+/**
+ * Searches and returns __all__ users with the given role available to the MockedUserService.
+ *
+ * @param role Role to search.
+ *
+ * @returns All users with the specified role.
+ *
+ * @throws `Error` - If no user with the given role could be found.
+ */
+export function getAllUserDocsWithRole(role: Role): TestDocument<UserModel>[] {
+  const docs: TestDocument<UserModel>[] = [];
+
+  for (const doc of USER_DOCUMENTS) {
+    if (doc.roles.includes(role)) {
+      docs.push(doc);
+    }
+  }
+
+  if (docs.length === 0) {
+    throw new Error(`There is no user with the '${role} role present in the USER_DOCUMENTS.'`);
+  }
+
+  return docs;
+}
 
 export class MockedUserService {
   findById(id: string) {
