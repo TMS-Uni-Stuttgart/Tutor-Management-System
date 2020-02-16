@@ -3,12 +3,19 @@ import { DateTime } from 'luxon';
 import { createMockModel } from '../../../test/helpers/test.create-mock-model';
 import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
 import { MockedModel } from '../../../test/helpers/testdocument';
-import { MockedUserService, USER_DOCUMENTS } from '../../../test/mocks/user.service.mock';
+import {
+  MockedUserService,
+  USER_DOCUMENTS,
+  getUserDocWithRole,
+  getAllUserDocsWithRole,
+} from '../../../test/mocks/user.service.mock';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import { TutorialModel } from '../models/tutorial.model';
 import { UserDocument } from '../models/user.model';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
+import { Role } from '../../shared/model/Role';
+import { BadRequestException } from '@nestjs/common';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
@@ -161,6 +168,90 @@ describe('TutorialService', () => {
     expect(substitutes).toEqual([]);
 
     expect(actual).toEqual(expected);
+  });
+
+  it('create a tutorial with a tutor', async () => {
+    const tutorDoc = getUserDocWithRole(Role.TUTOR);
+
+    const dto: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: tutorDoc.id,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorial(),
+      correctorIds: [],
+    };
+
+    const tutorial = await service.create(dto);
+
+    expect(tutorial.tutor).toEqual(tutorDoc.id);
+  });
+
+  it('create a tutorial with correctors', async () => {
+    const correctorDocs = getAllUserDocsWithRole(Role.CORRECTOR);
+
+    const dto: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorial(),
+      correctorIds: correctorDocs.map(corrector => corrector.id),
+    };
+
+    const tutorial = await service.create(dto);
+
+    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector.id));
+  });
+
+  it('create a tutorial with tutor and correctors', async () => {
+    const tutorDoc = getUserDocWithRole(Role.TUTOR);
+    const correctorDocs = getAllUserDocsWithRole(Role.CORRECTOR);
+
+    const dto: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: tutorDoc.id,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorial(),
+      correctorIds: correctorDocs.map(corrector => corrector.id),
+    };
+
+    const tutorial = await service.create(dto);
+
+    expect(tutorial.tutor).toEqual(tutorDoc.id);
+    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector.id));
+  });
+
+  it('fail on creating a tutorial with a non tutor', async () => {
+    const tutorDoc = getUserDocWithRole(Role.ADMIN);
+
+    const dto: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: tutorDoc.id,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorial(),
+      correctorIds: [],
+    };
+
+    await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+  });
+
+  it('fail on creating a tutorial with a non corrector', async () => {
+    const tutorDoc = getUserDocWithRole(Role.ADMIN);
+    const correctors = getAllUserDocsWithRole(Role.CORRECTOR).map(corrector => corrector.id);
+
+    const dto: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorial(),
+      correctorIds: [...correctors, tutorDoc.id],
+    };
+
+    await expect(service.create(dto)).rejects.toThrow(BadRequestException);
   });
 });
 
