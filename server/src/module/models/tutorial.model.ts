@@ -4,10 +4,17 @@ import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { UserDocument, UserModel } from './user.model';
 import { StudentDocument } from './student.model';
 import { CollectionName } from '../../helpers/CollectionName';
+import { Tutorial } from '../../shared/model/Tutorial';
+import { TeamDocument } from './team.model';
+import { NoFunctions } from '../../helpers/NoFunctions';
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })
 export class TutorialModel {
+  constructor(fields: NoFunctions<TutorialModel>) {
+    Object.assign(this, fields);
+  }
+
   @prop({ required: true })
   slot!: string;
 
@@ -30,7 +37,7 @@ export class TutorialModel {
   correctors!: UserDocument[];
 
   @mapProp({ of: UserModel, autopopulate: true, default: new Map() })
-  private substitutes!: Map<string, UserDocument>;
+  substitutes!: Map<string, UserDocument>;
 
   /**
    * Sets the substitute of the given date to the given user.
@@ -65,6 +72,34 @@ export class TutorialModel {
    */
   getSubstitute(date: Date): UserDocument | undefined {
     return this.substitutes.get(this.getDateKey(date));
+  }
+
+  /**
+   *
+   * @param teams Teams related to the tutorial.
+   *
+   * @returns The DTO representation of this document.
+   */
+  toDTO(this: TutorialDocument, teams: TeamDocument[]): Tutorial {
+    const { id, slot, tutor, dates, startTime, endTime, students, correctors } = this;
+    const substitutes: Map<string, string> = new Map();
+
+    for (const [date, doc] of this.substitutes.entries()) {
+      substitutes.set(date, doc.id);
+    }
+
+    return {
+      id,
+      slot,
+      tutor: tutor?.id,
+      dates: dates.map(date => date.toJSON()),
+      startTime,
+      endTime,
+      students: students.map(student => student.id),
+      correctors: correctors.map(corrector => corrector.id),
+      substitutes: [...substitutes],
+      teams: teams.map(team => team.id),
+    };
   }
 
   private getDateKey(date: Date): string {

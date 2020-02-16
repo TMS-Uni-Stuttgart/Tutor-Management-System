@@ -4,6 +4,8 @@ import {
   NotFoundException,
   OnModuleInit,
   Logger,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
@@ -17,6 +19,7 @@ import { TutorialService } from '../tutorial/tutorial.service';
 @Injectable()
 export class UserService implements OnModuleInit {
   constructor(
+    @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,
     @InjectModel(UserModel) private readonly userModel: ReturnModelType<typeof UserModel>
   ) {}
@@ -55,6 +58,16 @@ export class UserService implements OnModuleInit {
     const users = (await this.userModel.find().exec()) as UserDocument[];
 
     return users.map(user => user.toDTO());
+  }
+
+  async findById(id: string): Promise<UserDocument> {
+    const user = (await this.userModel.findById(id).exec()) as UserDocument;
+
+    if (!user) {
+      throw new NotFoundException(`User with the ID '${id}' could not be found.`);
+    }
+
+    return user;
   }
 
   /**
