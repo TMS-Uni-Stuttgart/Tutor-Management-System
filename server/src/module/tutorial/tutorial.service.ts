@@ -1,18 +1,18 @@
 import {
+  BadRequestException,
   forwardRef,
   Inject,
   Injectable,
-  NotImplementedException,
-  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
+import { ServiceInterface } from '../../helpers/ServiceInterface';
+import { Role } from '../../shared/model/Role';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import { TutorialDocument, TutorialModel } from '../models/tutorial.model';
-import { UserService } from '../user/user.service';
-import { Role } from '../../shared/model/Role';
 import { UserDocument } from '../models/user.model';
-import { ServiceInterface } from '../../helpers/ServiceInterface';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, TutorialDocument> {
@@ -33,8 +33,25 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
     return tutorials.map(tutorial => tutorial.toDTO([]));
   }
 
+  /**
+   * Searches for a tutorial with th given ID and returns it.
+   *
+   * If there is no tutorial with that ID an exception is thrown.
+   *
+   * @param id ID to search for.
+   *
+   * @returns TutorialDocument with the given ID.
+   *
+   * @throws `NotFoundException` - If no tutorial with the given ID could be found.
+   */
   async findById(id: string): Promise<TutorialDocument> {
-    throw new NotImplementedException();
+    const tutorial: TutorialDocument | null = await this.tutorialModel.findById(id).exec();
+
+    if (!tutorial) {
+      throw new NotFoundException(`Tutorial with the ID ${id} could not be found.`);
+    }
+
+    return tutorial;
   }
 
   /**

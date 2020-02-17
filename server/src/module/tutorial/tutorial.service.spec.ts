@@ -15,7 +15,8 @@ import { UserDocument } from '../models/user.model';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
 import { Role } from '../../shared/model/Role';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { generateObjectId } from '../../../test/helpers/test.helpers';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
@@ -124,6 +125,18 @@ describe('TutorialService', () => {
     const allTutorials: Tutorial[] = await service.findAll();
 
     assertTutorialList({ expected: TUTORIAL_DOCUMENTS, actual: allTutorials });
+  });
+
+  it('find a tutorial by id', async () => {
+    const tutorial = await service.findById(TUTORIAL_DOCUMENTS[0]._id);
+
+    expect(tutorial).toEqual(TUTORIAL_DOCUMENTS[0]);
+  });
+
+  it('fail on finding non existing tutorial (by ID)', async () => {
+    const nonExistingId = generateObjectId();
+
+    await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
   });
 
   it('create a tutorial without a tutor', async () => {
