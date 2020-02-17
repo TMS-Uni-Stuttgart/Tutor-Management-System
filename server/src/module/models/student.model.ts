@@ -1,16 +1,22 @@
 import { DocumentType, modelOptions, plugin, prop, mapProp } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
-import { StudentStatus } from '../../shared/model/Student';
+import { StudentStatus, Student } from '../../shared/model/Student';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { TeamModel, TeamDocument } from './team.model';
 import { GradingModel, GradingDocument } from './grading.model';
 import { HasExercises } from '../../shared/model/Sheet';
 import { TutorialDocument } from './tutorial.model';
+import { NoFunctions } from '../../helpers/NoFunctions';
+import { convertDocumentMapToArray } from '../../helpers/converters';
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
 export class StudentModel {
+  constructor(fields: NoFunctions<StudentModel>) {
+    Object.assign(this, fields);
+  }
+
   @prop({ required: true })
   firstname!: string;
 
@@ -95,6 +101,41 @@ export class StudentModel {
    */
   getGrading(sheet: HasExercises): GradingDocument | undefined {
     return this.gradings.get(sheet.id);
+  }
+
+  /**
+   * @returns The DTO representation of this document.
+   */
+  toDTO(this: StudentDocument): Student {
+    const {
+      id,
+      firstname,
+      lastname,
+      matriculationNo,
+      cakeCount,
+      tutorial,
+      email,
+      courseOfStudies,
+      status,
+      team,
+    } = this;
+    const attendances = convertDocumentMapToArray(this.attendances);
+
+    return {
+      id,
+      firstname,
+      lastname,
+      matriculationNo,
+      tutorial: { id: tutorial.id, slot: tutorial.slot },
+      team: team?.id,
+      status,
+      courseOfStudies,
+      attendances,
+      cakeCount,
+      email,
+      points: {}, // TODO: Implement the gradings property!
+      presentationPoints: {}, // TODO: Implement me!
+    };
   }
 
   private getDateKey(date: Date): string {
