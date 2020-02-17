@@ -53,7 +53,7 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
   }
 
   /**
-   * Returns all users saved in the database.
+   * @returns All users saved in the database.
    */
   async findAll(): Promise<User[]> {
     const users = (await this.userModel.find().exec()) as UserDocument[];

@@ -24,7 +24,7 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
   ) {}
 
   /**
-   * Returns all tutorials saved in the database.
+   * @returns All tutorials saved in the database.
    */
   async findAll(): Promise<Tutorial[]> {
     const tutorials: TutorialDocument[] = await this.tutorialModel.find().exec();
