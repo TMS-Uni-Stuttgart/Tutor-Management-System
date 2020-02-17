@@ -50,6 +50,17 @@ export class MongooseMockModelProvider {
             return null;
           },
         }),
+        findById: (id: string) => ({
+          exec: () => {
+            for (const doc of alteredDocuments) {
+              if (this.checkConditions(doc, { _id: id })) {
+                return doc;
+              }
+            }
+
+            return null;
+          },
+        }),
         create: (doc: T) =>
           this.adjustDocument(doc, { id: generateObjectId(), ...additionalProperties }),
       },

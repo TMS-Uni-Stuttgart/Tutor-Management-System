@@ -31,6 +31,8 @@
     "@nestjs/swagger": "^4.2.8",
     "@typegoose/typegoose": "^6.3.2",
     "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.0",
     "config": "^3.2.5",
     "connect-mongo": "^3.2.0",
     "express-session": "^1.17.0",

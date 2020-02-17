@@ -25,6 +25,7 @@ rules:
   '@typescript-eslint/no-parameter-properties':
     - 'error'
     - { allows: ['private', 'readonly', 'private readonly'] }
+  '@typescript-eslint/interface-name-prefix': 'off'
   'constructor-super': 'error'
   'no-fallthrough': 'error'
   'no-console': 'warn'

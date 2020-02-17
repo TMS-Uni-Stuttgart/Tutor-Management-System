@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { ServiceInterface } from '../../helpers/ServiceInterface';
-import { Student, StudentDTO } from '../../shared/model/Student';
+import { Student } from '../../shared/model/Student';
 import { StudentDocument, StudentModel } from '../models/student.model';
+import { StudentDTO } from './student.dto';
+import { TutorialService } from '../tutorial/tutorial.service';
 
 @Injectable()
 export class StudentService implements ServiceInterface<Student, StudentDTO, StudentDocument> {
   constructor(
+    private readonly tutorialService: TutorialService,
     @InjectModel(StudentModel) private readonly studentModel: ReturnModelType<typeof StudentModel>
   ) {}
 
@@ -25,6 +28,13 @@ export class StudentService implements ServiceInterface<Student, StudentDTO, Stu
   }
 
   async create(dto: StudentDTO): Promise<Student> {
-    throw new Error('Method not implemented.');
+    const { tutorial: tutorialId, team, ...rest } = dto;
+    const tutorial = await this.tutorialService.findById(tutorialId);
+
+    // TODO: Add proper team.
+    const doc = new StudentModel({ ...rest, tutorial, team: undefined, cakeCount: 0 });
+    const created: StudentDocument = await this.studentModel.create(doc);
+
+    return created.toDTO();
   }
 }
