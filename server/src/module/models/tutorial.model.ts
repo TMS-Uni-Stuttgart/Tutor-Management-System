@@ -75,7 +75,6 @@ export class TutorialModel {
   }
 
   /**
-   *
    * @param teams Teams related to the tutorial.
    *
    * @returns The DTO representation of this document.
