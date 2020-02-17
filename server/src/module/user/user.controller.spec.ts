@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { mocked } from 'ts-jest/utils';
+import { MockedUserService } from '../../../test/mocks/user.service.mock';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-
-jest.mock('./user.service');
-const mockedUserService = mocked(UserService, true);
 
 describe('User Controller', () => {
   let testingModule: TestingModule;
@@ -14,7 +11,7 @@ describe('User Controller', () => {
     testingModule = await Test.createTestingModule({
       imports: [],
       controllers: [UserController],
-      providers: [{ provide: UserService, useValue: mockedUserService }],
+      providers: [{ provide: UserService, useClass: MockedUserService }],
     }).compile();
 
     controller = testingModule.get<UserController>(UserController);

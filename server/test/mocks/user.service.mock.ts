@@ -66,51 +66,51 @@ export const USER_DOCUMENTS: readonly TestDocument<UserModel>[] = [
   },
 ];
 
-/**
- * Searches a user document with the given role which is available to the MockedUserService.
- *
- * @param role Role to search.
- *
- * @returns User with the given role.
- *
- * @throws `Error` - If no user with such role could be found.
- */
-export function getUserDocWithRole(role: Role): TestDocument<UserModel> {
-  for (const doc of USER_DOCUMENTS) {
-    if (doc.roles.includes(role)) {
-      return doc;
+export class MockedUserService {
+  /**
+   * Searches a user document with the given role which is available to the MockedUserService.
+   *
+   * @param role Role to search.
+   *
+   * @returns User with the given role.
+   *
+   * @throws `Error` - If no user with such role could be found.
+   */
+  static getUserDocWithRole(role: Role): TestDocument<UserModel> {
+    for (const doc of USER_DOCUMENTS) {
+      if (doc.roles.includes(role)) {
+        return doc;
+      }
     }
-  }
 
-  throw new Error(`There is no user with the '${role} role present in the USER_DOCUMENTS.'`);
-}
-
-/**
- * Searches and returns __all__ users with the given role available to the MockedUserService.
- *
- * @param role Role to search.
- *
- * @returns All users with the specified role.
- *
- * @throws `Error` - If no user with the given role could be found.
- */
-export function getAllUserDocsWithRole(role: Role): TestDocument<UserModel>[] {
-  const docs: TestDocument<UserModel>[] = [];
-
-  for (const doc of USER_DOCUMENTS) {
-    if (doc.roles.includes(role)) {
-      docs.push(doc);
-    }
-  }
-
-  if (docs.length === 0) {
     throw new Error(`There is no user with the '${role} role present in the USER_DOCUMENTS.'`);
   }
 
-  return docs;
-}
+  /**
+   * Searches and returns __all__ users with the given role available to the MockedUserService.
+   *
+   * @param role Role to search.
+   *
+   * @returns All users with the specified role.
+   *
+   * @throws `Error` - If no user with the given role could be found.
+   */
+  static getAllUserDocsWithRole(role: Role): TestDocument<UserModel>[] {
+    const docs: TestDocument<UserModel>[] = [];
 
-export class MockedUserService {
+    for (const doc of USER_DOCUMENTS) {
+      if (doc.roles.includes(role)) {
+        docs.push(doc);
+      }
+    }
+
+    if (docs.length === 0) {
+      throw new Error(`There is no user with the '${role} role present in the USER_DOCUMENTS.'`);
+    }
+
+    return docs;
+  }
+
   findById(id: string) {
     for (const user of USER_DOCUMENTS) {
       if (user.id === id) {
