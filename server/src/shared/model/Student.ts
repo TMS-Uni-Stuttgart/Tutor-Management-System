@@ -1,4 +1,3 @@
-import { Attendance } from './Attendance';
 import { HasId, NamedElement } from './Common';
 import { PointMapDTO } from './Points';
 
@@ -30,7 +29,7 @@ export interface Student extends NamedElement {
   cakeCount: number;
 }
 
-export interface StudentDTO {
+export interface IStudentDTO {
   courseOfStudies?: string;
   email?: string;
   firstname: string;
