@@ -15,9 +15,10 @@ import { Role } from '../../shared/model/Role';
 import { TutorialDocument } from '../models/tutorial.model';
 import { UserDocument, UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
+import { ServiceInterface } from '../../helpers/ServiceInterface';
 
 @Injectable()
-export class UserService implements OnModuleInit {
+export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO, UserDocument> {
   constructor(
     @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,

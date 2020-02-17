@@ -12,9 +12,10 @@ import { TutorialDocument, TutorialModel } from '../models/tutorial.model';
 import { UserService } from '../user/user.service';
 import { Role } from '../../shared/model/Role';
 import { UserDocument } from '../models/user.model';
+import { ServiceInterface } from '../../helpers/ServiceInterface';
 
 @Injectable()
-export class TutorialService {
+export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, TutorialDocument> {
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
@@ -30,6 +31,10 @@ export class TutorialService {
 
     // TODO: Add proper teams!
     return tutorials.map(tutorial => tutorial.toDTO([]));
+  }
+
+  async findById(id: string): Promise<TutorialDocument> {
+    throw new NotImplementedException();
   }
 
   /**
@@ -71,10 +76,6 @@ export class TutorialService {
     const created = await this.tutorialModel.create(tutorial);
 
     return created.toDTO([]);
-  }
-
-  async findById(id: string): Promise<TutorialDocument> {
-    throw new NotImplementedException();
   }
 
   private assertTutorHasTutorRole(tutor?: UserDocument) {
