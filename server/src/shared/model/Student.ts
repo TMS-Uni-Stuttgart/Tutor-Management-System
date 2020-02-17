@@ -12,17 +12,21 @@ export enum StudentStatus {
   NO_SCHEIN_REQUIRED = 'NO_SCHEIN_REQUIRED',
 }
 
+export interface TutorialInStudent {
+  id: string;
+  slot: string;
+}
+
 export interface Student extends NamedElement {
-  attendance: { [index: string]: Attendance };
+  attendances: [string, string][];
   courseOfStudies?: string;
   email?: string;
   matriculationNo?: string;
   points: PointMapDTO;
   presentationPoints: { [index: string]: number };
-  scheinExamResults: PointMapDTO;
   status: StudentStatus;
   team?: TeamInStudent;
-  tutorial: string;
+  tutorial: TutorialInStudent;
   cakeCount: number;
 }
 
