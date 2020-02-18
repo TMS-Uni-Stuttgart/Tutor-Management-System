@@ -12,6 +12,10 @@ import { TutorialService } from './tutorial.service';
 import { Role } from '../../shared/model/Role';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
+import {
+  createDatesForTutorial,
+  createDatesForTutorialAsStrings,
+} from '../../../test/mocks/tutorial.service.mock';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
@@ -30,9 +34,9 @@ const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
       slot: 'Tutorial 1',
       students: [],
       correctors: [],
-      dates: [new Date()],
-      startTime: new Date(),
-      endTime: new Date(),
+      dates: createDatesForTutorial('2020-02-18'),
+      startTime: DateTime.fromISO('08:00:00', { zone: 'utc' }).toJSDate(),
+      endTime: DateTime.fromISO('09:30:00', { zone: 'utc' }).toJSDate(),
       substitutes: new Map(),
     })
   ),
@@ -42,9 +46,9 @@ const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
       slot: 'Tutorial 2',
       students: [],
       correctors: [],
-      dates: [new Date()],
-      startTime: new Date(),
-      endTime: new Date(),
+      dates: createDatesForTutorial('2020-02-21'),
+      startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
+      endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
       substitutes: new Map(),
     })
   ),
@@ -140,7 +144,7 @@ describe('TutorialService', () => {
       tutorId: undefined,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
-      dates: createDatesForTutorial(),
+      dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
 
@@ -186,7 +190,7 @@ describe('TutorialService', () => {
       tutorId: tutorDoc.id,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
-      dates: createDatesForTutorial(),
+      dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
 
@@ -203,7 +207,7 @@ describe('TutorialService', () => {
       tutorId: undefined,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
-      dates: createDatesForTutorial(),
+      dates: createDatesForTutorialAsStrings(),
       correctorIds: correctorDocs.map(corrector => corrector.id),
     };
 
@@ -221,7 +225,7 @@ describe('TutorialService', () => {
       tutorId: tutorDoc.id,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
-      dates: createDatesForTutorial(),
+      dates: createDatesForTutorialAsStrings(),
       correctorIds: correctorDocs.map(corrector => corrector.id),
     };
 
@@ -239,7 +243,7 @@ describe('TutorialService', () => {
       tutorId: tutorDoc.id,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
-      dates: createDatesForTutorial(),
+      dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
 
@@ -257,28 +261,10 @@ describe('TutorialService', () => {
       tutorId: undefined,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
-      dates: createDatesForTutorial(),
+      dates: createDatesForTutorialAsStrings(),
       correctorIds: [...correctors, tutorDoc.id],
     };
 
     await expect(service.create(dto)).rejects.toThrow(BadRequestException);
   });
 });
-
-/**
- * Creates a few days each one week apart starting at 2020-02-17 (utc time zone).
- *
- * Those days are returned in their JSON string format.
- *
- * @returns 10 days in JSON string format.
- */
-function createDatesForTutorial(): string[] {
-  const baseDate = DateTime.fromISO('2020-02-17', { zone: 'utc' });
-  const dates: DateTime[] = [];
-
-  for (let i = 0; i < 10; i++) {
-    dates.push(baseDate.plus({ weeks: i }));
-  }
-
-  return dates.map(date => date.toJSON());
-}
