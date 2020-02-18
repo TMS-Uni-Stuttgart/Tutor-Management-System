@@ -45,10 +45,10 @@ export class StudentModel {
   cakeCount!: number;
 
   @mapProp({ of: AttendanceModel, autopopulate: true, default: new Map() })
-  private attendances!: Map<string, AttendanceDocument>;
+  attendances!: Map<string, AttendanceDocument>;
 
   @mapProp({ of: GradingModel, autopopulate: true, default: new Map() })
-  private gradings!: Map<string, GradingDocument>;
+  gradings!: Map<string, GradingDocument>;
 
   /**
    * Saves the given attendance in the student.
@@ -121,6 +121,9 @@ export class StudentModel {
     } = this;
     const attendances = convertDocumentMapToArray(this.attendances);
 
+    // TODO: Implement the gradings properly!
+    const gradings = convertDocumentMapToArray(this.gradings);
+
     return {
       id,
       firstname,
@@ -133,7 +136,7 @@ export class StudentModel {
       attendances,
       cakeCount,
       email,
-      points: {}, // TODO: Implement the gradings property!
+      gradings,
       presentationPoints: {}, // TODO: Implement me!
     };
   }

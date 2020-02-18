@@ -1,5 +1,4 @@
 import { HasId, NamedElement } from './Common';
-import { PointMapDTO } from './Points';
 
 export interface TeamInStudent extends HasId {
   teamNo: number;
@@ -21,7 +20,7 @@ export interface Student extends NamedElement {
   courseOfStudies?: string;
   email?: string;
   matriculationNo?: string;
-  points: PointMapDTO;
+  gradings: [string, any][];
   presentationPoints: { [index: string]: number };
   status: StudentStatus;
   team?: TeamInStudent;
