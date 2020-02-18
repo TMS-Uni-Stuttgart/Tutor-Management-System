@@ -2,6 +2,7 @@ import { UserModel } from '../../src/module/models/user.model';
 import { Role } from '../../src/shared/model/Role';
 import { generateObjectId } from '../helpers/test.helpers';
 import { TestDocument } from '../helpers/testdocument';
+import { NotFoundException } from '@nestjs/common';
 
 export const USER_DOCUMENTS: readonly TestDocument<UserModel>[] = [
   {
@@ -83,7 +84,9 @@ export class MockedUserService {
       }
     }
 
-    throw new Error(`There is no user with the '${role} role present in the USER_DOCUMENTS.'`);
+    throw new NotFoundException(
+      `There is no user with the '${role} role present in the USER_DOCUMENTS.'`
+    );
   }
 
   /**
@@ -105,7 +108,9 @@ export class MockedUserService {
     }
 
     if (docs.length === 0) {
-      throw new Error(`There is no user with the '${role} role present in the USER_DOCUMENTS.'`);
+      throw new NotFoundException(
+        `There is no user with the '${role} role present in the USER_DOCUMENTS.'`
+      );
     }
 
     return docs;
@@ -118,6 +123,6 @@ export class MockedUserService {
       }
     }
 
-    throw new Error(`Mocked user with ID '${id} could not be found.'`);
+    throw new NotFoundException(`Mocked user with ID '${id} could not be found.'`);
   }
 }
