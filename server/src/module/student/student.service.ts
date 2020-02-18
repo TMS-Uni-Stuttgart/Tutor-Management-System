@@ -27,12 +27,28 @@ export class StudentService implements ServiceInterface<Student, StudentDTO, Stu
     throw new Error('Method not implemented.');
   }
 
+  /**
+   * Creates a student from the given DTO and returns the created student.
+   *
+   * @param dto DTO with the information for the student to create.
+   *
+   * @returns Created student.
+   *
+   * @throws `NotFoundException` - If the tutorial of the student could not be found.
+   */
   async create(dto: StudentDTO): Promise<Student> {
     const { tutorial: tutorialId, team, ...rest } = dto;
     const tutorial = await this.tutorialService.findById(tutorialId);
 
     // TODO: Add proper team.
-    const doc = new StudentModel({ ...rest, tutorial, team: undefined, cakeCount: 0 });
+    const doc = new StudentModel({
+      ...rest,
+      tutorial,
+      team: undefined,
+      cakeCount: 0,
+      attendances: new Map(),
+      gradings: new Map(),
+    });
     const created: StudentDocument = await this.studentModel.create(doc);
 
     return created.toDTO();
