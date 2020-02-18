@@ -2,6 +2,7 @@ import { TutorialModel } from '../../src/module/models/tutorial.model';
 import { generateObjectId } from '../helpers/test.helpers';
 import { TestDocument } from '../helpers/testdocument';
 import { DateTime } from 'luxon';
+import { NotFoundException } from '@nestjs/common';
 
 export const TUTORIAL_DOCUMENTS: readonly TestDocument<TutorialModel>[] = [
   {
@@ -40,7 +41,7 @@ export class MockedTutorialService {
       }
     }
 
-    throw new Error(`Mocked tutorial with ID '${id} could not be found.'`);
+    throw new NotFoundException(`Mocked tutorial with ID '${id} could not be found.'`);
   }
 }
 
