@@ -1,21 +1,21 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
+  Logger,
   NotFoundException,
   OnModuleInit,
-  Logger,
-  Inject,
-  forwardRef,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
+import { ServiceInterface } from '../../helpers/ServiceInterface';
 import { Role } from '../../shared/model/Role';
 import { TutorialDocument } from '../models/tutorial.model';
 import { UserDocument, UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { ServiceInterface } from '../../helpers/ServiceInterface';
 
 @Injectable()
 export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO, UserDocument> {
