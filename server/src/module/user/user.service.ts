@@ -7,7 +7,7 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
+import { ReturnModelType, mongoose } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';

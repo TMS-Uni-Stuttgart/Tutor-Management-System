@@ -92,10 +92,6 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
 
     const created = await this.tutorialModel.create(tutorial);
 
-    if (tutor) {
-      await tutor.addTutorial(created);
-    }
-
     return created.toDTO([]);
   }
 
