@@ -1,4 +1,12 @@
-import { arrayProp, DocumentType, modelOptions, plugin, pre, prop } from '@typegoose/typegoose';
+import {
+  arrayProp,
+  DocumentType,
+  modelOptions,
+  plugin,
+  pre,
+  prop,
+  post,
+} from '@typegoose/typegoose';
 import bcrypt from 'bcryptjs';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
@@ -31,7 +39,17 @@ import { TutorialDocument } from './tutorial.model';
   this.password = hashedPassword;
   next();
 })
-@modelOptions({ schemaOptions: { collection: CollectionName.USER } })
+@post<UserModel>('find', async function(result, next) {
+  await Promise.all(result.map(doc => doc.populate('tutorials').execPopulate()));
+
+  next && next();
+})
+@post<UserModel>('findOne', async function(result, next) {
+  await result.populate('tutorials').execPopulate();
+
+  next && next();
+})
+@modelOptions({ schemaOptions: { collection: CollectionName.USER, toObject: { virtuals: true } } })
 export class UserModel {
   constructor(fields: NoFunctions<UserModel>) {
     Object.assign(this, fields);
@@ -58,34 +76,15 @@ export class UserModel {
   @prop()
   temporaryPassword?: string;
 
-  @arrayProp({ required: true, autopopulate: true, ref: 'TutorialModel' })
+  @arrayProp({
+    ref: 'TutorialModel',
+    foreignField: 'tutor',
+    localField: '_id',
+  })
   tutorials!: TutorialDocument[];
 
   @arrayProp({ default: [], autopopulate: true, ref: 'TutorialModel' })
   tutorialsToCorrect!: TutorialDocument[];
-
-  /**
-   * Adds the given tutorial to this user.
-   *
-   * If the user is not already the tutor of the given tutorial it will get added to it's `tutorials` list. Afterwards the document is saved.
-   * Else the operation will not change anything.
-   *
-   * @param tutorial Tutorial to add to this user.
-   *
-   * @returns If the tutorial got added the `save()` promise is returned. Else `undefined` is returned.
-   */
-  async addTutorial(this: UserDocument, tutorial: TutorialDocument) {
-    const idx = this.tutorials.findIndex(tut => tut.id === tutorial.id);
-
-    if (idx !== -1) {
-      return undefined;
-    }
-
-    tutorial.tutor = { ...this } as any;
-    this.tutorials.push(tutorial);
-
-    return this.save();
-  }
 
   /**
    * @returns The DTO representation of the document.
