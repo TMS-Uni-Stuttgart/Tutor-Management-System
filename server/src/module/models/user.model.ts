@@ -65,6 +65,29 @@ export class UserModel {
   tutorialsToCorrect!: TutorialDocument[];
 
   /**
+   * Adds the given tutorial to this user.
+   *
+   * If the user is not already the tutor of the given tutorial it will get added to it's `tutorials` list. Afterwards the document is saved.
+   * Else the operation will not change anything.
+   *
+   * @param tutorial Tutorial to add to this user.
+   *
+   * @returns If the tutorial got added the `save()` promise is returned. Else `undefined` is returned.
+   */
+  async addTutorial(this: UserDocument, tutorial: TutorialDocument) {
+    const idx = this.tutorials.findIndex(tut => tut.id === tutorial.id);
+
+    if (idx !== -1) {
+      return undefined;
+    }
+
+    tutorial.tutor = { ...this } as any;
+    this.tutorials.push(tutorial);
+
+    return this.save();
+  }
+
+  /**
    * @returns The DTO representation of the document.
    */
   toDTO(this: UserDocument): User {
