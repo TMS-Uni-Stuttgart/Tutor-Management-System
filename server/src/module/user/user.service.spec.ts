@@ -1,7 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createUserMockModel, MockedUserModel } from '../../../test/helpers/test.create-mock-model';
-import { sanitizeObject } from '../../../test/helpers/test.helpers';
+import { sanitizeObject, generateObjectId } from '../../../test/helpers/test.helpers';
 import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
 import {
   MockedTutorialService,
@@ -283,5 +283,18 @@ describe('UserService', () => {
     };
 
     await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+  });
+
+  it('get a user with a specific ID', async () => {
+    const expected = USER_DOCUMENTS[0];
+    const user = await service.findById(expected._id);
+
+    assertUser({ expected, actual: user.toDTO() });
+  });
+
+  it('fail on searching a non-existing user', async () => {
+    const nonExistingId = generateObjectId();
+
+    await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
   });
 });
