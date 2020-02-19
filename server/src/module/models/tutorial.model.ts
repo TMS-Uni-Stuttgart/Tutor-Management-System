@@ -33,7 +33,7 @@ export class TutorialModel {
   @arrayProp({ requires: true, autopopulate: true, ref: 'StudentModel' })
   students!: StudentDocument[];
 
-  @prop({ ref: 'UserModel', autopopulate: true, default: [] })
+  @arrayProp({ ref: 'UserModel', autopopulate: true, default: [] })
   correctors!: UserDocument[];
 
   @mapProp({ of: UserModel, autopopulate: true, default: new Map() })
