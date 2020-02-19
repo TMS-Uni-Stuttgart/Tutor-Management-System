@@ -1,6 +1,8 @@
 declare namespace Express {
   export interface User {
-    roles?: import('../src/shared/model/Role').Role[];
+    _id: string;
+    username: string;
+    roles: import('../src/shared/model/Role').Role[];
   }
 
   // export interface Request {
