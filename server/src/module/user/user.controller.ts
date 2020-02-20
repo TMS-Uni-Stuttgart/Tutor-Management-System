@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Param, Delete } from '@nestjs/common';
 import { CreateUserDTO, User } from 'src/shared/model/User';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { Role } from '../../shared/model/Role';
@@ -31,5 +31,11 @@ export class UserController {
     const user = await this.userService.findById(id);
 
     return user.toDTO();
+  }
+
+  @Delete('/:id')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  async deleteUser(@Param('id') id: string): Promise<void> {
+    await this.userService.delete(id);
   }
 }
