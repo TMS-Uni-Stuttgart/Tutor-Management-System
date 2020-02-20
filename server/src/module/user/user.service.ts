@@ -7,7 +7,7 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { ReturnModelType, mongoose } from '@typegoose/typegoose';
+import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
@@ -61,6 +61,15 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
     return users.map(user => user.toDTO());
   }
 
+  /**
+   * Searches for a user with the given ID and returns it's document if possible.
+   *
+   * @param id ID to search for.
+   *
+   * @returns UserDocument with the given ID.
+   *
+   * @throws `NotFoundException` - If there is no user with the given ID.
+   */
   async findById(id: string): Promise<UserDocument> {
     const user = (await this.userModel.findById(id).exec()) as UserDocument;
 
@@ -121,6 +130,20 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
     const result = (await this.userModel.create(userDocument)) as UserDocument;
 
     return result.toDTO();
+  }
+
+  /**
+   * Delete the user with the given ID if one exists.
+   *
+   * @param id ID of the user to delete.
+   *
+   * @returns Deleted document.
+   *
+   * @throws `NotFoundExceotion` - If there is no user with such an ID.
+   */
+  async delete(id: string): Promise<UserDocument> {
+    const user = await this.findById(id);
+    return user.remove();
   }
 
   /**
