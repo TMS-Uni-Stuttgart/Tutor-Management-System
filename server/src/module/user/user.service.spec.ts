@@ -297,4 +297,23 @@ describe('UserService', () => {
 
     await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
   });
+
+  it('delete a user without tutorials', async () => {
+    const dto: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.TUTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
+
+    const user = await service.create(dto);
+    const deletedUser = await service.delete(user.id);
+
+    expect(deletedUser.id).toEqual(user.id);
+    await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
+  });
 });
