@@ -1,11 +1,13 @@
-import { DynamicModule, Module, OnApplicationShutdown } from '@nestjs/common';
+import { DynamicModule, Module, OnApplicationShutdown, Inject } from '@nestjs/common';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { TypegooseModule } from 'nestjs-typegoose';
+import { Connection } from 'mongoose';
+import { TypegooseModule, getConnectionToken } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
 
 @Module({})
 export class TestModule implements OnApplicationShutdown {
-  private static mongodb: MongoMemoryServer | undefined;
+  private mongodb: MongoMemoryServer | undefined;
+  private connection: Connection | undefined;
 
   /**
    * Generates a module which contains a connection to the in-memory mongo database aswell as the corresponding providers for the given models.
@@ -16,6 +18,17 @@ export class TestModule implements OnApplicationShutdown {
    * @return Promise which resolves to the generated DynamicModule.
    */
   static async forRootAsync(models: TypegooseClass[]): Promise<DynamicModule> {
+    const testModule = new TestModule();
+
+    return testModule.init(models);
+  }
+
+  constructor(mongodb?: MongoMemoryServer, @Inject(getConnectionToken()) connection?: Connection) {
+    this.mongodb = mongodb;
+    this.connection = connection;
+  }
+
+  async init(models: TypegooseClass[]): Promise<DynamicModule> {
     this.mongodb = new MongoMemoryServer({
       instance: {
         dbName: 'tms',
@@ -34,13 +47,31 @@ export class TestModule implements OnApplicationShutdown {
         }),
         featureModule,
       ],
+      providers: [
+        {
+          provide: MongoMemoryServer,
+          useValue: this.mongodb,
+        },
+      ],
       exports: [featureModule],
     };
   }
 
+  async reset() {
+    if (!this.connection) {
+      return;
+    }
+
+    console.log(this.connection?.modelNames());
+
+    await Promise.all(
+      Object.values(this.connection.collections).map(collection => collection.deleteMany({}))
+    );
+  }
+
   async onApplicationShutdown() {
-    if (TestModule.mongodb) {
-      await TestModule.mongodb.stop();
+    if (this.mongodb) {
+      await this.mongodb.stop();
     }
   }
 }
