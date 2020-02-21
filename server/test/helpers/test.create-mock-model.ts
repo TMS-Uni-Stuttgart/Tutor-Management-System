@@ -1,6 +1,7 @@
-import { MockedModel } from './testdocument';
 import { generateObjectId } from './test.helpers';
 import { UserModel } from '../../src/module/models/user.model';
+
+type MockedModel<M> = M & { _id: string };
 
 export type MockedUserModel = MockedModel<UserModel> & {
   _id: string;
