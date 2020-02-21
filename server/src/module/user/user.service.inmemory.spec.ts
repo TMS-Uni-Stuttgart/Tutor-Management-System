@@ -1,63 +1,78 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createUserMockModel, MockedUserModel } from '../../../test/helpers/test.create-mock-model';
-import { sanitizeObject, generateObjectId } from '../../../test/helpers/test.helpers';
-import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
-import {
-  MockedTutorialService,
-  TUTORIAL_DOCUMENTS,
-} from '../../../test/mocks/tutorial.service.mock';
+import { DateTime } from 'luxon';
+import { generateObjectId, sanitizeObject } from '../../../test/helpers/test.helpers';
+import { TestModule } from '../../../test/helpers/test.module';
+import { MockedModel } from '../../../test/helpers/testdocument';
+import { createDatesForTutorial } from '../../../test/mocks/tutorial.service.mock';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, User } from '../../shared/model/User';
-import { TutorialDocument, TutorialModel } from '../models/tutorial.model';
+import { StudentModel } from '../models/student.model';
+import { TutorialModel } from '../models/tutorial.model';
 import { UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
-import { TestModule } from '../../../test/helpers/test.module';
 
 interface AssertUserParam {
-  expected: MockedUserModel;
+  expected: MockedModel<UserModel>;
   actual: User;
 }
 
 interface AssertUserListParam {
-  expected: MockedUserModel[];
+  expected: MockedModel<UserModel>[];
   actual: User[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-function decryptFieldsSync(this: MockedUserModel) {}
+const USER_DOCUMENTS: MockedModel<UserModel>[] = [
+  {
+    _id: '5e501290468622e257c2db16',
+    firstname: 'Harry',
+    lastname: 'Potter',
+    email: 'harrypotter@hogwarts.com',
+    username: 'potterhy',
+    password: 'harrysPassword',
+    temporaryPassword: undefined,
+    roles: [Role.TUTOR],
+    tutorials: [],
+    tutorialsToCorrect: [],
+  },
+  {
+    _id: '5e5013711922d1957bcf0c30',
+    firstname: 'Ron',
+    lastname: 'Weasley',
+    email: 'weaslyron@hogwarts.com',
+    username: 'weaslern',
+    password: 'ronsPassword',
+    temporaryPassword: undefined,
+    roles: [Role.TUTOR],
+    tutorials: [],
+    tutorialsToCorrect: [],
+  },
+];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-function encryptFieldsSync(this: MockedUserModel) {}
-
-const USER_DOCUMENTS: MockedUserModel[] = [
-  createUserMockModel(
-    new UserModel({
-      firstname: 'Harry',
-      lastname: 'Potter',
-      email: 'harrypotter@hogwarts.com',
-      username: 'potterhy',
-      password: 'harrysPassword',
-      temporaryPassword: undefined,
-      roles: [Role.TUTOR],
-      tutorials: [],
-      tutorialsToCorrect: [],
-    })
-  ),
-  createUserMockModel(
-    new UserModel({
-      firstname: 'Ron',
-      lastname: 'Weasley',
-      email: 'weaslyron@hogwarts.com',
-      username: 'weaslern',
-      password: 'ronsPassword',
-      temporaryPassword: undefined,
-      roles: [Role.TUTOR],
-      tutorials: [TUTORIAL_DOCUMENTS[0] as TutorialDocument],
-      tutorialsToCorrect: [],
-    })
-  ),
+const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
+  {
+    _id: '5e50141098205a0d95857492',
+    tutor: undefined,
+    slot: 'Tutorial 1',
+    students: [],
+    correctors: [],
+    dates: createDatesForTutorial('2020-02-18'),
+    startTime: DateTime.fromISO('08:00:00', { zone: 'utc' }).toJSDate(),
+    endTime: DateTime.fromISO('09:30:00', { zone: 'utc' }).toJSDate(),
+    substitutes: new Map(),
+  },
+  {
+    _id: '5e5014186db2b69773038a9d',
+    tutor: undefined,
+    slot: 'Tutorial 2',
+    students: [],
+    correctors: [],
+    dates: createDatesForTutorial('2020-02-21'),
+    startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
+    endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
+    substitutes: new Map(),
+  },
 ];
 
 /**
@@ -74,12 +89,13 @@ function assertUser({ expected, actual }: AssertUserParam) {
     expected
   );
   const {
+    id: actualId,
     tutorials: actualTutorials,
     tutorialsToCorrect: actualTutorialsToCorrect,
     ...actualUser
   } = actual;
 
-  expect(actualUser.id).toBe(_id);
+  expect(actualId).toBeDefined();
   expect(actualUser).toEqual(expectedUser);
 
   expect(actualTutorials).toEqual(tutorials.map(t => t.id));
@@ -112,7 +128,16 @@ describe('UserService', () => {
 
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
-      imports: [TestModule.forRootAsync([UserModel, TutorialModel])],
+      imports: [
+        TestModule.forRootAsync([
+          {
+            model: UserModel,
+            initialDocuments: [...USER_DOCUMENTS],
+          },
+          { model: TutorialModel, initialDocuments: [...TUTORIAL_DOCUMENTS] },
+          { model: StudentModel, initialDocuments: [] },
+        ]),
+      ],
       providers: [UserService, TutorialService],
     }).compile();
   });
@@ -131,31 +156,31 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
-  // it('find all users', async () => {
-  //   const allUsers: User[] = await service.findAll();
+  it('find all users', async () => {
+    const allUsers: User[] = await service.findAll();
 
-  //   assertUserList({ expected: USER_DOCUMENTS, actual: sanitizeObject(allUsers) });
-  // });
+    assertUserList({ expected: USER_DOCUMENTS, actual: sanitizeObject(allUsers) });
+  });
 
-  // it('create user without tutorials', async () => {
-  //   const userToCreate: CreateUserDTO = {
-  //     firstname: 'Hermine',
-  //     lastname: 'Granger',
-  //     email: 'granger@hogwarts.com',
-  //     username: 'grangehe',
-  //     password: 'herminesPassword',
-  //     roles: [Role.TUTOR],
-  //     tutorials: [],
-  //     tutorialsToCorrect: [],
-  //   };
+  it.skip('create user without tutorials', async () => {
+    const userToCreate: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.TUTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
 
-  //   const createdUser: User = await service.create(userToCreate);
-  //   const { password, ...expected } = userToCreate;
-  //   const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+    const createdUser: User = await service.create(userToCreate);
+    const { password, ...expected } = userToCreate;
+    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
 
-  //   expect(actual).toEqual(expected);
-  //   expect(temporaryPassword).toBe(password);
-  // });
+    expect(actual).toEqual(expected);
+    expect(temporaryPassword).toBe(password);
+  });
 
   // it('create user with ONE tutorial', async () => {
   //   const userToCreate: CreateUserDTO = {
@@ -197,20 +222,20 @@ describe('UserService', () => {
   //   expect(temporaryPassword).toBe(password);
   // });
 
-  // it('fail on creating a user with already existing username', async () => {
-  //   const userToCreate: CreateUserDTO = {
-  //     firstname: 'Hermine',
-  //     lastname: 'Granger',
-  //     email: 'granger@hogwarts.com',
-  //     username: 'potterhy',
-  //     password: 'herminesPassword',
-  //     roles: [Role.TUTOR],
-  //     tutorials: [],
-  //     tutorialsToCorrect: [],
-  //   };
+  it.skip('fail on creating a user with already existing username', async () => {
+    const userToCreate: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'potterhy',
+      password: 'herminesPassword',
+      roles: [Role.TUTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
 
-  //   await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
-  // });
+    await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+  });
 
   // it('create user with ONE tutorial to correct', async () => {
   //   const userToCreate: CreateUserDTO = {
@@ -289,28 +314,28 @@ describe('UserService', () => {
   //   assertUser({ expected, actual: user.toDTO() });
   // });
 
-  // it('fail on searching a non-existing user', async () => {
-  //   const nonExistingId = generateObjectId();
+  it.skip('fail on searching a non-existing user', async () => {
+    const nonExistingId = generateObjectId();
 
-  //   await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
-  // });
+    await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
+  });
 
-  // it('delete a user without tutorials', async () => {
-  //   const dto: CreateUserDTO = {
-  //     firstname: 'Hermine',
-  //     lastname: 'Granger',
-  //     email: 'granger@hogwarts.com',
-  //     username: 'grangehe',
-  //     password: 'herminesPassword',
-  //     roles: [Role.TUTOR],
-  //     tutorials: [],
-  //     tutorialsToCorrect: [],
-  //   };
+  it.skip('delete a user without tutorials', async () => {
+    const dto: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.TUTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
 
-  //   const user = await service.create(dto);
-  //   const deletedUser = await service.delete(user.id);
+    const user = await service.create(dto);
+    const deletedUser = await service.delete(user.id);
 
-  //   expect(deletedUser.id).toEqual(user.id);
-  //   await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
-  // });
+    expect(deletedUser.id).toEqual(user.id);
+    await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
+  });
 });

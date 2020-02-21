@@ -1,14 +1,19 @@
-import { DynamicModule, Module, OnApplicationShutdown, Inject } from '@nestjs/common';
+import { DynamicModule, Inject, Module, OnApplicationShutdown } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Connection } from 'mongoose';
-import { TypegooseModule, getConnectionToken } from 'nestjs-typegoose';
+import { Connection, Model } from 'mongoose';
+import { getConnectionToken, getModelToken, TypegooseModule } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
+
+const MODEL_OPTIONS = 'MODEL_OPTIONS';
+
+interface ModelMockOptions {
+  model: TypegooseClass;
+  initialDocuments: any[];
+}
 
 @Module({})
 export class TestModule implements OnApplicationShutdown {
-  private mongodb: MongoMemoryServer | undefined;
-  private connection: Connection | undefined;
-
   /**
    * Generates a module which contains a connection to the in-memory mongo database aswell as the corresponding providers for the given models.
    *
@@ -17,25 +22,15 @@ export class TestModule implements OnApplicationShutdown {
    * @param models Models to register in the module
    * @return Promise which resolves to the generated DynamicModule.
    */
-  static async forRootAsync(models: TypegooseClass[]): Promise<DynamicModule> {
-    const testModule = new TestModule();
-
-    return testModule.init(models);
-  }
-
-  constructor(mongodb?: MongoMemoryServer, @Inject(getConnectionToken()) connection?: Connection) {
-    this.mongodb = mongodb;
-    this.connection = connection;
-  }
-
-  async init(models: TypegooseClass[]): Promise<DynamicModule> {
-    this.mongodb = new MongoMemoryServer({
+  static async forRootAsync(options: ModelMockOptions[]): Promise<DynamicModule> {
+    const models = options.map(opt => opt.model);
+    const mongodb = new MongoMemoryServer({
       instance: {
         dbName: 'tms',
       },
       debug: false,
     });
-    const connectionUri = await this.mongodb.getConnectionString();
+    const connectionUri = await mongodb.getConnectionString();
     const featureModule = TypegooseModule.forFeature(models);
 
     return {
@@ -50,28 +45,49 @@ export class TestModule implements OnApplicationShutdown {
       providers: [
         {
           provide: MongoMemoryServer,
-          useValue: this.mongodb,
+          useValue: mongodb,
+        },
+        {
+          provide: MODEL_OPTIONS,
+          useValue: options,
         },
       ],
       exports: [featureModule],
     };
   }
 
+  constructor(
+    private readonly mongodb: MongoMemoryServer,
+    private readonly moduleRef: ModuleRef,
+    @Inject(getConnectionToken()) private readonly connection: Connection,
+    @Inject(MODEL_OPTIONS) private readonly options: ModelMockOptions[]
+  ) {}
+
   async reset() {
     if (!this.connection) {
       return;
     }
 
-    console.log(this.connection?.modelNames());
-
     await Promise.all(
       Object.values(this.connection.collections).map(collection => collection.deleteMany({}))
     );
+
+    await this.fillCollections();
   }
 
   async onApplicationShutdown() {
     if (this.mongodb) {
       await this.mongodb.stop();
+    }
+  }
+
+  private async fillCollections() {
+    for (const option of this.options) {
+      const model = this.moduleRef.get<string, Model<any>>(getModelToken(option.model.name), {
+        strict: false,
+      });
+
+      await model.insertMany(option.initialDocuments);
     }
   }
 }
