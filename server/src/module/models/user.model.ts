@@ -17,6 +17,19 @@ import { NoFunctions } from '../../helpers/NoFunctions';
 import { User } from '../../shared/model/User';
 import { TutorialDocument } from './tutorial.model';
 
+/**
+ * Populates the fields in the given UserDocument. If no document is provided this functions does nothing.
+ *
+ * @param doc UserDocument to populate.
+ */
+export async function populateUserDocument(doc?: UserDocument) {
+  if (!doc) {
+    return;
+  }
+
+  await doc.populate('tutorials').execPopulate();
+}
+
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
   fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email'],
@@ -39,13 +52,8 @@ import { TutorialDocument } from './tutorial.model';
   this.password = hashedPassword;
   next();
 })
-@post<UserModel>('find', async function(result, next) {
-  await Promise.all(result.map(doc => doc.populate('tutorials').execPopulate()));
-
-  next && next();
-})
 @post<UserModel>('findOne', async function(result, next) {
-  await result.populate('tutorials').execPopulate();
+  await populateUserDocument(result as UserDocument);
 
   next && next();
 })

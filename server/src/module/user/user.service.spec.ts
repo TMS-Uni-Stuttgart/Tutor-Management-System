@@ -1,62 +1,78 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createUserMockModel, MockedUserModel } from '../../../test/helpers/test.create-mock-model';
-import { sanitizeObject, generateObjectId } from '../../../test/helpers/test.helpers';
-import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
-import {
-  MockedTutorialService,
-  TUTORIAL_DOCUMENTS,
-} from '../../../test/mocks/tutorial.service.mock';
+import { DateTime } from 'luxon';
+import { generateObjectId, sanitizeObject } from '../../../test/helpers/test.helpers';
+import { TestModule } from '../../../test/helpers/test.module';
+import { MockedModel } from '../../../test/helpers/testdocument';
+import { createDatesForTutorial } from '../../../test/mocks/tutorial.service.mock';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, User } from '../../shared/model/User';
-import { TutorialDocument } from '../models/tutorial.model';
+import { StudentModel } from '../models/student.model';
+import { TutorialModel } from '../models/tutorial.model';
 import { UserModel } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
 
 interface AssertUserParam {
-  expected: MockedUserModel;
+  expected: MockedModel<UserModel>;
   actual: User;
 }
 
 interface AssertUserListParam {
-  expected: MockedUserModel[];
+  expected: MockedModel<UserModel>[];
   actual: User[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-function decryptFieldsSync(this: MockedUserModel) {}
+const USER_DOCUMENTS: MockedModel<UserModel>[] = [
+  {
+    _id: '5e501290468622e257c2db16',
+    firstname: 'Harry',
+    lastname: 'Potter',
+    email: 'harrypotter@hogwarts.com',
+    username: 'potterhy',
+    password: 'harrysPassword',
+    temporaryPassword: 'someTemporatayPassword',
+    roles: [Role.TUTOR],
+    tutorials: [],
+    tutorialsToCorrect: [],
+  },
+  {
+    _id: '5e5013711922d1957bcf0c30',
+    firstname: 'Ron',
+    lastname: 'Weasley',
+    email: 'weaslyron@hogwarts.com',
+    username: 'weaslern',
+    password: 'ronsPassword',
+    temporaryPassword: undefined,
+    roles: [Role.TUTOR],
+    tutorials: [{ _id: '5e5014186db2b69773038a9d' } as any],
+    tutorialsToCorrect: [],
+  },
+];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-function encryptFieldsSync(this: MockedUserModel) {}
-
-const USER_DOCUMENTS: MockedUserModel[] = [
-  createUserMockModel(
-    new UserModel({
-      firstname: 'Harry',
-      lastname: 'Potter',
-      email: 'harrypotter@hogwarts.com',
-      username: 'potterhy',
-      password: 'harrysPassword',
-      temporaryPassword: undefined,
-      roles: [Role.TUTOR],
-      tutorials: [],
-      tutorialsToCorrect: [],
-    })
-  ),
-  createUserMockModel(
-    new UserModel({
-      firstname: 'Ron',
-      lastname: 'Weasley',
-      email: 'weaslyron@hogwarts.com',
-      username: 'weaslern',
-      password: 'ronsPassword',
-      temporaryPassword: undefined,
-      roles: [Role.TUTOR],
-      tutorials: [TUTORIAL_DOCUMENTS[0] as TutorialDocument],
-      tutorialsToCorrect: [],
-    })
-  ),
+const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
+  {
+    _id: '5e50141098205a0d95857492',
+    tutor: undefined,
+    slot: 'Tutorial 1',
+    students: [],
+    correctors: [],
+    dates: createDatesForTutorial('2020-02-18'),
+    startTime: DateTime.fromISO('08:00:00', { zone: 'utc' }).toJSDate(),
+    endTime: DateTime.fromISO('09:30:00', { zone: 'utc' }).toJSDate(),
+    substitutes: new Map(),
+  },
+  {
+    _id: '5e5014186db2b69773038a9d',
+    tutor: '5e5013711922d1957bcf0c30' as any,
+    slot: 'Tutorial 2',
+    students: [],
+    correctors: [],
+    dates: createDatesForTutorial('2020-02-21'),
+    startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
+    endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
+    substitutes: new Map(),
+  },
 ];
 
 /**
@@ -73,15 +89,16 @@ function assertUser({ expected, actual }: AssertUserParam) {
     expected
   );
   const {
+    id: actualId,
     tutorials: actualTutorials,
     tutorialsToCorrect: actualTutorialsToCorrect,
     ...actualUser
-  } = actual;
+  } = sanitizeObject(actual);
 
-  expect(actualUser.id).toBe(_id);
+  expect(actualId).toBeDefined();
   expect(actualUser).toEqual(expectedUser);
 
-  expect(actualTutorials).toEqual(tutorials.map(t => t.id));
+  expect(actualTutorials).toEqual(tutorials.map(t => t._id));
   expect(actualTutorialsToCorrect).toEqual(tutorialsToCorrect.map(t => t._id));
 }
 
@@ -106,28 +123,33 @@ function assertUserList({ expected, actual }: AssertUserListParam) {
 }
 
 describe('UserService', () => {
+  let testModule: TestingModule;
   let service: UserService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserService,
-        {
-          provide: TutorialService,
-          useClass: MockedTutorialService,
-        },
-        MongooseMockModelProvider.create({
-          modelClass: UserModel,
-          documents: USER_DOCUMENTS,
-          additionalDocProperties: {
-            decryptFieldsSync,
-            encryptFieldsSync,
+  beforeAll(async () => {
+    testModule = await Test.createTestingModule({
+      imports: [
+        TestModule.forRootAsync([
+          {
+            model: UserModel,
+            initialDocuments: [...USER_DOCUMENTS],
           },
-        }),
+          { model: TutorialModel, initialDocuments: [...TUTORIAL_DOCUMENTS] },
+          { model: StudentModel, initialDocuments: [] },
+        ]),
       ],
+      providers: [UserService, TutorialService],
     }).compile();
+  });
 
-    service = module.get<UserService>(UserService);
+  beforeEach(async () => {
+    await testModule.get<TestModule>(TestModule).reset();
+
+    service = testModule.get<UserService>(UserService);
+  });
+
+  afterAll(async () => {
+    await testModule.close();
   });
 
   it('should be defined', () => {
@@ -168,7 +190,7 @@ describe('UserService', () => {
       username: 'grangehe',
       password: 'herminesPassword',
       roles: [Role.TUTOR],
-      tutorials: [TUTORIAL_DOCUMENTS[1].id],
+      tutorials: [TUTORIAL_DOCUMENTS[1]._id],
       tutorialsToCorrect: [],
     };
 
@@ -188,7 +210,7 @@ describe('UserService', () => {
       username: 'grangehe',
       password: 'herminesPassword',
       roles: [Role.TUTOR],
-      tutorials: [TUTORIAL_DOCUMENTS[0].id, TUTORIAL_DOCUMENTS[1].id],
+      tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
       tutorialsToCorrect: [],
     };
 
@@ -224,7 +246,7 @@ describe('UserService', () => {
       password: 'herminesPassword',
       roles: [Role.CORRECTOR],
       tutorials: [],
-      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0].id],
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
     };
 
     const createdUser: User = await service.create(userToCreate);
@@ -244,7 +266,7 @@ describe('UserService', () => {
       password: 'herminesPassword',
       roles: [Role.CORRECTOR],
       tutorials: [],
-      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0].id, TUTORIAL_DOCUMENTS[1].id],
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
     };
 
     const createdUser: User = await service.create(userToCreate);
@@ -263,7 +285,7 @@ describe('UserService', () => {
       username: 'grangehe',
       password: 'herminesPassword',
       roles: [Role.ADMIN],
-      tutorials: [TUTORIAL_DOCUMENTS[0].id, TUTORIAL_DOCUMENTS[1].id],
+      tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
       tutorialsToCorrect: [],
     };
 
@@ -279,7 +301,7 @@ describe('UserService', () => {
       password: 'herminesPassword',
       roles: [Role.EMPLOYEE],
       tutorials: [],
-      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0].id, TUTORIAL_DOCUMENTS[1].id],
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
     };
 
     await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);

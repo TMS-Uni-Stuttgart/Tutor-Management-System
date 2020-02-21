@@ -14,7 +14,7 @@ import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { ServiceInterface } from '../../helpers/ServiceInterface';
 import { Role } from '../../shared/model/Role';
 import { TutorialDocument } from '../models/tutorial.model';
-import { UserDocument, UserModel } from '../models/user.model';
+import { UserDocument, UserModel, populateUserDocument } from '../models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 
 @Injectable()
@@ -57,6 +57,8 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
    */
   async findAll(): Promise<User[]> {
     const users = (await this.userModel.find().exec()) as UserDocument[];
+
+    await Promise.all(users.map(doc => populateUserDocument(doc)));
 
     return users.map(user => user.toDTO());
   }
