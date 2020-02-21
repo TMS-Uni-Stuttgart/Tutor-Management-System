@@ -4,7 +4,7 @@ import { generateObjectId } from '../helpers/test.helpers';
 import { TestDocument } from '../helpers/testdocument';
 import { NotFoundException } from '@nestjs/common';
 
-export const USER_DOCUMENTS: readonly TestDocument<UserModel>[] = [
+const USER_DOCUMENTS: readonly TestDocument<UserModel>[] = [
   {
     id: generateObjectId(),
     firstname: 'Albus',

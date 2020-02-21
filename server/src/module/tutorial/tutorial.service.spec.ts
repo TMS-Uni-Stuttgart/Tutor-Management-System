@@ -1,21 +1,23 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DateTime } from 'luxon';
-import { createMockModel } from '../../../test/helpers/test.create-mock-model';
-import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
+import { generateObjectId } from '../../../test/helpers/test.helpers';
+import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
-import { MockedUserService, USER_DOCUMENTS } from '../../../test/mocks/user.service.mock';
+import {
+  createDatesForTutorialAsStrings,
+  TUTORIAL_DOCUMENTS,
+  USER_DOCUMENTS,
+} from '../../../test/mocks/documents.mock';
+import {
+  getAllUserDocsWithRole,
+  getUserDocWithRole,
+} from '../../../test/mocks/documents.mock.helpers';
+import { Role } from '../../shared/model/Role';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import { TutorialModel } from '../models/tutorial.model';
-import { UserDocument } from '../models/user.model';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
-import { Role } from '../../shared/model/Role';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import {
-  createDatesForTutorial,
-  createDatesForTutorialAsStrings,
-} from '../../../test/mocks/tutorial.service.mock';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
@@ -26,33 +28,6 @@ interface AssertTutorialListParams {
   expected: MockedModel<TutorialModel>[];
   actual: Tutorial[];
 }
-
-const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
-  createMockModel(
-    new TutorialModel({
-      tutor: undefined,
-      slot: 'Tutorial 1',
-      students: [],
-      correctors: [],
-      dates: createDatesForTutorial('2020-02-18'),
-      startTime: DateTime.fromISO('08:00:00', { zone: 'utc' }).toJSDate(),
-      endTime: DateTime.fromISO('09:30:00', { zone: 'utc' }).toJSDate(),
-      substitutes: new Map(),
-    })
-  ),
-  createMockModel(
-    new TutorialModel({
-      tutor: USER_DOCUMENTS[0] as UserDocument,
-      slot: 'Tutorial 2',
-      students: [],
-      correctors: [],
-      dates: createDatesForTutorial('2020-02-21'),
-      startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
-      endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
-      substitutes: new Map(),
-    })
-  ),
-];
 
 /**
  * Checks if the `expected` and the `actual` tutorials are equal.
@@ -67,15 +42,15 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
   const substitutes: Map<string, string> = new Map();
 
   for (const [date, doc] of expected.substitutes.entries()) {
-    substitutes.set(date, doc.id);
+    substitutes.set(date, doc._id);
   }
 
   expect(actual.id).toEqual(_id);
   expect(actual.slot).toEqual(slot);
-  expect(actual.tutor).toEqual(tutor?.id);
+  expect(actual.tutor).toEqual(tutor?._id);
 
-  expect(actual.students).toEqual(students.map(s => s.id));
-  expect(actual.correctors).toEqual(correctors.map(c => c.id));
+  expect(actual.students).toEqual(students.map(s => s._id));
+  expect(actual.correctors).toEqual(correctors.map(c => c._id));
 
   expect(actual.dates).toEqual(dates.map(date => date.toJSON()));
   expect(actual.startTime).toEqual(startTime);
@@ -96,24 +71,24 @@ function assertTutorialList({ expected, actual }: AssertTutorialListParams) {
 }
 
 describe('TutorialService', () => {
+  let testModule: TestingModule;
   let service: TutorialService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TutorialService,
-        {
-          provide: UserService,
-          useClass: MockedUserService,
-        },
-        MongooseMockModelProvider.create({
-          modelClass: TutorialModel,
-          documents: TUTORIAL_DOCUMENTS,
-        }),
-      ],
+  beforeAll(async () => {
+    testModule = await Test.createTestingModule({
+      imports: [TestModule.forRootAsync()],
+      providers: [TutorialService, UserService],
     }).compile();
+  });
 
-    service = module.get<TutorialService>(TutorialService);
+  afterAll(async () => {
+    await testModule.close();
+  });
+
+  beforeEach(async () => {
+    await testModule.get<TestModule>(TestModule).reset();
+
+    service = testModule.get<TutorialService>(TutorialService);
   });
 
   it('should be defined', () => {
@@ -129,7 +104,7 @@ describe('TutorialService', () => {
   it('find a tutorial by id', async () => {
     const tutorial = await service.findById(TUTORIAL_DOCUMENTS[0]._id);
 
-    expect(tutorial).toEqual(TUTORIAL_DOCUMENTS[0]);
+    assertTutorial({ expected: TUTORIAL_DOCUMENTS[0], actual: tutorial.toDTO([]) });
   });
 
   it('fail on finding non existing tutorial (by ID)', async () => {
@@ -183,11 +158,11 @@ describe('TutorialService', () => {
   });
 
   it('create a tutorial with a tutor', async () => {
-    const tutorDoc = MockedUserService.getUserDocWithRole(Role.TUTOR);
+    const tutorDoc = getUserDocWithRole(Role.TUTOR);
 
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
-      tutorId: tutorDoc.id,
+      tutorId: USER_DOCUMENTS[1]._id,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
@@ -196,11 +171,11 @@ describe('TutorialService', () => {
 
     const tutorial = await service.create(dto);
 
-    expect(tutorial.tutor).toEqual(tutorDoc.id);
+    expect(tutorial.tutor).toEqual(tutorDoc._id);
   });
 
   it('create a tutorial with correctors', async () => {
-    const correctorDocs = MockedUserService.getAllUserDocsWithRole(Role.CORRECTOR);
+    const correctorDocs = getAllUserDocsWithRole(Role.CORRECTOR);
 
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
@@ -208,39 +183,39 @@ describe('TutorialService', () => {
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
-      correctorIds: correctorDocs.map(corrector => corrector.id),
+      correctorIds: correctorDocs.map(corrector => corrector._id),
     };
 
     const tutorial = await service.create(dto);
 
-    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector.id));
+    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector._id));
   });
 
   it('create a tutorial with tutor and correctors', async () => {
-    const tutorDoc = MockedUserService.getUserDocWithRole(Role.TUTOR);
-    const correctorDocs = MockedUserService.getAllUserDocsWithRole(Role.CORRECTOR);
+    const tutorDoc = getUserDocWithRole(Role.TUTOR);
+    const correctorDocs = getAllUserDocsWithRole(Role.CORRECTOR);
 
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
-      tutorId: tutorDoc.id,
+      tutorId: tutorDoc._id,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
-      correctorIds: correctorDocs.map(corrector => corrector.id),
+      correctorIds: correctorDocs.map(corrector => corrector._id),
     };
 
     const tutorial = await service.create(dto);
 
-    expect(tutorial.tutor).toEqual(tutorDoc.id);
-    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector.id));
+    expect(tutorial.tutor).toEqual(tutorDoc._id);
+    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector._id));
   });
 
   it('fail on creating a tutorial with a non tutor', async () => {
-    const tutorDoc = MockedUserService.getUserDocWithRole(Role.ADMIN);
+    const tutorDoc = getUserDocWithRole(Role.ADMIN);
 
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
-      tutorId: tutorDoc.id,
+      tutorId: tutorDoc._id,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
@@ -251,10 +226,8 @@ describe('TutorialService', () => {
   });
 
   it('fail on creating a tutorial with a non corrector', async () => {
-    const tutorDoc = MockedUserService.getUserDocWithRole(Role.ADMIN);
-    const correctors = MockedUserService.getAllUserDocsWithRole(Role.CORRECTOR).map(
-      corrector => corrector.id
-    );
+    const tutorDoc = getUserDocWithRole(Role.ADMIN);
+    const correctors = getAllUserDocsWithRole(Role.CORRECTOR).map(corrector => corrector._id);
 
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
@@ -262,7 +235,7 @@ describe('TutorialService', () => {
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
-      correctorIds: [...correctors, tutorDoc.id],
+      correctorIds: [...correctors, tutorDoc._id],
     };
 
     await expect(service.create(dto)).rejects.toThrow(BadRequestException);
