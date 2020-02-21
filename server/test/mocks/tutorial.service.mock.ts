@@ -4,7 +4,7 @@ import { TestDocument } from '../helpers/testdocument';
 import { DateTime } from 'luxon';
 import { NotFoundException } from '@nestjs/common';
 
-export const TUTORIAL_DOCUMENTS: readonly TestDocument<TutorialModel>[] = [
+const TUTORIAL_DOCUMENTS: readonly TestDocument<TutorialModel>[] = [
   {
     id: generateObjectId(),
     tutor: undefined,

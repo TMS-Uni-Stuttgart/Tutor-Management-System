@@ -1,16 +1,15 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongooseMockModelProvider } from '../../../test/helpers/test.provider';
+import { generateObjectId } from '../../../test/helpers/test.helpers';
+import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
-import { MockedTutorialService } from '../../../test/mocks/tutorial.service.mock';
+import { STUDENT_DOCUMENTS, TUTORIAL_DOCUMENTS } from '../../../test/mocks/documents.mock';
+import { Student, StudentStatus } from '../../shared/model/Student';
 import { StudentModel } from '../models/student.model';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { StudentService } from './student.service';
-import { createMockModel } from '../../../test/helpers/test.create-mock-model';
-import { TutorialDocument } from '../models/tutorial.model';
-import { StudentStatus, Student } from '../../shared/model/Student';
+import { UserService } from '../user/user.service';
 import { StudentDTO } from './student.dto';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { NotFoundException } from '@nestjs/common';
+import { StudentService } from './student.service';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -21,54 +20,6 @@ interface AssertStudentListParams {
   expected: MockedModel<StudentModel>[];
   actual: Student[];
 }
-
-const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
-  createMockModel(
-    new StudentModel({
-      firstname: 'Hermine',
-      lastname: 'Granger',
-      tutorial: MockedTutorialService.getOneDocument() as TutorialDocument,
-      status: StudentStatus.NO_SCHEIN_REQUIRED,
-      courseOfStudies: 'Software engineering B. Sc.',
-      email: 'granger_hermine@hogwarts.com',
-      matriculationNo: '2345671',
-      cakeCount: 0,
-      team: undefined,
-      attendances: new Map(),
-      gradings: new Map(),
-    })
-  ),
-  createMockModel(
-    new StudentModel({
-      firstname: 'Harry',
-      lastname: 'Potter',
-      tutorial: MockedTutorialService.getOneDocument() as TutorialDocument,
-      status: StudentStatus.ACTIVE,
-      courseOfStudies: 'Computer science B. Sc.',
-      email: 'potter_harry@hogwarts.com',
-      matriculationNo: '1234567',
-      cakeCount: 2,
-      team: undefined,
-      attendances: new Map(),
-      gradings: new Map(),
-    })
-  ),
-  createMockModel(
-    new StudentModel({
-      firstname: 'Draco',
-      lastname: 'Malfoy',
-      tutorial: MockedTutorialService.getOneDocument() as TutorialDocument,
-      status: StudentStatus.INACTIVE,
-      courseOfStudies: 'Computer science B. Sc.',
-      email: 'malfoy_draco@hogwarts.com',
-      matriculationNo: '3456712',
-      cakeCount: 0,
-      team: undefined,
-      attendances: new Map(),
-      gradings: new Map(),
-    })
-  ),
-];
 
 /**
  * Checks if the given student representations are considered equal.
@@ -84,6 +35,7 @@ const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
 function assertStudent({ expected, actual }: AssertStudentParams) {
   const { _id, attendances, gradings, tutorial, ...restExpected } = expected;
   const {
+    id: actualId,
     attendances: actualAttendances,
     gradings: actualGradings,
     tutorial: actualTutorial,
@@ -91,9 +43,9 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
     ...restActual
   } = actual;
 
-  expect(actual.id).toEqual(_id.toString());
+  expect(actualId).toEqual(_id.toString());
 
-  expect(actualTutorial.id).toEqual(tutorial.id);
+  expect(actualTutorial.id).toEqual(tutorial._id);
   expect(actualTutorial.slot).toEqual(tutorial.slot);
 
   expect(new Map(actualAttendances)).toEqual(attendances);
@@ -120,21 +72,24 @@ function assertStudentList({ expected, actual }: AssertStudentListParams) {
 }
 
 describe('StudentService', () => {
+  let testModule: TestingModule;
   let service: StudentService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        StudentService,
-        { provide: TutorialService, useClass: MockedTutorialService },
-        MongooseMockModelProvider.create({
-          modelClass: StudentModel,
-          documents: STUDENT_DOCUMENTS,
-        }),
-      ],
+  beforeAll(async () => {
+    testModule = await Test.createTestingModule({
+      imports: [TestModule.forRootAsync()],
+      providers: [StudentService, TutorialService, UserService],
     }).compile();
+  });
 
-    service = module.get<StudentService>(StudentService);
+  afterAll(async () => {
+    await testModule.close();
+  });
+
+  beforeEach(async () => {
+    await testModule.get<TestModule>(TestModule).reset();
+
+    service = testModule.get<StudentService>(StudentService);
   });
 
   it('should be defined', () => {
@@ -148,13 +103,13 @@ describe('StudentService', () => {
   });
 
   it('create a student without a team', async () => {
-    const expectedTutorial = MockedTutorialService.getOneDocument();
+    const expectedTutorial = TUTORIAL_DOCUMENTS[0];
 
     const dto: StudentDTO = new StudentDTO({
       firstname: 'Ginny',
       lastname: 'Weasley',
       status: StudentStatus.ACTIVE,
-      tutorial: expectedTutorial.id,
+      tutorial: expectedTutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
       email: 'weasley_ginny@hogwarts.com',
       matriculationNo: '4567123',
@@ -180,7 +135,7 @@ describe('StudentService', () => {
     expect(attendances).toEqual([]);
     expect(gradings).toEqual([]);
 
-    expect(actualTutorial.id).toEqual(expectedTutorial.id);
+    expect(actualTutorial.id).toEqual(expectedTutorial._id);
     expect(actualTutorial.slot).toEqual(expectedTutorial.slot);
 
     expect(cakeCount).toBe(0);

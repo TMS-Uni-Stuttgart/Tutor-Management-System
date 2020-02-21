@@ -4,13 +4,26 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Connection, Model } from 'mongoose';
 import { getConnectionToken, getModelToken, TypegooseModule } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
-
-const MODEL_OPTIONS = 'MODEL_OPTIONS';
+import { UserModel } from '../../src/module/models/user.model';
+import { USER_DOCUMENTS, TUTORIAL_DOCUMENTS, STUDENT_DOCUMENTS } from '../mocks/documents.mock';
+import { TutorialModel } from '../../src/module/models/tutorial.model';
+import { StudentModel } from '../../src/module/models/student.model';
+import { TeamModel } from '../../src/module/models/team.model';
 
 interface ModelMockOptions {
   model: TypegooseClass;
   initialDocuments: any[];
 }
+
+const MODEL_OPTIONS: ModelMockOptions[] = [
+  {
+    model: UserModel,
+    initialDocuments: [...USER_DOCUMENTS],
+  },
+  { model: TutorialModel, initialDocuments: [...TUTORIAL_DOCUMENTS] },
+  { model: StudentModel, initialDocuments: [...STUDENT_DOCUMENTS] },
+  { model: TeamModel, initialDocuments: [] },
+];
 
 @Module({})
 export class TestModule implements OnApplicationShutdown {
@@ -22,8 +35,8 @@ export class TestModule implements OnApplicationShutdown {
    * @param models Models to register in the module
    * @return Promise which resolves to the generated DynamicModule.
    */
-  static async forRootAsync(options: ModelMockOptions[]): Promise<DynamicModule> {
-    const models = options.map(opt => opt.model);
+  static async forRootAsync(): Promise<DynamicModule> {
+    const models = MODEL_OPTIONS.map(opt => opt.model);
     const mongodb = new MongoMemoryServer({
       instance: {
         dbName: 'tms',
@@ -47,10 +60,6 @@ export class TestModule implements OnApplicationShutdown {
           provide: MongoMemoryServer,
           useValue: mongodb,
         },
-        {
-          provide: MODEL_OPTIONS,
-          useValue: options,
-        },
       ],
       exports: [featureModule],
     };
@@ -59,8 +68,7 @@ export class TestModule implements OnApplicationShutdown {
   constructor(
     private readonly mongodb: MongoMemoryServer,
     private readonly moduleRef: ModuleRef,
-    @Inject(getConnectionToken()) private readonly connection: Connection,
-    @Inject(MODEL_OPTIONS) private readonly options: ModelMockOptions[]
+    @Inject(getConnectionToken()) private readonly connection: Connection
   ) {}
 
   async reset() {
@@ -82,7 +90,7 @@ export class TestModule implements OnApplicationShutdown {
   }
 
   private async fillCollections() {
-    for (const option of this.options) {
+    for (const option of MODEL_OPTIONS) {
       const model = this.moduleRef.get<string, Model<any>>(getModelToken(option.model.name), {
         strict: false,
       });
