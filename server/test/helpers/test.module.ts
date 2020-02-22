@@ -4,11 +4,11 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Connection, Model } from 'mongoose';
 import { getConnectionToken, getModelToken, TypegooseModule } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
-import { UserModel } from '../../src/module/models/user.model';
+import { UserModel } from '../../src/database/models/user.model';
 import { USER_DOCUMENTS, TUTORIAL_DOCUMENTS, STUDENT_DOCUMENTS } from '../mocks/documents.mock';
-import { TutorialModel } from '../../src/module/models/tutorial.model';
-import { StudentModel } from '../../src/module/models/student.model';
-import { TeamModel } from '../../src/module/models/team.model';
+import { TutorialModel } from '../../src/database/models/tutorial.model';
+import { StudentModel } from '../../src/database/models/student.model';
+import { TeamModel } from '../../src/database/models/team.model';
 
 interface ModelMockOptions {
   model: TypegooseClass;

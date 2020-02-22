@@ -1,5 +1,5 @@
 import { generateObjectId } from './test.helpers';
-import { UserModel } from '../../src/module/models/user.model';
+import { UserModel } from '../../src/database/models/user.model';
 
 type MockedModel<M> = M & { _id: string };
 

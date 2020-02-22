@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import bcrypt from 'bcryptjs';
 import { createUserMockModel, MockedUserModel } from '../../test/helpers/test.create-mock-model';
 import { MongooseMockModelProvider } from '../../test/helpers/test.provider';
-import { UserModel } from '../module/models/user.model';
+import { UserModel } from '../database/models/user.model';
 import { TutorialService } from '../module/tutorial/tutorial.service';
 import { UserService } from '../module/user/user.service';
 import { Role } from '../shared/model/Role';

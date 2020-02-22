@@ -4,7 +4,7 @@ import { DatabaseModule } from './database/database.module';
 import { StudentModule } from './module/student/student.module';
 import { TutorialModule } from './module/tutorial/tutorial.module';
 import { UserModule } from './module/user/user.module';
-import { ModelsModule } from './module/models/models.module';
+import { ModelsModule } from './database/models/models.module';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 
 @Module({

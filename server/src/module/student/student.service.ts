@@ -3,7 +3,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { ServiceInterface } from '../../helpers/ServiceInterface';
 import { Student } from '../../shared/model/Student';
-import { StudentDocument, StudentModel } from '../models/student.model';
+import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { StudentDTO } from './student.dto';
 import { TutorialService } from '../tutorial/tutorial.service';
 

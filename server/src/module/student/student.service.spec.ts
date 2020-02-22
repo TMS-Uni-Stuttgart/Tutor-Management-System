@@ -5,7 +5,7 @@ import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import { STUDENT_DOCUMENTS, TUTORIAL_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { Student, StudentStatus } from '../../shared/model/Student';
-import { StudentModel } from '../models/student.model';
+import { StudentModel } from '../../database/models/student.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
 import { StudentDTO } from './student.dto';
