@@ -3,7 +3,6 @@ import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ExerciseModel, ExerciseDocument } from './exercise.model';
 
-// TODO: If not needed remove the plugin.
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.SCHEINEXAM } })
 export class ScheinexamModel {
