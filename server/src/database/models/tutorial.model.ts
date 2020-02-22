@@ -15,6 +15,7 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { Tutorial } from '../../shared/model/Tutorial';
 import { TeamDocument } from './team.model';
 import { NoFunctions } from '../../helpers/NoFunctions';
+import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 
 /**
  * Populates the fields in the given TutorialDocument. If no document is provided this functions does nothing.
@@ -33,10 +34,8 @@ export async function populateTutorialDocument(doc?: TutorialDocument) {
 }
 
 @plugin(mongooseAutoPopulate)
-@post<TutorialModel>('findOne', async function(result, next) {
-  await populateTutorialDocument(result);
-
-  next && next();
+@plugin<VirtualPopulationOptions<TutorialModel>>(VirtualPopulation, {
+  populateDocument: populateTutorialDocument,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })
 export class TutorialModel {

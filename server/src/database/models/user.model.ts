@@ -16,6 +16,7 @@ import { databaseConfig } from '../../helpers/config';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { User } from '../../shared/model/User';
 import { TutorialDocument } from './tutorial.model';
+import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 
 /**
  * Populates the fields in the given UserDocument. If no document is provided this functions does nothing.
@@ -52,10 +53,8 @@ export async function populateUserDocument(doc?: UserDocument) {
   this.password = hashedPassword;
   next();
 })
-@post<UserModel>('findOne', async function(result, next) {
-  await populateUserDocument(result as UserDocument);
-
-  next && next();
+@plugin<VirtualPopulationOptions<UserModel>>(VirtualPopulation, {
+  populateDocument: populateUserDocument as any,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.USER, toObject: { virtuals: true } } })
 export class UserModel {

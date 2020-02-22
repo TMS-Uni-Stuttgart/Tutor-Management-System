@@ -3,6 +3,7 @@ import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
+import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 
 /**
  * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.
@@ -18,10 +19,8 @@ export async function populateTeamDocument(doc?: TeamDocument) {
 }
 
 @plugin(mongooseAutoPopulate)
-@post<TeamModel>('findOne', async function(result, next) {
-  await populateTeamDocument(result);
-
-  next && next();
+@plugin<VirtualPopulationOptions<TeamModel>>(VirtualPopulation, {
+  populateDocument: populateTeamDocument,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })
 export class TeamModel {
