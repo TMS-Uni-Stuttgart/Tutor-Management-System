@@ -28,7 +28,10 @@ export async function populateUserDocument(doc?: UserDocument) {
     return;
   }
 
-  await doc.populate('tutorials').execPopulate();
+  await doc
+    .populate('tutorials')
+    .populate('tutorialsToCorrect')
+    .execPopulate();
 }
 
 @plugin(fieldEncryption, {
@@ -90,7 +93,12 @@ export class UserModel {
   })
   tutorials!: TutorialDocument[];
 
-  @arrayProp({ default: [], autopopulate: true, ref: 'TutorialModel' })
+  // @arrayProp({ default: [], autopopulate: true, ref: 'TutorialModel' })
+  @arrayProp({
+    ref: 'TutorialModel',
+    foreignField: 'correctors',
+    localField: '_id',
+  })
   tutorialsToCorrect!: TutorialDocument[];
 
   /**

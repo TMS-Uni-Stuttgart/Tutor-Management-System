@@ -1,21 +1,13 @@
-import {
-  arrayProp,
-  DocumentType,
-  mapProp,
-  modelOptions,
-  plugin,
-  prop,
-  post,
-} from '@typegoose/typegoose';
+import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
-import { UserDocument, UserModel } from './user.model';
-import { StudentDocument } from './student.model';
 import { CollectionName } from '../../helpers/CollectionName';
-import { Tutorial } from '../../shared/model/Tutorial';
-import { TeamDocument } from './team.model';
 import { NoFunctions } from '../../helpers/NoFunctions';
+import { Tutorial } from '../../shared/model/Tutorial';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
+import { StudentDocument } from './student.model';
+import { TeamDocument } from './team.model';
+import { UserDocument, UserModel } from './user.model';
 
 /**
  * Populates the fields in the given TutorialDocument. If no document is provided this functions does nothing.
@@ -67,7 +59,7 @@ export class TutorialModel {
 
   @arrayProp({
     ref: 'TeamModel',
-    foreignField: 'tutorials',
+    foreignField: 'tutorial',
     localField: '_id',
   })
   teams!: TeamDocument[];
