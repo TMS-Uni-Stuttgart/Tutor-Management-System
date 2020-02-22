@@ -1,9 +1,9 @@
-import { arrayProp, DocumentType, modelOptions, plugin, post, prop } from '@typegoose/typegoose';
+import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
+import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 
 /**
  * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.

@@ -5,7 +5,7 @@ import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import { TUTORIAL_DOCUMENTS, USER_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { Role } from '../../shared/model/Role';
-import { CreateUserDTO, User } from '../../shared/model/User';
+import { CreateUserDTO, User, UserDTO } from '../../shared/model/User';
 import { UserModel } from '../../database/models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
@@ -268,6 +268,160 @@ describe('UserService', () => {
     const nonExistingId = generateObjectId();
 
     await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
+  });
+
+  it('update an existing user with basic information', async () => {
+    const userToCreate: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.EMPLOYEE],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
+    const updateDTO: UserDTO = {
+      firstname: 'Cho',
+      lastname: 'Chang',
+      email: 'cho_chang@hogwarts.com',
+      username: 'changco',
+      roles: [Role.EMPLOYEE, Role.TUTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
+
+    const oldUser = await service.create(userToCreate);
+    const updatedUser = await service.update(oldUser.id, updateDTO);
+
+    const { id, temporaryPassword, ...actual } = sanitizeObject(updatedUser);
+
+    expect(id).toEqual(oldUser.id);
+    expect(actual).toEqual(updateDTO);
+  });
+
+  it('update tutorials to be tutor of an existing user', async () => {
+    const updateDTO: UserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      roles: [Role.TUTOR],
+      tutorialsToCorrect: [],
+      tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[2]._id],
+    };
+    const userToCreate: CreateUserDTO = {
+      ...updateDTO,
+      tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+      password: 'herminesPassword',
+    };
+
+    const oldUser = await service.create(userToCreate);
+    const updatedUser = await service.update(oldUser.id, updateDTO);
+
+    const { id, temporaryPassword, ...actual } = sanitizeObject(updatedUser);
+
+    expect(id).toEqual(oldUser.id);
+    expect(actual).toEqual(updateDTO);
+  });
+
+  it('update tutorials to correct of an existing user', async () => {
+    const updateDTO: UserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      roles: [Role.CORRECTOR],
+      tutorials: [],
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[2]._id],
+    };
+    const userToCreate: CreateUserDTO = {
+      ...updateDTO,
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+      password: 'herminesPassword',
+    };
+
+    const oldUser = await service.create(userToCreate);
+    const updatedUser = await service.update(oldUser.id, updateDTO);
+
+    const { id, temporaryPassword, ...actual } = sanitizeObject(updatedUser);
+
+    expect(id).toEqual(oldUser.id);
+    expect(actual).toEqual(updateDTO);
+  });
+
+  it('fail on updating with already existing username', async () => {
+    const updateDTO: UserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger_hermine@hogwarts.com',
+      username: 'potterhy',
+      roles: [Role.CORRECTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
+    const userToCreate: CreateUserDTO = {
+      ...updateDTO,
+      username: 'grangehe',
+      password: 'herminesPassword',
+    };
+
+    const oldUser = await service.create(userToCreate);
+    await expect(service.update(oldUser.id, updateDTO)).rejects.toThrow(BadRequestException);
+  });
+
+  it('fail on updating non existing user', async () => {
+    const updateDTO: UserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger_hermine@hogwarts.com',
+      username: 'potterhy',
+      roles: [Role.CORRECTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
+
+    await expect(service.update(generateObjectId(), updateDTO)).rejects.toThrow(NotFoundException);
+  });
+
+  it('fail on updating user with non existing tutorial', async () => {
+    const updateDTO: UserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      roles: [Role.TUTOR],
+      tutorials: [generateObjectId(), TUTORIAL_DOCUMENTS[0]._id],
+      tutorialsToCorrect: [],
+    };
+    const userToCreate: CreateUserDTO = {
+      ...updateDTO,
+      tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+      password: 'herminesPassword',
+    };
+
+    const oldUser = await service.create(userToCreate);
+    await expect(service.update(oldUser.id, updateDTO)).rejects.toThrow(NotFoundException);
+  });
+
+  it('fail on updating user with non existing tutorial to correct', async () => {
+    const updateDTO: UserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      roles: [Role.CORRECTOR],
+      tutorials: [],
+      tutorialsToCorrect: [generateObjectId(), TUTORIAL_DOCUMENTS[0]._id],
+    };
+    const userToCreate: CreateUserDTO = {
+      ...updateDTO,
+      tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+      password: 'herminesPassword',
+    };
+
+    const oldUser = await service.create(userToCreate);
+    await expect(service.update(oldUser.id, updateDTO)).rejects.toThrow(NotFoundException);
   });
 
   it('delete a user without tutorials', async () => {

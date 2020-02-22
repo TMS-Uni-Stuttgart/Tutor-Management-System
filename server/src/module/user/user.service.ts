@@ -115,7 +115,7 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
       ...dto
     } = user;
 
-    await this.checkCreateUserDTO(user);
+    await this.checkUserDTO(user);
 
     const tutorials = await this.getAllTutorials(tutorialIds);
     const tutorialsToCorrect = await this.getAllTutorials(toCorrectIds);
@@ -131,7 +131,106 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
 
     const result = (await this.userModel.create(userDocument)) as UserDocument;
 
-    return result.toDTO();
+    await Promise.all(
+      tutorials.map(tutorial => {
+        tutorial.tutor = result;
+        return tutorial.save();
+      })
+    );
+
+    await Promise.all(
+      tutorialsToCorrect.map(tutorial => {
+        tutorial.correctors.push(result);
+        return tutorial.save();
+      })
+    );
+
+    const createdUser = await this.findById(result.id);
+    return createdUser.toDTO();
+  }
+
+  /**
+   * Updates the user with the given information
+   *
+   * If neccessary this functions updates all related tutorials and saves them afterwards. Related tutorials can be:
+   * - Tutorials of which the user _was_ the tutor.
+   * - Tutorials of which the user _will be_ the tutor.
+   * - Tutorials of which the user _was_ a corrector.
+   * - Tutorials of which the user _will be_ a corrector.
+   *
+   * @param id ID of the user to update.
+   * @param dto Information to update the user with.
+   *
+   * @returns Updated user.
+   *
+   * @throws `NotFoundException` - If there is no user with the given `id`.
+   * @throws `BadRequestException` - {@link UserService#checkUserDTO}
+   */
+  async update(id: string, dto: UserDTO): Promise<User> {
+    const user = await this.findById(id);
+    const { tutorials, tutorialsToCorrect } = user;
+
+    await this.checkUserDTO(dto, user);
+
+    // Remove user as tutor from all tutorials he/she is not the tutor of anymore.
+    await Promise.all(
+      tutorials
+        .filter(tut => !dto.tutorials.includes(tut.id))
+        .map(tutorial => {
+          tutorial.tutor = undefined;
+          return tutorial.save();
+        })
+    );
+
+    // Add user as tutor to all tutorials he/she is the tutor of.
+    const idsOfTutorialsToAdd: string[] = dto.tutorials.filter(
+      id => !tutorials.map(tut => tut.id).includes(id)
+    );
+    const tutorialsToAdd = await this.getAllTutorials(idsOfTutorialsToAdd);
+
+    await Promise.all(
+      tutorialsToAdd.map(tutorial => {
+        tutorial.tutor = user.id;
+        return tutorial.save();
+      })
+    );
+
+    // Remove user from all tutorial to correct he's not the corrector of anymore.
+    await Promise.all(
+      tutorialsToCorrect
+        .filter(tutorial => !dto.tutorialsToCorrect.includes(tutorial.id))
+        .map(tutorial => {
+          tutorial.correctors = [
+            ...tutorial.correctors.filter(corrector => corrector.id !== user.id),
+          ];
+
+          return tutorial.save();
+        })
+    );
+
+    // Add user as corrector to all tutorials he's corrector of, now (old correctors stay).
+    const idsOfTutorialsToCorrect = dto.tutorialsToCorrect.filter(
+      id => !tutorialsToCorrect.map(t => t.id).includes(id)
+    );
+    const additionalToCorrect = await this.getAllTutorials(idsOfTutorialsToCorrect);
+
+    await Promise.all(
+      additionalToCorrect.map(tutorial => {
+        tutorial.correctors.push(user);
+        return tutorial.save();
+      })
+    );
+
+    // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
+    user.firstname = dto.firstname;
+    user.lastname = dto.lastname;
+    user.username = dto.username;
+    user.email = dto.email;
+    user.roles = dto.roles;
+
+    const updatedUser = await user.save();
+
+    return updatedUser.toDTO();
   }
 
   /**
@@ -159,9 +258,17 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
       .find({ username })
       .exec()) as UserDocument[];
 
-    // TODO: Does not work if the username got changed during the request. This needs some other logic!
+    if (!user) {
+      return usersWithUsername.length > 0;
+    }
 
-    return !!user ? usersWithUsername.length > 1 : usersWithUsername.length !== 0;
+    for (const sameUsernameUser of usersWithUsername) {
+      if (sameUsernameUser.id !== user.id) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -223,7 +330,7 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
    *
    * @throws `BadRequestException` - If _any_ of the above conditions is violated a `BadRequestException` is thrown.
    */
-  private async checkCreateUserDTO(
+  private async checkUserDTO(
     { tutorials, tutorialsToCorrect, username, roles }: UserDTO,
     user?: UserDocument
   ) {

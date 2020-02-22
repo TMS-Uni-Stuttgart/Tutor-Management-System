@@ -16,4 +16,6 @@ export interface ServiceInterface<T, D, M> {
   findById(id: string): Promise<M>;
 
   create(dto: D): Promise<T>;
+
+  update(id: string, dto: D): Promise<T>;
 }
