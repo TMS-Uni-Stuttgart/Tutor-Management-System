@@ -6,7 +6,7 @@ import { MockedModel } from '../../../test/helpers/testdocument';
 import { TUTORIAL_DOCUMENTS, USER_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, User } from '../../shared/model/User';
-import { UserModel } from '../models/user.model';
+import { UserModel } from '../../database/models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
 

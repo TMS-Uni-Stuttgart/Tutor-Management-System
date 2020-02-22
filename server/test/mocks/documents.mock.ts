@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
-import { StudentModel } from '../../src/module/models/student.model';
-import { TutorialModel } from '../../src/module/models/tutorial.model';
-import { UserModel } from '../../src/module/models/user.model';
+import { StudentModel } from '../../src/database/models/student.model';
+import { TutorialModel } from '../../src/database/models/tutorial.model';
+import { UserModel } from '../../src/database/models/user.model';
 import { Role } from '../../src/shared/model/Role';
 import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';

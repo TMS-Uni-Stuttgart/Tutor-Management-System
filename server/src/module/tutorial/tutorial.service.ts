@@ -14,8 +14,8 @@ import {
   TutorialDocument,
   TutorialModel,
   populateTutorialDocument,
-} from '../models/tutorial.model';
-import { UserDocument } from '../models/user.model';
+} from '../../database/models/tutorial.model';
+import { UserDocument } from '../../database/models/user.model';
 import { UserService } from '../user/user.service';
 
 @Injectable()

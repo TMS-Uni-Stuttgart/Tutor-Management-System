@@ -15,7 +15,7 @@ import {
 } from '../../../test/mocks/documents.mock.helpers';
 import { Role } from '../../shared/model/Role';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
-import { TutorialModel } from '../models/tutorial.model';
+import { TutorialModel } from '../../database/models/tutorial.model';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
 

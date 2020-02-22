@@ -13,8 +13,8 @@ import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { ServiceInterface } from '../../helpers/ServiceInterface';
 import { Role } from '../../shared/model/Role';
-import { TutorialDocument } from '../models/tutorial.model';
-import { UserDocument, UserModel, populateUserDocument } from '../models/user.model';
+import { TutorialDocument } from '../../database/models/tutorial.model';
+import { UserDocument, UserModel, populateUserDocument } from '../../database/models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 
 @Injectable()
