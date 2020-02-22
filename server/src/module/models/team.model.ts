@@ -1,10 +1,28 @@
-import { DocumentType, modelOptions, plugin, prop, arrayProp } from '@typegoose/typegoose';
+import { arrayProp, DocumentType, modelOptions, plugin, post, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
-import { TutorialModel, TutorialDocument } from './tutorial.model';
-import { StudentModel, StudentDocument } from './student.model';
+import { StudentDocument } from './student.model';
+import { TutorialDocument, TutorialModel } from './tutorial.model';
+
+/**
+ * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.
+ *
+ * @param doc TeamDocument to populate.
+ */
+export async function populateTeamDocument(doc?: TeamDocument) {
+  if (!doc) {
+    return;
+  }
+
+  await doc.populate('students').execPopulate();
+}
 
 @plugin(mongooseAutoPopulate)
+@post<TeamModel>('findOne', async function(result, next) {
+  await populateTeamDocument(result);
+
+  next && next();
+})
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })
 export class TeamModel {
   @prop({ required: true })
@@ -13,33 +31,12 @@ export class TeamModel {
   @prop({ required: true, autopopulate: true, ref: TutorialModel })
   tutorial!: TutorialDocument;
 
-  // @arrayProp({ autopopulate: true, ref: StudentModel, default: [] })
-  // students!: StudentDocument[];
-
-  // /**
-  //  * Adds the given student to the team.
-  //  *
-  //  * If this team does NOT already include that student the student's team will get set to this team and the student gets added to this team. Afterwards _only_ this document is saved.
-  //  * Else the operation will not change anything.
-  //  *
-  //  * Please note: The related student does __NOT__ get saved by this operation.
-  //  *
-  //  * @param student Student to add to the team.
-  //  *
-  //  * @returns If the student got added the `save()` promise is returned. Else `undefined` is returned.
-  //  */
-  // async addStudent(this: TeamDocument, student: StudentDocument) {
-  //   const idx = this.students.findIndex(s => s.id === student.id);
-
-  //   if (idx !== -1) {
-  //     return undefined;
-  //   }
-
-  //   student.team = this;
-  //   this.students.push(student);
-
-  //   return this.save();
-  // }
+  @arrayProp({
+    ref: 'StudentModel',
+    foreignField: 'team',
+    localField: '_id',
+  })
+  students!: StudentDocument[];
 }
 
 export type TeamDocument = DocumentType<TeamModel>;

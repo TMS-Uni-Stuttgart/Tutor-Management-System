@@ -104,7 +104,7 @@ describe('TutorialService', () => {
   it('find a tutorial by id', async () => {
     const tutorial = await service.findById(TUTORIAL_DOCUMENTS[0]._id);
 
-    assertTutorial({ expected: TUTORIAL_DOCUMENTS[0], actual: tutorial.toDTO([]) });
+    assertTutorial({ expected: TUTORIAL_DOCUMENTS[0], actual: tutorial.toDTO() });
   });
 
   it('fail on finding non existing tutorial (by ID)', async () => {
