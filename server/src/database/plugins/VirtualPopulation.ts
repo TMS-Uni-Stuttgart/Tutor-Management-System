@@ -10,6 +10,7 @@ export interface VirtualPopulationOptions<M> {
 /**
  * Adds hooks to populate documents after the following queries:
  * - `findOne`
+ * - `save`
  *
  * Population is done by calling the provided `populateDocument` function.
  *
@@ -24,11 +25,14 @@ export default function VirtualPopulation<M>(
     return;
   }
 
-  schema.post('findOne', async function(result: any, next: () => void) {
+  const populateFunction = async function(result: any, next: () => void) {
     await populateDocument(result);
 
     next();
-  });
+  };
+
+  schema.post('findOne', populateFunction);
+  schema.post('save', populateFunction);
 }
 
 function assertPopulateDocument<M>(
