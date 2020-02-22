@@ -20,6 +20,11 @@ interface AssertUserListParam {
   actual: User[];
 }
 
+interface AssertUserDTOParams {
+  expected: UserDTO;
+  actual: User;
+}
+
 /**
  * Checks if the given user representations are considered equal.
  *
@@ -43,8 +48,8 @@ function assertUser({ expected, actual }: AssertUserParam) {
   expect(actualId).toBeDefined();
   expect(actualUser).toEqual(expectedUser);
 
-  expect(actualTutorials).toEqual(tutorials.map(t => t._id));
-  expect(actualTutorialsToCorrect).toEqual(tutorialsToCorrect.map(t => t._id));
+  expect(actualTutorials.map(t => t.id)).toEqual(tutorials.map(t => t._id));
+  expect(actualTutorialsToCorrect.map(t => t.id)).toEqual(tutorialsToCorrect.map(t => t._id));
 }
 
 /**
@@ -65,6 +70,34 @@ function assertUserList({ expected, actual }: AssertUserListParam) {
       actual: actual[i],
     });
   }
+}
+
+/**
+ * Checks if the given User and the given UserDTO are equal.
+ *
+ * Equalitiy is defined as:
+ * - The IDs of the tutorials are the same.
+ * - The IDS of the tutorials to correct are the same.
+ * - The rest of `expected` matches the rest of `actual` (__excluding `id` and `temporaryPassword`__).
+ *
+ * @param params Must contain an expected UserDTO and an actual User.
+ */
+function assertUserDTO({ expected, actual }: AssertUserDTOParams) {
+  const { tutorials, tutorialsToCorrect, ...restExpected } = expected;
+  const {
+    id,
+    temporaryPassword,
+    tutorials: actualTutorials,
+    tutorialsToCorrect: actualToCorrect,
+    ...restActual
+  } = sanitizeObject(actual);
+
+  expect(id).toBeDefined();
+
+  expect(actualTutorials.map(tutorial => tutorial.id)).toEqual(tutorials);
+  expect(actualToCorrect.map(tutorial => tutorial.id)).toEqual(tutorialsToCorrect);
+
+  expect(restActual).toEqual(restExpected);
 }
 
 describe('UserService', () => {
@@ -112,9 +145,9 @@ describe('UserService', () => {
 
     const createdUser: User = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+    const { temporaryPassword } = sanitizeObject(createdUser);
 
-    expect(actual).toEqual(expected);
+    assertUserDTO({ expected, actual: createdUser });
     expect(temporaryPassword).toBe(password);
   });
 
@@ -131,9 +164,9 @@ describe('UserService', () => {
     };
     const createdUser: User = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+    const { temporaryPassword } = sanitizeObject(createdUser);
 
-    expect(actual).toEqual(expected);
+    assertUserDTO({ expected, actual: createdUser });
     expect(temporaryPassword).toBe(password);
   });
 
@@ -151,9 +184,9 @@ describe('UserService', () => {
 
     const createdUser: User = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+    const { temporaryPassword } = sanitizeObject(createdUser);
 
-    expect(actual).toEqual(expected);
+    assertUserDTO({ expected, actual: createdUser });
     expect(temporaryPassword).toBe(password);
   });
 
@@ -186,9 +219,9 @@ describe('UserService', () => {
 
     const createdUser: User = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+    const { temporaryPassword } = sanitizeObject(createdUser);
 
-    expect(actual).toEqual(expected);
+    assertUserDTO({ expected, actual: createdUser });
     expect(temporaryPassword).toBe(password);
   });
 
@@ -206,9 +239,9 @@ describe('UserService', () => {
 
     const createdUser: User = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword, id, ...actual } = sanitizeObject(createdUser);
+    const { temporaryPassword } = sanitizeObject(createdUser);
 
-    expect(actual).toEqual(expected);
+    assertUserDTO({ expected, actual: createdUser });
     expect(temporaryPassword).toBe(password);
   });
 
@@ -294,10 +327,8 @@ describe('UserService', () => {
     const oldUser = await service.create(userToCreate);
     const updatedUser = await service.update(oldUser.id, updateDTO);
 
-    const { id, temporaryPassword, ...actual } = sanitizeObject(updatedUser);
-
-    expect(id).toEqual(oldUser.id);
-    expect(actual).toEqual(updateDTO);
+    expect(updatedUser.id).toEqual(oldUser.id);
+    assertUserDTO({ expected: updateDTO, actual: updatedUser });
   });
 
   it('update tutorials to be tutor of an existing user', async () => {
@@ -319,10 +350,8 @@ describe('UserService', () => {
     const oldUser = await service.create(userToCreate);
     const updatedUser = await service.update(oldUser.id, updateDTO);
 
-    const { id, temporaryPassword, ...actual } = sanitizeObject(updatedUser);
-
-    expect(id).toEqual(oldUser.id);
-    expect(actual).toEqual(updateDTO);
+    expect(updatedUser.id).toEqual(oldUser.id);
+    assertUserDTO({ expected: updateDTO, actual: updatedUser });
   });
 
   it('update tutorials to correct of an existing user', async () => {
@@ -344,10 +373,8 @@ describe('UserService', () => {
     const oldUser = await service.create(userToCreate);
     const updatedUser = await service.update(oldUser.id, updateDTO);
 
-    const { id, temporaryPassword, ...actual } = sanitizeObject(updatedUser);
-
-    expect(id).toEqual(oldUser.id);
-    expect(actual).toEqual(updateDTO);
+    expect(updatedUser.id).toEqual(oldUser.id);
+    assertUserDTO({ expected: updateDTO, actual: updatedUser });
   });
 
   it('fail on updating with already existing username', async () => {

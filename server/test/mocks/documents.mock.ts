@@ -53,7 +53,7 @@ export const USER_DOCUMENTS: MockedModel<UserModel>[] = [
     temporaryPassword: undefined,
     roles: [Role.TUTOR, Role.CORRECTOR],
     tutorials: [],
-    tutorialsToCorrect: [],
+    tutorialsToCorrect: [generateFakeDocument('5e5014186db2b69773038a9d')],
   },
 ];
 
@@ -80,7 +80,7 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     slot: 'Tutorial 2',
     students: [],
     teams: [],
-    correctors: [],
+    correctors: [generateFakeDocument('5e503ac11015dc73652731a6')],
     dates: createDatesForTutorial('2020-02-21'),
     startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
     endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
