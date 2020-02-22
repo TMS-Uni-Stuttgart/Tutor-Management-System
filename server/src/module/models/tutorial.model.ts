@@ -1,4 +1,12 @@
-import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import {
+  arrayProp,
+  DocumentType,
+  mapProp,
+  modelOptions,
+  plugin,
+  prop,
+  post,
+} from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { UserDocument, UserModel } from './user.model';
@@ -8,7 +16,28 @@ import { Tutorial } from '../../shared/model/Tutorial';
 import { TeamDocument } from './team.model';
 import { NoFunctions } from '../../helpers/NoFunctions';
 
+/**
+ * Populates the fields in the given TutorialDocument. If no document is provided this functions does nothing.
+ *
+ * @param doc TutorialDocument to populate.
+ */
+export async function populateTutorialDocument(doc?: TutorialDocument) {
+  if (!doc) {
+    return;
+  }
+
+  await doc
+    .populate('students')
+    .populate('teams')
+    .execPopulate();
+}
+
 @plugin(mongooseAutoPopulate)
+@post<TutorialModel>('findOne', async function(result, next) {
+  await populateTutorialDocument(result);
+
+  next && next();
+})
 @modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })
 export class TutorialModel {
   constructor(fields: NoFunctions<TutorialModel>) {
@@ -30,8 +59,19 @@ export class TutorialModel {
   @prop({ required: true })
   endTime!: Date;
 
-  @arrayProp({ requires: true, autopopulate: true, ref: 'StudentModel' })
+  @arrayProp({
+    ref: 'StudentModel',
+    foreignField: 'tutorial',
+    localField: '_id',
+  })
   students!: StudentDocument[];
+
+  @arrayProp({
+    ref: 'TeamModel',
+    foreignField: 'tutorials',
+    localField: '_id',
+  })
+  teams!: TeamDocument[];
 
   @arrayProp({ ref: 'UserModel', autopopulate: true, default: [] })
   correctors!: UserDocument[];
@@ -79,8 +119,8 @@ export class TutorialModel {
    *
    * @returns The DTO representation of this document.
    */
-  toDTO(this: TutorialDocument, teams: TeamDocument[]): Tutorial {
-    const { id, slot, tutor, dates, startTime, endTime, students, correctors } = this;
+  toDTO(this: TutorialDocument): Tutorial {
+    const { id, slot, tutor, dates, startTime, endTime, students, correctors, teams } = this;
     const substitutes: Map<string, string> = new Map();
 
     for (const [date, doc] of this.substitutes.entries()) {

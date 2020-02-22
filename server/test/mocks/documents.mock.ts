@@ -1,11 +1,10 @@
 import { DateTime } from 'luxon';
+import { StudentModel } from '../../src/module/models/student.model';
 import { TutorialModel } from '../../src/module/models/tutorial.model';
 import { UserModel } from '../../src/module/models/user.model';
 import { Role } from '../../src/shared/model/Role';
-import { MockedModel } from '../helpers/testdocument';
-import { StudentModel } from '../../src/module/models/student.model';
 import { StudentStatus } from '../../src/shared/model/Student';
-import mongoose from 'mongoose';
+import { MockedModel } from '../helpers/testdocument';
 
 export const USER_DOCUMENTS: MockedModel<UserModel>[] = [
   {
@@ -68,6 +67,7 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
       generateFakeDocument('5e503fa7467c801a4953e0b6'),
       generateFakeDocument('5e503fa4396e8d6f315f7194'),
     ],
+    teams: [],
     correctors: [],
     dates: createDatesForTutorial('2020-02-18'),
     startTime: DateTime.fromISO('08:00:00', { zone: 'utc' }).toJSDate(),
@@ -79,6 +79,7 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     tutor: generateFakeDocument('5e5013711922d1957bcf0c30'),
     slot: 'Tutorial 2',
     students: [],
+    teams: [],
     correctors: [],
     dates: createDatesForTutorial('2020-02-21'),
     startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),

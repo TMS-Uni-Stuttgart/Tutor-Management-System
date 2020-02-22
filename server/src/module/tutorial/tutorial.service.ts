@@ -10,7 +10,11 @@ import { InjectModel } from 'nestjs-typegoose';
 import { ServiceInterface } from '../../helpers/ServiceInterface';
 import { Role } from '../../shared/model/Role';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
-import { TutorialDocument, TutorialModel } from '../models/tutorial.model';
+import {
+  TutorialDocument,
+  TutorialModel,
+  populateTutorialDocument,
+} from '../models/tutorial.model';
 import { UserDocument } from '../models/user.model';
 import { UserService } from '../user/user.service';
 
@@ -29,8 +33,9 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
   async findAll(): Promise<Tutorial[]> {
     const tutorials: TutorialDocument[] = await this.tutorialModel.find().exec();
 
-    // TODO: Add proper teams!
-    return tutorials.map(tutorial => tutorial.toDTO([]));
+    await Promise.all(tutorials.map(doc => populateTutorialDocument(doc)));
+
+    return tutorials.map(tutorial => tutorial.toDTO());
   }
 
   /**
@@ -85,6 +90,7 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
       startTime: startDate,
       endTime: endDate,
       students: [],
+      teams: [],
       dates: dates.map(date => new Date(date)),
       correctors,
       substitutes: new Map(),
@@ -92,7 +98,7 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
 
     const created = await this.tutorialModel.create(tutorial);
 
-    return created.toDTO([]);
+    return created.toDTO();
   }
 
   private assertTutorHasTutorRole(tutor?: UserDocument) {
