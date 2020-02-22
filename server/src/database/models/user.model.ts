@@ -1,12 +1,4 @@
-import {
-  arrayProp,
-  DocumentType,
-  modelOptions,
-  plugin,
-  pre,
-  prop,
-  post,
-} from '@typegoose/typegoose';
+import { arrayProp, DocumentType, modelOptions, plugin, pre, prop } from '@typegoose/typegoose';
 import bcrypt from 'bcryptjs';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
@@ -15,8 +7,8 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { databaseConfig } from '../../helpers/config';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { User } from '../../shared/model/User';
-import { TutorialDocument } from './tutorial.model';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
+import { TutorialDocument } from './tutorial.model';
 
 /**
  * Populates the fields in the given UserDocument. If no document is provided this functions does nothing.

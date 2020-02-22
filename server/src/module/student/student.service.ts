@@ -53,4 +53,8 @@ export class StudentService implements ServiceInterface<Student, StudentDTO, Stu
 
     return created.toDTO();
   }
+
+  async update(id: string, dto: StudentDTO): Promise<Student> {
+    throw new Error('Method not implemented.');
+  }
 }

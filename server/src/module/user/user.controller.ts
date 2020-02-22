@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, UseGuards, Param, Delete } from '@nestjs/common';
-import { CreateUserDTO, User } from 'src/shared/model/User';
+import { Body, Controller, Get, Post, UseGuards, Param, Delete, Patch } from '@nestjs/common';
+import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { Role } from '../../shared/model/Role';
 import { UserService } from './user.service';
@@ -26,11 +26,19 @@ export class UserController {
   }
 
   @Get('/:id')
-  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
+  @UseGuards(new SameUserGuard({ roles: [Role.ADMIN, Role.EMPLOYEE] }))
   async getUser(@Param('id') id: string): Promise<User> {
     const user = await this.userService.findById(id);
 
     return user.toDTO();
+  }
+
+  @Patch('/:id')
+  @UseGuards(new SameUserGuard())
+  async updateUser(@Param('id') id: string, @Body() dto: UserDTO): Promise<User> {
+    const updatedUser = await this.userService.update(id, dto);
+
+    return updatedUser;
   }
 
   @Delete('/:id')

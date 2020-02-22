@@ -101,6 +101,10 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
     return created.toDTO();
   }
 
+  async update(id: string, dto: TutorialDTO): Promise<Tutorial> {
+    throw new Error('Method not implemented.');
+  }
+
   private assertTutorHasTutorRole(tutor?: UserDocument) {
     if (tutor && !tutor.roles.includes(Role.TUTOR)) {
       throw new BadRequestException('The tutor of a tutorial needs to have the TUTOR role.');

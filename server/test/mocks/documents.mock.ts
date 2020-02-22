@@ -86,6 +86,18 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
     substitutes: new Map(),
   },
+  {
+    _id: '5e51421a7fd4b19a4cbe933f',
+    tutor: undefined,
+    slot: 'Tutorial 2',
+    students: [],
+    teams: [],
+    correctors: [],
+    dates: createDatesForTutorial('2020-02-21'),
+    startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
+    endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
+    substitutes: new Map(),
+  },
 ];
 
 export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
