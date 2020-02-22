@@ -1,4 +1,4 @@
-import { HasId, NamedElement } from './Common';
+import { HasId, NamedElement, TutorialInEntity } from './Common';
 
 export interface TeamInStudent extends HasId {
   teamNo: number;
@@ -10,11 +10,6 @@ export enum StudentStatus {
   NO_SCHEIN_REQUIRED = 'NO_SCHEIN_REQUIRED',
 }
 
-export interface TutorialInStudent {
-  id: string;
-  slot: string;
-}
-
 export interface Student extends NamedElement {
   attendances: [string, string][];
   courseOfStudies?: string;
@@ -24,7 +19,7 @@ export interface Student extends NamedElement {
   presentationPoints: { [index: string]: number };
   status: StudentStatus;
   team?: TeamInStudent;
-  tutorial: TutorialInStudent;
+  tutorial: TutorialInEntity;
   cakeCount: number;
 }
 

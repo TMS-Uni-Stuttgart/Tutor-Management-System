@@ -1,6 +1,6 @@
-import { NamedElement } from './Common';
+import { NamedElement, TutorialInEntity } from './Common';
 import { Role } from './Role';
-import { LoggedInUserTutorial, LoggedInUserSubstituteTutorial } from './Tutorial';
+import { LoggedInUserSubstituteTutorial, LoggedInUserTutorial } from './Tutorial';
 
 export interface LoggedInUser extends NamedElement {
   tutorials: LoggedInUserTutorial[];
@@ -11,8 +11,8 @@ export interface LoggedInUser extends NamedElement {
 }
 
 export interface User extends NamedElement {
-  readonly tutorials: string[];
-  readonly tutorialsToCorrect: string[];
+  readonly tutorials: TutorialInEntity[];
+  readonly tutorialsToCorrect: TutorialInEntity[];
   readonly roles: Role[];
   readonly username: string;
   readonly email: string;
