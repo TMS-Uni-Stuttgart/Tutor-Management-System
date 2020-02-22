@@ -3,17 +3,26 @@ import { Request } from 'express';
 import { Role } from '../shared/model/Role';
 import { HasRoleGuard } from './has-role.guard';
 
+interface SameUserGuardOptions {
+  userIdField?: string;
+  roles?: Role[];
+}
+
 /**
  * Checks if the request is made on a user ID which belongs to the user making the request.
  *
- * By default the `id` param is assumed to be the one beloging to the user. If the user ID is in a different param field one can provide the _name_ of the field to the constructor of this class.
+ * By default the `id` param is assumed to be the one beloging to the user. If the user ID is in a different param field one can provide the _name_ of the field to the constructor of this class as `userIdField` option.
  *
- * Any user with the ADMIN role will get access to the endpoint.
+ * Any user with the ADMIN role will get access to the endpoint. The roles getting access immediatly can be configured by providing the `roles` option to the constructor.
  */
 @Injectable()
 export class SameUserGuard extends HasRoleGuard {
-  constructor(private readonly userIdField: string = 'id') {
-    super(Role.ADMIN);
+  private readonly userIdField: string;
+
+  constructor({ userIdField, roles }: SameUserGuardOptions = {}) {
+    super(roles ?? Role.ADMIN);
+
+    this.userIdField = userIdField ?? 'id';
   }
 
   canActivate(context: ExecutionContext): boolean {
