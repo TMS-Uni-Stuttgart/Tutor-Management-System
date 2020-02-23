@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { HasRoleGuard } from '../../guards/has-role.guard';
+import { TutorialGuard } from '../../guards/tutorial.guard';
 import { Role } from '../../shared/model/Role';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import { TutorialService } from './tutorial.service';
@@ -22,5 +23,13 @@ export class TutorialController {
     const tutorial = await this.tutorialService.create(dto);
 
     return tutorial;
+  }
+
+  @Get('/:id')
+  @UseGuards(TutorialGuard)
+  async getTutorial(@Param('id') id: string): Promise<Tutorial> {
+    const tutorial = await this.tutorialService.findById(id);
+
+    return tutorial.toDTO();
   }
 }

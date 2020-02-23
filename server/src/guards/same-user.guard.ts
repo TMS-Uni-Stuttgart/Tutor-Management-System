@@ -31,13 +31,13 @@ export class SameUserGuard extends HasRoleGuard {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const user = this.getUserFromRequest(request);
+    const user = this.getUserFromRequest(context);
     const paramId = this.getIdFromRequest(request);
 
     return user._id.toString() === paramId;
   }
 
-  private getIdFromRequest(request: Request): string {
+  protected getIdFromRequest(request: Request): string {
     if (!request.params[this.userIdField]) {
       Logger.error(
         `Request params must contain a '${this.userIdField}' field.`,
@@ -48,14 +48,5 @@ export class SameUserGuard extends HasRoleGuard {
     }
 
     return request.params[this.userIdField];
-  }
-
-  private getUserFromRequest(request: Request): Express.User {
-    if (!request.user) {
-      Logger.error('Request does not contain a user', undefined, SameUserGuard.name);
-      throw new ForbiddenException(`Forbidden ressource.`);
-    }
-
-    return request.user;
   }
 }

@@ -1,4 +1,4 @@
-import { ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { Role } from '../shared/model/Role';
 import { AuthenticatedGuard } from './authenticated.guard';
@@ -25,14 +25,7 @@ export class HasRoleGuard extends AuthenticatedGuard {
   }
 
   canActivate(context: ExecutionContext): boolean {
-    const isAuthenticated: boolean = super.canActivate(context);
-    const request = context.switchToHttp().getRequest<Request>();
-
-    if (!isAuthenticated || !request.user || !request.user.roles) {
-      throw new ForbiddenException('Forbidden ressource');
-    }
-
-    const { roles } = request.user;
+    const { roles } = this.getUserFromRequest(context);
 
     for (const role of this.allowedRoles) {
       if (roles.includes(role)) {
@@ -41,5 +34,17 @@ export class HasRoleGuard extends AuthenticatedGuard {
     }
 
     return false;
+  }
+
+  getUserFromRequest(context: ExecutionContext): Express.User {
+    const isAuthenticated: boolean = super.canActivate(context);
+    const request = context.switchToHttp().getRequest<Request>();
+
+    if (!isAuthenticated || !request.user || !request.user.roles) {
+      Logger.error('Request does not contain a user', undefined, HasRoleGuard.name);
+      throw new ForbiddenException('Forbidden ressource');
+    }
+
+    return request.user;
   }
 }

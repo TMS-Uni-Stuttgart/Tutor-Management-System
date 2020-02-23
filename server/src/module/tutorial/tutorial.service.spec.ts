@@ -7,15 +7,14 @@ import { MockedModel } from '../../../test/helpers/testdocument';
 import {
   createDatesForTutorialAsStrings,
   TUTORIAL_DOCUMENTS,
-  USER_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
 import {
   getAllUserDocsWithRole,
   getUserDocWithRole,
 } from '../../../test/mocks/documents.mock.helpers';
+import { TutorialModel } from '../../database/models/tutorial.model';
 import { Role } from '../../shared/model/Role';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
-import { TutorialModel } from '../../database/models/tutorial.model';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
 
