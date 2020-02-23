@@ -1,5 +1,4 @@
-import { ExecutionContext, ForbiddenException, Injectable, Logger } from '@nestjs/common';
-import { Request } from 'express';
+import { ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Role } from '../shared/model/Role';
 import { AuthenticatedGuard } from './authenticated.guard';
 import { UseUserFromRequest } from './helpers/UseUserFromRequest';

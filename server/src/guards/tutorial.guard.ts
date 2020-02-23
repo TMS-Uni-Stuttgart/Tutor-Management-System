@@ -8,7 +8,7 @@ import { TutorialDocument } from '../database/models/tutorial.model';
 /**
  * Checks if the request is made on a tutorial ID which the logged in user is allowed to access.
  *
- * By default the `id` param is assumend to be the one belonging to the tutorial. If the user ID is in a different param field one can set that field with the `@IDField()` decorator.
+ * By default the `id` param is assumend to be the one belonging to the tutorial. If the tutorial ID is in a different param field one can set that field with the `@IDField()` decorator.
  *
  * By default, any user with the ADMIN role will get access to the endpoint. The roles getting access immediatly can be configured with the `@Roles()` decorator.
  */
