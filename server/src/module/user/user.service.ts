@@ -244,6 +244,14 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
    */
   async delete(id: string): Promise<UserDocument> {
     const user = await this.findById(id);
+
+    await Promise.all(
+      user.tutorials.map(tutorial => {
+        tutorial.tutor = undefined;
+        return tutorial.save();
+      })
+    );
+
     return user.remove();
   }
 

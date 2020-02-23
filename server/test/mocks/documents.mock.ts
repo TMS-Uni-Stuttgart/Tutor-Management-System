@@ -55,6 +55,18 @@ export const USER_DOCUMENTS: MockedModel<UserModel>[] = [
     tutorials: [],
     tutorialsToCorrect: [generateFakeDocument('5e5014186db2b69773038a9d')],
   },
+  {
+    _id: '5e5255f7b0f499ba072261ea',
+    firstname: 'FRED',
+    lastname: 'Weasley',
+    email: 'weasley_fred@hogwarts.com',
+    username: 'weaslefd',
+    password: 'fredsPassword',
+    temporaryPassword: undefined,
+    roles: [Role.CORRECTOR],
+    tutorials: [],
+    tutorialsToCorrect: [],
+  },
 ];
 
 export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
@@ -186,5 +198,5 @@ export function createDatesForTutorialAsStrings(startISODate: string = '2020-02-
     dates.push(baseDate.plus({ weeks: i }));
   }
 
-  return dates.map(date => date.toJSON());
+  return dates.map(date => date.toISODate());
 }
