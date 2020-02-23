@@ -40,9 +40,7 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
   }
 
   /**
-   * Searches for a tutorial with th given ID and returns it.
-   *
-   * If there is no tutorial with that ID an exception is thrown.
+   * Searches for a tutorial with thegiven ID and returns it.
    *
    * @param id ID to search for.
    *

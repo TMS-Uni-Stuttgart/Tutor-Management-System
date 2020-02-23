@@ -153,5 +153,10 @@
       "export default $1Router;",
       ""
     ]
+  },
+  "throws documentation": {
+    "prefix": "@throws",
+    "description": "Template for the @throws documentation in JSDoc",
+    "body": "@throws `$1` - $0"
   }
 }
