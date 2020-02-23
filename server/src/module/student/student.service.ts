@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { ServiceInterface } from '../../helpers/ServiceInterface';
@@ -23,8 +23,23 @@ export class StudentService implements ServiceInterface<Student, StudentDTO, Stu
     return allStudents.map(student => student.toDTO());
   }
 
+  /**
+   * Searches for a student with the given ID and returns it.
+   *
+   * @param id ID to search for.
+   *
+   * @returns StudentDocument with the given ID.
+   *
+   * @throws `NotFoundException` - If no student with the given id could be found.
+   */
   async findById(id: string): Promise<StudentDocument> {
-    throw new Error('Method not implemented.');
+    const student: StudentDocument | null = await this.studentModel.findById(id).exec();
+
+    if (!student) {
+      throw new NotFoundException(`Student with the ID ${id} could not be found`);
+    }
+
+    return student;
   }
 
   /**
@@ -54,11 +69,51 @@ export class StudentService implements ServiceInterface<Student, StudentDTO, Stu
     return created.toDTO();
   }
 
+  /**
+   * Updates the student with the given ID and the given information.
+   *
+   * @param id ID of the student to update.
+   * @param dto Information to update the student with.
+   *
+   * @returns Updated student.
+   *
+   * @throws `NotFoundException` - If the no student with the given ID or if the new tutorial of the student (if it changes) could not be found.
+   */
   async update(id: string, dto: StudentDTO): Promise<Student> {
-    throw new Error('Method not implemented.');
+    const student = await this.findById(id);
+
+    if (dto.tutorial !== student.tutorial.id) {
+      const tutorial = await this.tutorialService.findById(dto.tutorial);
+      student.tutorial = tutorial;
+    }
+
+    const { firstname, lastname, status, courseOfStudies, email, matriculationNo } = dto;
+
+    // TODO: Add proper team
+    student.firstname = firstname;
+    student.lastname = lastname;
+    student.status = status;
+    student.courseOfStudies = courseOfStudies;
+    student.email = email;
+    student.matriculationNo = matriculationNo;
+
+    const updatedStudent = await student.save();
+
+    return updatedStudent.toDTO();
   }
 
+  /**
+   * Deletes the student with the given ID.
+   *
+   * @param id ID of the student to delete.
+   *
+   * @returns Document of the deleted student.
+   *
+   * @throws `NotFoundException` - If no student with the given ID could be found.
+   */
   async delete(id: string): Promise<StudentDocument> {
-    throw new Error('Method not implemented.');
+    const student = await this.findById(id);
+
+    return student.remove();
   }
 }
