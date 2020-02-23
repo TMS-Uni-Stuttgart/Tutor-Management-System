@@ -4,6 +4,7 @@ import { CollectionName } from '../../helpers/CollectionName';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
+import { NoFunctions } from '../../helpers/NoFunctions';
 
 /**
  * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.
@@ -18,12 +19,20 @@ export async function populateTeamDocument(doc?: TeamDocument) {
   await doc.populate('students').execPopulate();
 }
 
+type AssignableFields = Omit<NoFunctions<TeamModel>, 'students'>;
+
 @plugin(mongooseAutoPopulate)
 @plugin<VirtualPopulationOptions<TeamModel>>(VirtualPopulation, {
   populateDocument: populateTeamDocument,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })
 export class TeamModel {
+  constructor(fields: AssignableFields) {
+    Object.assign(this, fields);
+
+    this.students = [];
+  }
+
   @prop({ required: true })
   teamNo!: number;
 

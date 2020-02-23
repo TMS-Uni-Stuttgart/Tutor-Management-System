@@ -19,8 +19,6 @@ const USER_DOCUMENTS: MockedUserModel[] = [
       password: bcrypt.hashSync('harrysPassword', bcrypt.genSaltSync(10)),
       temporaryPassword: undefined,
       roles: [Role.TUTOR],
-      tutorials: [],
-      tutorialsToCorrect: [],
     })
   ),
 ];

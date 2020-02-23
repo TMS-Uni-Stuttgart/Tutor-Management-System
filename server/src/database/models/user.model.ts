@@ -26,6 +26,8 @@ export async function populateUserDocument(doc?: UserDocument) {
     .execPopulate();
 }
 
+type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToCorrect'>;
+
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
   fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email'],
@@ -53,8 +55,11 @@ export async function populateUserDocument(doc?: UserDocument) {
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.USER, toObject: { virtuals: true } } })
 export class UserModel {
-  constructor(fields: NoFunctions<UserModel>) {
+  constructor(fields: AssignableFields) {
     Object.assign(this, fields);
+
+    this.tutorials = [];
+    this.tutorialsToCorrect = [];
   }
 
   @prop({ required: true })

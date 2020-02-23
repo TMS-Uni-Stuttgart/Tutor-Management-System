@@ -125,8 +125,6 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
       username,
       password,
       temporaryPassword: password,
-      tutorials,
-      tutorialsToCorrect,
     });
 
     const result = (await this.userModel.create(userDocument)) as UserDocument;
