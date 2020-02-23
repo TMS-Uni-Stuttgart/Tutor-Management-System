@@ -2,6 +2,7 @@ import { ExecutionContext, ForbiddenException, Injectable, Logger } from '@nestj
 import { Request } from 'express';
 import { Role } from '../shared/model/Role';
 import { AuthenticatedGuard } from './authenticated.guard';
+import { UseUserFromRequest } from './helpers/UseUserFromRequest';
 
 /**
  * Guard which check if request is done by a user which fullfil the following conditions:
@@ -11,7 +12,7 @@ import { AuthenticatedGuard } from './authenticated.guard';
  * If any of the above do _not_ apply access is refused and if all apply access is granted.
  */
 @Injectable()
-export class HasRoleGuard extends AuthenticatedGuard {
+export class HasRoleGuard extends UseUserFromRequest {
   private readonly allowedRoles: readonly Role[];
 
   constructor(roles: Role | Role[]) {
@@ -25,6 +26,13 @@ export class HasRoleGuard extends AuthenticatedGuard {
   }
 
   canActivate(context: ExecutionContext): boolean {
+    const authGuard = new AuthenticatedGuard();
+    const isAuthenticated = authGuard.canActivate(context);
+
+    if (!isAuthenticated) {
+      throw new ForbiddenException('Forbidden ressource');
+    }
+
     const { roles } = this.getUserFromRequest(context);
 
     for (const role of this.allowedRoles) {
@@ -34,17 +42,5 @@ export class HasRoleGuard extends AuthenticatedGuard {
     }
 
     return false;
-  }
-
-  getUserFromRequest(context: ExecutionContext): Express.User {
-    const isAuthenticated: boolean = super.canActivate(context);
-    const request = context.switchToHttp().getRequest<Request>();
-
-    if (!isAuthenticated || !request.user || !request.user.roles) {
-      Logger.error('Request does not contain a user', undefined, HasRoleGuard.name);
-      throw new ForbiddenException('Forbidden ressource');
-    }
-
-    return request.user;
   }
 }

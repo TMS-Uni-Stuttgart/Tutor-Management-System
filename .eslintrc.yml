@@ -24,7 +24,7 @@ rules:
     - { functions: false, classes: true, variables: true, typedefs: true }
   '@typescript-eslint/no-parameter-properties':
     - 'error'
-    - { allows: ['private', 'readonly', 'private readonly'] }
+    - { allows: ['private', 'readonly', 'private readonly', 'protected readonly'] }
   '@typescript-eslint/interface-name-prefix': 'off'
   'constructor-super': 'error'
   'no-fallthrough': 'error'

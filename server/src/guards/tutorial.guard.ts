@@ -1,17 +1,9 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Logger,
-  ForbiddenException,
-} from '@nestjs/common';
-import { Role } from '../shared/model/Role';
-import { HasRoleGuard } from './has-role.guard';
-import { Request } from 'express';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLE_METADATA_KEY } from '../decorators/roles.decorator';
-import { ID_FIELD_METADATA_KEY } from '../decorators/idField.decorator';
 import { TutorialService } from '../module/tutorial/tutorial.service';
+import { HasRoleGuard } from './has-role.guard';
+import { UseMetadata } from './helpers/UseMetadata';
+import { TutorialDocument } from '../database/models/tutorial.model';
 
 /**
  * Checks if the request is made on a tutorial ID which the logged in user is allowed to access.
@@ -21,43 +13,29 @@ import { TutorialService } from '../module/tutorial/tutorial.service';
  * By default, any user with the ADMIN role will get access to the endpoint. The roles getting access immediatly can be configured with the `@Roles()` decorator.
  */
 @Injectable()
-export class TutorialGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly tutorialService: TutorialService
-  ) {}
+export class TutorialGuard extends UseMetadata {
+  constructor(private readonly tutorialService: TutorialService, reflector: Reflector) {
+    super(reflector);
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const roles: Role[] | undefined = this.reflector.get<Role[]>(
-      ROLE_METADATA_KEY,
-      context.getHandler()
-    );
-    const roleGuard = new HasRoleGuard(roles ?? [Role.ADMIN]);
+    const roles = this.getRolesFromContext(context);
+    const roleGuard = new HasRoleGuard(roles);
 
     if (roleGuard.canActivate(context)) {
       return true;
     }
 
     // TODO: Support substitutions & correctors aswell.
-    const user = roleGuard.getUserFromRequest(context);
+    const user = this.getUserFromRequest(context);
     const tutorial = await this.getTutorialFromRequest(context);
 
     return tutorial.tutor?.id === user._id;
   }
 
-  private async getTutorialFromRequest(context: ExecutionContext) {
-    const idField = this.reflector.get<string>(ID_FIELD_METADATA_KEY, context.getHandler()) ?? 'id';
+  private async getTutorialFromRequest(context: ExecutionContext): Promise<TutorialDocument> {
+    const tutorialId = this.getIdFieldContentFromContext(context);
 
-    const request = context.switchToHttp().getRequest<Request>();
-    if (!request.params[idField]) {
-      Logger.error(
-        `Request params must contain a '${idField}' field.`,
-        undefined,
-        TutorialGuard.name
-      );
-      throw new ForbiddenException('Forbidden ressource.');
-    }
-
-    return this.tutorialService.findById(request.params[idField]);
+    return this.tutorialService.findById(tutorialId);
   }
 }
