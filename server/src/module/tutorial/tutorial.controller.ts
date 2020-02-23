@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+  Patch,
+  Delete,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
 import { Role } from '../../shared/model/Role';
@@ -31,5 +42,20 @@ export class TutorialController {
     const tutorial = await this.tutorialService.findById(id);
 
     return tutorial.toDTO();
+  }
+
+  @Patch('/:id')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  async updateTutorial(@Param('id') id: string, @Body() dto: TutorialDTO): Promise<Tutorial> {
+    const tutorial = await this.tutorialService.update(id, dto);
+
+    return tutorial;
+  }
+
+  @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  async deleteTutorial(@Param('id') id: string): Promise<void> {
+    await this.tutorialService.delete(id);
   }
 }

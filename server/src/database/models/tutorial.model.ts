@@ -16,7 +16,7 @@ import { DateTime } from 'luxon';
  * @param doc TutorialDocument to populate.
  */
 export async function populateTutorialDocument(doc?: TutorialDocument) {
-  if (!doc) {
+  if (!doc || !doc.populate) {
     return;
   }
 

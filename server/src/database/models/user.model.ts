@@ -16,7 +16,7 @@ import { TutorialDocument } from './tutorial.model';
  * @param doc UserDocument to populate.
  */
 export async function populateUserDocument(doc?: UserDocument) {
-  if (!doc) {
+  if (!doc || !doc.populate) {
     return;
   }
 
