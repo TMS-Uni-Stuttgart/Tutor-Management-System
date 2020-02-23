@@ -57,4 +57,8 @@ export class StudentService implements ServiceInterface<Student, StudentDTO, Stu
   async update(id: string, dto: StudentDTO): Promise<Student> {
     throw new Error('Method not implemented.');
   }
+
+  async delete(id: string): Promise<StudentDocument> {
+    throw new Error('Method not implemented.');
+  }
 }

@@ -29,6 +29,12 @@ interface AssertTutorialListParams {
   actual: Tutorial[];
 }
 
+interface AssertTutorialDTOParams {
+  expected: TutorialDTO;
+  actual: Tutorial;
+  oldTutorial?: Tutorial;
+}
+
 /**
  * Checks if the `expected` and the `actual` tutorials are equal.
  *
@@ -52,9 +58,9 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
   expect(actual.students).toEqual(students.map(s => s._id));
   expect(actual.correctors).toEqual(correctors.map(c => c._id));
 
-  expect(actual.dates).toEqual(dates.map(date => date.toJSON()));
-  expect(actual.startTime).toEqual(startTime);
-  expect(actual.endTime).toEqual(endTime);
+  expect(actual.dates).toEqual(dates.map(date => DateTime.fromJSDate(date).toISODate()));
+  expect(DateTime.fromISO(actual.startTime).equals(DateTime.fromJSDate(startTime))).toBeTruthy();
+  expect(DateTime.fromISO(actual.endTime).equals(DateTime.fromJSDate(endTime))).toBeTruthy();
 
   expect(actual.substitutes).toEqual([...substitutes]);
 }
@@ -67,6 +73,54 @@ function assertTutorialList({ expected, actual }: AssertTutorialListParams) {
       expected: expected[i],
       actual: actual[i],
     });
+  }
+}
+
+/**
+ * Checks if the given Tutorial and the given TutorialDTO are equal.
+ *
+ * Equalitiy is defined as:
+ * - Dates & Times are equal as of luxon's definition of an equal date.
+ * - The IDs of the correctors match.
+ * - `students`, `teams` and `substitutes` are either empty (if not `oldTutorial` tutorial is provided) or match those in the `oldTutorial` tutorial.
+ * - The rest of `expected` matches the rest of `actual`.
+ *
+ * @param params Must contain an expected TutorialDTO and an actual Tutorial. Can include an old version of the tutorial to compare `teams`, `students` and `substitutes`.
+ */
+function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOParams) {
+  const {
+    id,
+    tutor,
+    startTime,
+    endTime,
+    correctors,
+    dates,
+    slot,
+    students,
+    teams,
+    substitutes,
+  } = actual;
+  const { tutorId, startTime: expectedStart, endTime: expectedEnd, correctorIds } = expected;
+
+  expect(id).toBeDefined();
+  expect(tutor).toEqual(tutorId);
+  expect(slot).toEqual(expected.slot);
+
+  expect(dates).toEqual(expected.dates.map(date => DateTime.fromISO(date).toISODate()));
+
+  expect(DateTime.fromISO(startTime).equals(DateTime.fromISO(expectedStart))).toBeTruthy();
+  expect(DateTime.fromISO(endTime).equals(DateTime.fromISO(expectedEnd))).toBeTruthy();
+
+  expect(correctors).toEqual(correctorIds);
+
+  if (!!oldTutorial) {
+    expect(teams).toEqual(oldTutorial.teams);
+    expect(students).toEqual(oldTutorial.students);
+    expect(substitutes).toEqual(oldTutorial.substitutes);
+  } else {
+    expect(teams).toEqual([]);
+    expect(students).toEqual([]);
+    expect(substitutes).toEqual([]);
   }
 }
 
@@ -117,44 +171,15 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
 
     const tutorial = await service.create(dto);
-    const {
-      id,
-      tutor,
-      startTime,
-      endTime,
-      students,
-      correctors,
-      substitutes,
-      teams,
-      ...actual
-    } = tutorial;
-    const {
-      tutorId,
-      startTime: expectedStart,
-      endTime: expectedEnd,
-      correctorIds,
-      ...expected
-    } = dto;
 
-    expect(id).toBeDefined();
-    expect(tutor).toBeUndefined();
-
-    expect(startTime.toJSON()).toEqual(expectedStart);
-    expect(endTime.toJSON()).toEqual(expectedEnd);
-
-    expect(teams).toEqual([]);
-    expect(students).toEqual([]);
-    expect(correctors).toEqual([]);
-    expect(substitutes).toEqual([]);
-
-    expect(actual).toEqual(expected);
+    assertTutorialDTO({ expected: dto, actual: tutorial });
   });
 
   it('create a tutorial with a tutor', async () => {
@@ -162,7 +187,7 @@ describe('TutorialService', () => {
 
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
-      tutorId: USER_DOCUMENTS[1]._id,
+      tutorId: tutorDoc._id,
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
@@ -171,7 +196,7 @@ describe('TutorialService', () => {
 
     const tutorial = await service.create(dto);
 
-    expect(tutorial.tutor).toEqual(tutorDoc._id);
+    assertTutorialDTO({ expected: dto, actual: tutorial });
   });
 
   it('create a tutorial with correctors', async () => {
@@ -188,7 +213,7 @@ describe('TutorialService', () => {
 
     const tutorial = await service.create(dto);
 
-    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector._id));
+    assertTutorialDTO({ expected: dto, actual: tutorial });
   });
 
   it('create a tutorial with tutor and correctors', async () => {
@@ -206,8 +231,7 @@ describe('TutorialService', () => {
 
     const tutorial = await service.create(dto);
 
-    expect(tutorial.tutor).toEqual(tutorDoc._id);
-    expect(tutorial.correctors).toEqual(correctorDocs.map(corrector => corrector._id));
+    assertTutorialDTO({ expected: dto, actual: tutorial });
   });
 
   it('fail on creating a tutorial with a non tutor', async () => {
@@ -240,4 +264,192 @@ describe('TutorialService', () => {
 
     await expect(service.create(dto)).rejects.toThrow(BadRequestException);
   });
+
+  it('update a tutorial without updating the tutor of the correctors', async () => {
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      slot: 'Tutorial Prev',
+      startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings('2020-02-18'),
+    };
+
+    const oldTutorial = await service.create(createDTO);
+    const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+
+    assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+  });
+
+  it('update tutor of tutorial', async () => {
+    const tutors = getAllUserDocsWithRole(Role.TUTOR);
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: tutors[0]._id,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      tutorId: tutors[1]._id,
+    };
+
+    const oldTutorial = await service.create(createDTO);
+    const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+
+    assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+  });
+
+  it('update tutorial to not have a tutor anymore', async () => {
+    const tutor = getUserDocWithRole(Role.TUTOR);
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      tutorId: tutor._id,
+    };
+
+    const oldTutorial = await service.create(createDTO);
+    const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+
+    assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+  });
+
+  it('update correctors of tutorial', async () => {
+    const correctors = getAllUserDocsWithRole(Role.CORRECTOR);
+
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [correctors[0]._id],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      correctorIds: [correctors[1]._id],
+    };
+
+    const oldTutorial = await service.create(createDTO);
+    const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+
+    assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+  });
+
+  it('fail on updating with a non-existing tutor', async () => {
+    const nonExistingId = generateObjectId();
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: nonExistingId,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      tutorId: undefined,
+    };
+
+    const oldTutorial = await service.create(createDTO);
+
+    await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(NotFoundException);
+  });
+
+  it('fail on updating with a non-existing corrector', async () => {
+    const nonExistingId = generateObjectId();
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [nonExistingId],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      correctorIds: [],
+    };
+
+    const oldTutorial = await service.create(createDTO);
+
+    await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(NotFoundException);
+  });
+
+  it('fail on updating a tutorial with a non-tutor', async () => {
+    const nonTutor = getUserDocWithRole(Role.ADMIN);
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: nonTutor._id,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      tutorId: undefined,
+    };
+
+    const oldTutorial = await service.create(createDTO);
+
+    await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(BadRequestException);
+  });
+
+  it('fail on updating a tutorial with a non-corrector', async () => {
+    const nonCorrector = getUserDocWithRole(Role.ADMIN);
+    const updatedDTO: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [nonCorrector._id],
+    };
+    const createDTO: TutorialDTO = {
+      ...updatedDTO,
+      correctorIds: [],
+    };
+
+    const oldTutorial = await service.create(createDTO);
+
+    await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(BadRequestException);
+  });
+
+  it('delete a tutorial', async () => {
+    const tutorDoc = getUserDocWithRole(Role.TUTOR);
+
+    const dto: TutorialDTO = {
+      slot: 'Tutorial 3',
+      tutorId: tutorDoc._id,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [],
+    };
+
+    const tutorial = await service.create(dto);
+    const deletedTutorial = await service.delete(tutorial.id);
+
+    expect(deletedTutorial.id).toEqual(tutorial.id);
+    await expect(service.findById(tutorial.id)).rejects.toThrow(NotFoundException);
+  });
+
+  it.todo('fail on deleting a tutorial with students');
 });

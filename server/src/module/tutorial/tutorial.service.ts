@@ -17,6 +17,7 @@ import {
 } from '../../database/models/tutorial.model';
 import { UserDocument } from '../../database/models/user.model';
 import { UserService } from '../user/user.service';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, TutorialDocument> {
@@ -81,8 +82,8 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
     this.assertTutorHasTutorRole(tutor);
     this.assertCorrectorsHaveCorrectorRole(correctors);
 
-    const startDate = new Date(startTime);
-    const endDate = new Date(endTime);
+    const startDate = DateTime.fromISO(startTime).toJSDate();
+    const endDate = DateTime.fromISO(endTime).toJSDate();
 
     const tutorial = new TutorialModel({
       slot,
@@ -91,7 +92,7 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
       endTime: endDate,
       students: [],
       teams: [],
-      dates: dates.map(date => new Date(date)),
+      dates: dates.map(date => DateTime.fromISO(date).toJSDate()),
       correctors,
       substitutes: new Map(),
     });
@@ -101,8 +102,60 @@ export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, 
     return created.toDTO();
   }
 
+  /**
+   * Updates the tutorial with the given information and returns the updated tutorial.
+   *
+   * @param id ID of the Tutorial to update.
+   * @param dto Information to update the tutorial with.
+   *
+   * @returns Updated document.
+   *
+   * @throws `BadRequestExpcetion` - If the tutor to be assigned does not have the TUTOR role or if any of the correctors to be assigned does not have the CORRECTOR role.
+   * @throws `NotFoundException` - If the tutorial with the given ID or if the tutor with the ID in the DTO or if any corrector with the ID in the DTO could NOT be found.
+   */
   async update(id: string, dto: TutorialDTO): Promise<Tutorial> {
-    throw new Error('Method not implemented.');
+    const tutorial = await this.findById(id);
+    const tutor = !!dto.tutorId ? await this.userService.findById(dto.tutorId) : undefined;
+    const correctors = await Promise.all(
+      dto.correctorIds.map(corrId => this.userService.findById(corrId))
+    );
+
+    this.assertTutorHasTutorRole(tutor);
+    this.assertCorrectorsHaveCorrectorRole(correctors);
+
+    tutorial.slot = dto.slot;
+    tutorial.dates = dto.dates.map(date => DateTime.fromISO(date).toJSDate());
+    tutorial.startTime = DateTime.fromISO(dto.startTime).toJSDate();
+    tutorial.endTime = DateTime.fromISO(dto.endTime).toJSDate();
+
+    tutorial.tutor = tutor;
+    tutorial.correctors = correctors;
+
+    const updatedTutorial = await tutorial.save();
+
+    return updatedTutorial.toDTO();
+  }
+
+  /**
+   * Deletes the given tutorial and returns it's document.
+   *
+   * However, a tutorial which still has one or more students assigned to it can _not_ be deleted.
+   *
+   * @param id ID of the tutorial to delete.
+   *
+   * @returns Document of the deleted tutorial.
+   *
+   * @throws `NotFoundException` - If no tutorial with the given ID could be found.
+   * @throws `BadRequestException` - If the tutorial to delete still has one or more student assigned to it.
+   */
+  async delete(id: string): Promise<TutorialDocument> {
+    const tutorial = await this.findById(id);
+
+    if (tutorial.students.length > 0) {
+      throw new BadRequestException(`A tutorial with students can NOT be deleted.`);
+    }
+
+    return tutorial.remove();
   }
 
   private assertTutorHasTutorRole(tutor?: UserDocument) {

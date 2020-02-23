@@ -18,4 +18,6 @@ export interface ServiceInterface<T, D, M> {
   create(dto: D): Promise<T>;
 
   update(id: string, dto: D): Promise<T>;
+
+  delete(id: string): Promise<M>;
 }

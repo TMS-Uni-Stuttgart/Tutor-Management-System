@@ -13,8 +13,8 @@ export interface Tutorial extends HasId {
   slot: string;
   tutor?: string;
   dates: string[];
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   students: string[];
   teams: string[];
   correctors: string[];
