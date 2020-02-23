@@ -26,14 +26,19 @@ export async function populateTutorialDocument(doc?: TutorialDocument) {
     .execPopulate();
 }
 
+type AssignableFields = Omit<NoFunctions<TutorialModel>, 'students' | 'teams'>;
+
 @plugin(mongooseAutoPopulate)
 @plugin<VirtualPopulationOptions<TutorialModel>>(VirtualPopulation, {
   populateDocument: populateTutorialDocument,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })
 export class TutorialModel {
-  constructor(fields: NoFunctions<TutorialModel>) {
+  constructor(fields: AssignableFields) {
     Object.assign(this, fields);
+
+    this.students = [];
+    this.teams = [];
   }
 
   @prop({ required: true })
