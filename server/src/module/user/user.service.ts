@@ -310,6 +310,54 @@ export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO
   }
 
   /**
+   * Sets the password of the given user to the given one. This will remove the `temporaryPassword` from the uesr.
+   *
+   * If one wants to set the temporary password aswell one should use the `setTemporaryPassword()` function.
+   *
+   * @param id ID of the user.
+   * @param password (New) password.
+   *
+   * @returns Updated UserDocument
+   *
+   * @throws `NotFoundException` - If no user with the given ID could be found.
+   */
+  async setPassword(id: string, password: string): Promise<UserDocument> {
+    const user = await this.findById(id);
+
+    user.password = password;
+    user.temporaryPassword = undefined;
+
+    const updatedUser = await user.save();
+    updatedUser.decryptFieldsSync();
+
+    return updatedUser;
+  }
+
+  /**
+   * Sets the password _and_ the temporary password of the user to the given one.
+   *
+   * If one only wants to set the password while removing the temporary one, one should use the `setPassword()` function.
+   *
+   * @param id ID of the user.
+   * @param password (New) password.
+   *
+   * @returns Updated UserDocument
+   *
+   * @throws `NotFoundException` - If no user with the given ID could be found.
+   */
+  async setTemporaryPassword(id: string, password: string): Promise<UserDocument> {
+    const user = await this.findById(id);
+
+    user.password = password;
+    user.temporaryPassword = password;
+
+    const updatedUser = await user.save();
+    updatedUser.decryptFieldsSync();
+
+    return updatedUser;
+  }
+
+  /**
    * Helper to retrieve all TutorialDocument of the given IDs.
    *
    * All tutorials will be fetched in parallel with a `Promise.all` collecting them all. The tutorials retrieved will match the order of their provided IDs.

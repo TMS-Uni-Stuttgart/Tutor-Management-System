@@ -1,9 +1,23 @@
-import { Body, Controller, Get, Post, UseGuards, Param, Delete, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { HasRoleGuard } from '../../guards/has-role.guard';
-import { Role } from '../../shared/model/Role';
-import { UserService } from './user.service';
 import { SameUserGuard } from '../../guards/same-user.guard';
+import { Role } from '../../shared/model/Role';
+import { PasswordDTO } from './user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
@@ -45,5 +59,21 @@ export class UserController {
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   async deleteUser(@Param('id') id: string): Promise<void> {
     await this.userService.delete(id);
+  }
+
+  @Post('/:id/password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UsePipes(ValidationPipe)
+  async updatePassword(@Param('id') id: string, @Body() body: PasswordDTO) {
+    await this.userService.setPassword(id, body.password);
+  }
+
+  @Post('/:id/temporaryPassword')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UsePipes(ValidationPipe)
+  async updateTemporaryPassword(@Param('id') id: string, @Body() body: PasswordDTO) {
+    await this.userService.setTemporaryPassword(id, body.password);
   }
 }
