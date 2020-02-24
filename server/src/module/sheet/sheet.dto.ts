@@ -1,4 +1,11 @@
-import { IsArray, IsNotEmpty, IsOptional, IsPositive, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsPositive,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { ISheetDTO, ISubexerciseDTO } from '../../shared/model/Sheet';
 
 export class SubExerciseDTO implements ISubexerciseDTO {
@@ -18,8 +25,10 @@ export class SubExerciseDTO implements ISubexerciseDTO {
 }
 
 export class ExerciseDTO extends SubExerciseDTO {
-  @IsArray({ each: true })
-  subexercises!: SubExerciseDTO[];
+  @IsArray()
+  @IsOptional()
+  @ValidateNested()
+  subexercises?: SubExerciseDTO[];
 }
 
 export class SheetDTO implements ISheetDTO {
@@ -29,6 +38,7 @@ export class SheetDTO implements ISheetDTO {
   @IsNotEmpty()
   bonusSheet!: boolean;
 
-  @IsArray({ each: true })
+  @IsArray()
+  @ValidateNested()
   exercises!: ExerciseDTO[];
 }
