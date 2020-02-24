@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { ServiceInterface } from '../../helpers/ServiceInterface';
+import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import {
@@ -20,7 +20,7 @@ import { UserService } from '../user/user.service';
 import { DateTime } from 'luxon';
 
 @Injectable()
-export class TutorialService implements ServiceInterface<Tutorial, TutorialDTO, TutorialDocument> {
+export class TutorialService implements CRUDService<Tutorial, TutorialDTO, TutorialDocument> {
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,

@@ -11,14 +11,14 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
-import { ServiceInterface } from '../../helpers/ServiceInterface';
+import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { UserDocument, UserModel, populateUserDocument } from '../../database/models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 
 @Injectable()
-export class UserService implements OnModuleInit, ServiceInterface<User, UserDTO, UserDocument> {
+export class UserService implements OnModuleInit, CRUDService<User, UserDTO, UserDocument> {
   constructor(
     @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,

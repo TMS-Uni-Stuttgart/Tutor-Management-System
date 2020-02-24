@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { ServiceInterface } from '../../helpers/ServiceInterface';
+import { CRUDService } from '../../helpers/CRUDService';
 import { Student } from '../../shared/model/Student';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { StudentDTO } from './student.dto';
 import { TutorialService } from '../tutorial/tutorial.service';
 
 @Injectable()
-export class StudentService implements ServiceInterface<Student, StudentDTO, StudentDocument> {
+export class StudentService implements CRUDService<Student, StudentDTO, StudentDocument> {
   constructor(
     private readonly tutorialService: TutorialService,
     @InjectModel(StudentModel) private readonly studentModel: ReturnModelType<typeof StudentModel>

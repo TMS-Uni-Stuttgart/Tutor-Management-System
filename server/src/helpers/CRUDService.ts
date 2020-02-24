@@ -10,7 +10,7 @@
  * class StudentService implements ServiceInterface<Student, StudentDTO, StudentDocument>
  * ```
  */
-export interface ServiceInterface<T, D, M> {
+export interface CRUDService<T, D, M> {
   findAll(): Promise<T[]>;
 
   findById(id: string): Promise<M>;
