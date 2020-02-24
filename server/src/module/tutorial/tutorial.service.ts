@@ -40,7 +40,7 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
   }
 
   /**
-   * Searches for a tutorial with thegiven ID and returns it.
+   * Searches for a tutorial with the given ID and returns it.
    *
    * @param id ID to search for.
    *
