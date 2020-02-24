@@ -1,12 +1,13 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import bcrypt from 'bcryptjs';
 import { generateObjectId, sanitizeObject } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import { TUTORIAL_DOCUMENTS, USER_DOCUMENTS } from '../../../test/mocks/documents.mock';
+import { UserModel } from '../../database/models/user.model';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, User, UserDTO } from '../../shared/model/User';
-import { UserModel } from '../../database/models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
 
@@ -468,5 +469,47 @@ describe('UserService', () => {
 
     expect(deletedUser.id).toEqual(user.id);
     await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
+  });
+
+  it('update the password of a user', async () => {
+    const newPassword: string = 'anotherPassword';
+    const dto: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.TUTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
+
+    const user = await service.create(dto);
+    const updatedUser = await service.setPassword(user.id, newPassword);
+    const userCredentials = await service.findWithUsername(user.username);
+
+    expect(updatedUser.temporaryPassword).toBeUndefined();
+    expect(() => bcrypt.compareSync(newPassword, userCredentials.password)).toBeTruthy();
+  });
+
+  it('update the temporary password of a user', async () => {
+    const newPassword: string = 'anotherPassword';
+    const dto: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.TUTOR],
+      tutorials: [],
+      tutorialsToCorrect: [],
+    };
+
+    const user = await service.create(dto);
+    const updatedUser = await service.setTemporaryPassword(user.id, newPassword);
+    const userCredentials = await service.findWithUsername(user.username);
+
+    expect(updatedUser.temporaryPassword).toEqual(newPassword);
+    expect(() => bcrypt.compareSync(newPassword, userCredentials.password)).toBeTruthy();
   });
 });
