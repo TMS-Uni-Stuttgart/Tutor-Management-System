@@ -10,11 +10,14 @@ export interface Sheet extends HasExercises {
   sheetNo: number;
 }
 
-export interface Exercise extends HasId {
+export interface Subexercise extends HasId {
   bonus: boolean;
   exName: string;
   maxPoints: number;
-  subexercises: Exercise[];
+}
+
+export interface Exercise extends Subexercise {
+  subexercises: Subexercise[];
 }
 
 export interface ISheetDTO {
@@ -31,5 +34,5 @@ export interface ISubexerciseDTO {
 }
 
 export interface IExerciseDTO extends ISubexerciseDTO {
-  subexercises: ISubexerciseDTO[];
+  subexercises?: ISubexerciseDTO[];
 }
