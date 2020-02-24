@@ -12,7 +12,7 @@ export class SheetModel {
   @prop({ required: true })
   bonusSheet!: boolean;
 
-  @arrayProp({ required: true, autopopulate: true, ref: ExerciseModel })
+  @arrayProp({ required: true, ref: ExerciseModel })
   exercises!: ExerciseDocument[];
 }
 

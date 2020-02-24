@@ -6,6 +6,7 @@ import { TutorialModule } from './module/tutorial/tutorial.module';
 import { UserModule } from './module/user/user.module';
 import { ModelsModule } from './database/models/models.module';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
+import { SheetModule } from './module/sheet/sheet.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RequestLoggerMiddleware } from './middleware/request-logger.middleware'
     TutorialModule,
     UserModule,
     StudentModule,
+    SheetModule,
   ],
   controllers: [],
   providers: [],

@@ -7,7 +7,6 @@ export interface HasExercises extends HasId {
 export interface Sheet extends HasExercises {
   bonusSheet: boolean;
   exercises: Exercise[];
-  id: string;
   sheetNo: number;
 }
 
@@ -18,16 +17,19 @@ export interface Exercise extends HasId {
   subexercises: Exercise[];
 }
 
-export interface SheetDTO {
+export interface ISheetDTO {
   bonusSheet: boolean;
-  exercises: ExerciseDTO[];
+  exercises: IExerciseDTO[];
   sheetNo: number;
 }
 
-export interface ExerciseDTO {
+export interface ISubexerciseDTO {
   id?: string;
   bonus: boolean;
   exName: string;
   maxPoints: number;
-  subexercises: ExerciseDTO[];
+}
+
+export interface IExerciseDTO extends ISubexerciseDTO {
+  subexercises: ISubexerciseDTO[];
 }
