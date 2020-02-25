@@ -42,6 +42,13 @@ export class SheetService implements CRUDService<Sheet, SheetDTO, SheetDocument>
     return sheet;
   }
 
+  /**
+   * Creates a new sheet from the given information and saves it to the database. The created sheet is returned.
+   *
+   * @param dto Information to create a sheet with.
+   *
+   * @returns Created sheet.
+   */
   async create(dto: SheetDTO): Promise<Sheet> {
     const { sheetNo, bonusSheet, exercises } = dto;
 

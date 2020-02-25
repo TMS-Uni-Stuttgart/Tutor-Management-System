@@ -1,13 +1,26 @@
-import { Body, Controller, Get, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UsePipes,
+  ValidationPipe,
+  UseGuards,
+  Param,
+} from '@nestjs/common';
 import { Sheet } from '../../shared/model/Sheet';
 import { SheetDTO } from './sheet.dto';
 import { SheetService } from './sheet.service';
+import { AuthenticatedGuard } from '../../guards/authenticated.guard';
+import { HasRoleGuard } from '../../guards/has-role.guard';
+import { Role } from '../../shared/model/Role';
 
 @Controller('sheet')
 export class SheetController {
   constructor(private readonly sheetService: SheetService) {}
 
   @Get()
+  @UseGuards(AuthenticatedGuard)
   async getAllSheet(): Promise<Sheet[]> {
     const sheets = await this.sheetService.findAll();
 
@@ -15,10 +28,19 @@ export class SheetController {
   }
 
   @Post()
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
   async createSheet(@Body() dto: SheetDTO): Promise<Sheet> {
     const sheet = await this.sheetService.create(dto);
 
     return sheet;
+  }
+
+  @Get('/:id')
+  @UseGuards(AuthenticatedGuard)
+  async getSheet(@Param('id') id: string): Promise<Sheet> {
+    const sheet = await this.sheetService.findById(id);
+
+    return sheet.toDTO();
   }
 }
