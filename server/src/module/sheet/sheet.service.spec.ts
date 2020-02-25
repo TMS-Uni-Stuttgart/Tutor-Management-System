@@ -232,6 +232,106 @@ describe('SheetService', () => {
 
     assertSheetDTO({ expected: dto, actual: created });
   });
+
+  it('update basic information of a sheet', async () => {
+    const updateDTO = getDTO();
+    const createDTO: SheetDTO = {
+      ...updateDTO,
+      sheetNo: 2,
+      bonusSheet: true,
+    };
+
+    const oldSheet = await service.create(createDTO);
+    const updated = await service.update(oldSheet.id, updateDTO);
+
+    assertSheetDTO({ expected: updateDTO, actual: updated });
+  });
+
+  it('update exercises of a sheet', async () => {
+    const updateDTO = getDTO();
+    const createDTO: SheetDTO = {
+      ...updateDTO,
+      exercises: [
+        {
+          exName: '7',
+          maxPoints: 13.37,
+          bonus: false,
+        },
+      ],
+    };
+
+    const oldSheet = await service.create(createDTO);
+    const updated = await service.update(oldSheet.id, updateDTO);
+
+    assertSheetDTO({ expected: updateDTO, actual: updated });
+  });
+
+  it('update subexercise of a sheet', async () => {
+    const updateDTO: SheetDTO = {
+      ...getDTO(),
+      exercises: [
+        {
+          exName: '7',
+          maxPoints: 13.37,
+          bonus: false,
+          subexercises: [
+            {
+              id: '5e559160ed91238f8762e8aa',
+              exName: '(b)',
+              bonus: false,
+              maxPoints: 15,
+            },
+          ],
+        },
+      ],
+    };
+    const createDTO: SheetDTO = {
+      ...updateDTO,
+      exercises: [
+        {
+          exName: '7',
+          maxPoints: 13.37,
+          bonus: false,
+          subexercises: [
+            {
+              id: '5e559160ed91238f8762e8aa',
+              exName: '(a)',
+              bonus: false,
+              maxPoints: 10,
+            },
+          ],
+        },
+      ],
+    };
+
+    const oldSheet = await service.create(createDTO);
+    const updated = await service.update(oldSheet.id, updateDTO);
+
+    assertSheetDTO({ expected: updateDTO, actual: updated });
+  });
+
+  it('fail on updating a non-existing sheet', async () => {
+    const nonExisting = generateObjectId();
+    const dto = getDTO();
+
+    await expect(service.update(nonExisting, dto)).rejects.toThrow(NotFoundException);
+  });
+
+  it('delete a sheet', async () => {
+    const dto = getDTO();
+
+    const sheet = await service.create(dto);
+    const deletedSheet = await service.delete(sheet.id);
+
+    expect(deletedSheet.id).toEqual(sheet.id);
+    await expect(service.findById(sheet.id)).rejects.toThrow(NotFoundException);
+  });
+
+  it('fail on deleting a non-existing sheet', async () => {
+    const nonExisting = generateObjectId();
+
+    await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
+  });
 });
 
 /**
