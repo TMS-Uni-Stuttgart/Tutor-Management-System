@@ -24,7 +24,6 @@ interface AssertStudentListParams {
 interface AssertStudentDTOParams {
   expected: StudentDTO;
   actual: Student;
-
   oldStudent?: Student;
 }
 
@@ -78,6 +77,17 @@ function assertStudentList({ expected, actual }: AssertStudentListParams) {
   }
 }
 
+/**
+ * Compares the given actual student with the expected one.
+ *
+ * If an old version is provided it's `gradings`, `attendances` and `cakeCount` are being used. Else this function will assert that `gradings` and `attendances` are empty and `cakeCount` is 0.
+ *
+ * All other properties are just being compared with the follwing two exceptions:
+ * - `id` must only be defined and is not compared to an expected value.
+ * - For the `tutorial` only the `id` property gets asserted to match the expected tutorial.
+ *
+ * @param params Must contain the expected StudentDocument and the actual Student. Can also include the old version of the Student.
+ */
 function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOParams) {
   const { tutorial, ...restExpected } = expected;
   const {
@@ -92,9 +102,6 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
 
   expect(id).toBeDefined();
   expect(restActual).toEqual(restExpected);
-
-  expect(attendances).toEqual([]);
-  expect(gradings).toEqual([]);
 
   expect(actualTutorial.id).toEqual(tutorial);
   // expect(actualTutorial.slot).toEqual(expectedTutorial.slot);

@@ -5,6 +5,16 @@ import { UserModel } from '../../src/database/models/user.model';
 import { Role } from '../../src/shared/model/Role';
 import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';
+import { SheetModel } from '../../src/database/models/sheet.model';
+import { ExerciseModel, SubExerciseModel } from '../../src/database/models/exercise.model';
+
+export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
+export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
+  subexercises?: MockedSubExerciseModel[];
+};
+export type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
+  exercises: MockedExerciseModel[];
+};
 
 export const USER_DOCUMENTS: MockedModel<UserModel>[] = [
   {
@@ -154,6 +164,32 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     team: undefined,
     attendances: new Map(),
     gradings: new Map(),
+  },
+];
+
+export const SHEET_DOCUMENTS: MockedSheetModel[] = [
+  {
+    _id: '5e5528e1e9010217b62efbb5',
+    sheetNo: 1,
+    bonusSheet: false,
+    exercises: [
+      {
+        _id: '5e552a0496f8e7414a001cd6',
+        exName: 'Exercise 1',
+        bonus: false,
+        maxPoints: 10,
+      },
+      {
+        _id: '5e552a07d55e796b8e3c51a9',
+        exName: 'Exercise 2',
+        bonus: false,
+        maxPoints: 20, // Put the expected sum of the subexercises here.
+        subexercises: [
+          { _id: '5e552a0a6ae88eda225ff562', exName: '(a)', bonus: false, maxPoints: 8 },
+          { _id: '5e552a0fd4d6f5c245617212', exName: '(b)', bonus: false, maxPoints: 12 },
+        ],
+      },
+    ],
   },
 ];
 
