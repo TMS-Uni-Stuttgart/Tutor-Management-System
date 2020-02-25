@@ -1,4 +1,4 @@
-import { DocumentType, mongoose, prop } from '@typegoose/typegoose';
+import { DocumentType, mongoose, prop, arrayProp } from '@typegoose/typegoose';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { Exercise, Subexercise } from '../../shared/model/Sheet';
@@ -52,7 +52,10 @@ export class SubExerciseModel {
 
 export class ExerciseModel {
   constructor(fields: ExerciseConstructorFields) {
-    Object.assign(this, fields);
+    this.exName = fields.exName;
+    this.bonus = fields.bonus;
+    this._maxPoints = fields.maxPoints;
+    this.subexercises = (fields.subexercises as SubExerciseDocument[]) ?? [];
   }
 
   @prop({ required: true })
@@ -62,9 +65,21 @@ export class ExerciseModel {
   bonus!: boolean;
 
   @prop({ required: true })
-  maxPoints!: number;
+  private _maxPoints!: number;
 
-  @prop({ default: [], items: SubExerciseModel })
+  get maxPoints(): number {
+    if (!!this.subexercises && this.subexercises.length > 0) {
+      return this.subexercises.reduce((sum, current) => sum + current.maxPoints, 0);
+    } else {
+      return this._maxPoints;
+    }
+  }
+
+  set maxPoints(points: number) {
+    this._maxPoints = points;
+  }
+
+  @arrayProp({ default: [], items: SubExerciseModel })
   subexercises!: SubExerciseDocument[];
 
   static fromDTO(dto: ExerciseDTO): ExerciseModel {
