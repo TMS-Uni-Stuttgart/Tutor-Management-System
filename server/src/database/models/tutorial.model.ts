@@ -8,7 +8,7 @@ import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualP
 import { StudentDocument } from './student.model';
 import { TeamDocument } from './team.model';
 import { UserDocument, UserModel } from './user.model';
-import { DateTime } from 'luxon';
+import { DateTime, DateTimeJSOptions, ToISOTimeOptions } from 'luxon';
 
 /**
  * Populates the fields in the given TutorialDocument. If no document is provided this functions does nothing.
@@ -124,13 +124,17 @@ export class TutorialModel {
       substitutes.set(date, doc.id);
     }
 
+    const dateOptions: ToISOTimeOptions = {
+      suppressMilliseconds: true,
+    };
+
     return {
       id,
       slot,
       tutor: tutor?.id,
       dates: dates.map(date => DateTime.fromJSDate(date).toISODate()),
-      startTime: DateTime.fromJSDate(startTime).toISOTime(),
-      endTime: DateTime.fromJSDate(endTime).toISOTime(),
+      startTime: DateTime.fromJSDate(startTime).toISOTime(dateOptions),
+      endTime: DateTime.fromJSDate(endTime).toISOTime(dateOptions),
       students: students.map(student => student.id),
       correctors: correctors.map(corrector => corrector.id),
       substitutes: [...substitutes],

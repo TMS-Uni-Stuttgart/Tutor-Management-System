@@ -1,6 +1,6 @@
 import { HasId } from './Common';
 
-export interface TutorialDTO {
+export interface ITutorialDTO {
   correctorIds: string[];
   dates: string[];
   endTime: string;

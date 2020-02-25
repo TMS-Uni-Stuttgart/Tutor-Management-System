@@ -6,18 +6,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { DateTime } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
-import { CRUDService } from '../../helpers/CRUDService';
-import { Role } from '../../shared/model/Role';
-import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
 import {
+  populateTutorialDocument,
   TutorialDocument,
   TutorialModel,
-  populateTutorialDocument,
 } from '../../database/models/tutorial.model';
 import { UserDocument } from '../../database/models/user.model';
+import { CRUDService } from '../../helpers/CRUDService';
+import { Role } from '../../shared/model/Role';
+import { Tutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
-import { DateTime } from 'luxon';
+import { TutorialDTO } from './tutorial.dto';
 
 @Injectable()
 export class TutorialService implements CRUDService<Tutorial, TutorialDTO, TutorialDocument> {
