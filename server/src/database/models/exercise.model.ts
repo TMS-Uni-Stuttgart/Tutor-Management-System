@@ -4,6 +4,7 @@ import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { Exercise, Subexercise } from '../../shared/model/Sheet';
 
 interface SubExerciseConstructorFields {
+  id?: string;
   exName: string;
   bonus: boolean;
   maxPoints: number;
@@ -15,9 +16,10 @@ interface ExerciseConstructorFields extends SubExerciseConstructorFields {
 
 export class SubExerciseModel {
   constructor(fields: SubExerciseConstructorFields) {
-    Object.assign(this, fields);
+    const { id, ...rest } = fields;
 
-    this._id = mongoose.Types.ObjectId(generateObjectId());
+    Object.assign(this, rest);
+    this._id = mongoose.Types.ObjectId(id ?? generateObjectId());
   }
 
   @prop()

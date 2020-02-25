@@ -1,4 +1,5 @@
 import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DateTime, ToISOTimeOptions } from 'luxon';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
@@ -8,7 +9,6 @@ import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualP
 import { StudentDocument } from './student.model';
 import { TeamDocument } from './team.model';
 import { UserDocument, UserModel } from './user.model';
-import { DateTime, DateTimeJSOptions, ToISOTimeOptions } from 'luxon';
 
 /**
  * Populates the fields in the given TutorialDocument. If no document is provided this functions does nothing.

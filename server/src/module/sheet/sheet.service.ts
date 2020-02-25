@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { ExerciseModel } from '../../database/models/exercise.model';
+import { ExerciseModel, ExerciseDocument } from '../../database/models/exercise.model';
 import { SheetDocument, SheetModel } from '../../database/models/sheet.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Sheet } from '../../shared/model/Sheet';
@@ -63,11 +63,42 @@ export class SheetService implements CRUDService<Sheet, SheetDTO, SheetDocument>
     return created.toDTO();
   }
 
+  /**
+   * Updates the sheet with the given ID and the given information.
+   *
+   * The sheet will be saved and the updated version will be returned in the end.
+   *
+   * @param id ID of the sheet to update.
+   * @param dto Information to update the sheet with.
+   *
+   * @returns The updated sheet.
+   *
+   * @throws `NotFoundException` - If there is no sheet available with the given ID.
+   */
   async update(id: string, dto: SheetDTO): Promise<Sheet> {
-    throw new Error('Method not implemented.');
+    const sheet = await this.findById(id);
+
+    sheet.sheetNo = dto.sheetNo;
+    sheet.bonusSheet = dto.bonusSheet;
+    sheet.exercises = dto.exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+
+    const updated = await sheet.save();
+
+    return updated.toDTO();
   }
 
+  /**
+   * Deletes the sheet with the given ID, if available, and returns the deleted document.
+   *
+   * @param id ID of the sheet to delete
+   *
+   * @returns Document of the deleted sheet.
+   *
+   * @throws `NotFoundException` - If no sheet with the given ID could be found.
+   */
   async delete(id: string): Promise<SheetDocument> {
-    throw new Error('Method not implemented.');
+    const sheet = await this.findById(id);
+
+    return sheet.remove();
   }
 }
