@@ -30,7 +30,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    *
    * @returns StudentDocument with the given ID.
    *
-   * @throws `NotFoundException` - If no student with the given id could be found.
+   * @throws `NotFoundException` - If no student with the given ID could be found.
    */
   async findById(id: string): Promise<StudentDocument> {
     const student: StudentDocument | null = await this.studentModel.findById(id).exec();

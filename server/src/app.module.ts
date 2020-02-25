@@ -7,6 +7,7 @@ import { UserModule } from './module/user/user.module';
 import { ModelsModule } from './database/models/models.module';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 import { SheetModule } from './module/sheet/sheet.module';
+import { ScheinexamModule } from './module/scheinexam/scheinexam.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SheetModule } from './module/sheet/sheet.module';
     UserModule,
     StudentModule,
     SheetModule,
+    ScheinexamModule,
   ],
   controllers: [],
   providers: [],

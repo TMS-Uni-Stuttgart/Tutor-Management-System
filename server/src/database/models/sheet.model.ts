@@ -14,7 +14,10 @@ interface ConstructorFields {
 @modelOptions({ schemaOptions: { collection: CollectionName.SHEET } })
 export class SheetModel {
   constructor(fields: ConstructorFields) {
-    Object.assign(this, fields);
+    const { exercises, ...rest } = fields;
+    Object.assign(this, rest);
+
+    this.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
   }
 
   @prop({ required: true })

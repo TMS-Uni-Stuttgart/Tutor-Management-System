@@ -2,7 +2,7 @@ import { HasId } from './Common';
 import { Exercise, IExerciseDTO } from './Sheet';
 
 export interface ScheinExam extends HasId {
-  date: Date;
+  date: string;
   exercises: Exercise[];
   percentageNeeded: number;
   scheinExamNo: number;
