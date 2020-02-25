@@ -1,11 +1,11 @@
 import * as Yup from 'yup';
 import { ValidationErrorsWrapper } from '../model/errors/Errors';
 import { Role } from '../model/Role';
-import { CreateUserDTO, UserDTO } from '../model/User';
+import { ICreateUserDTO, IUserDTO } from '../model/User';
 import { validateSchema } from './helper';
 import { TutorialIdListSchema } from './Tutorial';
 
-const UserDTOSchema = Yup.object().shape<UserDTO>({
+const UserDTOSchema = Yup.object().shape<IUserDTO>({
   firstname: Yup.string().required(),
   lastname: Yup.string().required(),
   email: Yup.string()
@@ -17,7 +17,7 @@ const UserDTOSchema = Yup.object().shape<UserDTO>({
   tutorialsToCorrect: TutorialIdListSchema,
 });
 
-const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
+const CreateUserDTOSchema = Yup.object().shape<ICreateUserDTO>({
   firstname: Yup.string().required(),
   lastname: Yup.string().required(),
   email: Yup.string()
@@ -32,12 +32,12 @@ const CreateUserDTOSchema = Yup.object().shape<CreateUserDTO>({
 
 export function validateAgainstCreateUserDTO(
   obj: any
-): Yup.Shape<object, CreateUserDTO> | ValidationErrorsWrapper {
+): Yup.Shape<object, ICreateUserDTO> | ValidationErrorsWrapper {
   return validateSchema(CreateUserDTOSchema, obj);
 }
 
 export function validateAgainstUserDTO(
   obj: any
-): Yup.Shape<object, UserDTO> | ValidationErrorsWrapper {
+): Yup.Shape<object, IUserDTO> | ValidationErrorsWrapper {
   return validateSchema(UserDTOSchema, obj);
 }

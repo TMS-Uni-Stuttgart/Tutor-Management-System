@@ -7,9 +7,10 @@ import { MockedModel } from '../../../test/helpers/testdocument';
 import { TUTORIAL_DOCUMENTS, USER_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { UserModel } from '../../database/models/user.model';
 import { Role } from '../../shared/model/Role';
-import { CreateUserDTO, User, UserDTO } from '../../shared/model/User';
+import { User } from '../../shared/model/User';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
+import { UserDTO, CreateUserDTO } from './user.dto';
 
 interface AssertUserParam {
   expected: MockedModel<UserModel>;

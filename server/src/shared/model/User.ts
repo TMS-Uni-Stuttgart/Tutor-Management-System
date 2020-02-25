@@ -19,7 +19,7 @@ export interface User extends NamedElement {
   readonly temporaryPassword?: string;
 }
 
-export interface UserDTO {
+export interface IUserDTO {
   firstname: User['firstname'];
   lastname: User['lastname'];
   tutorials: string[];
@@ -29,7 +29,7 @@ export interface UserDTO {
   username: User['username'];
 }
 
-export interface CreateUserDTO extends UserDTO {
+export interface ICreateUserDTO extends IUserDTO {
   password: string;
 }
 

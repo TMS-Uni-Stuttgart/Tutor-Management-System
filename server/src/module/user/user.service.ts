@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
+import { User } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { UserDocument, UserModel, populateUserDocument } from '../../database/models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
+import { UserDTO, CreateUserDTO } from './user.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit, CRUDService<User, UserDTO, UserDocument> {
