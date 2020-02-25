@@ -14,9 +14,10 @@ import {
 } from '../../../test/mocks/documents.mock.helpers';
 import { TutorialModel } from '../../database/models/tutorial.model';
 import { Role } from '../../shared/model/Role';
-import { Tutorial, TutorialDTO } from '../../shared/model/Tutorial';
+import { Tutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
+import { TutorialDTO } from './tutorial.dto';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;

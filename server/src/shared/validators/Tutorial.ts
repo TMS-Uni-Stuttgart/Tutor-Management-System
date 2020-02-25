@@ -1,9 +1,9 @@
 import * as Yup from 'yup';
-import { TutorialDTO, SubstituteDTO } from '../model/Tutorial';
+import { ITutorialDTO, SubstituteDTO } from '../model/Tutorial';
 import { ValidationErrorsWrapper } from '../model/errors/Errors';
 import { validateSchema, YupIdShape } from './helper';
 
-const TutorialDTOSchema = Yup.object().shape<TutorialDTO>({
+const TutorialDTOSchema = Yup.object().shape<ITutorialDTO>({
   slot: Yup.string().required(),
   tutorId: YupIdShape.notRequired(),
   correctorIds: Yup.array<string>()
@@ -36,7 +36,7 @@ export const TutorialIdListSchema = Yup.array()
 
 export function validateAgainstTutorialDTO(
   obj: any
-): Yup.Shape<object, TutorialDTO> | ValidationErrorsWrapper {
+): Yup.Shape<object, ITutorialDTO> | ValidationErrorsWrapper {
   return validateSchema(TutorialDTOSchema, obj);
 }
 
