@@ -12,11 +12,11 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUserDTO, User, UserDTO } from 'src/shared/model/User';
+import { User } from 'src/shared/model/User';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { SameUserGuard } from '../../guards/same-user.guard';
 import { Role } from '../../shared/model/Role';
-import { PasswordDTO } from './user.dto';
+import { PasswordDTO, CreateUserDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -33,6 +33,7 @@ export class UserController {
 
   @Post()
   @UseGuards(new SameUserGuard())
+  @UsePipes(ValidationPipe)
   async createUser(@Body() user: CreateUserDTO): Promise<User> {
     const createdUser = await this.userService.create(user);
 
@@ -49,6 +50,7 @@ export class UserController {
 
   @Patch('/:id')
   @UseGuards(new SameUserGuard())
+  @UsePipes(ValidationPipe)
   async updateUser(@Param('id') id: string, @Body() dto: UserDTO): Promise<User> {
     const updatedUser = await this.userService.update(id, dto);
 
