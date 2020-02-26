@@ -22,15 +22,29 @@ export class ScheinexamModel {
   percentageNeeded!: number;
 
   static fromDTO(dto: ScheinExamDTO) {
+    return this.assignDTO(new ScheinexamModel(), dto);
+  }
+
+  private static assignDTO(model: ScheinexamModel, dto: ScheinExamDTO): ScheinexamModel {
     const { date, exercises, percentageNeeded, scheinExamNo } = dto;
-    const scheinexam = new ScheinexamModel();
 
-    scheinexam.scheinexamNo = scheinExamNo;
-    scheinexam.percentageNeeded = percentageNeeded;
-    scheinexam.date = DateTime.fromISO(date).toJSDate();
-    scheinexam.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+    model.scheinexamNo = scheinExamNo;
+    model.percentageNeeded = percentageNeeded;
+    model.date = DateTime.fromISO(date).toJSDate();
+    model.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
 
-    return scheinexam;
+    return model;
+  }
+
+  /**
+   * Updates this document with the information provided by the given DTO.
+   *
+   * @param dto DTO with the new information.
+   *
+   * @returns `This` document for chaining abilities.
+   */
+  updateFromDTO(this: ScheinexamDocument, dto: ScheinExamDTO): ScheinexamDocument {
+    return ScheinexamModel.assignDTO(this, dto) as ScheinexamDocument;
   }
 
   toDTO(this: ScheinexamDocument): ScheinExam {
