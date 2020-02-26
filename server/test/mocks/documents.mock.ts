@@ -7,12 +7,16 @@ import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';
 import { SheetModel } from '../../src/database/models/sheet.model';
 import { ExerciseModel, SubExerciseModel } from '../../src/database/models/exercise.model';
+import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
 
 export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
 export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
   subexercises?: MockedSubExerciseModel[];
 };
 export type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
+  exercises: MockedExerciseModel[];
+};
+export type MockedScheinexamModel = Omit<MockedModel<ScheinexamModel>, 'exercises'> & {
   exercises: MockedExerciseModel[];
 };
 
@@ -172,6 +176,33 @@ export const SHEET_DOCUMENTS: MockedSheetModel[] = [
     _id: '5e5528e1e9010217b62efbb5',
     sheetNo: 1,
     bonusSheet: false,
+    exercises: [
+      {
+        _id: '5e552a0496f8e7414a001cd6',
+        exName: 'Exercise 1',
+        bonus: false,
+        maxPoints: 10,
+      },
+      {
+        _id: '5e552a07d55e796b8e3c51a9',
+        exName: 'Exercise 2',
+        bonus: false,
+        maxPoints: 20, // Put the expected sum of the subexercises here.
+        subexercises: [
+          { _id: '5e552a0a6ae88eda225ff562', exName: '(a)', bonus: false, maxPoints: 8 },
+          { _id: '5e552a0fd4d6f5c245617212', exName: '(b)', bonus: false, maxPoints: 12 },
+        ],
+      },
+    ],
+  },
+];
+
+export const SCHEINEXAM_DOCUMENTS: MockedScheinexamModel[] = [
+  {
+    _id: '5e565b58d8d3cb7660bf01d7',
+    scheinExamNo: 1,
+    date: DateTime.fromISO('2020-01-15').toJSDate(),
+    percentageNeeded: 0.4,
     exercises: [
       {
         _id: '5e552a0496f8e7414a001cd6',
