@@ -42,12 +42,39 @@ export class ScheinexamService
     return scheinexam;
   }
 
+  /**
+   * Creates a scheinexam with the given information. Returns the created scheinexam.
+   *
+   * @param dto Information to create the scheinexam with.
+   *
+   * @returns Created scheinexam.
+   */
   async create(dto: ScheinExamDTO): Promise<ScheinExam> {
-    throw new Error('Method not implemented.');
+    const scheinexam = ScheinexamModel.fromDTO(dto);
+    const created = await this.scheinexamModel.create(scheinexam);
+
+    return created.toDTO();
   }
 
+  /**
+   * Updates the document with the given ID with the given information.
+   *
+   * Afterwards it is saved to the database and the updated version is returned.
+   *
+   * @param id ID of the document to update.
+   * @param dto Information to update the document with.
+   *
+   * @returns Update scheinexam.
+   *
+   * @throws `NotFoundException` - If no scheinexam with the given ID could be found.
+   */
   async update(id: string, dto: ScheinExamDTO): Promise<ScheinExam> {
-    throw new Error('Method not implemented.');
+    const scheinexam = await this.findById(id);
+    scheinexam.updateFromDTO(dto);
+
+    const updated = await scheinexam.save();
+
+    return updated.toDTO();
   }
 
   /**
