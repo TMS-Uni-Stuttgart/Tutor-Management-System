@@ -10,7 +10,7 @@ import { ExerciseDocument, ExerciseModel } from './exercise.model';
 @modelOptions({ schemaOptions: { collection: CollectionName.SCHEINEXAM } })
 export class ScheinexamModel {
   @prop({ required: true })
-  scheinexamNo!: number;
+  scheinExamNo!: number;
 
   @prop({ required: true })
   date!: Date;
@@ -28,7 +28,7 @@ export class ScheinexamModel {
   private static assignDTO(model: ScheinexamModel, dto: ScheinExamDTO): ScheinexamModel {
     const { date, exercises, percentageNeeded, scheinExamNo } = dto;
 
-    model.scheinexamNo = scheinExamNo;
+    model.scheinExamNo = scheinExamNo;
     model.percentageNeeded = percentageNeeded;
     model.date = DateTime.fromISO(date).toJSDate();
     model.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
@@ -50,7 +50,7 @@ export class ScheinexamModel {
   toDTO(this: ScheinexamDocument): ScheinExam {
     return {
       id: this.id,
-      scheinExamNo: this.scheinexamNo,
+      scheinExamNo: this.scheinExamNo,
       percentageNeeded: this.percentageNeeded,
       date: DateTime.fromJSDate(this.date).toISODate(),
       exercises: this.exercises.map(ex => ex.toDTO()),

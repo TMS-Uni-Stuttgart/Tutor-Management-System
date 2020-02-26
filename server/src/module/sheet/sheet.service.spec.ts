@@ -1,26 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { SheetService } from './sheet.service';
-import { TestModule } from '../../../test/helpers/test.module';
-import {
-  SHEET_DOCUMENTS,
-  MockedSheetModel,
-  MockedExerciseModel,
-  MockedSubExerciseModel,
-} from '../../../test/mocks/documents.mock';
-import { Sheet, Exercise, Subexercise } from '../../shared/model/Sheet';
-import { SheetDTO } from './sheet.dto';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { NotFoundException } from '@nestjs/common';
-
-interface AssertSubExerciseParams {
-  expected: MockedSubExerciseModel;
-  actual: Subexercise;
-}
-
-interface AssertExerciseParams {
-  expected: MockedExerciseModel;
-  actual: Exercise;
-}
+import { Test, TestingModule } from '@nestjs/testing';
+import { assertExercise, assertExerciseDTOs } from '../../../test/helpers/test.assertExercises';
+import { generateObjectId } from '../../../test/helpers/test.helpers';
+import { TestModule } from '../../../test/helpers/test.module';
+import { MockedSheetModel, SHEET_DOCUMENTS } from '../../../test/mocks/documents.mock';
+import { Sheet } from '../../shared/model/Sheet';
+import { SheetDTO } from './sheet.dto';
+import { SheetService } from './sheet.service';
 
 interface AssertSheetParams {
   expected: MockedSheetModel;
@@ -35,49 +21,6 @@ interface AssertSheetListParams {
 interface AssertSheetDTOParams {
   expected: SheetDTO;
   actual: Sheet;
-}
-
-/**
- * Checks if the actual SubExercise matches the expected ones.
- *
- * They are considered equal if all their properties match and if `actual.id` matches `expected._id`.
- *
- * @param params Must contain an expected SubExercise and an actual SubExercise.
- */
-function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
-  const { _id, ...restExpected } = expected;
-  const { id, ...restActual } = actual;
-
-  expect(id).toEqual(_id);
-  expect(restActual).toEqual(restExpected);
-}
-
-/**
- * Checks if the actual exercise matches the expected one.
- *
- * Equality is defined as:
- * - The actual `subexercises` array matches the expected one (if it exists) as defined by {@link assertSubExercise}. If the expected exercise does __not__ have such an array, the actual array needs to be empty.
- * - All other properties match.
- *
- * @param params Must contain an expected ExerciseDocument and an actual Exercise.
- */
-function assertExercise({ expected, actual }: AssertExerciseParams) {
-  const { subexercises, ...restExpected } = expected;
-  const { subexercises: actualSubexercises, ...restActual } = actual;
-
-  assertSubExercise({ expected: restExpected, actual: restActual });
-
-  if (!subexercises) {
-    expect(actualSubexercises).toHaveLength(0);
-  } else {
-    expect(actualSubexercises.length).toEqual(subexercises.length);
-    for (let i = 0; i < subexercises.length; i++) {
-      assertSubExercise({
-        expected: subexercises[i],
-        actual: actualSubexercises[i],
-      });
-    }
-  }
 }
 
 /**
@@ -137,49 +80,7 @@ function assertSheetDTO({ expected, actual }: AssertSheetDTOParams) {
   expect(id).toBeDefined();
   expect(restActual).toEqual(restExpected);
 
-  expect(actualExercises.length).toEqual(exercises.length);
-
-  // TODO: Clean me up!
-  for (let i = 0; i < exercises.length; i++) {
-    const { id, subexercises, maxPoints, ...restExpected } = exercises[i];
-    const {
-      id: actualId,
-      subexercises: actualSubexercises,
-      maxPoints: actualMaxPoints,
-      ...restActual
-    } = actualExercises[i];
-
-    if (!!id) {
-      expect(actualId).toEqual(id);
-    } else {
-      expect(actualId).toBeDefined();
-    }
-
-    expect(restActual).toEqual(restExpected);
-
-    if (!!subexercises) {
-      const expectedMaxPoints = subexercises.reduce((sum, cur) => sum + cur.maxPoints, 0);
-
-      expect(actualMaxPoints).toEqual(expectedMaxPoints);
-      expect(actualSubexercises.length).toEqual(subexercises.length);
-
-      for (let k = 0; k < subexercises.length; k++) {
-        const { id, ...restExp } = subexercises[k];
-        const { id: actualId, ...restAct } = actualSubexercises[k];
-
-        expect(restAct).toEqual(restExp);
-
-        if (!!id) {
-          expect(actualId).toEqual(id);
-        } else {
-          expect(actualId).toBeDefined();
-        }
-      }
-    } else {
-      expect(actualMaxPoints).toEqual(maxPoints);
-      expect(actualSubexercises).toHaveLength(0);
-    }
-  }
+  assertExerciseDTOs({ expected: exercises, actual: actualExercises });
 }
 
 describe('SheetService', () => {
