@@ -25,7 +25,7 @@ export class SheetController {
 
   @Get()
   @UseGuards(AuthenticatedGuard)
-  async getAllSheet(): Promise<Sheet[]> {
+  async getAllSheets(): Promise<Sheet[]> {
     const sheets = await this.sheetService.findAll();
 
     return sheets;
