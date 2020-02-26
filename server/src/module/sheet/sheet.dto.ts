@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsBoolean,
   IsNotEmpty,
@@ -44,6 +45,7 @@ export class SheetDTO implements ISheetDTO {
   bonusSheet!: boolean;
 
   @IsArray()
+  @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => ExerciseDTO)
   exercises!: ExerciseDTO[];

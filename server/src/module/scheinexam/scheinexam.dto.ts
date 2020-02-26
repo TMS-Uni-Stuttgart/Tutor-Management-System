@@ -1,8 +1,8 @@
+import { Type } from 'class-transformer';
+import { ArrayNotEmpty, IsArray, IsNumber, Max, Min, ValidateNested } from 'class-validator';
+import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
 import { IScheinExamDTO } from '../../shared/model/Scheinexam';
 import { ExerciseDTO } from '../sheet/sheet.dto';
-import { IsNumber, Min, Max, IsArray, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
 
 export class ScheinExamDTO implements IScheinExamDTO {
   @IsNumber()
@@ -17,6 +17,7 @@ export class ScheinExamDTO implements IScheinExamDTO {
   date!: string;
 
   @IsArray()
+  @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => ExerciseDTO)
   exercises!: ExerciseDTO[];
