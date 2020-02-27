@@ -61,8 +61,6 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
       tutorial,
       team: undefined,
       cakeCount: 0,
-      attendances: new Map(),
-      gradings: new Map(),
     });
     const created: StudentDocument = await this.studentModel.create(doc);
 

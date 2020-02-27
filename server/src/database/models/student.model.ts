@@ -1,20 +1,36 @@
-import { DocumentType, modelOptions, plugin, prop, mapProp } from '@typegoose/typegoose';
+import { DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
-import { StudentStatus, Student } from '../../shared/model/Student';
-import { AttendanceDocument, AttendanceModel } from './attendance.model';
-import { TeamModel, TeamDocument } from './team.model';
-import { GradingModel, GradingDocument } from './grading.model';
-import { HasExercises } from '../../shared/model/Sheet';
-import { TutorialDocument } from './tutorial.model';
-import { NoFunctions } from '../../helpers/NoFunctions';
 import { convertDocumentMapToArray } from '../../helpers/converters';
+import { Student, StudentStatus } from '../../shared/model/Student';
+import { AttendanceDocument, AttendanceModel } from './attendance.model';
+import { HasExerciseDocuments } from './exercise.model';
+import { GradingDocument, GradingModel } from './grading.model';
+import { SheetDocument } from './sheet.model';
+import { TeamDocument, TeamModel } from './team.model';
+import { TutorialDocument } from './tutorial.model';
+
+interface ConstructorFields {
+  firstname: string;
+  lastname: string;
+  tutorial: TutorialDocument;
+  team?: TeamDocument;
+  matriculationNo?: string;
+  email?: string;
+  courseOfStudies?: string;
+  status: StudentStatus;
+  cakeCount: number;
+}
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
 export class StudentModel {
-  constructor(fields: NoFunctions<StudentModel>) {
+  constructor(fields: ConstructorFields) {
     Object.assign(this, fields);
+
+    this.attendances = new Map();
+    this.gradings = new Map();
+    this.presentationPoints = new Map();
   }
 
   @prop({ required: true })
@@ -50,6 +66,9 @@ export class StudentModel {
   @mapProp({ of: GradingModel, autopopulate: true, default: new Map() })
   gradings!: Map<string, GradingDocument>;
 
+  @mapProp({ of: Number, default: new Map() })
+  presentationPoints!: Map<string, number>;
+
   /**
    * Saves the given attendance in the student.
    *
@@ -70,6 +89,7 @@ export class StudentModel {
    * Returns the attendance of the given date if there is one saved. If not `undefined` is returned.
    *
    * @param date Date to look up
+   *
    * @returns Returns the attendance of the date or `undefined`.
    */
   getAttendance(date: Date): AttendanceDocument | undefined {
@@ -86,7 +106,11 @@ export class StudentModel {
    * @param sheet Sheet to save grading for.
    * @param grading Grading so save.
    */
-  setGrading(this: StudentDocument, sheet: HasExercises, grading: GradingDocument) {
+  setGrading(this: StudentDocument, sheet: HasExerciseDocuments, grading: GradingDocument) {
+    if (!sheet.id) {
+      throw new Error('Given sheet needs to have an id field.');
+    }
+
     this.gradings.set(sheet.id, grading);
 
     // TODO: Needed?
@@ -97,10 +121,43 @@ export class StudentModel {
    * Returns the grading for the given sheet if one is saved. If not `undefined` is returned.
    *
    * @param sheet Sheet to get grading for.
+   *
    * @returns Grading for the given sheet or `undefined`
    */
-  getGrading(sheet: HasExercises): GradingDocument | undefined {
+  getGrading(sheet: HasExerciseDocuments): GradingDocument | undefined {
+    if (!sheet.id) {
+      return undefined;
+    }
+
     return this.gradings.get(sheet.id);
+  }
+
+  /**
+   * Saves the given presentation points for the given sheet.
+   *
+   * If there are already saved presentation points for the given sheet the old ones will get overridden.
+   *
+   * This function marks the corresponding path as modified.
+   *
+   * @param sheet Sheet to save grading for.
+   * @param points Presentation points to save.
+   */
+  setPresentationPoints(this: StudentDocument, sheet: SheetDocument, points: number) {
+    this.presentationPoints.set(sheet.id, points);
+
+    // TODO: Needed?
+    this.markModified('presentationPoints');
+  }
+
+  /**
+   * Returns the presentation points for the given sheet if there are any saved. If not `undefined` is returned.
+   *
+   * @param sheet Sheet to get presentation points for.
+   *
+   * @returns Presentation points for the given sheet or `undefined`.
+   */
+  getPresentationPoints(this: StudentDocument, sheet: SheetDocument): number | undefined {
+    return this.presentationPoints.get(sheet.id);
   }
 
   /**
@@ -119,9 +176,11 @@ export class StudentModel {
       status,
       team,
     } = this;
-    const attendances = convertDocumentMapToArray(this.attendances);
 
-    // TODO: Implement the gradings properly!
+    const presentationPoints = [...this.presentationPoints];
+
+    // TODO: Implement the gradings & attendances properly -- dont just return the IDs of the corresponding documents. That is NOT useful...
+    const attendances = convertDocumentMapToArray(this.attendances);
     const gradings = convertDocumentMapToArray(this.gradings);
 
     return {
@@ -137,7 +196,7 @@ export class StudentModel {
       cakeCount,
       email,
       gradings,
-      presentationPoints: {}, // TODO: Implement me!
+      presentationPoints,
     };
   }
 

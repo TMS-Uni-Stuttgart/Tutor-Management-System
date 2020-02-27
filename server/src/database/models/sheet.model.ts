@@ -29,6 +29,13 @@ export class SheetModel {
   @arrayProp({ required: true, items: ExerciseModel })
   exercises!: ExerciseDocument[];
 
+  get totalPoints(): number {
+    return this.exercises.reduce(
+      (sum: number, current: ExerciseDocument) => sum + current.maxPoints,
+      0
+    );
+  }
+
   toDTO(this: SheetDocument): Sheet {
     return {
       id: this.id,

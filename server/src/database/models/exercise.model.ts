@@ -3,6 +3,11 @@ import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { Exercise, Subexercise } from '../../shared/model/Sheet';
 
+export interface HasExerciseDocuments {
+  id?: string;
+  exercises: ExerciseDocument[];
+}
+
 interface SubExerciseConstructorFields {
   id?: string;
   exName: string;

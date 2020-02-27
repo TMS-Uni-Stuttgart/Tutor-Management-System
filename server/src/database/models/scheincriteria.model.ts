@@ -1,6 +1,6 @@
 import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
-import { Scheincriteria } from '../../scheincriteria/Scheincriteria';
+import { Scheincriteria } from '../../module/scheincriteria/container/Scheincriteria';
 
 @modelOptions({ schemaOptions: { collection: CollectionName.SCHEINCRITERIA } })
 export class ScheincriteriaModel {

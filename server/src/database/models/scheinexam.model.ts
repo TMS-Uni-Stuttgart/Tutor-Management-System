@@ -5,6 +5,14 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { ScheinExamDTO } from '../../module/scheinexam/scheinexam.dto';
 import { ScheinExam } from '../../shared/model/Scheinexam';
 import { ExerciseDocument, ExerciseModel } from './exercise.model';
+import { StudentDocument } from './student.model';
+import { ExercisePointInfo } from '../../shared/model/Points';
+
+interface PassedInformation {
+  passed: boolean;
+  achieved: number;
+  total: ExercisePointInfo;
+}
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.SCHEINEXAM } })
@@ -34,6 +42,10 @@ export class ScheinexamModel {
     model.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
 
     return model;
+  }
+
+  hasPassed(student: StudentDocument): PassedInformation {
+    throw new Error('Method not implemented');
   }
 
   /**

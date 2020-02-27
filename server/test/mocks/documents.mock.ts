@@ -140,6 +140,7 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     team: undefined,
     attendances: new Map(),
     gradings: new Map(),
+    presentationPoints: new Map(),
   },
   {
     _id: '5e503fa7467c801a4953e0b6',
@@ -154,6 +155,7 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     team: undefined,
     attendances: new Map(),
     gradings: new Map(),
+    presentationPoints: new Map(),
   },
   {
     _id: '5e503fa4396e8d6f315f7194',
@@ -168,6 +170,7 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     team: undefined,
     attendances: new Map(),
     gradings: new Map(),
+    presentationPoints: new Map(),
   },
 ];
 
@@ -176,6 +179,7 @@ export const SHEET_DOCUMENTS: MockedSheetModel[] = [
     _id: '5e5528e1e9010217b62efbb5',
     sheetNo: 1,
     bonusSheet: false,
+    totalPoints: 30, // Put the expected sum of all exercises here.
     exercises: [
       {
         _id: '5e552a0496f8e7414a001cd6',

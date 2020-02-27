@@ -16,7 +16,7 @@ export interface Student extends NamedElement {
   email?: string;
   matriculationNo?: string;
   gradings: [string, any][];
-  presentationPoints: { [index: string]: number };
+  presentationPoints: [string, number][];
   status: StudentStatus;
   team?: TeamInStudent;
   tutorial: TutorialInEntity;
