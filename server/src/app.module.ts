@@ -8,6 +8,7 @@ import { ModelsModule } from './database/models/models.module';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 import { SheetModule } from './module/sheet/sheet.module';
 import { ScheinexamModule } from './module/scheinexam/scheinexam.module';
+import { ScheincriteriaModule } from './module/scheincriteria/scheincriteria.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ScheinexamModule } from './module/scheinexam/scheinexam.module';
     StudentModule,
     SheetModule,
     ScheinexamModule,
+    ScheincriteriaModule,
   ],
   controllers: [],
   providers: [],
