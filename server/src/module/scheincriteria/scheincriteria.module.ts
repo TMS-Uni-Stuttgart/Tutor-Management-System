@@ -6,10 +6,15 @@ import { SheetIndividualCriteria } from './container/criterias/SheetIndividualCr
 import { SheetTotalCriteria } from './container/criterias/SheetTotalCriteria';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
+import { ScheincriteriaService } from './scheincriteria.service';
+import { ScheincriteriaController } from './scheincriteria.controller';
 
 type ScheincriteriaConstructor = new () => Scheincriteria;
 
-@Module({})
+@Module({
+  providers: [ScheincriteriaService],
+  controllers: [ScheincriteriaController],
+})
 export class ScheincriteriaModule implements OnModuleInit {
   onModuleInit() {
     const criterias: ScheincriteriaConstructor[] = [

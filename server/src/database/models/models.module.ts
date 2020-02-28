@@ -1,14 +1,13 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { AttendanceModel } from './attendance.model';
-import { ExerciseModel, SubExerciseModel } from './exercise.model';
-import { GradingModel } from './grading.model';
+import { ScheincriteriaModel } from './scheincriteria.model';
+import { ScheinexamModel } from './scheinexam.model';
 import { SheetModel } from './sheet.model';
 import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
 import { TutorialModel } from './tutorial.model';
 import { UserModel } from './user.model';
-import { ScheinexamModel } from './scheinexam.model';
 
 @Global()
 @Module({})
@@ -22,9 +21,7 @@ export class ModelsModule {
       UserModel,
       SheetModel,
       ScheinexamModel,
-      GradingModel, // TODO: Needed?
-      ExerciseModel, // TODO: Needed?
-      SubExerciseModel, // TODO: Needed?
+      ScheincriteriaModel,
     ]);
 
     return {
