@@ -56,6 +56,7 @@ export class ScheincriteriaService
    * @returns The created scheincriteria
    *
    * @throws `NotFoundException` - If no scheincriteria could be generated with the provided identifier in the DTO.
+   * @throws `BadRequestException` - If the provided data is not a valid criteria.
    */
   async create(dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
     const scheincriteria = this.generateCriteriaFromDTO(dto);
@@ -78,6 +79,7 @@ export class ScheincriteriaService
    * @returns Updated version of the scheincriteria.
    *
    * @throws `NotFoundException` - If there is no scheincriteria saved with the given ID or if no scheincriteria could be generated from the given DTO.
+   * @throws `BadRequestException` - If the provided data is not a valid criteria.
    */
   async update(id: string, dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
     const scheincriteria = await this.findById(id);

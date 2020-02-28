@@ -1,13 +1,15 @@
 import { DateTime } from 'luxon';
+import { ExerciseModel, SubExerciseModel } from '../../src/database/models/exercise.model';
+import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
+import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
+import { SheetModel } from '../../src/database/models/sheet.model';
 import { StudentModel } from '../../src/database/models/student.model';
 import { TutorialModel } from '../../src/database/models/tutorial.model';
 import { UserModel } from '../../src/database/models/user.model';
 import { Role } from '../../src/shared/model/Role';
+import { ScheincriteriaIdentifier } from '../../src/shared/model/ScheinCriteria';
 import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';
-import { SheetModel } from '../../src/database/models/sheet.model';
-import { ExerciseModel, SubExerciseModel } from '../../src/database/models/exercise.model';
-import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
 
 export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
 export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
@@ -18,6 +20,9 @@ export type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
 };
 export type MockedScheinexamModel = Omit<MockedModel<ScheinexamModel>, 'exercises'> & {
   exercises: MockedExerciseModel[];
+};
+export type MockedScheincriteriaModel = Omit<MockedModel<ScheincriteriaModel>, 'criteria'> & {
+  criteria: { identifier: string; [key: string]: any };
 };
 
 export const USER_DOCUMENTS: MockedModel<UserModel>[] = [
@@ -225,6 +230,55 @@ export const SCHEINEXAM_DOCUMENTS: MockedScheinexamModel[] = [
         ],
       },
     ],
+  },
+];
+
+export const SCHEINCRITERIA_DOCUMENTS: MockedScheincriteriaModel[] = [
+  {
+    _id: '5e59295a14255d6110d892a8',
+    name: 'Attendance criteria',
+    criteria: {
+      identifier: ScheincriteriaIdentifier.ATTENDANCE,
+      percentage: true,
+      valueNeeded: 0.6,
+    },
+  },
+  {
+    _id: '5e5929b16aabf232282f33dc',
+    name: 'Presentation criteria',
+    criteria: {
+      identifier: ScheincriteriaIdentifier.PRESENTATION,
+      presentationsNeeded: 2,
+    },
+  },
+  {
+    _id: '5e592a7872211d1b70af9cb0',
+    name: 'Scheinexam criteria',
+    criteria: {
+      identifier: ScheincriteriaIdentifier.SCHEINEXAM,
+      passAllExamsIndividually: true,
+      percentageOfAllPointsNeeded: 0.5,
+    },
+  },
+  {
+    _id: '5e592aad72211d1b70af9cb1',
+    name: 'Sheet Total criteria',
+    criteria: {
+      identifier: ScheincriteriaIdentifier.SHEET_TOTAL,
+      percentage: true,
+      valueNeeded: 0.5,
+    },
+  },
+  {
+    _id: '5e592ace72211d1b70af9cb2',
+    name: 'Sheet Individual criteria',
+    criteria: {
+      identifier: ScheincriteriaIdentifier.SHEET_INDIVIDUAL,
+      percentage: true,
+      valueNeeded: 0.8,
+      valuePerSheetNeeded: 0.5,
+      percentagePerSheet: true,
+    },
   },
 ];
 
