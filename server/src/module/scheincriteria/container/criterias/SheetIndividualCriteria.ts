@@ -1,6 +1,10 @@
 import { SheetDocument } from '../../../../database/models/sheet.model';
 import { StudentDocument } from '../../../../database/models/student.model';
-import { PassedState, ScheinCriteriaUnit } from '../../../../shared/model/ScheinCriteria';
+import {
+  PassedState,
+  ScheinCriteriaUnit,
+  ScheincriteriaIdentifier,
+} from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
   CriteriaPayload,
@@ -26,7 +30,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     percentagePerSheet: boolean,
     valuePerSheetNeeded: number
   ) {
-    super('sheetIndividual', percentage, valueNeeded);
+    super(ScheincriteriaIdentifier.SHEET_INDIVIDUAL, percentage, valueNeeded);
 
     this.valuePerSheetNeeded = valuePerSheetNeeded;
     this.percentagePerSheet = percentagePerSheet;

@@ -1,4 +1,7 @@
-import { ScheinCriteriaUnit } from '../../../../shared/model/ScheinCriteria';
+import {
+  ScheinCriteriaUnit,
+  ScheincriteriaIdentifier,
+} from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
   CriteriaPayload,
@@ -16,7 +19,7 @@ export class PresentationCriteria extends Scheincriteria {
   readonly presentationsNeeded: number;
 
   constructor(presentationsNeeded: number) {
-    super('presentation');
+    super(ScheincriteriaIdentifier.PRESENTATION);
     this.presentationsNeeded = presentationsNeeded;
   }
 

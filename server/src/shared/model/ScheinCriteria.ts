@@ -1,5 +1,13 @@
 import { HasExercises } from './Sheet';
 
+export enum ScheincriteriaIdentifier {
+  ATTENDANCE = 'attendance',
+  PRESENTATION = 'presentation',
+  SCHEINEXAM = 'scheinexam',
+  SHEET_INDIVIDUAL = 'sheetIndividual',
+  SHEET_TOTAL = 'sheetTotal',
+}
+
 export interface ScheinCriteriaResponse {
   id: string;
   identifier: string;

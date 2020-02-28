@@ -1,5 +1,8 @@
 import { AttendanceState } from '../../../../shared/model/Attendance';
-import { ScheinCriteriaUnit } from '../../../../shared/model/ScheinCriteria';
+import {
+  ScheinCriteriaUnit,
+  ScheincriteriaIdentifier,
+} from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
   CriteriaPayload,
@@ -10,7 +13,7 @@ import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
 
 export class AttendanceCriteria extends PossiblePercentageCriteria {
   constructor(percentage: boolean, valueNeeded: number) {
-    super('attendance', percentage, valueNeeded);
+    super(ScheincriteriaIdentifier.ATTENDANCE, percentage, valueNeeded);
   }
 
   checkCriteriaStatus({ student }: CriteriaPayload): StatusCheckResponse {

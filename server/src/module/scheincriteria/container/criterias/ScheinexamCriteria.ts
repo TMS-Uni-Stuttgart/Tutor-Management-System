@@ -1,6 +1,10 @@
 import { ScheinexamDocument } from '../../../../database/models/scheinexam.model';
 import { StudentDocument } from '../../../../database/models/student.model';
-import { PassedState, ScheinCriteriaUnit } from '../../../../shared/model/ScheinCriteria';
+import {
+  PassedState,
+  ScheinCriteriaUnit,
+  ScheincriteriaIdentifier,
+} from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
   CriteriaPayload,
@@ -22,7 +26,7 @@ export class ScheinexamCriteria extends Scheincriteria {
   readonly percentageOfAllPointsNeeded: number;
 
   constructor(passAllExamsIndividually: boolean, percentageOfAllPointsNeeded: number) {
-    super('scheinexam');
+    super(ScheincriteriaIdentifier.SCHEINEXAM);
 
     this.passAllExamsIndividually = passAllExamsIndividually;
     this.percentageOfAllPointsNeeded = percentageOfAllPointsNeeded;
