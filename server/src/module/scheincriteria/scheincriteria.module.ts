@@ -36,7 +36,7 @@ export class ScheincriteriaModule implements OnModuleInit {
     const container = ScheincriteriaContainer.getContainer();
     const identifier = criteria.identifier;
 
-    Logger.log(`Registering scheincriteria '${identifier}...`, logContext);
+    Logger.log(`Registering scheincriteria '${identifier}'...`, logContext);
 
     container.registerBluePrint(criteria);
 
