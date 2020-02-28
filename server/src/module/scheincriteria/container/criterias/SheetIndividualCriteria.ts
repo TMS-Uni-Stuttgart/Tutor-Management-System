@@ -9,17 +9,22 @@ import {
 } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { IsBoolean, IsNumber, Min } from 'class-validator';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
   @ScheincriteriaPossiblePercentage('percentagePerSheet')
+  @IsNumber()
+  @Min(0)
   readonly valuePerSheetNeeded: number;
+
+  @IsBoolean()
   readonly percentagePerSheet: boolean;
 
   constructor(
-    percentage: boolean = false,
-    valueNeeded: number = 0,
-    percentagePerSheet: boolean = false,
-    valuePerSheetNeeded: number = 0
+    percentage: boolean,
+    valueNeeded: number,
+    percentagePerSheet: boolean,
+    valuePerSheetNeeded: number
   ) {
     super('sheetIndividual', percentage, valueNeeded);
 
