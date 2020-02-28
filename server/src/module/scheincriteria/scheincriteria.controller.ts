@@ -8,17 +8,20 @@ import {
   Post,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ScheinCriteriaResponse } from '../../shared/model/ScheinCriteria';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaService } from './scheincriteria.service';
+import { HasRoleGuard } from '../../guards/has-role.guard';
+import { Role } from '../../shared/model/Role';
 
 @Controller('scheincriteria')
 export class ScheincriteriaController {
   constructor(private readonly scheincriteriaService: ScheincriteriaService) {}
 
-  // TODO: Add guards to ALL routes!
   @Get()
+  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
   async getAllCriterias(): Promise<ScheinCriteriaResponse[]> {
     const scheincriterias = await this.scheincriteriaService.findAll();
 
@@ -26,6 +29,7 @@ export class ScheincriteriaController {
   }
 
   @Post()
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
   async createCriteria(@Body() dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
     const scheincriteria = await this.scheincriteriaService.create(dto);
@@ -33,14 +37,8 @@ export class ScheincriteriaController {
     return scheincriteria;
   }
 
-  @Get('/:id')
-  async getCriteria(@Param('id') id: string): Promise<ScheinCriteriaResponse> {
-    const scheincriteria = await this.scheincriteriaService.findById(id);
-
-    return scheincriteria.toDTO();
-  }
-
   @Patch('/:id')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
   async updateCriteria(
     @Param('id') id: string,
@@ -52,6 +50,7 @@ export class ScheincriteriaController {
   }
 
   @Delete('/:id')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
   async deleteCriteria(@Param('id') id: string): Promise<void> {
     await this.scheincriteriaService.delete(id);
   }
