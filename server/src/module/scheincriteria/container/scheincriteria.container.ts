@@ -80,13 +80,14 @@ class SCContainer {
 
       if (fieldData) {
         criteriaForm.formDataSet.set(propertyName, fieldData);
-        Logger.log(`\t${fieldData.type} field '${propertyName}' added.`, SCContainer.name);
+        Logger.log(
+          `${fieldData.type} field '${propertyName}' added.`,
+          `Criteria: ${criteria.identifier}`
+        );
       }
     }
 
     this.criteriaBluePrints.set(criteria.identifier, criteriaForm);
-
-    Logger.log(`\tCriteria blue print with identifier '${criteria.identifier}' registered.`);
   }
 
   private getFormFieldDataForProperty(

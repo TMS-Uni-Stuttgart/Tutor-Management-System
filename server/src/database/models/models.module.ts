@@ -8,6 +8,7 @@ import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
 import { TutorialModel } from './tutorial.model';
 import { UserModel } from './user.model';
+import { ScheinexamModel } from './scheinexam.model';
 
 @Global()
 @Module({})
@@ -15,13 +16,14 @@ export class ModelsModule {
   static init(): DynamicModule {
     const moduleWithModels = TypegooseModule.forFeature([
       AttendanceModel,
-      GradingModel,
       StudentModel,
       TeamModel,
       TutorialModel,
       UserModel,
       SheetModel,
-      ExerciseModel,
+      ScheinexamModel,
+      GradingModel, // TODO: Needed?
+      ExerciseModel, // TODO: Needed?
       SubExerciseModel, // TODO: Needed?
     ]);
 
