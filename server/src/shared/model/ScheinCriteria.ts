@@ -4,10 +4,12 @@ export interface ScheinCriteriaResponse {
   id: string;
   identifier: string;
   name: string;
-  [key: string]: any;
+  data: {
+    [key: string]: any;
+  };
 }
 
-export interface ScheinCriteriaDTO {
+export interface IScheinCriteriaDTO {
   data: any;
   name: string;
   identifier: string;
