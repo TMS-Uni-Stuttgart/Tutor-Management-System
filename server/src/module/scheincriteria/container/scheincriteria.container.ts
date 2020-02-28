@@ -1,7 +1,7 @@
 import { ScheincriteriaForm } from './scheincriteria.form';
 import { ScheincriteriaMetadata, ScheincriteriaMetadataKey } from './scheincriteria.metadata';
 import { Scheincriteria } from './Scheincriteria';
-import { Logger } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import {
   FormFieldData,
   FormSelectValue,
@@ -88,6 +88,25 @@ class SCContainer {
     }
 
     this.criteriaBluePrints.set(criteria.identifier, criteriaForm);
+  }
+
+  /**
+   * Returns the blue print of the given identifier if there is one saved.
+   *
+   * @param identifier Identifier to get blue print of.
+   *
+   * @returns Blue print of the given identifiert.
+   *
+   * @throws `NotFoundException` - If no blue print of the given identifier could be found.
+   */
+  getBluePrint(identifier: string): ScheincriteriaForm {
+    const bluePrint = this.criteriaBluePrints.get(identifier);
+
+    if (!bluePrint) {
+      throw new NotFoundException(`No criteria blue print found for identifier ${identifier}.`);
+    }
+
+    return bluePrint;
   }
 
   private getFormFieldDataForProperty(
