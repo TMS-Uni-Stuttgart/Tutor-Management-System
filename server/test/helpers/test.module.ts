@@ -11,12 +11,14 @@ import {
   STUDENT_DOCUMENTS,
   SHEET_DOCUMENTS,
   SCHEINEXAM_DOCUMENTS,
+  SCHEINCRITERIA_DOCUMENTS,
 } from '../mocks/documents.mock';
 import { TutorialModel } from '../../src/database/models/tutorial.model';
 import { StudentModel } from '../../src/database/models/student.model';
 import { TeamModel } from '../../src/database/models/team.model';
 import { SheetModel } from '../../src/database/models/sheet.model';
 import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
+import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
 
 interface ModelMockOptions {
   model: TypegooseClass;
@@ -33,6 +35,7 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
   { model: TeamModel, initialDocuments: [] },
   { model: SheetModel, initialDocuments: [...SHEET_DOCUMENTS] },
   { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
+  { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
 ];
 
 @Module({})
