@@ -1,16 +1,17 @@
+import { Logger, NotFoundException } from '@nestjs/common';
+import { DecoratorKeys } from '@typegoose/typegoose/lib/internal/constants';
+import {
+  FormBooleanFieldData,
+  FormEnumFieldData,
+  FormFieldData,
+  FormFloatFieldData,
+  FormIntegerFieldData,
+  FormSelectValue,
+  FormStringFieldData,
+} from '../../../shared/model/FormTypes';
+import { Scheincriteria } from './Scheincriteria';
 import { ScheincriteriaForm } from './scheincriteria.form';
 import { ScheincriteriaMetadata, ScheincriteriaMetadataKey } from './scheincriteria.metadata';
-import { Scheincriteria } from './Scheincriteria';
-import { Logger, NotFoundException } from '@nestjs/common';
-import {
-  FormFieldData,
-  FormSelectValue,
-  FormEnumFieldData,
-  FormStringFieldData,
-  FormBooleanFieldData,
-  FormIntegerFieldData,
-  FormFloatFieldData,
-} from '../../../shared/model/FormTypes';
 
 class SCContainer {
   private readonly criteriaMetadata: Map<string, ScheincriteriaMetadata>;
@@ -69,14 +70,8 @@ class SCContainer {
   registerBluePrint(criteria: Scheincriteria) {
     const criteriaForm = new ScheincriteriaForm(criteria);
 
-    for (const [propertyName, propertyDescriptor] of Object.entries(
-      Object.getOwnPropertyDescriptors(criteria)
-    )) {
-      const fieldData = this.getFormFieldDataForProperty(
-        propertyName,
-        propertyDescriptor,
-        criteria
-      );
+    for (const [propertyName] of Object.entries(Object.getOwnPropertyDescriptors(criteria))) {
+      const fieldData = this.getFormFieldDataForProperty(propertyName, criteria);
 
       if (fieldData) {
         criteriaForm.formDataSet.set(propertyName, fieldData);
@@ -103,7 +98,7 @@ class SCContainer {
     const bluePrint = this.criteriaBluePrints.get(identifier);
 
     if (!bluePrint) {
-      throw new NotFoundException(`No criteria blue print found for identifier ${identifier}.`);
+      throw new NotFoundException(`No criteria blue print found for identifier '${identifier}'.`);
     }
 
     return bluePrint;
@@ -111,7 +106,6 @@ class SCContainer {
 
   private getFormFieldDataForProperty(
     propertyName: string,
-    propertyDescriptor: PropertyDescriptor,
     criteria: Scheincriteria
   ): FormFieldData | undefined {
     /*
@@ -122,8 +116,12 @@ class SCContainer {
       return undefined;
     }
 
-    const type = typeof propertyDescriptor.value;
     const metadata: ScheincriteriaMetadata = this.getMetadata(criteria, propertyName);
+    const type = Reflect.getMetadata(
+      DecoratorKeys.Type,
+      criteria,
+      propertyName
+    )?.name?.toLowerCase();
 
     if (metadata.type === 'ignore') {
       return undefined;
@@ -183,7 +181,8 @@ class SCContainer {
 
       default:
         Logger.warn(
-          `Property '${propertyName}' with type '${type}' is not supported by the scheincriteria form system.`
+          `Property '${propertyName}' with type '${type}' is not supported by the scheincriteria form system.`,
+          `Criteria: ${criteria.identifier}`
         );
     }
 
