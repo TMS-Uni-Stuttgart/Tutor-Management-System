@@ -7,12 +7,15 @@ import {
   StatusCheckResponse,
 } from '../Scheincriteria';
 import { ScheincriteriaNumber } from '../scheincriteria.decorators';
+import { IsNumber, Min } from 'class-validator';
 
 export class PresentationCriteria extends Scheincriteria {
+  @IsNumber()
+  @Min(0)
   @ScheincriteriaNumber({ min: 0 })
   readonly presentationsNeeded: number;
 
-  constructor(presentationsNeeded: number = 0) {
+  constructor(presentationsNeeded: number) {
     super('presentation');
     this.presentationsNeeded = presentationsNeeded;
   }

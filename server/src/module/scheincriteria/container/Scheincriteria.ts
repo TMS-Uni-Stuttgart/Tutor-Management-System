@@ -1,3 +1,4 @@
+import { IsString } from 'class-validator';
 import { ScheinexamDocument } from '../../../database/models/scheinexam.model';
 import { SheetDocument } from '../../../database/models/sheet.model';
 import { StudentDocument } from '../../../database/models/student.model';
@@ -19,7 +20,12 @@ export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;
 export type CriteriaInformationWithoutName = Omit<CriteriaInformation, 'name' | 'studentSummaries'>;
 
 export abstract class Scheincriteria {
-  constructor(readonly identifier: string) {}
+  @IsString()
+  readonly identifier: string;
+
+  constructor(identifier: string) {
+    this.identifier = identifier;
+  }
 
   abstract checkCriteriaStatus(payload: CriteriaPayload): StatusCheckResponse;
 

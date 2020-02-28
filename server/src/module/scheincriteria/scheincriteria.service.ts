@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { validateSync } from 'class-validator';
 import { InjectModel } from 'nestjs-typegoose';
 import {
   ScheincriteriaDocument,
@@ -7,9 +8,9 @@ import {
 } from '../../database/models/scheincriteria.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { ScheinCriteriaResponse } from '../../shared/model/ScheinCriteria';
-import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
+import { ScheinCriteriaDTO } from './scheincriteria.dto';
 
 @Injectable()
 export class ScheincriteriaService
@@ -95,6 +96,12 @@ export class ScheincriteriaService
     // Get the constructor of the blueprint. The type needs to be set here because 'constructor' is only typed as 'Function' and therefore cannot be used with 'new' in front of it.
     const prototype = bluePrintData.blueprint.constructor as new () => Scheincriteria;
     const criteria: Scheincriteria = Object.assign(new prototype(), data);
+
+    const errors = validateSync(criteria, { whitelist: true, forbidNonWhitelisted: true });
+
+    if (errors.length > 0) {
+      throw new BadRequestException(errors);
+    }
 
     return criteria;
   }

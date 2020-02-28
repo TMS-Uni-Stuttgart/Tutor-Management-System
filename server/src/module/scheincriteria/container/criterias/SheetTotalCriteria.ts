@@ -10,7 +10,7 @@ import {
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
 
 export class SheetTotalCriteria extends PossiblePercentageCriteria {
-  constructor(percentage: boolean = false, valueNeeded: number = 0) {
+  constructor(percentage: boolean, valueNeeded: number) {
     super('sheetTotal', percentage, valueNeeded);
   }
 

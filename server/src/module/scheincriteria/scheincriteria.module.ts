@@ -9,7 +9,7 @@ import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheincriteriaService } from './scheincriteria.service';
 import { ScheincriteriaController } from './scheincriteria.controller';
 
-type ScheincriteriaConstructor = new () => Scheincriteria;
+type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
 
 @Module({
   providers: [ScheincriteriaService],

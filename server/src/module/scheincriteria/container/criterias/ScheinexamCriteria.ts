@@ -9,15 +9,20 @@ import {
   StatusCheckResponse,
 } from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../scheincriteria.decorators';
+import { IsBoolean, IsNumber, Min, Max } from 'class-validator';
 
 export class ScheinexamCriteria extends Scheincriteria {
+  @IsBoolean()
   readonly passAllExamsIndividually: boolean;
 
   @ScheincriteriaPercentage()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
   readonly percentageOfAllPointsNeeded: number;
 
-  constructor(passAllExamsIndividually: boolean = false, percentageOfAllPointsNeeded: number = 0) {
-    super('exam');
+  constructor(passAllExamsIndividually: boolean, percentageOfAllPointsNeeded: number) {
+    super('scheinexam');
 
     this.passAllExamsIndividually = passAllExamsIndividually;
     this.percentageOfAllPointsNeeded = percentageOfAllPointsNeeded;
