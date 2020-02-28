@@ -1,6 +1,10 @@
 import { SheetDocument } from '../../../../database/models/sheet.model';
 import { StudentDocument } from '../../../../database/models/student.model';
-import { PassedState, ScheinCriteriaUnit } from '../../../../shared/model/ScheinCriteria';
+import {
+  PassedState,
+  ScheinCriteriaUnit,
+  ScheincriteriaIdentifier,
+} from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
   CriteriaPayload,
@@ -11,7 +15,7 @@ import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
 
 export class SheetTotalCriteria extends PossiblePercentageCriteria {
   constructor(percentage: boolean, valueNeeded: number) {
-    super('sheetTotal', percentage, valueNeeded);
+    super(ScheincriteriaIdentifier.SHEET_TOTAL, percentage, valueNeeded);
   }
 
   checkCriteriaStatus({ student, sheets }: CriteriaPayload): StatusCheckResponse {
