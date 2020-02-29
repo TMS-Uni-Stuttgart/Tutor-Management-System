@@ -39,13 +39,22 @@ interface AssertStudentDTOParams {
  * @param params Must contain an expected StudentDocuemt and the actual Student object.
  */
 function assertStudent({ expected, actual }: AssertStudentParams) {
-  const { _id, attendances, gradings, tutorial, presentationPoints, ...restExpected } = expected;
+  const {
+    _id,
+    attendances,
+    gradings,
+    tutorial,
+    presentationPoints,
+    team,
+    ...restExpected
+  } = expected;
   const {
     id: actualId,
     attendances: actualAttendances,
     gradings: actualGradings,
     tutorial: actualTutorial,
     presentationPoints: actualPresentationPoints,
+    team: actualTeam,
     ...restActual
   } = actual;
 
@@ -53,6 +62,9 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
 
   expect(actualTutorial.id).toEqual(tutorial._id);
   expect(actualTutorial.slot).toEqual(tutorial.slot);
+
+  expect(actualTeam?.id).toEqual(team?._id);
+  expect(actualTeam?.teamNo).toEqual(team?.teamNo);
 
   expect(new Map(actualAttendances)).toEqual(attendances);
   expect(new Map(gradings)).toEqual(gradings);
@@ -90,7 +102,7 @@ function assertStudentList({ expected, actual }: AssertStudentListParams) {
  * @param params Must contain the expected StudentDocument and the actual Student. Can also include the old version of the Student.
  */
 function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOParams) {
-  const { tutorial, ...restExpected } = expected;
+  const { tutorial, team, ...restExpected } = expected;
   const {
     id,
     attendances,
@@ -98,6 +110,7 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
     tutorial: actualTutorial,
     presentationPoints, // TODO: Compare me after the model has the presentation points.
     cakeCount,
+    team: actualTeam,
     ...restActual
   } = actual;
 
@@ -105,6 +118,7 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
   expect(restActual).toEqual(restExpected);
 
   expect(actualTutorial.id).toEqual(tutorial);
+  expect(actualTeam?.id).toEqual(team);
   // expect(actualTutorial.slot).toEqual(expectedTutorial.slot);
 
   if (!!oldStudent) {

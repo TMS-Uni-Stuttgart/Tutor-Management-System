@@ -10,6 +10,8 @@ import { Role } from '../../src/shared/model/Role';
 import { ScheincriteriaIdentifier } from '../../src/shared/model/ScheinCriteria';
 import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';
+import { TeamModel } from '../../src/database/models/team.model';
+import { generate } from 'rxjs';
 
 export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
 export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
@@ -98,7 +100,10 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
       generateFakeDocument('5e503fa7467c801a4953e0b6'),
       generateFakeDocument('5e503fa4396e8d6f315f7194'),
     ],
-    teams: [],
+    teams: [
+      generateFakeDocument('5e5a48b128fa40e1a26b7ddb'),
+      generateFakeDocument('5e5a48fcc99e7f140d2c946a'),
+    ],
     correctors: [],
     dates: createDatesForTutorial('2020-02-18'),
     startTime: DateTime.fromISO('08:00:00', { zone: 'utc' }).toJSDate(),
@@ -121,6 +126,18 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     _id: '5e51421a7fd4b19a4cbe933f',
     tutor: undefined,
     slot: 'Tutorial 2',
+    students: [generateFakeDocument('5e5a4ce8b3a28d41d3370349')],
+    teams: [],
+    correctors: [],
+    dates: createDatesForTutorial('2020-02-21'),
+    startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
+    endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
+    substitutes: new Map(),
+  },
+  {
+    _id: '5e5a4cfc318e40b25051a877',
+    tutor: undefined,
+    slot: 'Tutorial 3',
     students: [],
     teams: [],
     correctors: [],
@@ -142,7 +159,7 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     email: 'granger_hermine@hogwarts.com',
     matriculationNo: '2345671',
     cakeCount: 0,
-    team: undefined,
+    team: generateFakeDocument('5e5a48b128fa40e1a26b7ddb', { teamNo: 1 }),
     attendances: new Map(),
     gradings: new Map(),
     presentationPoints: new Map(),
@@ -157,25 +174,58 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     email: 'potter_harry@hogwarts.com',
     matriculationNo: '1234567',
     cakeCount: 2,
-    team: undefined,
+    team: generateFakeDocument('5e5a48b128fa40e1a26b7ddb', { teamNo: 1 }),
     attendances: new Map(),
     gradings: new Map(),
     presentationPoints: new Map(),
   },
   {
     _id: '5e503fa4396e8d6f315f7194',
-    firstname: 'Draco',
-    lastname: 'Malfoy',
+    firstname: 'Weasley',
+    lastname: 'Ron',
     tutorial: generateFakeDocument('5e50141098205a0d95857492', { slot: 'Tutorial 1' }),
     status: StudentStatus.INACTIVE,
     courseOfStudies: 'Computer science B. Sc.',
-    email: 'malfoy_draco@hogwarts.com',
+    email: 'weasley_ron@hogwarts.com',
     matriculationNo: '3456712',
     cakeCount: 0,
     team: undefined,
     attendances: new Map(),
     gradings: new Map(),
     presentationPoints: new Map(),
+  },
+  {
+    _id: '5e5a4ce8b3a28d41d3370349',
+    firstname: 'Draco',
+    lastname: 'Malfoy',
+    tutorial: generateFakeDocument('5e51421a7fd4b19a4cbe933f', { slot: 'Tutorial 2' }),
+    status: StudentStatus.INACTIVE,
+    courseOfStudies: 'Computer science B. Sc.',
+    email: 'malfoy_draco@hogwarts.com',
+    matriculationNo: '8745321',
+    cakeCount: 0,
+    team: undefined,
+    attendances: new Map(),
+    gradings: new Map(),
+    presentationPoints: new Map(),
+  },
+];
+
+export const TEAM_DOCUMENTS: MockedModel<TeamModel>[] = [
+  {
+    _id: '5e5a48b128fa40e1a26b7ddb',
+    tutorial: generateFakeDocument('5e50141098205a0d95857492'),
+    teamNo: 1,
+    students: [
+      generateFakeDocument('5e503faaec719cfb56f99496'),
+      generateFakeDocument('5e503fa7467c801a4953e0b6'),
+    ],
+  },
+  {
+    _id: '5e5a48fcc99e7f140d2c946a',
+    tutorial: generateFakeDocument('5e50141098205a0d95857492'),
+    teamNo: 2,
+    students: [],
   },
 ];
 
