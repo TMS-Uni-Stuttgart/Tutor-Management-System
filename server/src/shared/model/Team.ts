@@ -9,6 +9,6 @@ export interface Team extends HasId {
   tutorial: string;
 }
 
-export interface TeamDTO {
+export interface ITeamDTO {
   students: string[];
 }

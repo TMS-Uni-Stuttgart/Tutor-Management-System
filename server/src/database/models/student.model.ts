@@ -189,7 +189,10 @@ export class StudentModel {
       lastname,
       matriculationNo,
       tutorial: { id: tutorial.id, slot: tutorial.slot },
-      team: team?.id,
+      team: team && {
+        id: team.id,
+        teamNo: team.teamNo,
+      },
       status,
       courseOfStudies,
       attendances,
