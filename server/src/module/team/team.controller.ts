@@ -10,10 +10,12 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { Team } from '../../shared/model/Team';
 import { TeamService } from './team.service';
 import { TeamDTO } from './team.dto';
+import { TeamGuard } from '../../guards/team.guard';
 
 @Controller('tutorial/:id/team')
 export class TeamController {
@@ -22,6 +24,7 @@ export class TeamController {
   // TODO: Add guards!
 
   @Get()
+  @UseGuards(TeamGuard)
   async getAllTeamsInTutorial(@Param('id') tutorialId: string): Promise<Team[]> {
     const teams = await this.teamService.findAllTeamsInTutorial(tutorialId);
 
@@ -29,6 +32,7 @@ export class TeamController {
   }
 
   @Post()
+  @UseGuards(TeamGuard)
   @UsePipes(ValidationPipe)
   async createTeamInTutorial(@Param('id') tutorialId: string, @Body() dto: TeamDTO): Promise<Team> {
     const team = await this.teamService.createTeamInTutorial(tutorialId, dto);
@@ -37,6 +41,7 @@ export class TeamController {
   }
 
   @Get('/:teamId')
+  @UseGuards(TeamGuard)
   async getTeamInTutorial(
     @Param('id') tutorialId: string,
     @Param('teamId') teamId: string
@@ -47,6 +52,7 @@ export class TeamController {
   }
 
   @Patch('/:teamId')
+  @UseGuards(TeamGuard)
   @UsePipes(ValidationPipe)
   async updateTeamInTutorial(
     @Param('id') tutorialId: string,
@@ -59,6 +65,7 @@ export class TeamController {
   }
 
   @Delete('/:teamId')
+  @UseGuards(TeamGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTeamFromTutorial(
     @Param('id') tutorialId: string,
