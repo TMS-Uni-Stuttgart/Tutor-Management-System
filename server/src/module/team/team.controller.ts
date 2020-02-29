@@ -1,4 +1,16 @@
-import { Controller, Get, Param, Post, UsePipes, ValidationPipe, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  UsePipes,
+  ValidationPipe,
+  Body,
+  Patch,
+  Delete,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { Team } from '../../shared/model/Team';
 import { TeamService } from './team.service';
 import { TeamDTO } from './team.dto';
@@ -32,5 +44,26 @@ export class TeamController {
     const team = await this.teamService.findById({ tutorialId, teamId });
 
     return team.toDTO();
+  }
+
+  @Patch('/:teamId')
+  @UsePipes(ValidationPipe)
+  async updateTeamInTutorial(
+    @Param('id') tutorialId: string,
+    @Param('teamId') teamId: string,
+    @Body() dto: TeamDTO
+  ): Promise<Team> {
+    const team = await this.teamService.updateTeamInTutorial({ tutorialId, teamId }, dto);
+
+    return team;
+  }
+
+  @Delete('/:teamId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteTeamFromTutorial(
+    @Param('id') tutorialId: string,
+    @Param('teamId') teamId: string
+  ): Promise<void> {
+    await this.teamService.deleteTeamFromTutorial({ tutorialId, teamId });
   }
 }
