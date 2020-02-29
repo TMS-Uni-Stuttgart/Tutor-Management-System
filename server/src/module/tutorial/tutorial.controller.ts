@@ -18,6 +18,7 @@ import { Role } from '../../shared/model/Role';
 import { Tutorial } from '../../shared/model/Tutorial';
 import { TutorialDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
+import { Student } from '../../shared/model/Student';
 
 @Controller('tutorial')
 export class TutorialController {
@@ -62,5 +63,13 @@ export class TutorialController {
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   async deleteTutorial(@Param('id') id: string): Promise<void> {
     await this.tutorialService.delete(id);
+  }
+
+  @Get('/:id/student')
+  @UseGuards(TutorialGuard)
+  async getAllStudentsOfTutorial(@Param('id') id: string): Promise<Student[]> {
+    const students = await this.tutorialService.getAllStudentsOfTutorial(id);
+
+    return students;
   }
 }

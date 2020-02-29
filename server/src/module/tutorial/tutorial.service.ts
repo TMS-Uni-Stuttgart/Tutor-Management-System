@@ -19,6 +19,7 @@ import { Role } from '../../shared/model/Role';
 import { Tutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
 import { TutorialDTO } from './tutorial.dto';
+import { Student } from '../../shared/model/Student';
 
 @Injectable()
 export class TutorialService implements CRUDService<Tutorial, TutorialDTO, TutorialDocument> {
@@ -153,6 +154,21 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
     }
 
     return tutorial.remove();
+  }
+
+  /**
+   * Returns all students in the tutorial with the given ID.
+   *
+   * @param id ID of the tutorial to get the students of.
+   *
+   * @returns All students in the tutorial with the given ID.
+   *
+   * @throws `NotFoundException` - If no tutorial with the given ID could be found.
+   */
+  async getAllStudentsOfTutorial(id: string): Promise<Student[]> {
+    const tutorial = await this.findById(id);
+
+    return tutorial.students.map(s => s.toDTO());
   }
 
   private assertTutorHasTutorRole(tutor?: UserDocument) {

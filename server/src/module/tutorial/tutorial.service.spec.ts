@@ -451,5 +451,29 @@ describe('TutorialService', () => {
     await expect(service.findById(tutorial.id)).rejects.toThrow(NotFoundException);
   });
 
-  it.todo('fail on deleting a tutorial with students');
+  it('fail on deleting a tutorial with students', async () => {
+    const tutorialWithStudents = TUTORIAL_DOCUMENTS[0];
+
+    // Sanity check
+    expect(tutorialWithStudents.students.length).not.toBe(0);
+
+    await expect(service.delete(tutorialWithStudents._id)).rejects.toThrow(BadRequestException);
+  });
+
+  it('get all students of a tutorial', async () => {
+    const tutorialWithStudents = TUTORIAL_DOCUMENTS[0];
+
+    // Sanity check
+    expect(tutorialWithStudents.students.length).not.toBe(0);
+
+    const students = await service.getAllStudentsOfTutorial(tutorialWithStudents._id);
+
+    expect(students.map(s => s.id)).toEqual(tutorialWithStudents.students.map(s => s._id));
+  });
+
+  it('fail on getting all student of a non-existing tutorial', async () => {
+    const nonExisting = generateObjectId();
+
+    await expect(service.getAllStudentsOfTutorial(nonExisting)).rejects.toThrow(NotFoundException);
+  });
 });
