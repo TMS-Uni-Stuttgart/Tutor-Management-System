@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { StudentDocument } from '../../database/models/student.model';
@@ -20,6 +26,7 @@ export class TeamService {
     @InjectModel(TeamModel)
     private readonly teamModel: ReturnModelType<typeof TeamModel>,
     private readonly tutorialService: TutorialService,
+    @Inject(forwardRef(() => StudentService))
     private readonly studentService: StudentService
   ) {}
 

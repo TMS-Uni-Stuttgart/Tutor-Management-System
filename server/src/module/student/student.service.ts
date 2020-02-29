@@ -1,17 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Student } from '../../shared/model/Student';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
-import { StudentDTO } from './student.dto';
+import { StudentDTO, CakeCountDTO } from './student.dto';
 import { TutorialService } from '../tutorial/tutorial.service';
+import { TeamService } from '../team/team.service';
 
 @Injectable()
 export class StudentService implements CRUDService<Student, StudentDTO, StudentDocument> {
   constructor(
     private readonly tutorialService: TutorialService,
-    @InjectModel(StudentModel) private readonly studentModel: ReturnModelType<typeof StudentModel>
+    @Inject(forwardRef(() => TeamService))
+    private readonly teamService: TeamService,
+    @InjectModel(StudentModel)
+    private readonly studentModel: ReturnModelType<typeof StudentModel>
   ) {}
 
   /**
@@ -49,17 +53,19 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    *
    * @returns Created student.
    *
-   * @throws `NotFoundException` - If the tutorial of the student could not be found.
+   * @throws `NotFoundException` - If the tutorial or the team of the student could not be found.
    */
   async create(dto: StudentDTO): Promise<Student> {
-    const { tutorial: tutorialId, team, ...rest } = dto;
+    const { tutorial: tutorialId, team: teamId, ...rest } = dto;
     const tutorial = await this.tutorialService.findById(tutorialId);
+    const team = !!teamId
+      ? await this.teamService.findById({ tutorialId: tutorial.id, teamId })
+      : undefined;
 
-    // TODO: Add proper team.
     const doc = new StudentModel({
       ...rest,
       tutorial,
-      team: undefined,
+      team,
       cakeCount: 0,
     });
     const created: StudentDocument = (await this.studentModel.create(doc)) as StudentDocument;
@@ -75,7 +81,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    *
    * @returns Updated student.
    *
-   * @throws `NotFoundException` - If the no student with the given ID or if the new tutorial of the student (if it changes) could not be found.
+   * @throws `NotFoundException` - If the no student with the given ID or if the new tutorial (if it changes) or the new team of the student could not be found.
    */
   async update(id: string, dto: StudentDTO): Promise<Student> {
     const student = await this.findById(id);
@@ -85,9 +91,22 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
       student.tutorial = tutorial;
     }
 
-    const { firstname, lastname, status, courseOfStudies, email, matriculationNo } = dto;
+    const {
+      firstname,
+      lastname,
+      status,
+      courseOfStudies,
+      email,
+      matriculationNo,
+      team: teamId,
+    } = dto;
+    const team = !!teamId
+      ? await this.teamService.findById({ tutorialId: student.tutorial.id, teamId })
+      : undefined;
 
-    // TODO: Add proper team
+    student.team = team;
+    student.markModified('team');
+
     student.firstname = firstname;
     student.lastname = lastname;
     student.status = status;
@@ -113,5 +132,20 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
     const student = await this.findById(id);
 
     return student.remove();
+  }
+
+  /**
+   * Updates the cake count of the student with the given ID. The new cake count will be taken from the DTO.
+   *
+   * @param id ID of the student to change.
+   * @param dto DTO containing the new cake count of the student.
+   *
+   * @throws `NotFoundException` - If no student with the given ID could be found.
+   */
+  async setCakeCount(id: string, dto: CakeCountDTO): Promise<void> {
+    const student = await this.findById(id);
+
+    student.cakeCount = dto.cakeCount;
+    await student.save();
   }
 }
