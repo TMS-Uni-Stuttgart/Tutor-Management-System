@@ -74,7 +74,7 @@ export class UserService implements OnModuleInit, CRUDService<User, UserDTO, Use
    * @throws `NotFoundException` - If there is no user with the given ID.
    */
   async findById(id: string): Promise<UserDocument> {
-    const user = (await this.userModel.findById(id).exec()) as UserDocument;
+    const user = (await this.userModel.findById(id).exec()) as UserDocument | null;
 
     if (!user) {
       throw new NotFoundException(`User with the ID '${id}' could not be found.`);

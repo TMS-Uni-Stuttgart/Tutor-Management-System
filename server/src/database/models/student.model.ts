@@ -9,6 +9,8 @@ import { GradingDocument, GradingModel } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
+import { fieldEncryption, EncryptedDocument } from 'mongoose-field-encryption';
+import { databaseConfig } from '../../helpers/config';
 
 interface ConstructorFields {
   firstname: string;
@@ -22,6 +24,10 @@ interface ConstructorFields {
   cakeCount: number;
 }
 
+@plugin(fieldEncryption, {
+  secret: databaseConfig.secret,
+  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
+})
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
 export class StudentModel {
@@ -164,6 +170,8 @@ export class StudentModel {
    * @returns The DTO representation of this document.
    */
   toDTO(this: StudentDocument): Student {
+    this.decryptFieldsSync();
+
     const {
       id,
       firstname,
@@ -208,4 +216,4 @@ export class StudentModel {
   }
 }
 
-export type StudentDocument = DocumentType<StudentModel>;
+export type StudentDocument = EncryptedDocument<DocumentType<StudentModel>>;
