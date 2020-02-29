@@ -18,7 +18,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    * @returns All students saved in the database.
    */
   async findAll(): Promise<Student[]> {
-    const allStudents = await this.studentModel.find().exec();
+    const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
 
     return allStudents.map(student => student.toDTO());
   }
@@ -33,7 +33,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    * @throws `NotFoundException` - If no student with the given ID could be found.
    */
   async findById(id: string): Promise<StudentDocument> {
-    const student: StudentDocument | null = await this.studentModel.findById(id).exec();
+    const student = (await this.studentModel.findById(id).exec()) as StudentDocument | null;
 
     if (!student) {
       throw new NotFoundException(`Student with the ID ${id} could not be found`);
@@ -62,7 +62,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
       team: undefined,
       cakeCount: 0,
     });
-    const created: StudentDocument = await this.studentModel.create(doc);
+    const created: StudentDocument = (await this.studentModel.create(doc)) as StudentDocument;
 
     return created.toDTO();
   }
