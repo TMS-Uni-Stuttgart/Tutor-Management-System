@@ -91,28 +91,19 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
       student.tutorial = tutorial;
     }
 
-    const {
-      firstname,
-      lastname,
-      status,
-      courseOfStudies,
-      email,
-      matriculationNo,
-      team: teamId,
-    } = dto;
-    const team = !!teamId
-      ? await this.teamService.findById({ tutorialId: student.tutorial.id, teamId })
+    const team = !!dto.team
+      ? await this.teamService.findById({ tutorialId: student.tutorial.id, teamId: dto.team })
       : undefined;
 
     student.team = team;
     student.markModified('team');
 
-    student.firstname = firstname;
-    student.lastname = lastname;
-    student.status = status;
-    student.courseOfStudies = courseOfStudies;
-    student.email = email;
-    student.matriculationNo = matriculationNo;
+    student.firstname = dto.firstname;
+    student.lastname = dto.lastname;
+    student.status = dto.status;
+    student.courseOfStudies = dto.courseOfStudies;
+    student.email = dto.email;
+    student.matriculationNo = dto.matriculationNo;
 
     const updatedStudent = await student.save();
 
