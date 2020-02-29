@@ -12,6 +12,7 @@ import {
   SHEET_DOCUMENTS,
   SCHEINEXAM_DOCUMENTS,
   SCHEINCRITERIA_DOCUMENTS,
+  TEAM_DOCUMENTS,
 } from '../mocks/documents.mock';
 import { TutorialModel } from '../../src/database/models/tutorial.model';
 import { StudentModel } from '../../src/database/models/student.model';
@@ -32,7 +33,7 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
   },
   { model: TutorialModel, initialDocuments: [...TUTORIAL_DOCUMENTS] },
   { model: StudentModel, initialDocuments: [...STUDENT_DOCUMENTS] },
-  { model: TeamModel, initialDocuments: [] },
+  { model: TeamModel, initialDocuments: [...TEAM_DOCUMENTS] },
   { model: SheetModel, initialDocuments: [...SHEET_DOCUMENTS] },
   { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
   { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
