@@ -5,6 +5,7 @@ import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualP
 import { StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
 import { NoFunctions } from '../../helpers/NoFunctions';
+import { Team } from '../../shared/model/Team';
 
 /**
  * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.
@@ -45,6 +46,18 @@ export class TeamModel {
     localField: '_id',
   })
   students!: StudentDocument[];
+
+  toDTO(this: TeamDocument): Team {
+    const { id, students, teamNo, tutorial } = this;
+
+    return {
+      id,
+      students: students.map(s => s.id),
+      teamNo,
+      tutorial: tutorial.id,
+      points: {}, // TODO: Add the correct points for the whole team
+    };
+  }
 }
 
 export type TeamDocument = DocumentType<TeamModel>;

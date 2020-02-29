@@ -9,6 +9,7 @@ import { RequestLoggerMiddleware } from './middleware/request-logger.middleware'
 import { SheetModule } from './module/sheet/sheet.module';
 import { ScheinexamModule } from './module/scheinexam/scheinexam.module';
 import { ScheincriteriaModule } from './module/scheincriteria/scheincriteria.module';
+import { TeamModule } from './module/team/team.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ScheincriteriaModule } from './module/scheincriteria/scheincriteria.mod
     SheetModule,
     ScheinexamModule,
     ScheincriteriaModule,
+    TeamModule,
   ],
   controllers: [],
   providers: [],

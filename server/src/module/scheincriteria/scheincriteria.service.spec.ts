@@ -380,16 +380,11 @@ describe('ScheincriteriaService', () => {
       },
     };
 
-    try {
-      const criteria = await service.create(dto);
-      const deletedCriteria = await service.delete(criteria.id);
+    const criteria = await service.create(dto);
+    const deletedCriteria = await service.delete(criteria.id);
 
-      expect(deletedCriteria.id).toEqual(criteria.id);
-      await expect(service.findById(criteria.id)).rejects.toThrow(NotFoundException);
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
+    expect(deletedCriteria.id).toEqual(criteria.id);
+    await expect(service.findById(criteria.id)).rejects.toThrow(NotFoundException);
   });
 
   it('fail on deleting non-existing criteria', async () => {
