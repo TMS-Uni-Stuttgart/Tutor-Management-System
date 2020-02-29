@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { StudentDocument } from '../../database/models/student.model';
@@ -9,7 +9,7 @@ import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { TeamDTO } from './team.dto';
 
-interface TeamID {
+export interface TeamID {
   tutorialId: string;
   teamId: string;
 }
@@ -72,6 +72,9 @@ export class TeamService {
   async createTeamInTutorial(tutorialId: string, { students }: TeamDTO): Promise<Team> {
     const tutorial = await this.tutorialService.findById(tutorialId);
     const studentDocs = await Promise.all(students.map(id => this.studentService.findById(id)));
+
+    this.assertAllStudentsInSameTutorial(tutorialId, studentDocs);
+
     const team = new TeamModel({
       tutorial,
       teamNo: this.getFirstAvailableTeamNo(tutorial),
@@ -104,6 +107,8 @@ export class TeamService {
     const newStudentsOfTeam = await Promise.all(
       students.map(id => this.studentService.findById(id))
     );
+
+    this.assertAllStudentsInSameTutorial(teamId.tutorialId, newStudentsOfTeam);
 
     await this.removeAllStudentsFromTeam(team);
     await this.addAllStudentToTeam(team, newStudentsOfTeam);
@@ -196,5 +201,25 @@ export class TeamService {
     }
 
     return tutorial.teams.length + 1;
+  }
+
+  /**
+   * Checks if all students are in the same tutorial. If they are NOT an exception is thrown.
+   *
+   * @param tutorialId ID of the tutorial the students should be in.
+   * @param students Students to check
+   *
+   * @throws `BadRequestException` - If NOT all students are in the same tutorial.
+   */
+  private assertAllStudentsInSameTutorial(tutorialId: string, students: StudentDocument[]) {
+    if (students.length === 0) {
+      return;
+    }
+
+    for (const student of students) {
+      if (student.tutorial.id !== tutorialId) {
+        throw new BadRequestException(`All students in a team must be in the same tutorial.`);
+      }
+    }
   }
 }
