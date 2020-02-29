@@ -52,10 +52,9 @@ export class TeamModel {
 
     return {
       id,
-      students: students.map(s => s.id),
+      students: students.map(s => s.toDTO()),
       teamNo,
       tutorial: tutorial.id,
-      points: {}, // TODO: Add the correct points for the whole team
     };
   }
 }
