@@ -34,11 +34,11 @@ export interface IStudentDTO {
   tutorial: string;
 }
 
-export interface PresentationPointsDTO {
+export interface IPresentationPointsDTO {
   points: number;
   sheetId: string;
 }
 
-export interface CakeCountDTO {
+export interface ICakeCountDTO {
   cakeCount: number;
 }

@@ -11,9 +11,10 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import { Student } from '../../shared/model/Student';
-import { StudentDTO } from './student.dto';
+import { StudentDTO, CakeCountDTO } from './student.dto';
 import { StudentService } from './student.service';
 import { Role } from '../../shared/model/Role';
 import { HasRoleGuard } from '../../guards/has-role.guard';
@@ -63,5 +64,12 @@ export class StudentController {
   @UseGuards(StudentGuard)
   async deleteStudent(@Param('id') id: string) {
     await this.studentService.delete(id);
+  }
+
+  @Put('/:id/cakecount')
+  @UseGuards(StudentGuard)
+  @UsePipes(ValidationPipe)
+  async updateCakeCount(@Param('id') id: string, @Body() dto: CakeCountDTO): Promise<void> {
+    await this.studentService.setCakeCount(id, dto);
   }
 }

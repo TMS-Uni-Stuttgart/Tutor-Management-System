@@ -8,7 +8,7 @@ import { Student, StudentStatus } from '../../shared/model/Student';
 import { StudentModel } from '../../database/models/student.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
-import { StudentDTO } from './student.dto';
+import { StudentDTO, CakeCountDTO } from './student.dto';
 import { StudentService } from './student.service';
 
 interface AssertStudentParams {
@@ -119,7 +119,6 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
 
   expect(actualTutorial.id).toEqual(tutorial);
   expect(actualTeam?.id).toEqual(team);
-  // expect(actualTutorial.slot).toEqual(expectedTutorial.slot);
 
   if (!!oldStudent) {
     expect(attendances).toEqual(oldStudent.attendances);
@@ -270,6 +269,10 @@ describe('StudentService', () => {
     assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
   });
 
+  it.todo('update a student by changing its team');
+
+  it.todo('update a student by removing its team');
+
   it('fail on updating a non-existing student', async () => {
     const nonExisting = generateObjectId();
     const updateDTO: StudentDTO = {
@@ -334,5 +337,29 @@ describe('StudentService', () => {
     const nonExisting = generateObjectId();
 
     await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
+  });
+
+  it('change cakecount of a student', async () => {
+    const expectedTutorial = TUTORIAL_DOCUMENTS[0];
+    const dto: StudentDTO = {
+      firstname: 'Ginny',
+      lastname: 'Weasley',
+      status: StudentStatus.ACTIVE,
+      tutorial: expectedTutorial._id,
+      courseOfStudies: 'Computer science B. Sc.',
+      email: 'weasley_ginny@hogwarts.com',
+      matriculationNo: '4567123',
+      team: undefined,
+    };
+    const cakeCountDTO: CakeCountDTO = {
+      cakeCount: 5,
+    };
+
+    const student = await service.create(dto);
+
+    await service.setCakeCount(student.id, cakeCountDTO);
+    const updatedStudent = await service.findById(student.id);
+
+    expect(updatedStudent.cakeCount).toBe(cakeCountDTO.cakeCount);
   });
 });
