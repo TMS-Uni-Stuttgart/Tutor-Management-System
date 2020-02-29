@@ -11,6 +11,7 @@ import { ScheinCriteriaResponse } from '../../shared/model/ScheinCriteria';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
+import { FormDataResponse } from '../../shared/model/FormTypes';
 
 @Injectable()
 export class ScheincriteriaService
@@ -92,6 +93,28 @@ export class ScheincriteriaService
     return updatedCriteria.toDTO();
   }
 
+  /**
+   * Deletes the scheincriteria with the given ID if there is one.
+   *
+   * @param id ID of the scheincriteria to delete.
+   *
+   * @returns Deleted ScheincriteriaDocument.
+   *
+   * @throws `NotFoundException` - If no scheincriteria with the given ID could be found.
+   */
+  async delete(id: string): Promise<ScheincriteriaDocument> {
+    const criteria = await this.findById(id);
+
+    return criteria.remove();
+  }
+
+  /**
+   * @returns The form data parsed from the loaded scheincriteria blueprints.
+   */
+  async getFormData(): Promise<FormDataResponse> {
+    return ScheincriteriaContainer.getContainer().getFormData();
+  }
+
   private generateCriteriaFromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
     const bluePrintData = ScheincriteriaContainer.getContainer().getBluePrint(identifier);
 
@@ -106,20 +129,5 @@ export class ScheincriteriaService
     }
 
     return criteria;
-  }
-
-  /**
-   * Deletes the scheincriteria with the given ID if there is one.
-   *
-   * @param id ID of the scheincriteria to delete.
-   *
-   * @returns Deleted ScheincriteriaDocument.
-   *
-   * @throws `NotFoundException` - If no scheincriteria with the given ID could be found.
-   */
-  async delete(id: string): Promise<ScheincriteriaDocument> {
-    const criteria = await this.findById(id);
-
-    return criteria.remove();
   }
 }

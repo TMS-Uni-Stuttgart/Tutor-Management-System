@@ -15,6 +15,7 @@ import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaService } from './scheincriteria.service';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { Role } from '../../shared/model/Role';
+import { FormDataResponse } from '../../shared/model/FormTypes';
 
 @Controller('scheincriteria')
 export class ScheincriteriaController {
@@ -53,5 +54,13 @@ export class ScheincriteriaController {
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   async deleteCriteria(@Param('id') id: string): Promise<void> {
     await this.scheincriteriaService.delete(id);
+  }
+
+  @Get('/form')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  async getFormData(): Promise<FormDataResponse> {
+    const formData = await this.scheincriteriaService.getFormData();
+
+    return formData;
   }
 }

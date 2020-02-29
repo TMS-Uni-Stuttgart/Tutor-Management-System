@@ -8,6 +8,8 @@ import {
   FormIntegerFieldData,
   FormSelectValue,
   FormStringFieldData,
+  FormDataResponse,
+  FormDataSet,
 } from '../../../shared/model/FormTypes';
 import { Scheincriteria } from './Scheincriteria';
 import { ScheincriteriaForm } from './scheincriteria.form';
@@ -102,6 +104,28 @@ class SCContainer {
     }
 
     return bluePrint;
+  }
+
+  /**
+   * Parses the loaded blueprints into a map that contains the form data for each criteria by their identifier as key.
+   *
+   * Those form datas are parsed from the decorators insinde the loaded criteria and initially set at registering the blueprint.
+   *
+   * @returns Parsed form data.
+   */
+  getFormData(): FormDataResponse {
+    const formData: FormDataResponse = {};
+
+    this.criteriaBluePrints.forEach((form, key) => {
+      const formDataSet: FormDataSet = {};
+      form.formDataSet.forEach((data, dataKey) => {
+        formDataSet[dataKey] = data;
+      });
+
+      formData[key] = formDataSet;
+    });
+
+    return formData;
   }
 
   private getFormFieldDataForProperty(
