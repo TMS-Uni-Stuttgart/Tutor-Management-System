@@ -6,9 +6,10 @@ import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials'
 import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheinexam';
 import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { TutorialModule } from '../tutorial/tutorial.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TutorialModule],
+  imports: [TutorialModule, UserModule],
   providers: [
     PdfService,
     AttendancePDFGenerator,

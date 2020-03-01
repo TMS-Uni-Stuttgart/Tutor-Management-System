@@ -25,7 +25,7 @@ export class AttendancePDFGenerator extends PDFGenerator<GeneratorOptions> {
   /**
    * Generates a PDF which contains a list with all students of the given tutorial. This list contains one empty column for signings.
    *
-   * @param options Must contain the tutorial and the date.
+   * @param options Must contain the tutorialId and the date.
    *
    * @returns Buffer containing a PDF with a list for attendances.
    *
