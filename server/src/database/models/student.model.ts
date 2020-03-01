@@ -11,6 +11,8 @@ import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
 import { fieldEncryption, EncryptedDocument } from 'mongoose-field-encryption';
 import { databaseConfig } from '../../helpers/config';
+import { DateTime } from 'luxon';
+import { Attendance } from '../../shared/model/Attendance';
 
 interface ConstructorFields {
   firstname: string;
@@ -86,8 +88,6 @@ export class StudentModel {
    */
   setAttendance(this: StudentDocument, attendance: AttendanceDocument) {
     this.attendances.set(this.getDateKey(attendance.date), attendance);
-
-    // TODO: Needed?
     this.markModified('attendances');
   }
 
@@ -98,7 +98,7 @@ export class StudentModel {
    *
    * @returns Returns the attendance of the date or `undefined`.
    */
-  getAttendance(date: Date): AttendanceDocument | undefined {
+  getAttendance(date: DateTime): AttendanceDocument | undefined {
     return this.attendances.get(this.getDateKey(date));
   }
 
@@ -118,8 +118,6 @@ export class StudentModel {
     }
 
     this.gradings.set(sheet.id, grading);
-
-    // TODO: Needed?
     this.markModified('gradings');
   }
 
@@ -150,8 +148,6 @@ export class StudentModel {
    */
   setPresentationPoints(this: StudentDocument, sheet: SheetDocument, points: number) {
     this.presentationPoints.set(sheet.id, points);
-
-    // TODO: Needed?
     this.markModified('presentationPoints');
   }
 
@@ -186,9 +182,13 @@ export class StudentModel {
     } = this;
 
     const presentationPoints = [...this.presentationPoints];
+    const attendances: Map<string, Attendance> = new Map();
 
-    // TODO: Implement the gradings & attendances properly -- dont just return the IDs of the corresponding documents. That is NOT useful...
-    const attendances = convertDocumentMapToArray(this.attendances);
+    for (const [key, doc] of this.attendances.entries()) {
+      attendances.set(key, { date: doc.date.toISODate(), note: doc.note, state: doc.state });
+    }
+
+    // TODO: Implement the gradings properly -- dont just return the IDs of the corresponding documents. That is NOT useful...
     const gradings = convertDocumentMapToArray(this.gradings);
 
     return {
@@ -203,7 +203,7 @@ export class StudentModel {
       },
       status,
       courseOfStudies,
-      attendances,
+      attendances: [...attendances],
       cakeCount,
       email,
       gradings,
@@ -211,8 +211,8 @@ export class StudentModel {
     };
   }
 
-  private getDateKey(date: Date): string {
-    return date.toJSON();
+  private getDateKey(date: DateTime): string {
+    return date.toISODate();
   }
 }
 

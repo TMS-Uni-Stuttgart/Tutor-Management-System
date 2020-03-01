@@ -1,4 +1,5 @@
 import { HasId, NamedElement, TutorialInEntity } from './Common';
+import { Attendance } from './Attendance';
 
 export interface TeamInStudent extends HasId {
   teamNo: number;
@@ -11,7 +12,7 @@ export enum StudentStatus {
 }
 
 export interface Student extends NamedElement {
-  attendances: [string, string][];
+  attendances: [string, Attendance][];
   courseOfStudies?: string;
   email?: string;
   matriculationNo?: string;
