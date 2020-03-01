@@ -10,6 +10,7 @@ import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
 import { StudentDTO, CakeCountDTO } from './student.dto';
 import { StudentService } from './student.service';
+import { TeamService } from '../team/team.service';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -140,7 +141,7 @@ describe('StudentService', () => {
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [StudentService, TutorialService, UserService],
+      providers: [StudentService, TutorialService, TeamService, UserService],
     }).compile();
   });
 
@@ -338,6 +339,10 @@ describe('StudentService', () => {
 
     await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
   });
+
+  it.todo('set the attendance of a student without note');
+
+  it.todo('set the attendance of a student with note');
 
   it('change cakecount of a student', async () => {
     const expectedTutorial = TUTORIAL_DOCUMENTS[0];
