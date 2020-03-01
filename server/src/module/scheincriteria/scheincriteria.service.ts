@@ -1,17 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
-import { validateSync } from 'class-validator';
 import { InjectModel } from 'nestjs-typegoose';
 import {
   ScheincriteriaDocument,
   ScheincriteriaModel,
 } from '../../database/models/scheincriteria.model';
 import { CRUDService } from '../../helpers/CRUDService';
+import { FormDataResponse } from '../../shared/model/FormTypes';
 import { ScheinCriteriaResponse } from '../../shared/model/ScheinCriteria';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
-import { FormDataResponse } from '../../shared/model/FormTypes';
 
 @Injectable()
 export class ScheincriteriaService
@@ -60,7 +59,7 @@ export class ScheincriteriaService
    * @throws `BadRequestException` - If the provided data is not a valid criteria.
    */
   async create(dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
-    const scheincriteria = this.generateCriteriaFromDTO(dto);
+    const scheincriteria = Scheincriteria.fromDTO(dto);
     const document = {
       name: dto.name,
       criteria: scheincriteria,
@@ -85,7 +84,7 @@ export class ScheincriteriaService
   async update(id: string, dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
     const scheincriteria = await this.findById(id);
 
-    scheincriteria.criteria = this.generateCriteriaFromDTO(dto);
+    scheincriteria.criteria = Scheincriteria.fromDTO(dto);
     scheincriteria.name = dto.name;
 
     const updatedCriteria = await scheincriteria.save();
@@ -113,21 +112,5 @@ export class ScheincriteriaService
    */
   async getFormData(): Promise<FormDataResponse> {
     return ScheincriteriaContainer.getContainer().getFormData();
-  }
-
-  private generateCriteriaFromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
-    const bluePrintData = ScheincriteriaContainer.getContainer().getBluePrint(identifier);
-
-    // Get the constructor of the blueprint. The type needs to be set here because 'constructor' is only typed as 'Function' and therefore cannot be used with 'new' in front of it.
-    const prototype = bluePrintData.blueprint.constructor as new () => Scheincriteria;
-    const criteria: Scheincriteria = Object.assign(new prototype(), data);
-
-    const errors = validateSync(criteria, { whitelist: true, forbidNonWhitelisted: true });
-
-    if (errors.length > 0) {
-      throw new BadRequestException(errors);
-    }
-
-    return criteria;
   }
 }
