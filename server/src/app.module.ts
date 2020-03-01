@@ -11,6 +11,7 @@ import { ScheinexamModule } from './module/scheinexam/scheinexam.module';
 import { ScheincriteriaModule } from './module/scheincriteria/scheincriteria.module';
 import { TeamModule } from './module/team/team.module';
 import { InformationModule } from './module/information/information.module';
+import { PdfModule } from './module/pdf/pdf.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { InformationModule } from './module/information/information.module';
     ScheincriteriaModule,
     TeamModule,
     InformationModule,
+    PdfModule,
   ],
   controllers: [],
   providers: [],
