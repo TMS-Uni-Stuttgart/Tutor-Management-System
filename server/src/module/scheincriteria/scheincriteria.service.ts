@@ -7,15 +7,44 @@ import {
 } from '../../database/models/scheincriteria.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { FormDataResponse } from '../../shared/model/FormTypes';
-import { ScheinCriteriaResponse } from '../../shared/model/ScheinCriteria';
+import {
+  ScheinCriteriaResponse,
+  ScheinCriteriaSummary as ScheincriteriaSummary,
+  ScheincriteriaSummaryByStudents,
+} from '../../shared/model/ScheinCriteria';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
+import { StudentService } from '../student/student.service';
+import { SheetService } from '../sheet/sheet.service';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { StudentDocument } from '../../database/models/student.model';
+import { ScheinexamDocument } from '../../database/models/scheinexam.model';
+import { SheetDocument } from '../../database/models/sheet.model';
+import { TutorialService } from '../tutorial/tutorial.service';
+
+interface SingleCalculationParams {
+  student: StudentDocument;
+  criterias: ScheincriteriaDocument[];
+  exams: ScheinexamDocument[];
+  sheets: SheetDocument[];
+}
+
+interface MultipleCalculationParams {
+  students: StudentDocument[];
+  criterias: ScheincriteriaDocument[];
+  exams: ScheinexamDocument[];
+  sheets: SheetDocument[];
+}
 
 @Injectable()
 export class ScheincriteriaService
   implements CRUDService<ScheinCriteriaResponse, ScheinCriteriaDTO, ScheincriteriaDocument> {
   constructor(
+    private readonly studentService: StudentService,
+    private readonly sheetService: SheetService,
+    private readonly scheinexamService: ScheinexamService,
+    private readonly tutorialService: TutorialService,
     @InjectModel(ScheincriteriaModel)
     private readonly scheincriteriaModel: ReturnModelType<typeof ScheincriteriaModel>
   ) {}
@@ -105,6 +134,115 @@ export class ScheincriteriaService
     const criteria = await this.findById(id);
 
     return criteria.remove();
+  }
+
+  /**
+   * Calculates the results of all criterias for the given student and returns the result.
+   *
+   * @param studentId Student ID to get the result for.
+   *
+   * @returns ScheinCriteriaSummary containing the result of the given student.
+   *
+   * @throws `NotFoundException` - If no student with the given ID could be found.
+   */
+  async getResultOfStudent(studentId: string): Promise<ScheincriteriaSummary> {
+    const [criterias, student, sheets, exams] = await Promise.all([
+      this.findAll(),
+      this.studentService.findById(studentId),
+      this.sheetService.findAll(),
+      this.scheinexamService.findAll(),
+    ]);
+
+    return this.calculateResultOfSingleStudent({ criterias, student, sheets, exams });
+  }
+
+  /**
+   * Calculates the result of all criterias for all students and returns the result.
+   *
+   * @returns Results of all criterias for all students.
+   */
+  async getResultsOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
+    const [criterias, students, sheets, exams] = await Promise.all([
+      this.findAll(),
+      this.studentService.findAll(),
+      this.sheetService.findAll(),
+      this.scheinexamService.findAll(),
+    ]);
+
+    return this.calculateResultOfMultipleStudents({ students, criterias, sheets, exams });
+  }
+
+  /**
+   * Calculates the results of all criterias for all students of the given tutorial. These results are then returned.
+   *
+   * @param tutorialId ID of the tutorial.
+   *
+   * @returns Criteria results of all students of the given tutorial.
+   *
+   * @throws `NotFoundException` - If no tutorial with the given ID could be found.
+   */
+  async getResultsOfTutorial(tutorialId: string): Promise<ScheincriteriaSummaryByStudents> {
+    const [criterias, students, sheets, exams] = await Promise.all([
+      this.findAll(),
+      this.tutorialService.getAllStudentsOfTutorial(tutorialId),
+      this.sheetService.findAll(),
+      this.scheinexamService.findAll(),
+    ]);
+
+    return this.calculateResultOfMultipleStudents({ students, criterias, sheets, exams });
+  }
+
+  /**
+   * Calculates the result of all given criterias for the given student and returns the result.
+   *
+   * @param params Must contain the student, the criterias, sheets and exams.
+   *
+   * @returns Calculation result of all given criterias for the given student.
+   */
+  private calculateResultOfSingleStudent({
+    criterias,
+    student,
+    exams,
+    sheets,
+  }: SingleCalculationParams): ScheincriteriaSummary {
+    const summaries: ScheincriteriaSummary['scheinCriteriaSummary'] = {};
+    let passed = true;
+
+    for (const { id, name, criteria } of criterias) {
+      const result = criteria.checkCriteriaStatus({ student, exams, sheets });
+      summaries[id] = { id, name, ...result };
+
+      passed = passed && result.passed;
+    }
+
+    return {
+      passed,
+      scheinCriteriaSummary: summaries,
+    };
+  }
+
+  /**
+   * Calculates the results of all given criterias for all given students.
+   *
+   * @param params Must contain a list of students, criterias, sheets and exams.
+   *
+   * @returns Criteria results for all given students of all given criterias.
+   */
+  private calculateResultOfMultipleStudents({
+    criterias,
+    students,
+    exams,
+    sheets,
+  }: MultipleCalculationParams): ScheincriteriaSummaryByStudents {
+    const summaries: ScheincriteriaSummaryByStudents = {};
+
+    students.forEach(student => {
+      const result = this.calculateResultOfSingleStudent({ criterias, student, sheets, exams });
+
+      summaries[student.id] = result;
+    });
+
+    return summaries;
   }
 
   /**

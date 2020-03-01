@@ -19,6 +19,12 @@ import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaConstructor } from './scheincriteria.module';
 import { ScheincriteriaService } from './scheincriteria.service';
+import { StudentService } from '../student/student.service';
+import { SheetService } from '../sheet/sheet.service';
+import { TutorialService } from '../tutorial/tutorial.service';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { TeamService } from '../team/team.service';
+import { UserService } from '../user/user.service';
 
 interface AssertScheincriteriaParams {
   expected: MockedScheincriteriaModel;
@@ -117,7 +123,15 @@ describe('ScheincriteriaService', () => {
 
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [ScheincriteriaService],
+      providers: [
+        ScheincriteriaService,
+        StudentService,
+        SheetService,
+        ScheinexamService,
+        TutorialService,
+        TeamService,
+        UserService,
+      ],
     }).compile();
   });
 

@@ -5,5 +5,6 @@ import { SheetService } from './sheet.service';
 @Module({
   controllers: [SheetController],
   providers: [SheetService],
+  exports: [SheetService],
 })
 export class SheetModule {}

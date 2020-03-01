@@ -70,6 +70,6 @@ export class TutorialController {
   async getAllStudentsOfTutorial(@Param('id') id: string): Promise<Student[]> {
     const students = await this.tutorialService.getAllStudentsOfTutorial(id);
 
-    return students;
+    return students.map(s => s.toDTO());
   }
 }

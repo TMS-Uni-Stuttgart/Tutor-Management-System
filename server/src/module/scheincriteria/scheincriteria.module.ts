@@ -8,10 +8,15 @@ import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheincriteriaService } from './scheincriteria.service';
 import { ScheincriteriaController } from './scheincriteria.controller';
+import { StudentModule } from '../student/student.module';
+import { SheetModule } from '../sheet/sheet.module';
+import { ScheinexamModule } from '../scheinexam/scheinexam.module';
+import { TutorialModule } from '../tutorial/tutorial.module';
 
 export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
 
 @Module({
+  imports: [StudentModule, SheetModule, ScheinexamModule, TutorialModule],
   providers: [ScheincriteriaService],
   controllers: [ScheincriteriaController],
 })

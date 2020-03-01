@@ -8,6 +8,7 @@ import {
 import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
+import { StudentDocument } from '../../database/models/student.model';
 import {
   populateTutorialDocument,
   TutorialDocument,
@@ -19,7 +20,6 @@ import { Role } from '../../shared/model/Role';
 import { Tutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
 import { TutorialDTO } from './tutorial.dto';
-import { Student } from '../../shared/model/Student';
 
 @Injectable()
 export class TutorialService implements CRUDService<Tutorial, TutorialDTO, TutorialDocument> {
@@ -165,10 +165,10 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
    *
    * @throws `NotFoundException` - If no tutorial with the given ID could be found.
    */
-  async getAllStudentsOfTutorial(id: string): Promise<Student[]> {
+  async getAllStudentsOfTutorial(id: string): Promise<StudentDocument[]> {
     const tutorial = await this.findById(id);
 
-    return tutorial.students.map(s => s.toDTO());
+    return tutorial.students;
   }
 
   private assertTutorHasTutorRole(tutor?: UserDocument) {
