@@ -1,7 +1,18 @@
-import { DocumentType, mapProp, modelOptions, prop } from '@typegoose/typegoose';
+import { DocumentType, mapProp, modelOptions, prop, getModelForClass } from '@typegoose/typegoose';
+import { GradingDTO } from '../../module/student/student.dto';
+import { NoFunctions } from '../../helpers/NoFunctions';
+import { BadRequestException } from '@nestjs/common';
+import { Grading } from '../../shared/model/Points';
 
 @modelOptions({})
 export class GradingModel {
+  constructor({ points, additionalPoints, comment, subExercisePoints }: NoFunctions<GradingModel>) {
+    this.points = points;
+    this.additionalPoints = additionalPoints;
+    this.comment = comment;
+    this.subExercisePoints = subExercisePoints;
+  }
+
   @prop()
   comment?: string;
 
@@ -9,7 +20,7 @@ export class GradingModel {
   additionalPoints?: number;
 
   @prop({ default: 0 })
-  _points!: number;
+  private _points!: number;
 
   get points(): number {
     const addPoints = this.additionalPoints ?? 0;
@@ -33,6 +44,48 @@ export class GradingModel {
 
   @mapProp({ of: Number })
   subExercisePoints?: Map<string, number>;
+
+  /**
+   * Converts the given DTO into a grading document.
+   *
+   * The DTO must hold either a `points` property or a `subExercisePoints` property. Otherwise an exception is thrown.
+   *
+   * @param dto DTO to convert to a document.
+   *
+   * @returns GradingDocument generated from the DTO.
+   *
+   * @throws `BadRequestException` - If neither the `points` nor the `subExercisePoints` property is set.
+   */
+  static fromDTO(dto: GradingDTO): GradingDocument {
+    const { additionalPoints, comment, points, subExercisePoints } = dto;
+
+    if (!points && !subExercisePoints) {
+      throw new BadRequestException(
+        `At least one of the two properties 'points' and 'subExercisePoints' has to be set in the DTO.`
+      );
+    }
+
+    const model = getModelForClass(GradingModel);
+    const grading = new GradingModel({
+      comment,
+      additionalPoints,
+      points: points ?? 0,
+      subExercisePoints: subExercisePoints ? new Map(subExercisePoints) : undefined,
+    });
+
+    return new model(grading);
+  }
+
+  toDTO(this: GradingDocument): Grading {
+    const { comment, additionalPoints, points, subExercisePoints } = this;
+
+    return {
+      comment,
+      additionalPoints,
+      points,
+      subExercisePoints: subExercisePoints ? [...subExercisePoints] : undefined,
+    };
+  }
 }
 
 export type GradingDocument = DocumentType<GradingModel>;

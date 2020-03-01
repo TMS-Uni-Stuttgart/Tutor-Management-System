@@ -1,8 +1,18 @@
 import { IStudentDTO, StudentStatus, ICakeCountDTO } from '../../shared/model/Student';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsEnum, IsEmail, IsOptional, IsNumber, Min, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsEnum,
+  IsEmail,
+  IsOptional,
+  IsNumber,
+  Min,
+  IsString,
+  IsArray,
+} from 'class-validator';
 import { IAttendanceDTO, AttendanceState } from '../../shared/model/Attendance';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
+import { IGradingDTO } from '../../shared/model/Points';
 
 export class StudentDTO implements IStudentDTO {
   @IsNotEmpty()
@@ -54,4 +64,25 @@ export class CakeCountDTO implements ICakeCountDTO {
   @IsNumber()
   @Min(0)
   cakeCount!: number;
+}
+
+export class GradingDTO implements IGradingDTO {
+  @IsString()
+  sheetId!: string;
+
+  @IsOptional()
+  @IsString()
+  comment?: string;
+
+  @IsOptional()
+  @IsNumber()
+  additionalPoints?: number;
+
+  @IsOptional()
+  @IsNumber()
+  points?: number;
+
+  @IsOptional()
+  @IsArray()
+  subExercisePoints?: [string, number][];
 }

@@ -1,5 +1,26 @@
 import { Exercise, HasExercises } from './Sheet';
 
+export interface Grading {
+  points: number;
+  comment?: string;
+  additionalPoints?: number;
+  subExercisePoints?: [string, number][];
+}
+
+export interface IGradingDTO {
+  sheetId: string;
+  comment?: string;
+  additionalPoints?: number;
+  points?: number;
+  subExercisePoints?: [string, number][];
+}
+
+// ==================================
+//               OLD
+//
+//  TODO: Remove this if not needed!
+// ==================================
+
 export type PointsOfSubexercises = {
   [subExId: string]: number;
 };
