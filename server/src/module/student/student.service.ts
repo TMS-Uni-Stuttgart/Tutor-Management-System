@@ -1,12 +1,14 @@
-import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { CRUDService } from '../../helpers/CRUDService';
-import { Student } from '../../shared/model/Student';
+import { AttendanceModel } from '../../database/models/attendance.model';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
-import { StudentDTO, CakeCountDTO } from './student.dto';
-import { TutorialService } from '../tutorial/tutorial.service';
+import { CRUDService } from '../../helpers/CRUDService';
+import { Attendance } from '../../shared/model/Attendance';
+import { Student } from '../../shared/model/Student';
 import { TeamService } from '../team/team.service';
+import { TutorialService } from '../tutorial/tutorial.service';
+import { AttendanceDTO, CakeCountDTO, StudentDTO } from './student.dto';
 
 @Injectable()
 export class StudentService implements CRUDService<Student, StudentDTO, StudentDocument> {
@@ -123,6 +125,26 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
     const student = await this.findById(id);
 
     return student.remove();
+  }
+
+  /**
+   * Sets the attendance information from the DTO in the student with the given ID.
+   *
+   * @param id ID of the student to set the attendance of.
+   * @param dto Information about the attendance to set.
+   *
+   * @returns Saved attendance.
+   *
+   * @throws `NotFoundException` - If no student with the given ID could be found.
+   */
+  async setAttendance(id: string, dto: AttendanceDTO): Promise<Attendance> {
+    const student = await this.findById(id);
+    const attendance = AttendanceModel.fromDTO(dto);
+
+    student.setAttendance(attendance);
+    await student.save();
+
+    return attendance.toDTO();
   }
 
   /**
