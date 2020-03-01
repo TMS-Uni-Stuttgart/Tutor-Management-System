@@ -27,4 +27,15 @@ export class PdfService {
   async generateAttendancePDF(tutorialId: string, date: string): Promise<Buffer> {
     return this.attendancePDF.generatePDF({ tutorialId, date: DateTime.fromISO(date) });
   }
+
+  /**
+   * Generates a list with the credentials for all users.
+   *
+   * The list only contains the password for users which have not yet changed their password (ie they still have a `temporaryPassword`).
+   *
+   * @returns Buffer containing the generated PDF.
+   */
+  async generateCredentialsPDF(): Promise<Buffer> {
+    return this.credentialsPDF.generatePDF();
+  }
 }
