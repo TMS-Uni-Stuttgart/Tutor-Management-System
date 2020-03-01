@@ -5,18 +5,17 @@ import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import {
   STUDENT_DOCUMENTS,
-  TUTORIAL_DOCUMENTS,
   TEAM_DOCUMENTS,
+  TUTORIAL_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
-import { Student, StudentStatus } from '../../shared/model/Student';
 import { StudentModel } from '../../database/models/student.model';
+import { AttendanceState } from '../../shared/model/Attendance';
+import { Student, StudentStatus } from '../../shared/model/Student';
+import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
-import { StudentDTO, CakeCountDTO, AttendanceDTO } from './student.dto';
+import { AttendanceDTO, CakeCountDTO, StudentDTO } from './student.dto';
 import { StudentService } from './student.service';
-import { TeamService } from '../team/team.service';
-import { AttendanceState } from '../../shared/model/Attendance';
-import { async } from 'rxjs/internal/scheduler/async';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
