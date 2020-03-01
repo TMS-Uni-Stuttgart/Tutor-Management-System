@@ -3,14 +3,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
-import { STUDENT_DOCUMENTS, TUTORIAL_DOCUMENTS } from '../../../test/mocks/documents.mock';
+import {
+  STUDENT_DOCUMENTS,
+  TUTORIAL_DOCUMENTS,
+  TEAM_DOCUMENTS,
+} from '../../../test/mocks/documents.mock';
 import { Student, StudentStatus } from '../../shared/model/Student';
 import { StudentModel } from '../../database/models/student.model';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
-import { StudentDTO, CakeCountDTO } from './student.dto';
+import { StudentDTO, CakeCountDTO, AttendanceDTO } from './student.dto';
 import { StudentService } from './student.service';
 import { TeamService } from '../team/team.service';
+import { AttendanceState } from '../../shared/model/Attendance';
+import { async } from 'rxjs/internal/scheduler/async';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -184,7 +190,23 @@ describe('StudentService', () => {
     assertStudentDTO({ expected: dto, actual: created });
   });
 
-  it.todo('create a student with a team');
+  it('create a student with a team', async () => {
+    const team = TEAM_DOCUMENTS[0];
+    const dto: StudentDTO = {
+      firstname: 'Ginny',
+      lastname: 'Weasley',
+      status: StudentStatus.ACTIVE,
+      tutorial: team.tutorial._id,
+      courseOfStudies: 'Computer science B. Sc.',
+      email: 'weasley_ginny@hogwarts.com',
+      matriculationNo: '4567123',
+      team: team._id,
+    };
+
+    const student = await service.create(dto);
+
+    assertStudentDTO({ expected: dto, actual: student });
+  });
 
   it('fail on creating a student in non-existing tutorial', async () => {
     const nonExistingTutorialId = generateObjectId();
@@ -270,9 +292,57 @@ describe('StudentService', () => {
     assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
   });
 
-  it.todo('update a student by changing its team');
+  it('update a student by changing its team', async () => {
+    const prevTeam = TEAM_DOCUMENTS[0];
+    const updatedTeam = TEAM_DOCUMENTS[1];
 
-  it.todo('update a student by removing its team');
+    // Sanity check
+    expect(prevTeam.tutorial._id).toEqual(updatedTeam.tutorial._id);
+
+    const updateDTO: StudentDTO = {
+      firstname: 'Ginny',
+      lastname: 'Weasley',
+      status: StudentStatus.ACTIVE,
+      tutorial: updatedTeam.tutorial._id,
+      courseOfStudies: 'Computer science B. Sc.',
+      email: 'weasley_ginny@hogwarts.com',
+      matriculationNo: '4567123',
+      team: updatedTeam._id,
+    };
+    const createDTO: StudentDTO = {
+      ...updateDTO,
+      team: prevTeam._id,
+    };
+
+    const oldStudent = await service.create(createDTO);
+    const updatedStudent = await service.update(oldStudent.id, updateDTO);
+
+    assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
+  });
+
+  it('update a student by removing its team', async () => {
+    const prevTeam = TEAM_DOCUMENTS[0];
+
+    const updateDTO: StudentDTO = {
+      firstname: 'Ginny',
+      lastname: 'Weasley',
+      status: StudentStatus.ACTIVE,
+      tutorial: prevTeam.tutorial._id,
+      courseOfStudies: 'Computer science B. Sc.',
+      email: 'weasley_ginny@hogwarts.com',
+      matriculationNo: '4567123',
+      team: undefined,
+    };
+    const createDTO: StudentDTO = {
+      ...updateDTO,
+      team: prevTeam._id,
+    };
+
+    const oldStudent = await service.create(createDTO);
+    const updatedStudent = await service.update(oldStudent.id, updateDTO);
+
+    assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
+  });
 
   it('fail on updating a non-existing student', async () => {
     const nonExisting = generateObjectId();
@@ -340,9 +410,33 @@ describe('StudentService', () => {
     await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
   });
 
-  it.todo('set the attendance of a student without note');
+  it('set the attendance of a student without note', async () => {
+    const student = STUDENT_DOCUMENTS[0];
+    const attendance: AttendanceDTO = {
+      date: '2020-03-01',
+      note: undefined,
+      state: AttendanceState.PRESENT,
+    };
 
-  it.todo('set the attendance of a student with note');
+    await service.setAttendance(student._id, attendance);
+    const updatedStudent = (await service.findById(student._id)).toDTO();
+
+    expect(updatedStudent.attendances).toEqual([['2020-03-01', attendance]]);
+  });
+
+  it('set the attendance of a student with note', async () => {
+    const student = STUDENT_DOCUMENTS[0];
+    const attendance: AttendanceDTO = {
+      date: '2020-03-01',
+      note: 'Some note',
+      state: AttendanceState.PRESENT,
+    };
+
+    await service.setAttendance(student._id, attendance);
+    const updatedStudent = (await service.findById(student._id)).toDTO();
+
+    expect(updatedStudent.attendances).toEqual([['2020-03-01', attendance]]);
+  });
 
   it('change cakecount of a student', async () => {
     const expectedTutorial = TUTORIAL_DOCUMENTS[0];
