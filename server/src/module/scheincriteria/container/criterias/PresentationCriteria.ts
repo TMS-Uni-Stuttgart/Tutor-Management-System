@@ -24,10 +24,11 @@ export class PresentationCriteria extends Scheincriteria {
   }
 
   checkCriteriaStatus({ student }: CriteriaPayload): StatusCheckResponse {
-    const achieved = Object.values(student.presentationPoints).reduce(
-      (prev, current) => prev + current,
-      0
-    );
+    let achieved = 0;
+
+    for (const value of student.presentationPoints.values()) {
+      achieved += value;
+    }
 
     return {
       identifier: this.identifier,
