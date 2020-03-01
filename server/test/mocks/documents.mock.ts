@@ -4,14 +4,13 @@ import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.mo
 import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
 import { SheetModel } from '../../src/database/models/sheet.model';
 import { StudentModel } from '../../src/database/models/student.model';
+import { TeamModel } from '../../src/database/models/team.model';
 import { TutorialModel } from '../../src/database/models/tutorial.model';
 import { UserModel } from '../../src/database/models/user.model';
 import { Role } from '../../src/shared/model/Role';
 import { ScheincriteriaIdentifier } from '../../src/shared/model/ScheinCriteria';
 import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';
-import { TeamModel } from '../../src/database/models/team.model';
-import { generate } from 'rxjs';
 
 export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
 export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
@@ -106,8 +105,8 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     ],
     correctors: [],
     dates: createDatesForTutorial('2020-02-18'),
-    startTime: DateTime.fromISO('08:00:00', { zone: 'utc' }).toJSDate(),
-    endTime: DateTime.fromISO('09:30:00', { zone: 'utc' }).toJSDate(),
+    startTime: DateTime.fromISO('08:00:00'),
+    endTime: DateTime.fromISO('09:30:00'),
     substitutes: new Map(),
   },
   {
@@ -118,8 +117,8 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     teams: [],
     correctors: [generateFakeDocument('5e503ac11015dc73652731a6')],
     dates: createDatesForTutorial('2020-02-21'),
-    startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
-    endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
+    startTime: DateTime.fromISO('14:00:00'),
+    endTime: DateTime.fromISO('15:30:00'),
     substitutes: new Map(),
   },
   {
@@ -130,8 +129,8 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     teams: [],
     correctors: [],
     dates: createDatesForTutorial('2020-02-21'),
-    startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
-    endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
+    startTime: DateTime.fromISO('14:00:00'),
+    endTime: DateTime.fromISO('15:30:00'),
     substitutes: new Map(),
   },
   {
@@ -142,8 +141,8 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     teams: [],
     correctors: [],
     dates: createDatesForTutorial('2020-02-21'),
-    startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toJSDate(),
-    endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toJSDate(),
+    startTime: DateTime.fromISO('14:00:00'),
+    endTime: DateTime.fromISO('15:30:00'),
     substitutes: new Map(),
   },
 ];
@@ -345,15 +344,15 @@ function generateFakeDocument(_id: string, additional?: object): any {
  *
  * @returns 10 days as JS Dates.
  */
-export function createDatesForTutorial(startISODate: string = '2020-02-17'): Date[] {
-  const baseDate = DateTime.fromISO(startISODate, { zone: 'utc' });
+export function createDatesForTutorial(startISODate: string = '2020-02-17'): DateTime[] {
+  const baseDate = DateTime.fromISO(startISODate);
   const dates: DateTime[] = [];
 
   for (let i = 0; i < 10; i++) {
     dates.push(baseDate.plus({ weeks: i }));
   }
 
-  return dates.map(date => date.toJSDate());
+  return dates;
 }
 
 /**
@@ -366,7 +365,7 @@ export function createDatesForTutorial(startISODate: string = '2020-02-17'): Dat
  * @returns 10 days in JSON string format.
  */
 export function createDatesForTutorialAsStrings(startISODate: string = '2020-02-17'): string[] {
-  const baseDate = DateTime.fromISO(startISODate, { zone: 'utc' });
+  const baseDate = DateTime.fromISO(startISODate);
   const dates: DateTime[] = [];
 
   for (let i = 0; i < 10; i++) {

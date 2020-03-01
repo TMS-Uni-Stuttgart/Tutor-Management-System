@@ -82,15 +82,15 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
     this.assertTutorHasTutorRole(tutor);
     this.assertCorrectorsHaveCorrectorRole(correctors);
 
-    const startDate = DateTime.fromISO(startTime).toJSDate();
-    const endDate = DateTime.fromISO(endTime).toJSDate();
+    const startDate = DateTime.fromISO(startTime);
+    const endDate = DateTime.fromISO(endTime);
 
     const tutorial = new TutorialModel({
       slot,
       tutor,
       startTime: startDate,
       endTime: endDate,
-      dates: dates.map(date => DateTime.fromISO(date).toJSDate()),
+      dates: dates.map(date => DateTime.fromISO(date)),
       correctors,
       substitutes: new Map(),
     });
@@ -122,9 +122,9 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
     this.assertCorrectorsHaveCorrectorRole(correctors);
 
     tutorial.slot = dto.slot;
-    tutorial.dates = dto.dates.map(date => DateTime.fromISO(date).toJSDate());
-    tutorial.startTime = DateTime.fromISO(dto.startTime).toJSDate();
-    tutorial.endTime = DateTime.fromISO(dto.endTime).toJSDate();
+    tutorial.dates = dto.dates.map(date => DateTime.fromISO(date));
+    tutorial.startTime = DateTime.fromISO(dto.startTime);
+    tutorial.endTime = DateTime.fromISO(dto.endTime);
 
     tutorial.tutor = tutor;
     tutorial.correctors = correctors;

@@ -1,11 +1,14 @@
-import { NamedElement } from '../model/Common';
-
 interface NameOptions {
   firstNameFirst: boolean;
 }
 
+interface HasName {
+  firstname: string;
+  lastname: string;
+}
+
 export function getNameOfEntity(
-  entity: NamedElement,
+  entity: HasName,
   { firstNameFirst }: Partial<NameOptions> = {}
 ): string {
   if (firstNameFirst) {
@@ -15,7 +18,7 @@ export function getNameOfEntity(
   }
 }
 
-export function sortByName(a: NamedElement, b: NamedElement): number {
+export function sortByName(a: HasName, b: HasName): number {
   const nameOfA = getNameOfEntity(a);
   const nameOfB = getNameOfEntity(b);
 
