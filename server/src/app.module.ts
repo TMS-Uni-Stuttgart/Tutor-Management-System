@@ -10,6 +10,7 @@ import { SheetModule } from './module/sheet/sheet.module';
 import { ScheinexamModule } from './module/scheinexam/scheinexam.module';
 import { ScheincriteriaModule } from './module/scheincriteria/scheincriteria.module';
 import { TeamModule } from './module/team/team.module';
+import { InformationModule } from './module/information/information.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TeamModule } from './module/team/team.module';
     ScheinexamModule,
     ScheincriteriaModule,
     TeamModule,
+    InformationModule,
   ],
   controllers: [],
   providers: [],
