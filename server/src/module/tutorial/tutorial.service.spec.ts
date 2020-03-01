@@ -150,9 +150,12 @@ describe('TutorialService', () => {
   });
 
   it('find all tutorials', async () => {
-    const allTutorials: Tutorial[] = await service.findAll();
+    const allTutorials = await service.findAll();
 
-    assertTutorialList({ expected: TUTORIAL_DOCUMENTS, actual: allTutorials });
+    assertTutorialList({
+      expected: TUTORIAL_DOCUMENTS,
+      actual: allTutorials.map(tutorial => tutorial.toDTO()),
+    });
   });
 
   it('find a tutorial by id', async () => {

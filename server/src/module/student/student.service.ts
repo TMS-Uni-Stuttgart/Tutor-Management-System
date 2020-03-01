@@ -23,10 +23,10 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
   /**
    * @returns All students saved in the database.
    */
-  async findAll(): Promise<Student[]> {
+  async findAll(): Promise<StudentDocument[]> {
     const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
 
-    return allStudents.map(student => student.toDTO());
+    return allStudents;
   }
 
   /**

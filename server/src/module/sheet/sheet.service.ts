@@ -17,10 +17,10 @@ export class SheetService implements CRUDService<Sheet, SheetDTO, SheetDocument>
   /**
    * @returns All sheets saved in the database.
    */
-  async findAll(): Promise<Sheet[]> {
+  async findAll(): Promise<SheetDocument[]> {
     const sheets = await this.sheetModel.find().exec();
 
-    return sheets.map(sheet => sheet.toDTO());
+    return sheets;
   }
 
   /**

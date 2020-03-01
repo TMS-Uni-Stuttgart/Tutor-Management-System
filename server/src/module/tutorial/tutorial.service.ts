@@ -33,12 +33,12 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
   /**
    * @returns All tutorials saved in the database.
    */
-  async findAll(): Promise<Tutorial[]> {
+  async findAll(): Promise<TutorialDocument[]> {
     const tutorials: TutorialDocument[] = await this.tutorialModel.find().exec();
 
     await Promise.all(tutorials.map(doc => populateTutorialDocument(doc)));
 
-    return tutorials.map(tutorial => tutorial.toDTO());
+    return tutorials;
   }
 
   /**

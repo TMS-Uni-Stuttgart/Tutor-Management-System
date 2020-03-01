@@ -56,12 +56,12 @@ export class UserService implements OnModuleInit, CRUDService<User, UserDTO, Use
   /**
    * @returns All users saved in the database.
    */
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserDocument[]> {
     const users = (await this.userModel.find().exec()) as UserDocument[];
 
     await Promise.all(users.map(doc => populateUserDocument(doc)));
 
-    return users.map(user => user.toDTO());
+    return users;
   }
 
   /**

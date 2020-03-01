@@ -138,7 +138,10 @@ describe('ScheincriteriaService', () => {
   it('get all criterias', async () => {
     const criterias = await service.findAll();
 
-    assertScheincriteriaList({ expected: SCHEINCRITERIA_DOCUMENTS, actual: criterias });
+    assertScheincriteriaList({
+      expected: SCHEINCRITERIA_DOCUMENTS,
+      actual: criterias.map(criteria => criteria.toDTO()),
+    });
   });
 
   it('find criteria by id', async () => {

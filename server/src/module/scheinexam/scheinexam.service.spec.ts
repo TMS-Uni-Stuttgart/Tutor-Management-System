@@ -113,7 +113,10 @@ describe('ScheinexamService', () => {
   it('find all scheinexam', async () => {
     const scheinexams = await service.findAll();
 
-    assertScheinexamList({ expected: SCHEINEXAM_DOCUMENTS, actual: scheinexams });
+    assertScheinexamList({
+      expected: SCHEINEXAM_DOCUMENTS,
+      actual: scheinexams.map(exam => exam.toDTO()),
+    });
   });
 
   it('find scheinexam by ID', async () => {

@@ -26,7 +26,7 @@ export class ScheincriteriaController {
   async getAllCriterias(): Promise<ScheinCriteriaResponse[]> {
     const scheincriterias = await this.scheincriteriaService.findAll();
 
-    return scheincriterias;
+    return scheincriterias.map(criteria => criteria.toDTO());
   }
 
   @Post()
