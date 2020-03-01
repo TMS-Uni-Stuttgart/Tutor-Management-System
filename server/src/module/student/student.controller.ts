@@ -14,11 +14,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { Student } from '../../shared/model/Student';
-import { StudentDTO, CakeCountDTO } from './student.dto';
+import { StudentDTO, CakeCountDTO, AttendanceDTO } from './student.dto';
 import { StudentService } from './student.service';
 import { Role } from '../../shared/model/Role';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
+import { Attendance } from '../../shared/model/Attendance';
 
 @Controller('student')
 export class StudentController {
@@ -64,6 +65,15 @@ export class StudentController {
   @UseGuards(StudentGuard)
   async deleteStudent(@Param('id') id: string) {
     await this.studentService.delete(id);
+  }
+
+  @Put('/:id/attendance')
+  @UseGuards(StudentGuard)
+  @UsePipes(ValidationPipe)
+  async updateAttendance(@Param('id') id: string, @Body() dto: AttendanceDTO): Promise<Attendance> {
+    const attendance = await this.studentService.setAttendance(id, dto);
+
+    return attendance;
   }
 
   @Put('/:id/cakecount')
