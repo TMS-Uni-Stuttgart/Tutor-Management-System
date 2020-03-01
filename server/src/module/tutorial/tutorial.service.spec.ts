@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DateTime } from 'luxon';
+import { DateTime, ToISOTimeOptions } from 'luxon';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
@@ -58,9 +58,13 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
   expect(actual.students).toEqual(students.map(s => s._id));
   expect(actual.correctors).toEqual(correctors.map(c => c._id));
 
-  expect(actual.dates).toEqual(dates.map(date => DateTime.fromJSDate(date).toISODate()));
-  expect(DateTime.fromISO(actual.startTime).equals(DateTime.fromJSDate(startTime))).toBeTruthy();
-  expect(DateTime.fromISO(actual.endTime).equals(DateTime.fromJSDate(endTime))).toBeTruthy();
+  const options: ToISOTimeOptions = {
+    suppressMilliseconds: true,
+  };
+
+  expect(actual.dates).toEqual(dates.map(date => date.toISODate()));
+  expect(actual.startTime).toEqual(startTime.toISOTime(options));
+  expect(actual.endTime).toEqual(endTime.toISOTime(options));
 
   expect(actual.substitutes).toEqual([...substitutes]);
 }

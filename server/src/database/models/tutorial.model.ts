@@ -47,14 +47,38 @@ export class TutorialModel {
   @prop({ ref: 'UserModel', autopopulate: true })
   tutor?: UserDocument;
 
-  @arrayProp({ required: true, items: Schema.Types.Date })
-  dates!: Date[];
+  @arrayProp({ required: true, items: Schema.Types.String })
+  private _dates!: string[];
+
+  get dates(): DateTime[] {
+    return this._dates.map(date => DateTime.fromISO(date));
+  }
+
+  set dates(dates: DateTime[]) {
+    this._dates = dates.map(date => date.toISODate());
+  }
 
   @prop({ required: true })
-  startTime!: Date;
+  private _startTime!: string;
+
+  get startTime(): DateTime {
+    return DateTime.fromISO(this._startTime);
+  }
+
+  set startTime(startTime: DateTime) {
+    this._startTime = startTime.toISOTime({ suppressMilliseconds: true });
+  }
 
   @prop({ required: true })
-  endTime!: Date;
+  private _endTime!: string;
+
+  get endTime(): DateTime {
+    return DateTime.fromISO(this._endTime);
+  }
+
+  set endTime(endTime: DateTime) {
+    this._endTime = endTime.toISOTime({ suppressMilliseconds: true });
+  }
 
   @arrayProp({
     ref: 'StudentModel',
@@ -132,9 +156,9 @@ export class TutorialModel {
       id,
       slot,
       tutor: tutor?.id,
-      dates: dates.map(date => DateTime.fromJSDate(date).toISODate()),
-      startTime: DateTime.fromJSDate(startTime).toISOTime(dateOptions),
-      endTime: DateTime.fromJSDate(endTime).toISOTime(dateOptions),
+      dates: dates.map(date => date.toISODate()),
+      startTime: startTime.toISOTime(dateOptions),
+      endTime: endTime.toISOTime(dateOptions),
       students: students.map(student => student.id),
       correctors: correctors.map(corrector => corrector.id),
       substitutes: [...substitutes],
