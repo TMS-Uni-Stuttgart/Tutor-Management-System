@@ -1,5 +1,6 @@
 import { HasId, NamedElement, TutorialInEntity } from './Common';
 import { Attendance } from './Attendance';
+import { Grading } from './Points';
 
 export interface TeamInStudent extends HasId {
   teamNo: number;
@@ -16,7 +17,7 @@ export interface Student extends NamedElement {
   courseOfStudies?: string;
   email?: string;
   matriculationNo?: string;
-  gradings: [string, any][];
+  gradings: [string, Grading][];
   presentationPoints: [string, number][];
   status: StudentStatus;
   team?: TeamInStudent;

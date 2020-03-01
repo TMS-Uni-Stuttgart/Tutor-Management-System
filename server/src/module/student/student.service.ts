@@ -8,7 +8,9 @@ import { Attendance } from '../../shared/model/Attendance';
 import { Student } from '../../shared/model/Student';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { AttendanceDTO, CakeCountDTO, StudentDTO } from './student.dto';
+import { AttendanceDTO, CakeCountDTO, StudentDTO, GradingDTO } from './student.dto';
+import { GradingModel } from '../../database/models/grading.model';
+import { SheetService } from '../sheet/sheet.service';
 
 @Injectable()
 export class StudentService implements CRUDService<Student, StudentDTO, StudentDocument> {
@@ -16,6 +18,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => TeamService))
     private readonly teamService: TeamService,
+    private readonly sheetService: SheetService,
     @InjectModel(StudentModel)
     private readonly studentModel: ReturnModelType<typeof StudentModel>
   ) {}
@@ -145,6 +148,26 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
     await student.save();
 
     return attendance.toDTO();
+  }
+
+  /**
+   * Saves the given grading information as GradingDocument into the student with the given ID.
+   *
+   * If there already was a grading saved for the given `sheetId` the old one will be overridden.
+   *
+   * @param id ID of the student to save.
+   * @param dto Information about the grading which should be saved.
+   *
+   * @throws `NotFoundException` - If either no student with the given ID or no sheet with the `sheetId` from the DTO could be found.
+   * @throws `BadRequestException` - If the DTO could not be converted into a GradingDocument. See {@link GradingDocument#fromDTO} for more information.
+   */
+  async setGrading(id: string, dto: GradingDTO): Promise<void> {
+    const student = await this.findById(id);
+    const sheet = await this.sheetService.findById(dto.sheetId);
+    const grading = GradingModel.fromDTO(dto);
+
+    student.setGrading(sheet, grading);
+    await student.save();
   }
 
   /**

@@ -13,6 +13,7 @@ import { fieldEncryption, EncryptedDocument } from 'mongoose-field-encryption';
 import { databaseConfig } from '../../helpers/config';
 import { DateTime } from 'luxon';
 import { Attendance } from '../../shared/model/Attendance';
+import { Grading } from '../../shared/model/Points';
 
 interface ConstructorFields {
   firstname: string;
@@ -183,13 +184,15 @@ export class StudentModel {
 
     const presentationPoints = [...this.presentationPoints];
     const attendances: Map<string, Attendance> = new Map();
+    const gradings: Map<string, Grading> = new Map();
 
     for (const [key, doc] of this.attendances.entries()) {
-      attendances.set(key, { date: doc.date.toISODate(), note: doc.note, state: doc.state });
+      attendances.set(key, doc.toDTO());
     }
 
-    // TODO: Implement the gradings properly -- dont just return the IDs of the corresponding documents. That is NOT useful...
-    const gradings = convertDocumentMapToArray(this.gradings);
+    for (const [key, doc] of this.gradings.entries()) {
+      gradings.set(key, doc.toDTO());
+    }
 
     return {
       id,
@@ -206,7 +209,7 @@ export class StudentModel {
       attendances: [...attendances],
       cakeCount,
       email,
-      gradings,
+      gradings: [...gradings],
       presentationPoints,
     };
   }
