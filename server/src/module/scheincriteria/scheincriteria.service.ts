@@ -23,10 +23,10 @@ export class ScheincriteriaService
   /**
    * @returns All scheincriterias saved in the database.
    */
-  async findAll(): Promise<ScheinCriteriaResponse[]> {
+  async findAll(): Promise<ScheincriteriaDocument[]> {
     const criterias = await this.scheincriteriaModel.find().exec();
 
-    return criterias.map(criteria => criteria.toDTO());
+    return criterias;
   }
 
   /**

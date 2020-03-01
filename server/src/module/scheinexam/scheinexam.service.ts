@@ -17,10 +17,10 @@ export class ScheinexamService
   /**
    * @returns All scheinexams saved in the database.
    */
-  async findAll(): Promise<ScheinExam[]> {
+  async findAll(): Promise<ScheinexamDocument[]> {
     const scheinexams = await this.scheinexamModel.find().exec();
 
-    return scheinexams.map(exam => exam.toDTO());
+    return scheinexams;
   }
 
   /**

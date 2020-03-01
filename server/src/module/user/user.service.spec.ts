@@ -128,9 +128,12 @@ describe('UserService', () => {
   });
 
   it('find all users', async () => {
-    const allUsers: User[] = await service.findAll();
+    const allUsers = await service.findAll();
 
-    assertUserList({ expected: USER_DOCUMENTS, actual: sanitizeObject(allUsers) });
+    assertUserList({
+      expected: USER_DOCUMENTS,
+      actual: sanitizeObject(allUsers.map(user => user.toDTO())),
+    });
   });
 
   it('create user without tutorials', async () => {

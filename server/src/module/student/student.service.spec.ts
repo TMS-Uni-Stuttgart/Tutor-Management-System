@@ -167,7 +167,10 @@ describe('StudentService', () => {
   it('find all students', async () => {
     const students = await service.findAll();
 
-    assertStudentList({ expected: STUDENT_DOCUMENTS, actual: students });
+    assertStudentList({
+      expected: STUDENT_DOCUMENTS,
+      actual: students.map(student => student.toDTO()),
+    });
   });
 
   it('create a student without a team', async () => {

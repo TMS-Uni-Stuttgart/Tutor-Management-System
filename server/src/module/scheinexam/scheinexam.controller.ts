@@ -28,7 +28,7 @@ export class ScheinexamController {
   async getAllScheinexams(): Promise<ScheinExam[]> {
     const scheinexams = await this.scheinexamService.findAll();
 
-    return scheinexams;
+    return scheinexams.map(exam => exam.toDTO());
   }
 
   @Post()

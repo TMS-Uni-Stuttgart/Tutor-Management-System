@@ -27,9 +27,9 @@ export class TutorialController {
   @Get()
   @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
   async getAllTutorials(): Promise<Tutorial[]> {
-    const tutorials: Tutorial[] = await this.tutorialService.findAll();
+    const tutorials = await this.tutorialService.findAll();
 
-    return tutorials;
+    return tutorials.map(tutorial => tutorial.toDTO());
   }
 
   @Post()
