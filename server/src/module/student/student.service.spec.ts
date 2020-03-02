@@ -15,9 +15,16 @@ import { Student, StudentStatus } from '../../shared/model/Student';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
-import { AttendanceDTO, CakeCountDTO, StudentDTO, PresentationPointsDTO } from './student.dto';
+import {
+  AttendanceDTO,
+  CakeCountDTO,
+  StudentDTO,
+  PresentationPointsDTO,
+  GradingDTO,
+} from './student.dto';
 import { StudentService } from './student.service';
 import { SheetService } from '../sheet/sheet.service';
+import { SheetDTO } from '../sheet/sheet.dto';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -454,6 +461,86 @@ describe('StudentService', () => {
     const updatedStudent = (await service.findById(student._id)).toDTO();
 
     expect(updatedStudent.presentationPoints).toEqual([[sheet._id, dto.points]]);
+  });
+
+  it('set a grading of a sheet of a student', async () => {
+    const sheetService = testModule.get<SheetService>(SheetService);
+    const student = STUDENT_DOCUMENTS[0];
+    const sheetDTO: SheetDTO = {
+      sheetNo: 42,
+      bonusSheet: false,
+      exercises: [
+        {
+          exName: '1',
+          maxPoints: 10,
+          bonus: false,
+        },
+        {
+          exName: '2',
+          bonus: false,
+          maxPoints: 0,
+          subexercises: [
+            {
+              exName: '(a)',
+              maxPoints: 5,
+              bonus: false,
+            },
+            {
+              exName: '(b)',
+              maxPoints: 7,
+              bonus: false,
+            },
+          ],
+        },
+      ],
+    };
+
+    const sheet = await sheetService.create(sheetDTO);
+    const gradingDTO: GradingDTO = {
+      sheetId: sheet.id,
+      exerciseGradings: [
+        [
+          sheet.exercises[0].id,
+          { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
+        ],
+        [
+          sheet.exercises[1].id,
+          {
+            comment: 'Comment for exercise 2',
+            additionalPoints: 0,
+            subExercisePoints: [
+              [sheet.exercises[1].subexercises[0].id, 4],
+              [sheet.exercises[1].subexercises[1].id, 5],
+            ],
+          },
+        ],
+      ],
+      additionalPoints: 0,
+      comment: 'This is a comment for the grading',
+    };
+
+    await service.setGrading(student._id, gradingDTO);
+
+    const updatedStudent = (await service.findById(student._id)).toDTO();
+    const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
+
+    // TODO: Extract me into seperate function.
+    expect(updatedStudent.gradings.length).toBe(1);
+
+    expect(actualGrading).toBeDefined();
+    expect(actualGrading?.points).toBe(8 + 4 + 5);
+
+    expect(actualGrading?.exerciseGradings.length).toBe(2);
+
+    expect(actualGrading?.exerciseGradings[0][1].points).toBe(8);
+    expect(actualGrading?.exerciseGradings[0][1].comment).toEqual(
+      gradingDTO.exerciseGradings[0][1].comment
+    );
+
+    expect(actualGrading?.exerciseGradings[1][1].points).toBe(4 + 5);
+    expect(actualGrading?.exerciseGradings[0][1].comment).toEqual(
+      gradingDTO.exerciseGradings[0][1].comment
+    );
   });
 
   it('change cakecount of a student', async () => {
