@@ -1,13 +1,12 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ScheinexamService } from './scheinexam.service';
-import { TestModule } from '../../../test/helpers/test.module';
-import { ScheinExamDTO } from './scheinexam.dto';
-import { ScheinExam } from '../../shared/model/Scheinexam';
-import { MockedScheinexamModel, SCHEINEXAM_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { assertExercise, assertExerciseDTOs } from '../../../test/helpers/test.assertExercises';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { NotFoundException } from '@nestjs/common';
-import { DateTime } from 'luxon';
+import { TestModule } from '../../../test/helpers/test.module';
+import { MockedScheinexamModel, SCHEINEXAM_DOCUMENTS } from '../../../test/mocks/documents.mock';
+import { ScheinExam } from '../../shared/model/Scheinexam';
+import { ScheinExamDTO } from './scheinexam.dto';
+import { ScheinexamService } from './scheinexam.service';
 
 interface AssertScheinexamParams {
   expected: MockedScheinexamModel;
@@ -40,7 +39,7 @@ function assertScheinexam({ expected, actual }: AssertScheinexamParams) {
 
   expect(id).toEqual(_id);
   expect(restActual).toEqual(restExpected);
-  expect(DateTime.fromISO(actualDate).equals(DateTime.fromJSDate(date))).toBeTruthy();
+  expect(actualDate).toEqual(date.toISODate());
 
   expect(actualExercises.length).toEqual(exercises.length);
 

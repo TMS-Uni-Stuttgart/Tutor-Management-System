@@ -21,7 +21,15 @@ export class ScheinexamModel {
   scheinExamNo!: number;
 
   @prop({ required: true })
-  date!: Date;
+  private _date!: string;
+
+  get date(): DateTime {
+    return DateTime.fromISO(this._date);
+  }
+
+  set date(date: DateTime) {
+    this._date = date.toISODate();
+  }
 
   @arrayProp({ required: true, items: ExerciseModel })
   exercises!: ExerciseDocument[];
@@ -38,7 +46,7 @@ export class ScheinexamModel {
 
     model.scheinExamNo = scheinExamNo;
     model.percentageNeeded = percentageNeeded;
-    model.date = DateTime.fromISO(date).toJSDate();
+    model.date = DateTime.fromISO(date);
     model.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
 
     return model;
@@ -64,7 +72,7 @@ export class ScheinexamModel {
       id: this.id,
       scheinExamNo: this.scheinExamNo,
       percentageNeeded: this.percentageNeeded,
-      date: DateTime.fromJSDate(this.date).toISODate(),
+      date: this.date.toISODate(),
       exercises: this.exercises.map(ex => ex.toDTO()),
     };
   }

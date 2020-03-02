@@ -108,7 +108,7 @@ export class TutorialModel {
    * @param date Date of the substitute
    * @param substitute Substitute
    */
-  setSubstitute(date: Date, substitute: UserDocument) {
+  setSubstitute(date: DateTime, substitute: UserDocument) {
     this.substitutes.set(this.getDateKey(date), substitute);
   }
 
@@ -119,7 +119,7 @@ export class TutorialModel {
    *
    * @param date Date to remove the substitute from
    */
-  removeSubstitute(date: Date) {
+  removeSubstitute(date: DateTime) {
     this.substitutes.delete(this.getDateKey(date));
   }
 
@@ -131,7 +131,7 @@ export class TutorialModel {
    * @param date Date to get the substitute.
    * @returns The corresponding user, if there is a substitute at the given date, else `undefined`.
    */
-  getSubstitute(date: Date): UserDocument | undefined {
+  getSubstitute(date: DateTime): UserDocument | undefined {
     return this.substitutes.get(this.getDateKey(date));
   }
 
@@ -166,8 +166,8 @@ export class TutorialModel {
     };
   }
 
-  private getDateKey(date: Date): string {
-    return date.toJSON();
+  private getDateKey(date: DateTime): string {
+    return date.toISODate();
   }
 }
 
