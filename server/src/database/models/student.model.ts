@@ -1,7 +1,11 @@
 import { DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
+import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
-import { convertDocumentMapToArray } from '../../helpers/converters';
+import { databaseConfig } from '../../helpers/config';
+import { Attendance } from '../../shared/model/Attendance';
+import { Grading } from '../../shared/model/Points';
 import { Student, StudentStatus } from '../../shared/model/Student';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { HasExerciseDocuments } from './exercise.model';
@@ -9,11 +13,6 @@ import { GradingDocument, GradingModel } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
-import { fieldEncryption, EncryptedDocument } from 'mongoose-field-encryption';
-import { databaseConfig } from '../../helpers/config';
-import { DateTime } from 'luxon';
-import { Attendance } from '../../shared/model/Attendance';
-import { Grading } from '../../shared/model/Points';
 
 interface ConstructorFields {
   firstname: string;

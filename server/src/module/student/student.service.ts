@@ -2,15 +2,15 @@ import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/commo
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { AttendanceModel } from '../../database/models/attendance.model';
+import { GradingModel } from '../../database/models/grading.model';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Attendance } from '../../shared/model/Attendance';
 import { Student } from '../../shared/model/Student';
+import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { AttendanceDTO, CakeCountDTO, StudentDTO, GradingDTO } from './student.dto';
-import { GradingModel } from '../../database/models/grading.model';
-import { SheetService } from '../sheet/sheet.service';
+import { AttendanceDTO, CakeCountDTO, GradingDTO, StudentDTO } from './student.dto';
 
 @Injectable()
 export class StudentService implements CRUDService<Student, StudentDTO, StudentDocument> {

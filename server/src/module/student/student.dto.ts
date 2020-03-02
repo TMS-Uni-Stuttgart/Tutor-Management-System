@@ -67,6 +67,10 @@ export class CakeCountDTO implements ICakeCountDTO {
 }
 
 export class GradingDTO implements IGradingDTO {
+  @IsOptional()
+  @IsString()
+  gradingId?: string;
+
   @IsString()
   sheetId!: string;
 

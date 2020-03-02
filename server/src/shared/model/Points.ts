@@ -8,6 +8,7 @@ export interface Grading {
 }
 
 export interface IGradingDTO {
+  gradingId?: string;
   sheetId: string;
   comment?: string;
   additionalPoints?: number;
