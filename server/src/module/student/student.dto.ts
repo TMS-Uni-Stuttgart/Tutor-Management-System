@@ -1,18 +1,23 @@
-import { IStudentDTO, StudentStatus, ICakeCountDTO } from '../../shared/model/Student';
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
-  IsEnum,
-  IsEmail,
-  IsOptional,
-  IsNumber,
-  Min,
-  IsString,
   IsArray,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
 } from 'class-validator';
-import { IAttendanceDTO, AttendanceState } from '../../shared/model/Attendance';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
-import { IGradingDTO, IPresentationPointsDTO } from '../../shared/model/Points';
+import { IsMapArray } from '../../helpers/validators/mapArray.validator';
+import { AttendanceState, IAttendanceDTO } from '../../shared/model/Attendance';
+import {
+  IExerciseGradingDTO,
+  IGradingDTO,
+  IPresentationPointsDTO,
+} from '../../shared/model/Points';
+import { ICakeCountDTO, IStudentDTO, StudentStatus } from '../../shared/model/Student';
 
 export class StudentDTO implements IStudentDTO {
   @IsNotEmpty()
@@ -66,11 +71,7 @@ export class CakeCountDTO implements ICakeCountDTO {
   cakeCount!: number;
 }
 
-export class GradingDTO implements IGradingDTO {
-  @IsOptional()
-  @IsString()
-  gradingId?: string;
-
+export class ExerciseGradingDTO implements IExerciseGradingDTO {
   @IsString()
   sheetId!: string;
 
@@ -89,6 +90,27 @@ export class GradingDTO implements IGradingDTO {
   @IsOptional()
   @IsArray()
   subExercisePoints?: [string, number][];
+}
+
+export class GradingDTO implements IGradingDTO {
+  @IsString()
+  sheetId!: string;
+
+  @IsOptional()
+  @IsString()
+  gradingId?: string;
+
+  @IsArray()
+  @IsMapArray(ExerciseGradingDTO, { each: true })
+  exerciseGradings!: [string, ExerciseGradingDTO][];
+
+  @IsOptional()
+  @IsString()
+  comment?: string;
+
+  @IsOptional()
+  @IsNumber()
+  additionalPoints?: number;
 }
 
 export class PresentationPointsDTO implements IPresentationPointsDTO {
