@@ -8,6 +8,7 @@ import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
 import { TutorialModel } from './tutorial.model';
 import { UserModel } from './user.model';
+import { GradingModel } from './grading.model';
 
 @Global()
 @Module({})
@@ -22,6 +23,7 @@ export class ModelsModule {
       SheetModel,
       ScheinexamModel,
       ScheincriteriaModel,
+      GradingModel,
     ]);
 
     return {

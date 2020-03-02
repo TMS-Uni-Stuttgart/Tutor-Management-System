@@ -49,9 +49,7 @@ export class GradingModel {
   /**
    * Converts the given DTO into a grading document.
    *
-   * The DTO must hold either a `points` property or a `subExercisePoints` property. Otherwise an exception is thrown.
-   *
-   * If the DTO contains a `gradingId` propery the `id` of the generated document will be set to this ID.
+   * For more information {@see GradinModel#updateFromDTO}
    *
    * @param dto DTO to convert to a document.
    *
@@ -60,6 +58,26 @@ export class GradingModel {
    * @throws `BadRequestException` - If neither the `points` nor the `subExercisePoints` property is set.
    */
   static fromDTO(dto: GradingDTO): GradingDocument {
+    const model = getModelForClass(GradingModel);
+    const grading = new GradingModel({ points: 0 });
+    const doc = new model(grading);
+
+    doc.updateFromDTO(dto);
+
+    return doc;
+  }
+
+  /**
+   * Updates the documents information according to the given DTO.
+   * The DTO must hold either a `points` property or a `subExercisePoints` property. Otherwise an exception is thrown.
+   *
+   * If the DTO contains a `gradingId` propery the `id` of the generated document will be set to this ID.
+   *
+   * @param dto DTO to update the document with.
+   *
+   * @throws `BadRequestException` - If neither the `points` nor the `subExercisePoints` property is set.
+   */
+  updateFromDTO(this: GradingDocument, dto: GradingDTO) {
     const { gradingId, additionalPoints, comment, points, subExercisePoints } = dto;
 
     if (!points && !subExercisePoints) {
@@ -68,26 +86,21 @@ export class GradingModel {
       );
     }
 
-    const model = getModelForClass(GradingModel);
-    const grading = new GradingModel({
-      comment,
-      additionalPoints,
-      points: points ?? 0,
-      subExercisePoints: subExercisePoints ? new Map(subExercisePoints) : undefined,
-    });
-    const doc = new model(grading);
-
     if (gradingId) {
-      doc.id = gradingId;
+      this.id = gradingId;
     }
 
-    return doc;
+    this.comment = comment;
+    this.additionalPoints = additionalPoints;
+    this.points = points ?? 0;
+    this.subExercisePoints = subExercisePoints ? new Map(subExercisePoints) : undefined;
   }
 
   toDTO(this: GradingDocument): Grading {
-    const { comment, additionalPoints, points, subExercisePoints } = this;
+    const { id, comment, additionalPoints, points, subExercisePoints } = this;
 
     return {
+      gradingId: id,
       comment,
       additionalPoints,
       points,

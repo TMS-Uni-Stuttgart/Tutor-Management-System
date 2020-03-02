@@ -20,6 +20,7 @@ import { TeamModel } from '../../src/database/models/team.model';
 import { SheetModel } from '../../src/database/models/sheet.model';
 import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
 import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
+import { GradingModel } from '../../src/database/models/grading.model';
 
 interface ModelMockOptions {
   model: TypegooseClass;
@@ -37,6 +38,7 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
   { model: SheetModel, initialDocuments: [...SHEET_DOCUMENTS] },
   { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
   { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
+  { model: GradingModel, initialDocuments: [] },
 ];
 
 @Module({})
