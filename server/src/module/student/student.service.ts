@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/commo
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { AttendanceModel } from '../../database/models/attendance.model';
-import { GradingModel } from '../../database/models/grading.model';
+import { GradingModel, GradingDocument } from '../../database/models/grading.model';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Attendance } from '../../shared/model/Attendance';
@@ -26,7 +26,9 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
     private readonly teamService: TeamService,
     private readonly sheetService: SheetService,
     @InjectModel(StudentModel)
-    private readonly studentModel: ReturnModelType<typeof StudentModel>
+    private readonly studentModel: ReturnModelType<typeof StudentModel>,
+    @InjectModel(GradingModel)
+    private readonly gradingModel: ReturnModelType<typeof GradingModel>
   ) {}
 
   /**
@@ -170,7 +172,19 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
   async setGrading(id: string, dto: GradingDTO): Promise<void> {
     const student = await this.findById(id);
     const sheet = await this.sheetService.findById(dto.sheetId);
-    const grading = GradingModel.fromDTO(dto);
+    let grading: GradingDocument | null;
+
+    if (!!dto.gradingId) {
+      grading = await this.gradingModel.findById(dto.gradingId);
+
+      if (!grading) {
+        throw new NotFoundException(`No grading with ID '${dto.gradingId}' could be found.`);
+      }
+
+      grading.updateFromDTO(dto);
+    } else {
+      grading = GradingModel.fromDTO(dto);
+    }
 
     student.setGrading(sheet, grading);
     await student.save();
