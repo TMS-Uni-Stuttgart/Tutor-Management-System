@@ -12,7 +12,7 @@ import {
 } from 'class-validator';
 import { IAttendanceDTO, AttendanceState } from '../../shared/model/Attendance';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
-import { IGradingDTO } from '../../shared/model/Points';
+import { IGradingDTO, IPresentationPointsDTO } from '../../shared/model/Points';
 
 export class StudentDTO implements IStudentDTO {
   @IsNotEmpty()
@@ -89,4 +89,13 @@ export class GradingDTO implements IGradingDTO {
   @IsOptional()
   @IsArray()
   subExercisePoints?: [string, number][];
+}
+
+export class PresentationPointsDTO implements IPresentationPointsDTO {
+  @IsString()
+  sheetId!: string;
+
+  @IsNumber()
+  @Min(0)
+  points!: number;
 }

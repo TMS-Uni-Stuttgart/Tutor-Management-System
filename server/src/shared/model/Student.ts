@@ -36,11 +36,6 @@ export interface IStudentDTO {
   tutorial: string;
 }
 
-export interface IPresentationPointsDTO {
-  points: number;
-  sheetId: string;
-}
-
 export interface ICakeCountDTO {
   cakeCount: number;
 }
