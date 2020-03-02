@@ -14,7 +14,13 @@ import {
   Put,
 } from '@nestjs/common';
 import { Student } from '../../shared/model/Student';
-import { StudentDTO, CakeCountDTO, AttendanceDTO, PresentationPointsDTO } from './student.dto';
+import {
+  StudentDTO,
+  CakeCountDTO,
+  AttendanceDTO,
+  PresentationPointsDTO,
+  GradingDTO,
+} from './student.dto';
 import { StudentService } from './student.service';
 import { Role } from '../../shared/model/Role';
 import { HasRoleGuard } from '../../guards/has-role.guard';
@@ -85,6 +91,14 @@ export class StudentController {
     @Body() dto: PresentationPointsDTO
   ): Promise<void> {
     await this.studentService.setPresentationPoints(id, dto);
+  }
+
+  @Put('/:id/point')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(StudentGuard)
+  @UsePipes(ValidationPipe)
+  async updatePoints(@Param('id') id: string, @Body() dto: GradingDTO): Promise<void> {
+    await this.studentService.setGrading(id, dto);
   }
 
   @Put('/:id/cakecount')

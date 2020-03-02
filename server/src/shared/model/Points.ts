@@ -1,6 +1,6 @@
 import { Exercise, HasExercises } from './Sheet';
 
-export interface Grading {
+export interface ExerciseGrading {
   gradingId: string;
   points: number;
   comment?: string;
@@ -8,13 +8,27 @@ export interface Grading {
   subExercisePoints?: [string, number][];
 }
 
-export interface IGradingDTO {
-  gradingId?: string;
-  sheetId: string;
+export interface Grading {
+  id: string;
+  points: number;
+  comment?: string;
+  additionalPoints?: number;
+  exerciseGradings: [string, ExerciseGrading][];
+}
+
+export interface IExerciseGradingDTO {
   comment?: string;
   additionalPoints?: number;
   points?: number;
   subExercisePoints?: [string, number][];
+}
+
+export interface IGradingDTO {
+  sheetId: string;
+  exerciseGradings: [string, IExerciseGradingDTO][];
+  gradingId?: string;
+  comment?: string;
+  additionalPoints?: number;
 }
 
 export interface IPresentationPointsDTO {
