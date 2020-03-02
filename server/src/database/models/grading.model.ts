@@ -3,8 +3,9 @@ import { GradingDTO } from '../../module/student/student.dto';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { BadRequestException } from '@nestjs/common';
 import { Grading } from '../../shared/model/Points';
+import { CollectionName } from '../../helpers/CollectionName';
 
-@modelOptions({})
+@modelOptions({ schemaOptions: { collection: CollectionName.GRADING } })
 export class GradingModel {
   constructor({ points, additionalPoints, comment, subExercisePoints }: NoFunctions<GradingModel>) {
     this.points = points;
@@ -50,6 +51,8 @@ export class GradingModel {
    *
    * The DTO must hold either a `points` property or a `subExercisePoints` property. Otherwise an exception is thrown.
    *
+   * If the DTO contains a `gradingId` propery the `id` of the generated document will be set to this ID.
+   *
    * @param dto DTO to convert to a document.
    *
    * @returns GradingDocument generated from the DTO.
@@ -57,7 +60,7 @@ export class GradingModel {
    * @throws `BadRequestException` - If neither the `points` nor the `subExercisePoints` property is set.
    */
   static fromDTO(dto: GradingDTO): GradingDocument {
-    const { additionalPoints, comment, points, subExercisePoints } = dto;
+    const { gradingId, additionalPoints, comment, points, subExercisePoints } = dto;
 
     if (!points && !subExercisePoints) {
       throw new BadRequestException(
@@ -72,8 +75,13 @@ export class GradingModel {
       points: points ?? 0,
       subExercisePoints: subExercisePoints ? new Map(subExercisePoints) : undefined,
     });
+    const doc = new model(grading);
 
-    return new model(grading);
+    if (gradingId) {
+      doc.id = gradingId;
+    }
+
+    return doc;
   }
 
   toDTO(this: GradingDocument): Grading {
