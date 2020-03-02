@@ -259,7 +259,7 @@ export const SCHEINEXAM_DOCUMENTS: MockedScheinexamModel[] = [
   {
     _id: '5e565b58d8d3cb7660bf01d7',
     scheinExamNo: 1,
-    date: DateTime.fromISO('2020-01-15').toJSDate(),
+    date: DateTime.fromISO('2020-01-15'),
     percentageNeeded: 0.4,
     exercises: [
       {
