@@ -7,6 +7,7 @@ import {
   STUDENT_DOCUMENTS,
   TEAM_DOCUMENTS,
   TUTORIAL_DOCUMENTS,
+  SHEET_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
 import { StudentModel } from '../../database/models/student.model';
 import { AttendanceState } from '../../shared/model/Attendance';
@@ -14,8 +15,9 @@ import { Student, StudentStatus } from '../../shared/model/Student';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
-import { AttendanceDTO, CakeCountDTO, StudentDTO } from './student.dto';
+import { AttendanceDTO, CakeCountDTO, StudentDTO, PresentationPointsDTO } from './student.dto';
 import { StudentService } from './student.service';
+import { SheetService } from '../sheet/sheet.service';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -146,7 +148,7 @@ describe('StudentService', () => {
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [StudentService, TutorialService, TeamService, UserService],
+      providers: [StudentService, TutorialService, TeamService, UserService, SheetService],
     }).compile();
   });
 
@@ -438,6 +440,20 @@ describe('StudentService', () => {
     const updatedStudent = (await service.findById(student._id)).toDTO();
 
     expect(updatedStudent.attendances).toEqual([['2020-03-01', attendance]]);
+  });
+
+  it('set the presentation points of a student', async () => {
+    const sheet = SHEET_DOCUMENTS[0];
+    const student = STUDENT_DOCUMENTS[0];
+    const dto: PresentationPointsDTO = {
+      points: 6,
+      sheetId: sheet._id,
+    };
+
+    await service.setPresentationPoints(student._id, dto);
+    const updatedStudent = (await service.findById(student._id)).toDTO();
+
+    expect(updatedStudent.presentationPoints).toEqual([[sheet._id, dto.points]]);
   });
 
   it('change cakecount of a student', async () => {

@@ -10,7 +10,13 @@ import { Student } from '../../shared/model/Student';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { AttendanceDTO, CakeCountDTO, GradingDTO, StudentDTO } from './student.dto';
+import {
+  AttendanceDTO,
+  CakeCountDTO,
+  GradingDTO,
+  StudentDTO,
+  PresentationPointsDTO,
+} from './student.dto';
 
 @Injectable()
 export class StudentService implements CRUDService<Student, StudentDTO, StudentDocument> {
@@ -167,6 +173,22 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
     const grading = GradingModel.fromDTO(dto);
 
     student.setGrading(sheet, grading);
+    await student.save();
+  }
+
+  /**
+   * Updates the presentation points of the given student for the sheet given in the sheet ID.
+   *
+   * @param id ID of the student to update.
+   * @param dto DTO holding the information to update the presentation points.
+   *
+   * @throws `NotFoundException` - If either no student with the given ID or no sheet with the `sheetId` from the DTO.
+   */
+  async setPresentationPoints(id: string, dto: PresentationPointsDTO): Promise<void> {
+    const student = await this.findById(id);
+    const sheet = await this.sheetService.findById(dto.sheetId);
+
+    student.setPresentationPoints(sheet, dto.points);
     await student.save();
   }
 

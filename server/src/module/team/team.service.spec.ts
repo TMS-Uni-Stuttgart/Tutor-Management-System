@@ -15,6 +15,7 @@ import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
 import { TeamDTO } from './team.dto';
 import { TeamID, TeamService } from './team.service';
+import { SheetService } from '../sheet/sheet.service';
 
 interface AssertTeamParams {
   expected: MockedModel<TeamModel>;
@@ -101,7 +102,7 @@ describe('TeamService', () => {
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [TeamService, TutorialService, StudentService, UserService],
+      providers: [TeamService, TutorialService, StudentService, UserService, SheetService],
     }).compile();
   });
 
