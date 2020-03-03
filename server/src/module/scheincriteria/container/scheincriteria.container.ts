@@ -66,8 +66,10 @@ class SCContainer {
     return { type: 'empty' };
   }
 
-  /*
-   * TODO: JSDoc
+  /**
+   * Registers a blueprint for the given criteria. This allows the instantiation of those later.
+   *
+   * @param criteria Criteria to register a blue print for.
    */
   registerBluePrint(criteria: Scheincriteria) {
     const criteriaForm = new ScheincriteriaForm(criteria);
@@ -128,13 +130,22 @@ class SCContainer {
     return formData;
   }
 
+  /**
+   * Gathers the data for the form using the given property of the given criteria.
+   *
+   * If the `propertyName` is 'identifier' or if the type of the property with the given name is not supported than `undefined` is returned.
+   *
+   * @param propertyName Name of the property to get the FormFieldData of.
+   * @param criteria Criteria containing the corresponding property.
+   *
+   * @returns The FormFieldData for the property or `undefined` (see above).
+   */
   private getFormFieldDataForProperty(
     propertyName: string,
     criteria: Scheincriteria
   ): FormFieldData | undefined {
     /*
      * TODO: Clean & split up function
-     * TODO: JSDoc(s)!
      */
     if (propertyName === 'identifier') {
       return undefined;

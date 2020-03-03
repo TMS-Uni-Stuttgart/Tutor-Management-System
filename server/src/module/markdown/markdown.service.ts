@@ -108,7 +108,6 @@ export class MarkdownService {
       const gradingForExercise = grading.getExerciseGrading(exercise);
 
       if (!gradingForExercise) {
-        // TODO: Handle correctly
         return;
       }
 
