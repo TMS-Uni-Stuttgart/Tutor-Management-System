@@ -12,6 +12,7 @@ import { ScheincriteriaModule } from './module/scheincriteria/scheincriteria.mod
 import { TeamModule } from './module/team/team.module';
 import { InformationModule } from './module/information/information.module';
 import { PdfModule } from './module/pdf/pdf.module';
+import { MarkdownModule } from './module/markdown/markdown.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PdfModule } from './module/pdf/pdf.module';
     TeamModule,
     InformationModule,
     PdfModule,
+    MarkdownModule,
   ],
   controllers: [],
   providers: [],
