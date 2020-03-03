@@ -240,15 +240,29 @@ export const SHEET_DOCUMENTS: MockedSheetModel[] = [
         exName: 'Exercise 1',
         bonus: false,
         maxPoints: 10,
+        pointInfo: { must: 10, bonus: 0 },
       },
       {
         _id: '5e552a07d55e796b8e3c51a9',
         exName: 'Exercise 2',
         bonus: false,
         maxPoints: 20, // Put the expected sum of the subexercises here.
+        pointInfo: { must: 20, bonus: 0 },
         subexercises: [
-          { _id: '5e552a0a6ae88eda225ff562', exName: '(a)', bonus: false, maxPoints: 8 },
-          { _id: '5e552a0fd4d6f5c245617212', exName: '(b)', bonus: false, maxPoints: 12 },
+          {
+            _id: '5e552a0a6ae88eda225ff562',
+            exName: '(a)',
+            bonus: false,
+            maxPoints: 8,
+            pointInfo: { must: 8, bonus: 0 },
+          },
+          {
+            _id: '5e552a0fd4d6f5c245617212',
+            exName: '(b)',
+            bonus: false,
+            maxPoints: 12,
+            pointInfo: { must: 12, bonus: 0 },
+          },
         ],
       },
     ],
@@ -267,15 +281,29 @@ export const SCHEINEXAM_DOCUMENTS: MockedScheinexamModel[] = [
         exName: 'Exercise 1',
         bonus: false,
         maxPoints: 10,
+        pointInfo: { must: 10, bonus: 0 },
       },
       {
         _id: '5e552a07d55e796b8e3c51a9',
         exName: 'Exercise 2',
         bonus: false,
         maxPoints: 20, // Put the expected sum of the subexercises here.
+        pointInfo: { must: 20, bonus: 0 },
         subexercises: [
-          { _id: '5e552a0a6ae88eda225ff562', exName: '(a)', bonus: false, maxPoints: 8 },
-          { _id: '5e552a0fd4d6f5c245617212', exName: '(b)', bonus: false, maxPoints: 12 },
+          {
+            _id: '5e552a0a6ae88eda225ff562',
+            exName: '(a)',
+            bonus: false,
+            maxPoints: 8,
+            pointInfo: { must: 8, bonus: 0 },
+          },
+          {
+            _id: '5e552a0fd4d6f5c245617212',
+            exName: '(b)',
+            bonus: false,
+            maxPoints: 12,
+            pointInfo: { must: 12, bonus: 0 },
+          },
         ],
       },
     ],
