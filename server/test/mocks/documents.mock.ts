@@ -160,7 +160,6 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     cakeCount: 0,
     team: generateFakeDocument('5e5a48b128fa40e1a26b7ddb', { teamNo: 1 }),
     attendances: new Map(),
-    gradings: new Map(),
     presentationPoints: new Map(),
   },
   {
@@ -175,7 +174,6 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     cakeCount: 2,
     team: generateFakeDocument('5e5a48b128fa40e1a26b7ddb', { teamNo: 1 }),
     attendances: new Map(),
-    gradings: new Map(),
     presentationPoints: new Map(),
   },
   {
@@ -190,7 +188,6 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     cakeCount: 0,
     team: undefined,
     attendances: new Map(),
-    gradings: new Map(),
     presentationPoints: new Map(),
   },
   {
@@ -205,7 +202,6 @@ export const STUDENT_DOCUMENTS: MockedModel<StudentModel>[] = [
     cakeCount: 0,
     team: undefined,
     attendances: new Map(),
-    gradings: new Map(),
     presentationPoints: new Map(),
   },
 ];
