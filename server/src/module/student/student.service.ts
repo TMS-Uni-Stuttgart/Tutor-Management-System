@@ -3,7 +3,11 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { AttendanceModel } from '../../database/models/attendance.model';
 import { GradingModel, GradingDocument } from '../../database/models/grading.model';
-import { StudentDocument, StudentModel } from '../../database/models/student.model';
+import {
+  StudentDocument,
+  StudentModel,
+  populateStudentDocument,
+} from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Attendance } from '../../shared/model/Attendance';
 import { Student } from '../../shared/model/Student';
@@ -36,6 +40,8 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    */
   async findAll(): Promise<StudentDocument[]> {
     const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
+
+    await Promise.all(allStudents.map(student => populateStudentDocument(student)));
 
     return allStudents;
   }
@@ -170,8 +176,9 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    * @throws `BadRequestException` - If the DTO could not be converted into a GradingDocument. See {@link GradingDocument#fromDTO} for more information.
    */
   async setGrading(id: string, dto: GradingDTO): Promise<void> {
+    await this.sheetService.hasSheetWithId(dto.sheetId);
+
     const student = await this.findById(id);
-    const sheet = await this.sheetService.findById(dto.sheetId);
     let grading: GradingDocument | null;
 
     if (!!dto.gradingId) {
@@ -186,10 +193,8 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
       grading = GradingModel.fromDTO(dto);
     }
 
+    grading.addStudent(student);
     await grading.save();
-
-    student.setGrading(sheet, grading);
-    await student.save();
   }
 
   /**

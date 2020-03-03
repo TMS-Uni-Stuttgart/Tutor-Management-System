@@ -1,9 +1,17 @@
 import { BadRequestException } from '@nestjs/common';
-import { DocumentType, getModelForClass, mapProp, modelOptions, prop } from '@typegoose/typegoose';
+import {
+  DocumentType,
+  getModelForClass,
+  mapProp,
+  modelOptions,
+  prop,
+  arrayProp,
+} from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { ExerciseGrading, Grading } from '../../shared/model/Points';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
+import { StudentDocument, StudentModel } from './student.model';
 
 export class ExerciseGradingModel {
   constructor({ points }: { points: number }) {
@@ -124,6 +132,41 @@ export class GradingModel {
 
   @mapProp({ of: ExerciseGradingModel, autopopulate: true, default: new Map() })
   exerciseGradings!: Map<string, ExerciseGradingDocument>;
+
+  @arrayProp({ ref: StudentModel, autopopulate: true, default: [] })
+  students!: StudentDocument[];
+
+  /**
+   * Adds a student to this grading to "use" it.
+   *
+   * If the student got added, the 'students' path is marked as modified. If the student is already using it, nothing happens.
+   *
+   * @param student Student to add to this grading.
+   */
+  addStudent(this: GradingDocument, student: StudentDocument) {
+    const idx = this.students.findIndex(s => s.id === student.id);
+
+    if (idx === -1) {
+      this.students.push(student);
+      this.markModified('students');
+    }
+  }
+
+  /**
+   * Removes the student from 'using' this grading.
+   *
+   * If the student got removed, the 'students' path is marked as modified. If the student has NOT used this grading, nothing happens.
+   *
+   * @param student Student to remove.
+   */
+  removeStudent(this: GradingDocument, student: StudentDocument) {
+    const idx = this.students.findIndex(s => s.id === student.id);
+
+    if (idx !== -1) {
+      this.students.splice(idx, 1);
+      this.markModified('students');
+    }
+  }
 
   /**
    * Sum of all points of all exercises and the `additionalPoints` of this grading.
