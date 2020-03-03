@@ -4,6 +4,7 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { ExerciseGrading, Grading } from '../../shared/model/Points';
+import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 
 export class ExerciseGradingModel {
   constructor({
@@ -49,6 +50,14 @@ export class ExerciseGradingModel {
 
   @mapProp({ of: Number })
   subExercisePoints?: Map<string, number>;
+
+  getGradingForSubexercise(subExercise: SubExerciseDocument): number | undefined {
+    if (!this.subExercisePoints) {
+      return undefined;
+    }
+
+    return this.subExercisePoints.get(subExercise.id);
+  }
 
   /**
    * Converts the given DTO into a grading document for a single exercise.
@@ -194,6 +203,10 @@ export class GradingModel {
       comment,
       additionalPoints,
     };
+  }
+
+  getExerciseGrading(exercise: ExerciseDocument): ExerciseGradingDocument | undefined {
+    return this.exerciseGradings.get(exercise.id);
   }
 }
 
