@@ -12,7 +12,10 @@ export abstract class PDFGenerator<T = {}> {
 
   protected constructor(filename?: string) {
     this.filename = filename;
-    this.checkIfTemplateFileExists();
+
+    if (!!filename) {
+      this.checkIfTemplateFileExists();
+    }
   }
 
   /**
