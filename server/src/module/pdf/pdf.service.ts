@@ -4,6 +4,7 @@ import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials'
 import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheinexam';
 import { DateTime } from 'luxon';
+import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
 
 @Injectable()
 export class PdfService {
@@ -11,7 +12,8 @@ export class PdfService {
     private readonly attendancePDF: AttendancePDFGenerator,
     private readonly credentialsPDF: CredentialsPDFGenerator,
     private readonly scheinResultsPDF: ScheinResultsPDFGenerator,
-    private readonly scheinexamResultPDF: ScheinexamResultPDFGenerator
+    private readonly scheinexamResultPDF: ScheinexamResultPDFGenerator,
+    private readonly markdownPDF: MarkdownPDFGenerator
   ) {}
 
   /**

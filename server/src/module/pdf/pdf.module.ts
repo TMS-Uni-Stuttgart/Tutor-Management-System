@@ -7,6 +7,7 @@ import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheine
 import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { TutorialModule } from '../tutorial/tutorial.module';
 import { UserModule } from '../user/user.module';
+import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
 
 @Module({
   imports: [TutorialModule, UserModule],
@@ -16,6 +17,7 @@ import { UserModule } from '../user/user.module';
     CredentialsPDFGenerator,
     ScheinexamResultPDFGenerator,
     ScheinResultsPDFGenerator,
+    MarkdownPDFGenerator,
   ],
   controllers: [PdfController],
 })
