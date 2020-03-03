@@ -11,11 +11,13 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { Team } from '../../shared/model/Team';
 import { TeamService } from './team.service';
 import { TeamDTO } from './team.dto';
 import { TeamGuard } from '../../guards/team.guard';
+import { GradingDTO } from '../student/student.dto';
 
 @Controller('tutorial/:id/team')
 export class TeamController {
@@ -70,5 +72,16 @@ export class TeamController {
     @Param('teamId') teamId: string
   ): Promise<void> {
     await this.teamService.deleteTeamFromTutorial({ tutorialId, teamId });
+  }
+
+  @Put('/:teamId/grading')
+  @UseGuards(TeamGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async setGradingForTeam(
+    @Param('id') tutorialId: string,
+    @Param('teamId') teamId: string,
+    @Body() dto: GradingDTO
+  ): Promise<void> {
+    await this.teamService.setGrading({ tutorialId, teamId }, dto);
   }
 }

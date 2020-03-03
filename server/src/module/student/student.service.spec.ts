@@ -4,27 +4,29 @@ import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import {
+  SHEET_DOCUMENTS,
   STUDENT_DOCUMENTS,
   TEAM_DOCUMENTS,
   TUTORIAL_DOCUMENTS,
-  SHEET_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
+import { ExerciseGradingModel, GradingModel } from '../../database/models/grading.model';
 import { StudentModel } from '../../database/models/student.model';
 import { AttendanceState } from '../../shared/model/Attendance';
+import { Grading } from '../../shared/model/Points';
 import { Student, StudentStatus } from '../../shared/model/Student';
+import { SheetDTO } from '../sheet/sheet.dto';
+import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
 import {
   AttendanceDTO,
   CakeCountDTO,
-  StudentDTO,
-  PresentationPointsDTO,
   GradingDTO,
+  PresentationPointsDTO,
+  StudentDTO,
 } from './student.dto';
 import { StudentService } from './student.service';
-import { SheetService } from '../sheet/sheet.service';
-import { SheetDTO } from '../sheet/sheet.dto';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -40,6 +42,11 @@ interface AssertStudentDTOParams {
   expected: StudentDTO;
   actual: Student;
   oldStudent?: Student;
+}
+
+interface AssertGradingParams {
+  expected: GradingDTO;
+  actual: Grading | undefined;
 }
 
 /**
@@ -136,6 +143,32 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
     expect(gradings).toEqual([]);
     expect(presentationPoints).toEqual([]);
     expect(cakeCount).toBe(0);
+  }
+}
+
+export function assertGrading({ expected, actual }: AssertGradingParams) {
+  expect(actual).toBeDefined();
+
+  if (!actual) {
+    return;
+  }
+
+  const expectedDoc = GradingModel.fromDTO(expected);
+  const expectedSum = expectedDoc.points;
+
+  expect(actual.points).toBe(expectedSum);
+
+  expect(actual.exerciseGradings.length).toBe(expected.exerciseGradings.length);
+
+  for (let i = 0; i < expected.exerciseGradings.length; i++) {
+    const [expectedKey, expectedEx] = expected.exerciseGradings[i];
+    const [actualKey, actualEx] = actual.exerciseGradings[i];
+    const expectedDoc = ExerciseGradingModel.fromDTO(expectedEx);
+
+    expect(actualKey).toEqual(expectedKey);
+    expect(actualEx.points).toEqual(expectedDoc.points);
+    expect(actualEx.comment).toEqual(expectedEx.comment);
+    expect(actualEx.additionalPoints).toEqual(expectedEx.additionalPoints);
   }
 }
 
@@ -515,23 +548,7 @@ describe('StudentService', () => {
     const updatedStudent = (await service.findById(student._id)).toDTO();
     const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
 
-    // TODO: Extract me into seperate function.
-    expect(updatedStudent.gradings.length).toBe(1);
-
-    expect(actualGrading).toBeDefined();
-    expect(actualGrading?.points).toBe(8 + 4 + 5);
-
-    expect(actualGrading?.exerciseGradings.length).toBe(2);
-
-    expect(actualGrading?.exerciseGradings[0][1].points).toBe(8);
-    expect(actualGrading?.exerciseGradings[0][1].comment).toEqual(
-      gradingDTO.exerciseGradings[0][1].comment
-    );
-
-    expect(actualGrading?.exerciseGradings[1][1].points).toBe(4 + 5);
-    expect(actualGrading?.exerciseGradings[0][1].comment).toEqual(
-      gradingDTO.exerciseGradings[0][1].comment
-    );
+    assertGrading({ expected: gradingDTO, actual: actualGrading });
   });
 
   it('change cakecount of a student', async () => {

@@ -14,6 +14,8 @@ import { Team } from '../../shared/model/Team';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { TeamDTO } from './team.dto';
+import { GradingDTO } from '../student/student.dto';
+import { SheetService } from '../sheet/sheet.service';
 
 export interface TeamID {
   tutorialId: string;
@@ -27,7 +29,8 @@ export class TeamService {
     private readonly teamModel: ReturnModelType<typeof TeamModel>,
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => StudentService))
-    private readonly studentService: StudentService
+    private readonly studentService: StudentService,
+    private readonly sheetService: SheetService
   ) {}
 
   /**
@@ -140,6 +143,38 @@ export class TeamService {
     await this.removeAllStudentsFromTeam(team);
 
     return team.remove();
+  }
+
+  /**
+   * Creates or updates a new grading and adds this grading to all student which don't already have a grading for the sheet in question.
+   *
+   * If the student already has a grading, don't change anything because:
+   *   - A: The student has this _exact_ grading anyways so it will get updated by updating the grading OR
+   *   - B: The student has a _different_ grading which should not be changed by this operation.
+   *
+   * If the grading is not applied to any students in the end it will __NOT__ get saved to the datebase (to prevent unused documents).
+   *
+   * @param teamId TeamID of the team to which students the grading should be added.
+   * @param dto DTO of the grading.
+   *
+   * @throws `NotFoundException` - If either no team with the given `teamId` or no sheet with the given `dto.sheetId` or no grading with the given `dto.gradingId` (if provided) could be found.
+   */
+  async setGrading(teamId: TeamID, dto: GradingDTO): Promise<void> {
+    const team = await this.findById(teamId);
+    const sheet = await this.sheetService.findById(dto.sheetId);
+    const grading = await this.studentService.getGradingFromDTO(dto);
+
+    for (const student of team.students) {
+      const gradingOfStudent = student.getGrading(sheet);
+
+      if (!gradingOfStudent) {
+        grading.addStudent(student);
+      }
+    }
+
+    if (grading.students.length !== 0) {
+      await grading.save();
+    }
   }
 
   /**
