@@ -21,6 +21,7 @@ import { GradingDocument, GradingModel } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
+import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 
 interface ConstructorFields {
   firstname: string;
@@ -34,11 +35,12 @@ interface ConstructorFields {
   cakeCount: number;
 }
 
-function loadGradingMap(doc: StudentModel | null) {
-  if (!doc) {
+export async function populateStudentDocument(doc?: StudentDocument) {
+  if (!doc || !doc.populate) {
     return;
   }
 
+  await doc.populate('_gradings').execPopulate();
   doc.loadGradingMap();
 }
 
@@ -47,10 +49,9 @@ function loadGradingMap(doc: StudentModel | null) {
   fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
 @plugin(mongooseAutoPopulate)
-@post<StudentModel>('find', function(result) {
-  result.forEach(loadGradingMap);
+@plugin<VirtualPopulationOptions<StudentModel>>(VirtualPopulation, {
+  populateDocument: populateStudentDocument as any,
 })
-@post<StudentModel>('findOne', loadGradingMap)
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
 export class StudentModel {
   constructor(fields: ConstructorFields) {
@@ -91,10 +92,10 @@ export class StudentModel {
   @mapProp({ of: AttendanceModel, autopopulate: true, default: new Map() })
   attendances!: Map<string, AttendanceDocument>;
 
-  @arrayProp({ ref: GradingModel, autopopulate: true, default: [] })
+  @arrayProp({ ref: 'GradingModel', foreignField: 'students', localField: '_id' })
   private _gradings!: GradingDocument[];
 
-  private gradings!: Map<string, GradingDocument>;
+  private gradings: Map<string, GradingDocument> = new Map();
 
   @mapProp({ of: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
@@ -110,21 +111,6 @@ export class StudentModel {
     for (const doc of this._gradings) {
       this.gradings.set(doc.sheetId, doc);
     }
-  }
-
-  /**
-   * Saves all documents currently saved in the gradings map into the array for the database.
-   *
-   * This will empty the array first and mark the corresponding path as modified afterwards.
-   */
-  private saveGradingMap(this: StudentDocument) {
-    this._gradings.splice(0);
-
-    for (const [, value] of this.gradings) {
-      this._gradings.push(value);
-    }
-
-    this.markModified('_gradings');
   }
 
   /**
@@ -168,7 +154,6 @@ export class StudentModel {
     }
 
     this.gradings.set(sheet.id, grading);
-    this.saveGradingMap();
   }
 
   /**
@@ -235,11 +220,11 @@ export class StudentModel {
     const attendances: Map<string, Attendance> = new Map();
     const gradings: Map<string, Grading> = new Map();
 
-    for (const [key, doc] of this.attendances.entries()) {
+    for (const [key, doc] of this.attendances) {
       attendances.set(key, doc.toDTO());
     }
 
-    for (const [key, doc] of this.gradings.entries()) {
+    for (const [key, doc] of this.gradings) {
       gradings.set(key, doc.toDTO());
     }
 

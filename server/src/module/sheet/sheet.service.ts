@@ -43,6 +43,17 @@ export class SheetService implements CRUDService<Sheet, SheetDTO, SheetDocument>
   }
 
   /**
+   * Checks if there is a sheet with the given ID. If not, an exception is thrown.
+   *
+   * @param id ID to search for.
+   *
+   * @throws `NotFoundException` - If no sheet with the given ID could be found.
+   */
+  async hasSheetWithId(id: string): Promise<void> {
+    await this.findById(id);
+  }
+
+  /**
    * Creates a new sheet from the given information and saves it to the database. The created sheet is returned.
    *
    * @param dto Information to create a sheet with.
