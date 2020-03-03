@@ -103,10 +103,9 @@ export class ExerciseGradingModel {
   }
 
   toDTO(this: ExerciseGradingDocument): ExerciseGrading {
-    const { id, comment, additionalPoints, points, subExercisePoints } = this;
+    const { comment, additionalPoints, points, subExercisePoints } = this;
 
     return {
-      gradingId: id,
       comment,
       additionalPoints,
       points,
