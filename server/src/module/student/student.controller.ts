@@ -93,7 +93,7 @@ export class StudentController {
     await this.studentService.setPresentationPoints(id, dto);
   }
 
-  @Put('/:id/point')
+  @Put('/:id/grading')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(StudentGuard)
   @UsePipes(ValidationPipe)
