@@ -8,15 +8,15 @@ import GITHUB_MARKDOWN_CSS from './css/githubMarkdown';
  * @param T Type of the options passed to `generatePDF`.
  */
 export abstract class PDFGenerator<T = {}> {
-  private readonly filename: string;
+  private readonly filename?: string;
 
-  protected constructor(filename: string) {
+  protected constructor(filename?: string) {
     this.filename = filename;
     this.checkIfTemplateFileExists();
   }
 
   /**
-   * Generats a PDF from the given options.
+   * Generates a PDF from the given options.
    *
    * @param options Options from which the PDF gets generated.
    *
@@ -27,12 +27,19 @@ export abstract class PDFGenerator<T = {}> {
   /**
    * Loads and returns the given HTML template file. The returned string does NOT contain any comments anymore and additional spaces after `{{` and before `}}` were removed aswell.
    *
-   * @param filename Filename of the corresponding template file.
+   * The `filename` property of the object this function is called on has to be set.
    *
    * @returns Cleaned up HTML template file.
-   * @throws `BadRequestError`: If the given html file could not be found.
+   *
+   * @throws `BadRequestError`: If the given html file could not be found or if the `filename` property is not set.
    */
   protected getTemplate(): string {
+    if (!this.filename) {
+      throw new BadRequestException(
+        `To get a template the 'filename' property of the object must be set.`
+      );
+    }
+
     try {
       const filePath = path.join(process.cwd(), 'config', 'html', this.filename);
       const template = fs.readFileSync(filePath).toString();
