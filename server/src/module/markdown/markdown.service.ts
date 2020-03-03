@@ -1,11 +1,12 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { TeamService, TeamID } from '../team/team.service';
-import { SheetService } from '../sheet/sheet.service';
-import { ExercisePointInfo, convertExercisePointInfoToString } from '../../shared/model/Points';
-import { GradingDocument } from '../../database/models/grading.model';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { SubExerciseDocument } from '../../database/models/exercise.model';
+import { ExerciseGradingDocument, GradingDocument } from '../../database/models/grading.model';
 import { SheetDocument } from '../../database/models/sheet.model';
-import { StudentService } from '../student/student.service';
+import { convertExercisePointInfoToString, ExercisePointInfo } from '../../shared/model/Points';
 import { getNameOfEntity } from '../../shared/util/helpers';
+import { SheetService } from '../sheet/sheet.service';
+import { StudentService } from '../student/student.service';
+import { TeamID, TeamService } from '../team/team.service';
 
 export interface SheetPointInfo {
   achieved: number;
@@ -16,6 +17,17 @@ interface GeneratingParams {
   sheet: SheetDocument;
   grading: GradingDocument;
   nameOfEntity: string;
+}
+
+interface GenerateSubExTableParams {
+  subexercises: SubExerciseDocument[];
+  gradingForExercise: ExerciseGradingDocument;
+}
+
+interface SubExData {
+  name: string;
+  achieved: number;
+  total: ExercisePointInfo;
 }
 
 @Injectable()
@@ -89,7 +101,6 @@ export class MarkdownService {
   }
 
   private generateMarkdownFromGrading({ sheet, grading, nameOfEntity }: GeneratingParams): string {
-    // TODO: Clean & split me up!
     const pointInfo: SheetPointInfo = { achieved: 0, total: { must: 0, bonus: 0 } };
     let exerciseMarkdown: string = '';
 
@@ -104,47 +115,16 @@ export class MarkdownService {
       const { pointInfo: total, subexercises } = exercise;
       const achieved = gradingForExercise.points;
       const exMaxPoints = convertExercisePointInfoToString(total);
+      const subExTable = this.generateSubExerciseTable({ subexercises, gradingForExercise });
 
       pointInfo.achieved += achieved;
       pointInfo.total.must = total.must;
       pointInfo.total.bonus = total.bonus;
 
       exerciseMarkdown += `## Aufgabe ${exercise.exName} [${achieved} / ${exMaxPoints}]\n\n`;
-
-      if (subexercises.length > 0) {
-        const subExData: { name: string; achieved: number; total: ExercisePointInfo }[] = [];
-
-        subexercises.forEach(subEx => {
-          const achieved = gradingForExercise.getGradingForSubexercise(subEx);
-
-          subExData.push({
-            name: subEx.exName,
-            achieved: achieved ?? 0,
-            total: subEx.pointInfo,
-          });
-        });
-
-        let subExTable = '';
-
-        subExData.forEach(({ name }) => {
-          subExTable += `|${name}`;
-        });
-        subExTable += '|\n';
-
-        subExData.forEach(() => {
-          subExTable += '|:-----:';
-        });
-        subExTable += '|\n';
-
-        subExData.forEach(({ achieved, total }) => {
-          const totalString = convertExercisePointInfoToString(total);
-          subExTable += `|${achieved} / ${totalString}`;
-        });
-        subExTable += '|\n';
-
+      if (!!subExTable) {
         exerciseMarkdown += `${subExTable}\n\n`;
       }
-
       exerciseMarkdown += `${gradingForExercise.comment ?? ''}\n\n`;
     });
 
@@ -152,5 +132,46 @@ export class MarkdownService {
     const header = `# ${nameOfEntity}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**`;
 
     return `${header}\n\n${exerciseMarkdown}`;
+  }
+
+  private generateSubExerciseTable(params: GenerateSubExTableParams): string {
+    const subExData: SubExData[] = this.generateSubExerciseData(params);
+
+    let subExTable = '';
+
+    subExData.forEach(({ name }) => {
+      subExTable += `|${name}`;
+    });
+    subExTable += '|\n';
+
+    subExData.forEach(() => {
+      subExTable += '|:-----:';
+    });
+    subExTable += '|\n';
+
+    subExData.forEach(({ achieved, total }) => {
+      const totalString = convertExercisePointInfoToString(total);
+      subExTable += `|${achieved} / ${totalString}`;
+    });
+    subExTable += '|\n';
+
+    return subExTable;
+  }
+
+  private generateSubExerciseData({
+    subexercises,
+    gradingForExercise,
+  }: GenerateSubExTableParams): SubExData[] {
+    return subexercises.reduce<SubExData[]>((data, subEx) => {
+      const achieved = gradingForExercise.getGradingForSubexercise(subEx);
+
+      data.push({
+        name: subEx.exName,
+        achieved: achieved ?? 0,
+        total: subEx.pointInfo,
+      });
+
+      return data;
+    }, []);
   }
 }
