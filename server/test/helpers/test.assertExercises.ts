@@ -30,7 +30,7 @@ interface AssertSubExerciseDTOParams {
  * @param params Must contain an expected SubExercise and an actual SubExercise.
  */
 function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
-  const { _id, ...restExpected } = expected;
+  const { _id, pointInfo, ...restExpected } = expected;
   const { id, ...restActual } = actual;
 
   expect(id).toEqual(_id);
