@@ -112,8 +112,12 @@ function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOP
 
   expect(dates).toEqual(expected.dates.map(date => DateTime.fromISO(date).toISODate()));
 
-  expect(DateTime.fromISO(startTime).equals(DateTime.fromISO(expectedStart))).toBeTruthy();
-  expect(DateTime.fromISO(endTime).equals(DateTime.fromISO(expectedEnd))).toBeTruthy();
+  const options: ToISOTimeOptions = {
+    suppressMilliseconds: true,
+  };
+
+  expect(actual.startTime).toEqual(DateTime.fromISO(expectedStart).toISOTime(options));
+  expect(actual.endTime).toEqual(DateTime.fromISO(expectedEnd).toISOTime(options));
 
   expect(correctors).toEqual(correctorIds);
 
