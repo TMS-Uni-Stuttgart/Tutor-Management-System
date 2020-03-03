@@ -129,7 +129,7 @@ export class MarkdownService {
         subExData.forEach(({ name }) => {
           subExTable += `|${name}`;
         });
-        subExTable += '\n';
+        subExTable += '|\n';
 
         subExData.forEach(() => {
           subExTable += '|:-----:';
@@ -145,7 +145,7 @@ export class MarkdownService {
         exerciseMarkdown += `${subExTable}\n\n`;
       }
 
-      exerciseMarkdown += `${grading.comment}\n\n`;
+      exerciseMarkdown += `${gradingForExercise.comment ?? ''}\n\n`;
     });
 
     const totalPointInfo = convertExercisePointInfoToString(pointInfo.total);
