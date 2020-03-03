@@ -95,7 +95,7 @@ export class StudentModel {
   @arrayProp({ ref: 'GradingModel', foreignField: 'students', localField: '_id' })
   private _gradings!: GradingDocument[];
 
-  private gradings: Map<string, GradingDocument> = new Map();
+  private gradings?: Map<string, GradingDocument>;
 
   @mapProp({ of: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
@@ -153,6 +153,10 @@ export class StudentModel {
       throw new Error('Given sheet needs to have an id field.');
     }
 
+    if (!this.gradings) {
+      this.gradings = new Map();
+    }
+
     this.gradings.set(sheet.id, grading);
   }
 
@@ -164,7 +168,7 @@ export class StudentModel {
    * @returns Grading for the given sheet or `undefined`
    */
   getGrading(sheet: HasExerciseDocuments): GradingDocument | undefined {
-    if (!sheet.id) {
+    if (!sheet.id || !this.gradings) {
       return undefined;
     }
 
@@ -224,8 +228,10 @@ export class StudentModel {
       attendances.set(key, doc.toDTO());
     }
 
-    for (const [key, doc] of this.gradings) {
-      gradings.set(key, doc.toDTO());
+    if (this.gradings) {
+      for (const [key, doc] of this.gradings) {
+        gradings.set(key, doc.toDTO());
+      }
     }
 
     return {
