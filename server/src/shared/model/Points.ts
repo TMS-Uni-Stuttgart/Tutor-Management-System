@@ -1,7 +1,6 @@
 import { Exercise, HasExercises } from './Sheet';
 
 export interface ExerciseGrading {
-  gradingId: string;
   points: number;
   comment?: string;
   additionalPoints?: number;
