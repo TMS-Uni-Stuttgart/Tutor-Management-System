@@ -19,8 +19,6 @@ export interface Tutorial extends HasId {
   teams: string[];
   correctors: string[];
   substitutes: [string, string][];
-  // TODO: Adjust client & remove me
-  // substitutes: { [index: string]: string };
 }
 
 export interface SubstituteDTO {

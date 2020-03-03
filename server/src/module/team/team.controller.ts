@@ -21,8 +21,6 @@ import { TeamGuard } from '../../guards/team.guard';
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
-  // TODO: Add guards!
-
   @Get()
   @UseGuards(TeamGuard)
   async getAllTeamsInTutorial(@Param('id') tutorialId: string): Promise<Team[]> {

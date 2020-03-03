@@ -131,7 +131,6 @@ export class ScheinexamCriteria extends Scheincriteria {
     student: StudentDocument,
     infos: StatusCheckResponse['infos']
   ): { examsPassed: number; pointsAchieved: number; pointsTotal: number } {
-    // FIXME: DOES NOT WORK!!!
     let pointsAchieved = 0;
     let pointsTotal = 0;
     let examsPassed = 0;
