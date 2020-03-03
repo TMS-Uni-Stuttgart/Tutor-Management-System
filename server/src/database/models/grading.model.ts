@@ -1,12 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import {
-  DocumentType,
-  getModelForClass,
-  mapProp,
-  modelOptions,
-  prop,
-  Typegoose,
-} from '@typegoose/typegoose';
+import { DocumentType, getModelForClass, mapProp, modelOptions, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { ExerciseGrading, Grading } from '../../shared/model/Points';

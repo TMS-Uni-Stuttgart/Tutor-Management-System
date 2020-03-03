@@ -114,7 +114,7 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
     attendances,
     gradings,
     tutorial: actualTutorial,
-    presentationPoints, // TODO: Compare me after the model has the presentation points.
+    presentationPoints,
     cakeCount,
     team: actualTeam,
     ...restActual

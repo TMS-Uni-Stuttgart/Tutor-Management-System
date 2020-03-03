@@ -272,6 +272,20 @@ describe('TutorialService', () => {
     await expect(service.create(dto)).rejects.toThrow(BadRequestException);
   });
 
+  it('fail on creating a tutorial with an already existing slot', async () => {
+    const tutorial = TUTORIAL_DOCUMENTS[0];
+    const dto: TutorialDTO = {
+      slot: tutorial.slot,
+      tutorId: undefined,
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      dates: createDatesForTutorialAsStrings(),
+      correctorIds: [],
+    };
+
+    await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+  });
+
   it('update a tutorial without updating the tutor of the correctors', async () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',

@@ -71,9 +71,9 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
    * @returns Created tutorial.
    */
   async create(dto: TutorialDTO): Promise<Tutorial> {
-    const { slot, tutorId, correctorIds, startTime, endTime, dates } = dto;
-    // TODO: Add check if there is a tutorial with the same slot!
+    await this.assertTutorialSlot(dto.slot);
 
+    const { slot, tutorId, correctorIds, startTime, endTime, dates } = dto;
     const [tutor, correctors] = await Promise.all([
       tutorId ? this.userService.findById(tutorId) : undefined,
       Promise.all(correctorIds.map(id => this.userService.findById(id))),
@@ -184,6 +184,14 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
           'The corrector of a tutorial needs to have the CORRECTOR role.'
         );
       }
+    }
+  }
+
+  private async assertTutorialSlot(slot: string) {
+    const tutorialWithSameSlot = await this.tutorialModel.findOne({ slot }).exec();
+
+    if (!!tutorialWithSameSlot) {
+      throw new BadRequestException(`A tutorial with the slot '${slot} already exists.`);
     }
   }
 }
