@@ -10,7 +10,7 @@ import {
   Min,
 } from 'class-validator';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
-import { IsMapArray } from '../../helpers/validators/mapArray.validator';
+import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
 import { AttendanceState, IAttendanceDTO } from '../../shared/model/Attendance';
 import {
   IExerciseGradingDTO,
@@ -86,6 +86,7 @@ export class ExerciseGradingDTO implements IExerciseGradingDTO {
 
   @IsOptional()
   @IsArray()
+  @IsNumberMapEntry({ each: true })
   subExercisePoints?: [string, number][];
 }
 
@@ -98,7 +99,7 @@ export class GradingDTO implements IGradingDTO {
   gradingId?: string;
 
   @IsArray()
-  @IsMapArray(ExerciseGradingDTO, { each: true })
+  @IsMapEntry(ExerciseGradingDTO, { each: true })
   exerciseGradings!: [string, ExerciseGradingDTO][];
 
   @IsOptional()
