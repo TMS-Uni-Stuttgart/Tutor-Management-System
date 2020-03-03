@@ -1,4 +1,12 @@
-import { DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import {
+  DocumentType,
+  mapProp,
+  modelOptions,
+  plugin,
+  prop,
+  arrayProp,
+  post,
+} from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
@@ -26,11 +34,23 @@ interface ConstructorFields {
   cakeCount: number;
 }
 
+function loadGradingMap(doc: StudentModel | null) {
+  if (!doc) {
+    return;
+  }
+
+  doc.loadGradingMap();
+}
+
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
   fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
 @plugin(mongooseAutoPopulate)
+@post<StudentModel>('find', function(result) {
+  result.forEach(loadGradingMap);
+})
+@post<StudentModel>('findOne', loadGradingMap)
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
 export class StudentModel {
   constructor(fields: ConstructorFields) {
@@ -71,11 +91,41 @@ export class StudentModel {
   @mapProp({ of: AttendanceModel, autopopulate: true, default: new Map() })
   attendances!: Map<string, AttendanceDocument>;
 
-  @mapProp({ of: GradingModel, autopopulate: true, default: new Map() })
-  gradings!: Map<string, GradingDocument>;
+  @arrayProp({ ref: GradingModel, autopopulate: true, default: [] })
+  private _gradings!: GradingDocument[];
+
+  private gradings!: Map<string, GradingDocument>;
 
   @mapProp({ of: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
+
+  /**
+   * Loads all documents saved as references in the database to be in an actual Map.
+   *
+   * This will clear the previously set map.
+   */
+  loadGradingMap() {
+    this.gradings = new Map();
+
+    for (const doc of this._gradings) {
+      this.gradings.set(doc.sheetId, doc);
+    }
+  }
+
+  /**
+   * Saves all documents currently saved in the gradings map into the array for the database.
+   *
+   * This will empty the array first and mark the corresponding path as modified afterwards.
+   */
+  private saveGradingMap(this: StudentDocument) {
+    this._gradings.splice(0);
+
+    for (const [, value] of this.gradings) {
+      this._gradings.push(value);
+    }
+
+    this.markModified('_gradings');
+  }
 
   /**
    * Saves the given attendance in the student.
@@ -118,7 +168,7 @@ export class StudentModel {
     }
 
     this.gradings.set(sheet.id, grading);
-    this.markModified('gradings');
+    this.saveGradingMap();
   }
 
   /**

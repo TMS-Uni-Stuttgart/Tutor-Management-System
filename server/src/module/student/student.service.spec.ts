@@ -54,15 +54,7 @@ interface AssertStudentDTOParams {
  * @param params Must contain an expected StudentDocuemt and the actual Student object.
  */
 function assertStudent({ expected, actual }: AssertStudentParams) {
-  const {
-    _id,
-    attendances,
-    gradings,
-    tutorial,
-    presentationPoints,
-    team,
-    ...restExpected
-  } = expected;
+  const { _id, attendances, tutorial, presentationPoints, team, ...restExpected } = expected;
   const {
     id: actualId,
     attendances: actualAttendances,
@@ -82,7 +74,6 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
   expect(actualTeam?.teamNo).toEqual(team?.teamNo);
 
   expect(new Map(actualAttendances)).toEqual(attendances);
-  expect(new Map(gradings)).toEqual(gradings);
   expect(new Map(presentationPoints)).toEqual(presentationPoints);
 
   expect(restActual).toEqual(restExpected);

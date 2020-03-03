@@ -186,6 +186,8 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
       grading = GradingModel.fromDTO(dto);
     }
 
+    await grading.save();
+
     student.setGrading(sheet, grading);
     await student.save();
   }

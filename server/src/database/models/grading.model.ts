@@ -1,22 +1,20 @@
 import { BadRequestException } from '@nestjs/common';
-import { DocumentType, getModelForClass, mapProp, modelOptions, prop } from '@typegoose/typegoose';
+import {
+  DocumentType,
+  getModelForClass,
+  mapProp,
+  modelOptions,
+  prop,
+  Typegoose,
+} from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
-import { NoFunctions } from '../../helpers/NoFunctions';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { ExerciseGrading, Grading } from '../../shared/model/Points';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 
 export class ExerciseGradingModel {
-  constructor({
-    points,
-    additionalPoints,
-    comment,
-    subExercisePoints,
-  }: NoFunctions<ExerciseGradingModel>) {
+  constructor({ points }: { points: number }) {
     this.points = points;
-    this.additionalPoints = additionalPoints;
-    this.comment = comment;
-    this.subExercisePoints = subExercisePoints;
   }
 
   @prop()
@@ -100,7 +98,7 @@ export class ExerciseGradingModel {
     this.comment = comment;
     this.additionalPoints = additionalPoints;
     this.points = points ?? 0;
-    this.subExercisePoints = subExercisePoints ? new Map(subExercisePoints) : undefined;
+    this.subExercisePoints = !!subExercisePoints ? new Map(subExercisePoints) : undefined;
   }
 
   toDTO(this: ExerciseGradingDocument): ExerciseGrading {
@@ -121,6 +119,9 @@ export class GradingModel {
   constructor() {
     this.exerciseGradings = new Map();
   }
+
+  @prop()
+  sheetId!: string;
 
   @prop()
   comment?: string;
@@ -173,12 +174,13 @@ export class GradingModel {
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
   updateFromDTO(this: GradingDocument, dto: GradingDTO) {
-    const { exerciseGradings, additionalPoints, comment, gradingId } = dto;
+    const { exerciseGradings, additionalPoints, comment, gradingId, sheetId } = dto;
 
     if (!!gradingId) {
       this.id = gradingId;
     }
 
+    this.sheetId = sheetId;
     this.comment = comment;
     this.additionalPoints = additionalPoints;
     this.exerciseGradings = new Map();
