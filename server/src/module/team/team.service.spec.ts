@@ -16,6 +16,9 @@ import { UserService } from '../user/user.service';
 import { TeamDTO } from './team.dto';
 import { TeamID, TeamService } from './team.service';
 import { SheetService } from '../sheet/sheet.service';
+import { SheetDTO } from '../sheet/sheet.dto';
+import { GradingDTO } from '../student/student.dto';
+import { assertGrading } from '../student/student.service.spec';
 
 interface AssertTeamParams {
   expected: MockedModel<TeamModel>;
@@ -289,4 +292,75 @@ describe('TeamService', () => {
       service.deleteTeamFromTutorial({ tutorialId: nonExisting, teamId: TEAM_DOCUMENTS[0]._id })
     ).rejects.toThrow(NotFoundException);
   });
+
+  it('set grading of a complete team (without students have a grading)', async () => {
+    const sheetService = testModule.get<SheetService>(SheetService);
+    const team = TEAM_DOCUMENTS[0];
+    const teamId = { tutorialId: team.tutorial._id, teamId: team._id };
+    const sheetDTO: SheetDTO = {
+      sheetNo: 42,
+      bonusSheet: false,
+      exercises: [
+        {
+          exName: '1',
+          maxPoints: 10,
+          bonus: false,
+        },
+        {
+          exName: '2',
+          bonus: false,
+          maxPoints: 0,
+          subexercises: [
+            {
+              exName: '(a)',
+              maxPoints: 5,
+              bonus: false,
+            },
+            {
+              exName: '(b)',
+              maxPoints: 7,
+              bonus: false,
+            },
+          ],
+        },
+      ],
+    };
+
+    const sheet = await sheetService.create(sheetDTO);
+    const gradingDTO: GradingDTO = {
+      sheetId: sheet.id,
+      exerciseGradings: [
+        [
+          sheet.exercises[0].id,
+          { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
+        ],
+        [
+          sheet.exercises[1].id,
+          {
+            comment: 'Comment for exercise 2',
+            additionalPoints: 0,
+            subExercisePoints: [
+              [sheet.exercises[1].subexercises[0].id, 4],
+              [sheet.exercises[1].subexercises[1].id, 5],
+            ],
+          },
+        ],
+      ],
+      additionalPoints: 0,
+      comment: 'This is a comment for the grading',
+    };
+
+    await service.setGrading(teamId, gradingDTO);
+    const updatedTeam = await service.findById(teamId);
+
+    for (const student of updatedTeam.students) {
+      const [, actualGrading] = student.toDTO().gradings.find(([key]) => key === sheet.id) ?? [];
+
+      assertGrading({ expected: gradingDTO, actual: actualGrading });
+    }
+  });
+
+  it.todo('set grading of a complete team (with ONE student have a grading)');
+
+  it.todo('set grading of a complete team (with ALL student have a grading)');
 });

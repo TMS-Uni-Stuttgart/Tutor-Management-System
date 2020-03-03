@@ -176,9 +176,29 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    * @throws `BadRequestException` - If the DTO could not be converted into a GradingDocument. See {@link GradingDocument#fromDTO} for more information.
    */
   async setGrading(id: string, dto: GradingDTO): Promise<void> {
+    const student = await this.findById(id);
+    const grading = await this.getGradingFromDTO(dto);
+
+    grading.addStudent(student);
+    await grading.save();
+  }
+
+  /**
+   * Searches or creates the GradingDocument according to the given DTO.
+   *
+   * If the DTO does contain a `gradingId` field, the corresponding GradingDocument is fetched from the database, updated with the DTO and returned. Please note: The GradingDocument does __NOT__ get saved by this function.
+   *
+   * If the DTO does __NOT__ contain such a field, a new GradingDocument is generated from the DTO and returned. This documuent is also __NOT__ getting saved by this function.
+   *
+   * @param dto DTO to get the related GradingDocument of.
+   *
+   * @returns GradingDocument related to the given DTO.
+   *
+   * @throws `NotFoundException` - If the DTO contains a `gradingId` but no GradingDocument with such an ID could be found.
+   */
+  async getGradingFromDTO(dto: GradingDTO): Promise<GradingDocument> {
     await this.sheetService.hasSheetWithId(dto.sheetId);
 
-    const student = await this.findById(id);
     let grading: GradingDocument | null;
 
     if (!!dto.gradingId) {
@@ -193,8 +213,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
       grading = GradingModel.fromDTO(dto);
     }
 
-    grading.addStudent(student);
-    await grading.save();
+    return grading;
   }
 
   /**

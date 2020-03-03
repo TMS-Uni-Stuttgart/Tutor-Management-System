@@ -1,12 +1,4 @@
-import {
-  DocumentType,
-  mapProp,
-  modelOptions,
-  plugin,
-  prop,
-  arrayProp,
-  post,
-} from '@typegoose/typegoose';
+import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
@@ -15,13 +7,13 @@ import { databaseConfig } from '../../helpers/config';
 import { Attendance } from '../../shared/model/Attendance';
 import { Grading } from '../../shared/model/Points';
 import { Student, StudentStatus } from '../../shared/model/Student';
+import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { HasExerciseDocuments } from './exercise.model';
-import { GradingDocument, GradingModel } from './grading.model';
+import { GradingDocument } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 
 interface ConstructorFields {
   firstname: string;

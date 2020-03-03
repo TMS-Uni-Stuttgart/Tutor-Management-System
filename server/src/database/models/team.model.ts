@@ -2,7 +2,7 @@ import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
-import { StudentDocument } from './student.model';
+import { StudentDocument, populateStudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { Team } from '../../shared/model/Team';
@@ -18,6 +18,7 @@ export async function populateTeamDocument(doc?: TeamDocument) {
   }
 
   await doc.populate('students').execPopulate();
+  await Promise.all(doc.students.map(student => populateStudentDocument(student)));
 }
 
 type AssignableFields = Omit<NoFunctions<TeamModel>, 'students'>;
