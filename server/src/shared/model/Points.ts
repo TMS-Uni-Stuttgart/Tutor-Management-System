@@ -36,6 +36,18 @@ export interface IPresentationPointsDTO {
   points: number;
 }
 
+export type ExercisePointInfo = { must: number; bonus: number };
+
+export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo): string {
+  if (exPointInfo.must > 0 && exPointInfo.bonus > 0) {
+    return `${exPointInfo.must} + ${exPointInfo.bonus}`;
+  } else if (exPointInfo.bonus === 0) {
+    return `${exPointInfo.must}`;
+  } else {
+    return `${exPointInfo.bonus} Bonus`;
+  }
+}
+
 // ==================================
 //               OLD
 //
@@ -338,18 +350,6 @@ export class PointMap {
   toDTO(): NewPointMapDTO {
     // TODO: Deep copy!
     return this.points;
-  }
-}
-
-export type ExercisePointInfo = { must: number; bonus: number };
-
-export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo): string {
-  if (exPointInfo.must > 0 && exPointInfo.bonus > 0) {
-    return `${exPointInfo.must} + ${exPointInfo.bonus}`;
-  } else if (exPointInfo.bonus === 0) {
-    return `${exPointInfo.must}`;
-  } else {
-    return `${exPointInfo.bonus} Bonus`;
   }
 }
 

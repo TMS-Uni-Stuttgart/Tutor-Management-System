@@ -2,6 +2,7 @@ import { DocumentType, mongoose, prop, arrayProp } from '@typegoose/typegoose';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { Exercise, Subexercise } from '../../shared/model/Sheet';
+import { ExercisePointInfo } from '../../shared/model/Points';
 
 export interface HasExerciseDocuments {
   id?: string;
@@ -42,6 +43,13 @@ export class SubExerciseModel {
 
   @prop({ required: true })
   maxPoints!: number;
+
+  get pointInfo(): ExercisePointInfo {
+    return {
+      must: this.bonus ? 0 : this.maxPoints,
+      bonus: this.bonus ? this.maxPoints : 0,
+    };
+  }
 
   static fromDTO(dto: SubExerciseDTO): SubExerciseModel {
     return new SubExerciseModel({ ...dto });
@@ -84,6 +92,26 @@ export class ExerciseModel {
 
   set maxPoints(points: number) {
     this._maxPoints = points;
+  }
+
+  get pointInfo(): ExercisePointInfo {
+    if (this.subexercises.length === 0) {
+      return {
+        must: this.bonus ? 0 : this.maxPoints,
+        bonus: this.bonus ? this.maxPoints : 0,
+      };
+    }
+
+    return this.subexercises.reduce(
+      (prev, current) => {
+        if (current.bonus) {
+          return { ...prev, bonus: current.maxPoints + prev.bonus };
+        } else {
+          return { ...prev, must: current.maxPoints + prev.must };
+        }
+      },
+      { must: 0, bonus: 0 }
+    );
   }
 
   @arrayProp({ default: [], items: SubExerciseModel })
