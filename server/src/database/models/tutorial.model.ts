@@ -6,8 +6,8 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { Tutorial } from '../../shared/model/Tutorial';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
-import { StudentDocument } from './student.model';
-import { TeamDocument } from './team.model';
+import { StudentDocument, populateStudentDocument } from './student.model';
+import { TeamDocument, populateTeamDocument } from './team.model';
 import { UserDocument, UserModel } from './user.model';
 
 /**

@@ -141,12 +141,8 @@ export class StudentModel {
    * @param grading Grading so save.
    */
   setGrading(this: StudentDocument, sheet: HasExerciseDocuments, grading: GradingDocument) {
-    if (!sheet.id) {
+    if (!sheet.id || !this.gradings) {
       throw new Error('Given sheet needs to have an id field.');
-    }
-
-    if (!this.gradings) {
-      this.gradings = new Map();
     }
 
     this.gradings.set(sheet.id, grading);
@@ -164,7 +160,7 @@ export class StudentModel {
       return undefined;
     }
 
-    return this.gradings.get(sheet.id);
+    return this.gradings?.get(sheet.id);
   }
 
   /**
