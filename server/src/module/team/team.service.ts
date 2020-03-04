@@ -38,12 +38,12 @@ export class TeamService {
    *
    * @returns All teams in the given tutorial.
    */
-  async findAllTeamsInTutorial(tutorialId: string): Promise<Team[]> {
+  async findAllTeamsInTutorial(tutorialId: string): Promise<TeamDocument[]> {
     const teams = await this.teamModel.find({ tutorial: tutorialId }).exec();
 
     await Promise.all(teams.map(team => populateTeamDocument(team)));
 
-    return teams.map(team => team.toDTO());
+    return teams;
   }
 
   /**

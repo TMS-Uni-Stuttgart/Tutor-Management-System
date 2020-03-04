@@ -28,7 +28,7 @@ export class TeamController {
   async getAllTeamsInTutorial(@Param('id') tutorialId: string): Promise<Team[]> {
     const teams = await this.teamService.findAllTeamsInTutorial(tutorialId);
 
-    return teams;
+    return teams.map(team => team.toDTO());
   }
 
   @Post()

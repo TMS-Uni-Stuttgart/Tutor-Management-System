@@ -126,7 +126,7 @@ describe('TeamService', () => {
   it('find all teams in tutorial', async () => {
     const teams = await service.findAllTeamsInTutorial(TUTORIAL_OF_ALL_TEAMS._id);
 
-    assertTeamList({ expected: TEAM_DOCUMENTS, actual: teams });
+    assertTeamList({ expected: TEAM_DOCUMENTS, actual: teams.map(team => team.toDTO()) });
   });
 
   it('find specific team', async () => {
