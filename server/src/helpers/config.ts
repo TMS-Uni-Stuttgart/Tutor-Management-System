@@ -1,7 +1,6 @@
 import { ConnectionOptions } from 'mongoose';
 import config from 'config';
 import { Logger } from '@nestjs/common';
-// import Logger from './Logger';
 
 export interface DatabaseConfig {
   databaseURL: string;

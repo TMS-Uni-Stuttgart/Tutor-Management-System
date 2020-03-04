@@ -13,6 +13,7 @@ import { TeamModule } from './module/team/team.module';
 import { InformationModule } from './module/information/information.module';
 import { PdfModule } from './module/pdf/pdf.module';
 import { MarkdownModule } from './module/markdown/markdown.module';
+import { MailModule } from './module/mail/mail.module';
 import { ExcelModule } from './module/excel/excel.module';
 
 @Module({
@@ -30,6 +31,7 @@ import { ExcelModule } from './module/excel/excel.module';
     InformationModule,
     PdfModule,
     MarkdownModule,
+    MailModule,
     ExcelModule,
   ],
   controllers: [],
