@@ -34,7 +34,7 @@ interface AssertScheinexamDTOParams {
  * @param params Must contain an actual and an expected Scheinexam.
  */
 function assertScheinexam({ expected, actual }: AssertScheinexamParams) {
-  const { _id, exercises, date, ...restExpected } = expected;
+  const { _id, exercises, date, totalPoints, ...restExpected } = expected;
   const { exercises: actualExercises, date: actualDate, id, ...restActual } = actual;
 
   expect(id).toEqual(_id);
