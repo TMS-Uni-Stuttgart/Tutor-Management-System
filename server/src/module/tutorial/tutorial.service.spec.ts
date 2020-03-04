@@ -92,18 +92,7 @@ function assertTutorialList({ expected, actual }: AssertTutorialListParams) {
  * @param params Must contain an expected TutorialDTO and an actual Tutorial. Can include an old version of the tutorial to compare `teams`, `students` and `substitutes`.
  */
 function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOParams) {
-  const {
-    id,
-    tutor,
-    startTime,
-    endTime,
-    correctors,
-    dates,
-    slot,
-    students,
-    teams,
-    substitutes,
-  } = actual;
+  const { id, tutor, correctors, dates, slot, students, teams, substitutes } = actual;
   const { tutorId, startTime: expectedStart, endTime: expectedEnd, correctorIds } = expected;
 
   expect(id).toBeDefined();

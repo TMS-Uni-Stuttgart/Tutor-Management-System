@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Res, UseGuards, Query } from '@nestjs/common';
 import { IDField } from '../../decorators/idField.decorator';
 import { PdfService } from './pdf.service';
 import { Response } from 'express';
@@ -19,6 +19,20 @@ export class PdfController {
     @Res() res: Response
   ): Promise<void> {
     const buffer = await this.pdfService.generateAttendancePDF(id, date);
+
+    res.contentType('pdf');
+    res.send(buffer);
+  }
+
+  @Get('/scheinoverview')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  async getScheinstatusPDF(
+    @Query('clearMatriculationNos') clearMatriculationNos: string,
+    @Res() res: Response
+  ): Promise<void> {
+    const buffer = await this.pdfService.generateStudentScheinOverviewPDF(
+      clearMatriculationNos !== 'true'
+    );
 
     res.contentType('pdf');
     res.send(buffer);

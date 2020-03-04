@@ -19,6 +19,7 @@ export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
   imports: [StudentModule, SheetModule, ScheinexamModule, TutorialModule],
   providers: [ScheincriteriaService],
   controllers: [ScheincriteriaController],
+  exports: [ScheincriteriaService],
 })
 export class ScheincriteriaModule implements OnModuleInit {
   onModuleInit() {

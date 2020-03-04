@@ -1,33 +1,35 @@
-import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
-import { StudentDocument } from '../../../database/models/student.model';
-import { ScheincriteriaSummaryByStudents } from '../../../shared/model/ScheinCriteria';
 import { Injectable } from '@nestjs/common';
+import { ScheincriteriaService } from '../../scheincriteria/scheincriteria.service';
+import { StudentService } from '../../student/student.service';
+import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
 
 interface GeneratorOptions {
-  students: StudentDocument[];
-  summaries: ScheincriteriaSummaryByStudents;
   enableShortMatriculatinNo: boolean;
 }
 
 @Injectable()
 export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<GeneratorOptions> {
-  constructor() {
+  constructor(
+    private readonly studentService: StudentService,
+    private readonly scheincriteriaService: ScheincriteriaService
+  ) {
     super('scheinstatus.html');
   }
 
   /**
    * Generates a PDF which shows a list of all students and their schein status.
    *
-   * @param options Must contain all students which schein status should be added to the list. Furthermore it needs to contain the scheincriteria summaries for at least all of those students.
+   * @param options Determine if the matriculation numbers are shortened or not.
    *
    * @returns Buffer of a PDF containing the list with the schein status of all the given students.
    */
-  public generatePDF({
-    students: givenStudents,
-    summaries,
-    enableShortMatriculatinNo,
-  }: GeneratorOptions): Promise<Buffer> {
-    const students = givenStudents.filter(student => !!student.matriculationNo);
+  public async generatePDF({ enableShortMatriculatinNo }: GeneratorOptions): Promise<Buffer> {
+    const [allStudents, summaries] = await Promise.all([
+      this.studentService.findAll(),
+      this.scheincriteriaService.getResultsOfAllStudents(),
+    ]);
+
+    const students = allStudents.filter(student => !!student.matriculationNo);
     const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
 
     const tableRows: string[] = [];
