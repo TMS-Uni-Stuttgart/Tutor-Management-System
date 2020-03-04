@@ -8,9 +8,11 @@ import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { TutorialModule } from '../tutorial/tutorial.module';
 import { UserModule } from '../user/user.module';
 import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
+import { StudentModule } from '../student/student.module';
+import { ScheincriteriaModule } from '../scheincriteria/scheincriteria.module';
 
 @Module({
-  imports: [TutorialModule, UserModule],
+  imports: [TutorialModule, UserModule, StudentModule, ScheincriteriaModule],
   providers: [
     PdfService,
     AttendancePDFGenerator,

@@ -40,4 +40,17 @@ export class PdfService {
   async generateCredentialsPDF(): Promise<Buffer> {
     return this.credentialsPDF.generatePDF();
   }
+
+  /**
+   * Generates a list with the schein results for all students with matriculation numbers.
+   *
+   * The list either has shortened matriculation numbers or not, depending on the corresponding parameter.
+   *
+   * @param enableShortMatriculatinNo Flag to determine if the matriculation numbers should be shortened or not.
+   *
+   * @returns Buffer containing the generated PDF.
+   */
+  async generateStudentScheinOverviewPDF(enableShortMatriculatinNo: boolean): Promise<Buffer> {
+    return this.scheinResultsPDF.generatePDF({ enableShortMatriculatinNo });
+  }
 }
