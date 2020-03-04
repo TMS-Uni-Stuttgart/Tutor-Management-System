@@ -3,6 +3,8 @@ import { ScheinexamDocument } from '../../../database/models/scheinexam.model';
 import { StudentDocument } from '../../../database/models/student.model';
 import { StudentStatus } from '../../../shared/model/Student';
 import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
+import { StudentService } from '../../student/student.service';
+import { ScheinexamService } from '../../scheinexam/scheinexam.service';
 
 enum ExamPassedState {
   PASSED = 'PASSED',
@@ -11,6 +13,11 @@ enum ExamPassedState {
 }
 
 interface PDFGeneratorOptions {
+  id: string;
+  enableShortMatriculationNo: boolean;
+}
+
+interface GetResultsParams {
   exam: ScheinexamDocument;
   students: StudentDocument[];
 }
@@ -21,7 +28,10 @@ interface ExamResultsByStudents {
 
 @Injectable()
 export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGeneratorOptions> {
-  constructor() {
+  constructor(
+    private readonly studentService: StudentService,
+    private readonly scheinexamService: ScheinexamService
+  ) {
     super('scheinexam.html');
   }
 
@@ -33,10 +43,14 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
    * @returns Buffer containing a PDF which itself contains the results of the given students of the given exam.
    */
   public async generatePDF({
-    exam,
-    students: givenStudents,
+    id,
+    enableShortMatriculationNo,
   }: PDFGeneratorOptions): Promise<Buffer> {
-    const students = givenStudents
+    const [exam, allStudents] = await Promise.all([
+      this.scheinexamService.findById(id),
+      this.studentService.findAll(),
+    ]);
+    const students = allStudents
       .filter(student => !!student.matriculationNo)
       .filter(student => student.status !== StudentStatus.INACTIVE);
     const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
@@ -45,7 +59,14 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
     const rows: string[] = [];
     shortenedMatriculationNumbers.forEach(({ studentId, shortenedNo }) => {
       const passedState: ExamPassedState = results[studentId] ?? ExamPassedState.NOT_ATTENDED;
-      rows.push(`<tr><td>${shortenedNo}</td><td>{{${passedState}}}</td></tr>`);
+      if (enableShortMatriculationNo) {
+        rows.push(`<tr><td>${shortenedNo}</td><td>{{${passedState}}}</td></tr>`);
+      } else {
+        const student = students.find(s => s.id === studentId);
+        rows.push(
+          `<tr><td>${student?.matriculationNo} (${shortenedNo})</td><td>{{${passedState}}}</td></tr>`
+        );
+      }
     });
 
     const body = this.replacePlaceholdersInTemplate(rows, exam);
@@ -100,24 +121,22 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
    *
    * @returns The results of all students mapped by their ID.
    */
-  private getResultsOfAllStudents({ exam, students }: PDFGeneratorOptions): ExamResultsByStudents {
-    // TODO: Implement me!
-    throw new Error('Method not implemented');
-    // const results: ExamResultsByStudents = {};
+  private getResultsOfAllStudents({ exam, students }: GetResultsParams): ExamResultsByStudents {
+    const results: ExamResultsByStudents = {};
 
-    // students.forEach(student => {
-    //   const examResults = new PointMap(student.scheinExamResults);
-    //   const hasAttended = examResults.has(exam.id);
+    students.forEach(student => {
+      const examGrading = student.getGrading(exam);
+      const hasAttended = examGrading !== undefined;
 
-    //   if (hasAttended) {
-    //     results[student.id] = exam.hasPassed(student).passed
-    //       ? ExamPassedState.PASSED
-    //       : ExamPassedState.NOT_PASSED;
-    //   } else {
-    //     results[student.id] = ExamPassedState.NOT_ATTENDED;
-    //   }
-    // });
+      if (hasAttended) {
+        results[student.id] = exam.hasPassed(student).passed
+          ? ExamPassedState.PASSED
+          : ExamPassedState.NOT_PASSED;
+      } else {
+        results[student.id] = ExamPassedState.NOT_ATTENDED;
+      }
+    });
 
-    // return results;
+    return results;
   }
 }

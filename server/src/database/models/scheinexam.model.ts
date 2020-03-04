@@ -37,6 +37,20 @@ export class ScheinexamModel {
   @prop({ required: true })
   percentageNeeded!: number;
 
+  get totalPoints(): ExercisePointInfo {
+    return this.exercises.reduce(
+      (sum, current: ExerciseDocument) => {
+        const ptInfoEx = current.pointInfo;
+
+        return {
+          must: sum.must + ptInfoEx.must,
+          bonus: sum.bonus + ptInfoEx.bonus,
+        };
+      },
+      { must: 0, bonus: 0 }
+    );
+  }
+
   static fromDTO(dto: ScheinExamDTO) {
     return this.assignDTO(new ScheinexamModel(), dto);
   }
@@ -52,8 +66,21 @@ export class ScheinexamModel {
     return model;
   }
 
-  hasPassed(student: StudentDocument): PassedInformation {
-    throw new Error('Method not implemented');
+  hasPassed(this: ScheinexamDocument, student: StudentDocument): PassedInformation {
+    const total = this.totalPoints;
+    const grading = student.getGrading(this);
+
+    if (!grading) {
+      return { passed: false, achieved: 0, total };
+    }
+
+    const achieved = grading.points;
+
+    return {
+      passed: achieved / total.must >= this.percentageNeeded,
+      achieved,
+      total,
+    };
   }
 
   /**

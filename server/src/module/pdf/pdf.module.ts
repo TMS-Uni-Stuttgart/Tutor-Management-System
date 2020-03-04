@@ -10,9 +10,10 @@ import { UserModule } from '../user/user.module';
 import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
 import { StudentModule } from '../student/student.module';
 import { ScheincriteriaModule } from '../scheincriteria/scheincriteria.module';
+import { ScheinexamModule } from '../scheinexam/scheinexam.module';
 
 @Module({
-  imports: [TutorialModule, UserModule, StudentModule, ScheincriteriaModule],
+  imports: [TutorialModule, UserModule, StudentModule, ScheincriteriaModule, ScheinexamModule],
   providers: [
     PdfService,
     AttendancePDFGenerator,

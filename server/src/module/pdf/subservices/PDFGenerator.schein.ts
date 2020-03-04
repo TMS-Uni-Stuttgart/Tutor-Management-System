@@ -4,7 +4,7 @@ import { StudentService } from '../../student/student.service';
 import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
 
 interface GeneratorOptions {
-  enableShortMatriculatinNo: boolean;
+  enableShortMatriculationNo: boolean;
 }
 
 @Injectable()
@@ -23,7 +23,9 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
    *
    * @returns Buffer of a PDF containing the list with the schein status of all the given students.
    */
-  public async generatePDF({ enableShortMatriculatinNo }: GeneratorOptions): Promise<Buffer> {
+  public async generatePDF({
+    enableShortMatriculationNo: enableShortMatriculatinNo,
+  }: GeneratorOptions): Promise<Buffer> {
     const [allStudents, summaries] = await Promise.all([
       this.studentService.findAll(),
       this.scheincriteriaService.getResultsOfAllStudents(),
