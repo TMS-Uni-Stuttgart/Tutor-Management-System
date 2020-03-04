@@ -4,6 +4,8 @@ import {
   PassedState,
   ScheinCriteriaUnit,
   ScheincriteriaIdentifier,
+  CriteriaDistributionInformation,
+  CriteriaSheetOrExamInformation,
 } from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
@@ -55,75 +57,74 @@ export class ScheinexamCriteria extends Scheincriteria {
   }
 
   getInformation({ students, exams }: InformationPayload): CriteriaInformationWithoutName {
-    throw new Error('Method not implemented');
-    // const information: CriteriaInformationWithoutName['information'] = {};
+    // TODO: Clean me up or rewrite me to prevent duplicate code!
+    const information: CriteriaInformationWithoutName['information'] = {};
 
-    // exams.forEach(exam => {
-    //   const averages: { [exName: string]: number[] } = {};
-    //   const distribution: CriteriaDistributionInformation = {};
-    //   const achieved = { achieved: 0, notAchieved: 0, notPresent: 0 };
+    exams.forEach(exam => {
+      const averages: { [exName: string]: number[] } = {};
+      const distribution: CriteriaDistributionInformation = {};
+      const achieved = { achieved: 0, notAchieved: 0, notPresent: 0 };
 
-    //   exam.exercises.forEach(exercise => {
-    //     averages[exercise.exName] = [];
-    //   });
+      exam.exercises.forEach(exercise => {
+        averages[exercise.exName] = [];
+      });
 
-    //   students.forEach(student => {
-    //     const points = new PointMap(student.scheinExamResults);
-    //     const hasAttended = points.has(exam.id);
+      students.forEach(student => {
+        const grading = student.getGrading(exam);
 
-    //     if (!hasAttended) {
-    //       achieved.notPresent += 1;
-    //       return;
-    //     }
+        if (grading === undefined) {
+          achieved.notPresent += 1;
+          return;
+        }
 
-    //     const result = exam.hasPassed(student);
-    //     const distributionForThisResult = distribution[result.achieved] ?? {
-    //       value: 0,
-    //       aboveThreshhold: result.achieved / result.total.must >= exam.percentageNeeded,
-    //     };
+        const result = exam.hasPassed(student);
+        const distributionForThisResult = distribution[result.achieved] ?? {
+          value: 0,
+          aboveThreshhold: result.achieved / result.total.must >= exam.percentageNeeded,
+        };
 
-    //     exam.exercises.forEach(exercise => {
-    //       averages[exercise.exName].push(points.getPoints(new PointId(exam.id, exercise)) ?? 0);
-    //     });
+        exam.exercises.forEach(exercise => {
+          averages[exercise.exName].push(grading.getExerciseGrading(exercise)?.points ?? 0);
+        });
 
-    //     distribution[result.achieved] = {
-    //       aboveThreshhold: distributionForThisResult.aboveThreshhold,
-    //       value: distributionForThisResult.value + 1,
-    //     };
+        distribution[result.achieved] = {
+          aboveThreshhold: distributionForThisResult.aboveThreshhold,
+          value: distributionForThisResult.value + 1,
+        };
 
-    //     if (result.passed) {
-    //       achieved.achieved += 1;
-    //     } else {
-    //       achieved.notAchieved += 1;
-    //     }
-    //   });
+        if (result.passed) {
+          achieved.achieved += 1;
+        } else {
+          achieved.notAchieved += 1;
+        }
+      });
 
-    //   information[exam.id] = {
-    //     achieved,
-    //     total: achieved.achieved + achieved.notAchieved + achieved.notPresent,
-    //     averages: exam.exercises.reduce((avgInfo, exercise) => {
-    //       const total: number = getPointsOfExercise(exercise).must;
-    //       const achievedPoints = averages[exercise.exName];
-    //       const value: number =
-    //         achievedPoints.length > 0
-    //           ? achievedPoints.reduce((sum, current) => sum + current, 0) / achievedPoints.length
-    //           : 0;
+      information[exam.id] = {
+        achieved,
+        total: achieved.achieved + achieved.notAchieved + achieved.notPresent,
+        averages: exam.exercises.reduce((avgInfo, exercise) => {
+          const total: number = exercise.maxPoints;
+          const achievedPoints = averages[exercise.exName];
+          const value: number =
+            achievedPoints.length > 0
+              ? achievedPoints.reduce((sum, current) => sum + current, 0) / achievedPoints.length
+              : 0;
 
-    //       return { ...avgInfo, [exercise.exName]: { value, total } };
-    //     }, {}),
-    //     distribution,
-    //   };
-    // });
+          return { ...avgInfo, [exercise.exName]: { value, total } };
+        }, {}),
+        distribution,
+      };
+    });
 
-    // return {
-    //   identifier: this.identifier,
-    //   sheetsOrExams: exams.map<CriteriaSheetOrExamInformation>(exam => ({
-    //     id: exam.id,
-    //     no: exam.scheinExamNo,
-    //     exercises: exam.exercises.map(convertDocumentToExercise),
-    //   })),
-    //   information,
-    // };
+    return {
+      identifier: this.identifier,
+      sheetsOrExams: exams.map<CriteriaSheetOrExamInformation>(exam => ({
+        id: exam.id,
+        no: exam.scheinExamNo,
+        exercises: exam.exercises.map(ex => ex.toDTO()),
+      })),
+      information,
+    };
   }
 
   private checkAllExams(

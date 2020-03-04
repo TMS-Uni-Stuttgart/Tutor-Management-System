@@ -19,6 +19,7 @@ import {
   ScheinCriteriaResponse,
   ScheinCriteriaSummary,
   ScheincriteriaSummaryByStudents,
+  CriteriaInformation,
 } from '../../shared/model/ScheinCriteria';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaService } from './scheincriteria.service';
@@ -60,6 +61,14 @@ export class ScheincriteriaController {
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   async deleteCriteria(@Param('id') id: string): Promise<void> {
     await this.scheincriteriaService.delete(id);
+  }
+
+  @Get('/:id/info')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  async getInformation(@Param('id') id: string): Promise<CriteriaInformation> {
+    const information = await this.scheincriteriaService.getInfoAboutCriteria(id);
+
+    return information;
   }
 
   @Get('/form')
