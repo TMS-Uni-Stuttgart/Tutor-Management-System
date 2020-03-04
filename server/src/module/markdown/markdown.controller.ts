@@ -16,10 +16,10 @@ export class MarkdownController {
     @Param('tutorialId') tutorialId: string,
     @Param('teamId') teamId: string
   ): Promise<string> {
-    const markdown = await this.markdownService.getMarkdownForTeamGrading(
-      { tutorialId, teamId },
-      sheetId
-    );
+    const markdown = await this.markdownService.getTeamGrading({
+      teamId: { tutorialId, teamId },
+      sheetId,
+    });
 
     return markdown;
   }
@@ -31,7 +31,7 @@ export class MarkdownController {
     @Param('sheetId') sheetId: string,
     @Param('studentId') studentId: string
   ): Promise<string> {
-    const markdown = await this.markdownService.getMarkdownForStudentGrading(studentId, sheetId);
+    const markdown = await this.markdownService.getStudentGrading(studentId, sheetId);
 
     return markdown;
   }
