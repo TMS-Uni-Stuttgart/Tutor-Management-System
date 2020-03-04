@@ -38,6 +38,22 @@ export class PdfController {
     res.send(buffer);
   }
 
+  @Get('/scheinexam/:id/result')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  async getScheinexamResultPDF(
+    @Param('id') id: string,
+    @Query('clearMatriculationNos') clearMatriculationNos: string,
+    @Res() res: Response
+  ): Promise<void> {
+    const buffer = await this.pdfService.generateScheinexamResultPDF(
+      id,
+      clearMatriculationNos !== 'true'
+    );
+
+    res.contentType('pdf');
+    res.send(buffer);
+  }
+
   @Get('/credentials')
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   async getCredentialsPDF(@Res() res: Response): Promise<void> {

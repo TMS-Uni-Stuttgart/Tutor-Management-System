@@ -76,7 +76,7 @@ export abstract class PDFGenerator<T = {}> {
         executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
       });
 
-      Logger.debug('Browser startet.');
+      Logger.debug('Browser started.');
 
       const page = await browser.newPage();
       Logger.debug('Page created.');
