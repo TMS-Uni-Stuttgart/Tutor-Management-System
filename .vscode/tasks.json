@@ -10,14 +10,14 @@
       "label": "Start Client",
       "isBackground": true,
       "problemMatcher": {
-        "owner": "custom", // This is not needed but, required by the problemMatcher Object
+        "owner": "custom",
         "pattern": {
-          "regexp": "^$" // This is not needed but, required by the problemMatcher Object
+          "regexp": "^$"
         },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Compiling...", // Signals the begin of the Task
-          "endsPattern": "Compiled" // Signals that now the initialization of the task is complete
+          "beginsPattern": "Compiling...",
+          "endsPattern": "Compiled"
         }
       },
       "presentation": {
@@ -36,16 +36,46 @@
       "label": "Start server compilation",
       "isBackground": true,
       "problemMatcher": {
-        "owner": "custom", // This is not needed but, required by the problemMatcher Object
+        "owner": "custom",
         "pattern": {
-          "regexp": "^$" // This is not needed but, required by the problemMatcher Object
+          "regexp": "^$"
         },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Starting compilation in watch mode...", // Signals the begin of the Task
-          "endsPattern": "Watching for file changes." // Signals that now the initialization of the task is complete
+          "beginsPattern": "Starting compilation in watch mode...",
+          "endsPattern": "Watching for file changes."
         }
       },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false
+      }
+    },
+    {
+      "type": "npm",
+      "script": "ts:check",
+      "path": "client/",
+      "label": "TypeCheck client",
+      "problemMatcher": ["$tsc"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false
+      }
+    },
+    {
+      "type": "npm",
+      "script": "ts:check",
+      "path": "server/",
+      "label": "TypeCheck server",
+      "problemMatcher": ["$tsc"],
       "presentation": {
         "echo": true,
         "reveal": "always",
