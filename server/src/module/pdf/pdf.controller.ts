@@ -62,4 +62,36 @@ export class PdfController {
     res.contentType('pdf');
     res.send(buffer);
   }
+
+  @Get('/grading/tutorial/:tutorialId/sheet/:sheetId')
+  @UseGuards(TutorialGuard)
+  @IDField('tutorialId')
+  async getCorrectionZIP(
+    @Param('tutorialId') tutorialId: string,
+    @Param('sheetId') sheetId: string,
+    @Res() res: Response
+  ): Promise<void> {
+    const zipStream = await this.pdfService.generateTutorialGradingZIP({ tutorialId, sheetId });
+
+    res.contentType('zip');
+    zipStream.pipe(res);
+  }
+
+  @Get('/grading/tutorial/:tutorialId/sheet/:sheetId/team/:teamId')
+  @UseGuards(TutorialGuard)
+  @IDField('tutorialId')
+  async getCorrectionPDFForTeam(
+    @Param('tutorialId') tutorialId: string,
+    @Param('sheetId') sheetId: string,
+    @Param('teamId') teamId: string,
+    @Res() res: Response
+  ): Promise<void> {
+    const buffer = await this.pdfService.generateGradingPDF({
+      teamId: { tutorialId, teamId },
+      sheetId,
+    });
+
+    res.contentType('pdf');
+    res.send(buffer);
+  }
 }

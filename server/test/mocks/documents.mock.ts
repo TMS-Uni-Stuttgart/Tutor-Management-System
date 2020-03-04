@@ -271,6 +271,7 @@ export const SCHEINEXAM_DOCUMENTS: MockedScheinexamModel[] = [
     scheinExamNo: 1,
     date: DateTime.fromISO('2020-01-15'),
     percentageNeeded: 0.4,
+    totalPoints: { must: 30, bonus: 0 },
     exercises: [
       {
         _id: '5e552a0496f8e7414a001cd6',

@@ -2,13 +2,34 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { SubExerciseDocument } from '../../database/models/exercise.model';
 import { ExerciseGradingDocument, GradingDocument } from '../../database/models/grading.model';
 import { SheetDocument } from '../../database/models/sheet.model';
+import { TeamDocument } from '../../database/models/team.model';
 import { convertExercisePointInfoToString, ExercisePointInfo } from '../../shared/model/Points';
 import { getNameOfEntity } from '../../shared/util/helpers';
 import { SheetService } from '../sheet/sheet.service';
 import { StudentService } from '../student/student.service';
 import { TeamID, TeamService } from '../team/team.service';
 
-export interface SheetPointInfo {
+export interface GenerateTeamGradingParams {
+  teamId: TeamID;
+  sheetId: string;
+}
+
+export interface GenerateAllTeamsGradingParams {
+  tutorialId: string;
+  sheetId: string;
+}
+
+export interface TeamMarkdownData {
+  teamName: string;
+  markdown: string;
+}
+
+export interface AllTeamGradings {
+  markdownForGradings: TeamMarkdownData[];
+  sheetNo: string;
+}
+
+interface SheetPointInfo {
   achieved: number;
   total: { must: number; bonus: number };
 }
@@ -17,6 +38,11 @@ interface GeneratingParams {
   sheet: SheetDocument;
   grading: GradingDocument;
   nameOfEntity: string;
+}
+
+interface GenerateFromTeamParams {
+  team: TeamDocument;
+  sheet: SheetDocument;
 }
 
 interface GenerateSubExTableParams {
@@ -39,6 +65,34 @@ export class MarkdownService {
   ) {}
 
   /**
+   * Generates a list of markdown strings for each team's grading for the given sheet.
+   *
+   * The sheet number is also returned as a string for convenience.
+   *
+   * @param params Must contain the ID of the tutorial and the sheet to generate the gradings for.
+   *
+   * @returns Gradings for all the teams in the tutorial as markdown and the `sheetNo`.
+   *
+   * @throws `NotFoundException` - If either no tutorial with the given ID or no sheet with the given ID could be found.
+   */
+  async getAllTeamsGradings({
+    tutorialId,
+    sheetId,
+  }: GenerateAllTeamsGradingParams): Promise<AllTeamGradings> {
+    const teams = await this.teamService.findAllTeamsInTutorial(tutorialId);
+    const sheet = await this.sheetService.findById(sheetId);
+
+    const gradingsMD: TeamMarkdownData[] = [];
+    const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
+
+    teams.forEach(team => {
+      gradingsMD.push(this.generateFromTeam({ team, sheet }));
+    });
+
+    return { markdownForGradings: gradingsMD, sheetNo };
+  }
+
+  /**
    * Generates a markdown string for the grading of the given team for the given sheet.
    *
    * @param teamId TeamID of the team to get markdown for.
@@ -49,10 +103,43 @@ export class MarkdownService {
    * @throws `NotFoundException` - If either no team with the given ID or no sheet with the given ID could be found.
    * @throws `BadRequestException` - If the given team does not have any students or the students do not hold a grading for the given sheet.
    */
-  async getMarkdownForTeamGrading(teamId: TeamID, sheetId: string): Promise<string> {
+  async getTeamGrading({ teamId, sheetId }: GenerateTeamGradingParams): Promise<string> {
     const team = await this.teamService.findById(teamId);
     const sheet = await this.sheetService.findById(sheetId);
 
+    return this.generateFromTeam({ team, sheet }).markdown;
+  }
+
+  /**
+   * Generates a markdown string for the grading of the given student for the given sheet.
+   *
+   * @param studentId ID of the student.
+   * @param sheetId ID of the sheet.
+   *
+   * @returns Generated markdown.
+   *
+   * @throws `NotFoundException` - If either no student with the given ID or no sheet with the given ID could be found.
+   * @throws `BadRequestException` - If the student does not hold a grading for the given sheet.
+   */
+  async getStudentGrading(studentId: string, sheetId: string): Promise<string> {
+    const student = await this.studentService.findById(studentId);
+    const sheet = await this.sheetService.findById(sheetId);
+    const grading = student.getGrading(sheet);
+
+    if (!grading) {
+      throw new BadRequestException(
+        `There is no grading available of the given sheet for the given student.`
+      );
+    }
+
+    return this.generateFromGrading({
+      sheet,
+      grading,
+      nameOfEntity: getNameOfEntity(student),
+    });
+  }
+
+  private generateFromTeam({ team, sheet }: GenerateFromTeamParams): TeamMarkdownData {
     if (team.students.length === 0) {
       throw new BadRequestException(`Can not generate markdown for an empty team.`);
     }
@@ -68,39 +155,13 @@ export class MarkdownService {
 
     const teamName: string = team.students.map(s => s.lastname).join('');
 
-    return this.generateMarkdownFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` });
+    return {
+      markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
+      teamName,
+    };
   }
 
-  /**
-   * Generates a markdown string for the grading of the given student for the given sheet.
-   *
-   * @param studentId ID of the student.
-   * @param sheetId ID of the sheet.
-   *
-   * @returns Generated markdown.
-   *
-   * @throws `NotFoundException` - If either no student with the given ID or no sheet with the given ID could be found.
-   * @throws `BadRequestException` - If the student does not hold a grading for the given sheet.
-   */
-  async getMarkdownForStudentGrading(studentId: string, sheetId: string): Promise<string> {
-    const student = await this.studentService.findById(studentId);
-    const sheet = await this.sheetService.findById(sheetId);
-    const grading = student.getGrading(sheet);
-
-    if (!grading) {
-      throw new BadRequestException(
-        `There is no grading available of the given sheet for the given student.`
-      );
-    }
-
-    return this.generateMarkdownFromGrading({
-      sheet,
-      grading,
-      nameOfEntity: getNameOfEntity(student),
-    });
-  }
-
-  private generateMarkdownFromGrading({ sheet, grading, nameOfEntity }: GeneratingParams): string {
+  private generateFromGrading({ sheet, grading, nameOfEntity }: GeneratingParams): string {
     const pointInfo: SheetPointInfo = { achieved: 0, total: { must: 0, bonus: 0 } };
     let exerciseMarkdown: string = '';
 

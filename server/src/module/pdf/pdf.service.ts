@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
+import JSZip from 'jszip';
 import { AttendancePDFGenerator } from './subservices/PDFGenerator.attendance';
 import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials';
 import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
 import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheinexam';
+import {
+  MarkdownService,
+  GenerateTeamGradingParams,
+  GenerateAllTeamsGradingParams,
+} from '../markdown/markdown.service';
 
 @Injectable()
 export class PdfService {
@@ -13,7 +19,8 @@ export class PdfService {
     private readonly credentialsPDF: CredentialsPDFGenerator,
     private readonly scheinResultsPDF: ScheinResultsPDFGenerator,
     private readonly scheinexamResultPDF: ScheinexamResultPDFGenerator,
-    private readonly markdownPDF: MarkdownPDFGenerator
+    private readonly markdownPDF: MarkdownPDFGenerator,
+    private readonly markdownService: MarkdownService
   ) {}
 
   /**
@@ -69,5 +76,52 @@ export class PdfService {
     enableShortMatriculationNo: boolean
   ): Promise<Buffer> {
     return this.scheinexamResultPDF.generatePDF({ id, enableShortMatriculationNo });
+  }
+
+  /**
+   * Generates a PDF from the grading of the given team for the given sheet.
+   *
+   * @param params Options passed to the markdown generation function.
+   *
+   * @returns Buffer containing the generated PDF.
+   *
+   * @throws `NotFoundException` - If either no team with the given ID or no sheet with the given ID could be found.
+   * @throws `BadRequestException` - If the given team does not have any students or the students do not hold a grading for the given sheet.
+   */
+  async generateGradingPDF(params: GenerateTeamGradingParams): Promise<Buffer> {
+    const markdown = await this.markdownService.getTeamGrading(params);
+
+    return this.markdownPDF.generatePDF({ markdown });
+  }
+
+  /**
+   * Generates a ZIP containing a PDF per team of the given tutorial with it's grading for the given sheet.
+   *
+   * @param params Options passed to the markdown generation function.
+   *
+   * @returns ReadableStream containing the ZIP-file containing the PDFs of the gradings.
+   *
+   * @throws `NotFoundException` - If either no tutorial with the given ID or no sheet with the given ID could be found.
+   */
+  async generateTutorialGradingZIP(
+    params: GenerateAllTeamsGradingParams
+  ): Promise<NodeJS.ReadableStream> {
+    const { markdownForGradings, sheetNo } = await this.markdownService.getAllTeamsGradings(params);
+    const files: { filename: string; payload: Buffer }[] = [];
+
+    for (const gradingMD of markdownForGradings) {
+      files.push({
+        filename: `Ex${sheetNo}_${gradingMD.teamName}.pdf`, // TODO: Make template.
+        payload: await this.markdownPDF.generatePDF({ markdown: gradingMD.markdown }),
+      });
+    }
+
+    const zip = new JSZip();
+
+    files.forEach(({ filename, payload }) => {
+      zip.file(filename, payload, { binary: true });
+    });
+
+    return zip.generateNodeStream({ type: 'nodebuffer' });
   }
 }
