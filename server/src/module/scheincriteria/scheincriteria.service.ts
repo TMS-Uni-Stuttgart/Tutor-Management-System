@@ -11,6 +11,8 @@ import {
   ScheinCriteriaResponse,
   ScheinCriteriaSummary as ScheincriteriaSummary,
   ScheincriteriaSummaryByStudents,
+  CriteriaInformation,
+  SingleScheincriteriaSummaryByStudents,
 } from '../../shared/model/ScheinCriteria';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
@@ -134,6 +136,47 @@ export class ScheincriteriaService
     const criteria = await this.findById(id);
 
     return criteria.remove();
+  }
+
+  /**
+   * Collects and returns the information about the criteria with the given ID. The result will be returned.
+   *
+   * @param id ID of the criteria to get the information for.
+   *
+   * @returns Information about the given criteria.
+   *
+   * @throws `NotFoundException` - If no criteria with the given ID could be found.
+   */
+  async getInfoAboutCriteria(id: string): Promise<CriteriaInformation> {
+    const [criteriaDoc, students, sheets, exams] = await Promise.all([
+      this.findById(id),
+      this.studentService.findAll(),
+      this.sheetService.findAll(),
+      this.scheinexamService.findAll(),
+    ]);
+
+    const criteria: Scheincriteria = Scheincriteria.fromDTO(criteriaDoc.toDTO());
+
+    const [criteriaInfo, summaries] = await Promise.all([
+      criteria.getInformation({ exams, sheets, students }),
+      this.calculateResultOfMultipleStudents({
+        criterias: [criteriaDoc],
+        students,
+        sheets,
+        exams,
+      }),
+    ]);
+
+    const studentSummaries: SingleScheincriteriaSummaryByStudents = {};
+    Object.entries(summaries).forEach(([key, summary]) => {
+      studentSummaries[key] = summary.scheinCriteriaSummary[criteriaDoc.id];
+    });
+
+    return {
+      name: criteriaDoc.name,
+      studentSummaries,
+      ...criteriaInfo,
+    };
   }
 
   /**
