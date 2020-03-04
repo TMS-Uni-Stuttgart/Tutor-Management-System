@@ -9,7 +9,7 @@ import { TutorialModule } from '../tutorial/tutorial.module';
 @Module({
   imports: [StudentModule, TeamModule, TutorialModule, SheetModule],
   providers: [MarkdownService],
-  exports: [MarkdownService],
   controllers: [MarkdownController],
+  exports: [MarkdownService],
 })
 export class MarkdownModule {}
