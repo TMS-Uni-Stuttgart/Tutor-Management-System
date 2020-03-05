@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Team, TeamDTO } from 'shared/model/Team';
+import { Team, ITeamDTO } from 'shared/model/Team';
 import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
@@ -88,7 +88,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     { students: studentsFromForm },
     { setSubmitting, resetForm }
   ) => {
-    const teamDTO: TeamDTO = { students: studentsFromForm };
+    const teamDTO: ITeamDTO = { students: studentsFromForm };
 
     try {
       const response = await createTeam(params.tutorialId, teamDTO);
@@ -145,7 +145,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     { students },
     { setSubmitting }
   ) => {
-    const teamDTO: TeamDTO = { students };
+    const teamDTO: ITeamDTO = { students };
 
     try {
       const response = await editTeamRequest(params.tutorialId, team.id, teamDTO);

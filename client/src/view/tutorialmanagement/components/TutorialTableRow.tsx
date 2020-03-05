@@ -1,13 +1,12 @@
 import { Button, Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { format } from 'date-fns';
 import React from 'react';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { TutorialWithFetchedCorrectors } from '../../../typings/types';
 import { renderLink } from '../../../components/drawer/components/renderLink';
 import { RoutingPath } from '../../../routes/Routing.routes';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
+import { Tutorial } from '../../../../../server/src/shared/model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,11 +28,11 @@ interface Substitute {
 }
 
 interface Props extends PaperTableRowProps {
-  tutorial: TutorialWithFetchedCorrectors;
+  tutorial: Tutorial;
   substitutes: Substitute[];
   correctors: string[];
-  onEditTutorialClicked: (tutorial: TutorialWithFetchedCorrectors) => void;
-  onDeleteTutorialClicked: (tutorial: TutorialWithFetchedCorrectors) => void;
+  onEditTutorialClicked: (tutorial: Tutorial) => void;
+  onDeleteTutorialClicked: (tutorial: Tutorial) => void;
 }
 
 function TutorialTableRow({

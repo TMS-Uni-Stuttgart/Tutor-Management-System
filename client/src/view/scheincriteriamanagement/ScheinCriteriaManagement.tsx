@@ -3,7 +3,7 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import {
   ScheinCriteriaResponse as ScheinCriteria,
-  ScheinCriteriaDTO,
+  IScheinCriteriaDTO,
 } from 'shared/model/ScheinCriteria';
 import ScheinCriteriaForm, {
   ScheinCriteriaFormCallback,
@@ -53,7 +53,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
     { name, identifier, ...values },
     { setSubmitting, resetForm }
   ) => {
-    const dto: ScheinCriteriaDTO = {
+    const dto: IScheinCriteriaDTO = {
       identifier,
       name,
       data: {
@@ -84,7 +84,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
     { name, identifier, ...values },
     { setSubmitting }
   ) => {
-    const dto: ScheinCriteriaDTO = {
+    const dto: IScheinCriteriaDTO = {
       identifier,
       name,
       data: {

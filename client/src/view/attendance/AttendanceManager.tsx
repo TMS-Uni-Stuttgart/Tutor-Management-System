@@ -1,10 +1,9 @@
 import { Typography } from '@material-ui/core';
 import GREEN from '@material-ui/core/colors/green';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { format, isSameDay } from 'date-fns';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Attendance, AttendanceDTO, AttendanceState } from 'shared/model/Attendance';
+import { Attendance, IAttendanceDTO, AttendanceState } from 'shared/model/Attendance';
 import { Student, StudentStatus } from 'shared/model/Student';
 import { LoggedInUser } from 'shared/model/User';
 import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
@@ -172,8 +171,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     setFetchedStudents(students =>
       students.map(innerStudent => {
         if (innerStudent.id === student.id) {
-          innerStudent.attendance = {
-            ...innerStudent.attendance,
+          innerStudent.attendances = {
+            ...innerStudent.attendances,
             [dateKey]: attendance,
           };
         }
@@ -193,8 +192,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       return;
     }
 
-    const attendance: Attendance | undefined = student.attendance[parseDateToMapKey(date)];
-    const attendanceDTO: AttendanceDTO = {
+    const attendance: Attendance | undefined = student.attendances[parseDateToMapKey(date)];
+    const attendanceDTO: IAttendanceDTO = {
       state: attendanceState,
       date: date.toDateString(),
       note: attendance ? attendance.note : '',
@@ -214,8 +213,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
         return;
       }
 
-      const attendance: Attendance | undefined = student.attendance[parseDateToMapKey(date)];
-      const attendanceDTO: AttendanceDTO = {
+      const attendance: Attendance | undefined = student.attendances[parseDateToMapKey(date)];
+      const attendanceDTO: IAttendanceDTO = {
         state: attendance ? attendance.state : undefined,
         date: date.toDateString(),
         note,
@@ -261,7 +260,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     const promises: Promise<void>[] = [];
 
     for (const student of filteredStudents) {
-      const attendance: Attendance | undefined = student.attendance[dateKey];
+      const attendance: Attendance | undefined = student.attendances[dateKey];
 
       if (!attendance || !attendance.state) {
         promises.push(handleStudentAttendanceChange(student, AttendanceState.PRESENT));
@@ -383,7 +382,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               items={filteredStudents}
               createRowFromItem={student => {
                 const dateKey: string = parseDateToMapKey(date);
-                const attendance: Attendance | undefined = student.attendance[dateKey];
+                const attendance: Attendance | undefined = student.attendances[dateKey];
 
                 return (
                   <StudentAttendanceRow

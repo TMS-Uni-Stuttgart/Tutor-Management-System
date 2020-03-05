@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
 import { Tutorial } from 'shared/model/Tutorial';
-import { CreateUserDTO, UserDTO } from 'shared/model/User';
+import { ICreateUserDTO, IUserDTO, User } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import SubmitButton from '../../components/loading/SubmitButton';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
@@ -12,10 +12,19 @@ import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SnackbarWithList from '../../components/SnackbarWithList';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
-import { useAxios } from '../../hooks/FetchingService';
-import { UserWithFetchedTutorials } from '../../typings/types';
 import { saveBlob } from '../../util/helperFunctions';
 import UserTableRow from './components/UserTableRow';
+import { getAllTutorials } from '../../hooks/fetching/Tutorial';
+import {
+  setTemporaryPassword,
+  getUsers,
+  createUser,
+  editUser,
+  sendCredentials as sendCredentialsRequest,
+  sendCredentialsToSingleUser as sendCredentialsToSingleUserRequest,
+  deleteUser,
+} from '../../hooks/fetching/User';
+import { getCredentialsPDF } from '../../hooks/fetching/Files';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,8 +55,8 @@ const availableRoles = [Role.ADMIN, Role.CORRECTOR, Role.TUTOR, Role.EMPLOYEE];
  */
 function convertFormStateToUserDTO(
   { firstname, lastname, tutorials, tutorialsToCorrect, roles, username, email }: UserFormState,
-  otherUsers: UserWithFetchedTutorials[]
-): UserDTO {
+  otherUsers: User[]
+): IUserDTO {
   for (const user of otherUsers) {
     if (user.username.toLowerCase().localeCompare(username.toLowerCase()) === 0) {
       throw new UsernameAlreadyTakenError(`Username ${username} already taken.`);
@@ -69,26 +78,15 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
-  const [users, setUsers] = useState<UserWithFetchedTutorials[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const {
-    getUsersAndFetchTutorials,
-    createUserAndFetchTutorials,
-    editUserAndFetchTutorials: editUserRequest,
-    deleteUser: deleteUserRequest,
-    getAllTutorials,
-    setTemporaryPassword,
-    sendCredentials: sendCredentialsRequest,
-    sendCredentialsToSingleUser: sendCredentialsToSingleUserRequest,
-    getCredentialsPDF,
-  } = useAxios();
   const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
 
     Promise.all([
-      getUsersAndFetchTutorials().catch(() => {
+      getUsers().catch(() => {
         enqueueSnackbar('Nutzer konnten nicht abgerufen werden.', { variant: 'error' });
       }),
       getAllTutorials().catch(() => {
@@ -105,19 +103,19 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
 
       setIsLoading(false);
     });
-  }, [enqueueSnackbar, getUsersAndFetchTutorials, getAllTutorials]);
+  }, [enqueueSnackbar, getAllTutorials]);
 
   const handleCreateUser: UserFormSubmitCallback = async (
     formState,
     { resetForm, setSubmitting, setFieldError }
   ) => {
     try {
-      const userToCreate: CreateUserDTO = {
+      const userToCreate: ICreateUserDTO = {
         ...convertFormStateToUserDTO(formState, users),
         password: formState.password,
       };
 
-      const response = await createUserAndFetchTutorials(userToCreate);
+      const response = await createUser(userToCreate);
 
       setUsers([...users, response]);
       enqueueSnackbar(`Nutzer wurde erfolgreich angelegt.`, { variant: 'success' });
@@ -133,18 +131,18 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     }
   };
 
-  const editUser: (user: UserWithFetchedTutorials) => UserFormSubmitCallback = user => async (
+  const handleEditUserSubmit: (user: User) => UserFormSubmitCallback = user => async (
     formState,
     { setSubmitting, setFieldError }
   ) => {
     try {
       const { password } = formState;
-      const userInformation: UserDTO = convertFormStateToUserDTO(
+      const userInformation: IUserDTO = convertFormStateToUserDTO(
         formState,
         users.filter(u => u.id !== user.id)
       );
 
-      const updatedUser = await editUserRequest(user.id, userInformation);
+      const updatedUser = await editUser(user.id, userInformation);
       setUsers(
         users.map(u => {
           if (u.id !== updatedUser.id) {
@@ -171,8 +169,8 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     }
   };
 
-  function deleteUser(user: UserWithFetchedTutorials) {
-    deleteUserRequest(user.id)
+  function handleDeleteUserSubmit(user: User) {
+    deleteUser(user.id)
       .then(() => {
         setUsers(users.filter(u => u.id !== user.id));
       })
@@ -182,7 +180,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       });
   }
 
-  function handleDeleteUser(user: UserWithFetchedTutorials) {
+  function handleDeleteUser(user: User) {
     const nameOfUser = `${user.firstname} ${user.lastname}`;
     dialog.show({
       title: 'Nutzer löschen',
@@ -194,7 +192,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
         },
         {
           label: 'Löschen',
-          onClick: () => deleteUser(user),
+          onClick: () => handleDeleteUserSubmit(user),
           buttonProps: {
             className: classes.dialogDeleteButton,
           },
@@ -203,7 +201,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     });
   }
 
-  function handleEditUser(user: UserWithFetchedTutorials) {
+  function handleEditUser(user: User) {
     dialog.show({
       title: 'Nutzer bearbeiten',
       content: (
@@ -211,7 +209,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
           user={user}
           availableRoles={availableRoles}
           tutorials={tutorials}
-          onSubmit={editUser(user)}
+          onSubmit={handleEditUserSubmit(user)}
           onCancelClicked={() => dialog.hide()}
         />
       ),
@@ -295,7 +293,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     setSendingCredentials(false);
   }
 
-  async function sendCredentialsToSingleUser(user: UserWithFetchedTutorials) {
+  async function sendCredentialsToSingleUser(user: User) {
     const snackbarKey = enqueueSnackbar('Verschicke Zugangsdaten...', { variant: 'info' });
 
     try {

@@ -1,10 +1,9 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { compareAsc } from 'date-fns';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { HasId } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
-import { TutorialDTO } from 'shared/model/Tutorial';
+import { ITutorialDTO, Tutorial } from 'shared/model/Tutorial';
 import { User } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import TutorialForm, {
@@ -15,8 +14,13 @@ import TutorialForm, {
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
-import { useAxios } from '../../hooks/FetchingService';
-import { TutorialWithFetchedCorrectors } from '../../typings/types';
+import {
+  createTutorial,
+  deleteTutorial,
+  editTutorial,
+  getAllTutorials,
+} from '../../hooks/fetching/Tutorial';
+import { getUsersWithRole } from '../../hooks/fetching/User';
 import { getDisplayStringForTutorial } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
 
@@ -38,7 +42,7 @@ function generateCreateTutorialDTO({
   endTime: endTimeString,
   correctors,
   selectedDates,
-}: TutorialFormState): TutorialDTO {
+}: TutorialFormState): ITutorialDTO {
   const startTime: Date = new Date(startTimeString);
   const endTime: Date = new Date(endTimeString);
 
@@ -57,15 +61,8 @@ function generateCreateTutorialDTO({
 function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
-  const [tutorials, setTutorials] = useState<TutorialWithFetchedCorrectors[]>([]);
+  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [tutors, setTutors] = useState<User[]>([]);
-  const {
-    getUsersWithRole,
-    getAllTutorialsAndFetchCorrectors,
-    createTutorialAndFetchCorrectors,
-    editTutorialAndFetchCorrectors: editTutorialRequest,
-    deleteTutorial: deleteTutorialRequest,
-  } = useAxios();
   const dialog = useDialog();
 
   useEffect(() => {
@@ -75,7 +72,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
         console.error(reason);
         enqueueSnackbar('Nutzer konnten nicht abgerufen werden.', { variant: 'error' });
       }),
-      getAllTutorialsAndFetchCorrectors().catch(reason => {
+      getAllTutorials().catch(reason => {
         console.error(reason);
         enqueueSnackbar('Tutorien konnten nicht abgerufen werden.', { variant: 'error' });
       }),
@@ -90,7 +87,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
 
       setIsLoading(false);
     });
-  }, [enqueueSnackbar, getUsersWithRole, getAllTutorialsAndFetchCorrectors]);
+  }, [enqueueSnackbar, getUsersWithRole, getAllTutorials]);
 
   const handleCreateTutorial: TutorialFormSubmitCallback = async (
     values,
@@ -104,7 +101,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     }
 
     try {
-      const response = await createTutorialAndFetchCorrectors(generateCreateTutorialDTO(values));
+      const response = await createTutorial(generateCreateTutorialDTO(values));
       const allTutorials = [...tutorials, response];
       setTutorials(allTutorials);
 
@@ -117,15 +114,11 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     }
   };
 
-  const editTutorial: (tutorial: HasId) => TutorialFormSubmitCallback = tutorial => async (
-    values,
-    { setSubmitting }
-  ) => {
+  const handleEditTutorialSubmit: (
+    tutorial: HasId
+  ) => TutorialFormSubmitCallback = tutorial => async (values, { setSubmitting }) => {
     try {
-      const updatedTutorial = await editTutorialRequest(
-        tutorial.id,
-        generateCreateTutorialDTO(values)
-      );
+      const updatedTutorial = await editTutorial(tutorial.id, generateCreateTutorialDTO(values));
 
       setTutorials(
         tutorials.map(t => {
@@ -144,14 +137,14 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     }
   };
 
-  function handleEditTutorial(tutorial: TutorialWithFetchedCorrectors) {
+  function handleEditTutorial(tutorial: Tutorial) {
     dialog.show({
       title: 'Tutorium bearbeiten',
       content: (
         <TutorialForm
           tutorial={tutorial}
           tutors={tutors}
-          onSubmit={editTutorial(tutorial)}
+          onSubmit={handleEditTutorialSubmit(tutorial)}
           onCancelClicked={() => dialog.hide()}
         />
       ),
@@ -161,7 +154,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     });
   }
 
-  function handleDeleteTutorial(tutorial: TutorialWithFetchedCorrectors) {
+  function handleDeleteTutorial(tutorial: Tutorial) {
     const tutorialDisplay = getDisplayStringForTutorial(tutorial);
 
     dialog.show({
@@ -174,7 +167,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
         },
         {
           label: 'Löschen',
-          onClick: () => deleteTutorial(tutorial),
+          onClick: () => handleDeleteTutorialSubmit(tutorial),
           buttonProps: {
             className: classes.dialogDeleteButton,
           },
@@ -183,8 +176,8 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     });
   }
 
-  function deleteTutorial(tutorial: TutorialWithFetchedCorrectors) {
-    deleteTutorialRequest(tutorial.id)
+  function handleDeleteTutorialSubmit(tutorial: Tutorial) {
+    deleteTutorial(tutorial.id)
       .then(() => {
         setTutorials(tutorials.filter(t => t.id !== tutorial.id));
         enqueueSnackbar(`${getDisplayStringForTutorial(tutorial)} wurde gelöscht.`, {

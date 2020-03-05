@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { Sheet, SheetDTO } from 'shared/model/Sheet';
+import { Sheet, ISheetDTO } from 'shared/model/Sheet';
 import SheetForm, {
   convertFormExercisesToDTOs,
   getInitialSheetFormState,
@@ -61,7 +61,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
       return;
     }
 
-    const sheetDTO: SheetDTO = {
+    const sheetDTO: ISheetDTO = {
       sheetNo,
       exercises: convertFormExercisesToDTOs(exercises),
       bonusSheet,
@@ -87,7 +87,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     { sheetNo, exercises, bonusSheet },
     { setSubmitting }
   ) => {
-    const sheetDTO: SheetDTO = {
+    const sheetDTO: ISheetDTO = {
       sheetNo,
       exercises: convertFormExercisesToDTOs(exercises),
       bonusSheet,
