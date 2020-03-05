@@ -1,98 +1,51 @@
+import { plainToClass } from 'class-transformer';
 import { IStudent } from 'shared/model/Student';
-import { ITutorialDTO, ISubstituteDTO, ITutorial } from 'shared/model/Tutorial';
+import { ISubstituteDTO, ITutorial, ITutorialDTO } from 'shared/model/Tutorial';
 import { sortByName } from 'shared/util/helpers';
-import {
-  StudentByTutorialSlotSummaryMap,
-  TutorialWithFetchedStudents,
-  TutorialWithFetchedTutor,
-} from '../../typings/types';
+import { Student } from '../../model/Student';
+import { Tutorial } from '../../model/Tutorial';
+import { StudentByTutorialSlotSummaryMap } from '../../typings/types';
 import {
   transformMultipleTutorialResponse,
   transformTutorialResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
-import { getUser } from './User';
 import { getScheinCriteriaSummaryOfAllStudents } from './Scheincriteria';
 
-export async function getAllTutorials(): Promise<ITutorial[]> {
+export async function getAllTutorials(): Promise<Tutorial[]> {
   const response = await axios.get<ITutorial[]>('tutorial', {
     transformResponse: transformMultipleTutorialResponse,
   });
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Tutorial, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getAllTutorialsAndFetchTutor(): Promise<TutorialWithFetchedTutor[]> {
-  const tutorials = await getAllTutorials();
-  const promises: Promise<TutorialWithFetchedTutor>[] = [];
-
-  for (const tutorial of tutorials) {
-    promises.push(fetchTutorOfTutorial(tutorial));
-  }
-
-  return Promise.all(promises);
-}
-
-export async function getAllTutorialsAndFetchStudents(): Promise<TutorialWithFetchedStudents[]> {
-  const tutorials = await getAllTutorials();
-  const promises: Promise<TutorialWithFetchedStudents>[] = [];
-
-  for (const tutorial of tutorials) {
-    promises.push(getStudentsOfTutorial(tutorial.id).then(students => ({ ...tutorial, students })));
-  }
-
-  return Promise.all(promises);
-}
-
-export async function getTutorial(id: string): Promise<ITutorial> {
+export async function getTutorial(id: string): Promise<Tutorial> {
   const response = await axios.get<ITutorial>(`tutorial/${id}`, {
     transformResponse: transformTutorialResponse,
   });
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Tutorial, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getTutorialAndFetchTutor(id: string): Promise<TutorialWithFetchedTutor> {
-  const tutorial = await getTutorial(id);
-
-  return fetchTutorOfTutorial(tutorial);
-}
-
-export async function getTutorialAndFetchTutorAndStudents(
-  id: string
-): Promise<TutorialWithFetchedStudents> {
-  const tutorial = await getTutorial(id);
-  const students = await getStudentsOfTutorial(tutorial.id);
-
-  return { ...tutorial, students };
-}
-
-export async function createTutorial(tutorialInformation: ITutorialDTO): Promise<ITutorial> {
+export async function createTutorial(tutorialInformation: ITutorialDTO): Promise<Tutorial> {
   const response = await axios.post<ITutorial>('tutorial', tutorialInformation, {
     transformResponse: transformTutorialResponse,
   });
 
   if (response.status === 201) {
-    return response.data;
+    return plainToClass(Tutorial, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
-}
-
-export async function createTutorialAndFetchTutor(
-  tutorialInformation: ITutorialDTO
-): Promise<TutorialWithFetchedTutor> {
-  const tutorial = await createTutorial(tutorialInformation);
-
-  return fetchTutorOfTutorial(tutorial);
 }
 
 export async function editTutorial(
@@ -110,15 +63,6 @@ export async function editTutorial(
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editTutorialAndFetchTutor(
-  id: string,
-  tutorialInformation: ITutorialDTO
-): Promise<TutorialWithFetchedTutor> {
-  const tutorial = await editTutorial(id, tutorialInformation);
-
-  return fetchTutorOfTutorial(tutorial);
-}
-
 export async function deleteTutorial(id: string): Promise<void> {
   const response = await axios.delete(`tutorial/${id}`);
 
@@ -127,11 +71,12 @@ export async function deleteTutorial(id: string): Promise<void> {
   }
 }
 
-export async function getStudentsOfTutorial(id: string): Promise<IStudent[]> {
+export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
   const response = await axios.get<IStudent[]>(`tutorial/${id}/student`);
 
   if (response.status === 200) {
-    return response.data.sort(sortByName);
+    const data = plainToClass(Student, response.data);
+    return data.sort(sortByName);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
@@ -150,12 +95,6 @@ export async function setSubstituteTutor(
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
-}
-
-async function fetchTutorOfTutorial(tutorial: ITutorial): Promise<TutorialWithFetchedTutor> {
-  const tutor = tutorial.tutor ? await getUser(tutorial.tutor) : undefined;
-
-  return { ...tutorial, tutor };
 }
 
 export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): Promise<

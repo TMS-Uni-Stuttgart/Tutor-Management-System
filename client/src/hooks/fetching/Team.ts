@@ -1,45 +1,50 @@
+import { plainToClass } from 'class-transformer';
 import { IGradingDTO } from 'shared/model/Points';
 import { ITeam, ITeamDTO } from 'shared/model/Team';
+import { Team } from '../../model/Team';
 import axios from './Axios';
 
-function sortStudentsOfTeam(team: ITeam) {
+function sortStudentsOfTeam(team: Team) {
   team.students = team.students.sort((a, b) =>
     `${a.lastname}, ${a.firstname}`.localeCompare(`${b.lastname}, ${b.firstname}`)
   );
 }
 
-export async function getTeamsOfTutorial(tutorialId: string): Promise<ITeam[]> {
+export async function getTeamsOfTutorial(tutorialId: string): Promise<Team[]> {
   const response = await axios.get<ITeam[]>(`tutorial/${tutorialId}/team`);
 
   if (response.status === 200) {
-    response.data.forEach(team => sortStudentsOfTeam(team));
-    response.data.sort((a, b) => a.teamNo - b.teamNo);
+    const data = plainToClass(Team, response.data);
+    data.forEach(team => sortStudentsOfTeam(team));
+    data.sort((a, b) => a.teamNo - b.teamNo);
 
-    return response.data;
+    return data;
   }
 
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function getTeamOfTutorial(tutorialId: string, teamId: string): Promise<ITeam> {
+export async function getTeamOfTutorial(tutorialId: string, teamId: string): Promise<Team> {
   const response = await axios.get<ITeam>(`tutorial/${tutorialId}/team/${teamId}`);
 
   if (response.status === 200) {
-    sortStudentsOfTeam(response.data);
+    const data = plainToClass(Team, response.data);
+    sortStudentsOfTeam(data);
 
-    return response.data;
+    return data;
   }
 
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function createTeam(tutorialId: string, teamInfo: ITeamDTO): Promise<ITeam> {
+export async function createTeam(tutorialId: string, teamInfo: ITeamDTO): Promise<Team> {
   const response = await axios.post<ITeam>(`tutorial/${tutorialId}/team`, teamInfo);
 
   if (response.status === 201) {
-    sortStudentsOfTeam(response.data);
+    const data = plainToClass(Team, response.data);
+    sortStudentsOfTeam(data);
 
-    return response.data;
+    return data;
   }
 
   return Promise.reject(`Wrong status code (${response.status}).`);
@@ -49,13 +54,14 @@ export async function editTeam(
   tutorialId: string,
   teamId: string,
   teamInfo: ITeamDTO
-): Promise<ITeam> {
+): Promise<Team> {
   const response = await axios.patch<ITeam>(`tutorial/${tutorialId}/team/${teamId}`, teamInfo);
 
   if (response.status === 200) {
-    sortStudentsOfTeam(response.data);
+    const data = plainToClass(Team, response.data);
+    sortStudentsOfTeam(data);
 
-    return response.data;
+    return data;
   }
 
   return Promise.reject(`Wrong status code (${response.status}).`);
