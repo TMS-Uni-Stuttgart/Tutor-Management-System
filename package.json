@@ -45,6 +45,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
+    "class-transformer": "^0.2.3",
     "lodash": "^4.17.15",
     "luxon": "^1.22.0",
     "markdown-it": "^10.0.0",
