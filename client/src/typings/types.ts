@@ -1,5 +1,4 @@
 import { HasId } from 'shared/model/Common';
-import { PointMapDTO } from 'shared/model/Points';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import { Student } from 'shared/model/Student';
 import { Tutorial } from 'shared/model/Tutorial';

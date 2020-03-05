@@ -12,7 +12,6 @@ import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
-import { PointMap } from 'shared/model/Points';
 import { CriteriaInformation, CriteriaInformationItem } from 'shared/model/ScheinCriteria';
 import { HasExercises } from 'shared/model/Sheet';
 import { Student } from 'shared/model/Student';

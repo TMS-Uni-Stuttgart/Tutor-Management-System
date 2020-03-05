@@ -1,4 +1,4 @@
-import { StudentDTO } from 'shared/model/Student';
+import { IStudentDTO } from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
@@ -6,13 +6,9 @@ import {
   deleteStudent,
   editStudent,
   getAllStudents,
-  getScheinCriteriaSummaryOfAllStudents,
 } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import {
-  getStudentsOfTutorial,
-  getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-} from '../../../hooks/fetching/Tutorial';
+import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { AsyncDispatch } from '../../../util/AsyncReducer';
 import { StudentStore } from './StudentStore';
 import {
@@ -23,6 +19,10 @@ import {
   StudentStoreActionType,
   StudentUpdateAction,
 } from './StudentStore.actions';
+import {
+  getScheinCriteriaSummariesOfAllStudentsOfTutorial,
+  getScheinCriteriaSummaryOfAllStudents,
+} from '../../../hooks/fetching/Scheincriteria';
 
 export type StudentStateDispatcher = AsyncDispatch<StudentStoreAction>;
 
@@ -46,7 +46,7 @@ async function reduceCreateStudent(
 
   const teamId = await createTeamIfNeccessary(tutorial, team);
 
-  const studentDTO: StudentDTO = {
+  const studentDTO: IStudentDTO = {
     ...dto,
     tutorial,
     team: teamId || undefined,
@@ -69,7 +69,7 @@ async function reduceUpdateStudent(
   const { team, tutorial, ...dto } = action.data.dto;
   const teamId = await createTeamIfNeccessary(tutorial, team);
 
-  const studentDTO: StudentDTO = {
+  const studentDTO: IStudentDTO = {
     ...dto,
     tutorial,
     team: teamId,

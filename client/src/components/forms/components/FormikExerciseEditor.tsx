@@ -8,7 +8,7 @@ import {
   TimelinePlusOutline as PlusSubIcon,
 } from 'mdi-material-ui';
 import React from 'react';
-import { Exercise } from 'shared/model/Sheet';
+import { Exercise, Subexercise } from 'shared/model/Sheet';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
 
@@ -77,19 +77,27 @@ export interface ExerciseFormExercise {
   subexercises: ExerciseFormExercise[];
 }
 
-export function mapExerciseToFormExercise({
+export function mapSubExerciseToFormExercise({
   id,
   exName,
   maxPoints,
   bonus,
-  subexercises,
-}: Exercise): ExerciseFormExercise {
+}: Subexercise): ExerciseFormExercise {
   return {
     id,
     exName,
     maxPoints: maxPoints.toString(),
     bonus,
-    subexercises: subexercises.map(mapExerciseToFormExercise),
+    subexercises: [],
+  };
+}
+
+export function mapExerciseToFormExercise(exercise: Exercise): ExerciseFormExercise {
+  const withoutSub = mapSubExerciseToFormExercise(exercise);
+
+  return {
+    ...withoutSub,
+    subexercises: exercise.subexercises.map(mapSubExerciseToFormExercise),
   };
 }
 
