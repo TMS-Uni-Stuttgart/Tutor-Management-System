@@ -14,7 +14,7 @@ import {
 } from '../../../test/mocks/documents.mock.helpers';
 import { TutorialModel } from '../../database/models/tutorial.model';
 import { Role } from '../../shared/model/Role';
-import { ITutorial } from '../../shared/model/Tutorial';
+import { ITutorial, UserInEntity } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
 import { TutorialDTO } from './tutorial.dto';
@@ -45,18 +45,22 @@ interface AssertTutorialDTOParams {
 function assertTutorial({ expected, actual }: AssertTutorialParams) {
   const { _id, dates, startTime, endTime, slot, tutor, students, correctors } = expected;
 
-  const substitutes: Map<string, string> = new Map();
+  const substitutes: Map<string, UserInEntity> = new Map();
 
   for (const [date, doc] of expected.substitutes.entries()) {
-    substitutes.set(date, doc._id);
+    substitutes.set(date, { id: doc._id, firstname: doc.firstname, lastname: doc.lastname });
   }
 
   expect(actual.id).toEqual(_id);
   expect(actual.slot).toEqual(slot);
-  expect(actual.tutor).toEqual(tutor?._id);
+  expect(actual.tutor?.id).toEqual(tutor?._id);
+  expect(actual.tutor?.firstname).toEqual(tutor?.firstname);
+  expect(actual.tutor?.lastname).toEqual(tutor?.lastname);
 
   expect(actual.students).toEqual(students.map(s => s._id));
-  expect(actual.correctors).toEqual(correctors.map(c => c._id));
+  expect(actual.correctors).toEqual(
+    correctors.map(c => ({ id: c.id, firstname: c.firstname, lastname: c.lastname }))
+  );
 
   const options: ToISOTimeOptions = {
     suppressMilliseconds: true,
@@ -96,7 +100,7 @@ function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOP
   const { tutorId, startTime: expectedStart, endTime: expectedEnd, correctorIds } = expected;
 
   expect(id).toBeDefined();
-  expect(tutor).toEqual(tutorId);
+  expect(tutor?.id).toEqual(tutorId);
   expect(slot).toEqual(expected.slot);
 
   expect(dates).toEqual(expected.dates.map(date => DateTime.fromISO(date).toISODate()));
@@ -108,7 +112,7 @@ function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOP
   expect(actual.startTime).toEqual(DateTime.fromISO(expectedStart).toISOTime(options));
   expect(actual.endTime).toEqual(DateTime.fromISO(expectedEnd).toISOTime(options));
 
-  expect(correctors).toEqual(correctorIds);
+  expect(correctors.map(c => c.id)).toEqual(correctorIds);
 
   if (!!oldTutorial) {
     expect(teams).toEqual(oldTutorial.teams);

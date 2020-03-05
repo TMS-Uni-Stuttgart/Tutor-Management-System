@@ -4,7 +4,7 @@ import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
-import { ITutorial } from '../../shared/model/Tutorial';
+import { ITutorial, UserInEntity } from '../../shared/model/Tutorial';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { StudentDocument } from './student.model';
 import { TeamDocument } from './team.model';
@@ -142,10 +142,10 @@ export class TutorialModel {
    */
   toDTO(this: TutorialDocument): ITutorial {
     const { id, slot, tutor, dates, startTime, endTime, students, correctors, teams } = this;
-    const substitutes: Map<string, string> = new Map();
+    const substitutes: Map<string, UserInEntity> = new Map();
 
     for (const [date, doc] of this.substitutes.entries()) {
-      substitutes.set(date, doc.id);
+      substitutes.set(date, { id: doc.id, firstname: doc.firstname, lastname: doc.lastname });
     }
 
     const dateOptions: ToISOTimeOptions = {
@@ -155,12 +155,18 @@ export class TutorialModel {
     return {
       id,
       slot,
-      tutor: tutor?.id,
+      tutor: tutor
+        ? { id: tutor.id, firstname: tutor.firstname, lastname: tutor.lastname }
+        : undefined,
       dates: dates.map(date => date.toISODate()),
       startTime: startTime.toISOTime(dateOptions),
       endTime: endTime.toISOTime(dateOptions),
       students: students.map(student => student.id),
-      correctors: correctors.map(corrector => corrector.id),
+      correctors: correctors.map(corrector => ({
+        id: corrector.id,
+        firstname: corrector.firstname,
+        lastname: corrector.lastname,
+      })),
       substitutes: [...substitutes],
       teams: teams.map(team => team.id),
     };
