@@ -4,48 +4,51 @@ import {
   transformScheinExamResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
+import { Scheinexam } from '../../model/Scheinexam';
+import { plainToClass } from 'class-transformer';
 
-export async function getAllScheinExams(): Promise<IScheinExam[]> {
+export async function getAllScheinExams(): Promise<Scheinexam[]> {
   const response = await axios.get<IScheinExam[]>(`scheinexam`, {
     transformResponse: transformMultipleScheinExamResponse,
   });
 
   if (response.status === 200) {
-    return response.data.sort((a, b) => a.scheinExamNo - b.scheinExamNo);
+    const data = plainToClass(Scheinexam, response.data);
+    return data.sort((a, b) => a.scheinExamNo - b.scheinExamNo);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getScheinexam(examId: string): Promise<IScheinExam> {
+export async function getScheinexam(examId: string): Promise<Scheinexam> {
   const response = await axios.get<IScheinExam>(`scheinexam/${examId}`);
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Scheinexam, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createScheinExam(exam: IScheinExamDTO): Promise<IScheinExam> {
+export async function createScheinExam(exam: IScheinExamDTO): Promise<Scheinexam> {
   const response = await axios.post<IScheinExam>(`scheinexam`, exam, {
     transformResponse: transformScheinExamResponse,
   });
 
   if (response.status === 201) {
-    return response.data;
+    return plainToClass(Scheinexam, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editScheinExam(examId: string, exam: IScheinExamDTO): Promise<IScheinExam> {
-  const response = await axios.patch(`scheinexam/${examId}`, exam, {
+export async function editScheinExam(examId: string, exam: IScheinExamDTO): Promise<Scheinexam> {
+  const response = await axios.patch<IScheinExam>(`scheinexam/${examId}`, exam, {
     transformResponse: transformScheinExamResponse,
   });
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Scheinexam, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
