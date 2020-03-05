@@ -51,13 +51,13 @@ export async function createTutorial(tutorialInformation: ITutorialDTO): Promise
 export async function editTutorial(
   id: string,
   tutorialInformation: ITutorialDTO
-): Promise<ITutorial> {
+): Promise<Tutorial> {
   const response = await axios.patch<ITutorial>(`tutorial/${id}`, tutorialInformation, {
     transformResponse: transformTutorialResponse,
   });
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Tutorial, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
@@ -85,13 +85,13 @@ export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
 export async function setSubstituteTutor(
   id: string,
   substituteDTO: ISubstituteDTO
-): Promise<ITutorial> {
-  const response = await axios.put(`tutorial/${id}/substitute`, substituteDTO, {
+): Promise<Tutorial> {
+  const response = await axios.put<ITutorial>(`tutorial/${id}/substitute`, substituteDTO, {
     transformResponse: transformTutorialResponse,
   });
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Tutorial, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);

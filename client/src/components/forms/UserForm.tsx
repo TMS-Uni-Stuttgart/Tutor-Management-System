@@ -1,21 +1,21 @@
+import { FormikHelpers } from 'formik';
+import pwGenerator from 'generate-password';
 import {
   Eye as RemoveRedEyeOutlinedIcon,
   Restore as RestoreOutlinedIcon,
   Shuffle as ShuffleIcon,
 } from 'mdi-material-ui';
-import { FormikHelpers } from 'formik';
-import pwGenerator from 'generate-password';
 import React, { useState } from 'react';
 import { Role } from 'shared/model/Role';
-import { ITutorial } from 'shared/model/Tutorial';
 import * as Yup from 'yup';
+import { IUser } from '../../../../server/src/shared/model/User';
+import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
 import { passwordValidationSchema } from '../../util/validationSchemas';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import { FormikTextFieldWithButtons } from './components/FormikTextFieldWithButtons';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { IUser } from '../../../../server/src/shared/model/User';
 
 export type UserFormSubmitCallback = FormikSubmitCallback<UserFormState>;
 
@@ -33,7 +33,7 @@ export interface UserFormState {
 interface Props extends Omit<FormikBaseFormProps<UserFormState>, CommonlyUsedFormProps> {
   user?: IUser;
   availableRoles: Role[];
-  tutorials: ITutorial[];
+  tutorials: Tutorial[];
   onSubmit: UserFormSubmitCallback;
 }
 
