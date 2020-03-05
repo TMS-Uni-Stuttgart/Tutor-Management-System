@@ -111,11 +111,16 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
   },
   {
     _id: '5e5014186db2b69773038a9d',
-    tutor: generateFakeDocument('5e5013711922d1957bcf0c30'),
+    tutor: generateFakeDocument('5e5013711922d1957bcf0c30', {
+      firstname: 'Ron',
+      lastname: 'Weasley',
+    }),
     slot: 'Tutorial 12',
     students: [],
     teams: [],
-    correctors: [generateFakeDocument('5e503ac11015dc73652731a6')],
+    correctors: [
+      generateFakeDocument('5e503ac11015dc73652731a6', { firstname: 'Ginny', lastname: 'Weasley' }),
+    ],
     dates: createDatesForTutorial('2020-02-21'),
     startTime: DateTime.fromISO('14:00:00'),
     endTime: DateTime.fromISO('15:30:00'),
@@ -357,7 +362,7 @@ export const SCHEINCRITERIA_DOCUMENTS: MockedScheincriteriaModel[] = [
 ];
 
 function generateFakeDocument(_id: string, additional?: object): any {
-  return { _id, ...additional };
+  return { _id, id: _id, ...additional };
 }
 
 /**

@@ -1,5 +1,11 @@
 import { HasId } from './Common';
 
+export interface UserInEntity {
+  id: string;
+  firstname: string;
+  lastname: string;
+}
+
 export interface ITutorialDTO {
   correctorIds: string[];
   dates: string[];
@@ -11,14 +17,14 @@ export interface ITutorialDTO {
 
 export interface ITutorial extends HasId {
   slot: string;
-  tutor?: string;
+  tutor?: UserInEntity;
   dates: string[];
   startTime: string;
   endTime: string;
   students: string[];
   teams: string[];
-  correctors: string[];
-  substitutes: [string, string][];
+  correctors: UserInEntity[];
+  substitutes: [string, UserInEntity][];
 }
 
 export interface ISubstituteDTO {
