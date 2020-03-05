@@ -3,7 +3,7 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { HasId } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
-import { ITutorialDTO, ITutorial } from 'shared/model/Tutorial';
+import { ITutorialDTO } from 'shared/model/Tutorial';
 import { IUser } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import TutorialForm, {
@@ -23,6 +23,7 @@ import {
 import { getUsersWithRole } from '../../hooks/fetching/User';
 import { getDisplayStringForTutorial } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
+import { Tutorial } from '../../model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,7 +62,7 @@ function generateCreateTutorialDTO({
 function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
-  const [tutorials, setTutorials] = useState<ITutorial[]>([]);
+  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [tutors, setTutors] = useState<IUser[]>([]);
   const dialog = useDialog();
 
@@ -137,7 +138,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     }
   };
 
-  function handleEditTutorial(tutorial: ITutorial) {
+  function handleEditTutorial(tutorial: Tutorial) {
     dialog.show({
       title: 'Tutorium bearbeiten',
       content: (
@@ -154,7 +155,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     });
   }
 
-  function handleDeleteTutorial(tutorial: ITutorial) {
+  function handleDeleteTutorial(tutorial: Tutorial) {
     const tutorialDisplay = getDisplayStringForTutorial(tutorial);
 
     dialog.show({
@@ -176,7 +177,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     });
   }
 
-  function handleDeleteTutorialSubmit(tutorial: ITutorial) {
+  function handleDeleteTutorialSubmit(tutorial: Tutorial) {
     deleteTutorial(tutorial.id)
       .then(() => {
         setTutorials(tutorials.filter(t => t.id !== tutorial.id));

@@ -1,18 +1,17 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-import { addDays, addMinutes, addWeeks, compareAsc } from 'date-fns';
 import React from 'react';
+import { Role } from 'shared/model/Role';
+import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
+import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
-import { TutorialWithFetchedCorrectors } from '../../typings/types';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikMultipleDatesPicker from './components/FormikMultipleDatesPicker';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { IUser } from 'shared/model/User';
-import { Role } from 'shared/model/Role';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -94,7 +93,7 @@ export type TutorialFormSubmitCallback = FormikSubmitCallback<TutorialFormState>
 
 interface Props extends Omit<FormikBaseFormProps<TutorialFormState>, CommonlyUsedFormProps> {
   tutors: IUser[];
-  tutorial?: TutorialWithFetchedCorrectors;
+  tutorial?: Tutorial;
   onSubmit: TutorialFormSubmitCallback;
 }
 
@@ -111,9 +110,7 @@ function getAllWeeklyDatesBetween(startDate: Date, endDate: Date): Date[] {
   return dates;
 }
 
-export function getInitialTutorialFormValues(
-  tutorial?: TutorialWithFetchedCorrectors
-): TutorialFormState {
+export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormState {
   const startDate = new Date(Date.now()).toISOString();
   const endDate = new Date(Date.now()).toISOString();
 
@@ -141,10 +138,10 @@ export function getInitialTutorialFormValues(
     endDate: sortedDates[sortedDates.length - 1]
       ? sortedDates[sortedDates.length - 1].toISOString()
       : endDate,
-    startTime: tutorial.startTime.toISOString(),
-    endTime: tutorial.endTime.toISOString(),
-    correctors: tutorial.correctors.map(corrector => corrector.id),
-    selectedDates: tutorial.dates.map(date => new Date(date).toDateString()),
+    startTime: tutorial.startTime.toISO(),
+    endTime: tutorial.endTime.toISO(),
+    correctors: tutorial.correctors,
+    selectedDates: tutorial.dates.map(date => date.toISODate()),
   };
 }
 

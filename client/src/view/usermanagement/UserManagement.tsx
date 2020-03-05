@@ -3,7 +3,6 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
-import { ITutorial } from 'shared/model/Tutorial';
 import { ICreateUserDTO, IUserDTO, IUser } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import SubmitButton from '../../components/loading/SubmitButton';
@@ -25,6 +24,7 @@ import {
   deleteUser,
 } from '../../hooks/fetching/User';
 import { getCredentialsPDF } from '../../hooks/fetching/Files';
+import { Tutorial } from '../../model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -79,7 +79,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
-  const [tutorials, setTutorials] = useState<ITutorial[]>([]);
+  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const dialog = useDialog();
 
   useEffect(() => {
