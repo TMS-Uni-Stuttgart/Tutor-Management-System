@@ -1,4 +1,4 @@
-import { StudentDTO } from 'shared/model/Student';
+import { IStudentDTO } from 'shared/model/Student';
 import { StudentStore } from './StudentStore';
 import { AsyncDispatch } from '../../../util/AsyncReducer';
 
@@ -16,14 +16,14 @@ interface StudentStoreBaseAction {
 
 export interface StudentCreateAction extends StudentStoreBaseAction {
   type: StudentStoreActionType.CREATE;
-  data: StudentDTO;
+  data: IStudentDTO;
 }
 
 export interface StudentUpdateAction extends StudentStoreBaseAction {
   type: StudentStoreActionType.UPDATE;
   data: {
     studentId: string;
-    dto: StudentDTO;
+    dto: IStudentDTO;
   };
 }
 

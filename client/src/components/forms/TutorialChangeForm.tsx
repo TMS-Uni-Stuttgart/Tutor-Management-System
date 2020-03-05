@@ -6,6 +6,7 @@ import { FormikSubmitCallback } from '../../types';
 import { getDisplayStringForTutorial } from '../../util/helperFunctions';
 import FormikSelect from './components/FormikSelect';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import { TutorialInEntity } from '../../../../server/src/shared/model/Common';
 
 const useStyles = makeStyles(
   createStyles({
@@ -27,7 +28,7 @@ export type TutorialChangeFormSubmitCallback = FormikSubmitCallback<TutorialChan
 
 interface Props extends Omit<FormikBaseFormProps<TutorialChangeFormState>, CommonlyUsedFormProps> {
   allTutorials: Tutorial[];
-  tutorial: string;
+  tutorial: TutorialInEntity;
   onSubmit: TutorialChangeFormSubmitCallback;
   onCancel: () => void;
 }
@@ -43,7 +44,7 @@ function TutorialChangeForm({
   const classes = useStyles();
 
   const initialFormValues: TutorialChangeFormState = {
-    tutorial,
+    tutorial: tutorial.id,
   };
 
   return (

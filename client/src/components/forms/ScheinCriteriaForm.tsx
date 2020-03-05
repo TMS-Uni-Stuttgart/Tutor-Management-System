@@ -38,7 +38,16 @@ function getInitialValues(criteria?: ScheinCriteria): ScheinCriteriaFormState {
     };
   }
 
-  return { ...criteria };
+  const data = Object.entries(criteria.data).reduce<{ [key: string]: string }>(
+    (prev, [key, value]) => {
+      prev[key] = String(value);
+
+      return prev;
+    },
+    {}
+  );
+
+  return { name: criteria.name, identifier: criteria.identifier, ...data };
 }
 
 function ScheinCriteriaForm({ onSubmit, formData, criteria, ...other }: Props): JSX.Element {

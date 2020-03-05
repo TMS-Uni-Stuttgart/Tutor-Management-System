@@ -13,7 +13,7 @@ export interface ScheinCriteriaResponse {
   identifier: string;
   name: string;
   data: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

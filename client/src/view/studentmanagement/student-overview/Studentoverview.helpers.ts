@@ -174,7 +174,7 @@ export function handleChangeTutorial({
   enqueueSnackbar,
 }: HandlerParams & { student: Student; dialog: DialogHelpers }): TutorialChangeFormSubmitCallback {
   return async ({ tutorial }) => {
-    if (tutorial === student.tutorial) {
+    if (tutorial === student.tutorial.id) {
       return;
     }
 
