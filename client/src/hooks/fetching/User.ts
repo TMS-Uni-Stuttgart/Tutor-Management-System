@@ -1,21 +1,8 @@
-import { UserWithFetchedTutorials } from '../../typings/types';
-import { transformMultipleTutorialResponse } from '../../util/axiosTransforms';
-import axios from './Axios';
-import { User, CreateUserDTO, UserDTO, NewPasswordDTO } from 'shared/model/User';
-import { Role } from 'shared/model/Role';
-import { Tutorial } from 'shared/model/Tutorial';
 import { MailingStatus } from 'shared/model/Mail';
-import { getTutorial } from './Tutorial';
+import { Role } from 'shared/model/Role';
+import { ICreateUserDTO, IUserDTO, NewPasswordDTO, User } from 'shared/model/User';
 import { sortByName } from 'shared/util/helpers';
-
-async function fetchTutorialsOfUser(user: User): Promise<UserWithFetchedTutorials> {
-  const tutorials = await getTutorialsOfUser(user.id);
-  const tutorialsToCorrect: Tutorial[] = await Promise.all(
-    user.tutorialsToCorrect.map(tutId => getTutorial(tutId))
-  );
-
-  return { ...user, tutorials, tutorialsToCorrect };
-}
+import axios from './Axios';
 
 export async function getUsers(): Promise<User[]> {
   const response = await axios.get<User[]>('user');
@@ -43,18 +30,7 @@ export async function getUsersWithRole(role: Role): Promise<User[]> {
   return allUsers.filter(u => u.roles.indexOf(role) !== -1);
 }
 
-export async function getUsersAndFetchTutorials(): Promise<UserWithFetchedTutorials[]> {
-  const users = await getUsers();
-  const promises: Promise<UserWithFetchedTutorials>[] = [];
-
-  for (const user of users) {
-    promises.push(fetchTutorialsOfUser(user));
-  }
-
-  return Promise.all(promises);
-}
-
-export async function createUser(userInformation: CreateUserDTO): Promise<User> {
+export async function createUser(userInformation: ICreateUserDTO): Promise<User> {
   const response = await axios.post<User>('user', userInformation);
 
   if (response.status === 201) {
@@ -64,15 +40,7 @@ export async function createUser(userInformation: CreateUserDTO): Promise<User> 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createUserAndFetchTutorials(
-  userInformation: CreateUserDTO
-): Promise<UserWithFetchedTutorials> {
-  const user = await createUser(userInformation);
-
-  return fetchTutorialsOfUser(user);
-}
-
-export async function editUser(userid: string, userInformation: UserDTO): Promise<User> {
+export async function editUser(userid: string, userInformation: IUserDTO): Promise<User> {
   const response = await axios.patch<User>(`user/${userid}`, userInformation);
 
   if (response.status === 200) {
@@ -80,27 +48,6 @@ export async function editUser(userid: string, userInformation: UserDTO): Promis
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
-}
-
-export async function editUserAndFetchTutorials(
-  userid: string,
-  userInformation: UserDTO
-): Promise<UserWithFetchedTutorials> {
-  const user = await editUser(userid, userInformation);
-
-  return fetchTutorialsOfUser(user);
-}
-
-export async function getTutorialsOfUser(userid: string): Promise<Tutorial[]> {
-  const response = await axios.get<Tutorial[]>(`user/${userid}/tutorial`, {
-    transformResponse: transformMultipleTutorialResponse,
-  });
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong response code (${response.status})`);
 }
 
 export async function deleteUser(userid: string): Promise<void> {

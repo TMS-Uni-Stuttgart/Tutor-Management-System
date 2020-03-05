@@ -1,11 +1,8 @@
-import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { Student } from 'shared/model/Student';
-import { SubstituteDTO, Tutorial, TutorialDTO } from 'shared/model/Tutorial';
-import { TutorInfo, User } from 'shared/model/User';
+import { ITutorialDTO, SubstituteDTO, Tutorial } from 'shared/model/Tutorial';
 import { sortByName } from 'shared/util/helpers';
 import {
   StudentByTutorialSlotSummaryMap,
-  TutorialWithFetchedCorrectors,
   TutorialWithFetchedStudents,
   TutorialWithFetchedTutor,
 } from '../../typings/types';
@@ -14,8 +11,8 @@ import {
   transformTutorialResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
-import { getScheinCriteriaSummaryOfAllStudents } from './Student';
 import { getUser } from './User';
+import { getScheinCriteriaSummaryOfAllStudents } from './Scheincriteria';
 
 export async function getAllTutorials(): Promise<Tutorial[]> {
   const response = await axios.get<Tutorial[]>('tutorial', {
@@ -51,21 +48,6 @@ export async function getAllTutorialsAndFetchStudents(): Promise<TutorialWithFet
   return Promise.all(promises);
 }
 
-export async function getAllTutorialsAndFetchCorrectors(): Promise<
-  TutorialWithFetchedCorrectors[]
-> {
-  const tutorials = await getAllTutorialsAndFetchTutor();
-  const promises: Promise<TutorialWithFetchedCorrectors>[] = [];
-
-  for (const tutorial of tutorials) {
-    promises.push(
-      getCorrectorsOfTutorial(tutorial.id).then(correctors => ({ ...tutorial, correctors }))
-    );
-  }
-
-  return Promise.all(promises);
-}
-
 export async function getTutorial(id: string): Promise<Tutorial> {
   const response = await axios.get<Tutorial>(`tutorial/${id}`, {
     transformResponse: transformTutorialResponse,
@@ -93,15 +75,7 @@ export async function getTutorialAndFetchTutorAndStudents(
   return { ...tutorial, students };
 }
 
-export async function getTutorialAndFetchCorrectors(
-  id: string
-): Promise<TutorialWithFetchedCorrectors> {
-  const tutorial = await getTutorialAndFetchTutor(id);
-
-  return fetchCorrectorsOfTutorial(tutorial);
-}
-
-export async function createTutorial(tutorialInformation: TutorialDTO): Promise<Tutorial> {
+export async function createTutorial(tutorialInformation: ITutorialDTO): Promise<Tutorial> {
   const response = await axios.post<Tutorial>('tutorial', tutorialInformation, {
     transformResponse: transformTutorialResponse,
   });
@@ -114,24 +88,16 @@ export async function createTutorial(tutorialInformation: TutorialDTO): Promise<
 }
 
 export async function createTutorialAndFetchTutor(
-  tutorialInformation: TutorialDTO
+  tutorialInformation: ITutorialDTO
 ): Promise<TutorialWithFetchedTutor> {
   const tutorial = await createTutorial(tutorialInformation);
 
   return fetchTutorOfTutorial(tutorial);
 }
 
-export async function createTutorialAndFetchCorrectors(
-  tutorialInformation: TutorialDTO
-): Promise<TutorialWithFetchedCorrectors> {
-  const tutorial = await createTutorialAndFetchTutor(tutorialInformation);
-
-  return fetchCorrectorsOfTutorial(tutorial);
-}
-
 export async function editTutorial(
   id: string,
-  tutorialInformation: TutorialDTO
+  tutorialInformation: ITutorialDTO
 ): Promise<Tutorial> {
   const response = await axios.patch<Tutorial>(`tutorial/${id}`, tutorialInformation, {
     transformResponse: transformTutorialResponse,
@@ -146,20 +112,11 @@ export async function editTutorial(
 
 export async function editTutorialAndFetchTutor(
   id: string,
-  tutorialInformation: TutorialDTO
+  tutorialInformation: ITutorialDTO
 ): Promise<TutorialWithFetchedTutor> {
   const tutorial = await editTutorial(id, tutorialInformation);
 
   return fetchTutorOfTutorial(tutorial);
-}
-
-export async function editTutorialAndFetchCorrectors(
-  id: string,
-  tutorialInformation: TutorialDTO
-): Promise<TutorialWithFetchedCorrectors> {
-  const tutorial = await editTutorialAndFetchTutor(id, tutorialInformation);
-
-  return fetchCorrectorsOfTutorial(tutorial);
 }
 
 export async function deleteTutorial(id: string): Promise<void> {
@@ -168,16 +125,6 @@ export async function deleteTutorial(id: string): Promise<void> {
   if (response.status !== 204) {
     return Promise.reject(`Wrong response code (${response.status}).`);
   }
-}
-
-export async function getTutorInfoOfTutorial(id: string): Promise<TutorInfo | undefined> {
-  const response = await axios.get<TutorInfo | undefined>(`tutorial/${id}/tutor`);
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
 export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
@@ -190,35 +137,11 @@ export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getScheinCriteriaSummariesOfAllStudentsOfTutorial(
-  id: string
-): Promise<ScheincriteriaSummaryByStudents> {
-  const response = await axios.get<ScheincriteriaSummaryByStudents>(
-    `scheincriteria/tutorial/${id}`
-  );
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong response code (${response.status}).`);
-}
-
-export async function getCorrectorsOfTutorial(id: string): Promise<User[]> {
-  const response = await axios.get<User[]>(`tutorial/${id}/corrector`);
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong response code (${response.status}).`);
-}
-
 export async function setSubstituteTutor(
   id: string,
   substituteDTO: SubstituteDTO
 ): Promise<Tutorial> {
-  const response = await axios.post(`tutorial/${id}/substitute`, substituteDTO, {
+  const response = await axios.put(`tutorial/${id}/substitute`, substituteDTO, {
     transformResponse: transformTutorialResponse,
   });
 
@@ -233,14 +156,6 @@ async function fetchTutorOfTutorial(tutorial: Tutorial): Promise<TutorialWithFet
   const tutor = tutorial.tutor ? await getUser(tutorial.tutor) : undefined;
 
   return { ...tutorial, tutor };
-}
-
-async function fetchCorrectorsOfTutorial(
-  tutorial: TutorialWithFetchedTutor
-): Promise<TutorialWithFetchedCorrectors> {
-  const correctors = await getCorrectorsOfTutorial(tutorial.id);
-
-  return { ...tutorial, correctors };
 }
 
 export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): Promise<

@@ -1,10 +1,6 @@
-import { Attendance, AttendanceDTO } from 'shared/model/Attendance';
-import { UpdatePointsDTO } from 'shared/model/Points';
-import {
-  ScheinCriteriaSummary,
-  ScheincriteriaSummaryByStudents,
-} from 'shared/model/ScheinCriteria';
-import { CakeCountDTO, PresentationPointsDTO, Student, StudentDTO } from 'shared/model/Student';
+import { Attendance, IAttendanceDTO } from 'shared/model/Attendance';
+import { IGradingDTO, IPresentationPointsDTO } from 'shared/model/Points';
+import { ICakeCountDTO, IStudentDTO, Student } from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
 import axios from './Axios';
 
@@ -28,7 +24,7 @@ export async function getStudent(studentId: string): Promise<Student> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createStudent(studentInfo: StudentDTO): Promise<Student> {
+export async function createStudent(studentInfo: IStudentDTO): Promise<Student> {
   const response = await axios.post<Student>('student', studentInfo);
 
   if (response.status === 201) {
@@ -38,7 +34,7 @@ export async function createStudent(studentInfo: StudentDTO): Promise<Student> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editStudent(id: string, studentInfo: StudentDTO): Promise<Student> {
+export async function editStudent(id: string, studentInfo: IStudentDTO): Promise<Student> {
   const response = await axios.patch<Student>(`student/${id}`, studentInfo);
 
   if (response.status === 200) {
@@ -58,7 +54,7 @@ export async function deleteStudent(id: string): Promise<void> {
 
 export async function setAttendanceOfStudent(
   id: string,
-  attendanceInfo: AttendanceDTO
+  attendanceInfo: IAttendanceDTO
 ): Promise<Attendance> {
   const response = await axios.put<Attendance>(`student/${id}/attendance`, attendanceInfo);
 
@@ -69,11 +65,8 @@ export async function setAttendanceOfStudent(
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function setPointsOfStudent(
-  studentId: string,
-  points: UpdatePointsDTO
-): Promise<void> {
-  const response = await axios.put(`student/${studentId}/point`, points);
+export async function setPointsOfStudent(studentId: string, points: IGradingDTO): Promise<void> {
+  const response = await axios.put(`student/${studentId}/grading`, points);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong status code (${response.status}).`);
@@ -82,7 +75,7 @@ export async function setPointsOfStudent(
 
 export async function setPresentationPointsOfStudent(
   studentId: string,
-  points: PresentationPointsDTO
+  points: IPresentationPointsDTO
 ): Promise<void> {
   const response = await axios.put(`student/${studentId}/presentation`, points);
 
@@ -91,73 +84,18 @@ export async function setPresentationPointsOfStudent(
   }
 }
 
-export async function setExamPointsOfStudent(studentId: string, points: UpdatePointsDTO) {
-  const response = await axios.put(`student/${studentId}/examresult`, points);
+export async function setExamPointsOfStudent(studentId: string, points: IGradingDTO) {
+  const response = await axios.put(`student/${studentId}/grading`, points);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong response code (${response.status}).`);
   }
 }
 
-export async function setCakeCountForStudent(studentId: string, cakeCountDTO: CakeCountDTO) {
+export async function setCakeCountForStudent(studentId: string, cakeCountDTO: ICakeCountDTO) {
   const response = await axios.put(`student/${studentId}/cakecount`, cakeCountDTO);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong response code (${response.status}).`);
   }
-}
-
-// export async function getTeamOfStudent(student: Student): Promise<Team | undefined> {
-//   if (!student.team) {
-//     return undefined;
-//   }
-
-//   return getTeamOfTutorial(student.tutorial, student.team.id);
-// }
-
-// export async function fetchTeamOfStudent(student: Student): Promise<StudentWithFetchedTeam> {
-//   const team = await getTeamOfStudent(student);
-
-//   return { ...student, team };
-// }
-
-// export async function fetchTeamsOfStudents(students: Student[]): Promise<StudentWithFetchedTeam[]> {
-//   const promises: Promise<StudentWithFetchedTeam>[] = [];
-
-//   for (const student of students) {
-//     promises.push(
-//       getTeamOfStudent(student)
-//         .then(team => ({ ...student, team }))
-//         .catch(() => {
-//           console.log('Could not load team of student.');
-//           return { ...student, team: undefined };
-//         })
-//     );
-//   }
-
-//   return Promise.all(promises);
-// }
-
-export async function getScheinCriteriaSummaryOfStudent(
-  studentId: string
-): Promise<ScheinCriteriaSummary> {
-  const response = await axios.get<ScheinCriteriaSummary>(`/student/${studentId}/scheincriteria`);
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong status code (${response.status}).`);
-}
-
-export async function getScheinCriteriaSummaryOfAllStudents(): Promise<
-  ScheincriteriaSummaryByStudents
-> {
-  const response = await axios.get<ScheincriteriaSummaryByStudents>(`/scheincriteria/student`);
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong status code (${response.status}).`);
 }

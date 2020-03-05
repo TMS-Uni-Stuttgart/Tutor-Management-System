@@ -16,7 +16,7 @@ export async function getAttendancePDF(tutorialId: string, date: string): Promis
 }
 
 export async function getScheinStatusPDF(): Promise<Blob> {
-  const response = await axios.get('/pdf/scheinstatus/', {
+  const response = await axios.get('/pdf/scheinoverview', {
     responseType: 'arraybuffer',
     headers: {
       Accept: 'application/pdf',
@@ -31,7 +31,7 @@ export async function getScheinStatusPDF(): Promise<Blob> {
 }
 
 export async function getClearScheinStatusPDF(): Promise<Blob> {
-  const response = await axios.get('/pdf/scheinoverview/', {
+  const response = await axios.get('/pdf/scheinoverview?clearMatriculationNos=true', {
     responseType: 'arraybuffer',
     headers: {
       Accept: 'application/pdf',
@@ -61,7 +61,7 @@ export async function getScheinexamResultPDF(examId: string): Promise<Blob> {
 }
 
 export async function getCredentialsPDF(): Promise<Blob> {
-  const response = await axios.get('/pdf/credentials/', {
+  const response = await axios.get('/pdf/credentials', {
     responseType: 'arraybuffer',
     headers: {
       Accept: 'application/pdf',
@@ -81,7 +81,7 @@ export async function getTeamCorrectionCommentMarkdown(
   teamId: string
 ): Promise<string> {
   const response = await axios.get(
-    `/pdf/markdown/tutorial/${tutorialId}/sheet/${sheetId}/team/${teamId}`
+    `/markdown/grading/${sheetId}/tutorial/${tutorialId}/team/${teamId}`
   );
 
   if (response.status === 200) {
@@ -96,12 +96,15 @@ export async function getTeamCorrectionCommentPDF(
   sheetId: string,
   teamId: string
 ): Promise<Blob> {
-  const response = await axios.get(`/pdf/correction/${tutorialId}/${sheetId}/${teamId}`, {
-    responseType: 'arraybuffer',
-    headers: {
-      Accept: 'application/pdf',
-    },
-  });
+  const response = await axios.get(
+    `/pdf/grading/tutorial/${tutorialId}/sheet/${sheetId}/team/${teamId}`,
+    {
+      responseType: 'arraybuffer',
+      headers: {
+        Accept: 'application/pdf',
+      },
+    }
+  );
 
   if (response.status === 200) {
     return new Blob([response.data], { type: 'application/pdf' });
@@ -114,7 +117,7 @@ export async function getStudentCorrectionCommentMarkdown(
   sheetId: string,
   studentId: string
 ): Promise<string> {
-  const response = await axios.get(`/pdf/markdown/sheet/${sheetId}/student/${studentId}`);
+  const response = await axios.get(`/markdown/grading/${sheetId}/student/${studentId}`);
 
   if (response.status === 200) {
     return response.data;
@@ -124,7 +127,7 @@ export async function getStudentCorrectionCommentMarkdown(
 }
 
 export async function getCorrectionCommentPDFs(tutorialId: string, sheetId: string): Promise<Blob> {
-  const response = await axios.get(`/pdf/correction/${tutorialId}/${sheetId}`, {
+  const response = await axios.get(`/pdf/grading/tutorial/${tutorialId}/sheet/${sheetId}`, {
     responseType: 'arraybuffer',
     headers: {
       Accept: 'application/zip',

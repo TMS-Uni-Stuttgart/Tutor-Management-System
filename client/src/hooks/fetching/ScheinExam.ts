@@ -1,4 +1,4 @@
-import { ScheinExam, ScheinExamDTO } from 'shared/model/Scheinexam';
+import { ScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
 import {
   transformMultipleScheinExamResponse,
   transformScheinExamResponse,
@@ -27,7 +27,7 @@ export async function getScheinexam(examId: string): Promise<ScheinExam> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createScheinExam(exam: ScheinExamDTO): Promise<ScheinExam> {
+export async function createScheinExam(exam: IScheinExamDTO): Promise<ScheinExam> {
   const response = await axios.post<ScheinExam>(`scheinexam`, exam, {
     transformResponse: transformScheinExamResponse,
   });
@@ -39,7 +39,7 @@ export async function createScheinExam(exam: ScheinExamDTO): Promise<ScheinExam>
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editScheinExam(examId: string, exam: ScheinExamDTO): Promise<ScheinExam> {
+export async function editScheinExam(examId: string, exam: IScheinExamDTO): Promise<ScheinExam> {
   const response = await axios.patch(`scheinexam/${examId}`, exam, {
     transformResponse: transformScheinExamResponse,
   });
