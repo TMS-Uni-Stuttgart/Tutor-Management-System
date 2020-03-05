@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import { CriteriaInformation, CriteriaInformationItem } from 'shared/model/ScheinCriteria';
 import { HasExercises } from 'shared/model/Sheet';
-import { IStudent } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../components/BackButton';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
@@ -30,6 +29,7 @@ import { getAllStudents } from '../../hooks/fetching/Student';
 import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
 import { RoutingPath } from '../../routes/Routing.routes';
 import { i18nNamespace } from '../../util/lang/configI18N';
+import { Student } from '../../model/Student';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -60,7 +60,7 @@ function CriteriaInfoView(): JSX.Element {
 
   const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
 
-  const [students, setStudents] = useState<IStudent[]>();
+  const [students, setStudents] = useState<Student[]>();
   const [criteriaInfo, setCriteriaInfo] = useState<CriteriaInformation>();
   const [information, setInformation] = useState<CriteriaInformationItem>();
   const [selectedSheetOrExam, setSelectetSheetOrExam] = useState<HasExercises>();
@@ -221,9 +221,8 @@ function CriteriaInfoView(): JSX.Element {
                           items={students}
                           createRowFromItem={student => {
                             const hasPassed = criteriaInfo.studentSummaries[student.id].passed;
-                            const hasAttended = new PointMap(student.scheinExamResults).has(
-                              selectedSheetOrExam.id
-                            );
+                            const hasAttended =
+                              student.getGrading(selectedSheetOrExam) !== undefined;
 
                             return (
                               <PaperTableRow
@@ -255,7 +254,7 @@ function CriteriaInfoView(): JSX.Element {
 
                                     <Box>
                                       <PointsTable
-                                        points={new PointMap(student.scheinExamResults)}
+                                        grading={student.getGrading(selectedSheetOrExam)}
                                         sheet={selectedSheetOrExam}
                                       />
                                     </Box>

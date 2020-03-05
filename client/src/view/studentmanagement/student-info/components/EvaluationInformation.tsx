@@ -2,15 +2,15 @@ import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { PointMap } from 'shared/model/Points';
-import { ISheet } from 'shared/model/Sheet';
-import { IStudent } from 'shared/model/Student';
 import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
 import LoadingSpinner from '../../../../components/loading/LoadingSpinner';
 import Markdown from '../../../../components/Markdown';
 import Placeholder from '../../../../components/Placeholder';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { getStudentCorrectionCommentMarkdown } from '../../../../hooks/fetching/Files';
+import { Grading } from '../../../../model/Grading';
+import { Sheet } from '../../../../model/Sheet';
+import { Student } from '../../../../model/Student';
 import { getDisplayStringOfSheet } from '../../../../util/helperFunctions';
 
 const useStyles = makeStyles(theme =>
@@ -33,8 +33,8 @@ const useStyles = makeStyles(theme =>
 );
 
 interface Props extends BoxProps {
-  student: IStudent;
-  sheets: ISheet[];
+  student: Student;
+  sheets: Sheet[];
 }
 
 function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Element {
@@ -42,24 +42,19 @@ function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Elemen
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
-  const [selectedSheet, setSelectedSheet] = useState<ISheet>();
+  const [gradingOfSelected, setGradingOfSelected] = useState<Grading>();
+  const [selectedSheet, setSelectedSheet] = useState<Sheet>();
   const [studentMarkdown, setStudentMarkdown] = useState<string>();
-
-  useEffect(() => {
-    if (!!student) {
-      setPointsOfStudent(new PointMap(student.points));
-    } else {
-      setPointsOfStudent(undefined);
-    }
-  }, [student]);
 
   useEffect(() => {
     setStudentMarkdown(undefined);
 
-    if (!selectedSheet || !student) {
+    if (!selectedSheet) {
+      setGradingOfSelected(undefined);
       return;
     }
+
+    setGradingOfSelected(student.getGrading(selectedSheet));
 
     getStudentCorrectionCommentMarkdown(selectedSheet.id, student.id)
       .then(response => {
@@ -105,11 +100,11 @@ function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Elemen
         showPlaceholder={!selectedSheet}
         reduceMarginTop
       >
-        {selectedSheet && pointsOfStudent && (
+        {selectedSheet && gradingOfSelected && (
           <Box marginTop={2} display='flex'>
             <PointsTable
               className={classes.pointsTable}
-              points={pointsOfStudent}
+              grading={gradingOfSelected}
               sheet={selectedSheet}
               size='medium'
               disablePaper

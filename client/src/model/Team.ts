@@ -14,4 +14,8 @@ export class Team implements Modify<ITeam, Modified> {
 
   @Type(() => Student)
   students!: Student[];
+
+  getTeamNoAsString(): string {
+    return this.teamNo.toString().padStart(2, '0');
+  }
 }

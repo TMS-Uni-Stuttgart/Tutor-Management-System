@@ -1,18 +1,17 @@
 import { Table, TableBody, TableCell, TableHead, TableProps, TableRow } from '@material-ui/core';
-import { format } from 'date-fns';
-import deLocale from 'date-fns/locale/de';
+import { DateTime } from 'luxon';
 import React from 'react';
-import { IAttendance, AttendanceState } from 'shared/model/Attendance';
-import { IStudent } from 'shared/model/Student';
-import { ITutorial } from 'shared/model/Tutorial';
+import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import AttendanceControls from '../../../../components/attendance-controls/AttendanceControls';
+import { Student } from '../../../../model/Student';
+import { Tutorial } from '../../../../model/Tutorial';
 import { parseDateToMapKey } from '../../../../util/helperFunctions';
 
 interface Props extends TableProps {
-  student: IStudent;
-  tutorialOfStudent: ITutorial;
-  onAttendanceChange: (date: Date, attendance?: AttendanceState) => void;
-  onNoteChange: (date: Date, note: string) => void;
+  student: Student;
+  tutorialOfStudent: Tutorial;
+  onAttendanceChange: (date: DateTime, attendance?: AttendanceState) => void;
+  onNoteChange: (date: DateTime, note: string) => void;
 }
 
 function AttendanceInformation({
@@ -32,29 +31,24 @@ function AttendanceInformation({
       </TableHead>
 
       <TableBody>
-        {tutorialOfStudent.dates
-          .map(date => new Date(date))
-          .map(date => {
-            const dateKey = parseDateToMapKey(date);
-            const formattedDate = format(date, 'dd. MMMM yyyy', {
-              locale: deLocale,
-            });
-            const attendance: IAttendance | undefined = student.attendance[dateKey];
+        {tutorialOfStudent.dates.map(date => {
+          const formattedDate = date.toLocaleString(DateTime.DATE_FULL);
+          const attendance: IAttendance | undefined = student.getAttendance(date);
 
-            return (
-              <TableRow key={dateKey}>
-                <TableCell>{formattedDate}</TableCell>
-                <TableCell align='right'>
-                  <AttendanceControls
-                    attendance={attendance}
-                    onAttendanceChange={attendance => onAttendanceChange(date, attendance)}
-                    onNoteChange={({ note }) => onNoteChange(date, note)}
-                    justifyContent='flex-end'
-                  />
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          return (
+            <TableRow key={parseDateToMapKey(date)}>
+              <TableCell>{formattedDate}</TableCell>
+              <TableCell align='right'>
+                <AttendanceControls
+                  attendance={attendance}
+                  onAttendanceChange={attendance => onAttendanceChange(date, attendance)}
+                  onNoteChange={({ note }) => onNoteChange(date, note)}
+                  justifyContent='flex-end'
+                />
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );

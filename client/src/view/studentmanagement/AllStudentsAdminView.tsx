@@ -1,19 +1,15 @@
 import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { format } from 'date-fns';
 import fastcsv from 'fast-csv';
 import { Row, RowMap } from 'fast-csv/build/src/parser';
 import FileSaver from 'file-saver';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { IAttendance } from 'shared/model/Attendance';
-import { PointMap } from 'shared/model/Points';
-import { ITutorial } from 'shared/model/Tutorial';
 import SubmitButton from '../../components/loading/SubmitButton';
 import { getScheinStatusPDF, getClearScheinStatusPDF } from '../../hooks/fetching/Files';
 import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
-import { getScheinCriteriaSummaryOfAllStudents } from '../../hooks/fetching/Student';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 import {
   getSumOfPointsOfStudentInScheinExam,
@@ -24,6 +20,7 @@ import { getPointsOfEntityAsString } from '../points-sheet/util/helper';
 import Studentoverview from './student-overview/Studentoverview';
 import StudentoverviewStoreProvider, { useStudentStore } from './student-store/StudentStore';
 import SplitButton from '../../components/SplitButton';
+import { Tutorial } from '../../model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,7 +45,7 @@ function AdminStudentManagement(): JSX.Element {
 
   const [isCreatingCSVFile, setCreatingCSVFile] = useState(false);
   const [isCreatingScheinStatus, setCreatingScheinStatus] = useState(false);
-  const [tutorials, setTutorials] = useState<ITutorial[]>([]);
+  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
 
   const [{ students }] = useStudentStore();
   const { enqueueSnackbar } = useSnackbar();
@@ -99,16 +96,9 @@ function AdminStudentManagement(): JSX.Element {
       getAllScheinExams(),
     ]);
 
-    for (const {
-      id,
-      lastname,
-      firstname,
-      matriculationNo,
-      presentationPoints,
-      scheinExamResults,
-      attendance,
-      points,
-    } of students) {
+    for (const student of students) {
+      const { id, lastname, firstname, matriculationNo } = student;
+
       const criteriaResult = summaries[id];
       const pointsOfStudent = new PointMap(points);
 
@@ -134,7 +124,7 @@ function AdminStudentManagement(): JSX.Element {
       }
 
       for (const exam of exams) {
-        const scheinExamResult = getSumOfPointsOfStudentInScheinExam(scheinExamResults, exam);
+        const scheinExamResult: number = student.getGrading(exam);
         data[`exam-${exam.scheinExamNo}`] = scheinExamResult.toString();
       }
       dataArray.push(data);

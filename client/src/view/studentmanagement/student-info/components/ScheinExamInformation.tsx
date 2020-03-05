@@ -1,12 +1,12 @@
 import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { PointMap } from 'shared/model/Points';
-import { IScheinExam } from 'shared/model/Scheinexam';
-import { IStudent } from 'shared/model/Student';
 import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
 import Placeholder from '../../../../components/Placeholder';
 import PointsTable from '../../../../components/points-table/PointsTable';
+import { Grading } from '../../../../model/Grading';
+import { Scheinexam } from '../../../../model/Scheinexam';
+import { Student } from '../../../../model/Student';
 import { getDisplayStringOfScheinExam } from '../../../../util/helperFunctions';
 
 const useStyles = makeStyles(theme =>
@@ -19,23 +19,23 @@ const useStyles = makeStyles(theme =>
 );
 
 interface Props extends BoxProps {
-  student: IStudent;
-  exams: IScheinExam[];
+  student: Student;
+  exams: Scheinexam[];
 }
 
 function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element {
   const classes = useStyles();
 
-  const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
-  const [selectedSheet, setSelectedSheet] = useState<IScheinExam>();
+  const [gradingOfSelected, setGradingOfSelected] = useState<Grading>();
+  const [selectedExam, setSelectedExam] = useState<Scheinexam>();
 
   useEffect(() => {
-    if (!!student) {
-      setPointsOfStudent(new PointMap(student.scheinExamResults));
+    if (!!selectedExam) {
+      setGradingOfSelected(student.getGrading(selectedExam));
     } else {
-      setPointsOfStudent(undefined);
+      setGradingOfSelected(undefined);
     }
-  }, [student]);
+  }, [selectedExam]);
 
   const handleScheinExamSelectionChange: OnChangeHandler = e => {
     if (typeof e.target.value !== 'string') {
@@ -45,7 +45,7 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
     const examId = e.target.value as string;
     const exam = exams.find(s => s.id === examId);
 
-    setSelectedSheet(exam);
+    setSelectedExam(exam);
   };
 
   return (
@@ -62,20 +62,20 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
           itemToString={getDisplayStringOfScheinExam}
           itemToValue={exam => exam.id}
           onChange={handleScheinExamSelectionChange}
-          value={selectedSheet?.id ?? ''}
+          value={selectedExam?.id ?? ''}
         />
       </Box>
 
       <Placeholder
         placeholderText='Kein Übungsblatt ausgewählt.'
-        showPlaceholder={!selectedSheet}
+        showPlaceholder={!selectedExam}
         reduceMarginTop
       >
-        {selectedSheet && pointsOfStudent && (
+        {selectedExam && gradingOfSelected && (
           <Box marginTop={2} display='flex'>
             <PointsTable
-              points={pointsOfStudent}
-              sheet={selectedSheet}
+              grading={gradingOfSelected}
+              sheet={selectedExam}
               size='medium'
               disablePaper
             />

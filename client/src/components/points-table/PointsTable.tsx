@@ -16,14 +16,15 @@ import {
   convertExercisePointInfoToString,
   getPointsOfAllExercises,
   getPointsOfExercise,
-  PointId,
-  PointMap,
 } from 'shared/model/Points';
-import { IExercise, HasExercises } from 'shared/model/Sheet';
+import { IExercise } from 'shared/model/Sheet';
+import { Grading } from '../../model/Grading';
+import { Scheinexam } from '../../model/Scheinexam';
+import { Sheet } from '../../model/Sheet';
 
 interface Props extends Omit<TableContainerProps, 'ref'> {
-  points: PointMap;
-  sheet: HasExercises;
+  grading: Grading | undefined;
+  sheet: Sheet | Scheinexam; // TODO: Convert to HasExercise? Maybe HasExercise needs some getter / properties?!
   disablePaper?: boolean;
   size?: TableProps['size'];
 }
@@ -43,14 +44,16 @@ function getPointStringOfExercise(exercise: IExercise): string {
 }
 
 function PointsTable({
-  points,
+  grading,
   sheet,
   size,
   disablePaper,
   className,
   ...props
 }: Props): JSX.Element {
-  const achieved = points.getSumOfPoints(sheet);
+  const achieved = grading?.totalPoints ?? 0;
+
+  // TODO: Add operation to sheet / scheinexam to get pointInfo.
   const total = convertExercisePointInfoToString(getPointsOfAllExercises(sheet));
 
   const TableComp = (
@@ -67,7 +70,7 @@ function PointsTable({
         {sheet.exercises.map(ex => (
           <TableRow key={ex.id} hover>
             <TableCell>Aufgabe {ex.exName}</TableCell>
-            <TableCell align='right'>{points.getPoints(new PointId(sheet.id, ex)) ?? 0}</TableCell>
+            <TableCell align='right'>{grading?.getExerciseGrading(ex)?.totalPoints ?? 0}</TableCell>
             <TableCell align='left'>/ {getPointStringOfExercise(ex)}</TableCell>
           </TableRow>
         ))}

@@ -3,12 +3,11 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Account as StudentIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { IScheinExam } from 'shared/model/Scheinexam';
-import { IStudent } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import PointsTable from '../../../../components/points-table/PointsTable';
+import { Scheinexam } from '../../../../model/Scheinexam';
+import { Student } from '../../../../model/Student';
 import { getEnterPointsForScheinexamPath } from '../../../../routes/Routing.helpers';
-import { PointMap } from 'shared/model/Points';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,12 +19,8 @@ const useStyles = makeStyles(() =>
 
 interface Props {
   tutorialId: string;
-  student: IStudent;
-  exam: IScheinExam;
-}
-
-function getTeamDisplayString(student: IStudent): string {
-  return !!student.team ? `Team ${student.team.teamNo.toString().padStart(2, '0')}` : 'Ohne Team';
+  student: Student;
+  exam: Scheinexam;
 }
 
 function StudentCard({ student, exam, tutorialId }: Props): JSX.Element {
@@ -36,11 +31,11 @@ function StudentCard({ student, exam, tutorialId }: Props): JSX.Element {
       <CardHeader
         avatar={<StudentIcon />}
         title={getNameOfEntity(student)}
-        subheader={getTeamDisplayString(student)}
+        subheader={student.getTeamString()}
       />
 
       <CardContent>
-        <PointsTable points={new PointMap(student.scheinExamResults)} sheet={exam} />
+        <PointsTable grading={student.getGrading(exam)} sheet={exam} />
       </CardContent>
 
       <CardActions className={classes.actions}>

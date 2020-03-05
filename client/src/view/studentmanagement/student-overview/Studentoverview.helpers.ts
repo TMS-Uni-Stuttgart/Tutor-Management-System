@@ -1,17 +1,17 @@
 import _ from 'lodash';
-import { getNameOfEntity, sortByName } from 'shared/util/helpers';
-import { StudentWithFetchedTeam } from '../../../typings/types';
-import { StudentStatus, IStudent } from 'shared/model/Student';
-import { StudentStoreDispatcher } from '../student-store/StudentStore';
 import { WithSnackbarProps } from 'notistack';
+import { StudentStatus } from 'shared/model/Student';
+import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import {
-  StudentFormSubmitCallback,
   getInitialStudentFormState,
+  StudentFormSubmitCallback,
 } from '../../../components/forms/StudentForm';
-import { StudentStoreActionType } from '../student-store/StudentStore.actions';
-import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import { DialogHelpers } from '../../../hooks/DialogService';
 import { TutorialChangeFormSubmitCallback } from '../../../components/forms/TutorialChangeForm';
+import { DialogHelpers } from '../../../hooks/DialogService';
+import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
+import { Student } from '../../../model/Student';
+import { StudentStoreDispatcher } from '../student-store/StudentStore';
+import { StudentStoreActionType } from '../student-store/StudentStore.actions';
 
 export interface HandlerParams {
   tutorialId?: string;
@@ -29,10 +29,10 @@ function unifyFilterableText(text: string): string {
 }
 
 export function getFilteredStudents(
-  students: StudentWithFetchedTeam[],
+  students: Student[],
   filterText: string,
   sortOption: StudentSortOption
-): StudentWithFetchedTeam[] {
+): Student[] {
   return students
     .filter(s => {
       if (!filterText) {
@@ -108,7 +108,7 @@ export function handleEditStudent({
   tutorialId,
   dispatch,
   enqueueSnackbar,
-}: HandlerParams & { student: IStudent; dialog: DialogHelpers }): StudentFormSubmitCallback {
+}: HandlerParams & { student: Student; dialog: DialogHelpers }): StudentFormSubmitCallback {
   return async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
     { setSubmitting }
@@ -127,7 +127,7 @@ export function handleEditStudent({
             courseOfStudies,
             status,
             team,
-            tutorial: tutorialId || student.tutorial,
+            tutorial: tutorialId || student.tutorial.id,
           },
         },
       });
@@ -147,7 +147,7 @@ export function handleDeleteStudent({
   dialog,
   dispatch,
   enqueueSnackbar,
-}: HandlerParams & { student: IStudent; dialog: DialogHelpers }) {
+}: HandlerParams & { student: Student; dialog: DialogHelpers }) {
   return async () => {
     try {
       await dispatch({
@@ -173,7 +173,7 @@ export function handleChangeTutorial({
   dispatch,
   enqueueSnackbar,
 }: HandlerParams & {
-  student: IStudent;
+  student: Student;
   dialog: DialogHelpers;
 }): TutorialChangeFormSubmitCallback {
   return async ({ tutorial }) => {

@@ -4,11 +4,10 @@ import { DatePicker, DatePickerProps } from '@material-ui/pickers';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { OutterCalendarProps } from '@material-ui/pickers/views/Calendar/Calendar';
 import clsx from 'clsx';
-import { format } from 'date-fns';
-import deLocale from 'date-fns/locale/de';
 import { ArrayHelpers, FieldArray, FieldProps, useField } from 'formik';
 import React, { useState } from 'react';
 import DateList, { DateInList } from './DateList';
+import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -96,8 +95,8 @@ function isStringArray(array: unknown): array is string[] {
   return Array.isArray(array);
 }
 
-export function getDateString(date: Date): string {
-  return date.toDateString();
+export function getDateString(date: DateTime): string {
+  return date.toISODate();
 }
 
 function FormikMultipleDatesPicker({
@@ -122,7 +121,7 @@ function FormikMultipleDatesPicker({
     selectedDays: unknown,
     arrayHelpers: ArrayHelpers
   ) => OutterCalendarProps['renderDay'] = (selectedDays, arrayHelpers) => {
-    return (date, selectedDate, dayInCurrentMonth) => {
+    return (date, _selectedDate, dayInCurrentMonth) => {
       if (!date) {
         return <></>;
       }
@@ -164,7 +163,7 @@ function FormikMultipleDatesPicker({
             }
           }}
         >
-          <p className={labelClassName}> {format(date, 'd')} </p>
+          <p className={labelClassName}> {DateTime.fromJSDate(date).toFormat('dd')} </p>
         </IconButton>
       );
     };
@@ -206,7 +205,7 @@ function FormikMultipleDatesPicker({
             <DateList
               dates={(form.values[name] as string[]).map<DateInList>(d => ({
                 dateValueString: new Date(d).toDateString(),
-                dateDisplayString: format(new Date(d), 'dd MMM yyyy', { locale: deLocale }),
+                dateDisplayString: DateTime.fromISO(d).toLocaleString(DateTime.DATE_MED),
               }))}
               onDateClicked={onDateInListClicked(form.values[name], arrayHelpers)}
             />

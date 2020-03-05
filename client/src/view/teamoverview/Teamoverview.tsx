@@ -3,14 +3,17 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { ITeam, ITeamDTO } from 'shared/model/Team';
+import { ITeamDTO } from 'shared/model/Team';
 import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import TeamTableRow from '../../components/TeamTableRow';
 import { useDialog } from '../../hooks/DialogService';
-import { useAxios } from '../../hooks/FetchingService';
-import { StudentWithFetchedTeam } from '../../typings/types';
+import { getStudent } from '../../hooks/fetching/Student';
+import { createTeam, getTeamsOfTutorial, deleteTeam, editTeam } from '../../hooks/fetching/Team';
+import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
+import { Student } from '../../model/Student';
+import { Team } from '../../model/Team';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,9 +39,9 @@ interface Params {
 type Props = WithSnackbarProps & RouteComponentProps<Params>;
 
 function updateStudentsArray(
-  studentsToUpdate: StudentWithFetchedTeam[],
-  students: StudentWithFetchedTeam[],
-  setStudents: React.Dispatch<React.SetStateAction<StudentWithFetchedTeam[]>>
+  studentsToUpdate: Student[],
+  students: Student[],
+  setStudents: React.Dispatch<React.SetStateAction<Student[]>>
 ) {
   const updatedStudents = [...students];
 
@@ -57,17 +60,9 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   const { params } = match;
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
-  const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
-  const [teams, setTeams] = useState<ITeam[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const dialog = useDialog();
-  const {
-    getStudent,
-    getTeamsOfTutorial,
-    getStudentsOfTutorial,
-    createTeam,
-    editTeam: editTeamRequest,
-    deleteTeam: deleteTeamRequest,
-  } = useAxios();
 
   useEffect(() => {
     setIsLoading(true);
@@ -104,7 +99,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     }
   };
 
-  function handleDeleteTeam(team: ITeam) {
+  function handleDeleteTeam(team: Team) {
     dialog.show({
       title: 'Team löschen',
       content: `Soll Team ${team.teamNo} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden!`,
@@ -115,7 +110,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
         },
         {
           label: 'Löschen',
-          onClick: () => deleteTeam(team),
+          onClick: () => handleDeleteTeamSubmit(team),
           buttonProps: {
             className: classes.dialogDeleteButton,
           },
@@ -124,8 +119,8 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     });
   }
 
-  function deleteTeam(team: ITeam) {
-    deleteTeamRequest(params.tutorialId, team.id)
+  function handleDeleteTeamSubmit(team: Team) {
+    deleteTeam(params.tutorialId, team.id)
       .then(async () => {
         setTeams(teams.filter(u => u.id !== team.id));
 
@@ -141,14 +136,14 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       });
   }
 
-  const editTeam: (team: ITeam) => TeamFormSubmitCallback = team => async (
+  const handleEditTeamSubmit: (team: Team) => TeamFormSubmitCallback = team => async (
     { students },
     { setSubmitting }
   ) => {
     const teamDTO: ITeamDTO = { students };
 
     try {
-      const response = await editTeamRequest(params.tutorialId, team.id, teamDTO);
+      const response = await editTeam(params.tutorialId, team.id, teamDTO);
 
       setTeams(
         teams.map(group => {
@@ -169,14 +164,14 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     }
   };
 
-  function handleEditTeam(team: ITeam) {
+  function handleEditTeam(team: Team) {
     dialog.show({
       title: `Team ${team.teamNo} bearbeiten`,
       content: (
         <TeamForm
           team={team}
           students={students.filter(student => !student.team || student.team.id === team.id)}
-          onSubmit={editTeam(team)}
+          onSubmit={handleEditTeamSubmit(team)}
           onCancelClicked={dialog.hide}
         />
       ),

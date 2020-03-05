@@ -2,9 +2,9 @@ import { TableCell, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { AccountMultiple as GroupIcon } from 'mdi-material-ui';
 import React from 'react';
-import { ITeam } from 'shared/model/Team';
 import EntityListItemMenu from './list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
+import { Team } from '../model/Team';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,9 +18,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props extends PaperTableRowProps {
-  team: ITeam;
-  onEditTeamClicked: (team: ITeam) => void;
-  onDeleteTeamClicked: (team: ITeam) => void;
+  team: Team;
+  onEditTeamClicked: (team: Team) => void;
+  onDeleteTeamClicked: (team: Team) => void;
 }
 
 function TeamTableRow({

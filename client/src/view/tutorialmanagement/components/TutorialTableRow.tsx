@@ -7,6 +7,7 @@ import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTabl
 import { Tutorial } from '../../../model/Tutorial';
 import { RoutingPath } from '../../../routes/Routing.routes';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
+import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Substitute {
-  date: Date;
+  date: DateTime;
   name: string;
 }
 
@@ -101,8 +102,8 @@ function TutorialTableRow({
           <div>
             {substitutes.map(sub => (
               <Chip
-                key={sub.date.toISOString()}
-                label={`Vertr. ${format(sub.date, 'dd.MM.yy')}: ${sub.name}`}
+                key={sub.date.toISO()}
+                label={`Vertr. ${sub.date.toFormat('dd.MM.yy')}: ${sub.name}`}
                 className={classes.tutorChip}
               />
             ))}

@@ -9,16 +9,16 @@ import {
 import { lighten } from '@material-ui/core/styles';
 import { Account as PersonIcon } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
-import { StudentWithFetchedTeam } from '../typings/types';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
+import { useAxios } from '../hooks/FetchingService';
+import { Student } from '../model/Student';
 import EntityListItemMenu from './list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
-import { useAxios } from '../hooks/FetchingService';
-import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
 interface Props extends PaperTableRowProps {
-  student: StudentWithFetchedTeam;
-  onEditStudentClicked: (student: StudentWithFetchedTeam) => void;
-  onDeleteStudentClicked: (student: StudentWithFetchedTeam) => void;
+  student: Student;
+  onEditStudentClicked: (student: Student) => void;
+  onDeleteStudentClicked: (student: Student) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>

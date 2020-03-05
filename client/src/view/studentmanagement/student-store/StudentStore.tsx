@@ -1,14 +1,14 @@
-import React, { PropsWithChildren, createContext, useContext, useEffect } from 'react';
-import { IStudent } from 'shared/model/Student';
-import { useAsyncReducer, AsyncDispatch } from '../../../util/AsyncReducer';
-import { StudentStoreAction, StudentStoreActionType } from './StudentStore.actions';
-import { ITeam } from 'shared/model/Team';
-import studentStoreReducer from './StudentStore.reducers';
+import React, { createContext, PropsWithChildren, useContext, useEffect } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
+import { Student } from '../../../model/Student';
+import { Team } from '../../../model/Team';
+import { AsyncDispatch, useAsyncReducer } from '../../../util/AsyncReducer';
+import { StudentStoreAction, StudentStoreActionType } from './StudentStore.actions';
+import studentStoreReducer from './StudentStore.reducers';
 
 export interface StudentStore {
-  students: IStudent[];
-  teams?: ITeam[];
+  students: Student[];
+  teams?: Team[];
   tutorialId?: string;
   isInitialized: boolean;
   summaries: ScheincriteriaSummaryByStudents;
