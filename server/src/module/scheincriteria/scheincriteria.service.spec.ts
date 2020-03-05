@@ -6,10 +6,7 @@ import {
   MockedScheincriteriaModel,
   SCHEINCRITERIA_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
-import {
-  ScheincriteriaIdentifier,
-  ScheinCriteriaResponse,
-} from '../../shared/model/ScheinCriteria';
+import { ScheincriteriaIdentifier, IScheinCriteria } from '../../shared/model/ScheinCriteria';
 import { AttendanceCriteria } from './container/criterias/AttendanceCriteria';
 import { PresentationCriteria } from './container/criterias/PresentationCriteria';
 import { ScheinexamCriteria } from './container/criterias/ScheinexamCriteria';
@@ -28,17 +25,17 @@ import { UserService } from '../user/user.service';
 
 interface AssertScheincriteriaParams {
   expected: MockedScheincriteriaModel;
-  actual: ScheinCriteriaResponse;
+  actual: IScheinCriteria;
 }
 
 interface AssertScheincriteriaListParams {
   expected: MockedScheincriteriaModel[];
-  actual: ScheinCriteriaResponse[];
+  actual: IScheinCriteria[];
 }
 
 interface AssertScheincriteriaDTOParams {
   expected: ScheinCriteriaDTO;
-  actual: ScheinCriteriaResponse;
+  actual: IScheinCriteria;
 }
 
 /**

@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ScheinExamDTO } from '../../module/scheinexam/scheinexam.dto';
-import { ScheinExam } from '../../shared/model/Scheinexam';
+import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ExerciseDocument, ExerciseModel } from './exercise.model';
 import { StudentDocument } from './student.model';
 import { ExercisePointInfo } from '../../shared/model/Points';
@@ -94,7 +94,7 @@ export class ScheinexamModel {
     return ScheinexamModel.assignDTO(this, dto) as ScheinexamDocument;
   }
 
-  toDTO(this: ScheinexamDocument): ScheinExam {
+  toDTO(this: ScheinexamDocument): IScheinExam {
     return {
       id: this.id,
       scheinExamNo: this.scheinExamNo,

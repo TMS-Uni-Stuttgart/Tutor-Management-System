@@ -1,6 +1,6 @@
 import { DocumentType, modelOptions, prop, getModelForClass } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
-import { AttendanceState, Attendance } from '../../shared/model/Attendance';
+import { AttendanceState, IAttendance } from '../../shared/model/Attendance';
 import { AttendanceDTO } from '../../module/student/student.dto';
 
 interface ConstructorFields {
@@ -41,7 +41,7 @@ export class AttendanceModel {
     return new model(attendance);
   }
 
-  toDTO(this: AttendanceDocument): Attendance {
+  toDTO(this: AttendanceDocument): IAttendance {
     const { date, note, state } = this;
 
     return {

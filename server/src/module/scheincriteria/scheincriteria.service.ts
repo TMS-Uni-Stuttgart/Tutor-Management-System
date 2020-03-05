@@ -8,7 +8,7 @@ import {
 import { CRUDService } from '../../helpers/CRUDService';
 import { FormDataResponse } from '../../shared/model/FormTypes';
 import {
-  ScheinCriteriaResponse,
+  IScheinCriteria,
   ScheinCriteriaSummary as ScheincriteriaSummary,
   ScheincriteriaSummaryByStudents,
   CriteriaInformation,
@@ -41,7 +41,7 @@ interface MultipleCalculationParams {
 
 @Injectable()
 export class ScheincriteriaService
-  implements CRUDService<ScheinCriteriaResponse, ScheinCriteriaDTO, ScheincriteriaDocument> {
+  implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaDocument> {
   constructor(
     private readonly studentService: StudentService,
     private readonly sheetService: SheetService,
@@ -89,7 +89,7 @@ export class ScheincriteriaService
    * @throws `NotFoundException` - If no scheincriteria could be generated with the provided identifier in the DTO.
    * @throws `BadRequestException` - If the provided data is not a valid criteria.
    */
-  async create(dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
+  async create(dto: ScheinCriteriaDTO): Promise<IScheinCriteria> {
     const scheincriteria = Scheincriteria.fromDTO(dto);
     const document = {
       name: dto.name,
@@ -112,7 +112,7 @@ export class ScheincriteriaService
    * @throws `NotFoundException` - If there is no scheincriteria saved with the given ID or if no scheincriteria could be generated from the given DTO.
    * @throws `BadRequestException` - If the provided data is not a valid criteria.
    */
-  async update(id: string, dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
+  async update(id: string, dto: ScheinCriteriaDTO): Promise<IScheinCriteria> {
     const scheincriteria = await this.findById(id);
 
     scheincriteria.criteria = Scheincriteria.fromDTO(dto);

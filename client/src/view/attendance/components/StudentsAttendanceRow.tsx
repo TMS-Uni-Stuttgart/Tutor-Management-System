@@ -2,7 +2,7 @@ import { TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
-import { Attendance, AttendanceState } from 'shared/model/Attendance';
+import { IAttendance, AttendanceState } from 'shared/model/Attendance';
 import AttendanceControls from '../../../components/attendance-controls/AttendanceControls';
 import { NoteFormCallback } from '../../../components/attendance-controls/components/AttendanceNotePopper';
 import PaperTableRow from '../../../components/PaperTableRow';
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   student: StudentWithFetchedTeam;
-  attendance: Attendance | undefined;
+  attendance: IAttendance | undefined;
   onAttendanceSelection: (state?: AttendanceState) => void;
   onNoteSave: NoteFormCallback;
   onCakeCountChanged?: (cakeCount: number) => void;

@@ -8,7 +8,7 @@ export enum ScheincriteriaIdentifier {
   SHEET_TOTAL = 'sheetTotal',
 }
 
-export interface ScheinCriteriaResponse {
+export interface IScheinCriteria {
   id: string;
   identifier: string;
   name: string;

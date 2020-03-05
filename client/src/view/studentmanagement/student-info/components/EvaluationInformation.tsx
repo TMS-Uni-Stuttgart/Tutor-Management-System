@@ -3,8 +3,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { PointMap } from 'shared/model/Points';
-import { Sheet } from 'shared/model/Sheet';
-import { Student } from 'shared/model/Student';
+import { ISheet } from 'shared/model/Sheet';
+import { IStudent } from 'shared/model/Student';
 import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
 import LoadingSpinner from '../../../../components/loading/LoadingSpinner';
 import Markdown from '../../../../components/Markdown';
@@ -33,8 +33,8 @@ const useStyles = makeStyles(theme =>
 );
 
 interface Props extends BoxProps {
-  student: Student;
-  sheets: Sheet[];
+  student: IStudent;
+  sheets: ISheet[];
 }
 
 function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Element {
@@ -43,7 +43,7 @@ function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Elemen
   const { enqueueSnackbar } = useSnackbar();
 
   const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
-  const [selectedSheet, setSelectedSheet] = useState<Sheet>();
+  const [selectedSheet, setSelectedSheet] = useState<ISheet>();
   const [studentMarkdown, setStudentMarkdown] = useState<string>();
 
   useEffect(() => {

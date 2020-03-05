@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import { CriteriaInformation, CriteriaInformationItem } from 'shared/model/ScheinCriteria';
 import { HasExercises } from 'shared/model/Sheet';
-import { Student } from 'shared/model/Student';
+import { IStudent } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../components/BackButton';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
@@ -60,7 +60,7 @@ function CriteriaInfoView(): JSX.Element {
 
   const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
 
-  const [students, setStudents] = useState<Student[]>();
+  const [students, setStudents] = useState<IStudent[]>();
   const [criteriaInfo, setCriteriaInfo] = useState<CriteriaInformation>();
   const [information, setInformation] = useState<CriteriaInformationItem>();
   const [selectedSheetOrExam, setSelectetSheetOrExam] = useState<HasExercises>();

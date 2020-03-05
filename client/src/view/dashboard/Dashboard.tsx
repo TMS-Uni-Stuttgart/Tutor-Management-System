@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
-import { Tutorial } from 'shared/model/Tutorial';
-import { LoggedInUser } from 'shared/model/User';
+import { ITutorial } from 'shared/model/Tutorial';
+import { ILoggedInUser } from 'shared/model/User';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import { getTutorial } from '../../hooks/fetching/Tutorial';
 import { useAxios } from '../../hooks/FetchingService';
@@ -13,11 +13,11 @@ import AllTutorialStatistics from './components/AllTutorialStatistics';
 import TutorialStatistics from './components/TutorialStatistics';
 
 export interface TutorialSummaryInfo {
-  tutorial: Tutorial;
+  tutorial: ITutorial;
   studentInfos: ScheincriteriaSummaryByStudents;
 }
 
-function isAdmin(userData: LoggedInUser | undefined): boolean {
+function isAdmin(userData: ILoggedInUser | undefined): boolean {
   return !!userData && userData.roles.includes(Role.ADMIN);
 }
 

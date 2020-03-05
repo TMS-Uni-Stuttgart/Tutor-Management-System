@@ -11,7 +11,7 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { User } from 'shared/model/User';
+import { IUser } from 'shared/model/User';
 import { Role } from 'shared/model/Role';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -93,7 +93,7 @@ const validationSchema = Yup.object().shape({
 export type TutorialFormSubmitCallback = FormikSubmitCallback<TutorialFormState>;
 
 interface Props extends Omit<FormikBaseFormProps<TutorialFormState>, CommonlyUsedFormProps> {
-  tutors: User[];
+  tutors: IUser[];
   tutorial?: TutorialWithFetchedCorrectors;
   onSubmit: TutorialFormSubmitCallback;
 }
@@ -154,8 +154,8 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
   const initialFormValues: TutorialFormState = getInitialTutorialFormValues(tutorial);
 
   const userConverterFunctions = {
-    itemToString: (tutor: User) => `${tutor.lastname}, ${tutor.firstname}`,
-    itemToValue: (tutor: User) => tutor.id,
+    itemToString: (tutor: IUser) => `${tutor.lastname}, ${tutor.firstname}`,
+    itemToValue: (tutor: IUser) => tutor.id,
   };
 
   return (

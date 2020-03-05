@@ -7,24 +7,24 @@ import { MockedModel } from '../../../test/helpers/testdocument';
 import { TUTORIAL_DOCUMENTS, USER_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { UserModel } from '../../database/models/user.model';
 import { Role } from '../../shared/model/Role';
-import { User } from '../../shared/model/User';
+import { IUser } from '../../shared/model/User';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
 import { UserDTO, CreateUserDTO } from './user.dto';
 
 interface AssertUserParam {
   expected: MockedModel<UserModel>;
-  actual: User;
+  actual: IUser;
 }
 
 interface AssertUserListParam {
   expected: MockedModel<UserModel>[];
-  actual: User[];
+  actual: IUser[];
 }
 
 interface AssertUserDTOParams {
   expected: UserDTO;
-  actual: User;
+  actual: IUser;
 }
 
 /**
@@ -148,7 +148,7 @@ describe('UserService', () => {
       tutorialsToCorrect: [],
     };
 
-    const createdUser: User = await service.create(userToCreate);
+    const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
     const { temporaryPassword } = sanitizeObject(createdUser);
 
@@ -167,7 +167,7 @@ describe('UserService', () => {
       tutorials: [TUTORIAL_DOCUMENTS[1]._id],
       tutorialsToCorrect: [],
     };
-    const createdUser: User = await service.create(userToCreate);
+    const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
     const { temporaryPassword } = sanitizeObject(createdUser);
 
@@ -187,7 +187,7 @@ describe('UserService', () => {
       tutorialsToCorrect: [],
     };
 
-    const createdUser: User = await service.create(userToCreate);
+    const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
     const { temporaryPassword } = sanitizeObject(createdUser);
 
@@ -222,7 +222,7 @@ describe('UserService', () => {
       tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
     };
 
-    const createdUser: User = await service.create(userToCreate);
+    const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
     const { temporaryPassword } = sanitizeObject(createdUser);
 
@@ -242,7 +242,7 @@ describe('UserService', () => {
       tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
     };
 
-    const createdUser: User = await service.create(userToCreate);
+    const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
     const { temporaryPassword } = sanitizeObject(createdUser);
 

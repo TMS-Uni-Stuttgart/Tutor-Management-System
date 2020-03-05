@@ -6,8 +6,8 @@ import {
   getTeamCorrectionCommentPDF,
   getCorrectionCommentPDFs,
 } from './fetching/Files';
-import { Sheet } from 'shared/model/Sheet';
-import { Team } from 'shared/model/Team';
+import { ISheet } from 'shared/model/Sheet';
+import { ITeam } from 'shared/model/Team';
 import { saveBlob } from '../util/helperFunctions';
 import { getTutorial } from './fetching/Tutorial';
 
@@ -17,13 +17,13 @@ interface DialogOption {
 
 interface CorrectionPdfOptions {
   tutorialId: string;
-  sheet: Sheet;
-  team: Team;
+  sheet: ISheet;
+  team: ITeam;
 }
 
 interface GenerateAllPDFsOptions {
   tutorialId: string;
-  sheet: Sheet;
+  sheet: ISheet;
 }
 
 async function showSinglePdfPreview({

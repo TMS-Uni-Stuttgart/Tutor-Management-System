@@ -3,8 +3,8 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useState } from 'react';
-import { Student } from 'shared/model/Student';
-import { Tutorial } from 'shared/model/Tutorial';
+import { IStudent } from 'shared/model/Student';
+import { ITutorial } from 'shared/model/Tutorial';
 import { getNameOfEntity } from 'shared/util/helpers';
 import CustomSelect from '../../../components/CustomSelect';
 import StudentForm from '../../../components/forms/StudentForm';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  tutorials?: Tutorial[];
+  tutorials?: ITutorial[];
   allowChangeTutorial?: boolean;
   additionalTopBarItem?: React.ReactNode;
 }
@@ -69,7 +69,7 @@ function Studentoverview({
     return <LoadingSpinner />;
   }
 
-  function openEditDialog(student: Student) {
+  function openEditDialog(student: IStudent) {
     dialog.show({
       title: 'Student bearbeiten',
       content: (
@@ -87,7 +87,7 @@ function Studentoverview({
     });
   }
 
-  function openDeleteDialog(student: Student) {
+  function openDeleteDialog(student: IStudent) {
     const nameOfStudent = getNameOfEntity(student);
 
     dialog.show({
@@ -109,7 +109,7 @@ function Studentoverview({
     });
   }
 
-  function openChangeTutorialDialog(student: Student) {
+  function openChangeTutorialDialog(student: IStudent) {
     if (!tutorials) {
       return;
     }
@@ -180,7 +180,7 @@ function Studentoverview({
     </>
   );
 
-  const createRowFromItem = (student: Student) => (
+  const createRowFromItem = (student: IStudent) => (
     <StudentRow
       className={classes.studentRow}
       student={student}

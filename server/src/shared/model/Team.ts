@@ -1,8 +1,8 @@
 import { HasId } from './Common';
-import { Student } from './Student';
+import { IStudent } from './Student';
 
-export interface Team extends HasId {
-  students: Student[];
+export interface ITeam extends HasId {
+  students: IStudent[];
   teamNo: number;
   tutorial: string;
 }

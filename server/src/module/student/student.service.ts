@@ -9,8 +9,8 @@ import {
   populateStudentDocument,
 } from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { Attendance } from '../../shared/model/Attendance';
-import { Student } from '../../shared/model/Student';
+import { IAttendance } from '../../shared/model/Attendance';
+import { IStudent } from '../../shared/model/Student';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
@@ -23,7 +23,7 @@ import {
 } from './student.dto';
 
 @Injectable()
-export class StudentService implements CRUDService<Student, StudentDTO, StudentDocument> {
+export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
   constructor(
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => TeamService))
@@ -74,7 +74,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    *
    * @throws `NotFoundException` - If the tutorial or the team of the student could not be found.
    */
-  async create(dto: StudentDTO): Promise<Student> {
+  async create(dto: StudentDTO): Promise<IStudent> {
     const { tutorial: tutorialId, team: teamId, ...rest } = dto;
     const tutorial = await this.tutorialService.findById(tutorialId);
     const team = !!teamId
@@ -102,7 +102,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    *
    * @throws `NotFoundException` - If the no student with the given ID or if the new tutorial (if it changes) or the new team of the student could not be found.
    */
-  async update(id: string, dto: StudentDTO): Promise<Student> {
+  async update(id: string, dto: StudentDTO): Promise<IStudent> {
     const student = await this.findById(id);
 
     if (dto.tutorial !== student.tutorial.id) {
@@ -154,7 +154,7 @@ export class StudentService implements CRUDService<Student, StudentDTO, StudentD
    *
    * @throws `NotFoundException` - If no student with the given ID could be found.
    */
-  async setAttendance(id: string, dto: AttendanceDTO): Promise<Attendance> {
+  async setAttendance(id: string, dto: AttendanceDTO): Promise<IAttendance> {
     const student = await this.findById(id);
     const attendance = AttendanceModel.fromDTO(dto);
 

@@ -2,15 +2,15 @@ import { Table, TableBody, TableCell, TableHead, TableProps, TableRow } from '@m
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
 import React from 'react';
-import { Attendance, AttendanceState } from 'shared/model/Attendance';
-import { Student } from 'shared/model/Student';
-import { Tutorial } from 'shared/model/Tutorial';
+import { IAttendance, AttendanceState } from 'shared/model/Attendance';
+import { IStudent } from 'shared/model/Student';
+import { ITutorial } from 'shared/model/Tutorial';
 import AttendanceControls from '../../../../components/attendance-controls/AttendanceControls';
 import { parseDateToMapKey } from '../../../../util/helperFunctions';
 
 interface Props extends TableProps {
-  student: Student;
-  tutorialOfStudent: Tutorial;
+  student: IStudent;
+  tutorialOfStudent: ITutorial;
   onAttendanceChange: (date: Date, attendance?: AttendanceState) => void;
   onNoteChange: (date: Date, note: string) => void;
 }
@@ -39,7 +39,7 @@ function AttendanceInformation({
             const formattedDate = format(date, 'dd. MMMM yyyy', {
               locale: deLocale,
             });
-            const attendance: Attendance | undefined = student.attendance[dateKey];
+            const attendance: IAttendance | undefined = student.attendance[dateKey];
 
             return (
               <TableRow key={dateKey}>

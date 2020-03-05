@@ -13,7 +13,7 @@ import {
   UseGuards,
   Put,
 } from '@nestjs/common';
-import { Team } from '../../shared/model/Team';
+import { ITeam } from '../../shared/model/Team';
 import { TeamService } from './team.service';
 import { TeamDTO } from './team.dto';
 import { TeamGuard } from '../../guards/team.guard';
@@ -25,7 +25,7 @@ export class TeamController {
 
   @Get()
   @UseGuards(TeamGuard)
-  async getAllTeamsInTutorial(@Param('id') tutorialId: string): Promise<Team[]> {
+  async getAllTeamsInTutorial(@Param('id') tutorialId: string): Promise<ITeam[]> {
     const teams = await this.teamService.findAllTeamsInTutorial(tutorialId);
 
     return teams.map(team => team.toDTO());
@@ -34,7 +34,10 @@ export class TeamController {
   @Post()
   @UseGuards(TeamGuard)
   @UsePipes(ValidationPipe)
-  async createTeamInTutorial(@Param('id') tutorialId: string, @Body() dto: TeamDTO): Promise<Team> {
+  async createTeamInTutorial(
+    @Param('id') tutorialId: string,
+    @Body() dto: TeamDTO
+  ): Promise<ITeam> {
     const team = await this.teamService.createTeamInTutorial(tutorialId, dto);
 
     return team;
@@ -45,7 +48,7 @@ export class TeamController {
   async getTeamInTutorial(
     @Param('id') tutorialId: string,
     @Param('teamId') teamId: string
-  ): Promise<Team> {
+  ): Promise<ITeam> {
     const team = await this.teamService.findById({ tutorialId, teamId });
 
     return team.toDTO();
@@ -58,7 +61,7 @@ export class TeamController {
     @Param('id') tutorialId: string,
     @Param('teamId') teamId: string,
     @Body() dto: TeamDTO
-  ): Promise<Team> {
+  ): Promise<ITeam> {
     const team = await this.teamService.updateTeamInTutorial({ tutorialId, teamId }, dto);
 
     return team;

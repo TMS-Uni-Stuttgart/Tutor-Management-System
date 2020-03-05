@@ -4,23 +4,23 @@ import { assertExercise, assertExerciseDTOs } from '../../../test/helpers/test.a
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedScheinexamModel, SCHEINEXAM_DOCUMENTS } from '../../../test/mocks/documents.mock';
-import { ScheinExam } from '../../shared/model/Scheinexam';
+import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ScheinExamDTO } from './scheinexam.dto';
 import { ScheinexamService } from './scheinexam.service';
 
 interface AssertScheinexamParams {
   expected: MockedScheinexamModel;
-  actual: ScheinExam;
+  actual: IScheinExam;
 }
 
 interface AssertScheinexamListParams {
   expected: MockedScheinexamModel[];
-  actual: ScheinExam[];
+  actual: IScheinExam[];
 }
 
 interface AssertScheinexamDTOParams {
   expected: ScheinExamDTO;
-  actual: ScheinExam;
+  actual: IScheinExam;
 }
 
 /**

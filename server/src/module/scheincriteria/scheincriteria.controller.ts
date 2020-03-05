@@ -16,7 +16,7 @@ import { TutorialGuard } from '../../guards/tutorial.guard';
 import { FormDataResponse } from '../../shared/model/FormTypes';
 import { Role } from '../../shared/model/Role';
 import {
-  ScheinCriteriaResponse,
+  IScheinCriteria,
   ScheinCriteriaSummary,
   ScheincriteriaSummaryByStudents,
   CriteriaInformation,
@@ -30,7 +30,7 @@ export class ScheincriteriaController {
 
   @Get()
   @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
-  async getAllCriterias(): Promise<ScheinCriteriaResponse[]> {
+  async getAllCriterias(): Promise<IScheinCriteria[]> {
     const scheincriterias = await this.scheincriteriaService.findAll();
 
     return scheincriterias.map(criteria => criteria.toDTO());
@@ -39,7 +39,7 @@ export class ScheincriteriaController {
   @Post()
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async createCriteria(@Body() dto: ScheinCriteriaDTO): Promise<ScheinCriteriaResponse> {
+  async createCriteria(@Body() dto: ScheinCriteriaDTO): Promise<IScheinCriteria> {
     const scheincriteria = await this.scheincriteriaService.create(dto);
 
     return scheincriteria;
@@ -51,7 +51,7 @@ export class ScheincriteriaController {
   async updateCriteria(
     @Param('id') id: string,
     @Body() dto: ScheinCriteriaDTO
-  ): Promise<ScheinCriteriaResponse> {
+  ): Promise<IScheinCriteria> {
     const scheincritera = await this.scheincriteriaService.update(id, dto);
 
     return scheincritera;

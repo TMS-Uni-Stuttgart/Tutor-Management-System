@@ -1,8 +1,8 @@
 import axios from './Axios';
-import { Sheet, ISheetDTO } from 'shared/model/Sheet';
+import { ISheet, ISheetDTO } from 'shared/model/Sheet';
 
-export async function getAllSheets(): Promise<Sheet[]> {
-  const response = await axios.get<Sheet[]>('sheet');
+export async function getAllSheets(): Promise<ISheet[]> {
+  const response = await axios.get<ISheet[]>('sheet');
 
   if (response.status === 200) {
     return response.data.sort((a, b) => a.sheetNo - b.sheetNo);
@@ -11,8 +11,8 @@ export async function getAllSheets(): Promise<Sheet[]> {
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function getSheet(sheetId: string): Promise<Sheet> {
-  const response = await axios.get<Sheet>(`sheet/${sheetId}`);
+export async function getSheet(sheetId: string): Promise<ISheet> {
+  const response = await axios.get<ISheet>(`sheet/${sheetId}`);
 
   if (response.status === 200) {
     return response.data;
@@ -21,8 +21,8 @@ export async function getSheet(sheetId: string): Promise<Sheet> {
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function createSheet(sheetInfo: ISheetDTO): Promise<Sheet> {
-  const response = await axios.post<Sheet>('sheet', sheetInfo);
+export async function createSheet(sheetInfo: ISheetDTO): Promise<ISheet> {
+  const response = await axios.post<ISheet>('sheet', sheetInfo);
 
   if (response.status === 201) {
     return response.data;
@@ -31,8 +31,8 @@ export async function createSheet(sheetInfo: ISheetDTO): Promise<Sheet> {
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function editSheet(id: string, sheetInfo: ISheetDTO): Promise<Sheet> {
-  const response = await axios.patch<Sheet>(`sheet/${id}`, sheetInfo);
+export async function editSheet(id: string, sheetInfo: ISheetDTO): Promise<ISheet> {
+  const response = await axios.patch<ISheet>(`sheet/${id}`, sheetInfo);
 
   if (response.status === 200) {
     return response.data;

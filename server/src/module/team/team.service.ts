@@ -10,7 +10,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { StudentDocument } from '../../database/models/student.model';
 import { populateTeamDocument, TeamDocument, TeamModel } from '../../database/models/team.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
-import { Team } from '../../shared/model/Team';
+import { ITeam } from '../../shared/model/Team';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { TeamDTO } from './team.dto';
@@ -79,7 +79,7 @@ export class TeamService {
    *
    * @throws `NotFoundException` - If no tutorial with the given ID could be found or if any student provided by the DTO could not be found.
    */
-  async createTeamInTutorial(tutorialId: string, { students }: TeamDTO): Promise<Team> {
+  async createTeamInTutorial(tutorialId: string, { students }: TeamDTO): Promise<ITeam> {
     const tutorial = await this.tutorialService.findById(tutorialId);
     const studentDocs = await Promise.all(students.map(id => this.studentService.findById(id)));
 
@@ -112,7 +112,7 @@ export class TeamService {
    *
    * @throws `NotFoundException` - If not team with the given ID could be found in the tutorial or if any of the provided students in the DTO could not be found.
    */
-  async updateTeamInTutorial(teamId: TeamID, { students }: TeamDTO): Promise<Team> {
+  async updateTeamInTutorial(teamId: TeamID, { students }: TeamDTO): Promise<ITeam> {
     const team = await this.findById(teamId);
     const newStudentsOfTeam = await Promise.all(
       students.map(id => this.studentService.findById(id))

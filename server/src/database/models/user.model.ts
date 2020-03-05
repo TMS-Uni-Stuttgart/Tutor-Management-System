@@ -6,7 +6,7 @@ import { Role } from 'src/shared/model/Role';
 import { CollectionName } from '../../helpers/CollectionName';
 import { databaseConfig } from '../../helpers/config';
 import { NoFunctions } from '../../helpers/NoFunctions';
-import { User } from '../../shared/model/User';
+import { IUser } from '../../shared/model/User';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { TutorialDocument } from './tutorial.model';
 
@@ -101,7 +101,7 @@ export class UserModel {
   /**
    * @returns The DTO representation of the document.
    */
-  toDTO(this: UserDocument): User {
+  toDTO(this: UserDocument): IUser {
     this.decryptFieldsSync();
 
     const {

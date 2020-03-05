@@ -19,7 +19,7 @@ import {
   PointId,
   PointMap,
 } from 'shared/model/Points';
-import { Exercise, HasExercises } from 'shared/model/Sheet';
+import { IExercise, HasExercises } from 'shared/model/Sheet';
 
 interface Props extends Omit<TableContainerProps, 'ref'> {
   points: PointMap;
@@ -36,7 +36,7 @@ function TablePaper({ children, ...props }: TableContainerBaseProps): JSX.Elemen
   );
 }
 
-function getPointStringOfExercise(exercise: Exercise): string {
+function getPointStringOfExercise(exercise: IExercise): string {
   const pointInfo = getPointsOfExercise(exercise);
 
   return convertExercisePointInfoToString(pointInfo);

@@ -2,8 +2,8 @@ import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import { PointMap } from 'shared/model/Points';
-import { ScheinExam } from 'shared/model/Scheinexam';
-import { Student } from 'shared/model/Student';
+import { IScheinExam } from 'shared/model/Scheinexam';
+import { IStudent } from 'shared/model/Student';
 import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
 import Placeholder from '../../../../components/Placeholder';
 import PointsTable from '../../../../components/points-table/PointsTable';
@@ -19,15 +19,15 @@ const useStyles = makeStyles(theme =>
 );
 
 interface Props extends BoxProps {
-  student: Student;
-  exams: ScheinExam[];
+  student: IStudent;
+  exams: IScheinExam[];
 }
 
 function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element {
   const classes = useStyles();
 
   const [pointsOfStudent, setPointsOfStudent] = useState<PointMap>();
-  const [selectedSheet, setSelectedSheet] = useState<ScheinExam>();
+  const [selectedSheet, setSelectedSheet] = useState<IScheinExam>();
 
   useEffect(() => {
     if (!!student) {

@@ -4,23 +4,23 @@ import { assertExercise, assertExerciseDTOs } from '../../../test/helpers/test.a
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedSheetModel, SHEET_DOCUMENTS } from '../../../test/mocks/documents.mock';
-import { Sheet } from '../../shared/model/Sheet';
+import { ISheet } from '../../shared/model/Sheet';
 import { SheetDTO } from './sheet.dto';
 import { SheetService } from './sheet.service';
 
 interface AssertSheetParams {
   expected: MockedSheetModel;
-  actual: Sheet;
+  actual: ISheet;
 }
 
 interface AssertSheetListParams {
   expected: MockedSheetModel[];
-  actual: Sheet[];
+  actual: ISheet[];
 }
 
 interface AssertSheetDTOParams {
   expected: SheetDTO;
-  actual: Sheet;
+  actual: ISheet;
 }
 
 /**

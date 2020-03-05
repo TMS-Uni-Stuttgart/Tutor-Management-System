@@ -2,7 +2,7 @@ import { DocumentType, modelOptions, mongoose, post, prop } from '@typegoose/typ
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { Scheincriteria } from '../../module/scheincriteria/container/Scheincriteria';
-import { ScheinCriteriaResponse } from '../../shared/model/ScheinCriteria';
+import { IScheinCriteria } from '../../shared/model/ScheinCriteria';
 
 /**
  * Transforms the criteria to an actual object instance.
@@ -36,8 +36,8 @@ export class ScheincriteriaModel {
   @prop({ required: true, type: mongoose.Schema.Types.Mixed })
   criteria!: Scheincriteria;
 
-  toDTO(this: ScheincriteriaDocument): ScheinCriteriaResponse {
-    const data: ScheinCriteriaResponse['data'] = {};
+  toDTO(this: ScheincriteriaDocument): IScheinCriteria {
+    const data: IScheinCriteria['data'] = {};
 
     for (const key in JSON.parse(JSON.stringify(this.criteria))) {
       if (key !== 'identifier') {

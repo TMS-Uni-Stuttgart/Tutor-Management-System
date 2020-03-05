@@ -3,8 +3,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Account as StudentIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ScheinExam } from 'shared/model/Scheinexam';
-import { Student } from 'shared/model/Student';
+import { IScheinExam } from 'shared/model/Scheinexam';
+import { IStudent } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { getEnterPointsForScheinexamPath } from '../../../../routes/Routing.helpers';
@@ -20,11 +20,11 @@ const useStyles = makeStyles(() =>
 
 interface Props {
   tutorialId: string;
-  student: Student;
-  exam: ScheinExam;
+  student: IStudent;
+  exam: IScheinExam;
 }
 
-function getTeamDisplayString(student: Student): string {
+function getTeamDisplayString(student: IStudent): string {
   return !!student.team ? `Team ${student.team.teamNo.toString().padStart(2, '0')}` : 'Ohne Team';
 }
 

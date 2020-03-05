@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Student } from 'shared/model/Student';
-import { ScheinExam } from 'shared/model/Scheinexam';
+import { IStudent } from 'shared/model/Student';
+import { IScheinExam } from 'shared/model/Scheinexam';
 import {
   ScheinexamPointsFormSubmitCallback,
   generateInitialValues,
@@ -57,8 +57,8 @@ const useStyles = makeStyles(theme =>
 );
 
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
-  student: Student;
-  exam: ScheinExam;
+  student: IStudent;
+  exam: IScheinExam;
   onSubmit: ScheinexamPointsFormSubmitCallback;
 }
 

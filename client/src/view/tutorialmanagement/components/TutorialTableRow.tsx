@@ -6,7 +6,7 @@ import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTabl
 import { renderLink } from '../../../components/drawer/components/renderLink';
 import { RoutingPath } from '../../../routes/Routing.routes';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-import { Tutorial } from '../../../../../server/src/shared/model/Tutorial';
+import { ITutorial } from '../../../../../server/src/shared/model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,11 +28,11 @@ interface Substitute {
 }
 
 interface Props extends PaperTableRowProps {
-  tutorial: Tutorial;
+  tutorial: ITutorial;
   substitutes: Substitute[];
   correctors: string[];
-  onEditTutorialClicked: (tutorial: Tutorial) => void;
-  onDeleteTutorialClicked: (tutorial: Tutorial) => void;
+  onEditTutorialClicked: (tutorial: ITutorial) => void;
+  onDeleteTutorialClicked: (tutorial: ITutorial) => void;
 }
 
 function TutorialTableRow({

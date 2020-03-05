@@ -15,10 +15,10 @@ import {
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
 import { Role } from '../../shared/model/Role';
-import { Tutorial } from '../../shared/model/Tutorial';
+import { ITutorial } from '../../shared/model/Tutorial';
 import { TutorialDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
-import { Student } from '../../shared/model/Student';
+import { IStudent } from '../../shared/model/Student';
 
 @Controller('tutorial')
 export class TutorialController {
@@ -26,7 +26,7 @@ export class TutorialController {
 
   @Get()
   @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
-  async getAllTutorials(): Promise<Tutorial[]> {
+  async getAllTutorials(): Promise<ITutorial[]> {
     const tutorials = await this.tutorialService.findAll();
 
     return tutorials.map(tutorial => tutorial.toDTO());
@@ -35,7 +35,7 @@ export class TutorialController {
   @Post()
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async createTutorial(@Body() dto: TutorialDTO): Promise<Tutorial> {
+  async createTutorial(@Body() dto: TutorialDTO): Promise<ITutorial> {
     const tutorial = await this.tutorialService.create(dto);
 
     return tutorial;
@@ -43,7 +43,7 @@ export class TutorialController {
 
   @Get('/:id')
   @UseGuards(TutorialGuard)
-  async getTutorial(@Param('id') id: string): Promise<Tutorial> {
+  async getTutorial(@Param('id') id: string): Promise<ITutorial> {
     const tutorial = await this.tutorialService.findById(id);
 
     return tutorial.toDTO();
@@ -52,7 +52,7 @@ export class TutorialController {
   @Patch('/:id')
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async updateTutorial(@Param('id') id: string, @Body() dto: TutorialDTO): Promise<Tutorial> {
+  async updateTutorial(@Param('id') id: string, @Body() dto: TutorialDTO): Promise<ITutorial> {
     const tutorial = await this.tutorialService.update(id, dto);
 
     return tutorial;
@@ -67,7 +67,7 @@ export class TutorialController {
 
   @Get('/:id/student')
   @UseGuards(TutorialGuard)
-  async getAllStudentsOfTutorial(@Param('id') id: string): Promise<Student[]> {
+  async getAllStudentsOfTutorial(@Param('id') id: string): Promise<IStudent[]> {
     const students = await this.tutorialService.getAllStudentsOfTutorial(id);
 
     return students.map(s => s.toDTO());

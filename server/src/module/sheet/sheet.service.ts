@@ -4,11 +4,11 @@ import { InjectModel } from 'nestjs-typegoose';
 import { ExerciseModel, ExerciseDocument } from '../../database/models/exercise.model';
 import { SheetDocument, SheetModel } from '../../database/models/sheet.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { Sheet } from '../../shared/model/Sheet';
+import { ISheet } from '../../shared/model/Sheet';
 import { SheetDTO } from './sheet.dto';
 
 @Injectable()
-export class SheetService implements CRUDService<Sheet, SheetDTO, SheetDocument> {
+export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument> {
   constructor(
     @InjectModel(SheetModel)
     private readonly sheetModel: ReturnModelType<typeof SheetModel>
@@ -60,7 +60,7 @@ export class SheetService implements CRUDService<Sheet, SheetDTO, SheetDocument>
    *
    * @returns Created sheet.
    */
-  async create(dto: SheetDTO): Promise<Sheet> {
+  async create(dto: SheetDTO): Promise<ISheet> {
     const { sheetNo, bonusSheet, exercises } = dto;
 
     const sheet = new SheetModel({
@@ -86,7 +86,7 @@ export class SheetService implements CRUDService<Sheet, SheetDTO, SheetDocument>
    *
    * @throws `NotFoundException` - If there is no sheet available with the given ID.
    */
-  async update(id: string, dto: SheetDTO): Promise<Sheet> {
+  async update(id: string, dto: SheetDTO): Promise<ISheet> {
     const sheet = await this.findById(id);
 
     sheet.sheetNo = dto.sheetNo;

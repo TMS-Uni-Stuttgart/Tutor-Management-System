@@ -1,18 +1,18 @@
-import { Exercise, HasExercises } from './Sheet';
+import { IExercise, HasExercises } from './Sheet';
 
-export interface ExerciseGrading {
+export interface IExerciseGrading {
   points: number;
   comment?: string;
   additionalPoints?: number;
   subExercisePoints?: [string, number][];
 }
 
-export interface Grading {
+export interface IGrading {
   id: string;
   points: number;
   comment?: string;
   additionalPoints?: number;
-  exerciseGradings: [string, ExerciseGrading][];
+  exerciseGradings: [string, IExerciseGrading][];
 }
 
 export interface IExerciseGradingDTO {
@@ -47,7 +47,7 @@ export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo)
   }
 }
 
-export function getPointsOfExercise(exercise: Exercise): ExercisePointInfo {
+export function getPointsOfExercise(exercise: IExercise): ExercisePointInfo {
   const points: ExercisePointInfo = { must: 0, bonus: 0 };
 
   if (exercise.subexercises.length === 0) {

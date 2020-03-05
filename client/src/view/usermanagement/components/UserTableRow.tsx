@@ -6,7 +6,7 @@ import { Role } from 'shared/model/Role';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-import { User } from 'shared/model/User';
+import { IUser } from 'shared/model/User';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -17,10 +17,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props extends PaperTableRowProps {
-  user: User;
-  onEditUserClicked: (user: User) => void;
-  onDeleteUserClicked: (user: User) => void;
-  onSendCredentialsClicked: (user: User) => void;
+  user: IUser;
+  onEditUserClicked: (user: IUser) => void;
+  onDeleteUserClicked: (user: IUser) => void;
+  onSendCredentialsClicked: (user: IUser) => void;
 }
 
 function getRolesAsString(roles: Role[]): string {

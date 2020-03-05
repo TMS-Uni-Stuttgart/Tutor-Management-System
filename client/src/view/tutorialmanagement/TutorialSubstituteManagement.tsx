@@ -5,8 +5,8 @@ import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Role } from 'shared/model/Role';
-import { SubstituteDTO, Tutorial } from 'shared/model/Tutorial';
-import { User } from 'shared/model/User';
+import { ISubstituteDTO, ITutorial } from 'shared/model/Tutorial';
+import { IUser } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../components/BackButton';
 import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
@@ -72,7 +72,7 @@ interface Params {
 
 type Props = RouteComponentProps<Params>;
 
-function getInitialValues(tutorial?: Tutorial): TutorialSubstituteFormState {
+function getInitialValues(tutorial?: ITutorial): TutorialSubstituteFormState {
   if (!tutorial) {
     return {
       dates: [],
@@ -97,8 +97,8 @@ function getInitialValues(tutorial?: Tutorial): TutorialSubstituteFormState {
 function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element {
   const classes = useStyles();
 
-  const [tutors, setTutors] = useState<User[]>([]);
-  const [tutorial, setTutorial] = useState<Tutorial | undefined>(undefined);
+  const [tutors, setTutors] = useState<IUser[]>([]);
+  const [tutorial, setTutorial] = useState<ITutorial | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   const { getTutorial, getUsersWithRole, setSubstituteTutor } = useAxios();
@@ -142,15 +142,15 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
       }
     });
 
-    const noSubDTO: SubstituteDTO = {
+    const noSubDTO: ISubstituteDTO = {
       tutorId: undefined,
       dates: datesWithoutSubstitute.map(d => new Date(d).toDateString()),
     };
 
-    let response: Tutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
+    let response: ITutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
 
     for (const [tutor, dates] of Object.entries(datesOfSubstitutes)) {
-      const dto: SubstituteDTO = {
+      const dto: ISubstituteDTO = {
         tutorId: tutor,
         dates: dates.map(d => new Date(d).toDateString()),
       };

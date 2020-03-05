@@ -12,7 +12,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { Sheet } from '../../shared/model/Sheet';
+import { ISheet } from '../../shared/model/Sheet';
 import { SheetDTO } from './sheet.dto';
 import { SheetService } from './sheet.service';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
@@ -25,7 +25,7 @@ export class SheetController {
 
   @Get()
   @UseGuards(AuthenticatedGuard)
-  async getAllSheets(): Promise<Sheet[]> {
+  async getAllSheets(): Promise<ISheet[]> {
     const sheets = await this.sheetService.findAll();
 
     return sheets.map(sheet => sheet.toDTO());
@@ -34,7 +34,7 @@ export class SheetController {
   @Post()
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async createSheet(@Body() dto: SheetDTO): Promise<Sheet> {
+  async createSheet(@Body() dto: SheetDTO): Promise<ISheet> {
     const sheet = await this.sheetService.create(dto);
 
     return sheet;
@@ -42,7 +42,7 @@ export class SheetController {
 
   @Get('/:id')
   @UseGuards(AuthenticatedGuard)
-  async getSheet(@Param('id') id: string): Promise<Sheet> {
+  async getSheet(@Param('id') id: string): Promise<ISheet> {
     const sheet = await this.sheetService.findById(id);
 
     return sheet.toDTO();
@@ -51,7 +51,7 @@ export class SheetController {
   @Patch('/:id')
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async updateSheet(@Param('id') id: string, @Body() dto: SheetDTO): Promise<Sheet> {
+  async updateSheet(@Param('id') id: string, @Body() dto: SheetDTO): Promise<ISheet> {
     const sheet = await this.sheetService.update(id, dto);
 
     return sheet;

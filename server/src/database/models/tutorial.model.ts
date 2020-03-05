@@ -4,7 +4,7 @@ import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
-import { Tutorial } from '../../shared/model/Tutorial';
+import { ITutorial } from '../../shared/model/Tutorial';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { StudentDocument } from './student.model';
 import { TeamDocument } from './team.model';
@@ -140,7 +140,7 @@ export class TutorialModel {
    *
    * @returns The DTO representation of this document.
    */
-  toDTO(this: TutorialDocument): Tutorial {
+  toDTO(this: TutorialDocument): ITutorial {
     const { id, slot, tutor, dates, startTime, endTime, students, correctors, teams } = this;
     const substitutes: Map<string, string> = new Map();
 

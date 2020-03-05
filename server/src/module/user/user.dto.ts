@@ -1,8 +1,8 @@
-import { NewPasswordDTO, IUserDTO, ICreateUserDTO } from '../../shared/model/User';
+import { INewPasswordDTO, IUserDTO, ICreateUserDTO } from '../../shared/model/User';
 import { IsNotEmpty, IsString, IsArray, IsEnum, IsEmail } from 'class-validator';
 import { Role } from '../../shared/model/Role';
 
-export class PasswordDTO implements NewPasswordDTO {
+export class PasswordDTO implements INewPasswordDTO {
   @IsNotEmpty()
   password!: string;
 }

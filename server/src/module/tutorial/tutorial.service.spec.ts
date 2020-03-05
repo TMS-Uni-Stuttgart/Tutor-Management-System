@@ -14,25 +14,25 @@ import {
 } from '../../../test/mocks/documents.mock.helpers';
 import { TutorialModel } from '../../database/models/tutorial.model';
 import { Role } from '../../shared/model/Role';
-import { Tutorial } from '../../shared/model/Tutorial';
+import { ITutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
 import { TutorialDTO } from './tutorial.dto';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
-  actual: Tutorial;
+  actual: ITutorial;
 }
 
 interface AssertTutorialListParams {
   expected: MockedModel<TutorialModel>[];
-  actual: Tutorial[];
+  actual: ITutorial[];
 }
 
 interface AssertTutorialDTOParams {
   expected: TutorialDTO;
-  actual: Tutorial;
-  oldTutorial?: Tutorial;
+  actual: ITutorial;
+  oldTutorial?: ITutorial;
 }
 
 /**

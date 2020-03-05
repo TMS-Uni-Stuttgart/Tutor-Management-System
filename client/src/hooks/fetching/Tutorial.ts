@@ -1,5 +1,5 @@
-import { Student } from 'shared/model/Student';
-import { ITutorialDTO, SubstituteDTO, Tutorial } from 'shared/model/Tutorial';
+import { IStudent } from 'shared/model/Student';
+import { ITutorialDTO, ISubstituteDTO, ITutorial } from 'shared/model/Tutorial';
 import { sortByName } from 'shared/util/helpers';
 import {
   StudentByTutorialSlotSummaryMap,
@@ -14,8 +14,8 @@ import axios from './Axios';
 import { getUser } from './User';
 import { getScheinCriteriaSummaryOfAllStudents } from './Scheincriteria';
 
-export async function getAllTutorials(): Promise<Tutorial[]> {
-  const response = await axios.get<Tutorial[]>('tutorial', {
+export async function getAllTutorials(): Promise<ITutorial[]> {
+  const response = await axios.get<ITutorial[]>('tutorial', {
     transformResponse: transformMultipleTutorialResponse,
   });
 
@@ -48,8 +48,8 @@ export async function getAllTutorialsAndFetchStudents(): Promise<TutorialWithFet
   return Promise.all(promises);
 }
 
-export async function getTutorial(id: string): Promise<Tutorial> {
-  const response = await axios.get<Tutorial>(`tutorial/${id}`, {
+export async function getTutorial(id: string): Promise<ITutorial> {
+  const response = await axios.get<ITutorial>(`tutorial/${id}`, {
     transformResponse: transformTutorialResponse,
   });
 
@@ -75,8 +75,8 @@ export async function getTutorialAndFetchTutorAndStudents(
   return { ...tutorial, students };
 }
 
-export async function createTutorial(tutorialInformation: ITutorialDTO): Promise<Tutorial> {
-  const response = await axios.post<Tutorial>('tutorial', tutorialInformation, {
+export async function createTutorial(tutorialInformation: ITutorialDTO): Promise<ITutorial> {
+  const response = await axios.post<ITutorial>('tutorial', tutorialInformation, {
     transformResponse: transformTutorialResponse,
   });
 
@@ -98,8 +98,8 @@ export async function createTutorialAndFetchTutor(
 export async function editTutorial(
   id: string,
   tutorialInformation: ITutorialDTO
-): Promise<Tutorial> {
-  const response = await axios.patch<Tutorial>(`tutorial/${id}`, tutorialInformation, {
+): Promise<ITutorial> {
+  const response = await axios.patch<ITutorial>(`tutorial/${id}`, tutorialInformation, {
     transformResponse: transformTutorialResponse,
   });
 
@@ -127,8 +127,8 @@ export async function deleteTutorial(id: string): Promise<void> {
   }
 }
 
-export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
-  const response = await axios.get<Student[]>(`tutorial/${id}/student`);
+export async function getStudentsOfTutorial(id: string): Promise<IStudent[]> {
+  const response = await axios.get<IStudent[]>(`tutorial/${id}/student`);
 
   if (response.status === 200) {
     return response.data.sort(sortByName);
@@ -139,8 +139,8 @@ export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
 
 export async function setSubstituteTutor(
   id: string,
-  substituteDTO: SubstituteDTO
-): Promise<Tutorial> {
+  substituteDTO: ISubstituteDTO
+): Promise<ITutorial> {
   const response = await axios.put(`tutorial/${id}/substitute`, substituteDTO, {
     transformResponse: transformTutorialResponse,
   });
@@ -152,7 +152,7 @@ export async function setSubstituteTutor(
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-async function fetchTutorOfTutorial(tutorial: Tutorial): Promise<TutorialWithFetchedTutor> {
+async function fetchTutorOfTutorial(tutorial: ITutorial): Promise<TutorialWithFetchedTutor> {
   const tutor = tutorial.tutor ? await getUser(tutorial.tutor) : undefined;
 
   return { ...tutorial, tutor };

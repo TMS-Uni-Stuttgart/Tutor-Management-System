@@ -2,7 +2,7 @@ import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { ScheinExam } from 'shared/model/Scheinexam';
+import { IScheinExam } from 'shared/model/Scheinexam';
 import BackButton from '../../../components/BackButton';
 import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
@@ -12,7 +12,7 @@ import {
 } from '../../../routes/Routing.helpers';
 import Placeholder from '../../../components/Placeholder';
 import CustomSelect from '../../../components/CustomSelect';
-import { Student } from 'shared/model/Student';
+import { IStudent } from 'shared/model/Student';
 import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { getNameOfEntity } from 'shared/util/helpers';
@@ -57,9 +57,9 @@ function EnterScheinexamPoints(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const { setError, isError } = useErrorSnackbar();
 
-  const [exam, setExam] = useState<ScheinExam>();
-  const [student, setStudent] = useState<Student>();
-  const [allStudents, setAllStudents] = useState<Student[]>([]);
+  const [exam, setExam] = useState<IScheinExam>();
+  const [student, setStudent] = useState<IStudent>();
+  const [allStudents, setAllStudents] = useState<IStudent[]>([]);
 
   useEffect(() => {
     getScheinexam(examId)

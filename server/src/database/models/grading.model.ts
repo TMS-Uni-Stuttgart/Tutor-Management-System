@@ -9,7 +9,7 @@ import {
 } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
-import { ExerciseGrading, Grading } from '../../shared/model/Points';
+import { IExerciseGrading, IGrading } from '../../shared/model/Points';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 import { StudentDocument, StudentModel } from './student.model';
 
@@ -102,7 +102,7 @@ export class ExerciseGradingModel {
     this.subExercisePoints = !!subExercisePoints ? new Map(subExercisePoints) : undefined;
   }
 
-  toDTO(this: ExerciseGradingDocument): ExerciseGrading {
+  toDTO(this: ExerciseGradingDocument): IExerciseGrading {
     const { comment, additionalPoints, points, subExercisePoints } = this;
 
     return {
@@ -225,9 +225,9 @@ export class GradingModel {
     }
   }
 
-  toDTO(this: GradingDocument): Grading {
+  toDTO(this: GradingDocument): IGrading {
     const { id, comment, additionalPoints, points } = this;
-    const exerciseGradings: Map<string, ExerciseGrading> = new Map();
+    const exerciseGradings: Map<string, IExerciseGrading> = new Map();
 
     for (const [key, exGrading] of this.exerciseGradings) {
       exerciseGradings.set(key, exGrading.toDTO());

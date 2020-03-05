@@ -14,7 +14,7 @@ import {
 import { DialogProps } from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useState } from 'react';
-import { Student } from 'shared/model/Student';
+import { IStudent } from 'shared/model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,7 +45,7 @@ export interface TeamData {
 interface Props extends DialogProps {
   onClose?: () => void;
   onSave: (teamData: TeamData) => void;
-  students: Student[];
+  students: IStudent[];
 }
 
 function CreateTeamDialog({ open, onSave, onClose, students, ...other }: Props): JSX.Element {
@@ -83,7 +83,7 @@ function CreateTeamDialog({ open, onSave, onClose, students, ...other }: Props):
     }
   }
 
-  function onStudentSelectionChanged(student: Student, isSelected: boolean) {
+  function onStudentSelectionChanged(student: IStudent, isSelected: boolean) {
     setSelected({
       ...selected,
       [student.id]: isSelected,

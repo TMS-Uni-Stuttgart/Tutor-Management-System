@@ -1,8 +1,8 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { ScheinExam } from 'shared/model/Scheinexam';
-import { Student } from 'shared/model/Student';
+import { IScheinExam } from 'shared/model/Scheinexam';
+import { IStudent } from 'shared/model/Student';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
@@ -41,9 +41,9 @@ function ScheinexamPointsOverview(): JSX.Element {
 
   const { setError } = useErrorSnackbar();
 
-  const [students, setStudents] = useState<Student[]>([]);
-  const [exams, setExams] = useState<ScheinExam[]>([]);
-  const [selectedExam, setSelectedExam] = useState<ScheinExam>();
+  const [students, setStudents] = useState<IStudent[]>([]);
+  const [exams, setExams] = useState<IScheinExam[]>([]);
+  const [selectedExam, setSelectedExam] = useState<IScheinExam>();
 
   useEffect(() => {
     getAllScheinExams()

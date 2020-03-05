@@ -1,14 +1,14 @@
 import { TableCell, Typography } from '@material-ui/core';
 import React from 'react';
-import { Sheet } from 'shared/model/Sheet';
+import { ISheet } from 'shared/model/Sheet';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { getPointsOfEntityAsString } from '../../points-sheet/util/helper';
 
 interface Props extends PaperTableRowProps {
-  sheet: Sheet;
-  onEditSheetClicked: (sheet: Sheet) => void;
-  onDeleteSheetClicked: (sheet: Sheet) => void;
+  sheet: ISheet;
+  onEditSheetClicked: (sheet: ISheet) => void;
+  onDeleteSheetClicked: (sheet: ISheet) => void;
 }
 
 function SheetRow({

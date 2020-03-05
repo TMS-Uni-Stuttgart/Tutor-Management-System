@@ -1,5 +1,5 @@
 import { PointId, PointMap, PointMapEntry, PointsOfSubexercises } from 'shared/model/Points';
-import { Exercise, Sheet } from 'shared/model/Sheet';
+import { IExercise, ISheet } from 'shared/model/Sheet';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasPoints } from '../../../../typings/types';
 
@@ -24,15 +24,15 @@ export type PointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
 interface InitialValuesOptions {
   entity: HasPoints;
-  sheet: Sheet;
+  sheet: ISheet;
 }
 
 interface GeneratePointsSubexerciseParams {
-  exercise: Exercise;
+  exercise: IExercise;
   pointsOfTeam: PointMapEntry;
 }
 
-export function getDefaultPointMapEntry(exercise: Exercise): PointMapEntry {
+export function getDefaultPointMapEntry(exercise: IExercise): PointMapEntry {
   if (exercise.subexercises.length > 0) {
     const points: PointsOfSubexercises = {};
 

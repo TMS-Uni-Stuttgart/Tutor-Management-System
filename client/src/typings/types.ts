@@ -1,30 +1,30 @@
 import { HasId } from 'shared/model/Common';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
-import { Student } from 'shared/model/Student';
-import { Tutorial } from 'shared/model/Tutorial';
-import { User } from 'shared/model/User';
+import { IStudent } from 'shared/model/Student';
+import { ITutorial } from 'shared/model/Tutorial';
+import { IUser } from 'shared/model/User';
 
-export interface UserWithFetchedTutorials extends Omit<User, 'tutorials' | 'tutorialsToCorrect'> {
-  tutorials: Tutorial[];
-  tutorialsToCorrect: Tutorial[];
+export interface UserWithFetchedTutorials extends Omit<IUser, 'tutorials' | 'tutorialsToCorrect'> {
+  tutorials: ITutorial[];
+  tutorialsToCorrect: ITutorial[];
 }
 
-export interface TutorialWithFetchedTutor extends Omit<Tutorial, 'tutor'> {
-  tutor?: User;
+export interface TutorialWithFetchedTutor extends Omit<ITutorial, 'tutor'> {
+  tutor?: IUser;
 }
 
-export interface TutorialWithFetchedStudents extends Omit<Tutorial, 'students'> {
+export interface TutorialWithFetchedStudents extends Omit<ITutorial, 'students'> {
   // tutor?: User;
-  students: Student[];
+  students: IStudent[];
 }
 
-export interface TutorialWithFetchedCorrectors extends Omit<Tutorial, 'tutor' | 'correctors'> {
-  tutor?: User;
-  correctors: User[];
+export interface TutorialWithFetchedCorrectors extends Omit<ITutorial, 'tutor' | 'correctors'> {
+  tutor?: IUser;
+  correctors: IUser[];
 }
 
 // FIXME: Remove me after replaced everywhere.
-export type StudentWithFetchedTeam = Student;
+export type StudentWithFetchedTeam = IStudent;
 
 export interface HasPoints extends HasId {
   points: PointMapDTO;

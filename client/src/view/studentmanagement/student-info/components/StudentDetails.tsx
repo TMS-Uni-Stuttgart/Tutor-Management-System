@@ -1,10 +1,10 @@
 import React from 'react';
-import { Student, StudentStatus } from 'shared/model/Student';
+import { IStudent, StudentStatus } from 'shared/model/Student';
 import InfoPaper, { InfoPaperProps } from '../../../../components/info-paper/InfoPaper';
 import { Table, TableBody, TableRow, TableCell } from '@material-ui/core';
 
 interface Props extends Omit<InfoPaperProps, 'title'> {
-  student: Student;
+  student: IStudent;
 }
 
 const STATUS_TO_STRING: { [key in StudentStatus]: string } = {

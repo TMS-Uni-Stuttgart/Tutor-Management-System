@@ -6,9 +6,9 @@ import { Row, RowMap } from 'fast-csv/build/src/parser';
 import FileSaver from 'file-saver';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { Attendance } from 'shared/model/Attendance';
+import { IAttendance } from 'shared/model/Attendance';
 import { PointMap } from 'shared/model/Points';
-import { Tutorial } from 'shared/model/Tutorial';
+import { ITutorial } from 'shared/model/Tutorial';
 import SubmitButton from '../../components/loading/SubmitButton';
 import { getScheinStatusPDF, getClearScheinStatusPDF } from '../../hooks/fetching/Files';
 import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
@@ -48,7 +48,7 @@ function AdminStudentManagement(): JSX.Element {
 
   const [isCreatingCSVFile, setCreatingCSVFile] = useState(false);
   const [isCreatingScheinStatus, setCreatingScheinStatus] = useState(false);
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+  const [tutorials, setTutorials] = useState<ITutorial[]>([]);
 
   const [{ students }] = useStudentStore();
   const { enqueueSnackbar } = useSnackbar();
@@ -129,7 +129,7 @@ function AdminStudentManagement(): JSX.Element {
       }
 
       for (const date of Object.values(attendance).map(at => at.date)) {
-        const attendanceOfDate: Attendance = attendance[parseDateToMapKey(new Date(date))];
+        const attendanceOfDate: IAttendance = attendance[parseDateToMapKey(new Date(date))];
         data[`date-${format(new Date(date), 'yyyy-MM-dd')}`] = attendanceOfDate.state || '';
       }
 
