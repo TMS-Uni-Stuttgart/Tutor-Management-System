@@ -1,11 +1,11 @@
 import { Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { compareAsc, format } from 'date-fns';
 import { Formik } from 'formik';
+import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Role } from 'shared/model/Role';
-import { ISubstituteDTO, ITutorial } from 'shared/model/Tutorial';
+import { ISubstituteDTO } from 'shared/model/Tutorial';
 import { IUser } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../components/BackButton';
@@ -16,10 +16,16 @@ import FormikMultipleDatesPicker, {
 } from '../../components/forms/components/FormikMultipleDatesPicker';
 import FormikSelect from '../../components/forms/components/FormikSelect';
 import SubmitButton from '../../components/loading/SubmitButton';
-import { useAxios } from '../../hooks/FetchingService';
-import { FormikSubmitCallback } from '../../types';
-import { getDisplayStringForTutorial, parseDateToMapKey } from '../../util/helperFunctions';
+import { getTutorial, setSubstituteTutor } from '../../hooks/fetching/Tutorial';
+import { getUsersWithRole } from '../../hooks/fetching/User';
+import { Tutorial } from '../../model/Tutorial';
 import { RoutingPath } from '../../routes/Routing.routes';
+import { FormikSubmitCallback } from '../../types';
+import {
+  compareDateTimes,
+  getDisplayStringForTutorial,
+  parseDateToMapKey,
+} from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,7 +78,7 @@ interface Params {
 
 type Props = RouteComponentProps<Params>;
 
-function getInitialValues(tutorial?: ITutorial): TutorialSubstituteFormState {
+function getInitialValues(tutorial?: Tutorial): TutorialSubstituteFormState {
   if (!tutorial) {
     return {
       dates: [],
@@ -80,15 +86,11 @@ function getInitialValues(tutorial?: ITutorial): TutorialSubstituteFormState {
     };
   }
 
-  const dates = tutorial.dates
-    .sort((a, b) => compareAsc(new Date(a), new Date(b)))
-    .map(date => new Date(date).toDateString());
-
+  const dates = tutorial.dates.sort(compareDateTimes).map(parseDateToMapKey);
   const substitutes: { [key: string]: string } = {};
 
-  tutorial.dates.forEach(d => {
-    const date = new Date(d);
-    substitutes[date.toDateString()] = tutorial.substitutes[parseDateToMapKey(date)] || '';
+  tutorial.dates.forEach(date => {
+    substitutes[parseDateToMapKey(date)] = tutorial.getSubstitute(date)?.id || '';
   });
 
   return { dates, substitutes };
@@ -98,10 +100,8 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
   const classes = useStyles();
 
   const [tutors, setTutors] = useState<IUser[]>([]);
-  const [tutorial, setTutorial] = useState<ITutorial | undefined>(undefined);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-
-  const { getTutorial, getUsersWithRole, setSubstituteTutor } = useAxios();
+  const [tutorial, setTutorial] = useState<Tutorial | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<DateTime | undefined>(undefined);
 
   useEffect(() => {
     getTutorial(params.tutorialid)
@@ -118,7 +118,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
       return;
     }
 
-    setSelectedDate(new Date(date));
+    setSelectedDate(DateTime.fromISO(date));
   };
 
   const handleSubmit: FormikSubmitCallback<TutorialSubstituteFormState> = async (
@@ -147,7 +147,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
       dates: datesWithoutSubstitute.map(d => new Date(d).toDateString()),
     };
 
-    let response: ITutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
+    let response: Tutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
 
     for (const [tutor, dates] of Object.entries(datesOfSubstitutes)) {
       const dto: ISubstituteDTO = {
@@ -197,11 +197,11 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                   {selectedDate ? (
                     <>
                       <Typography className={classes.choosenDateLabel}>
-                        Gewähltes Datum: {format(selectedDate, 'dd.MM.yy')}
+                        Gewähltes Datum: {selectedDate.toFormat('dd.MM.yy')}
                       </Typography>
 
                       <FormikSelect
-                        name={`substitutes.${selectedDate.toDateString()}`}
+                        name={`substitutes.${parseDateToMapKey(selectedDate)}`}
                         label='Ersatztutor'
                         emptyPlaceholder='Keine Tutoren vorhanden.'
                         nameOfNoneItem='Keine Vertretung'

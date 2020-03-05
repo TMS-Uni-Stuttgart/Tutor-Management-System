@@ -23,9 +23,6 @@ export interface TutorialWithFetchedCorrectors extends Omit<ITutorial, 'tutor' |
   correctors: IUser[];
 }
 
-// FIXME: Remove me after replaced everywhere.
-export type StudentWithFetchedTeam = IStudent;
-
 export interface HasPoints extends HasId {
   points: PointMapDTO;
 }

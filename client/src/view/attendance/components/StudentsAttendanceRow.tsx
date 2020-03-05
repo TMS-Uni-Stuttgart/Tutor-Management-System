@@ -7,9 +7,9 @@ import AttendanceControls from '../../../components/attendance-controls/Attendan
 import { NoteFormCallback } from '../../../components/attendance-controls/components/AttendanceNotePopper';
 import PaperTableRow from '../../../components/PaperTableRow';
 import StudentAvatar from '../../../components/student-icon/StudentAvatar';
-import { StudentWithFetchedTeam } from '../../../typings/types';
 import { getAttendanceColor } from './AttendanceButton';
 import CakeCount from './CakeCount';
+import { Student } from '../../../model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  student: StudentWithFetchedTeam;
+  student: Student;
   attendance: IAttendance | undefined;
   onAttendanceSelection: (state?: AttendanceState) => void;
   onNoteSave: NoteFormCallback;

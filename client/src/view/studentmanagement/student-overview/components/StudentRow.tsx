@@ -8,12 +8,13 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
-import { IStudent, TeamInStudent } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
+import { TeamInStudent } from '../../../../../../server/src/shared/model/Student';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
 import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
+import { Student } from '../../../../model/Student';
 import { getStudentInfoPath } from '../../../../routes/Routing.helpers';
 import ScheinStatusBox from '../../student-info/components/ScheinStatusBox';
 import { useStudentStore } from '../../student-store/StudentStore';
@@ -33,10 +34,10 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-type StudentCallback = (student: IStudent) => void;
+type StudentCallback = (student: Student) => void;
 
 interface Props extends PaperTableRowProps {
-  student: IStudent;
+  student: Student;
   onEdit: StudentCallback;
   onDelete: StudentCallback;
   onChangeTutorial?: StudentCallback;

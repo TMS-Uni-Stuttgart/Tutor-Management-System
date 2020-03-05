@@ -1,10 +1,11 @@
+import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import React from 'react';
-import { IStudent, StudentStatus } from 'shared/model/Student';
+import { StudentStatus } from '../../../../../../server/src/shared/model/Student';
 import InfoPaper, { InfoPaperProps } from '../../../../components/info-paper/InfoPaper';
-import { Table, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { Student } from '../../../../model/Student';
 
 interface Props extends Omit<InfoPaperProps, 'title'> {
-  student: IStudent;
+  student: Student;
 }
 
 const STATUS_TO_STRING: { [key in StudentStatus]: string } = {

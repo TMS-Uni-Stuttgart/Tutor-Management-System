@@ -1,34 +1,31 @@
 import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { IAttendance, AttendanceDTO, AttendanceState } from 'shared/model/Attendance';
+import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
-import { ISheet } from 'shared/model/Sheet';
-import { IStudent } from 'shared/model/Student';
-import { ITutorial } from 'shared/model/Tutorial';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../../components/BackButton';
 import Placeholder from '../../../components/Placeholder';
 import TabPanel from '../../../components/TabPanel';
+import { getScheinCriteriaSummaryOfStudent } from '../../../hooks/fetching/Scheincriteria';
+import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
-import {
-  getScheinCriteriaSummaryOfStudent,
-  getStudent,
-  setAttendanceOfStudent,
-} from '../../../hooks/fetching/Student';
+import { getStudent, setAttendanceOfStudent } from '../../../hooks/fetching/Student';
 import { getTutorial } from '../../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { Scheinexam } from '../../../model/Scheinexam';
+import { Sheet } from '../../../model/Sheet';
+import { Student } from '../../../model/Student';
+import { Tutorial } from '../../../model/Tutorial';
 import { getStudentOverviewPath } from '../../../routes/Routing.helpers';
-import { parseDateToMapKey } from '../../../util/helperFunctions';
 import AttendanceInformation from './components/AttendanceInformation';
 import CriteriaCharts from './components/CriteriaCharts';
 import EvaluationInformation from './components/EvaluationInformation';
 import ScheinExamInformation from './components/ScheinExamInformation';
 import ScheinStatusBox from './components/ScheinStatusBox';
-import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
-import { IScheinExam } from 'shared/model/Scheinexam';
 import StudentDetails from './components/StudentDetails';
 
 const useStyles = makeStyles(theme =>
@@ -62,10 +59,10 @@ function StudentInfo(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
-  const [student, setStudent] = useState<IStudent>();
-  const [sheets, setSheets] = useState<ISheet[]>([]);
-  const [exams, setExams] = useState<IScheinExam[]>([]);
-  const [tutorialOfStudent, setTutorialOfStudent] = useState<ITutorial>();
+  const [student, setStudent] = useState<Student>();
+  const [sheets, setSheets] = useState<Sheet[]>([]);
+  const [exams, setExams] = useState<Scheinexam[]>([]);
+  const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
   const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
   const [selectedTab, setSelectedTab] = React.useState(0);
 
@@ -89,7 +86,7 @@ function StudentInfo(): JSX.Element {
         enqueueSnackbar('Scheinstatus konnte nicht abgerufen werden.', { variant: 'error' });
       });
 
-    getTutorial(student.tutorial)
+    getTutorial(student.tutorial.id)
       .then(response => {
         setTutorialOfStudent(response);
       })
@@ -116,18 +113,18 @@ function StudentInfo(): JSX.Element {
     setSelectedTab(newValue);
   };
 
-  const handleStudentAttendanceChange = (student?: IStudent) => async (
-    date: Date,
+  const handleStudentAttendanceChange = (student?: Student) => async (
+    date: DateTime,
     attendanceState?: AttendanceState
   ) => {
     if (!student) {
       return;
     }
 
-    const attendance: IAttendance | undefined = student.attendance[parseDateToMapKey(date)];
-    const attendanceDTO: AttendanceDTO = {
+    const attendance: IAttendance | undefined = student.getAttendance(date);
+    const attendanceDTO: IAttendanceDTO = {
       state: attendanceState,
-      date: date.toDateString(),
+      date: date.toISODate(),
       note: attendance?.note ?? '',
     };
 
@@ -141,15 +138,15 @@ function StudentInfo(): JSX.Element {
     }
   };
 
-  const handleStudentNoteChange = (student: IStudent) => async (date: Date, note: string) => {
+  const handleStudentNoteChange = (student: Student) => async (date: DateTime, note: string) => {
     if (!student) {
       return;
     }
 
-    const attendance: IAttendance | undefined = student.attendance[parseDateToMapKey(date)];
-    const attendanceDTO: AttendanceDTO = {
+    const attendance: IAttendance | undefined = student.getAttendance(date);
+    const attendanceDTO: IAttendanceDTO = {
       state: attendance?.state,
-      date: date.toDateString(),
+      date: date.toISODate(),
       note,
     };
 

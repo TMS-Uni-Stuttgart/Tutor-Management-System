@@ -3,8 +3,6 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useState } from 'react';
-import { IStudent } from 'shared/model/Student';
-import { ITutorial } from 'shared/model/Tutorial';
 import { getNameOfEntity } from 'shared/util/helpers';
 import CustomSelect from '../../../components/CustomSelect';
 import StudentForm from '../../../components/forms/StudentForm';
@@ -13,6 +11,8 @@ import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
 import { useDialog } from '../../../hooks/DialogService';
+import { Student } from '../../../model/Student';
+import { Tutorial } from '../../../model/Tutorial';
 import { useStudentStore } from '../student-store/StudentStore';
 import StudentRow from './components/StudentRow';
 import {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  tutorials?: ITutorial[];
+  tutorials?: Tutorial[];
   allowChangeTutorial?: boolean;
   additionalTopBarItem?: React.ReactNode;
 }
@@ -69,7 +69,7 @@ function Studentoverview({
     return <LoadingSpinner />;
   }
 
-  function openEditDialog(student: IStudent) {
+  function openEditDialog(student: Student) {
     dialog.show({
       title: 'Student bearbeiten',
       content: (
@@ -87,7 +87,7 @@ function Studentoverview({
     });
   }
 
-  function openDeleteDialog(student: IStudent) {
+  function openDeleteDialog(student: Student) {
     const nameOfStudent = getNameOfEntity(student);
 
     dialog.show({
@@ -109,7 +109,7 @@ function Studentoverview({
     });
   }
 
-  function openChangeTutorialDialog(student: IStudent) {
+  function openChangeTutorialDialog(student: Student) {
     if (!tutorials) {
       return;
     }
@@ -180,7 +180,7 @@ function Studentoverview({
     </>
   );
 
-  const createRowFromItem = (student: IStudent) => (
+  const createRowFromItem = (student: Student) => (
     <StudentRow
       className={classes.studentRow}
       student={student}

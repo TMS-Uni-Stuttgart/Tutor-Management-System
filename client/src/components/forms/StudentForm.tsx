@@ -2,16 +2,16 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { FormikHelpers } from 'formik';
 import { AlertOutline as AlertIcon } from 'mdi-material-ui';
 import React, { useRef } from 'react';
-import { ITeam } from 'shared/model/Team';
+import { StudentStatus } from 'shared/model/Student';
+import { getNameOfEntity } from 'shared/util/helpers';
 import * as Yup from 'yup';
+import { Student } from '../../model/Student';
 import { FormikSubmitCallback } from '../../types';
-import { StudentWithFetchedTeam } from '../../typings/types';
+import { teamItemToString } from '../../util/helperFunctions';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { getNameOfEntity } from 'shared/util/helpers';
-import { StudentStatus } from 'shared/model/Student';
-import { teamItemToString } from '../../util/helperFunctions';
+import { Team } from '../../model/Team';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,8 +61,8 @@ interface StudentFormState {
 
 interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsedFormProps> {
   onSubmit: StudentFormSubmitCallback;
-  student?: StudentWithFetchedTeam;
-  otherStudents: StudentWithFetchedTeam[];
+  student?: Student;
+  otherStudents: Student[];
   teams?: ITeam[];
 }
 
@@ -86,10 +86,7 @@ function getNextTeamWithSlot(teams: ITeam[]): string {
   return CREATE_NEW_TEAM_VALUE;
 }
 
-export function getInitialStudentFormState(
-  teams?: ITeam[],
-  student?: StudentWithFetchedTeam
-): StudentFormState {
+export function getInitialStudentFormState(teams?: Team[], student?: Student): StudentFormState {
   if (student) {
     return {
       lastname: student.lastname,

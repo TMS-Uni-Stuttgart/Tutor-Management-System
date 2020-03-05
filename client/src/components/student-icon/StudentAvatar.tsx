@@ -2,15 +2,16 @@ import { Tooltip } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
-import { Account as PersonIcon } from 'mdi-material-ui';
 import clsx from 'clsx';
 import {
+  Account as PersonIcon,
   FileCheck as NoScheinRequiredIcon,
   MessageAlert as WarningIcon,
   Sleep as InactiveIcon,
 } from 'mdi-material-ui';
 import React from 'react';
-import { IStudent, StudentStatus } from 'shared/model/Student';
+import { StudentStatus } from '../../../../server/src/shared/model/Student';
+import { Student } from '../../model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,10 +22,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface StudentAvatarProps {
-  student: IStudent;
+  student: Student;
 }
 
-function getStudentIcon(student: IStudent): React.FunctionComponent<SvgIconProps> {
+function getStudentIcon(student: Student): React.FunctionComponent<SvgIconProps> {
   switch (student.status) {
     case StudentStatus.INACTIVE:
       return InactiveIcon;
@@ -40,7 +41,7 @@ function getStudentIcon(student: IStudent): React.FunctionComponent<SvgIconProps
   return PersonIcon;
 }
 
-function getStudentTooltip(student: IStudent): string | undefined {
+function getStudentTooltip(student: Student): string | undefined {
   switch (student.status) {
     case StudentStatus.INACTIVE:
       return 'Student/in ist inaktiv.';

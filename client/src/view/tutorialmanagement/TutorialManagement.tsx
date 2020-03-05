@@ -1,4 +1,5 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { DateTime } from 'luxon';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { HasId } from 'shared/model/Common';
@@ -21,9 +22,9 @@ import {
   getAllTutorials,
 } from '../../hooks/fetching/Tutorial';
 import { getUsersWithRole } from '../../hooks/fetching/User';
-import { getDisplayStringForTutorial } from '../../util/helperFunctions';
-import TutorialTableRow from './components/TutorialTableRow';
 import { Tutorial } from '../../model/Tutorial';
+import { getDisplayStringForTutorial, compareDateTimes } from '../../util/helperFunctions';
+import TutorialTableRow from './components/TutorialTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -206,11 +207,11 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
                   const tutor = tutors.find(t => t.id === id);
 
                   return {
-                    date: new Date(date),
+                    date: DateTime.fromISO(date),
                     name: tutor ? getNameOfEntity(tutor) : 'TUTOR_NOT_FOUND',
                   };
                 })
-                .sort((a, b) => compareAsc(a.date, b.date))}
+                .sort((a, b) => compareDateTimes(a.date, b.date))}
               onEditTutorialClicked={handleEditTutorial}
               onDeleteTutorialClicked={handleDeleteTutorial}
             />

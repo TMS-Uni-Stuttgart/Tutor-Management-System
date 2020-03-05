@@ -1,11 +1,13 @@
-import { IStudent, StudentStatus, TeamInStudent } from '../../../server/src/shared/model/Student';
-import { IAttendance } from '../../../server/src/shared/model/Attendance';
-import { TutorialInEntity } from '../../../server/src/shared/model/Common';
-import { Modify } from '../typings/Modify';
-import { getNameOfEntity } from '../../../server/src/shared/util/helpers';
-import { Grading } from './Grading';
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
+import { IAttendance } from '../../../server/src/shared/model/Attendance';
+import { TutorialInEntity } from '../../../server/src/shared/model/Common';
+import { HasExercises } from '../../../server/src/shared/model/Sheet';
+import { IStudent, StudentStatus, TeamInStudent } from '../../../server/src/shared/model/Student';
+import { getNameOfEntity } from '../../../server/src/shared/util/helpers';
+import { Modify } from '../typings/Modify';
+import { parseDateToMapKey } from '../util/helperFunctions';
+import { Grading } from './Grading';
 import { Sheet } from './Sheet';
 
 interface Modified {
@@ -45,7 +47,7 @@ export class Student implements Modify<IStudent, Modified> {
    * @returns Attendance of the given date or `undefined`.
    */
   getAttendance(date: DateTime): IAttendance | undefined {
-    return this.attendances.get(this.getDateKey(date));
+    return this.attendances.get(parseDateToMapKey(date));
   }
 
   /**
@@ -55,7 +57,7 @@ export class Student implements Modify<IStudent, Modified> {
    *
    * @returns Grading for the sheet or `undefined`.
    */
-  getGrading(sheet: Sheet): Grading | undefined {
+  getGrading(sheet: HasExercises): Grading | undefined {
     return this.gradings.get(sheet.id);
   }
 
@@ -70,7 +72,18 @@ export class Student implements Modify<IStudent, Modified> {
     return this.presentationPoints.get(sheet.id);
   }
 
-  private getDateKey(date: DateTime): string {
-    return date.toISODate();
+  /**
+   * Returns a string for the team of this students.
+   *
+   * It is either:
+   * - 'Team XX' if the student is in a team (where 'XX' is the number) or
+   * - 'Ohne Team' if the student is NOT in a team.
+   */
+  getTeamString(): string {
+    if (!this.team) {
+      return 'Ohne Team';
+    }
+
+    return `Team ${this.team.teamNo.toString().padStart(2, '0')}`;
   }
 }

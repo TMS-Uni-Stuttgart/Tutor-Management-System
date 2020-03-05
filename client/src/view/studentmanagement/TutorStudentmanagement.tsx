@@ -4,7 +4,7 @@ import _ from 'lodash';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
-import { StudentWithFetchedTeam } from '../../typings/types';
+import { Student } from '../../model/Student';
 import Studentoverview from './student-overview/Studentoverview';
 import StudentoverviewStoreProvider from './student-store/StudentStore';
 
@@ -35,10 +35,7 @@ function unifyFilterableText(text: string): string {
   return _.deburr(text).toLowerCase();
 }
 
-export function getFilteredStudents(
-  students: StudentWithFetchedTeam[],
-  filterText: string
-): StudentWithFetchedTeam[] {
+export function getFilteredStudents(students: Student[], filterText: string): Student[] {
   if (!filterText) {
     return students;
   }

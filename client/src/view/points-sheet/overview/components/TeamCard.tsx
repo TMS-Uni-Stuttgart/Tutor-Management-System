@@ -18,19 +18,17 @@ import {
 } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ISheet } from 'shared/model/Sheet';
-import { ITeam } from 'shared/model/Team';
 import { getNameOfEntity } from 'shared/util/helpers';
-import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
-import { useDialog } from '../../../../hooks/DialogService';
-import {
-  getEnterPointsForTeamPath,
-  getEnterPointsForStudentPath,
-} from '../../../../routes/Routing.helpers';
-import SplitButton from '../../../../components/SplitButton';
-import PointsTable from '../../../../components/points-table/PointsTable';
 import { renderLink } from '../../../../components/drawer/components/renderLink';
-import { PointMap } from 'shared/model/Points';
+import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
+import SplitButton from '../../../../components/SplitButton';
+import { useDialog } from '../../../../hooks/DialogService';
+import { Sheet } from '../../../../model/Sheet';
+import { Team } from '../../../../model/Team';
+import {
+  getEnterPointsForStudentPath,
+  getEnterPointsForTeamPath,
+} from '../../../../routes/Routing.helpers';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -42,14 +40,14 @@ const useStyles = makeStyles(() =>
 
 interface Props {
   tutorialId: string;
-  team: ITeam;
-  sheet: ISheet;
-  onPdfPreviewClicked: (team: ITeam) => void;
-  onGeneratePdfClicked: (team: ITeam) => void;
+  team: Team;
+  sheet: Sheet;
+  onPdfPreviewClicked: (team: Team) => void;
+  onGeneratePdfClicked: (team: Team) => void;
 }
 
-function teamToString(team: ITeam): string {
-  return `Team #${team.teamNo.toString().padStart(2, '0')}`;
+function teamToString(team: Team): string {
+  return `Team #${team.getTeamNoAsString()}`;
 }
 
 function TeamCard({
@@ -138,7 +136,10 @@ function TeamCard({
       />
 
       <CardContent>
-        <PointsTable points={new PointMap(team.points)} sheet={sheet} />
+        {/* <PointsTable grading={new PointMap(team.points)} sheet={sheet} /> */}
+        {/* TODO: Re-add the display of the grading of the 'team' */}
+        <div>WORK IN PROGESS</div>
+        <div>Teambewertung wieder anzeigen!</div>
       </CardContent>
 
       <CardActions className={classes.actions}>

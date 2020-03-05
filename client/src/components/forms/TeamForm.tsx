@@ -1,7 +1,7 @@
 import React from 'react';
-import { ITeam } from 'shared/model/Team';
+import { Student } from '../../model/Student';
+import { Team } from '../../model/Team';
 import { FormikSubmitCallback } from '../../types';
-import { StudentWithFetchedTeam } from '../../typings/types';
 import FormikFilterableSelect from './components/FormikFilterableSelect';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 
@@ -14,12 +14,12 @@ interface TeamFormState {
 }
 
 interface Props extends Omit<FormikBaseFormProps<TeamFormState>, CommonlyUsedFormProps> {
-  team?: ITeam;
+  team?: Team;
   onSubmit: TeamFormSubmitCallback;
-  students: StudentWithFetchedTeam[];
+  students: Student[];
 }
 
-function getInitialFormState(team?: ITeam): TeamFormState {
+function getInitialFormState(team?: Team): TeamFormState {
   if (team) {
     return {
       filter: '',
