@@ -1,44 +1,47 @@
+import { plainToClass } from 'class-transformer';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { IGradingDTO, IPresentationPointsDTO } from 'shared/model/Points';
-import { ICakeCountDTO, IStudentDTO, IStudent } from 'shared/model/Student';
+import { ICakeCountDTO, IStudent, IStudentDTO } from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
+import { Student } from '../../model/Student';
 import axios from './Axios';
 
-export async function getAllStudents(): Promise<IStudent[]> {
+export async function getAllStudents(): Promise<Student[]> {
   const response = await axios.get<IStudent[]>('student');
 
   if (response.status === 200) {
-    return response.data.sort(sortByName);
+    const data = plainToClass(Student, response.data);
+    return data.sort(sortByName);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getStudent(studentId: string): Promise<IStudent> {
+export async function getStudent(studentId: string): Promise<Student> {
   const response = await axios.get<IStudent>(`student/${studentId}`);
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Student, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createStudent(studentInfo: IStudentDTO): Promise<IStudent> {
+export async function createStudent(studentInfo: IStudentDTO): Promise<Student> {
   const response = await axios.post<IStudent>('student', studentInfo);
 
   if (response.status === 201) {
-    return response.data;
+    return plainToClass(Student, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editStudent(id: string, studentInfo: IStudentDTO): Promise<IStudent> {
+export async function editStudent(id: string, studentInfo: IStudentDTO): Promise<Student> {
   const response = await axios.patch<IStudent>(`student/${id}`, studentInfo);
 
   if (response.status === 200) {
-    return response.data;
+    return plainToClass(Student, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
