@@ -1,5 +1,5 @@
-import { UpdatePointsDTO } from 'shared/model/Points';
-import { Team, TeamDTO } from 'shared/model/Team';
+import { IGradingDTO } from 'shared/model/Points';
+import { Team, ITeamDTO } from 'shared/model/Team';
 import axios from './Axios';
 
 function sortStudentsOfTeam(team: Team) {
@@ -33,7 +33,7 @@ export async function getTeamOfTutorial(tutorialId: string, teamId: string): Pro
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function createTeam(tutorialId: string, teamInfo: TeamDTO): Promise<Team> {
+export async function createTeam(tutorialId: string, teamInfo: ITeamDTO): Promise<Team> {
   const response = await axios.post<Team>(`tutorial/${tutorialId}/team`, teamInfo);
 
   if (response.status === 201) {
@@ -48,7 +48,7 @@ export async function createTeam(tutorialId: string, teamInfo: TeamDTO): Promise
 export async function editTeam(
   tutorialId: string,
   teamId: string,
-  teamInfo: TeamDTO
+  teamInfo: ITeamDTO
 ): Promise<Team> {
   const response = await axios.patch<Team>(`tutorial/${tutorialId}/team/${teamId}`, teamInfo);
 
@@ -72,9 +72,9 @@ export async function deleteTeam(tutorialId: string, teamId: string): Promise<vo
 export async function setPointsOfTeam(
   tutorialId: string,
   teamId: string,
-  points: UpdatePointsDTO
+  points: IGradingDTO
 ): Promise<void> {
-  const response = await axios.put(`tutorial/${tutorialId}/team/${teamId}/point`, points);
+  const response = await axios.put(`tutorial/${tutorialId}/team/${teamId}/grading`, points);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong status code (${response.status}).`);

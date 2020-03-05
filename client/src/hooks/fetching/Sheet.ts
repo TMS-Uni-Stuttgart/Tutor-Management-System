@@ -1,5 +1,5 @@
 import axios from './Axios';
-import { Sheet, SheetDTO } from 'shared/model/Sheet';
+import { Sheet, ISheetDTO } from 'shared/model/Sheet';
 
 export async function getAllSheets(): Promise<Sheet[]> {
   const response = await axios.get<Sheet[]>('sheet');
@@ -21,7 +21,7 @@ export async function getSheet(sheetId: string): Promise<Sheet> {
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function createSheet(sheetInfo: SheetDTO): Promise<Sheet> {
+export async function createSheet(sheetInfo: ISheetDTO): Promise<Sheet> {
   const response = await axios.post<Sheet>('sheet', sheetInfo);
 
   if (response.status === 201) {
@@ -31,7 +31,7 @@ export async function createSheet(sheetInfo: SheetDTO): Promise<Sheet> {
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function editSheet(id: string, sheetInfo: SheetDTO): Promise<Sheet> {
+export async function editSheet(id: string, sheetInfo: ISheetDTO): Promise<Sheet> {
   const response = await axios.patch<Sheet>(`sheet/${id}`, sheetInfo);
 
   if (response.status === 200) {

@@ -1,10 +1,12 @@
-import axios from './Axios';
-import { FormDataResponse } from '../../components/generatedForm/types/FieldData';
 import {
-  ScheinCriteriaResponse,
-  ScheinCriteriaDTO,
   CriteriaInformation,
+  IScheinCriteriaDTO,
+  ScheinCriteriaResponse,
+  ScheincriteriaSummaryByStudents,
+  ScheinCriteriaSummary,
 } from 'shared/model/ScheinCriteria';
+import { FormDataResponse } from '../../components/generatedForm/types/FieldData';
+import axios from './Axios';
 
 export async function getAllScheinCriterias(): Promise<ScheinCriteriaResponse[]> {
   const response = await axios.get<ScheinCriteriaResponse[]>('scheincriteria');
@@ -39,7 +41,7 @@ export async function getScheinCriteriaFormData(): Promise<FormDataResponse> {
 }
 
 export async function createScheinCriteria(
-  criteriaInfo: ScheinCriteriaDTO
+  criteriaInfo: IScheinCriteriaDTO
 ): Promise<ScheinCriteriaResponse> {
   const response = await axios.post<ScheinCriteriaResponse>('scheincriteria', criteriaInfo);
 
@@ -52,7 +54,7 @@ export async function createScheinCriteria(
 
 export async function editScheinCriteria(
   id: string,
-  criteriaInfo: ScheinCriteriaDTO
+  criteriaInfo: IScheinCriteriaDTO
 ): Promise<ScheinCriteriaResponse> {
   const response = await axios.patch<ScheinCriteriaResponse>(`/scheincriteria/${id}`, criteriaInfo);
 
@@ -69,4 +71,42 @@ export async function deleteScheinCriteria(id: string): Promise<void> {
   if (response.status !== 204) {
     return Promise.reject(`Wrong response code (${response.status}).`);
   }
+}
+
+export async function getScheinCriteriaSummariesOfAllStudentsOfTutorial(
+  id: string
+): Promise<ScheincriteriaSummaryByStudents> {
+  const response = await axios.get<ScheincriteriaSummaryByStudents>(
+    `scheincriteria/tutorial/${id}`
+  );
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
+export async function getScheinCriteriaSummaryOfStudent(
+  studentId: string
+): Promise<ScheinCriteriaSummary> {
+  const response = await axios.get<ScheinCriteriaSummary>(`/scheincriteria/student/${studentId}`);
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong status code (${response.status}).`);
+}
+
+export async function getScheinCriteriaSummaryOfAllStudents(): Promise<
+  ScheincriteriaSummaryByStudents
+> {
+  const response = await axios.get<ScheincriteriaSummaryByStudents>(`/scheincriteria/student`);
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong status code (${response.status}).`);
 }
