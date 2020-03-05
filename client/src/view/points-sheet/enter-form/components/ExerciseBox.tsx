@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useField } from 'formik';
 import React from 'react';
 import { convertExercisePointInfoToString, getPointsOfExercise } from 'shared/model/Points';
-import { Exercise } from 'shared/model/Sheet';
+import { IExercise } from 'shared/model/Sheet';
 import FormikMarkdownTextfield from '../../../../components/forms/components/FormikMarkdownTextfield';
 import PointsTextField from '../../../../components/PointsTextField';
 
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props extends React.ComponentProps<'div'> {
   name: string;
-  exercise: Exercise;
+  exercise: IExercise;
 }
 
 type ExerciseBoxSubexerciseFormState = { [subExId: string]: string };

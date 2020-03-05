@@ -17,12 +17,12 @@ import {
 import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
-import { Tutorial } from '../../shared/model/Tutorial';
+import { ITutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
 import { TutorialDTO } from './tutorial.dto';
 
 @Injectable()
-export class TutorialService implements CRUDService<Tutorial, TutorialDTO, TutorialDocument> {
+export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
@@ -70,7 +70,7 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
    *
    * @returns Created tutorial.
    */
-  async create(dto: TutorialDTO): Promise<Tutorial> {
+  async create(dto: TutorialDTO): Promise<ITutorial> {
     await this.assertTutorialSlot(dto.slot);
 
     const { slot, tutorId, correctorIds, startTime, endTime, dates } = dto;
@@ -111,7 +111,7 @@ export class TutorialService implements CRUDService<Tutorial, TutorialDTO, Tutor
    * @throws `BadRequestExpcetion` - If the tutor to be assigned does not have the TUTOR role or if any of the correctors to be assigned does not have the CORRECTOR role.
    * @throws `NotFoundException` - If the tutorial with the given ID or if the tutor with the ID in the DTO or if any corrector with the ID in the DTO could NOT be found.
    */
-  async update(id: string, dto: TutorialDTO): Promise<Tutorial> {
+  async update(id: string, dto: TutorialDTO): Promise<ITutorial> {
     const tutorial = await this.findById(id);
     const tutor = !!dto.tutorId ? await this.userService.findById(dto.tutorId) : undefined;
     const correctors = await Promise.all(

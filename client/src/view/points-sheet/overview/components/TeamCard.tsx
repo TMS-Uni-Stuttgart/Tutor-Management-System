@@ -18,8 +18,8 @@ import {
 } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sheet } from 'shared/model/Sheet';
-import { Team } from 'shared/model/Team';
+import { ISheet } from 'shared/model/Sheet';
+import { ITeam } from 'shared/model/Team';
 import { getNameOfEntity } from 'shared/util/helpers';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { useDialog } from '../../../../hooks/DialogService';
@@ -42,13 +42,13 @@ const useStyles = makeStyles(() =>
 
 interface Props {
   tutorialId: string;
-  team: Team;
-  sheet: Sheet;
-  onPdfPreviewClicked: (team: Team) => void;
-  onGeneratePdfClicked: (team: Team) => void;
+  team: ITeam;
+  sheet: ISheet;
+  onPdfPreviewClicked: (team: ITeam) => void;
+  onGeneratePdfClicked: (team: ITeam) => void;
 }
 
-function teamToString(team: Team): string {
+function teamToString(team: ITeam): string {
   return `Team #${team.teamNo.toString().padStart(2, '0')}`;
 }
 

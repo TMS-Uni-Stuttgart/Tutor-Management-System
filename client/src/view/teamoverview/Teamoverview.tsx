@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Team, ITeamDTO } from 'shared/model/Team';
+import { ITeam, ITeamDTO } from 'shared/model/Team';
 import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
@@ -58,7 +58,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [students, setStudents] = useState<StudentWithFetchedTeam[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<ITeam[]>([]);
   const dialog = useDialog();
   const {
     getStudent,
@@ -104,7 +104,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     }
   };
 
-  function handleDeleteTeam(team: Team) {
+  function handleDeleteTeam(team: ITeam) {
     dialog.show({
       title: 'Team löschen',
       content: `Soll Team ${team.teamNo} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden!`,
@@ -124,7 +124,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     });
   }
 
-  function deleteTeam(team: Team) {
+  function deleteTeam(team: ITeam) {
     deleteTeamRequest(params.tutorialId, team.id)
       .then(async () => {
         setTeams(teams.filter(u => u.id !== team.id));
@@ -141,7 +141,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       });
   }
 
-  const editTeam: (team: Team) => TeamFormSubmitCallback = team => async (
+  const editTeam: (team: ITeam) => TeamFormSubmitCallback = team => async (
     { students },
     { setSubmitting }
   ) => {
@@ -169,7 +169,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     }
   };
 
-  function handleEditTeam(team: Team) {
+  function handleEditTeam(team: ITeam) {
     dialog.show({
       title: `Team ${team.teamNo} bearbeiten`,
       content: (

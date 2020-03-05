@@ -1,11 +1,11 @@
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
-import { ICreateUserDTO, IUserDTO, NewPasswordDTO, User } from 'shared/model/User';
+import { ICreateUserDTO, IUserDTO, INewPasswordDTO, IUser } from 'shared/model/User';
 import { sortByName } from 'shared/util/helpers';
 import axios from './Axios';
 
-export async function getUsers(): Promise<User[]> {
-  const response = await axios.get<User[]>('user');
+export async function getUsers(): Promise<IUser[]> {
+  const response = await axios.get<IUser[]>('user');
 
   if (response.status === 200) {
     return response.data.sort(sortByName);
@@ -14,8 +14,8 @@ export async function getUsers(): Promise<User[]> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getUser(id: string): Promise<User> {
-  const response = await axios.get<User>(`user/${id}`);
+export async function getUser(id: string): Promise<IUser> {
+  const response = await axios.get<IUser>(`user/${id}`);
 
   if (response.status === 200) {
     return response.data;
@@ -24,14 +24,14 @@ export async function getUser(id: string): Promise<User> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getUsersWithRole(role: Role): Promise<User[]> {
+export async function getUsersWithRole(role: Role): Promise<IUser[]> {
   const allUsers = await getUsers();
 
   return allUsers.filter(u => u.roles.indexOf(role) !== -1);
 }
 
-export async function createUser(userInformation: ICreateUserDTO): Promise<User> {
-  const response = await axios.post<User>('user', userInformation);
+export async function createUser(userInformation: ICreateUserDTO): Promise<IUser> {
+  const response = await axios.post<IUser>('user', userInformation);
 
   if (response.status === 201) {
     return response.data;
@@ -40,8 +40,8 @@ export async function createUser(userInformation: ICreateUserDTO): Promise<User>
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editUser(userid: string, userInformation: IUserDTO): Promise<User> {
-  const response = await axios.patch<User>(`user/${userid}`, userInformation);
+export async function editUser(userid: string, userInformation: IUserDTO): Promise<IUser> {
+  const response = await axios.patch<IUser>(`user/${userid}`, userInformation);
 
   if (response.status === 200) {
     return response.data;
@@ -60,7 +60,7 @@ export async function deleteUser(userid: string): Promise<void> {
 
 export async function setTemporaryPassword(
   userid: string,
-  password: NewPasswordDTO
+  password: INewPasswordDTO
 ): Promise<void> {
   const response = await axios.post(`user/${userid}/temporarypassword`, password);
 

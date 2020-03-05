@@ -13,7 +13,7 @@ import {
   HttpStatus,
   Put,
 } from '@nestjs/common';
-import { Student } from '../../shared/model/Student';
+import { IStudent } from '../../shared/model/Student';
 import {
   StudentDTO,
   CakeCountDTO,
@@ -25,7 +25,7 @@ import { StudentService } from './student.service';
 import { Role } from '../../shared/model/Role';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
-import { Attendance } from '../../shared/model/Attendance';
+import { IAttendance } from '../../shared/model/Attendance';
 
 @Controller('student')
 export class StudentController {
@@ -33,7 +33,7 @@ export class StudentController {
 
   @Get()
   @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
-  async getAllStudents(): Promise<Student[]> {
+  async getAllStudents(): Promise<IStudent[]> {
     const students = await this.studentService.findAll();
 
     return students.map(user => user.toDTO());
@@ -42,7 +42,7 @@ export class StudentController {
   @Post()
   @UseGuards(new HasRoleGuard([Role.ADMIN, Role.TUTOR]))
   @UsePipes(ValidationPipe)
-  async createStudent(@Body() dto: StudentDTO): Promise<Student> {
+  async createStudent(@Body() dto: StudentDTO): Promise<IStudent> {
     // TODO: Guard -- Check if the student is created IN the tutorial of the calling tutor.
     const student = await this.studentService.create(dto);
 
@@ -51,7 +51,7 @@ export class StudentController {
 
   @Get('/:id')
   @UseGuards(StudentGuard)
-  async getStudent(@Param('id') id: string): Promise<Student> {
+  async getStudent(@Param('id') id: string): Promise<IStudent> {
     const student = await this.studentService.findById(id);
 
     return student.toDTO();
@@ -60,7 +60,7 @@ export class StudentController {
   @Patch('/:id')
   @UseGuards(StudentGuard)
   @UsePipes(ValidationPipe)
-  async updateStudent(@Param('id') id: string, @Body() dto: StudentDTO): Promise<Student> {
+  async updateStudent(@Param('id') id: string, @Body() dto: StudentDTO): Promise<IStudent> {
     const student = await this.studentService.update(id, dto);
 
     return student;
@@ -76,7 +76,10 @@ export class StudentController {
   @Put('/:id/attendance')
   @UseGuards(StudentGuard)
   @UsePipes(ValidationPipe)
-  async updateAttendance(@Param('id') id: string, @Body() dto: AttendanceDTO): Promise<Attendance> {
+  async updateAttendance(
+    @Param('id') id: string,
+    @Body() dto: AttendanceDTO
+  ): Promise<IAttendance> {
     const attendance = await this.studentService.setAttendance(id, dto);
 
     return attendance;

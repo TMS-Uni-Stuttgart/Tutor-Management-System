@@ -7,7 +7,7 @@ import { FormikHelpers } from 'formik';
 import pwGenerator from 'generate-password';
 import React, { useState } from 'react';
 import { Role } from 'shared/model/Role';
-import { Tutorial } from 'shared/model/Tutorial';
+import { ITutorial } from 'shared/model/Tutorial';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import { passwordValidationSchema } from '../../util/validationSchemas';
@@ -15,7 +15,7 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import { FormikTextFieldWithButtons } from './components/FormikTextFieldWithButtons';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { User } from '../../../../server/src/shared/model/User';
+import { IUser } from '../../../../server/src/shared/model/User';
 
 export type UserFormSubmitCallback = FormikSubmitCallback<UserFormState>;
 
@@ -31,9 +31,9 @@ export interface UserFormState {
 }
 
 interface Props extends Omit<FormikBaseFormProps<UserFormState>, CommonlyUsedFormProps> {
-  user?: User;
+  user?: IUser;
   availableRoles: Role[];
-  tutorials: Tutorial[];
+  tutorials: ITutorial[];
   onSubmit: UserFormSubmitCallback;
 }
 
@@ -46,7 +46,7 @@ function generateTemporaryPassword(): string {
   });
 }
 
-function getInitialFormState(user?: User): UserFormState {
+function getInitialFormState(user?: IUser): UserFormState {
   if (!user) {
     return {
       firstname: '',

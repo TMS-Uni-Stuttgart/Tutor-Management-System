@@ -1,23 +1,23 @@
-import { ScheinExam } from 'shared/model/Scheinexam';
-import { LoggedInUserSubstituteTutorial, Tutorial } from 'shared/model/Tutorial';
-import { LoggedInUser } from 'shared/model/User';
+import { IScheinExam } from 'shared/model/Scheinexam';
+import { LoggedInUserSubstituteTutorial, ITutorial } from 'shared/model/Tutorial';
+import { ILoggedInUser } from 'shared/model/User';
 
-interface TutorialResponse extends Omit<Tutorial, 'dates' | 'startTime' | 'endTime'> {
+interface TutorialResponse extends Omit<ITutorial, 'dates' | 'startTime' | 'endTime'> {
   dates: string[];
   startTime: string;
   endTime: string;
 }
 
-interface ScheinExamResponse extends Omit<ScheinExam, 'date'> {
+interface ScheinExamResponse extends Omit<IScheinExam, 'date'> {
   date: string;
 }
 
-export function transformLoggedInUserResponse(responseJSON: string): LoggedInUser | undefined {
+export function transformLoggedInUserResponse(responseJSON: string): ILoggedInUser | undefined {
   if (!responseJSON) {
     return undefined;
   }
 
-  const { substituteTutorials, ...rest }: LoggedInUser = JSON.parse(responseJSON);
+  const { substituteTutorials, ...rest }: ILoggedInUser = JSON.parse(responseJSON);
   const parsedSubstituteTutorials: LoggedInUserSubstituteTutorial[] = [];
 
   substituteTutorials.forEach(tutorial => {
@@ -35,13 +35,13 @@ export function transformLoggedInUserResponse(responseJSON: string): LoggedInUse
   };
 }
 
-export function transformMultipleTutorialResponse(responseJSON: string): Tutorial[] {
+export function transformMultipleTutorialResponse(responseJSON: string): ITutorial[] {
   if (!responseJSON) {
     return [];
   }
 
   const response: TutorialResponse[] = JSON.parse(responseJSON);
-  const tutorials: Tutorial[] = [];
+  const tutorials: ITutorial[] = [];
 
   response.forEach(res => {
     tutorials.push(transformTutorialResponse(JSON.stringify(res)));
@@ -50,7 +50,7 @@ export function transformMultipleTutorialResponse(responseJSON: string): Tutoria
   return tutorials;
 }
 
-export function transformTutorialResponse(responseJSON: string): Tutorial {
+export function transformTutorialResponse(responseJSON: string): ITutorial {
   // FIXME: Crashes if responseJSON is empty.
   const {
     dates,
@@ -70,20 +70,20 @@ export function transformTutorialResponse(responseJSON: string): Tutorial {
   };
 }
 
-export function transformMultipleScheinExamResponse(responseJSON: string): ScheinExam[] {
+export function transformMultipleScheinExamResponse(responseJSON: string): IScheinExam[] {
   if (!responseJSON) {
     return [];
   }
 
   const response: ScheinExamResponse[] = JSON.parse(responseJSON);
-  const exams: ScheinExam[] = [];
+  const exams: IScheinExam[] = [];
 
   response.forEach(res => exams.push(transformScheinExamResponse(JSON.stringify(res))));
 
   return exams;
 }
 
-export function transformScheinExamResponse(responseJSON: string): ScheinExam {
+export function transformScheinExamResponse(responseJSON: string): IScheinExam {
   // FIXME: Crashed if responseJSON is empty.
   const { date, ...rest }: ScheinExamResponse = JSON.parse(responseJSON);
 

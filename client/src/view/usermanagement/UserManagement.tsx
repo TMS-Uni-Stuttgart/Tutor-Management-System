@@ -3,8 +3,8 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
-import { Tutorial } from 'shared/model/Tutorial';
-import { ICreateUserDTO, IUserDTO, User } from 'shared/model/User';
+import { ITutorial } from 'shared/model/Tutorial';
+import { ICreateUserDTO, IUserDTO, IUser } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import SubmitButton from '../../components/loading/SubmitButton';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
@@ -55,7 +55,7 @@ const availableRoles = [Role.ADMIN, Role.CORRECTOR, Role.TUTOR, Role.EMPLOYEE];
  */
 function convertFormStateToUserDTO(
   { firstname, lastname, tutorials, tutorialsToCorrect, roles, username, email }: UserFormState,
-  otherUsers: User[]
+  otherUsers: IUser[]
 ): IUserDTO {
   for (const user of otherUsers) {
     if (user.username.toLowerCase().localeCompare(username.toLowerCase()) === 0) {
@@ -78,8 +78,8 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [tutorials, setTutorials] = useState<ITutorial[]>([]);
   const dialog = useDialog();
 
   useEffect(() => {
@@ -131,7 +131,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     }
   };
 
-  const handleEditUserSubmit: (user: User) => UserFormSubmitCallback = user => async (
+  const handleEditUserSubmit: (user: IUser) => UserFormSubmitCallback = user => async (
     formState,
     { setSubmitting, setFieldError }
   ) => {
@@ -169,7 +169,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     }
   };
 
-  function handleDeleteUserSubmit(user: User) {
+  function handleDeleteUserSubmit(user: IUser) {
     deleteUser(user.id)
       .then(() => {
         setUsers(users.filter(u => u.id !== user.id));
@@ -180,7 +180,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       });
   }
 
-  function handleDeleteUser(user: User) {
+  function handleDeleteUser(user: IUser) {
     const nameOfUser = `${user.firstname} ${user.lastname}`;
     dialog.show({
       title: 'Nutzer löschen',
@@ -201,7 +201,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     });
   }
 
-  function handleEditUser(user: User) {
+  function handleEditUser(user: IUser) {
     dialog.show({
       title: 'Nutzer bearbeiten',
       content: (
@@ -293,7 +293,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     setSendingCredentials(false);
   }
 
-  async function sendCredentialsToSingleUser(user: User) {
+  async function sendCredentialsToSingleUser(user: IUser) {
     const snackbarKey = enqueueSnackbar('Verschicke Zugangsdaten...', { variant: 'info' });
 
     try {

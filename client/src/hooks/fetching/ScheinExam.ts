@@ -1,12 +1,12 @@
-import { ScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
+import { IScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
 import {
   transformMultipleScheinExamResponse,
   transformScheinExamResponse,
 } from '../../util/axiosTransforms';
 import axios from './Axios';
 
-export async function getAllScheinExams(): Promise<ScheinExam[]> {
-  const response = await axios.get<ScheinExam[]>(`scheinexam`, {
+export async function getAllScheinExams(): Promise<IScheinExam[]> {
+  const response = await axios.get<IScheinExam[]>(`scheinexam`, {
     transformResponse: transformMultipleScheinExamResponse,
   });
 
@@ -17,8 +17,8 @@ export async function getAllScheinExams(): Promise<ScheinExam[]> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function getScheinexam(examId: string): Promise<ScheinExam> {
-  const response = await axios.get<ScheinExam>(`scheinexam/${examId}`);
+export async function getScheinexam(examId: string): Promise<IScheinExam> {
+  const response = await axios.get<IScheinExam>(`scheinexam/${examId}`);
 
   if (response.status === 200) {
     return response.data;
@@ -27,8 +27,8 @@ export async function getScheinexam(examId: string): Promise<ScheinExam> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createScheinExam(exam: IScheinExamDTO): Promise<ScheinExam> {
-  const response = await axios.post<ScheinExam>(`scheinexam`, exam, {
+export async function createScheinExam(exam: IScheinExamDTO): Promise<IScheinExam> {
+  const response = await axios.post<IScheinExam>(`scheinexam`, exam, {
     transformResponse: transformScheinExamResponse,
   });
 
@@ -39,7 +39,7 @@ export async function createScheinExam(exam: IScheinExamDTO): Promise<ScheinExam
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editScheinExam(examId: string, exam: IScheinExamDTO): Promise<ScheinExam> {
+export async function editScheinExam(examId: string, exam: IScheinExamDTO): Promise<IScheinExam> {
   const response = await axios.patch(`scheinexam/${examId}`, exam, {
     transformResponse: transformScheinExamResponse,
   });

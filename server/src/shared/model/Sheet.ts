@@ -1,23 +1,23 @@
 import { HasId } from './Common';
 
 export interface HasExercises extends HasId {
-  exercises: Exercise[];
+  exercises: IExercise[];
 }
 
-export interface Sheet extends HasExercises {
+export interface ISheet extends HasExercises {
   bonusSheet: boolean;
-  exercises: Exercise[];
+  exercises: IExercise[];
   sheetNo: number;
 }
 
-export interface Subexercise extends HasId {
+export interface ISubexercise extends HasId {
   bonus: boolean;
   exName: string;
   maxPoints: number;
 }
 
-export interface Exercise extends Subexercise {
-  subexercises: Subexercise[];
+export interface IExercise extends ISubexercise {
+  subexercises: ISubexercise[];
 }
 
 export interface ISheetDTO {

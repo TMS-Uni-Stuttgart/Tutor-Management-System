@@ -2,7 +2,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { FormikHelpers } from 'formik';
 import { AlertOutline as AlertIcon } from 'mdi-material-ui';
 import React, { useRef } from 'react';
-import { Team } from 'shared/model/Team';
+import { ITeam } from 'shared/model/Team';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import { StudentWithFetchedTeam } from '../../typings/types';
@@ -63,18 +63,18 @@ interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsed
   onSubmit: StudentFormSubmitCallback;
   student?: StudentWithFetchedTeam;
   otherStudents: StudentWithFetchedTeam[];
-  teams?: Team[];
+  teams?: ITeam[];
 }
 
 export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
-type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
+type ItemType = ITeam | { type: typeof CREATE_NEW_TEAM_VALUE };
 
 function getMaxTeamSize() {
   // TODO: Replace with settings after settings are implemented.
   return 2;
 }
 
-function getNextTeamWithSlot(teams: Team[]): string {
+function getNextTeamWithSlot(teams: ITeam[]): string {
   const maxTeamSize = getMaxTeamSize();
 
   for (const team of teams) {
@@ -87,7 +87,7 @@ function getNextTeamWithSlot(teams: Team[]): string {
 }
 
 export function getInitialStudentFormState(
-  teams?: Team[],
+  teams?: ITeam[],
   student?: StudentWithFetchedTeam
 ): StudentFormState {
   if (student) {

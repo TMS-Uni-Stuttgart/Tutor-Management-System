@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import { StudentWithFetchedTeam } from '../../../typings/types';
-import { StudentStatus, Student } from 'shared/model/Student';
+import { StudentStatus, IStudent } from 'shared/model/Student';
 import { StudentStoreDispatcher } from '../student-store/StudentStore';
 import { WithSnackbarProps } from 'notistack';
 import {
@@ -108,7 +108,7 @@ export function handleEditStudent({
   tutorialId,
   dispatch,
   enqueueSnackbar,
-}: HandlerParams & { student: Student; dialog: DialogHelpers }): StudentFormSubmitCallback {
+}: HandlerParams & { student: IStudent; dialog: DialogHelpers }): StudentFormSubmitCallback {
   return async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
     { setSubmitting }
@@ -147,7 +147,7 @@ export function handleDeleteStudent({
   dialog,
   dispatch,
   enqueueSnackbar,
-}: HandlerParams & { student: Student; dialog: DialogHelpers }) {
+}: HandlerParams & { student: IStudent; dialog: DialogHelpers }) {
   return async () => {
     try {
       await dispatch({
@@ -172,7 +172,10 @@ export function handleChangeTutorial({
   dialog,
   dispatch,
   enqueueSnackbar,
-}: HandlerParams & { student: Student; dialog: DialogHelpers }): TutorialChangeFormSubmitCallback {
+}: HandlerParams & {
+  student: IStudent;
+  dialog: DialogHelpers;
+}): TutorialChangeFormSubmitCallback {
   return async ({ tutorial }) => {
     if (tutorial === student.tutorial.id) {
       return;

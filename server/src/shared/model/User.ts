@@ -1,16 +1,19 @@
 import { NamedElement, TutorialInEntity } from './Common';
 import { Role } from './Role';
-import { LoggedInUserSubstituteTutorial, LoggedInUserTutorial } from './Tutorial';
 
-export interface LoggedInUser extends NamedElement {
-  tutorials: LoggedInUserTutorial[];
-  tutorialsToCorrect: LoggedInUserTutorial[];
-  roles: User['roles'];
+export interface LoggedInUserSubstituteTutorial extends TutorialInEntity {
+  dates: string[];
+}
+
+export interface ILoggedInUser extends NamedElement {
+  tutorials: TutorialInEntity[];
+  tutorialsToCorrect: TutorialInEntity[];
+  roles: IUser['roles'];
   hasTemporaryPassword: boolean;
   substituteTutorials: LoggedInUserSubstituteTutorial[];
 }
 
-export interface User extends NamedElement {
+export interface IUser extends NamedElement {
   readonly tutorials: TutorialInEntity[];
   readonly tutorialsToCorrect: TutorialInEntity[];
   readonly roles: Role[];
@@ -20,24 +23,19 @@ export interface User extends NamedElement {
 }
 
 export interface IUserDTO {
-  firstname: User['firstname'];
-  lastname: User['lastname'];
+  firstname: IUser['firstname'];
+  lastname: IUser['lastname'];
   tutorials: string[];
   tutorialsToCorrect: string[];
-  roles: User['roles'];
-  email: User['email'];
-  username: User['username'];
+  roles: IUser['roles'];
+  email: IUser['email'];
+  username: IUser['username'];
 }
 
 export interface ICreateUserDTO extends IUserDTO {
   password: string;
 }
 
-export interface NewPasswordDTO {
+export interface INewPasswordDTO {
   password: string;
-}
-
-export interface TutorInfo {
-  lastname: string;
-  firstname: string;
 }

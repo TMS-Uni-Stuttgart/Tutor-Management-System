@@ -5,7 +5,7 @@ import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { Prompt } from 'react-router';
 import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Points';
-import { Exercise, Sheet } from 'shared/model/Sheet';
+import { IExercise, ISheet } from 'shared/model/Sheet';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';
@@ -57,8 +57,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   entity: HasPoints;
-  sheet: Sheet;
-  exercise: Exercise;
+  sheet: ISheet;
+  exercise: IExercise;
   onSubmit: PointsFormSubmitCallback;
 }
 

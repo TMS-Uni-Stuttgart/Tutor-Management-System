@@ -12,7 +12,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { User } from 'src/shared/model/User';
+import { IUser } from 'src/shared/model/User';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { SameUserGuard } from '../../guards/same-user.guard';
 import { Role } from '../../shared/model/Role';
@@ -25,7 +25,7 @@ export class UserController {
 
   @Get()
   @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<IUser[]> {
     const users = await this.userService.findAll();
 
     return users.map(user => user.toDTO());
@@ -34,7 +34,7 @@ export class UserController {
   @Post()
   @UseGuards(new SameUserGuard())
   @UsePipes(ValidationPipe)
-  async createUser(@Body() user: CreateUserDTO): Promise<User> {
+  async createUser(@Body() user: CreateUserDTO): Promise<IUser> {
     const createdUser = await this.userService.create(user);
 
     return createdUser;
@@ -42,7 +42,7 @@ export class UserController {
 
   @Get('/:id')
   @UseGuards(new SameUserGuard({ roles: [Role.ADMIN, Role.EMPLOYEE] }))
-  async getUser(@Param('id') id: string): Promise<User> {
+  async getUser(@Param('id') id: string): Promise<IUser> {
     const user = await this.userService.findById(id);
 
     return user.toDTO();
@@ -51,7 +51,7 @@ export class UserController {
   @Patch('/:id')
   @UseGuards(new SameUserGuard())
   @UsePipes(ValidationPipe)
-  async updateUser(@Param('id') id: string, @Body() dto: UserDTO): Promise<User> {
+  async updateUser(@Param('id') id: string, @Body() dto: UserDTO): Promise<IUser> {
     const updatedUser = await this.userService.update(id, dto);
 
     return updatedUser;

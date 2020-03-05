@@ -8,7 +8,7 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
-import { Student, TeamInStudent } from 'shared/model/Student';
+import { IStudent, TeamInStudent } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
@@ -33,10 +33,10 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-type StudentCallback = (student: Student) => void;
+type StudentCallback = (student: IStudent) => void;
 
 interface Props extends PaperTableRowProps {
-  student: Student;
+  student: IStudent;
   onEdit: StudentCallback;
   onDelete: StudentCallback;
   onChangeTutorial?: StudentCallback;

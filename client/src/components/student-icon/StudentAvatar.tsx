@@ -10,7 +10,7 @@ import {
   Sleep as InactiveIcon,
 } from 'mdi-material-ui';
 import React from 'react';
-import { Student, StudentStatus } from 'shared/model/Student';
+import { IStudent, StudentStatus } from 'shared/model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface StudentAvatarProps {
-  student: Student;
+  student: IStudent;
 }
 
-function getStudentIcon(student: Student): React.FunctionComponent<SvgIconProps> {
+function getStudentIcon(student: IStudent): React.FunctionComponent<SvgIconProps> {
   switch (student.status) {
     case StudentStatus.INACTIVE:
       return InactiveIcon;
@@ -40,7 +40,7 @@ function getStudentIcon(student: Student): React.FunctionComponent<SvgIconProps>
   return PersonIcon;
 }
 
-function getStudentTooltip(student: Student): string | undefined {
+function getStudentTooltip(student: IStudent): string | undefined {
   switch (student.status) {
     case StudentStatus.INACTIVE:
       return 'Student/in ist inaktiv.';

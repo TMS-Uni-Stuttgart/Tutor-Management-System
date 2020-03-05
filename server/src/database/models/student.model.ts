@@ -4,9 +4,9 @@ import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { databaseConfig } from '../../helpers/config';
-import { Attendance } from '../../shared/model/Attendance';
-import { Grading } from '../../shared/model/Points';
-import { Student, StudentStatus } from '../../shared/model/Student';
+import { IAttendance } from '../../shared/model/Attendance';
+import { IGrading } from '../../shared/model/Points';
+import { IStudent, StudentStatus } from '../../shared/model/Student';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { HasExerciseDocuments } from './exercise.model';
@@ -192,7 +192,7 @@ export class StudentModel {
   /**
    * @returns The DTO representation of this document.
    */
-  toDTO(this: StudentDocument): Student {
+  toDTO(this: StudentDocument): IStudent {
     this.decryptFieldsSync();
 
     const {
@@ -209,8 +209,8 @@ export class StudentModel {
     } = this;
 
     const presentationPoints = [...this.presentationPoints];
-    const attendances: Map<string, Attendance> = new Map();
-    const gradings: Map<string, Grading> = new Map();
+    const attendances: Map<string, IAttendance> = new Map();
+    const gradings: Map<string, IGrading> = new Map();
 
     for (const [key, doc] of this.attendances) {
       attendances.set(key, doc.toDTO());

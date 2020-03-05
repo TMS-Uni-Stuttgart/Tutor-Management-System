@@ -1,18 +1,18 @@
 import { transformLoggedInUserResponse } from './axiosTransforms';
-import { LoggedInUser } from 'shared/model/User';
+import { ILoggedInUser } from 'shared/model/User';
 
-export function saveUser(user: LoggedInUser) {
+export function saveUser(user: ILoggedInUser) {
   sessionStorage.setItem('user', JSON.stringify(user));
 }
 
-export function getUser(): LoggedInUser | undefined {
+export function getUser(): ILoggedInUser | undefined {
   const userItem: string | null = sessionStorage.getItem('user');
 
   if (!userItem) {
     return undefined;
   }
 
-  const user: LoggedInUser | undefined = transformLoggedInUserResponse(userItem);
+  const user: ILoggedInUser | undefined = transformLoggedInUserResponse(userItem);
 
   return user;
 }

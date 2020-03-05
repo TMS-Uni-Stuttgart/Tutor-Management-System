@@ -1,6 +1,6 @@
 import { HasId, NamedElement, TutorialInEntity } from './Common';
-import { Attendance } from './Attendance';
-import { Grading } from './Points';
+import { IAttendance } from './Attendance';
+import { IGrading } from './Points';
 
 export interface TeamInStudent extends HasId {
   teamNo: number;
@@ -12,12 +12,12 @@ export enum StudentStatus {
   NO_SCHEIN_REQUIRED = 'NO_SCHEIN_REQUIRED',
 }
 
-export interface Student extends NamedElement {
-  attendances: [string, Attendance][];
+export interface IStudent extends NamedElement {
+  attendances: [string, IAttendance][];
   courseOfStudies?: string;
   email?: string;
   matriculationNo?: string;
-  gradings: [string, Grading][];
+  gradings: [string, IGrading][];
   presentationPoints: [string, number][];
   status: StudentStatus;
   team?: TeamInStudent;

@@ -1,6 +1,6 @@
 import { FormikSubmitCallback } from '../../../../types';
-import { Student } from 'shared/model/Student';
-import { ScheinExam } from 'shared/model/Scheinexam';
+import { IStudent } from 'shared/model/Student';
+import { IScheinExam } from 'shared/model/Scheinexam';
 import { PointMap, PointId, SheetMapEntry } from 'shared/model/Points';
 
 export interface ScheinexamPointsFormState {
@@ -12,8 +12,8 @@ export interface ScheinexamPointsFormState {
 export type ScheinexamPointsFormSubmitCallback = FormikSubmitCallback<ScheinexamPointsFormState>;
 
 interface GenerateInitialValuesParams {
-  student: Student;
-  exam: ScheinExam;
+  student: IStudent;
+  exam: IScheinExam;
 }
 
 interface ConvertParams {

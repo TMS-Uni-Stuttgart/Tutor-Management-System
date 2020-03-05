@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { Sheet, ISheetDTO } from 'shared/model/Sheet';
+import { ISheet, ISheetDTO } from 'shared/model/Sheet';
 import SheetForm, {
   convertFormExercisesToDTOs,
   getInitialSheetFormState,
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
-  const [sheets, setSheets] = useState<Sheet[]>([]);
+  const [sheets, setSheets] = useState<ISheet[]>([]);
   const {
     getAllSheets,
     createSheet,
@@ -83,7 +83,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     }
   };
 
-  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback = sheet => async (
+  const editSheet: (sheet: ISheet) => SheetFormSubmitCallback = sheet => async (
     { sheetNo, exercises, bonusSheet },
     { setSubmitting }
   ) => {
@@ -115,7 +115,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     }
   };
 
-  function handleEditSheet(sheet: Sheet) {
+  function handleEditSheet(sheet: ISheet) {
     dialog.show({
       title: 'Blatt bearbeiten',
       content: (
@@ -131,7 +131,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     });
   }
 
-  function handleDeleteSheet(sheet: Sheet) {
+  function handleDeleteSheet(sheet: ISheet) {
     const sheetNo: string = sheet.sheetNo.toString().padStart(2, '0');
     dialog.show({
       title: 'Blatt löschen',
@@ -152,7 +152,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     });
   }
 
-  function deleteSheet(sheet: Sheet) {
+  function deleteSheet(sheet: ISheet) {
     deleteSheetRequest(sheet.id)
       .then(() => {
         setSheets(sheets.filter(s => s.id !== sheet.id));

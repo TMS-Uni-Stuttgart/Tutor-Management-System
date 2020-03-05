@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScheinExam } from 'shared/model/Scheinexam';
+import { IScheinExam } from 'shared/model/Scheinexam';
 import { FormikSubmitCallback } from '../../types';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikExerciseEditor, {
@@ -19,14 +19,14 @@ export interface ScheinExamFormState {
 export type ScheinExamFormSubmitCallback = FormikSubmitCallback<ScheinExamFormState>;
 
 interface Props extends Omit<FormikBaseFormProps<ScheinExamFormState>, CommonlyUsedFormProps> {
-  exam?: ScheinExam;
+  exam?: IScheinExam;
   onSubmit: ScheinExamFormSubmitCallback;
-  exams?: ScheinExam[];
+  exams?: IScheinExam[];
 }
 
 export function getInitialExamFormState(
-  exam?: ScheinExam,
-  exams?: ScheinExam[]
+  exam?: IScheinExam,
+  exams?: IScheinExam[]
 ): ScheinExamFormState {
   if (!!exam) {
     const exercises = exam.exercises.map(mapExerciseToFormExercise);

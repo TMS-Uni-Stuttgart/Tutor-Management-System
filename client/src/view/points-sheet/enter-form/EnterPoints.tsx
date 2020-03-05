@@ -1,7 +1,7 @@
 import { CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { Exercise, Sheet } from 'shared/model/Sheet';
+import { IExercise, ISheet } from 'shared/model/Sheet';
 import BackButton from '../../../components/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
 import { getSheet } from '../../../hooks/fetching/Sheet';
@@ -71,8 +71,8 @@ function EnterPoints<T extends HasPoints>({
 
   const { setError } = useErrorSnackbar();
 
-  const [sheet, setSheet] = useState<Sheet>();
-  const [selectedExercise, setSelectedExercise] = useState<Exercise>();
+  const [sheet, setSheet] = useState<ISheet>();
+  const [selectedExercise, setSelectedExercise] = useState<IExercise>();
 
   useEffect(() => {
     if (!sheetId) {

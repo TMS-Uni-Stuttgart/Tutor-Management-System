@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { ScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
+import { IScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
 import ScheinExamForm, {
   getInitialExamFormState,
   ScheinExamFormState,
@@ -52,7 +52,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingResults, setGeneratingResults] = useState(false);
-  const [exams, setExams] = useState<ScheinExam[]>([]);
+  const [exams, setExams] = useState<IScheinExam[]>([]);
   const dialog = useDialog();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  const handleGenerateResultPDF: (exam: ScheinExam) => void = async exam => {
+  const handleGenerateResultPDF: (exam: IScheinExam) => void = async exam => {
     setGeneratingResults(true);
 
     const blob = await getScheinexamResultPDF(exam.id);
@@ -103,7 +103,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     setGeneratingResults(false);
   };
 
-  const editExam: (exam: ScheinExam) => ScheinExamFormSubmitCallback = exam => async (
+  const editExam: (exam: IScheinExam) => ScheinExamFormSubmitCallback = exam => async (
     values,
     { setSubmitting }
   ) => {
@@ -120,7 +120,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  const deleteExam: (exam: ScheinExam) => void = async exam => {
+  const deleteExam: (exam: IScheinExam) => void = async exam => {
     try {
       await deleteScheinExam(exam.id);
 
@@ -133,7 +133,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  function handleEditExam(exam: ScheinExam) {
+  function handleEditExam(exam: IScheinExam) {
     dialog.show({
       title: 'Scheinklausur bearbeiten',
       content: (
@@ -145,7 +145,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     });
   }
 
-  function handleDeleteExam(exam: ScheinExam) {
+  function handleDeleteExam(exam: IScheinExam) {
     dialog.show({
       title: 'Nutzer löschen',
       content: `Soll ${getDisplayStringOfScheinExam(

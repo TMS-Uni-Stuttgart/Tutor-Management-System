@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { User } from 'src/shared/model/User';
+import { IUser } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
@@ -19,7 +19,7 @@ import { TutorialService } from '../tutorial/tutorial.service';
 import { UserDTO, CreateUserDTO } from './user.dto';
 
 @Injectable()
-export class UserService implements OnModuleInit, CRUDService<User, UserDTO, UserDocument> {
+export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
   constructor(
     @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,
@@ -107,7 +107,7 @@ export class UserService implements OnModuleInit, CRUDService<User, UserDTO, Use
    *
    * @returns Created user.
    */
-  async create(user: CreateUserDTO): Promise<User> {
+  async create(user: CreateUserDTO): Promise<IUser> {
     const {
       tutorials: tutorialIds,
       tutorialsToCorrect: toCorrectIds,
@@ -165,7 +165,7 @@ export class UserService implements OnModuleInit, CRUDService<User, UserDTO, Use
    * @throws `NotFoundException` - If there is no user with the given `id`.
    * @throws `BadRequestException` - {@link UserService#checkUserDTO}
    */
-  async update(id: string, dto: UserDTO): Promise<User> {
+  async update(id: string, dto: UserDTO): Promise<IUser> {
     const user = await this.findById(id);
     const { tutorials, tutorialsToCorrect } = user;
 

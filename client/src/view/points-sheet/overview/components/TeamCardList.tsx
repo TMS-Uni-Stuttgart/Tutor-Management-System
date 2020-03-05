@@ -1,15 +1,15 @@
 import React from 'react';
-import { Sheet } from 'shared/model/Sheet';
-import { Team } from 'shared/model/Team';
+import { ISheet } from 'shared/model/Sheet';
+import { ITeam } from 'shared/model/Team';
 import CardList from '../../../../components/cardlist/CardList';
 import TeamCard from './TeamCard';
 
 interface Props {
   tutorialId: string;
-  teams: Team[];
-  sheet: Sheet;
-  onPdfPreviewClicked: (team: Team) => void;
-  onGeneratePdfClicked: (team: Team) => void;
+  teams: ITeam[];
+  sheet: ISheet;
+  onPdfPreviewClicked: (team: ITeam) => void;
+  onGeneratePdfClicked: (team: ITeam) => void;
 }
 
 function TeamCardList({

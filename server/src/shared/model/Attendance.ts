@@ -4,15 +4,10 @@ export enum AttendanceState {
   UNEXCUSED = 'UNEXCUSED',
 }
 
-export interface Attendance {
+export interface IAttendance {
   date: string;
   note?: string;
   state?: AttendanceState;
-}
-
-export interface AttendanceId {
-  date: string;
-  studentId: string;
 }
 
 export interface IAttendanceDTO {

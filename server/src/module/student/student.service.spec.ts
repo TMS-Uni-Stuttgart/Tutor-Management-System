@@ -12,8 +12,8 @@ import {
 import { ExerciseGradingModel, GradingModel } from '../../database/models/grading.model';
 import { StudentModel } from '../../database/models/student.model';
 import { AttendanceState } from '../../shared/model/Attendance';
-import { Grading } from '../../shared/model/Points';
-import { Student, StudentStatus } from '../../shared/model/Student';
+import { IGrading } from '../../shared/model/Points';
+import { IStudent, StudentStatus } from '../../shared/model/Student';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
@@ -30,23 +30,23 @@ import { StudentService } from './student.service';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
-  actual: Student;
+  actual: IStudent;
 }
 
 interface AssertStudentListParams {
   expected: MockedModel<StudentModel>[];
-  actual: Student[];
+  actual: IStudent[];
 }
 
 interface AssertStudentDTOParams {
   expected: StudentDTO;
-  actual: Student;
-  oldStudent?: Student;
+  actual: IStudent;
+  oldStudent?: IStudent;
 }
 
 interface AssertGradingParams {
   expected: GradingDTO;
-  actual: Grading | undefined;
+  actual: IGrading | undefined;
 }
 
 /**

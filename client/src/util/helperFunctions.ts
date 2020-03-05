@@ -1,12 +1,12 @@
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
 import { PointMap } from 'shared/model/Points';
-import { ScheinExam } from 'shared/model/Scheinexam';
-import { Student } from 'shared/model/Student';
-import { Team } from 'shared/model/Team';
-import { Sheet } from 'shared/model/Sheet';
+import { IScheinExam } from 'shared/model/Scheinexam';
+import { IStudent } from 'shared/model/Student';
+import { ITeam } from 'shared/model/Team';
+import { ISheet } from 'shared/model/Sheet';
 
-export function teamItemToString(team: Team): string {
+export function teamItemToString(team: ITeam): string {
   const studentsInTeam = team.students.length
     ? `(${team.students.map(student => student.lastname).join(', ')})`
     : '(Keine Studierende)';
@@ -18,11 +18,11 @@ export function getDisplayStringForTutorial(tutorial: { slot: string }): string 
   return `Tutorium ${tutorial.slot.padStart(2, '0')}`;
 }
 
-export function getDisplayStringOfSheet(sheet: Sheet): string {
+export function getDisplayStringOfSheet(sheet: ISheet): string {
   return `Übungsblatt #${sheet.sheetNo.toString().padStart(2, '0')}`;
 }
 
-export function getDisplayStringOfScheinExam(exam: ScheinExam): string {
+export function getDisplayStringOfScheinExam(exam: IScheinExam): string {
   return `Scheinklausur #${exam.scheinExamNo} (${format(exam.date, 'dd MMM. yyyy', {
     locale: deLocale,
   })})`;
@@ -33,8 +33,8 @@ export function parseDateToMapKey(date: Date): string {
 }
 
 export function getSumOfPointsOfStudentInScheinExam(
-  scheinExamResults: Student['scheinExamResults'],
-  exam: ScheinExam
+  scheinExamResults: IStudent['scheinExamResults'],
+  exam: IScheinExam
 ): number {
   return new PointMap(scheinExamResults).getSumOfPoints(exam);
 }

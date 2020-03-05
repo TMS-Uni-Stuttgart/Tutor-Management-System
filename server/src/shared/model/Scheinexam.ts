@@ -1,9 +1,9 @@
 import { HasId } from './Common';
-import { Exercise, IExerciseDTO } from './Sheet';
+import { IExercise, IExerciseDTO } from './Sheet';
 
-export interface ScheinExam extends HasId {
+export interface IScheinExam extends HasId {
   date: string;
-  exercises: Exercise[];
+  exercises: IExercise[];
   percentageNeeded: number;
   scheinExamNo: number;
 }

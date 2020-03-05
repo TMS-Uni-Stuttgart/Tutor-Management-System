@@ -3,7 +3,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { PointMap, UpdatePointsDTO } from 'shared/model/Points';
-import { Team } from 'shared/model/Team';
+import { ITeam } from 'shared/model/Team';
 import {
   getTeamOfTutorial,
   getTeamsOfTutorial,
@@ -29,9 +29,9 @@ function EnterTeamPoints(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<ITeam[]>([]);
 
-  const [selectedTeam, setSelectedTeam] = useState<Team>();
+  const [selectedTeam, setSelectedTeam] = useState<ITeam>();
 
   useEffect(() => {
     if (!tutorialId) {

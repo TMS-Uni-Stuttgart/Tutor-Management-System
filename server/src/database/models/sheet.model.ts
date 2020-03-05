@@ -1,7 +1,7 @@
 import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
-import { Sheet } from '../../shared/model/Sheet';
+import { ISheet } from '../../shared/model/Sheet';
 import { ExerciseDocument, ExerciseModel } from './exercise.model';
 
 interface ConstructorFields {
@@ -36,7 +36,7 @@ export class SheetModel {
     );
   }
 
-  toDTO(this: SheetDocument): Sheet {
+  toDTO(this: SheetDocument): ISheet {
     return {
       id: this.id,
       sheetNo: this.sheetNo,

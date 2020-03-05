@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ScheinexamService } from './scheinexam.service';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
-import { ScheinExam } from '../../shared/model/Scheinexam';
+import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ScheinExamDTO } from './scheinexam.dto';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { Role } from '../../shared/model/Role';
@@ -25,7 +25,7 @@ export class ScheinexamController {
 
   @Get()
   @UseGuards(AuthenticatedGuard)
-  async getAllScheinexams(): Promise<ScheinExam[]> {
+  async getAllScheinexams(): Promise<IScheinExam[]> {
     const scheinexams = await this.scheinexamService.findAll();
 
     return scheinexams.map(exam => exam.toDTO());
@@ -34,7 +34,7 @@ export class ScheinexamController {
   @Post()
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async createScheinexam(@Body() dto: ScheinExamDTO): Promise<ScheinExam> {
+  async createScheinexam(@Body() dto: ScheinExamDTO): Promise<IScheinExam> {
     const scheinexam = await this.scheinexamService.create(dto);
 
     return scheinexam;
@@ -42,7 +42,7 @@ export class ScheinexamController {
 
   @Get('/:id')
   @UseGuards(AuthenticatedGuard)
-  async getScheinexam(@Param('id') id: string): Promise<ScheinExam> {
+  async getScheinexam(@Param('id') id: string): Promise<IScheinExam> {
     const scheinexam = await this.scheinexamService.findById(id);
 
     return scheinexam.toDTO();
@@ -51,7 +51,10 @@ export class ScheinexamController {
   @Patch('/:id')
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async updateScheinexam(@Param('id') id: string, @Body() dto: ScheinExamDTO): Promise<ScheinExam> {
+  async updateScheinexam(
+    @Param('id') id: string,
+    @Body() dto: ScheinExamDTO
+  ): Promise<IScheinExam> {
     const scheinexam = await this.scheinexamService.update(id, dto);
 
     return scheinexam;

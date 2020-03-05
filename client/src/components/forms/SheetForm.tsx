@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sheet, IExerciseDTO } from 'shared/model/Sheet';
+import { ISheet, IExerciseDTO } from 'shared/model/Sheet';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
 import FormikExerciseEditor, {
@@ -36,9 +36,9 @@ interface SheetFormState {
 }
 
 interface Props extends Omit<FormikBaseFormProps<SheetFormState>, CommonlyUsedFormProps> {
-  sheet?: Sheet;
+  sheet?: ISheet;
   onSubmit: SheetFormSubmitCallback;
-  sheets?: Sheet[];
+  sheets?: ISheet[];
 }
 
 export function convertFormExercisesToDTOs(exercises: ExerciseFormExercise[]): IExerciseDTO[] {
@@ -51,7 +51,7 @@ export function convertFormExercisesToDTOs(exercises: ExerciseFormExercise[]): I
   }));
 }
 
-export function getInitialSheetFormState(sheet?: Sheet, sheets?: Sheet[]): SheetFormState {
+export function getInitialSheetFormState(sheet?: ISheet, sheets?: ISheet[]): SheetFormState {
   if (!!sheet) {
     const exercises: ExerciseFormExercise[] = sheet.exercises.map(mapExerciseToFormExercise);
 

@@ -3,8 +3,8 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { HasId } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
-import { ITutorialDTO, Tutorial } from 'shared/model/Tutorial';
-import { User } from 'shared/model/User';
+import { ITutorialDTO, ITutorial } from 'shared/model/Tutorial';
+import { IUser } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
 import TutorialForm, {
   getInitialTutorialFormValues,
@@ -61,8 +61,8 @@ function generateCreateTutorialDTO({
 function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const [tutors, setTutors] = useState<User[]>([]);
+  const [tutorials, setTutorials] = useState<ITutorial[]>([]);
+  const [tutors, setTutors] = useState<IUser[]>([]);
   const dialog = useDialog();
 
   useEffect(() => {
@@ -137,7 +137,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     }
   };
 
-  function handleEditTutorial(tutorial: Tutorial) {
+  function handleEditTutorial(tutorial: ITutorial) {
     dialog.show({
       title: 'Tutorium bearbeiten',
       content: (
@@ -154,7 +154,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     });
   }
 
-  function handleDeleteTutorial(tutorial: Tutorial) {
+  function handleDeleteTutorial(tutorial: ITutorial) {
     const tutorialDisplay = getDisplayStringForTutorial(tutorial);
 
     dialog.show({
@@ -176,7 +176,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     });
   }
 
-  function handleDeleteTutorialSubmit(tutorial: Tutorial) {
+  function handleDeleteTutorialSubmit(tutorial: ITutorial) {
     deleteTutorial(tutorial.id)
       .then(() => {
         setTutorials(tutorials.filter(t => t.id !== tutorial.id));

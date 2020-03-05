@@ -9,7 +9,7 @@ export interface ITutorialDTO {
   tutorId?: string | null;
 }
 
-export interface Tutorial extends HasId {
+export interface ITutorial extends HasId {
   slot: string;
   tutor?: string;
   dates: string[];
@@ -21,15 +21,7 @@ export interface Tutorial extends HasId {
   substitutes: [string, string][];
 }
 
-export interface SubstituteDTO {
+export interface ISubstituteDTO {
   tutorId?: string;
-  dates: string[];
-}
-
-export interface LoggedInUserTutorial extends HasId {
-  slot: string;
-}
-
-export interface LoggedInUserSubstituteTutorial extends LoggedInUserTutorial {
   dates: string[];
 }

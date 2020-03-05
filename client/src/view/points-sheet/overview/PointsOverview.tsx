@@ -2,8 +2,8 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { Sheet } from 'shared/model/Sheet';
-import { Team } from 'shared/model/Team';
+import { ISheet } from 'shared/model/Sheet';
+import { ITeam } from 'shared/model/Team';
 import CustomSelect from '../../../components/CustomSelect';
 import SubmitButton from '../../../components/loading/SubmitButton';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
@@ -56,10 +56,10 @@ function PointsOverview(): JSX.Element {
   const { setError } = useErrorSnackbar();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [sheets, setSheets] = useState<Sheet[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [sheets, setSheets] = useState<ISheet[]>([]);
+  const [teams, setTeams] = useState<ITeam[]>([]);
 
-  const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>();
+  const [currentSheet, setCurrentSheet] = useState<ISheet | undefined>();
   const [isLoadingSheet, setLoadingSheet] = useState(false);
 
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
@@ -111,7 +111,7 @@ function PointsOverview(): JSX.Element {
     history.push(getPointOverviewPath({ tutorialId, sheetId }));
   }
 
-  async function handlePdfPreviewClicked(team: Team) {
+  async function handlePdfPreviewClicked(team: ITeam) {
     if (!currentSheet || !tutorialId) {
       return;
     }
@@ -123,7 +123,7 @@ function PointsOverview(): JSX.Element {
     }
   }
 
-  async function handleGenerateSinglePdf(team: Team) {
+  async function handleGenerateSinglePdf(team: ITeam) {
     if (!currentSheet || !tutorialId) {
       return;
     }

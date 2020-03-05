@@ -9,7 +9,7 @@ import {
   TUTORIAL_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
 import { TeamModel } from '../../database/models/team.model';
-import { Team } from '../../shared/model/Team';
+import { ITeam } from '../../shared/model/Team';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
@@ -22,17 +22,17 @@ import { assertGrading } from '../student/student.service.spec';
 
 interface AssertTeamParams {
   expected: MockedModel<TeamModel>;
-  actual: Team;
+  actual: ITeam;
 }
 
 interface AssertTeamListParams {
   expected: MockedModel<TeamModel>[];
-  actual: Team[];
+  actual: ITeam[];
 }
 
 interface AssertTeamDTOParams {
   expected: TeamDTO;
-  actual: Team;
+  actual: ITeam;
 }
 
 /**

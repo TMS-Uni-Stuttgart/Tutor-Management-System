@@ -1,7 +1,7 @@
 import { DocumentType, mongoose, prop, arrayProp } from '@typegoose/typegoose';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
-import { Exercise, Subexercise } from '../../shared/model/Sheet';
+import { IExercise, ISubexercise } from '../../shared/model/Sheet';
 import { ExercisePointInfo } from '../../shared/model/Points';
 
 export interface HasExerciseDocuments {
@@ -55,7 +55,7 @@ export class SubExerciseModel {
     return new SubExerciseModel({ ...dto });
   }
 
-  toDTO(this: SubExerciseDocument): Subexercise {
+  toDTO(this: SubExerciseDocument): ISubexercise {
     return {
       id: this.id,
       bonus: this.bonus,
@@ -129,7 +129,7 @@ export class ExerciseModel {
     });
   }
 
-  toDTO(this: ExerciseDocument): Exercise {
+  toDTO(this: ExerciseDocument): IExercise {
     return {
       id: this.id,
       bonus: this.bonus,

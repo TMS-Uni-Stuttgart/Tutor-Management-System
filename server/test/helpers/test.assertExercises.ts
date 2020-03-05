@@ -1,25 +1,25 @@
 import { ExerciseDTO, SubExerciseDTO } from '../../src/module/sheet/sheet.dto';
-import { Exercise, Subexercise } from '../../src/shared/model/Sheet';
+import { IExercise, ISubexercise } from '../../src/shared/model/Sheet';
 import { MockedExerciseModel, MockedSubExerciseModel } from '../mocks/documents.mock';
 
 interface AssertSubExerciseParams {
   expected: MockedSubExerciseModel;
-  actual: Subexercise;
+  actual: ISubexercise;
 }
 
 interface AssertExerciseParams {
   expected: MockedExerciseModel;
-  actual: Exercise;
+  actual: IExercise;
 }
 
 interface AssertExerciseDTOsParams {
   expected: ExerciseDTO[];
-  actual: Exercise[];
+  actual: IExercise[];
 }
 
 interface AssertSubExerciseDTOParams {
   expected: SubExerciseDTO[];
-  actual: Subexercise[];
+  actual: ISubexercise[];
 }
 
 /**
