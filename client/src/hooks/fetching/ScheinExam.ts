@@ -1,16 +1,10 @@
 import { IScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
-import {
-  transformMultipleScheinExamResponse,
-  transformScheinExamResponse,
-} from '../../util/axiosTransforms';
 import axios from './Axios';
 import { Scheinexam } from '../../model/Scheinexam';
 import { plainToClass } from 'class-transformer';
 
 export async function getAllScheinExams(): Promise<Scheinexam[]> {
-  const response = await axios.get<IScheinExam[]>(`scheinexam`, {
-    transformResponse: transformMultipleScheinExamResponse,
-  });
+  const response = await axios.get<IScheinExam[]>(`scheinexam`);
 
   if (response.status === 200) {
     const data = plainToClass(Scheinexam, response.data);
@@ -31,9 +25,7 @@ export async function getScheinexam(examId: string): Promise<Scheinexam> {
 }
 
 export async function createScheinExam(exam: IScheinExamDTO): Promise<Scheinexam> {
-  const response = await axios.post<IScheinExam>(`scheinexam`, exam, {
-    transformResponse: transformScheinExamResponse,
-  });
+  const response = await axios.post<IScheinExam>(`scheinexam`, exam);
 
   if (response.status === 201) {
     return plainToClass(Scheinexam, response.data);
@@ -43,9 +35,7 @@ export async function createScheinExam(exam: IScheinExamDTO): Promise<Scheinexam
 }
 
 export async function editScheinExam(examId: string, exam: IScheinExamDTO): Promise<Scheinexam> {
-  const response = await axios.patch<IScheinExam>(`scheinexam/${examId}`, exam, {
-    transformResponse: transformScheinExamResponse,
-  });
+  const response = await axios.patch<IScheinExam>(`scheinexam/${examId}`, exam);
 
   if (response.status === 200) {
     return plainToClass(Scheinexam, response.data);

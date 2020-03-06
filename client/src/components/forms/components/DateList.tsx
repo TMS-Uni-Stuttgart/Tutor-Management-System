@@ -4,12 +4,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { DateTime } from 'luxon';
 import {
-  CalendarRemoveOutline as RemoveIcon,
   CalendarAlert as PlaceholderIcon,
+  CalendarRemoveOutline as RemoveIcon,
 } from 'mdi-material-ui';
-import React, { useState, useRef, useEffect } from 'react';
-import { compareAsc } from 'date-fns';
+import React, { useEffect, useRef, useState } from 'react';
+import { compareDateTimes } from '../../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,7 +60,12 @@ function DateList({ dates, className, onDateClicked, ...other }: Props): JSX.Ele
       {dates.length > 0 ? (
         <List {...other} className={clsx(classes.root, className)} style={{ minWidth: labelWidth }}>
           {dates
-            .sort((a, b) => compareAsc(new Date(a.dateValueString), new Date(b.dateValueString)))
+            .sort((a, b) =>
+              compareDateTimes(
+                DateTime.fromISO(a.dateValueString),
+                DateTime.fromISO(b.dateValueString)
+              )
+            )
             .map(date => (
               <ListItem
                 key={date.dateValueString}

@@ -1,5 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { IScheinCriteria } from 'shared/model/ScheinCriteria';
+import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import { i18nNamespace } from '../../util/lang/configI18N';
 import GeneratedForm from '../generatedForm/GeneratedForm';
@@ -8,8 +10,6 @@ import { FormDataResponse } from '../generatedForm/types/FieldData';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import * as Yup from 'yup';
-import { ScheinCriteriaResponse as ScheinCriteria } from 'shared/model/ScheinCriteria';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Benötigt'),
@@ -27,10 +27,10 @@ export type ScheinCriteriaFormCallback = FormikSubmitCallback<ScheinCriteriaForm
 interface Props extends Omit<FormikBaseFormProps<ScheinCriteriaFormState>, CommonlyUsedFormProps> {
   formData: FormDataResponse;
   onSubmit: ScheinCriteriaFormCallback;
-  criteria?: ScheinCriteria;
+  criteria?: IScheinCriteria;
 }
 
-function getInitialValues(criteria?: ScheinCriteria): ScheinCriteriaFormState {
+function getInitialValues(criteria?: IScheinCriteria): ScheinCriteriaFormState {
   if (!criteria) {
     return {
       name: '',

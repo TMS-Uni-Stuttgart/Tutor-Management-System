@@ -72,6 +72,9 @@ export class Student implements Modify<IStudent, Modified> {
     return this.presentationPoints.get(sheet.id);
   }
 
+  /**
+   * @returns Sum of all presentation points of this student.
+   */
   getPresentationPointsSum(): number {
     let sum = 0;
 

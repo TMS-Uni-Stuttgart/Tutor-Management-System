@@ -5,17 +5,11 @@ import { sortByName } from 'shared/util/helpers';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
 import { StudentByTutorialSlotSummaryMap } from '../../typings/types';
-import {
-  transformMultipleTutorialResponse,
-  transformTutorialResponse,
-} from '../../util/axiosTransforms';
 import axios from './Axios';
 import { getScheinCriteriaSummaryOfAllStudents } from './Scheincriteria';
 
 export async function getAllTutorials(): Promise<Tutorial[]> {
-  const response = await axios.get<ITutorial[]>('tutorial', {
-    transformResponse: transformMultipleTutorialResponse,
-  });
+  const response = await axios.get<ITutorial[]>('tutorial');
 
   if (response.status === 200) {
     return plainToClass(Tutorial, response.data);
@@ -25,9 +19,7 @@ export async function getAllTutorials(): Promise<Tutorial[]> {
 }
 
 export async function getTutorial(id: string): Promise<Tutorial> {
-  const response = await axios.get<ITutorial>(`tutorial/${id}`, {
-    transformResponse: transformTutorialResponse,
-  });
+  const response = await axios.get<ITutorial>(`tutorial/${id}`);
 
   if (response.status === 200) {
     return plainToClass(Tutorial, response.data);
@@ -37,9 +29,7 @@ export async function getTutorial(id: string): Promise<Tutorial> {
 }
 
 export async function createTutorial(tutorialInformation: ITutorialDTO): Promise<Tutorial> {
-  const response = await axios.post<ITutorial>('tutorial', tutorialInformation, {
-    transformResponse: transformTutorialResponse,
-  });
+  const response = await axios.post<ITutorial>('tutorial', tutorialInformation);
 
   if (response.status === 201) {
     return plainToClass(Tutorial, response.data);
@@ -52,9 +42,7 @@ export async function editTutorial(
   id: string,
   tutorialInformation: ITutorialDTO
 ): Promise<Tutorial> {
-  const response = await axios.patch<ITutorial>(`tutorial/${id}`, tutorialInformation, {
-    transformResponse: transformTutorialResponse,
-  });
+  const response = await axios.patch<ITutorial>(`tutorial/${id}`, tutorialInformation);
 
   if (response.status === 200) {
     return plainToClass(Tutorial, response.data);
@@ -86,9 +74,7 @@ export async function setSubstituteTutor(
   id: string,
   substituteDTO: ISubstituteDTO
 ): Promise<Tutorial> {
-  const response = await axios.put<ITutorial>(`tutorial/${id}/substitute`, substituteDTO, {
-    transformResponse: transformTutorialResponse,
-  });
+  const response = await axios.put<ITutorial>(`tutorial/${id}/substitute`, substituteDTO);
 
   if (response.status === 200) {
     return plainToClass(Tutorial, response.data);

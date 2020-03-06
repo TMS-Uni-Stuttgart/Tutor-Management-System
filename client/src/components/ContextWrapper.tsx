@@ -1,10 +1,9 @@
-import DateFnsUtils from '@date-io/date-fns';
+import DateFnsUtils from '@date-io/luxon';
 import { PaletteType, useMediaQuery } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { ThemeProvider } from '@material-ui/core/styles';
-import deLocale from 'date-fns/locale/de';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { SnackbarProvider } from 'notistack';
-import React, { PropsWithChildren, useState, useContext, useEffect } from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouterProps } from 'react-router';
 import { BrowserRouterProps } from 'react-router-dom';
@@ -81,7 +80,7 @@ function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Ele
       <I18nextProvider i18n={i18n}>
         <CustomThemeProvider>
           <LoginContextProvider>
-            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={deLocale}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <SnackbarProvider maxSnack={3}>
                 <DialogService>{children}</DialogService>
               </SnackbarProvider>
