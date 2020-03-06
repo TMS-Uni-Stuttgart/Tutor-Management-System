@@ -1,5 +1,6 @@
+import { DateTime } from 'luxon';
 import React from 'react';
-import { IScheinExam } from 'shared/model/Scheinexam';
+import { Scheinexam } from '../../model/Scheinexam';
 import { FormikSubmitCallback } from '../../types';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikExerciseEditor, {
@@ -19,14 +20,14 @@ export interface ScheinExamFormState {
 export type ScheinExamFormSubmitCallback = FormikSubmitCallback<ScheinExamFormState>;
 
 interface Props extends Omit<FormikBaseFormProps<ScheinExamFormState>, CommonlyUsedFormProps> {
-  exam?: IScheinExam;
+  exam?: Scheinexam;
   onSubmit: ScheinExamFormSubmitCallback;
-  exams?: IScheinExam[];
+  exams?: Scheinexam[];
 }
 
 export function getInitialExamFormState(
-  exam?: IScheinExam,
-  exams?: IScheinExam[]
+  exam?: Scheinexam,
+  exams?: Scheinexam[]
 ): ScheinExamFormState {
   if (!!exam) {
     const exercises = exam.exercises.map(mapExerciseToFormExercise);
@@ -35,7 +36,7 @@ export function getInitialExamFormState(
       scheinExamNo: exam.scheinExamNo.toString(),
       exercises,
       percentageNeeded: exam.percentageNeeded,
-      date: exam.date.toDateString(),
+      date: exam.date.toISODate(),
     };
   }
 
@@ -47,7 +48,7 @@ export function getInitialExamFormState(
   return {
     scheinExamNo: (lastScheinExamNo + 1).toString(),
     exercises: [],
-    date: new Date(Date.now()).toDateString(),
+    date: DateTime.local().toISODate(),
     percentageNeeded: 0.5,
   };
 }

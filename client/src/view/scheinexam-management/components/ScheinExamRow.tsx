@@ -1,17 +1,17 @@
 import { TableCell, Typography } from '@material-ui/core';
+import { PdfBox as PDFGenerationIcon } from 'mdi-material-ui';
 import React from 'react';
-import { IScheinExam } from 'shared/model/Scheinexam';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
+import { Scheinexam } from '../../../model/Scheinexam';
 import { getDisplayStringOfScheinExam } from '../../../util/helperFunctions';
 import { getPointsOfEntityAsString } from '../../points-sheet/util/helper';
-import { PdfBox as PDFGenerationIcon } from 'mdi-material-ui';
 
 interface Props extends PaperTableRowProps {
-  exam: IScheinExam;
-  onEditExamClicked: (exam: IScheinExam) => void;
-  onHandleGenerateResultPDFClicked: (exam: IScheinExam) => void;
-  onDeleteExamClicked: (exam: IScheinExam) => void;
+  exam: Scheinexam;
+  onEditExamClicked: (exam: Scheinexam) => void;
+  onHandleGenerateResultPDFClicked: (exam: Scheinexam) => void;
+  onDeleteExamClicked: (exam: Scheinexam) => void;
 }
 
 function ScheinExamRow({

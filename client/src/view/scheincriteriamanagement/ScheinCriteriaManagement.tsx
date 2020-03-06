@@ -1,10 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import {
-  ScheinCriteriaResponse as ScheinCriteria,
-  IScheinCriteriaDTO,
-} from 'shared/model/ScheinCriteria';
+import { IScheinCriteria as ScheinCriteria, IScheinCriteriaDTO } from 'shared/model/ScheinCriteria';
 import ScheinCriteriaForm, {
   ScheinCriteriaFormCallback,
 } from '../../components/forms/ScheinCriteriaForm';
@@ -12,7 +9,13 @@ import { FormDataResponse } from '../../components/generatedForm/types/FieldData
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
-import { useAxios } from '../../hooks/FetchingService';
+import {
+  createScheinCriteria,
+  deleteScheinCriteria,
+  editScheinCriteria,
+  getAllScheinCriterias,
+  getScheinCriteriaFormData,
+} from '../../hooks/fetching/Scheincriteria';
 import ScheinCriteriaRow from './components/ScheinCriteriaRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,13 +31,6 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormDataResponse>({});
   const [criterias, setCriterias] = useState<ScheinCriteria[]>([]);
-  const {
-    getAllScheinCriterias,
-    getScheinCriteriaFormData,
-    createScheinCriteria,
-    editScheinCriteria,
-    deleteScheinCriteria,
-  } = useAxios();
   const dialog = useDialog();
 
   useEffect(() => {

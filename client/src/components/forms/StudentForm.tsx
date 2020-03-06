@@ -6,12 +6,11 @@ import { StudentStatus } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import * as Yup from 'yup';
 import { Student } from '../../model/Student';
+import { Team } from '../../model/Team';
 import { FormikSubmitCallback } from '../../types';
-import { teamItemToString } from '../../util/helperFunctions';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { Team } from '../../model/Team';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,18 +62,18 @@ interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsed
   onSubmit: StudentFormSubmitCallback;
   student?: Student;
   otherStudents: Student[];
-  teams?: ITeam[];
+  teams?: Team[];
 }
 
 export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
-type ItemType = ITeam | { type: typeof CREATE_NEW_TEAM_VALUE };
+type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
 
 function getMaxTeamSize() {
   // TODO: Replace with settings after settings are implemented.
   return 2;
 }
 
-function getNextTeamWithSlot(teams: ITeam[]): string {
+function getNextTeamWithSlot(teams: Team[]): string {
   const maxTeamSize = getMaxTeamSize();
 
   for (const team of teams) {
@@ -115,7 +114,7 @@ function parseTeamItemToString(team: ItemType): string {
     return 'Neues Team erstellen';
   }
 
-  return teamItemToString(team);
+  return team.toString();
 }
 
 function teamItemToValue(team: ItemType): string {

@@ -1,14 +1,15 @@
 import { CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { IExercise, ISheet } from 'shared/model/Sheet';
 import BackButton from '../../../components/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
+import Placeholder from '../../../components/Placeholder';
 import { getSheet } from '../../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
-import { HasPoints } from '../../../typings/types';
+import { Exercise } from '../../../model/Exercise';
+import { Sheet } from '../../../model/Sheet';
 import { getPointOverviewPath } from '../../../routes/Routing.helpers';
-import Placeholder from '../../../components/Placeholder';
+import { HasPoints } from '../../../typings/types';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 
@@ -71,8 +72,8 @@ function EnterPoints<T extends HasPoints>({
 
   const { setError } = useErrorSnackbar();
 
-  const [sheet, setSheet] = useState<ISheet>();
-  const [selectedExercise, setSelectedExercise] = useState<IExercise>();
+  const [sheet, setSheet] = useState<Sheet>();
+  const [selectedExercise, setSelectedExercise] = useState<Exercise>();
 
   useEffect(() => {
     if (!sheetId) {

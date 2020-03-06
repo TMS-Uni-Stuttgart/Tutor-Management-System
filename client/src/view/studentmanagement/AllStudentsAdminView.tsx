@@ -3,24 +3,21 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import fastcsv from 'fast-csv';
 import { Row, RowMap } from 'fast-csv/build/src/parser';
 import FileSaver from 'file-saver';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { IAttendance } from 'shared/model/Attendance';
 import SubmitButton from '../../components/loading/SubmitButton';
-import { getScheinStatusPDF, getClearScheinStatusPDF } from '../../hooks/fetching/Files';
+import SplitButton from '../../components/SplitButton';
+import { getClearScheinStatusPDF, getScheinStatusPDF } from '../../hooks/fetching/Files';
+import { getScheinCriteriaSummaryOfAllStudents } from '../../hooks/fetching/Scheincriteria';
 import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
-import {
-  getSumOfPointsOfStudentInScheinExam,
-  parseDateToMapKey,
-  saveBlob,
-} from '../../util/helperFunctions';
+import { Tutorial } from '../../model/Tutorial';
+import { saveBlob } from '../../util/helperFunctions';
 import { getPointsOfEntityAsString } from '../points-sheet/util/helper';
 import Studentoverview from './student-overview/Studentoverview';
 import StudentoverviewStoreProvider, { useStudentStore } from './student-store/StudentStore';
-import SplitButton from '../../components/SplitButton';
-import { Tutorial } from '../../model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -82,12 +79,9 @@ function AdminStudentManagement(): JSX.Element {
     }
   }
 
+  // TODO: Move this to the server.
   async function generateCSVFile() {
     setCreatingCSVFile(true);
-
-    // const summaries = await getScheinCriteriaSummaryOfAllStudents();
-    // const exams = await getAllScheinExams();
-    // const sheets = await getAllSheets();
 
     const dataArray: Row[] = [];
     const [summaries, sheets, exams] = await Promise.all([
@@ -98,33 +92,29 @@ function AdminStudentManagement(): JSX.Element {
 
     for (const student of students) {
       const { id, lastname, firstname, matriculationNo } = student;
-
       const criteriaResult = summaries[id];
-      const pointsOfStudent = new PointMap(points);
+      const presentations: string = student.getPresentationPointsSum().toString();
 
       const data: RowMap = {
         lastname,
         firstname,
         matriculationNo: matriculationNo || 'NA',
         scheinPassed: criteriaResult.passed + '',
-        presentations: Object.values(presentationPoints)
-          .reduce((prev, current) => prev + current, 0)
-          .toString(),
+        presentations,
       };
 
       for (const sheet of sheets) {
         const maxPoints = getPointsOfEntityAsString(sheet);
-        const sheetResult = pointsOfStudent.getSumOfPoints(sheet);
+        const sheetResult = student.getGrading(sheet)?.totalPoints ?? 0;
         data[`sheet-${sheet.sheetNo}`] = `${sheetResult}/${maxPoints}`;
       }
 
-      for (const date of Object.values(attendance).map(at => at.date)) {
-        const attendanceOfDate: IAttendance = attendance[parseDateToMapKey(new Date(date))];
-        data[`date-${format(new Date(date), 'yyyy-MM-dd')}`] = attendanceOfDate.state || '';
+      for (const [date, attendance] of student.attendances) {
+        data[`date-${DateTime.fromISO(date).toFormat('yyyy-MM-dd')}`] = attendance.state || '';
       }
 
       for (const exam of exams) {
-        const scheinExamResult: number = student.getGrading(exam);
+        const scheinExamResult: number = student.getGrading(exam)?.totalPoints ?? 0;
         data[`exam-${exam.scheinExamNo}`] = scheinExamResult.toString();
       }
       dataArray.push(data);

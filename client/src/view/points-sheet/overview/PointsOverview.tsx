@@ -1,18 +1,18 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router';
-import { ISheet } from 'shared/model/Sheet';
-import { ITeam } from 'shared/model/Team';
+import { useHistory, useParams } from 'react-router';
 import CustomSelect from '../../../components/CustomSelect';
 import SubmitButton from '../../../components/loading/SubmitButton';
+import Placeholder from '../../../components/Placeholder';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
-import Placeholder from '../../../components/Placeholder';
-import TeamCardList from './components/TeamCardList';
+import { Sheet } from '../../../model/Sheet';
+import { Team } from '../../../model/Team';
 import { getPointOverviewPath } from '../../../routes/Routing.helpers';
+import TeamCardList from './components/TeamCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,10 +56,10 @@ function PointsOverview(): JSX.Element {
   const { setError } = useErrorSnackbar();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [sheets, setSheets] = useState<ISheet[]>([]);
-  const [teams, setTeams] = useState<ITeam[]>([]);
+  const [sheets, setSheets] = useState<Sheet[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
 
-  const [currentSheet, setCurrentSheet] = useState<ISheet | undefined>();
+  const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>();
   const [isLoadingSheet, setLoadingSheet] = useState(false);
 
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
@@ -111,7 +111,7 @@ function PointsOverview(): JSX.Element {
     history.push(getPointOverviewPath({ tutorialId, sheetId }));
   }
 
-  async function handlePdfPreviewClicked(team: ITeam) {
+  async function handlePdfPreviewClicked(team: Team) {
     if (!currentSheet || !tutorialId) {
       return;
     }
@@ -123,7 +123,7 @@ function PointsOverview(): JSX.Element {
     }
   }
 
-  async function handleGenerateSinglePdf(team: ITeam) {
+  async function handleGenerateSinglePdf(team: Team) {
     if (!currentSheet || !tutorialId) {
       return;
     }

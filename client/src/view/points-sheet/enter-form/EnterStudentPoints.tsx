@@ -1,18 +1,17 @@
 import { Typography } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router';
-import { IStudent } from 'shared/model/Student';
+import { useHistory, useParams } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
+import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { Student } from '../../../model/Student';
+import { Team } from '../../../model/Team';
+import { getEnterPointsForStudentPath } from '../../../routes/Routing.helpers';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
-import { PointMap, UpdatePointsDTO } from 'shared/model/Points';
 import { convertFormStateToPointMap } from './EnterPoints.helpers';
-import { ITeam } from 'shared/model/Team';
-import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
-import { getEnterPointsForStudentPath } from '../../../routes/Routing.helpers';
 
 interface RouteParams {
   tutorialId?: string;
@@ -28,8 +27,8 @@ function EnterStudentPoints(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
-  const [student, setStudent] = useState<IStudent>();
-  const [team, setTeam] = useState<ITeam>();
+  const [student, setStudent] = useState<Student>();
+  const [team, setTeam] = useState<Team>();
 
   useEffect(() => {
     if (!studentId) {
@@ -104,7 +103,7 @@ function EnterStudentPoints(): JSX.Element {
     }
   };
 
-  const allStudents: IStudent[] = team ? team.students : student ? [student] : [];
+  const allStudents: Student[] = team ? team.students : student ? [student] : [];
 
   return (
     <EnterPoints
