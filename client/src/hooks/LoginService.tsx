@@ -28,7 +28,6 @@ async function login(username: string, password: string): Promise<LoggedInUser> 
     'auth/login',
     { username, password },
     {
-      // Override the behaviour of checking the response status to not be 401 (session timed out)
       validateStatus: () => true,
     }
   );
