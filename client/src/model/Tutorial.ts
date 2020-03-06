@@ -12,23 +12,27 @@ interface Modified {
 }
 
 export class Tutorial implements Modify<ITutorial, Modified> {
-  id!: string;
-  slot!: string;
-  tutor?: UserInEntity;
-  students!: string[];
-  teams!: string[];
-  correctors!: UserInEntity[];
+  readonly id!: string;
+  readonly slot!: string;
+  readonly tutor?: UserInEntity;
+  readonly students!: string[];
+  readonly teams!: string[];
+  readonly correctors!: UserInEntity[];
+
+  @Transform((values: string[]) => values.map(val => DateTime.fromISO(val)), { toClassOnly: true })
+  readonly dates!: DateTime[];
 
   @Transform(value => DateTime.fromISO(value), { toClassOnly: true })
-  dates!: DateTime[];
+  readonly startTime!: DateTime;
 
   @Transform(value => DateTime.fromISO(value), { toClassOnly: true })
-  startTime!: DateTime;
+  readonly endTime!: DateTime;
 
-  @Transform(value => DateTime.fromISO(value), { toClassOnly: true })
-  endTime!: DateTime;
-
-  substitutes!: Map<string, UserInEntity>;
+  @Transform(value => {
+    console.log(value);
+    return new Map(value);
+  })
+  readonly substitutes!: Map<string, UserInEntity>;
 
   /**
    * Returns basic information of the substitute of the given date. If there is no substitute `undefined` is returned.

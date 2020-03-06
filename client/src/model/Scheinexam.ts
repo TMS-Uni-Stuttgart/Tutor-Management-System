@@ -9,10 +9,10 @@ interface Modified {
 }
 
 export class Scheinexam extends HasExercises implements Modify<IScheinExam, Modified> {
-  id!: string;
-  scheinExamNo!: number;
-  percentageNeeded!: number;
+  readonly id!: string;
+  readonly scheinExamNo!: number;
+  readonly percentageNeeded!: number;
 
   @Transform(value => DateTime.fromISO(value))
-  date!: DateTime;
+  readonly date!: DateTime;
 }
