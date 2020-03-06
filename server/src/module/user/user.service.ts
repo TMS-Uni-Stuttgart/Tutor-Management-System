@@ -8,15 +8,16 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { DateTime } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
-import { IUser } from 'src/shared/model/User';
+import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
+import { TutorialDocument } from '../../database/models/tutorial.model';
+import { populateUserDocument, UserDocument, UserModel } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
-import { TutorialDocument } from '../../database/models/tutorial.model';
-import { UserDocument, UserModel, populateUserDocument } from '../../database/models/user.model';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { UserDTO, CreateUserDTO } from './user.dto';
+import { CreateUserDTO, UserDTO } from './user.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
@@ -255,6 +256,108 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
   }
 
   /**
+   * Sets the password of the given user to the given one. This will remove the `temporaryPassword` from the uesr.
+   *
+   * If one wants to set the temporary password aswell one should use the `setTemporaryPassword()` function.
+   *
+   * @param id ID of the user.
+   * @param password (New) password.
+   *
+   * @returns Updated UserDocument
+   *
+   * @throws `NotFoundException` - If no user with the given ID could be found.
+   */
+  async setPassword(id: string, password: string): Promise<UserDocument> {
+    const user = await this.findById(id);
+
+    user.password = password;
+    user.temporaryPassword = undefined;
+
+    const updatedUser = await user.save();
+    updatedUser.decryptFieldsSync();
+
+    return updatedUser;
+  }
+
+  /**
+   * Sets the password _and_ the temporary password of the user to the given one.
+   *
+   * If one only wants to set the password while removing the temporary one, one should use the `setPassword()` function.
+   *
+   * @param id ID of the user.
+   * @param password (New) password.
+   *
+   * @returns Updated UserDocument
+   *
+   * @throws `NotFoundException` - If no user with the given ID could be found.
+   */
+  async setTemporaryPassword(id: string, password: string): Promise<UserDocument> {
+    const user = await this.findById(id);
+
+    user.password = password;
+    user.temporaryPassword = password;
+
+    const updatedUser = await user.save();
+    updatedUser.decryptFieldsSync();
+
+    return updatedUser;
+  }
+
+  /**
+   * Collects and returns the information about a user which just logged in and needs it's information.
+   *
+   * @param id ID of the user to get the information on login for.
+   *
+   * @returns Information for the user on logging in.
+   *
+   * @throws `NotFoundException` - If no user with the given ID could be found.
+   */
+  async getLoggedInUserInformation(id: string): Promise<ILoggedInUser> {
+    const allTutorials = await this.tutorialService.findAll();
+    const {
+      id: userId,
+      firstname,
+      lastname,
+      roles,
+      temporaryPassword,
+      tutorials,
+      tutorialsToCorrect,
+    } = (await this.findById(id)).toDTO();
+
+    const substituteTutorials: Map<string, ILoggedInUserSubstituteTutorial> = new Map();
+
+    allTutorials.forEach(tutorial => {
+      tutorial.substitutes.forEach((substitute, dateKey) => {
+        if (substitute.id !== userId) {
+          return;
+        }
+
+        const date = DateTime.fromISO(dateKey);
+        const substInfo: ILoggedInUserSubstituteTutorial = substituteTutorials.get(tutorial.id) ?? {
+          id: tutorial.id,
+          slot: tutorial.slot,
+          dates: [],
+        };
+
+        substInfo.dates.push(date.toISODate());
+
+        substituteTutorials.set(tutorial.id, substInfo);
+      });
+    });
+
+    return {
+      id: userId,
+      firstname,
+      lastname,
+      roles,
+      substituteTutorials: Array.of(...substituteTutorials.values()),
+      hasTemporaryPassword: !!temporaryPassword,
+      tutorials,
+      tutorialsToCorrect,
+    };
+  }
+
+  /**
    * Checks if there is already a user with the given username saved in the database.
    *
    * @param username Username to check
@@ -308,54 +411,6 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     }
 
     return userDoc as UserDocument;
-  }
-
-  /**
-   * Sets the password of the given user to the given one. This will remove the `temporaryPassword` from the uesr.
-   *
-   * If one wants to set the temporary password aswell one should use the `setTemporaryPassword()` function.
-   *
-   * @param id ID of the user.
-   * @param password (New) password.
-   *
-   * @returns Updated UserDocument
-   *
-   * @throws `NotFoundException` - If no user with the given ID could be found.
-   */
-  async setPassword(id: string, password: string): Promise<UserDocument> {
-    const user = await this.findById(id);
-
-    user.password = password;
-    user.temporaryPassword = undefined;
-
-    const updatedUser = await user.save();
-    updatedUser.decryptFieldsSync();
-
-    return updatedUser;
-  }
-
-  /**
-   * Sets the password _and_ the temporary password of the user to the given one.
-   *
-   * If one only wants to set the password while removing the temporary one, one should use the `setPassword()` function.
-   *
-   * @param id ID of the user.
-   * @param password (New) password.
-   *
-   * @returns Updated UserDocument
-   *
-   * @throws `NotFoundException` - If no user with the given ID could be found.
-   */
-  async setTemporaryPassword(id: string, password: string): Promise<UserDocument> {
-    const user = await this.findById(id);
-
-    user.password = password;
-    user.temporaryPassword = password;
-
-    const updatedUser = await user.save();
-    updatedUser.decryptFieldsSync();
-
-    return updatedUser;
   }
 
   /**

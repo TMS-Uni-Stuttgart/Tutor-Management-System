@@ -90,7 +90,6 @@ export class UserModel {
   })
   tutorials!: TutorialDocument[];
 
-  // @arrayProp({ default: [], autopopulate: true, ref: 'TutorialModel' })
   @arrayProp({
     ref: 'TutorialModel',
     foreignField: 'correctors',
