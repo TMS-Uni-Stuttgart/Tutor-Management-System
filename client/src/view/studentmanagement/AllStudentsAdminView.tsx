@@ -1,21 +1,13 @@
 import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import fastcsv from 'fast-csv';
-import { Row, RowMap } from 'fast-csv/build/src/parser';
-import FileSaver from 'file-saver';
-import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import SubmitButton from '../../components/loading/SubmitButton';
 import SplitButton from '../../components/SplitButton';
 import { getClearScheinStatusPDF, getScheinStatusPDF } from '../../hooks/fetching/Files';
-import { getScheinCriteriaSummaryOfAllStudents } from '../../hooks/fetching/Scheincriteria';
-import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
-import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 import { Tutorial } from '../../model/Tutorial';
 import { saveBlob } from '../../util/helperFunctions';
-import { getPointsOfEntityAsString } from '../points-sheet/util/helper';
 import Studentoverview from './student-overview/Studentoverview';
 import StudentoverviewStoreProvider, { useStudentStore } from './student-store/StudentStore';
 
@@ -81,51 +73,52 @@ function AdminStudentManagement(): JSX.Element {
 
   // TODO: Move this to the server.
   async function generateCSVFile() {
-    setCreatingCSVFile(true);
+    enqueueSnackbar('CSV-Export wird aktuell nicht unterstützt', { variant: 'error' });
+    // setCreatingCSVFile(true);
 
-    const dataArray: Row[] = [];
-    const [summaries, sheets, exams] = await Promise.all([
-      getScheinCriteriaSummaryOfAllStudents(),
-      getAllSheets(),
-      getAllScheinExams(),
-    ]);
+    // const dataArray: Row[] = [];
+    // const [summaries, sheets, exams] = await Promise.all([
+    //   getScheinCriteriaSummaryOfAllStudents(),
+    //   getAllSheets(),
+    //   getAllScheinExams(),
+    // ]);
 
-    for (const student of students) {
-      const { id, lastname, firstname, matriculationNo } = student;
-      const criteriaResult = summaries[id];
-      const presentations: string = student.getPresentationPointsSum().toString();
+    // for (const student of students) {
+    //   const { id, lastname, firstname, matriculationNo } = student;
+    //   const criteriaResult = summaries[id];
+    //   const presentations: string = student.getPresentationPointsSum().toString();
 
-      const data: RowMap = {
-        lastname,
-        firstname,
-        matriculationNo: matriculationNo || 'NA',
-        scheinPassed: criteriaResult.passed + '',
-        presentations,
-      };
+    //   const data: RowMap = {
+    //     lastname,
+    //     firstname,
+    //     matriculationNo: matriculationNo || 'NA',
+    //     scheinPassed: criteriaResult.passed + '',
+    //     presentations,
+    //   };
 
-      for (const sheet of sheets) {
-        const maxPoints = getPointsOfEntityAsString(sheet);
-        const sheetResult = student.getGrading(sheet)?.totalPoints ?? 0;
-        data[`sheet-${sheet.sheetNo}`] = `${sheetResult}/${maxPoints}`;
-      }
+    //   for (const sheet of sheets) {
+    //     const maxPoints = getPointsOfEntityAsString(sheet);
+    //     const sheetResult = student.getGrading(sheet)?.totalPoints ?? 0;
+    //     data[`sheet-${sheet.sheetNo}`] = `${sheetResult}/${maxPoints}`;
+    //   }
 
-      for (const [date, attendance] of student.attendances) {
-        data[`date-${DateTime.fromISO(date).toFormat('yyyy-MM-dd')}`] = attendance.state || '';
-      }
+    //   for (const [date, attendance] of student.attendances) {
+    //     data[`date-${DateTime.fromISO(date).toFormat('yyyy-MM-dd')}`] = attendance.state || '';
+    //   }
 
-      for (const exam of exams) {
-        const scheinExamResult: number = student.getGrading(exam)?.totalPoints ?? 0;
-        data[`exam-${exam.scheinExamNo}`] = scheinExamResult.toString();
-      }
-      dataArray.push(data);
-    }
+    //   for (const exam of exams) {
+    //     const scheinExamResult: number = student.getGrading(exam)?.totalPoints ?? 0;
+    //     data[`exam-${exam.scheinExamNo}`] = scheinExamResult.toString();
+    //   }
+    //   dataArray.push(data);
+    // }
 
-    const csvData: string = await fastcsv.writeToString(dataArray, { headers: true });
-    const csvBlob = new Blob([csvData], { type: 'text/csv' });
+    // const csvData: string = await fastcsv.writeToString(dataArray, { headers: true });
+    // const csvBlob = new Blob([csvData], { type: 'text/csv' });
 
-    FileSaver.saveAs(csvBlob, 'tms_export.csv');
+    // FileSaver.saveAs(csvBlob, 'tms_export.csv');
 
-    setCreatingCSVFile(false);
+    // setCreatingCSVFile(false);
   }
 
   return (
@@ -161,7 +154,8 @@ function AdminStudentManagement(): JSX.Element {
             className={classes.printButton}
             onClick={generateCSVFile}
             isSubmitting={isCreatingCSVFile}
-            disabled={students.length === 0}
+            disabled
+            // disabled={students.length === 0}
           >
             CSV Datei
           </SubmitButton>

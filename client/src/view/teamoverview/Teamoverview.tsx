@@ -77,7 +77,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       setTeams(teams);
       setIsLoading(false);
     })();
-  }, [getStudentsOfTutorial, getTeamsOfTutorial, params.tutorialId]);
+  }, [params.tutorialId]);
 
   const handleCreateTeam: TeamFormSubmitCallback = async (
     { students: studentsFromForm },

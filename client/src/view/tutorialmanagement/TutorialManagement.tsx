@@ -89,7 +89,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
 
       setIsLoading(false);
     });
-  }, [enqueueSnackbar, getUsersWithRole, getAllTutorials]);
+  }, [enqueueSnackbar]);
 
   const handleCreateTutorial: TutorialFormSubmitCallback = async (
     values,

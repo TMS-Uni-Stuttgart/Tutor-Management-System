@@ -43,7 +43,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
         setIsLoading(false);
       }
     );
-  }, [getAllScheinCriterias, getScheinCriteriaFormData]);
+  }, []);
 
   const handleCreateCriteria: ScheinCriteriaFormCallback = async (
     { name, identifier, ...values },

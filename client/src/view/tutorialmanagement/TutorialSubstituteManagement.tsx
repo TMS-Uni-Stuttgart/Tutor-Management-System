@@ -109,7 +109,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
       .catch(reason => console.log(reason));
 
     getUsersWithRole(Role.TUTOR).then(tutors => setTutors(tutors));
-  }, [getTutorial, getUsersWithRole, params.tutorialid]);
+  }, [params.tutorialid]);
 
   const initialValues: TutorialSubstituteFormState = getInitialValues(tutorial);
 

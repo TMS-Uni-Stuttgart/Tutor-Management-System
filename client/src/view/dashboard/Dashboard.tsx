@@ -64,11 +64,7 @@ function Dashboard(): JSX.Element {
 
       setIsLoading(false);
     })();
-  }, [
-    getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-    getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
-    userData,
-  ]);
+  }, [userData]);
 
   return (
     <div>
