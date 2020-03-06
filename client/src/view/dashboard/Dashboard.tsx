@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
-import { ILoggedInUser } from 'shared/model/User';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import { getScheinCriteriaSummariesOfAllStudentsOfTutorial } from '../../hooks/fetching/Scheincriteria';
 import {
@@ -14,13 +13,14 @@ import { StudentByTutorialSlotSummaryMap } from '../../typings/types';
 import AdminStatsCard from './components/AdminStatsCard';
 import AllTutorialStatistics from './components/AllTutorialStatistics';
 import TutorialStatistics from './components/TutorialStatistics';
+import { LoggedInUser } from '../../model/LoggedInUser';
 
 export interface TutorialSummaryInfo {
   tutorial: Tutorial;
   studentInfos: ScheincriteriaSummaryByStudents;
 }
 
-function isAdmin(userData: ILoggedInUser | undefined): boolean {
+function isAdmin(userData: LoggedInUser | undefined): boolean {
   return !!userData && userData.roles.includes(Role.ADMIN);
 }
 

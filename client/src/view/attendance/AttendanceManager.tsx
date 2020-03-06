@@ -6,7 +6,6 @@ import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { StudentStatus } from 'shared/model/Student';
-import { ILoggedInUser } from 'shared/model/User';
 import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
 import CustomSelect from '../../components/CustomSelect';
 import DateOfTutorialSelection from '../../components/DateOfTutorialSelection';
@@ -21,6 +20,7 @@ import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
 import { parseDateToMapKey, saveBlob } from '../../util/helperFunctions';
 import StudentAttendanceRow from './components/StudentsAttendanceRow';
+import { LoggedInUser } from '../../model/LoggedInUser';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,7 +62,7 @@ enum FilterOption {
 
 function getAvailableDates(
   tutorial: Tutorial | undefined,
-  user: ILoggedInUser | undefined,
+  user: LoggedInUser | undefined,
   isAdminPage: boolean
 ): DateTime[] {
   if (!tutorial) {
@@ -74,8 +74,7 @@ function getAvailableDates(
 
     if (substituteTutorial) {
       return tutorial.dates.filter(
-        date =>
-          substituteTutorial.dates.findIndex(d => date.hasSame(DateTime.fromISO(d), 'day')) !== -1
+        date => substituteTutorial.dates.findIndex(d => date.hasSame(d, 'day')) !== -1
       );
     }
   }

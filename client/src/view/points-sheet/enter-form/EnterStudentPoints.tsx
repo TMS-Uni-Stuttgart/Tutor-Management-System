@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
+import { IGradingDTO } from '../../../../../server/src/shared/model/Points';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
@@ -11,7 +12,7 @@ import { Team } from '../../../model/Team';
 import { getEnterPointsForStudentPath } from '../../../routes/Routing.helpers';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
-import { convertFormStateToPointMap } from './EnterPoints.helpers';
+import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
 
 interface RouteParams {
   tutorialId?: string;
@@ -78,13 +79,12 @@ function EnterStudentPoints(): JSX.Element {
       return;
     }
 
-    const points: PointMap = convertFormStateToPointMap({
+    const prevGrading = student.getGrading(sheetId);
+    const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
-      sheetId: sheetId,
+      entityId: sheetId,
+      prevGrading,
     });
-    const updateDTO: UpdatePointsDTO = {
-      points: points.toDTO(),
-    };
 
     try {
       await setPointsOfStudent(studentId, updateDTO);

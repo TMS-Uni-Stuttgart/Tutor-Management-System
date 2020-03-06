@@ -1,20 +1,24 @@
-import { transformLoggedInUserResponse } from './axiosTransforms';
-import { ILoggedInUser } from 'shared/model/User';
+import { LoggedInUser } from '../model/LoggedInUser';
+import { plainToClass } from 'class-transformer';
 
-export function saveUser(user: ILoggedInUser) {
+export function saveUser(user: LoggedInUser) {
   sessionStorage.setItem('user', JSON.stringify(user));
 }
 
-export function getUser(): ILoggedInUser | undefined {
+export function getUser(): LoggedInUser | undefined {
   const userItem: string | null = sessionStorage.getItem('user');
 
   if (!userItem) {
     return undefined;
   }
 
-  const user: ILoggedInUser | undefined = transformLoggedInUserResponse(userItem);
+  try {
+    const user = plainToClass(LoggedInUser, JSON.parse(userItem));
 
-  return user;
+    return user;
+  } catch {
+    return undefined;
+  }
 }
 
 export function removeUser() {

@@ -9,7 +9,7 @@ import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Sheet } from '../../../model/Sheet';
 import { getPointOverviewPath } from '../../../routes/Routing.helpers';
-import { HasPoints } from '../../../typings/types';
+import { HasGradings } from '../../../typings/types';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 
@@ -43,14 +43,14 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface EntitySelectProps<T extends HasPoints> {
+interface EntitySelectProps<T extends HasGradings> {
   label: string;
   emptyPlaceholder: string;
   itemToString: CustomSelectProps<T>['itemToString'];
   onChange?: CustomSelectProps<T>['onChange'];
 }
 
-interface Props<T extends HasPoints> {
+interface Props<T extends HasGradings> {
   tutorialId: string;
   sheetId: string;
   entity?: T;
@@ -60,7 +60,7 @@ interface Props<T extends HasPoints> {
   entitySelectProps: EntitySelectProps<T>;
 }
 
-function EnterPoints<T extends HasPoints>({
+function EnterPoints<T extends HasGradings>({
   tutorialId,
   sheetId,
   entity,

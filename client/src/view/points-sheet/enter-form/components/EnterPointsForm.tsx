@@ -5,11 +5,13 @@ import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { Prompt } from 'react-router';
 import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Points';
-import { IExercise, ISheet } from 'shared/model/Sheet';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';
-import { HasPoints } from '../../../../typings/types';
+import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
+import { Exercise } from '../../../../model/Exercise';
+import { Sheet } from '../../../../model/Sheet';
+import { HasGradings } from '../../../../typings/types';
 import { getPointsFromState as getAchievedPointsFromState } from '../EnterPoints.helpers';
 import {
   generateInitialValues,
@@ -17,7 +19,6 @@ import {
   PointsFormSubmitCallback,
 } from './EnterPointsForm.helpers';
 import ExerciseBox from './ExerciseBox';
-import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,9 +57,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
-  entity: HasPoints;
-  sheet: ISheet;
-  exercise: IExercise;
+  entity: HasGradings;
+  sheet: Sheet;
+  exercise: Exercise;
   onSubmit: PointsFormSubmitCallback;
 }
 

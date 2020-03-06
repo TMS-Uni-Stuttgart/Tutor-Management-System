@@ -1,13 +1,13 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { IScheinExam } from 'shared/model/Scheinexam';
-import { IStudent } from 'shared/model/Student';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { Scheinexam } from '../../../model/Scheinexam';
+import { Student } from '../../../model/Student';
 import { getScheinexamPointsOverviewPath } from '../../../routes/Routing.helpers';
 import StudentCardList from './components/StudentCardList';
 
@@ -41,9 +41,9 @@ function ScheinexamPointsOverview(): JSX.Element {
 
   const { setError } = useErrorSnackbar();
 
-  const [students, setStudents] = useState<IStudent[]>([]);
-  const [exams, setExams] = useState<IScheinExam[]>([]);
-  const [selectedExam, setSelectedExam] = useState<IScheinExam>();
+  const [students, setStudents] = useState<Student[]>([]);
+  const [exams, setExams] = useState<Scheinexam[]>([]);
+  const [selectedExam, setSelectedExam] = useState<Scheinexam>();
 
   useEffect(() => {
     getAllScheinExams()

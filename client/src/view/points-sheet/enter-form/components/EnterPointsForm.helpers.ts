@@ -1,7 +1,7 @@
-import { PointId, PointMap, PointMapEntry, PointsOfSubexercises } from 'shared/model/Points';
-import { IExercise, ISheet } from 'shared/model/Sheet';
+import { Exercise, HasExercises } from '../../../../model/Exercise';
+import { Grading } from '../../../../model/Grading';
 import { FormikSubmitCallback } from '../../../../types';
-import { HasPoints } from '../../../../typings/types';
+import { HasGradings } from '../../../../typings/types';
 
 export interface PointsFormSubExerciseState {
   [subExerciseId: string]: string;
@@ -23,75 +23,52 @@ export interface PointsFormState {
 export type PointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
 interface InitialValuesOptions {
-  entity: HasPoints;
-  sheet: ISheet;
+  entity: HasGradings;
+  sheet: HasExercises;
 }
 
 interface GeneratePointsSubexerciseParams {
-  exercise: IExercise;
-  pointsOfTeam: PointMapEntry;
-}
-
-export function getDefaultPointMapEntry(exercise: IExercise): PointMapEntry {
-  if (exercise.subexercises.length > 0) {
-    const points: PointsOfSubexercises = {};
-
-    exercise.subexercises.forEach(subEx => {
-      points[subEx.id] = 0;
-    });
-
-    return {
-      comment: '',
-      points,
-    };
-  } else {
-    return {
-      comment: '',
-      points: 0,
-    };
-  }
+  exercise: Exercise;
+  gradingOfTeam: Grading;
 }
 
 export function generatePointStateWithSubexercises({
   exercise,
-  pointsOfTeam,
+  gradingOfTeam: pointsOfTeam,
 }: GeneratePointsSubexerciseParams): PointsFormSubExerciseState {
+  const grading = pointsOfTeam.getExerciseGrading(exercise);
   const { subexercises } = exercise;
 
   return subexercises.reduce<PointsFormSubExerciseState>((prev, current) => {
-    if (typeof pointsOfTeam.points === 'number') {
-      return prev;
-    }
+    const gradingOfSubEx = grading?.getGradingForSubexercise(current);
 
-    const pointsOfSubEx = pointsOfTeam.points[current.id];
-
-    return { ...prev, [current.id]: pointsOfSubEx?.toString() ?? '0' };
+    return { ...prev, [current.id]: gradingOfSubEx?.toString() ?? '0' };
   }, {});
 }
 
 export function generateInitialValues({ entity, sheet }: InitialValuesOptions): PointsFormState {
-  const pointMap = new PointMap(entity.points);
+  const gradingOfTeam = entity.getGrading(sheet);
   const exercises: { [id: string]: PointsFormExerciseState } = {};
 
-  sheet.exercises.forEach(exercise => {
-    const pointsOfTeam =
-      pointMap.getPointEntry(new PointId(sheet.id, exercise.id)) ??
-      getDefaultPointMapEntry(exercise);
+  if (!gradingOfTeam) {
+    return { comment: '', additionalPoints: '0', exercises };
+  }
 
+  sheet.exercises.forEach(exercise => {
     if (exercise.subexercises.length > 0) {
       const points: PointsFormSubExerciseState = generatePointStateWithSubexercises({
         exercise,
-        pointsOfTeam,
+        gradingOfTeam,
       });
 
       exercises[exercise.id] = {
-        comment: pointsOfTeam.comment ?? '',
+        comment: gradingOfTeam.comment ?? '',
         points,
       };
     } else {
       exercises[exercise.id] = {
-        comment: pointsOfTeam.comment ?? '',
-        points: pointsOfTeam.points.toString() ?? '0',
+        comment: gradingOfTeam.comment ?? '',
+        points: gradingOfTeam.totalPoints.toString() ?? '0',
       };
     }
   });

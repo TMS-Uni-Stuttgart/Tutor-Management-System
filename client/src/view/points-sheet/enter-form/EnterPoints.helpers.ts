@@ -1,62 +1,57 @@
-import { PointMap, PointMapEntry, PointsOfSubexercises, SheetMapEntry } from 'shared/model/Points';
+import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Points';
 import { PointsFormExerciseState, PointsFormState } from './components/EnterPointsForm.helpers';
+import { Grading } from '../../../model/Grading';
+
+interface ConvertToGradingDTOParams {
+  values: PointsFormState;
+  entityId: string;
+  prevGrading?: Grading;
+}
 
 /**
- * Converts the given form state of __one__ exercise to a valid PointMapEntry.
+ * Converts the given form state of __one__ exercise to a valid IExerciseGradingDTO.
  *
  * @param state State representing exactly one exercise.
  */
 function convertFormExerciseStateToPointMapEntry({
   comment,
   points,
-}: PointsFormExerciseState): PointMapEntry {
+}: PointsFormExerciseState): IExerciseGradingDTO {
   if (typeof points === 'string') {
     return {
       comment,
       points: points ? Number.parseFloat(points) : 0,
     };
   } else {
-    const pointsOfSubexercises: PointsOfSubexercises = {};
+    const subExercisePoints: Map<string, number> = new Map();
 
     Object.entries(points).forEach(([subKey, value]) => {
-      pointsOfSubexercises[subKey] = value ? Number.parseFloat(value) : 0;
+      const parsedValue = value ? Number.parseFloat(value) : 0;
+      subExercisePoints.set(subKey, !Number.isNaN(parsedValue) ? parsedValue : 0);
     });
 
     return {
       comment,
-      points: pointsOfSubexercises,
+      subExercisePoints: [...subExercisePoints],
     };
   }
 }
 
-interface ConvertParams {
-  values: PointsFormState;
-  sheetId: string;
-}
-
 /**
- * Converts the given PointsFormState to a PointMap with exactly one entry.
- *
- * This entry is the one from the given values with the given `sheetId` as key.
+ * Converts the given PointsFormState to a Map with the IExerciseGradingDTOs.
  *
  * @param values Form values of the point form.
- * @param sheetId ID of the sheet to which the values belong to.
  */
-export function convertFormStateToPointMap({ values, sheetId }: ConvertParams): PointMap {
-  const points = new PointMap();
-  const entry: SheetMapEntry = {
-    comment: values.comment,
-    additionalPoints: values.additionalPoints ? Number.parseFloat(values.additionalPoints) : 0,
-    exercises: {},
-  };
+function convertFormStateToExerciseGradingDTOMap(
+  values: PointsFormState
+): Map<string, IExerciseGradingDTO> {
+  const gradings = new Map();
 
   Object.entries(values.exercises).forEach(([exerciseId, state]) => {
-    entry.exercises[exerciseId] = convertFormExerciseStateToPointMapEntry(state);
+    gradings.set(exerciseId, convertFormExerciseStateToPointMapEntry(state));
   });
 
-  points.setSheetEntry(sheetId, entry);
-
-  return points;
+  return gradings;
 }
 
 export function getPointsFromState(values: PointsFormState): number {
@@ -69,4 +64,24 @@ export function getPointsFromState(values: PointsFormState): number {
       return pts + Number.parseFloat(value);
     }, sum);
   }, Number.parseFloat(values.additionalPoints));
+}
+
+export function convertFormStateToGradingDTO({
+  values,
+  entityId,
+  prevGrading,
+}: ConvertToGradingDTOParams): IGradingDTO {
+  const exerciseGradings: Map<
+    string,
+    IExerciseGradingDTO
+  > = convertFormStateToExerciseGradingDTOMap(values);
+  const additionalPoints = values.additionalPoints ? Number.parseFloat(values.additionalPoints) : 0;
+
+  return {
+    sheetId: entityId,
+    exerciseGradings: [...exerciseGradings],
+    gradingId: prevGrading?.id,
+    comment: values.comment,
+    additionalPoints,
+  };
 }
