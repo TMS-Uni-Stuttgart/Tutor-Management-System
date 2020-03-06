@@ -17,7 +17,7 @@ function DateOfTutorialSelection({
   className,
   ...other
 }: Props): JSX.Element {
-  const [value, setValue] = useState<string>();
+  const [value, setValue] = useState<string>(valueFromProps ?? '');
 
   useEffect(() => {
     setValue(valueFromProps ?? '');
