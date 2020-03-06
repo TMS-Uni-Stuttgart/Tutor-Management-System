@@ -35,7 +35,7 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
     } else {
       setGradingOfSelected(undefined);
     }
-  }, [selectedExam]);
+  }, [student, selectedExam]);
 
   const handleScheinExamSelectionChange: OnChangeHandler = e => {
     if (typeof e.target.value !== 'string') {

@@ -103,7 +103,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
 
       setIsLoading(false);
     });
-  }, [enqueueSnackbar, getAllTutorials]);
+  }, [enqueueSnackbar]);
 
   const handleCreateUser: UserFormSubmitCallback = async (
     formState,
@@ -260,7 +260,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
 
         enqueueSnackbar('', {
           persist: true,
-          children: id => (
+          children: (id: any) => (
             <SnackbarWithList
               id={id}
               title={'Nicht zugestellte Zugangsdaten'}

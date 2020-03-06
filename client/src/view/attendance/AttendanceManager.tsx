@@ -148,7 +148,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
         });
       }
     }
-  }, [tutorialFromProps]);
+  }, [tutorialFromProps, tutorial]);
 
   useEffect(() => {
     setFilteredStudents(getFilteredStudents(fetchedStudents, filterOption));

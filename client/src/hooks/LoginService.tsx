@@ -24,15 +24,14 @@ const LoginContext = React.createContext<LoginState>({
 });
 
 async function login(username: string, password: string): Promise<LoggedInUser> {
-  // We build the Authorization header by ourselfs because the axios library does NOT use UTF-8 to encode the string as base64.
-  const encodedAuth = Buffer.from(username + ':' + password, 'utf8').toString('base64');
-  const response = await axios.post<LoggedInUser>('login', null, {
-    headers: {
-      Authorization: `Basic ${encodedAuth}`,
-    },
-    // Override the behaviour of checking the response status to not be 401 (session timed out)
-    validateStatus: () => true,
-  });
+  const response = await axios.post<LoggedInUser>(
+    'auth/login',
+    { username, password },
+    {
+      // Override the behaviour of checking the response status to not be 401 (session timed out)
+      validateStatus: () => true,
+    }
+  );
 
   const user: LoggedInUser = await handleResponse(response);
 
@@ -69,7 +68,7 @@ async function changePassword(password: string): Promise<LoggedInUser | undefine
 
 async function logout() {
   try {
-    await axios.get(`/logout`, { validateStatus: () => true });
+    await axios.get(`auth/logout`, { validateStatus: () => true });
   } catch {
   } finally {
     removeUser();

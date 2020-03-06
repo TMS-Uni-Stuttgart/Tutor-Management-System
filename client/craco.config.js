@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const CracoAlias = require('craco-alias');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 
