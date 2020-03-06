@@ -1,35 +1,8 @@
-import {
-  Box,
-  Chip,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from '@material-ui/core';
-import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
-import { CriteriaInformation, CriteriaInformationItem } from 'shared/model/ScheinCriteria';
-import { HasExercises } from 'shared/model/Sheet';
-import { getNameOfEntity } from 'shared/util/helpers';
+import { Box } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import BackButton from '../../components/BackButton';
-import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
-import ChartPaper from '../../components/info-paper/ChartPaper';
-import InfoPaper from '../../components/info-paper/InfoPaper';
-import PaperTableRow from '../../components/PaperTableRow';
-import Placeholder from '../../components/Placeholder';
-import PointsTable from '../../components/points-table/PointsTable';
-import StudentAvatar from '../../components/student-icon/StudentAvatar';
-import TableWithPadding from '../../components/TableWithPadding';
-import { getScheincriteriaInformation } from '../../hooks/fetching/Scheincriteria';
-import { getAllStudents } from '../../hooks/fetching/Student';
-import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
 import { RoutingPath } from '../../routes/Routing.routes';
-import { i18nNamespace } from '../../util/lang/configI18N';
-import { Student } from '../../model/Student';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -53,64 +26,65 @@ interface PathParams {
 
 function CriteriaInfoView(): JSX.Element {
   const classes = useStyles();
-  const theme = useTheme();
+  // const theme = useTheme();
 
-  const { id: criteriaId } = useParams<PathParams>();
-  const { setError } = useErrorSnackbar();
+  // const { id: criteriaId } = useParams<PathParams>();
+  // const { setError } = useErrorSnackbar();
 
-  const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
+  // const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
 
-  const [students, setStudents] = useState<Student[]>();
-  const [criteriaInfo, setCriteriaInfo] = useState<CriteriaInformation>();
-  const [information, setInformation] = useState<CriteriaInformationItem>();
-  const [selectedSheetOrExam, setSelectetSheetOrExam] = useState<HasExercises>();
+  // const [students, setStudents] = useState<Student[]>();
+  // const [criteriaInfo, setCriteriaInfo] = useState<CriteriaInformation>();
+  // const [information, setInformation] = useState<CriteriaInformationItem>();
+  // const [selectedSheetOrExam, setSelectetSheetOrExam] = useState<HasExercises>();
 
-  useEffect(() => {
-    getAllStudents()
-      .then(response => {
-        setStudents(response);
-      })
-      .catch(() => {
-        setError('Studierende konnten nicht abgerufen werden.');
-        setStudents(undefined);
-      });
-  }, [setError]);
+  // useEffect(() => {
+  //   getAllStudents()
+  //     .then(response => {
+  //       setStudents(response);
+  //     })
+  //     .catch(() => {
+  //       setError('Studierende konnten nicht abgerufen werden.');
+  //       setStudents(undefined);
+  //     });
+  // }, [setError]);
 
-  useEffect(() => {
-    getScheincriteriaInformation(criteriaId)
-      .then(response => {
-        setCriteriaInfo(response);
-      })
-      .catch(() => {
-        setError('Informationen über das Kriterium konnten nicht abgerufen werden.');
-      });
-  }, [criteriaId, setError]);
+  // useEffect(() => {
+  //   getScheincriteriaInformation(criteriaId)
+  //     .then(response => {
+  //       setCriteriaInfo(response);
+  //     })
+  //     .catch(() => {
+  //       setError('Informationen über das Kriterium konnten nicht abgerufen werden.');
+  //     });
+  // }, [criteriaId, setError]);
 
-  useEffect(() => {
-    setInformation(
-      selectedSheetOrExam ? criteriaInfo?.information[selectedSheetOrExam.id] : undefined
-    );
-  }, [criteriaInfo, selectedSheetOrExam]);
+  // useEffect(() => {
+  //   setInformation(
+  //     selectedSheetOrExam ? criteriaInfo?.information[selectedSheetOrExam.id] : undefined
+  //   );
+  // }, [criteriaInfo, selectedSheetOrExam]);
 
-  const handleSheetOrExamChange: OnChangeHandler = event => {
-    if (!criteriaInfo?.sheetsOrExams) {
-      return;
-    }
+  // const handleSheetOrExamChange: OnChangeHandler = event => {
+  //   if (!criteriaInfo?.sheetsOrExams) {
+  //     return;
+  //   }
 
-    const exam = criteriaInfo.sheetsOrExams.find(exam => exam.id === event.target.value);
+  //   const exam = criteriaInfo.sheetsOrExams.find(exam => exam.id === event.target.value);
 
-    setSelectetSheetOrExam(exam);
-  };
+  //   setSelectetSheetOrExam(exam);
+  // };
 
   return (
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={3}>
         <BackButton to={RoutingPath.MANAGE_SCHEIN_CRITERIAS} className={classes.backButton} />
 
-        {criteriaInfo && <Typography variant='h4'>{criteriaInfo.name}</Typography>}
+        {/* {criteriaInfo && <Typography variant='h4'>{criteriaInfo.name}</Typography>} */}
       </Box>
 
-      <Placeholder
+      <Box>WORK IN PROGRESS</Box>
+      {/* <Placeholder
         placeholderText='Keine Informationen verfügbar.'
         showPlaceholder={!criteriaInfo?.sheetsOrExams}
         loading={!criteriaInfo}
@@ -272,7 +246,7 @@ function CriteriaInfoView(): JSX.Element {
             </Placeholder>
           </Box>
         )}
-      </Placeholder>
+      </Placeholder> */}
     </Box>
   );
 }

@@ -1,4 +1,6 @@
 import { Type } from 'class-transformer';
+import { HasId } from '../../../server/src/shared/model/Common';
+import { ExercisePointInfo } from '../../../server/src/shared/model/Points';
 import { IExercise, ISubexercise } from '../../../server/src/shared/model/Sheet';
 
 export class Subexercise implements ISubexercise {
@@ -6,6 +8,13 @@ export class Subexercise implements ISubexercise {
   exName!: string;
   maxPoints!: number;
   bonus!: boolean;
+
+  get pointInfo(): ExercisePointInfo {
+    return {
+      must: this.bonus ? 0 : this.maxPoints,
+      bonus: this.bonus ? this.maxPoints : 0,
+    };
+  }
 }
 
 export class Exercise extends Subexercise implements IExercise {
@@ -21,5 +30,54 @@ export class Exercise extends Subexercise implements IExercise {
     }
 
     return this.subexercises.reduce((sum, current) => sum + current.maxPoints, 0);
+  }
+
+  get pointInfo(): ExercisePointInfo {
+    if (this.subexercises.length === 0) {
+      return {
+        must: this.bonus ? 0 : this.maxPoints,
+        bonus: this.bonus ? this.maxPoints : 0,
+      };
+    }
+
+    return this.subexercises.reduce(
+      (prev, current) => {
+        const currentInfo = current.pointInfo;
+
+        return {
+          must: prev.must + currentInfo.must,
+          bonus: prev.bonus + currentInfo.bonus,
+        };
+      },
+      { must: 0, bonus: 0 }
+    );
+  }
+}
+
+export abstract class HasExercises implements HasId {
+  id!: string;
+
+  @Type(() => Exercise)
+  exercises!: Exercise[];
+
+  /**
+   * Total points of the sheet. This is equal to the sum of the points of all exercises in this sheet.
+   */
+  get totalPoints(): number {
+    return this.exercises.reduce((sum, current) => sum + current.points, 0);
+  }
+
+  get pointInfo(): ExercisePointInfo {
+    return this.exercises.reduce<ExercisePointInfo>(
+      (prev, current) => {
+        const { must, bonus } = current.pointInfo;
+
+        return {
+          must: prev.must + must,
+          bonus: prev.bonus + bonus,
+        };
+      },
+      { must: 0, bonus: 0 }
+    );
   }
 }

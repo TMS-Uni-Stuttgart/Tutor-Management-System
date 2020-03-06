@@ -1,18 +1,18 @@
 import { AxiosResponse } from 'axios';
+import { plainToClass } from 'class-transformer';
 import React, { useContext, useState } from 'react';
-import { ILoggedInUser } from 'shared/model/User';
-import { transformLoggedInUserResponse } from '../util/axiosTransforms';
+import { LoggedInUser } from '../model/LoggedInUser';
 import { getUser, removeUser, saveUser } from '../util/userStorage';
 import axios from './fetching/Axios';
 
 export type LoggedInFunction = (isLoggedIn: boolean) => void;
 
 interface LoginState {
-  login: (username: string, password: string) => Promise<ILoggedInUser | undefined>;
+  login: (username: string, password: string) => Promise<LoggedInUser | undefined>;
   logout: () => Promise<void>;
-  changePassword: (password: string) => Promise<ILoggedInUser | undefined>;
+  changePassword: (password: string) => Promise<LoggedInUser | undefined>;
   isLoggedIn: () => boolean;
-  userData: ILoggedInUser | undefined;
+  userData: LoggedInUser | undefined;
 }
 
 const LoginContext = React.createContext<LoginState>({
@@ -23,19 +23,18 @@ const LoginContext = React.createContext<LoginState>({
   userData: undefined,
 });
 
-async function login(username: string, password: string): Promise<ILoggedInUser> {
+async function login(username: string, password: string): Promise<LoggedInUser> {
   // We build the Authorization header by ourselfs because the axios library does NOT use UTF-8 to encode the string as base64.
   const encodedAuth = Buffer.from(username + ':' + password, 'utf8').toString('base64');
-  const response = await axios.post<ILoggedInUser>('login', null, {
+  const response = await axios.post<LoggedInUser>('login', null, {
     headers: {
       Authorization: `Basic ${encodedAuth}`,
     },
-    transformResponse: transformLoggedInUserResponse,
     // Override the behaviour of checking the response status to not be 401 (session timed out)
     validateStatus: () => true,
   });
 
-  const user: ILoggedInUser = await handleResponse(response);
+  const user: LoggedInUser = await handleResponse(response);
 
   if (user) {
     saveUser(user);
@@ -46,7 +45,7 @@ async function login(username: string, password: string): Promise<ILoggedInUser>
   return Promise.reject(response.statusText);
 }
 
-async function changePassword(password: string): Promise<ILoggedInUser | undefined> {
+async function changePassword(password: string): Promise<LoggedInUser | undefined> {
   const user = getUser();
 
   if (user === undefined || user.id === undefined) {
@@ -91,7 +90,7 @@ function isLoggedIn(): boolean {
   return true;
 }
 
-async function handleResponse(response: AxiosResponse<ILoggedInUser>): Promise<ILoggedInUser> {
+async function handleResponse(response: AxiosResponse<LoggedInUser>): Promise<LoggedInUser> {
   const data = response.data;
 
   if (!(response.status === 200)) {
@@ -102,12 +101,12 @@ async function handleResponse(response: AxiosResponse<ILoggedInUser>): Promise<I
     return Promise.reject(response.statusText);
   }
 
-  return data;
+  return plainToClass(LoggedInUser, data);
 }
 
 export function LoginContextProvider({ children }: React.PropsWithChildren<{}>) {
-  const [user, setUser] = useState<ILoggedInUser | undefined>(() => {
-    const user: ILoggedInUser | undefined = getUser();
+  const [user, setUser] = useState<LoggedInUser | undefined>(() => {
+    const user: LoggedInUser | undefined = getUser();
 
     return user;
   });

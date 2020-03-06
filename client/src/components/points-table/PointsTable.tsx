@@ -12,19 +12,13 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React from 'react';
-import {
-  convertExercisePointInfoToString,
-  getPointsOfAllExercises,
-  getPointsOfExercise,
-} from 'shared/model/Points';
-import { IExercise } from 'shared/model/Sheet';
+import { convertExercisePointInfoToString } from 'shared/model/Points';
+import { HasExercises } from '../../model/Exercise';
 import { Grading } from '../../model/Grading';
-import { Scheinexam } from '../../model/Scheinexam';
-import { Sheet } from '../../model/Sheet';
 
 interface Props extends Omit<TableContainerProps, 'ref'> {
   grading: Grading | undefined;
-  sheet: Sheet | Scheinexam; // TODO: Convert to HasExercise? Maybe HasExercise needs some getter / properties?!
+  sheet: HasExercises;
   disablePaper?: boolean;
   size?: TableProps['size'];
 }
@@ -35,12 +29,6 @@ function TablePaper({ children, ...props }: TableContainerBaseProps): JSX.Elemen
       {children}
     </Paper>
   );
-}
-
-function getPointStringOfExercise(exercise: IExercise): string {
-  const pointInfo = getPointsOfExercise(exercise);
-
-  return convertExercisePointInfoToString(pointInfo);
 }
 
 function PointsTable({
@@ -54,7 +42,7 @@ function PointsTable({
   const achieved = grading?.totalPoints ?? 0;
 
   // TODO: Add operation to sheet / scheinexam to get pointInfo.
-  const total = convertExercisePointInfoToString(getPointsOfAllExercises(sheet));
+  const total = convertExercisePointInfoToString(sheet.pointInfo);
 
   const TableComp = (
     <Table size={size ?? 'small'} className={clsx(disablePaper && className)}>
@@ -71,7 +59,7 @@ function PointsTable({
           <TableRow key={ex.id} hover>
             <TableCell>Aufgabe {ex.exName}</TableCell>
             <TableCell align='right'>{grading?.getExerciseGrading(ex)?.totalPoints ?? 0}</TableCell>
-            <TableCell align='left'>/ {getPointStringOfExercise(ex)}</TableCell>
+            <TableCell align='left'>/ {convertExercisePointInfoToString(ex.pointInfo)}</TableCell>
           </TableRow>
         ))}
       </TableBody>

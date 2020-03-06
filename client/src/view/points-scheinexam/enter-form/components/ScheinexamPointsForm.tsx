@@ -1,27 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { IStudent } from 'shared/model/Student';
-import { IScheinExam } from 'shared/model/Scheinexam';
-import {
-  ScheinexamPointsFormSubmitCallback,
-  generateInitialValues,
-  ScheinexamPointsFormState,
-  getPointsFromState,
-} from './ScheinexamPointsForm.helpers';
-import { Formik, useFormikContext } from 'formik';
-import { Prompt } from 'react-router';
+import { Box, Button, Grid, Paper, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Box, Paper, Typography, Grid, Button } from '@material-ui/core';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import PointsTextField from '../../../../components/PointsTextField';
+import { Formik, useFormikContext } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { Prompt } from 'react-router';
 import {
-  getPointsOfExercise,
-  getPointsOfAllExercises,
   convertExercisePointInfoToString,
+  getPointsOfAllExercises,
+  getPointsOfExercise,
 } from 'shared/model/Points';
-import SubmitButton from '../../../../components/loading/SubmitButton';
-import { useDialog } from '../../../../hooks/DialogService';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
+import SubmitButton from '../../../../components/loading/SubmitButton';
+import PointsTextField from '../../../../components/PointsTextField';
+import { useDialog } from '../../../../hooks/DialogService';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
+import { Scheinexam } from '../../../../model/Scheinexam';
+import { Student } from '../../../../model/Student';
+import { FormikSubmitCallback } from '../../../../types';
+import {
+  generateInitialValues,
+  PointsFormState,
+} from '../../../points-sheet/enter-form/components/EnterPointsForm.helpers';
+import { getPointsFromState } from '../../../points-sheet/enter-form/EnterPoints.helpers';
+
+export type ScheinexamPointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -57,20 +59,20 @@ const useStyles = makeStyles(theme =>
 );
 
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
-  student: IStudent;
-  exam: IScheinExam;
+  student: Student;
+  exam: Scheinexam;
   onSubmit: ScheinexamPointsFormSubmitCallback;
 }
 
 type FormProps = Omit<Props, 'student' | 'onSubmit'>;
 
 function ScheinexamPointsForm({ student, onSubmit, exam, ...props }: Props): JSX.Element {
-  const [initialValues, setInitialValues] = useState<ScheinexamPointsFormState>(
-    generateInitialValues({ student, exam })
+  const [initialValues, setInitialValues] = useState<PointsFormState>(
+    generateInitialValues({ entity: student, sheet: exam })
   );
 
   useEffect(() => {
-    const values = generateInitialValues({ student, exam });
+    const values = generateInitialValues({ entity: student, sheet: exam });
     setInitialValues(values);
   }, [student, exam]);
 
@@ -84,7 +86,7 @@ function ScheinexamPointsForm({ student, onSubmit, exam, ...props }: Props): JSX
 function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JSX.Element {
   const classes = useStyles();
 
-  const formikContext = useFormikContext<ScheinexamPointsFormState>();
+  const formikContext = useFormikContext<PointsFormState>();
   const {
     values,
     errors,
@@ -163,7 +165,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
                   </Typography>
 
                   <PointsTextField
-                    name={`${exercise.id}.points`}
+                    name={`${exercise.id}`}
                     placeholder='0'
                     maxPoints={getPointsOfExercise(exercise)}
                   />

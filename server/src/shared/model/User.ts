@@ -1,7 +1,7 @@
 import { NamedElement, TutorialInEntity } from './Common';
 import { Role } from './Role';
 
-export interface LoggedInUserSubstituteTutorial extends TutorialInEntity {
+export interface ILoggedInUserSubstituteTutorial extends TutorialInEntity {
   dates: string[];
 }
 
@@ -10,7 +10,7 @@ export interface ILoggedInUser extends NamedElement {
   tutorialsToCorrect: TutorialInEntity[];
   roles: IUser['roles'];
   hasTemporaryPassword: boolean;
-  substituteTutorials: LoggedInUserSubstituteTutorial[];
+  substituteTutorials: ILoggedInUserSubstituteTutorial[];
 }
 
 export interface IUser extends NamedElement {

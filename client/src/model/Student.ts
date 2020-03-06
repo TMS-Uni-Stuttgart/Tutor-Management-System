@@ -1,19 +1,19 @@
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { IAttendance } from '../../../server/src/shared/model/Attendance';
-import { TutorialInEntity } from '../../../server/src/shared/model/Common';
-import { HasExercises } from '../../../server/src/shared/model/Sheet';
+import { HasId, TutorialInEntity } from '../../../server/src/shared/model/Common';
 import { IStudent, StudentStatus, TeamInStudent } from '../../../server/src/shared/model/Student';
 import { getNameOfEntity } from '../../../server/src/shared/util/helpers';
 import { Modify } from '../typings/Modify';
 import { parseDateToMapKey } from '../util/helperFunctions';
 import { Grading } from './Grading';
 import { Sheet } from './Sheet';
+import { HasGradings } from '../typings/types';
 
-interface Modified {
+interface Modified extends HasGradings {
   attendances: Map<string, IAttendance>;
-  gradings: Map<string, Grading>;
   presentationPoints: Map<string, number>;
+  gradings: Map<string, Grading>;
 }
 
 export class Student implements Modify<IStudent, Modified> {
@@ -53,12 +53,16 @@ export class Student implements Modify<IStudent, Modified> {
   /**
    * Returns the grading of the given sheet if the student has one. If not `undefined` is returned.
    *
-   * @param sheet Sheet to get the grading for.
+   * @param sheet Sheet or the sheet ID to get the grading for.
    *
    * @returns Grading for the sheet or `undefined`.
    */
-  getGrading(sheet: HasExercises): Grading | undefined {
-    return this.gradings.get(sheet.id);
+  getGrading(sheet: HasId | string): Grading | undefined {
+    if (typeof sheet === 'string') {
+      return this.gradings.get(sheet);
+    } else {
+      return this.gradings.get(sheet.id);
+    }
   }
 
   /**

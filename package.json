@@ -8,24 +8,18 @@
   ],
   "scripts": {
     "format": "yarn workspaces run format",
-    "format:client": "echo Formatting client && cd ./client && yarn format",
-    "format:server": "echo Formatting server && cd ./server && yarn format",
-    "format:shared": "echo Formatting shared && cd ./shared && yarn format",
-    "build": "yarn build:shared && yarn build:client && yarn build:server && yarn copy:app",
+    "build": "yarn build:client && yarn build:server && yarn copy:app",
     "build:client": "cd ./client && yarn build",
     "build:server": "cd ./server && yarn build",
-    "build:shared": "cd ./shared && yarn build",
-    "ts:check": "yarn ts:check:client && yarn ts:check:server && yarn ts:check:shared",
+    "ts:check": "yarn ts:check:client && yarn ts:check:server",
     "ts:check:client": "echo Type checking client && cd ./client && yarn ts:check",
     "ts:check:server": "echo Type checking server && cd ./server && yarn ts:check",
-    "ts:check:shared": "echo Type checking shared && cd ./shared && yarn ts:check",
     "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/src/app",
     "docker:build": "yarn version && ts-node ./build-docker-image.ts",
     "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre --skip-bundle",
-    "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server && yarn upgrade-pgk:shared",
+    "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server",
     "upgrade-pgk:client": "cd ./client && npm-upgrade",
-    "upgrade-pgk:server": "cd ./server && npm-upgrade",
-    "upgrade-pgk:shared": "cd ./shared && npm-upgrade"
+    "upgrade-pgk:server": "cd ./server && npm-upgrade"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",

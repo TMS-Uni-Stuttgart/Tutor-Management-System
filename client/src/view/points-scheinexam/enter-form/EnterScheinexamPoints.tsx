@@ -1,28 +1,27 @@
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router';
-import { IScheinExam } from 'shared/model/Scheinexam';
+import { useHistory, useParams } from 'react-router';
+import { getNameOfEntity } from 'shared/util/helpers';
+import { IGradingDTO } from '../../../../../server/src/shared/model/Points';
 import BackButton from '../../../components/BackButton';
-import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
-import {
-  getScheinexamPointsOverviewPath,
-  getEnterPointsForScheinexamPath,
-} from '../../../routes/Routing.helpers';
-import Placeholder from '../../../components/Placeholder';
 import CustomSelect from '../../../components/CustomSelect';
-import { IStudent } from 'shared/model/Student';
+import Placeholder from '../../../components/Placeholder';
+import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
 import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { getNameOfEntity } from 'shared/util/helpers';
-import ScheinexamPointsForm from './components/ScheinexamPointsForm';
+import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { Scheinexam } from '../../../model/Scheinexam';
+import { Student } from '../../../model/Student';
 import {
+  getEnterPointsForScheinexamPath,
+  getScheinexamPointsOverviewPath,
+} from '../../../routes/Routing.helpers';
+import { convertFormStateToGradingDTO } from '../../points-sheet/enter-form/EnterPoints.helpers';
+import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,
-  convertFormStateToPointMap,
-} from './components/ScheinexamPointsForm.helpers';
-import { PointMap, UpdatePointsDTO } from 'shared/model/Points';
-import { useSnackbar } from 'notistack';
+} from './components/ScheinexamPointsForm';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -57,9 +56,9 @@ function EnterScheinexamPoints(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const { setError, isError } = useErrorSnackbar();
 
-  const [exam, setExam] = useState<IScheinExam>();
-  const [student, setStudent] = useState<IStudent>();
-  const [allStudents, setAllStudents] = useState<IStudent[]>([]);
+  const [exam, setExam] = useState<Scheinexam>();
+  const [student, setStudent] = useState<Student>();
+  const [allStudents, setAllStudents] = useState<Student[]>([]);
 
   useEffect(() => {
     getScheinexam(examId)
@@ -106,8 +105,12 @@ function EnterScheinexamPoints(): JSX.Element {
       return;
     }
 
-    const points: PointMap = convertFormStateToPointMap({ values, examId });
-    const updateDTO: UpdatePointsDTO = { points: points.toDTO() };
+    const prevGrading = student.getGrading(examId);
+    const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
+      values,
+      entityId: examId,
+      prevGrading,
+    });
 
     try {
       await setExamPointsOfStudent(studentId, updateDTO);

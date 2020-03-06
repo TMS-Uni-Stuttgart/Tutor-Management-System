@@ -12,7 +12,7 @@ import { Team } from '../../../model/Team';
 import { getEnterPointsForTeamPath } from '../../../routes/Routing.helpers';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
-import { convertFormStateToPointMap } from './EnterPoints.helpers';
+import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
 
 interface RouteParams {
   tutorialId?: string;
@@ -69,13 +69,8 @@ function EnterTeamPoints(): JSX.Element {
       return;
     }
 
-    const points: PointMap = convertFormStateToPointMap({
-      values,
-      sheetId: sheetId,
-    });
-    const updateDTO: UpdatePointsDTO = {
-      points: points.toDTO(),
-    };
+    const prevGrading = selectedTeam.getGrading(sheetId);
+    const updateDTO = convertFormStateToGradingDTO({ values, entityId: teamId, prevGrading });
 
     try {
       await setPointsOfTeam(tutorialId, teamId, updateDTO);
