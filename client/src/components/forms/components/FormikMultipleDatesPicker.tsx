@@ -5,9 +5,9 @@ import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { OutterCalendarProps } from '@material-ui/pickers/views/Calendar/Calendar';
 import clsx from 'clsx';
 import { ArrayHelpers, FieldArray, FieldProps, useField } from 'formik';
+import { DateTime } from 'luxon';
 import React, { useState } from 'react';
 import DateList, { DateInList } from './DateList';
-import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -113,7 +113,7 @@ function FormikMultipleDatesPicker({
   // It'll be still 'today' if the list is empty.
   const [value, setValue] = useState<MaterialUiPickersDate>(
     valueOfField && Array.isArray(valueOfField) && valueOfField.length > 0
-      ? new Date(valueOfField[0])
+      ? DateTime.fromISO(valueOfField[0])
       : null
   );
 
@@ -163,7 +163,7 @@ function FormikMultipleDatesPicker({
             }
           }}
         >
-          <p className={labelClassName}> {DateTime.fromJSDate(date).toFormat('dd')} </p>
+          <p className={labelClassName}> {date.toFormat('dd')} </p>
         </IconButton>
       );
     };
@@ -185,7 +185,7 @@ function FormikMultipleDatesPicker({
       const idx = selectedDays.indexOf(date);
 
       if (idx > -1) {
-        setValue(new Date(date));
+        setValue(DateTime.fromISO(date));
 
         if (onDateClicked) {
           onDateClicked(date, selectedDays, arrayHelpers);

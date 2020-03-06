@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
-import { ITutorial } from 'shared/model/Tutorial';
 import { ILoggedInUser } from 'shared/model/User';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
-import { getTutorial } from '../../hooks/fetching/Tutorial';
-import { useAxios } from '../../hooks/FetchingService';
+import { getScheinCriteriaSummariesOfAllStudentsOfTutorial } from '../../hooks/fetching/Scheincriteria';
+import {
+  getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
+  getTutorial,
+} from '../../hooks/fetching/Tutorial';
 import { useLogin } from '../../hooks/LoginService';
+import { Tutorial } from '../../model/Tutorial';
 import { StudentByTutorialSlotSummaryMap } from '../../typings/types';
 import AdminStatsCard from './components/AdminStatsCard';
 import AllTutorialStatistics from './components/AllTutorialStatistics';
 import TutorialStatistics from './components/TutorialStatistics';
 
 export interface TutorialSummaryInfo {
-  tutorial: ITutorial;
+  tutorial: Tutorial;
   studentInfos: ScheincriteriaSummaryByStudents;
 }
 
@@ -23,10 +26,6 @@ function isAdmin(userData: ILoggedInUser | undefined): boolean {
 
 function Dashboard(): JSX.Element {
   const { userData } = useLogin();
-  const {
-    getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-    getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
-  } = useAxios();
 
   const [isLoading, setIsLoading] = useState(false);
   const [tutorialsWithScheinCriteriaSummaries, setTutorialsWithScheinCriteriaSummaries] = useState<

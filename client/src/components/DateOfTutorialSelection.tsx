@@ -1,13 +1,11 @@
 import { FormControlProps } from '@material-ui/core/FormControl';
-import { format } from 'date-fns';
-import deLocale from 'date-fns/locale/de';
+import { DateTime } from 'luxon';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import CustomSelect from './CustomSelect';
 
 interface Props extends FormControlProps {
-  // tutorial: Tutorial | undefined;
-  availableDates: Date[];
-  onDateSelected: (date: Date | undefined) => void;
+  availableDates: DateTime[];
+  onDateSelected: (date: DateTime | undefined) => void;
   value?: string;
 }
 
@@ -19,10 +17,10 @@ function DateOfTutorialSelection({
   className,
   ...other
 }: Props): JSX.Element {
-  const [value, setValue] = useState<string>(valueFromProps || '');
+  const [value, setValue] = useState<string>();
 
   useEffect(() => {
-    setValue(valueFromProps || '');
+    setValue(valueFromProps ?? '');
   }, [valueFromProps]);
 
   function onDateSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
@@ -30,7 +28,7 @@ function DateOfTutorialSelection({
       return;
     }
 
-    const date: Date | undefined = availableDates.find(d => d.toISOString() === e.target.value);
+    const date: DateTime | undefined = availableDates.find(d => d.toISODate() === e.target.value);
 
     onDateSelected(date);
     setValue(e.target.value);
@@ -45,8 +43,8 @@ function DateOfTutorialSelection({
       className={className}
       FormControlProps={other}
       items={availableDates}
-      itemToString={date => format(date, 'dd. MMMM yyyy', { locale: deLocale })}
-      itemToValue={date => date.toISOString()}
+      itemToString={date => date.toLocaleString(DateTime.DATE_MED)}
+      itemToValue={date => date.toISODate()}
     />
   );
 }

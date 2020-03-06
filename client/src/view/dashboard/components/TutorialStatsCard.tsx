@@ -8,6 +8,7 @@ import {
   TableRow,
   Theme,
 } from '@material-ui/core';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { TutorialSummaryInfo } from '../Dashboard';
 
@@ -38,39 +39,36 @@ interface TutorialStatsCardProps {
 
 function TutorialStatsCard({ value }: TutorialStatsCardProps): JSX.Element {
   const classes = useStyles();
+  const { studentInfos, tutorial } = value;
 
   return (
     <Paper className={classes.statsPaper}>
-      {/* <AspectRatio ratio='16-9'> */}
       <Table className={classes.tableRoot}>
         <TableBody>
           <TableRow>
             <TableCell className={classes.tableTitle}>Teilnehmer: </TableCell>
-            <TableCell>{Object.values(value.studentInfos).length}</TableCell>
+            <TableCell>{Object.values(studentInfos).length}</TableCell>
           </TableRow>
           <>
             <TableRow>
               <TableCell className={classes.tableTitle}>Teams: </TableCell>
-              <TableCell>{value.tutorial.teams.length}</TableCell>
+              <TableCell>{tutorial.teams.length}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className={classes.tableTitle}>Uhrzeit: </TableCell>
               <TableCell>
-                {value.tutorial.startTime.toTimeString().substring(0, 5) +
+                {tutorial.startTime.toLocaleString(DateTime.TIME_24_SIMPLE) +
                   ' - ' +
-                  value.tutorial.endTime.toTimeString().substring(0, 5)}
+                  tutorial.endTime.toLocaleString(DateTime.TIME_24_SIMPLE)}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell className={classes.tableTitle}>Wochentag: </TableCell>
-              <TableCell>
-                {new Date(value.tutorial.dates[0]).toLocaleString('de-de', { weekday: 'long' })}
-              </TableCell>
+              <TableCell>{tutorial.dates[0].toFormat('EEEE')}</TableCell>
             </TableRow>
           </>
         </TableBody>
       </Table>
-      {/* </AspectRatio> */}
     </Paper>
   );
 }

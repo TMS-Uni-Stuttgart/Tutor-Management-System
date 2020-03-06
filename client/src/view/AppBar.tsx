@@ -11,22 +11,26 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { Brightness5 as LightIcon, Brightness7 as DarkIcon } from 'mdi-material-ui';
-import { Menu as MenuIcon } from 'mdi-material-ui';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Location } from 'history';
-import { Download as DownloadIcon, GithubCircle as GitHubIcon } from 'mdi-material-ui';
+import {
+  Brightness5 as LightIcon,
+  Brightness7 as DarkIcon,
+  Download as DownloadIcon,
+  GithubCircle as GitHubIcon,
+  Menu as MenuIcon,
+} from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { matchPath, useLocation } from 'react-router';
-import { LoggedInUserTutorial } from 'shared/model/Tutorial';
+import { TutorialInEntity } from '../../../server/src/shared/model/Common';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
 import { useLogin } from '../hooks/LoginService';
-import { getDisplayStringForTutorial, saveBlob } from '../util/helperFunctions';
 import { getTutorialRelatedPath } from '../routes/Routing.helpers';
 import { ROUTES, RouteType } from '../routes/Routing.routes';
+import { getDisplayStringForTutorial, saveBlob } from '../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -110,7 +114,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
     logout().then(() => enqueueSnackbar('Erfolgreich ausgeloggt', { variant: 'success' }));
   }
 
-  async function handleDownloadXLSX(tutorial: LoggedInUserTutorial) {
+  async function handleDownloadXLSX(tutorial: TutorialInEntity) {
     const snackId = enqueueSnackbar('Erstelle XLSX...', { variant: 'info', persist: true });
     setCreatingXLSX(state => ({ ...state, [tutorial.slot]: true }));
 

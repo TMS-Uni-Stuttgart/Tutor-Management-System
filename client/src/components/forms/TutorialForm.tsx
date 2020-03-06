@@ -1,5 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';
@@ -12,6 +13,7 @@ import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import { compareDateTimes } from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -97,22 +99,21 @@ interface Props extends Omit<FormikBaseFormProps<TutorialFormState>, CommonlyUse
   onSubmit: TutorialFormSubmitCallback;
 }
 
-function getAllWeeklyDatesBetween(startDate: Date, endDate: Date): Date[] {
-  const dates: Date[] = [startDate];
+function getAllWeeklyDatesBetween(startDate: DateTime, endDate: DateTime): DateTime[] {
+  const dates: DateTime[] = [startDate];
+  let currentDate: DateTime = startDate.plus({ weeks: 1 });
 
-  let currentDate: Date = addDays(startDate, 7);
-
-  while (compareAsc(currentDate, endDate) <= 0) {
+  while (currentDate <= endDate) {
     dates.push(currentDate);
-    currentDate = addDays(currentDate, 7);
+    currentDate = currentDate.plus({ weeks: 1 });
   }
 
   return dates;
 }
 
 export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormState {
-  const startDate = new Date(Date.now()).toISOString();
-  const endDate = new Date(Date.now()).toISOString();
+  const startDate = DateTime.local().toISODate();
+  const endDate = DateTime.local().toISODate();
 
   if (!tutorial) {
     return {
@@ -120,28 +121,26 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
       tutor: '',
       startDate,
       endDate,
-      startTime: new Date(Date.now()).toISOString(),
-      endTime: new Date(addMinutes(Date.now(), 90)).toISOString(),
+      startTime: DateTime.local().toISO(),
+      endTime: DateTime.local().toISO(),
       correctors: [],
       selectedDates: [],
     };
   }
 
-  const sortedDates: Date[] = tutorial.dates
-    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-    .map(d => new Date(d));
+  const sortedDates: DateTime[] = tutorial.dates.sort(compareDateTimes);
 
   return {
     slot: tutorial.slot,
     tutor: tutorial.tutor ? tutorial.tutor.id : '',
-    startDate: sortedDates[0] ? sortedDates[0].toISOString() : startDate,
+    startDate: sortedDates[0] ? sortedDates[0].toISODate() : startDate,
     endDate: sortedDates[sortedDates.length - 1]
-      ? sortedDates[sortedDates.length - 1].toISOString()
+      ? sortedDates[sortedDates.length - 1].toISODate()
       : endDate,
     startTime: tutorial.startTime.toISO(),
     endTime: tutorial.endTime.toISO(),
-    correctors: tutorial.correctors,
-    selectedDates: tutorial.dates.map(date => date.toISODate()),
+    correctors: tutorial.correctors.map(c => c.id),
+    selectedDates: tutorial.dates.map(DateTime => DateTime.toISODate()),
   };
 }
 
@@ -181,18 +180,18 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
               className={classes.startDateField}
               onAccept={(date: MaterialUiPickersDate) => {
                 if (date) {
-                  let endDate = new Date(values.endDate);
+                  let endDate = DateTime.fromISO(values.endDate);
 
                   if (!touched.endDate) {
-                    endDate = addWeeks(date, 12);
-                    setFieldValue('endDate', endDate.toDateString());
+                    endDate = date.plus({ weeks: 12 });
+                    setFieldValue('endDate', endDate.toISODate());
                   }
 
-                  const dates: Date[] = getAllWeeklyDatesBetween(date, endDate);
+                  const dates: DateTime[] = getAllWeeklyDatesBetween(date, endDate);
 
                   setFieldValue(
                     'selectedDates',
-                    dates.map(date => date.toDateString())
+                    dates.map(date => date.toISODate())
                   );
                 }
               }}
@@ -204,11 +203,14 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
               className={classes.endDateField}
               onAccept={(date: MaterialUiPickersDate) => {
                 if (date) {
-                  const dates: Date[] = getAllWeeklyDatesBetween(new Date(values.startDate), date);
+                  const dates: DateTime[] = getAllWeeklyDatesBetween(
+                    DateTime.fromISO(values.startDate),
+                    date
+                  );
 
                   setFieldValue(
                     'selectedDates',
-                    dates.map(date => date.toDateString())
+                    dates.map(date => date.toISODate())
                   );
                 }
               }}
@@ -222,7 +224,7 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
               className={classes.startDateField}
               onChange={(time: MaterialUiPickersDate) => {
                 if (time) {
-                  setFieldValue('endTime', addMinutes(time, 90).toISOString());
+                  setFieldValue('endTime', time.plus({ hours: 1, minutes: 30 }).toISO());
                 }
               }}
             />

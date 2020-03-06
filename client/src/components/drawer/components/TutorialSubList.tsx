@@ -6,11 +6,11 @@ import {
   CheckboxMarkedCircleOutline as TutorialToCorrectIcon,
 } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
-import { LoggedInUserTutorial } from 'shared/model/Tutorial';
 import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 import { RouteType } from '../../../routes/Routing.routes';
 import DrawerListItem from './DrawerListItem';
 import { getTutorialRelatedPath } from '../../../routes/Routing.helpers';
+import { TutorialInEntity } from '../../../../../server/src/shared/model/Common';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface TutorialSubListProps {
-  tutorial: LoggedInUserTutorial;
+  tutorial: TutorialInEntity;
   tutorialRoutes: RouteType[];
   isDrawerOpen: boolean;
   isTutorialToCorrect?: boolean;
