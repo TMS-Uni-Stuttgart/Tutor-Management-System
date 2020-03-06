@@ -1,4 +1,4 @@
-import { ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Role } from '../shared/model/Role';
 import { AuthenticatedGuard } from './authenticated.guard';
 import { UseUserFromRequest } from './helpers/UseUserFromRequest';
@@ -29,7 +29,7 @@ export class HasRoleGuard extends UseUserFromRequest {
     const isAuthenticated = authGuard.canActivate(context);
 
     if (!isAuthenticated) {
-      throw new ForbiddenException('Forbidden ressource');
+      throw new UnauthorizedException();
     }
 
     const { roles } = this.getUserFromRequest(context);
