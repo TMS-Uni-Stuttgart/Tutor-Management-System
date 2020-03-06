@@ -126,10 +126,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const { setAttendanceOfStudent, setCakeCountForStudent, getAttendancePDF } = useAxios();
 
   useEffect(() => {
-    if (tutorialFromProps !== tutorial?.id) {
-      setDate(undefined);
-
-      if (!!tutorialFromProps) {
+    if (!!tutorialFromProps) {
+      if (tutorialFromProps !== tutorial?.id) {
         setIsLoading(true);
         Promise.all([
           getTutorial(tutorialFromProps),
@@ -139,16 +137,17 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
           setFetchedStudents(students);
           setIsLoading(false);
         });
-      } else {
-        Promise.all([getAllTutorials(), getAllStudents()]).then(([tutorials, students]) => {
-          setTutorial(undefined);
-          setTutorials(tutorials);
-          setFetchedStudents(students);
-          setIsLoading(false);
-        });
+        setDate(undefined);
       }
+    } else if (tutorials.length === 0) {
+      Promise.all([getAllTutorials(), getAllStudents()]).then(([tutorials, students]) => {
+        setTutorial(undefined);
+        setTutorials(tutorials);
+        setFetchedStudents(students);
+        setIsLoading(false);
+      });
     }
-  }, [tutorialFromProps, tutorial]);
+  }, [tutorialFromProps, tutorials, tutorial]);
 
   useEffect(() => {
     setFilteredStudents(getFilteredStudents(fetchedStudents, filterOption));
@@ -171,10 +170,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     setFetchedStudents(students =>
       students.map(innerStudent => {
         if (innerStudent.id === student.id) {
-          innerStudent.attendances = {
-            ...innerStudent.attendances,
-            [dateKey]: attendance,
-          };
+          innerStudent.attendances.set(dateKey, attendance);
         }
 
         return innerStudent;
@@ -323,7 +319,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
                 label='Tutorium wählen'
                 emptyPlaceholder='Keine Tutorien vorhanden.'
                 className={classes.barItem}
-                value={tutorial ? tutorial.id : ''}
+                value={tutorial?.id ?? ''}
                 items={tutorials}
                 itemToString={tutorial => `Tutorium Slot #${tutorial.slot}`}
                 itemToValue={tutorial => tutorial.id}
@@ -336,14 +332,14 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               availableDates={availableDates}
               onDateSelected={date => setDate(date)}
               disabled={!tutorial}
-              value={date ? date.toISODate() : ''}
+              value={date?.toISODate() ?? ''}
             />
 
             <CustomSelect
               label='Filtern nach...'
               emptyPlaceholder='Keine Filteroption vorhanden.'
               className={classes.barItem}
-              value={filterOption}
+              value={filterOption ?? ''}
               items={Object.values(FilterOption)}
               itemToString={option => option}
               itemToValue={option => option}
