@@ -1,15 +1,8 @@
 import { DateTime } from 'luxon';
 import { Scheinexam } from '../model/Scheinexam';
 import { Sheet } from '../model/Sheet';
-import { Team } from '../model/Team';
 
-export function teamItemToString(team: Team): string {
-  const studentsInTeam = team.students.length
-    ? `(${team.students.map(student => student.lastname).join(', ')})`
-    : '(Keine Studierende)';
-
-  return `#${team.teamNo.toString().padStart(2, '0')} ${studentsInTeam}`;
-}
+// TODO: Move many of those helpers in the classes.
 
 export function getDisplayStringForTutorial(tutorial: { slot: string }): string {
   return `Tutorium ${tutorial.slot.padStart(2, '0')}`;

@@ -18,4 +18,12 @@ export class Team implements Modify<ITeam, Modified> {
   getTeamNoAsString(): string {
     return this.teamNo.toString().padStart(2, '0');
   }
+
+  toString(): string {
+    const studentsInTeam = this.students.length
+      ? `(${this.students.map(student => student.lastname).join(', ')})`
+      : '(Keine Studierende)';
+
+    return `#${this.teamNo.toString().padStart(2, '0')} ${studentsInTeam}`;
+  }
 }

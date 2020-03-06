@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { IScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
+import { IScheinExamDTO } from 'shared/model/Scheinexam';
 import ScheinExamForm, {
   getInitialExamFormState,
   ScheinExamFormState,
@@ -19,6 +19,7 @@ import {
   editScheinExam,
   getAllScheinExams,
 } from '../../hooks/fetching/ScheinExam';
+import { Scheinexam } from '../../model/Scheinexam';
 import { getDisplayStringOfScheinExam, saveBlob } from '../../util/helperFunctions';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import ScheinExamRow from './components/ScheinExamRow';
@@ -52,7 +53,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingResults, setGeneratingResults] = useState(false);
-  const [exams, setExams] = useState<IScheinExam[]>([]);
+  const [exams, setExams] = useState<Scheinexam[]>([]);
   const dialog = useDialog();
 
   useEffect(() => {
@@ -94,7 +95,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  const handleGenerateResultPDF: (exam: IScheinExam) => void = async exam => {
+  const handleGenerateResultPDF: (exam: Scheinexam) => void = async exam => {
     setGeneratingResults(true);
 
     const blob = await getScheinexamResultPDF(exam.id);
@@ -103,7 +104,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     setGeneratingResults(false);
   };
 
-  const editExam: (exam: IScheinExam) => ScheinExamFormSubmitCallback = exam => async (
+  const editExam: (exam: Scheinexam) => ScheinExamFormSubmitCallback = exam => async (
     values,
     { setSubmitting }
   ) => {
@@ -120,7 +121,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  const deleteExam: (exam: IScheinExam) => void = async exam => {
+  const deleteExam: (exam: Scheinexam) => void = async exam => {
     try {
       await deleteScheinExam(exam.id);
 
@@ -133,7 +134,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  function handleEditExam(exam: IScheinExam) {
+  function handleEditExam(exam: Scheinexam) {
     dialog.show({
       title: 'Scheinklausur bearbeiten',
       content: (
@@ -145,7 +146,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     });
   }
 
-  function handleDeleteExam(exam: IScheinExam) {
+  function handleDeleteExam(exam: Scheinexam) {
     dialog.show({
       title: 'Nutzer löschen',
       content: `Soll ${getDisplayStringOfScheinExam(

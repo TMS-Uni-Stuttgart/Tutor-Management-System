@@ -1,6 +1,7 @@
 import { HasExercises } from 'shared/model/Sheet';
 import { ExerciseFormExercise } from '../../../components/forms/components/FormikExerciseEditor';
 
+// TODO Remove me & add an abstract parent class to Sheet & Exam
 export function getPointsOfEntityAsString(sheet: HasExercises): string {
   const { must, bonus } = sheet.exercises.reduce(
     ({ must, bonus }, ex) =>

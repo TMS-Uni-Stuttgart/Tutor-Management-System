@@ -1,14 +1,14 @@
 import React from 'react';
-import { useDialog, DialogHelpers } from './DialogService';
 import Markdown from '../components/Markdown';
+import { Sheet } from '../model/Sheet';
+import { Team } from '../model/Team';
+import { saveBlob } from '../util/helperFunctions';
+import { DialogHelpers, useDialog } from './DialogService';
 import {
+  getCorrectionCommentPDFs,
   getTeamCorrectionCommentMarkdown,
   getTeamCorrectionCommentPDF,
-  getCorrectionCommentPDFs,
 } from './fetching/Files';
-import { ISheet } from 'shared/model/Sheet';
-import { ITeam } from 'shared/model/Team';
-import { saveBlob } from '../util/helperFunctions';
 import { getTutorial } from './fetching/Tutorial';
 
 interface DialogOption {
@@ -17,13 +17,13 @@ interface DialogOption {
 
 interface CorrectionPdfOptions {
   tutorialId: string;
-  sheet: ISheet;
-  team: ITeam;
+  sheet: Sheet;
+  team: Team;
 }
 
 interface GenerateAllPDFsOptions {
   tutorialId: string;
-  sheet: ISheet;
+  sheet: Sheet;
 }
 
 async function showSinglePdfPreview({

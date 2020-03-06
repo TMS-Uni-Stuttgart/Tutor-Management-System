@@ -2,15 +2,13 @@ import { Typography } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { PointMap, UpdatePointsDTO } from 'shared/model/Points';
-import { ITeam } from 'shared/model/Team';
 import {
   getTeamOfTutorial,
   getTeamsOfTutorial,
   setPointsOfTeam,
 } from '../../../hooks/fetching/Team';
 import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
-import { teamItemToString } from '../../../util/helperFunctions';
+import { Team } from '../../../model/Team';
 import { getEnterPointsForTeamPath } from '../../../routes/Routing.helpers';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
@@ -29,9 +27,8 @@ function EnterTeamPoints(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const { setError } = useErrorSnackbar();
 
-  const [teams, setTeams] = useState<ITeam[]>([]);
-
-  const [selectedTeam, setSelectedTeam] = useState<ITeam>();
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<Team>();
 
   useEffect(() => {
     if (!tutorialId) {
@@ -122,7 +119,7 @@ function EnterTeamPoints(): JSX.Element {
       entitySelectProps={{
         label: 'Teams',
         emptyPlaceholder: 'Keine Teams verfügbar',
-        itemToString: teamItemToString,
+        itemToString: team => team.toString(),
         onChange: handleTeamChange,
       }}
     />

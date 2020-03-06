@@ -1,13 +1,13 @@
 import React from 'react';
 import CardList from '../../../../components/cardlist/CardList';
-import { IStudent } from 'shared/model/Student';
+import { Scheinexam } from '../../../../model/Scheinexam';
+import { Student } from '../../../../model/Student';
 import StudentCard from './StudentCard';
-import { IScheinExam } from 'shared/model/Scheinexam';
 
 interface Props {
   tutorialId: string;
-  students: IStudent[];
-  exam: IScheinExam;
+  students: Student[];
+  exam: Scheinexam;
 }
 
 function StudentCardList({ students, tutorialId, exam }: Props): JSX.Element {
