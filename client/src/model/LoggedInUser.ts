@@ -16,14 +16,15 @@ class LoggedInSubstituteTutorial {
 }
 
 export class LoggedInUser implements Modify<ILoggedInUser, Modified> {
-  id!: string;
-  firstname!: string;
-  lastname!: string;
-  tutorials!: TutorialInEntity[];
-  tutorialsToCorrect!: TutorialInEntity[];
-  roles!: Role[];
+  readonly id!: string;
+  readonly firstname!: string;
+  readonly lastname!: string;
+  readonly tutorials!: TutorialInEntity[];
+  readonly tutorialsToCorrect!: TutorialInEntity[];
+  readonly roles!: Role[];
+
   hasTemporaryPassword!: boolean;
 
   @Type(() => LoggedInSubstituteTutorial)
-  substituteTutorials!: LoggedInSubstituteTutorial[];
+  readonly substituteTutorials!: LoggedInSubstituteTutorial[];
 }

@@ -55,10 +55,10 @@ export class Exercise extends Subexercise implements IExercise {
 }
 
 export abstract class HasExercises implements HasId {
-  id!: string;
+  readonly id!: string;
 
   @Type(() => Exercise)
-  exercises!: Exercise[];
+  readonly exercises!: Exercise[];
 
   /**
    * Total points of the sheet. This is equal to the sum of the points of all exercises in this sheet.

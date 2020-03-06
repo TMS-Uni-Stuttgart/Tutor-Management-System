@@ -5,7 +5,7 @@ import { Team } from '../../model/Team';
 import axios from './Axios';
 
 function sortStudentsOfTeam(team: Team) {
-  team.students = team.students.sort((a, b) =>
+  team.students.sort((a, b) =>
     `${a.lastname}, ${a.firstname}`.localeCompare(`${b.lastname}, ${b.firstname}`)
   );
 }

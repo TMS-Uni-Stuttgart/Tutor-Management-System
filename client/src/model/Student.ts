@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { IAttendance } from '../../../server/src/shared/model/Attendance';
 import { HasId, TutorialInEntity } from '../../../server/src/shared/model/Common';
@@ -17,22 +17,29 @@ interface Modified extends HasGradings {
 }
 
 export class Student implements Modify<IStudent, Modified> {
-  id!: string;
-  firstname!: string;
-  lastname!: string;
+  readonly id!: string;
+  readonly firstname!: string;
+  readonly lastname!: string;
 
   @Type(() => Grading)
-  gradings!: Map<string, Grading>;
+  @Transform(value => new Map(value))
+  readonly gradings!: Map<string, Grading>;
 
-  attendances!: Map<string, IAttendance>;
-  presentationPoints!: Map<string, number>;
+  @Type(() => Object)
+  @Transform(value => new Map(value))
+  readonly attendances!: Map<string, IAttendance>;
 
-  courseOfStudies?: string;
-  email?: string;
-  matriculationNo?: string;
-  status!: StudentStatus;
-  team?: TeamInStudent;
-  tutorial!: TutorialInEntity;
+  @Type(() => Number)
+  @Transform(value => new Map(value))
+  readonly presentationPoints!: Map<string, number>;
+
+  readonly courseOfStudies?: string;
+  readonly email?: string;
+  readonly matriculationNo?: string;
+  readonly status!: StudentStatus;
+  readonly team?: TeamInStudent;
+  readonly tutorial!: TutorialInEntity;
+
   cakeCount!: number;
 
   get name(): string {

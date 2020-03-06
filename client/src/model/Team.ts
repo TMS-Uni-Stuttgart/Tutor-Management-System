@@ -11,12 +11,12 @@ interface Modified extends HasGradings {
 }
 
 export class Team implements Modify<ITeam, Modified> {
-  id!: string;
-  teamNo!: number;
-  tutorial!: string;
+  readonly id!: string;
+  readonly teamNo!: number;
+  readonly tutorial!: string;
 
   @Type(() => Student)
-  students!: Student[];
+  readonly students!: Student[];
 
   getGrading(entity: HasId | string): Grading | undefined {
     if (this.students.length === 0) {

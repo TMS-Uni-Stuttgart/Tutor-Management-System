@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { IExerciseGrading, IGrading } from '../../../server/src/shared/model/Points';
 import { Modify } from '../typings/Modify';
 import { Exercise, Subexercise } from './Exercise';
@@ -12,10 +12,10 @@ interface ExerciseModified {
 }
 
 class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModified> {
-  points!: number;
-  comment?: string;
-  additionalPoints?: number;
-  subExercisePoints?: Map<string, number>;
+  readonly points!: number;
+  readonly comment?: string;
+  readonly additionalPoints?: number;
+  readonly subExercisePoints?: Map<string, number>;
 
   /**
    * The sum of all points achieved in the exercise (or the subexercises) plus the `additionalPoints` (if there are any).
@@ -53,13 +53,14 @@ class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModified> {
 }
 
 export class Grading implements Modify<IGrading, Modified> {
-  id!: string;
-  points!: number;
-  comment?: string;
-  additionalPoints?: number;
+  readonly id!: string;
+  readonly points!: number;
+  readonly comment?: string;
+  readonly additionalPoints?: number;
 
   @Type(() => ExerciseGrading)
-  exerciseGradings!: Map<string, ExerciseGrading>;
+  @Transform(value => new Map(value))
+  readonly exerciseGradings!: Map<string, ExerciseGrading>;
 
   /**
    * The sum of all points achieved in the exercises plus the `additionalPoints` (if there are any).
