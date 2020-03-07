@@ -15,6 +15,8 @@ class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModified> {
   readonly points!: number;
   readonly comment?: string;
   readonly additionalPoints?: number;
+
+  @Transform(value => new Map(value))
   readonly subExercisePoints?: Map<string, number>;
 
   /**

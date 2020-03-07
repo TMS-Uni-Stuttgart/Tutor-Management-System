@@ -67,7 +67,7 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
       </Box>
 
       <Placeholder
-        placeholderText='Kein Übungsblatt ausgewählt.'
+        placeholderText='Keine Scheinklausur ausgewählt.'
         showPlaceholder={!selectedExam}
         reduceMarginTop
       >
