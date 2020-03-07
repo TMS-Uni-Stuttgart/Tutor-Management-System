@@ -197,6 +197,10 @@ export class MarkdownService {
   private generateSubExerciseTable(params: GenerateSubExTableParams): string {
     const subExData: SubExData[] = this.generateSubExerciseData(params);
 
+    if (subExData.length === 0) {
+      return '';
+    }
+
     let subExTable = '';
 
     subExData.forEach(({ name }) => {
