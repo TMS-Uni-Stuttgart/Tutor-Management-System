@@ -6,7 +6,7 @@ import { ScheinexamModel } from './scheinexam.model';
 import { SheetModel } from './sheet.model';
 import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
-import { TutorialModel } from './tutorial.model';
+import { TutorialModel, SubstituteModel } from './tutorial.model';
 import { UserModel } from './user.model';
 import { GradingModel } from './grading.model';
 
@@ -24,6 +24,7 @@ export class ModelsModule {
       ScheinexamModel,
       ScheincriteriaModel,
       GradingModel,
+      SubstituteModel,
     ]);
 
     return {

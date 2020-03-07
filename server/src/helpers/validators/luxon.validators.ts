@@ -2,9 +2,9 @@ import { registerDecorator, ValidationOptions } from 'class-validator';
 import { DateTime } from 'luxon';
 
 /**
- * Validates the property to match the luxon format of a date in the format 'yyyy-MM-dd'.
+ * Validates the property to match the luxon format of a date in the ISO format.
  *
- * @param validationOptions Options passed to the class-validator
+ * @param validationOptions Options passed to the class-validator.
  */
 export function IsLuxonDateTime(validationOptions?: ValidationOptions) {
   return function(object: object, propertyName: string) {

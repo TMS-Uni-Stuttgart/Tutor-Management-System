@@ -17,9 +17,9 @@ import {
 import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
-import { ITutorial } from '../../shared/model/Tutorial';
+import { ITutorial, ISubstituteDTO } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
-import { TutorialDTO } from './tutorial.dto';
+import { TutorialDTO, SubstituteDTO } from './tutorial.dto';
 
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {
@@ -92,7 +92,6 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
       endTime: endDate,
       dates: dates.map(date => DateTime.fromISO(date)),
       correctors,
-      substitutes: new Map(),
     });
 
     const created = await this.tutorialModel.create(tutorial);
@@ -154,6 +153,24 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     }
 
     return tutorial.remove();
+  }
+
+  async setSubstitute(id: string, dto: SubstituteDTO): Promise<ITutorial> {
+    const tutorial = await this.findById(id);
+    const { dates, tutorId } = dto;
+
+    if (!tutorId) {
+      dates.forEach(date => tutorial.removeSubstitute(DateTime.fromISO(date)));
+    } else {
+      const tutor = await this.userService.findById(tutorId);
+      this.assertTutorHasTutorRole(tutor);
+
+      dates.forEach(date => tutorial.setSubstitute(DateTime.fromISO(date), tutor));
+    }
+
+    const updated = await tutorial.save();
+
+    return updated.toDTO();
   }
 
   /**

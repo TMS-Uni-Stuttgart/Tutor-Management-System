@@ -327,7 +327,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     const substituteTutorials: Map<string, ILoggedInUserSubstituteTutorial> = new Map();
 
     allTutorials.forEach(tutorial => {
-      tutorial.substitutes.forEach((substitute, dateKey) => {
+      tutorial.getAllSubstitutes().forEach((substitute, dateKey) => {
         if (substitute.id !== userId) {
           return;
         }

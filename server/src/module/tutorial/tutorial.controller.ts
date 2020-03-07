@@ -11,12 +11,13 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Put,
 } from '@nestjs/common';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
 import { Role } from '../../shared/model/Role';
 import { ITutorial } from '../../shared/model/Tutorial';
-import { TutorialDTO } from './tutorial.dto';
+import { TutorialDTO, SubstituteDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
 import { IStudent } from '../../shared/model/Student';
 
@@ -71,5 +72,17 @@ export class TutorialController {
     const students = await this.tutorialService.getAllStudentsOfTutorial(id);
 
     return students.map(s => s.toDTO());
+  }
+
+  @Put('/:id/substitute')
+  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UsePipes(ValidationPipe)
+  async setSubstituteOfTutorial(
+    @Param('id') id: string,
+    @Body() dto: SubstituteDTO
+  ): Promise<ITutorial> {
+    const updated = await this.tutorialService.setSubstitute(id, dto);
+
+    return updated;
   }
 }
