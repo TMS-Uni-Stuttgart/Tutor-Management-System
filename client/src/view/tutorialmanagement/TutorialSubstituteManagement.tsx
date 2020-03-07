@@ -130,7 +130,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
     }
 
     const datesOfSubstitutes: { [tutor: string]: string[] } = {};
-    const datesWithoutSubstitute: any[] = [];
+    const datesWithoutSubstitute: string[] = [];
 
     Object.entries(substitutes).forEach(([date, tutor]) => {
       if (!!tutor) {
@@ -144,7 +144,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
 
     const noSubDTO: ISubstituteDTO = {
       tutorId: undefined,
-      dates: datesWithoutSubstitute.map(d => new Date(d).toDateString()),
+      dates: datesWithoutSubstitute,
     };
 
     let response: Tutorial | undefined = await setSubstituteTutor(tutorial.id, noSubDTO);
@@ -152,7 +152,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
     for (const [tutor, dates] of Object.entries(datesOfSubstitutes)) {
       const dto: ISubstituteDTO = {
         tutorId: tutor,
-        dates: dates.map(d => new Date(d).toDateString()),
+        dates,
       };
 
       response = await setSubstituteTutor(tutorial.id, dto);
