@@ -66,7 +66,7 @@ export class TutorialModel {
   }
 
   set startTime(startTime: DateTime) {
-    this._startTime = startTime.toISOTime({ suppressMilliseconds: true });
+    this._startTime = startTime.startOf('minute').toISOTime({ suppressMilliseconds: true });
   }
 
   @prop({ required: true })
@@ -77,7 +77,7 @@ export class TutorialModel {
   }
 
   set endTime(endTime: DateTime) {
-    this._endTime = endTime.toISOTime({ suppressMilliseconds: true });
+    this._endTime = endTime.startOf('minute').toISOTime({ suppressMilliseconds: true });
   }
 
   @arrayProp({
