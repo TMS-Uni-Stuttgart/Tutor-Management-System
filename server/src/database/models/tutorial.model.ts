@@ -24,9 +24,21 @@ export async function populateTutorialDocument(doc?: TutorialDocument) {
     .populate('students')
     .populate('teams')
     .execPopulate();
+
+  doc.loadSubstituteMap();
 }
 
 type AssignableFields = Omit<NoFunctions<TutorialModel>, 'students' | 'teams'>;
+
+export class SubstituteModel {
+  @prop({ required: true })
+  date!: string;
+
+  @prop({ ref: UserModel, autopopulate: true, required: true })
+  user!: UserDocument;
+}
+
+type SubstituteDocument = DocumentType<SubstituteModel>;
 
 @plugin(mongooseAutoPopulate)
 @plugin<VirtualPopulationOptions<TutorialModel>>(VirtualPopulation, {
@@ -39,6 +51,8 @@ export class TutorialModel {
 
     this.students = [];
     this.teams = [];
+
+    this.substitutes = new Map();
   }
 
   @prop({ required: true })
@@ -97,8 +111,35 @@ export class TutorialModel {
   @arrayProp({ ref: 'UserModel', autopopulate: true, default: [] })
   correctors!: UserDocument[];
 
-  @mapProp({ of: UserModel, autopopulate: true, default: new Map() })
-  substitutes!: Map<string, UserDocument>;
+  @arrayProp({ type: SubstituteModel, autopopulate: true, default: [] })
+  private _substitutes!: SubstituteDocument[];
+
+  private substitutes?: Map<string, UserDocument>;
+
+  loadSubstituteMap() {
+    this.substitutes = new Map();
+
+    for (const doc of this._substitutes) {
+      this.substitutes.set(doc.date, doc.user);
+    }
+  }
+
+  saveSubstituteMap(this: TutorialDocument) {
+    if (!this.substitutes) {
+      return;
+    }
+
+    this._substitutes = [];
+
+    for (const [date, user] of this.substitutes) {
+      this._substitutes.push({
+        date,
+        user,
+      } as any);
+    }
+
+    this.markModified('_substitutes');
+  }
 
   /**
    * Sets the substitute of the given date to the given user.
@@ -108,8 +149,10 @@ export class TutorialModel {
    * @param date Date of the substitute
    * @param substitute Substitute
    */
-  setSubstitute(date: DateTime, substitute: UserDocument) {
-    this.substitutes.set(this.getDateKey(date), substitute);
+  setSubstitute(this: TutorialDocument, date: DateTime, substitute: UserDocument) {
+    this.substitutes?.set(this.getDateKey(date), substitute);
+
+    this.saveSubstituteMap();
   }
 
   /**
@@ -119,8 +162,13 @@ export class TutorialModel {
    *
    * @param date Date to remove the substitute from
    */
-  removeSubstitute(date: DateTime) {
-    this.substitutes.delete(this.getDateKey(date));
+  removeSubstitute(this: TutorialDocument, date: DateTime) {
+    const key = this.getDateKey(date);
+
+    if (this.substitutes?.has(key)) {
+      this.substitutes?.delete(key);
+      this.saveSubstituteMap();
+    }
   }
 
   /**
@@ -132,7 +180,11 @@ export class TutorialModel {
    * @returns The corresponding user, if there is a substitute at the given date, else `undefined`.
    */
   getSubstitute(date: DateTime): UserDocument | undefined {
-    return this.substitutes.get(this.getDateKey(date));
+    return this.substitutes?.get(this.getDateKey(date));
+  }
+
+  getAllSubstitutes(): Map<string, UserDocument> {
+    return this.substitutes ?? new Map();
   }
 
   /**
@@ -144,7 +196,7 @@ export class TutorialModel {
     const { id, slot, tutor, dates, startTime, endTime, students, correctors, teams } = this;
     const substitutes: Map<string, UserInEntity> = new Map();
 
-    for (const [date, doc] of this.substitutes.entries()) {
+    for (const [date, doc] of this.substitutes?.entries() ?? []) {
       substitutes.set(date, { id: doc.id, firstname: doc.firstname, lastname: doc.lastname });
     }
 

@@ -1,5 +1,5 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
-import { ITutorialDTO } from '../../shared/model/Tutorial';
+import { IsArray, IsOptional, IsString, IsMongoId } from 'class-validator';
+import { ITutorialDTO, ISubstituteDTO } from '../../shared/model/Tutorial';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
 
 export class TutorialDTO implements ITutorialDTO {
@@ -23,4 +23,14 @@ export class TutorialDTO implements ITutorialDTO {
   @IsArray()
   @IsString({ each: true })
   correctorIds!: string[];
+}
+
+export class SubstituteDTO implements ISubstituteDTO {
+  @IsOptional()
+  @IsMongoId()
+  tutorId?: string;
+
+  @IsArray()
+  @IsLuxonDateTime({ each: true })
+  dates!: string[];
 }
