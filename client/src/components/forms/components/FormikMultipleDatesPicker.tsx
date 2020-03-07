@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
-      height: 320,
+      height: 344,
       border: `1px solid ${theme.palette.divider}`,
       borderRadius: `${theme.shape.borderRadius}px`,
       '& > div:first-child': {
@@ -130,9 +130,7 @@ function FormikMultipleDatesPicker({
         return <></>;
       }
 
-      const dayIsSelected = selectedDays
-        .map(d => new Date(d).toDateString())
-        .includes(getDateString(date));
+      const dayIsSelected = selectedDays.includes(getDateString(date));
 
       const dayClassName = clsx(classes.day, {
         [classes.highlight]: dayIsSelected,
@@ -203,9 +201,9 @@ function FormikMultipleDatesPicker({
         <div className={classes.root}>
           <div className={classes.dateList}>
             <DateList
-              dates={(form.values[name] as string[]).map<DateInList>(d => ({
-                dateValueString: new Date(d).toDateString(),
-                dateDisplayString: DateTime.fromISO(d).toLocaleString(DateTime.DATE_MED),
+              dates={(form.values[name] as string[]).map<DateInList>(date => ({
+                dateValueString: date,
+                dateDisplayString: DateTime.fromISO(date).toLocaleString(DateTime.DATE_MED),
               }))}
               onDateClicked={onDateInListClicked(form.values[name], arrayHelpers)}
             />

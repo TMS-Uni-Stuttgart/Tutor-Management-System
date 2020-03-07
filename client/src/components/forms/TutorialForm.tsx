@@ -95,6 +95,7 @@ export type TutorialFormSubmitCallback = FormikSubmitCallback<TutorialFormState>
 
 interface Props extends Omit<FormikBaseFormProps<TutorialFormState>, CommonlyUsedFormProps> {
   tutors: IUser[];
+  correctors: IUser[];
   tutorial?: Tutorial;
   onSubmit: TutorialFormSubmitCallback;
 }
@@ -144,7 +145,14 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
   };
 }
 
-function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props): JSX.Element {
+function TutorialForm({
+  tutors,
+  correctors,
+  tutorial,
+  onSubmit,
+  className,
+  ...other
+}: Props): JSX.Element {
   const classes = useStyles();
 
   const initialFormValues: TutorialFormState = getInitialTutorialFormValues(tutorial);
@@ -160,6 +168,7 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
       initialValues={initialFormValues}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
+      enableDebug
     >
       {({ values, setFieldValue, touched }) => (
         <>
@@ -236,10 +245,10 @@ function TutorialForm({ tutors, tutorial, onSubmit, className, ...other }: Props
             name='correctors'
             label='Korrektoren'
             emptyPlaceholder='Keine Korrektoren vorhanden.'
-            items={tutors}
+            items={correctors}
             {...userConverterFunctions}
             multiple
-            isItemSelected={tutor => values['correctors'].indexOf(tutor.id) > -1}
+            isItemSelected={corrector => values['correctors'].indexOf(corrector.id) > -1}
             fullWidth
           />
 

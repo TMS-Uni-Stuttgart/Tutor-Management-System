@@ -14,7 +14,7 @@ function FormikDatePicker({ name, className, ...other }: PropType): JSX.Element 
       {({ field, form, meta: { touched, error } }: FieldProps) => (
         <DatePicker
           variant='inline'
-          format='EE, dd MMMM yyyy'
+          format='EEE, dd MMMM yyyy'
           autoOk
           fullWidth
           {...field}

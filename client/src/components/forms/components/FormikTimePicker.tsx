@@ -13,7 +13,6 @@ function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
       {({ field, form, meta: { touched, error } }: FieldProps) => (
         <TimePicker
           variant='inline'
-          autoOk
           ampm={false}
           format='HH:mm'
           fullWidth

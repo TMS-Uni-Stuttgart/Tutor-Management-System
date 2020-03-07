@@ -12,10 +12,10 @@ const useStyles = makeStyles((theme: Theme) =>
         easing: theme.transitions.easing.easeInOut,
         duration: theme.transitions.duration.shorter,
       }),
-      transform: 'rotate(0deg)',
+      transform: 'rotate(-180deg)',
     },
     collapseIconOpen: {
-      transform: 'rotate(-180deg)',
+      transform: 'rotate(0deg)',
     },
   })
 );
