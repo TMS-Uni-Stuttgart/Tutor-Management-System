@@ -65,30 +65,21 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
   const [isLoading, setIsLoading] = useState(false);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [tutors, setTutors] = useState<IUser[]>([]);
+  const [correctors, setCorrectors] = useState<IUser[]>([]);
   const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
-    Promise.all([
-      getUsersWithRole(Role.TUTOR).catch(reason => {
-        console.error(reason);
-        enqueueSnackbar('Nutzer konnten nicht abgerufen werden.', { variant: 'error' });
-      }),
-      getAllTutorials().catch(reason => {
-        console.error(reason);
-        enqueueSnackbar('Tutorien konnten nicht abgerufen werden.', { variant: 'error' });
-      }),
-    ]).then(([userResponse, tutorialResponse]) => {
-      if (userResponse) {
-        setTutors(userResponse);
-      }
-
-      if (tutorialResponse) {
-        setTutorials(tutorialResponse);
-      }
-
-      setIsLoading(false);
-    });
+    Promise.all([getUsersWithRole(Role.TUTOR), getUsersWithRole(Role.CORRECTOR), getAllTutorials()])
+      .then(([tutorsResponse, correctorsResponse, tutorialResponse]) => {
+        setTutors(tutorsResponse || []);
+        setCorrectors(correctorsResponse || []);
+        setTutorials(tutorialResponse || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        enqueueSnackbar('Daten konnten nicht abgerufen werden.', { variant: 'error' });
+      });
   }, [enqueueSnackbar]);
 
   const handleCreateTutorial: TutorialFormSubmitCallback = async (
@@ -145,6 +136,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
       content: (
         <TutorialForm
           tutorial={tutorial}
+          correctors={correctors}
           tutors={tutors}
           onSubmit={handleEditTutorialSubmit(tutorial)}
           onCancelClicked={() => dialog.hide()}
@@ -196,7 +188,9 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
       ) : (
         <TableWithForm
           title='Neues Tutorium erstellen'
-          form={<TutorialForm tutors={tutors} onSubmit={handleCreateTutorial} />}
+          form={
+            <TutorialForm tutors={tutors} correctors={correctors} onSubmit={handleCreateTutorial} />
+          }
           items={tutorials}
           createRowFromItem={tutorial => (
             <TutorialTableRow

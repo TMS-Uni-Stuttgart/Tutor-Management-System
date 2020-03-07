@@ -28,10 +28,7 @@ export class Tutorial implements Modify<ITutorial, Modified> {
   @Transform(value => DateTime.fromISO(value), { toClassOnly: true })
   readonly endTime!: DateTime;
 
-  @Transform(value => {
-    console.log(value);
-    return new Map(value);
-  })
+  @Transform(value => new Map(value))
   readonly substitutes!: Map<string, UserInEntity>;
 
   /**

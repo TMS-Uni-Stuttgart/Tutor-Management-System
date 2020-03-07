@@ -1,4 +1,4 @@
-import DateFnsUtils from '@date-io/luxon';
+import LuxonUtils from '@date-io/luxon';
 import { PaletteType, useMediaQuery } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -80,7 +80,7 @@ function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Ele
       <I18nextProvider i18n={i18n}>
         <CustomThemeProvider>
           <LoginContextProvider>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <MuiPickersUtilsProvider locale={navigator.language ?? 'de'} utils={LuxonUtils}>
               <SnackbarProvider maxSnack={3}>
                 <DialogService>{children}</DialogService>
               </SnackbarProvider>
