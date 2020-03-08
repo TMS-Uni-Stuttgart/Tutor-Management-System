@@ -19,7 +19,7 @@ const validationSchema = Yup.object().shape({
 interface ScheinCriteriaFormState {
   name: string;
   identifier: string;
-  [fieldKey: string]: string;
+  [fieldKey: string]: any;
 }
 
 export type ScheinCriteriaFormCallback = FormikSubmitCallback<ScheinCriteriaFormState>;
@@ -38,9 +38,9 @@ function getInitialValues(criteria?: IScheinCriteria): ScheinCriteriaFormState {
     };
   }
 
-  const data = Object.entries(criteria.data).reduce<{ [key: string]: string }>(
+  const data = Object.entries(criteria.data).reduce<{ [key: string]: any }>(
     (prev, [key, value]) => {
-      prev[key] = String(value);
+      prev[key] = value;
 
       return prev;
     },

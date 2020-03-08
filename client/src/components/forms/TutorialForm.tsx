@@ -70,22 +70,23 @@ const validationSchema = Yup.object().shape({
     .required('Benötigt')
     .test({
       test: function(this, date: string) {
-        const startDate: Date = new Date(this.resolve(Yup.ref('startDate')));
-        const endDate: Date = new Date(date);
+        const startDate: DateTime = DateTime.fromISO(this.resolve(Yup.ref('startDate')));
+        const endDate: DateTime = DateTime.fromISO(date);
 
-        return startDate.getTime() < endDate.getTime();
+        return startDate.toMillis() < endDate.toMillis();
       },
       message: 'Muss größer als Startdatum sein.',
     }),
   startTime: Yup.string().required('Benötigt'),
   endTime: Yup.string()
+    .nullable()
     .required('Benötigt')
     .test({
       test: function(this, time: string) {
-        const startTime: Date = new Date(this.resolve(Yup.ref('startTime')));
-        const endTime: Date = new Date(time);
+        const startTime: DateTime = DateTime.fromISO(this.resolve(Yup.ref('startTime')));
+        const endTime: DateTime = DateTime.fromISO(time);
 
-        return startTime.getTime() < endTime.getTime();
+        return startTime.toMillis() < endTime.toMillis();
       },
       message: 'Muss größer als Startzeit sein.',
     }),
@@ -172,7 +173,7 @@ function TutorialForm({
     >
       {({ values, setFieldValue, touched }) => (
         <>
-          <FormikTextField name='slot' label='Slot' />
+          <FormikTextField name='slot' label='Slot' required />
 
           <FormikSelect
             name='tutor'
@@ -186,6 +187,7 @@ function TutorialForm({
             <FormikDatePicker
               name='startDate'
               label='Startdatum'
+              required
               className={classes.startDateField}
               onAccept={(date: MaterialUiPickersDate) => {
                 if (date) {
@@ -209,6 +211,7 @@ function TutorialForm({
             <FormikDatePicker
               name='endDate'
               label='Enddatum'
+              required
               className={classes.endDateField}
               onAccept={(date: MaterialUiPickersDate) => {
                 if (date) {
@@ -230,6 +233,7 @@ function TutorialForm({
             <FormikTimePicker
               name='startTime'
               label='Startuhrzeit'
+              required
               className={classes.startDateField}
               onChange={(time: MaterialUiPickersDate) => {
                 if (time) {
@@ -238,7 +242,12 @@ function TutorialForm({
               }}
             />
 
-            <FormikTimePicker name='endTime' label='Enduhrzeit' className={classes.endDateField} />
+            <FormikTimePicker
+              name='endTime'
+              label='Enduhrzeit'
+              required
+              className={classes.endDateField}
+            />
           </div>
 
           <FormikSelect

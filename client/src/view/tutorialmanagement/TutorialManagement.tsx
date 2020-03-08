@@ -45,17 +45,19 @@ function generateCreateTutorialDTO({
   correctors,
   selectedDates,
 }: TutorialFormState): ITutorialDTO {
-  const startTime: Date = new Date(startTimeString);
-  const endTime: Date = new Date(endTimeString);
+  const startTime = DateTime.fromISO(startTimeString).set({ second: 0, millisecond: 0 });
+  const endTime = DateTime.fromISO(endTimeString).set({ second: 0, millisecond: 0 });
 
-  const dates: string[] = selectedDates.map(date => new Date(date)).map(date => date.toISOString());
+  const dates: string[] = selectedDates
+    .map(date => DateTime.fromISO(date))
+    .map(date => date.toISODate());
 
   return {
     slot,
     tutorId: tutor,
     dates,
-    startTime: startTime.toLocaleTimeString(),
-    endTime: endTime.toLocaleTimeString(),
+    startTime: startTime.toISOTime(),
+    endTime: endTime.toISOTime(),
     correctorIds: correctors,
   };
 }

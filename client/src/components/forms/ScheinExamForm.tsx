@@ -62,6 +62,7 @@ function ScheinExamForm({ onSubmit, className, exam, exams, ...other }: Props): 
       initialValues={initialFormState}
       // validationSchema={validationSchema}
       onSubmit={onSubmit}
+      enableDebug
     >
       {() => (
         <>

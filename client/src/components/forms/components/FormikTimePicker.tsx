@@ -1,4 +1,4 @@
-import { TimePicker, TimePickerProps } from '@material-ui/pickers';
+import { TimePicker, TimePickerProps, KeyboardTimePicker } from '@material-ui/pickers';
 import { Field, FieldProps } from 'formik';
 import React from 'react';
 
@@ -11,7 +11,7 @@ function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
   return (
     <Field name={name}>
       {({ field, form, meta: { touched, error } }: FieldProps) => (
-        <TimePicker
+        <KeyboardTimePicker
           variant='inline'
           ampm={false}
           format='HH:mm'
