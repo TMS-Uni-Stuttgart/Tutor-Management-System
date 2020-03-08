@@ -165,7 +165,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
                   </Typography>
 
                   <PointsTextField
-                    name={`${exercise.id}`}
+                    name={`exercises.${exercise.id}.points`}
                     placeholder='0'
                     maxPoints={getPointsOfExercise(exercise)}
                   />

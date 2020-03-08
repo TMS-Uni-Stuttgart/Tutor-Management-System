@@ -1,5 +1,5 @@
 import { Exercise, HasExercises } from '../../../../model/Exercise';
-import { Grading } from '../../../../model/Grading';
+import { ExerciseGrading } from '../../../../model/Grading';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasGradings } from '../../../../typings/types';
 
@@ -29,18 +29,17 @@ interface InitialValuesOptions {
 
 interface GeneratePointsSubexerciseParams {
   exercise: Exercise;
-  gradingOfTeam: Grading;
+  gradingOfExercise: ExerciseGrading | undefined;
 }
 
 export function generatePointStateWithSubexercises({
   exercise,
-  gradingOfTeam: pointsOfTeam,
+  gradingOfExercise,
 }: GeneratePointsSubexerciseParams): PointsFormSubExerciseState {
-  const grading = pointsOfTeam.getExerciseGrading(exercise);
   const { subexercises } = exercise;
 
   return subexercises.reduce<PointsFormSubExerciseState>((prev, current) => {
-    const gradingOfSubEx = grading?.getGradingForSubexercise(current);
+    const gradingOfSubEx = gradingOfExercise?.getGradingForSubexercise(current);
 
     return { ...prev, [current.id]: gradingOfSubEx?.toString() ?? '0' };
   }, {});
@@ -50,32 +49,30 @@ export function generateInitialValues({ entity, sheet }: InitialValuesOptions): 
   const gradingOfTeam = entity.getGrading(sheet);
   const exercises: { [id: string]: PointsFormExerciseState } = {};
 
-  if (!gradingOfTeam) {
-    return { comment: '', additionalPoints: '0', exercises };
-  }
-
   sheet.exercises.forEach(exercise => {
+    const gradingOfExercise = gradingOfTeam?.getExerciseGrading(exercise);
+
     if (exercise.subexercises.length > 0) {
       const points: PointsFormSubExerciseState = generatePointStateWithSubexercises({
         exercise,
-        gradingOfTeam,
+        gradingOfExercise,
       });
 
       exercises[exercise.id] = {
-        comment: gradingOfTeam.comment ?? '',
+        comment: gradingOfExercise?.comment ?? '',
         points,
       };
     } else {
       exercises[exercise.id] = {
-        comment: gradingOfTeam.comment ?? '',
-        points: gradingOfTeam.totalPoints.toString() ?? '0',
+        comment: gradingOfExercise?.comment ?? '',
+        points: gradingOfExercise?.totalPoints.toString() ?? '0',
       };
     }
   });
 
   return {
-    comment: '',
-    additionalPoints: '0',
+    comment: gradingOfTeam?.comment ?? '',
+    additionalPoints: gradingOfTeam?.additionalPoints?.toString() ?? '0',
     exercises,
   };
 }

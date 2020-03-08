@@ -53,7 +53,7 @@ function EnterStudentPoints(): JSX.Element {
         setTeam(response);
       })
       .catch(() => setError('Team konnte nicht abgerufen werden.'));
-  });
+  }, [tutorialId, teamId, setError]);
 
   if (!tutorialId || !sheetId || !studentId || !teamId) {
     return (
@@ -80,10 +80,12 @@ function EnterStudentPoints(): JSX.Element {
     }
 
     const prevGrading = student.getGrading(sheetId);
+    const teamGrading = team?.getGrading(sheetId);
+
     const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
       entityId: sheetId,
-      prevGrading,
+      prevGrading: teamGrading?.id === prevGrading?.id ? undefined : prevGrading,
     });
 
     try {
