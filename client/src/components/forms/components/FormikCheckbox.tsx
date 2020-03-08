@@ -13,7 +13,7 @@ function FormikCheckbox({ name, label, ...other }: Props): JSX.Element {
     <Field name={name}>
       {({ field }: FieldProps) => (
         <FormControlLabel
-          control={<Checkbox {...other} {...field} checked={field.value} />}
+          control={<Checkbox {...other} {...field} checked={!!field.value} />}
           name={name}
           label={label}
         />
