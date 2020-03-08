@@ -1,11 +1,13 @@
+import { IsBoolean } from 'class-validator';
 import { ScheinexamDocument } from '../../../../database/models/scheinexam.model';
 import { StudentDocument } from '../../../../database/models/student.model';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
-  PassedState,
-  ScheinCriteriaUnit,
-  ScheincriteriaIdentifier,
   CriteriaDistributionInformation,
   CriteriaSheetOrExamInformation,
+  PassedState,
+  ScheincriteriaIdentifier,
+  ScheinCriteriaUnit,
 } from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
@@ -15,16 +17,13 @@ import {
   StatusCheckResponse,
 } from '../Scheincriteria';
 import { ScheincriteriaPercentage } from '../scheincriteria.decorators';
-import { IsBoolean, IsNumber, Min, Max } from 'class-validator';
 
 export class ScheinexamCriteria extends Scheincriteria {
   @IsBoolean()
   readonly passAllExamsIndividually: boolean;
 
+  @IsNonNegativeNumberValue({ isFloat: true, max: 1 })
   @ScheincriteriaPercentage()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
   readonly percentageOfAllPointsNeeded: number;
 
   constructor(passAllExamsIndividually: boolean, percentageOfAllPointsNeeded: number) {

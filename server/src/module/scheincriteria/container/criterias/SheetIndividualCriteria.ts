@@ -1,9 +1,11 @@
+import { IsBoolean } from 'class-validator';
 import { SheetDocument } from '../../../../database/models/sheet.model';
 import { StudentDocument } from '../../../../database/models/student.model';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
   PassedState,
-  ScheinCriteriaUnit,
   ScheincriteriaIdentifier,
+  ScheinCriteriaUnit,
 } from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
@@ -13,12 +15,10 @@ import {
 } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
-import { IsBoolean, IsNumber, Min } from 'class-validator';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
+  @IsNonNegativeNumberValue({ isFloat: true })
   @ScheincriteriaPossiblePercentage('percentagePerSheet')
-  @IsNumber()
-  @Min(0)
   readonly valuePerSheetNeeded: number;
 
   @IsBoolean()

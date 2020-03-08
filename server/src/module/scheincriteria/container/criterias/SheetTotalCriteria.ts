@@ -2,8 +2,8 @@ import { SheetDocument } from '../../../../database/models/sheet.model';
 import { StudentDocument } from '../../../../database/models/student.model';
 import {
   PassedState,
-  ScheinCriteriaUnit,
   ScheincriteriaIdentifier,
+  ScheinCriteriaUnit,
 } from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,

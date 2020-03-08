@@ -1,6 +1,8 @@
+import { Transform } from 'class-transformer';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
-  ScheinCriteriaUnit,
   ScheincriteriaIdentifier,
+  ScheinCriteriaUnit,
 } from '../../../../shared/model/ScheinCriteria';
 import {
   CriteriaInformationWithoutName,
@@ -10,11 +12,10 @@ import {
   StatusCheckResponse,
 } from '../Scheincriteria';
 import { ScheincriteriaNumber } from '../scheincriteria.decorators';
-import { IsNumber, Min } from 'class-validator';
 
 export class PresentationCriteria extends Scheincriteria {
-  @IsNumber()
-  @Min(0)
+  @IsNonNegativeNumberValue()
+  @Transform(value => Number.parseInt(value))
   @ScheincriteriaNumber({ min: 0 })
   readonly presentationsNeeded: number;
 
