@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  IsMongoId,
 } from 'class-validator';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
@@ -34,6 +35,8 @@ export class StudentDTO implements IStudentDTO {
   tutorial!: string;
 
   @ApiProperty({ type: String })
+  @IsOptional()
+  @IsString()
   courseOfStudies?: string;
 
   @ApiProperty({ type: String })
@@ -42,9 +45,13 @@ export class StudentDTO implements IStudentDTO {
   email?: string;
 
   @ApiProperty({ type: String })
+  @IsOptional()
+  @IsString()
   matriculationNo?: string;
 
   @ApiProperty({ type: String })
+  @IsOptional()
+  @IsMongoId()
   team?: string;
 
   constructor(fields: IStudentDTO) {
