@@ -1,4 +1,5 @@
-import { IsBoolean, IsNumber, Min } from 'class-validator';
+import { IsBoolean } from 'class-validator';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import { Scheincriteria } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 
@@ -6,9 +7,8 @@ export abstract class PossiblePercentageCriteria extends Scheincriteria {
   @IsBoolean()
   readonly percentage: boolean;
 
+  @IsNonNegativeNumberValue({ isFloat: true })
   @ScheincriteriaPossiblePercentage('percentage')
-  @IsNumber()
-  @Min(0)
   readonly valueNeeded: number;
 
   constructor(identifier: string, percentage: boolean, valueNeeded: number) {
