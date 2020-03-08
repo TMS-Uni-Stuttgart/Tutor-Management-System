@@ -1,4 +1,4 @@
-import { TimePicker, TimePickerProps, KeyboardTimePicker } from '@material-ui/pickers';
+import { KeyboardTimePicker, TimePickerProps } from '@material-ui/pickers';
 import { Field, FieldProps } from 'formik';
 import React from 'react';
 

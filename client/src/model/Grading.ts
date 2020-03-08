@@ -11,7 +11,7 @@ interface ExerciseModified {
   subExercisePoints?: Map<string, number>;
 }
 
-class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModified> {
+export class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModified> {
   readonly points!: number;
   readonly comment?: string;
   readonly additionalPoints?: number;
