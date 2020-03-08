@@ -12,6 +12,7 @@ import { StudentModule } from '../student/student.module';
 import { SheetModule } from '../sheet/sheet.module';
 import { ScheinexamModule } from '../scheinexam/scheinexam.module';
 import { TutorialModule } from '../tutorial/tutorial.module';
+import { ScheincriteriaClass } from './container/scheincriteria.form';
 
 export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
 
@@ -41,15 +42,15 @@ export class ScheincriteriaModule implements OnModuleInit {
    *
    * @param criteria Criteria to register to the `ScheincriteriaContainer`.
    */
-  private registerCriteria(criteriaConstructor: ScheincriteriaConstructor) {
-    const criteria = new criteriaConstructor();
+  private registerCriteria(criteriaClass: ScheincriteriaClass) {
     const logContext = ScheincriteriaModule.name;
     const container = ScheincriteriaContainer.getContainer();
+    const criteria = new criteriaClass();
     const identifier = criteria.identifier;
 
     Logger.log(`Registering scheincriteria '${identifier}'...`, logContext);
 
-    container.registerBluePrint(criteria);
+    container.registerBluePrint(criteriaClass);
 
     Logger.log(`Scheincriteria ${identifier} registered`, logContext);
   }

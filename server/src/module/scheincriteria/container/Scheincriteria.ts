@@ -1,3 +1,5 @@
+import { BadRequestException } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { IsString, validateSync } from 'class-validator';
 import { ScheinexamDocument } from '../../../database/models/scheinexam.model';
 import { SheetDocument } from '../../../database/models/sheet.model';
@@ -5,7 +7,6 @@ import { StudentDocument } from '../../../database/models/student.model';
 import { CriteriaInformation, ScheinCriteriaStatus } from '../../../shared/model/ScheinCriteria';
 import { ScheinCriteriaDTO } from '../scheincriteria.dto';
 import { ScheincriteriaContainer } from './scheincriteria.container';
-import { BadRequestException } from '@nestjs/common';
 
 export interface CriteriaPayload {
   student: StudentDocument;
@@ -45,10 +46,7 @@ export abstract class Scheincriteria {
   static fromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
     const bluePrintData = ScheincriteriaContainer.getContainer().getBluePrint(identifier);
 
-    // Get the constructor of the blueprint. The type needs to be set here because 'constructor' is only typed as 'Function' and therefore cannot be used with 'new' in front of it.
-    const prototype = bluePrintData.blueprint.constructor as new () => Scheincriteria;
-    const criteria: Scheincriteria = Object.assign(new prototype(), data);
-
+    const criteria = plainToClass(bluePrintData.blueprint, data);
     const errors = validateSync(criteria, { whitelist: true, forbidNonWhitelisted: true });
 
     if (errors.length > 0) {

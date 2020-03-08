@@ -22,6 +22,7 @@ import { TutorialService } from '../tutorial/tutorial.service';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { TeamService } from '../team/team.service';
 import { UserService } from '../user/user.service';
+import { ScheincriteriaClass } from './container/scheincriteria.form';
 
 interface AssertScheincriteriaParams {
   expected: MockedScheincriteriaModel;
@@ -106,9 +107,8 @@ function registerAllCriterias() {
   criterias.forEach(criteria => registerCriteria(criteria));
 }
 
-function registerCriteria(criteriaConstructor: ScheincriteriaConstructor) {
-  const criteria = new criteriaConstructor();
-  ScheincriteriaContainer.getContainer().registerBluePrint(criteria);
+function registerCriteria(criteriaClass: ScheincriteriaClass) {
+  ScheincriteriaContainer.getContainer().registerBluePrint(criteriaClass);
 }
 
 describe('ScheincriteriaService', () => {

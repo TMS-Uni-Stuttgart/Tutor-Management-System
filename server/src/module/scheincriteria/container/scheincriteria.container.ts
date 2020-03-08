@@ -12,7 +12,7 @@ import {
   FormDataSet,
 } from '../../../shared/model/FormTypes';
 import { Scheincriteria } from './Scheincriteria';
-import { ScheincriteriaForm } from './scheincriteria.form';
+import { ScheincriteriaForm, ScheincriteriaClass } from './scheincriteria.form';
 import { ScheincriteriaMetadata, ScheincriteriaMetadataKey } from './scheincriteria.metadata';
 
 class SCContainer {
@@ -71,8 +71,9 @@ class SCContainer {
    *
    * @param criteria Criteria to register a blue print for.
    */
-  registerBluePrint(criteria: Scheincriteria) {
-    const criteriaForm = new ScheincriteriaForm(criteria);
+  registerBluePrint(criteriaClass: ScheincriteriaClass) {
+    const criteriaForm = new ScheincriteriaForm(criteriaClass);
+    const criteria = new criteriaClass();
 
     for (const [propertyName] of Object.entries(Object.getOwnPropertyDescriptors(criteria))) {
       const fieldData = this.getFormFieldDataForProperty(propertyName, criteria);
