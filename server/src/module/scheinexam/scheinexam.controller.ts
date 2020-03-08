@@ -15,7 +15,7 @@ import {
 import { ScheinexamService } from './scheinexam.service';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
 import { IScheinExam } from '../../shared/model/Scheinexam';
-import { ScheinExamDTO } from './scheinexam.dto';
+import { ScheinexamDTO } from './scheinexam.dto';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { Role } from '../../shared/model/Role';
 
@@ -34,7 +34,7 @@ export class ScheinexamController {
   @Post()
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   @UsePipes(ValidationPipe)
-  async createScheinexam(@Body() dto: ScheinExamDTO): Promise<IScheinExam> {
+  async createScheinexam(@Body() dto: ScheinexamDTO): Promise<IScheinExam> {
     const scheinexam = await this.scheinexamService.create(dto);
 
     return scheinexam;
@@ -53,7 +53,7 @@ export class ScheinexamController {
   @UsePipes(ValidationPipe)
   async updateScheinexam(
     @Param('id') id: string,
-    @Body() dto: ScheinExamDTO
+    @Body() dto: ScheinexamDTO
   ): Promise<IScheinExam> {
     const scheinexam = await this.scheinexamService.update(id, dto);
 

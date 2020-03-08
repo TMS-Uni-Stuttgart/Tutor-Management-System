@@ -27,6 +27,9 @@ import {
   StudentDTO,
 } from './student.dto';
 import { StudentService } from './student.service';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
+import { DateTime } from 'luxon';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -179,7 +182,14 @@ describe('StudentService', () => {
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [StudentService, TutorialService, TeamService, UserService, SheetService],
+      providers: [
+        StudentService,
+        TutorialService,
+        TeamService,
+        UserService,
+        SheetService,
+        ScheinexamService,
+      ],
     }).compile();
   });
 
@@ -547,6 +557,71 @@ describe('StudentService', () => {
 
     const updatedStudent = (await service.findById(student._id)).toDTO();
     const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
+
+    assertGrading({ expected: gradingDTO, actual: actualGrading });
+  });
+
+  it('set a grading of an exam of a student', async () => {
+    const scheinexamService = testModule.get<ScheinexamService>(ScheinexamService);
+    const student = STUDENT_DOCUMENTS[0];
+    const scheinexamDTO: ScheinexamDTO = {
+      scheinExamNo: 17,
+      percentageNeeded: 0.5,
+      date: DateTime.fromISO('2020-02-08').toISODate(),
+      exercises: [
+        {
+          exName: '1',
+          maxPoints: 30,
+          bonus: false,
+        },
+        {
+          exName: '2',
+          bonus: false,
+          maxPoints: 0,
+          subexercises: [
+            {
+              exName: '(a)',
+              maxPoints: 5,
+              bonus: false,
+            },
+            {
+              exName: '(b)',
+              maxPoints: 7,
+              bonus: false,
+            },
+          ],
+        },
+      ],
+    };
+
+    const scheinexam = await scheinexamService.create(scheinexamDTO);
+    const gradingDTO: GradingDTO = {
+      examId: scheinexam.id,
+      exerciseGradings: [
+        [
+          scheinexam.exercises[0].id,
+          { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
+        ],
+        [
+          scheinexam.exercises[1].id,
+          {
+            comment: 'Comment for exercise 2',
+            additionalPoints: 0,
+            subExercisePoints: [
+              [scheinexam.exercises[1].subexercises[0].id, 4],
+              [scheinexam.exercises[1].subexercises[1].id, 5],
+            ],
+          },
+        ],
+      ],
+      additionalPoints: 0,
+      comment: 'This is a comment for the grading',
+    };
+
+    await service.setGrading(student._id, gradingDTO);
+
+    const updatedStudent = (await service.findById(student._id)).toDTO();
+    const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === scheinexam.id) ?? [];
 
     assertGrading({ expected: gradingDTO, actual: actualGrading });
   });

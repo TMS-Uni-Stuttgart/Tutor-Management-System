@@ -19,6 +19,7 @@ import { SheetService } from '../sheet/sheet.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { GradingDTO } from '../student/student.dto';
 import { assertGrading } from '../student/student.service.spec';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
 
 interface AssertTeamParams {
   expected: MockedModel<TeamModel>;
@@ -105,7 +106,14 @@ describe('TeamService', () => {
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [TeamService, TutorialService, StudentService, UserService, SheetService],
+      providers: [
+        TeamService,
+        TutorialService,
+        StudentService,
+        UserService,
+        SheetService,
+        ScheinexamService,
+      ],
     }).compile();
   });
 

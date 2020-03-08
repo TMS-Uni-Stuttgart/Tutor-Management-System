@@ -4,7 +4,8 @@ import { Grading } from '../../../model/Grading';
 
 interface ConvertToGradingDTOParams {
   values: PointsFormState;
-  entityId: string;
+  sheetId?: string;
+  examId?: string;
   prevGrading?: Grading;
 }
 
@@ -68,7 +69,8 @@ export function getPointsFromState(values: PointsFormState): number {
 
 export function convertFormStateToGradingDTO({
   values,
-  entityId,
+  sheetId,
+  examId,
   prevGrading,
 }: ConvertToGradingDTOParams): IGradingDTO {
   const exerciseGradings: Map<
@@ -78,7 +80,8 @@ export function convertFormStateToGradingDTO({
   const additionalPoints = values.additionalPoints ? Number.parseFloat(values.additionalPoints) : 0;
 
   return {
-    sheetId: entityId,
+    sheetId,
+    examId,
     exerciseGradings: [...exerciseGradings],
     gradingId: prevGrading?.id,
     comment: values.comment,

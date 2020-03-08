@@ -5,7 +5,7 @@ import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedScheinexamModel, SCHEINEXAM_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { IScheinExam } from '../../shared/model/Scheinexam';
-import { ScheinExamDTO } from './scheinexam.dto';
+import { ScheinexamDTO } from './scheinexam.dto';
 import { ScheinexamService } from './scheinexam.service';
 
 interface AssertScheinexamParams {
@@ -19,7 +19,7 @@ interface AssertScheinexamListParams {
 }
 
 interface AssertScheinexamDTOParams {
-  expected: ScheinExamDTO;
+  expected: ScheinexamDTO;
   actual: IScheinExam;
 }
 
@@ -140,7 +140,7 @@ describe('ScheinexamService', () => {
 
   it('update basic information of a scheinexam', async () => {
     const updateDTO = getDTO();
-    const createDTO: ScheinExamDTO = {
+    const createDTO: ScheinexamDTO = {
       ...updateDTO,
       scheinExamNo: 2,
       percentageNeeded: 0.7,
@@ -155,7 +155,7 @@ describe('ScheinexamService', () => {
 
   it('update exercises of a scheinexam', async () => {
     const updateDTO = getDTO();
-    const createDTO: ScheinExamDTO = {
+    const createDTO: ScheinexamDTO = {
       ...updateDTO,
       exercises: [
         {
@@ -173,7 +173,7 @@ describe('ScheinexamService', () => {
   });
 
   it('update subexercise of a scheinexam', async () => {
-    const updateDTO: ScheinExamDTO = {
+    const updateDTO: ScheinexamDTO = {
       ...getDTO(),
       exercises: [
         {
@@ -191,7 +191,7 @@ describe('ScheinexamService', () => {
         },
       ],
     };
-    const createDTO: ScheinExamDTO = {
+    const createDTO: ScheinexamDTO = {
       ...updateDTO,
       exercises: [
         {
@@ -245,7 +245,7 @@ describe('ScheinexamService', () => {
  *
  * @returns ScheinexamDTO to use.
  */
-function getDTO(): ScheinExamDTO {
+function getDTO(): ScheinexamDTO {
   return {
     scheinExamNo: 17,
     percentageNeeded: 0.5,

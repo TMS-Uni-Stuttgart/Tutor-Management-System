@@ -84,7 +84,7 @@ function EnterStudentPoints(): JSX.Element {
 
     const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
-      entityId: sheetId,
+      sheetId,
       prevGrading: teamGrading?.id === prevGrading?.id ? undefined : prevGrading,
     });
 

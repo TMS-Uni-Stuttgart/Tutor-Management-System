@@ -8,7 +8,7 @@ export interface IScheinExam extends HasId {
   scheinExamNo: number;
 }
 
-export interface IScheinExamDTO {
+export interface IScheinexamDTO {
   date: string;
   exercises: IExerciseDTO[];
   percentageNeeded: number;

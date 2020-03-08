@@ -101,7 +101,7 @@ export class StudentModel {
     this.gradings = new Map();
 
     for (const doc of this._gradings) {
-      this.gradings.set(doc.sheetId, doc);
+      this.gradings.set(doc.entityId, doc);
     }
   }
 

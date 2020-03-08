@@ -2,7 +2,7 @@ import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
-import { ScheinExamDTO } from '../../module/scheinexam/scheinexam.dto';
+import { ScheinexamDTO } from '../../module/scheinexam/scheinexam.dto';
 import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ExerciseDocument, ExerciseModel } from './exercise.model';
 import { StudentDocument } from './student.model';
@@ -51,11 +51,11 @@ export class ScheinexamModel {
     );
   }
 
-  static fromDTO(dto: ScheinExamDTO) {
+  static fromDTO(dto: ScheinexamDTO) {
     return this.assignDTO(new ScheinexamModel(), dto);
   }
 
-  private static assignDTO(model: ScheinexamModel, dto: ScheinExamDTO): ScheinexamModel {
+  private static assignDTO(model: ScheinexamModel, dto: ScheinexamDTO): ScheinexamModel {
     const { date, exercises, percentageNeeded, scheinExamNo } = dto;
 
     model.scheinExamNo = scheinExamNo;
@@ -90,7 +90,7 @@ export class ScheinexamModel {
    *
    * @returns `This` document for chaining abilities.
    */
-  updateFromDTO(this: ScheinexamDocument, dto: ScheinExamDTO): ScheinexamDocument {
+  updateFromDTO(this: ScheinexamDocument, dto: ScheinexamDTO): ScheinexamDocument {
     return ScheinexamModel.assignDTO(this, dto) as ScheinexamDocument;
   }
 
