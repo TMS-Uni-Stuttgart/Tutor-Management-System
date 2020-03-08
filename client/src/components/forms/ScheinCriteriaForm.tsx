@@ -61,6 +61,7 @@ function ScheinCriteriaForm({ onSubmit, formData, criteria, ...other }: Props): 
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
+      enableDebug
     >
       {({ handleSubmit, values, isSubmitting, setValues, setFieldValue, ...formik }) => (
         <>

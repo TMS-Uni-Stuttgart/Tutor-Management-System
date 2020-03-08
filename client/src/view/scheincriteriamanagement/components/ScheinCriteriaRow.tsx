@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { InformationOutline as InfoIcon } from 'mdi-material-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { IScheinCriteria as ScheinCriteria } from 'shared/model/ScheinCriteria';
+import { IScheinCriteria } from 'shared/model/ScheinCriteria';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { i18nNamespace } from '../../../util/lang/configI18N';
@@ -22,9 +22,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props extends PaperTableRowProps {
-  criteria: ScheinCriteria;
-  onEditCriteriaClicked: (criteria: ScheinCriteria) => void;
-  onDeleteCriteriaClicked: (criteria: ScheinCriteria) => void;
+  criteria: IScheinCriteria;
+  onEditCriteriaClicked: (criteria: IScheinCriteria) => void;
+  onDeleteCriteriaClicked: (criteria: IScheinCriteria) => void;
 }
 
 function ScheinCriteriaRow({
@@ -59,19 +59,22 @@ function ScheinCriteriaRow({
       {...rest}
     >
       <TableCell className={classes.infoCell}>
-        {Object.entries(criteria).map(([key, value]) => {
+        {Object.entries(criteria.data).map(([key, value]) => {
           if (key === 'id' || key === 'name' || key === 'identifier') {
             return null;
           }
+
+          const valueAsString = String(value);
+
           return (
             <React.Fragment key={key}>
               <Typography component='span'>{`${t('VALUE_' + key)}:`}</Typography>
-              {`${value}` === 'true' || `${value}` === 'false' ? (
-                <Typography component='span'>{t(value)}</Typography>
+              {`${valueAsString}` === 'true' || `${valueAsString}` === 'false' ? (
+                <Typography component='span'>{t(valueAsString)}</Typography>
               ) : key.startsWith('percentage') ? (
-                <Typography component='span'>{`${value} %`}</Typography>
+                <Typography component='span'>{`${valueAsString} %`}</Typography>
               ) : (
-                <Typography component='span'>{`${value}`}</Typography>
+                <Typography component='span'>{`${valueAsString}`}</Typography>
               )}
             </React.Fragment>
           );

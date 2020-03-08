@@ -117,6 +117,9 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
           onCancelClicked={() => dialog.hide()}
         />
       ),
+      DialogProps: {
+        maxWidth: 'lg',
+      },
     });
   }
 
