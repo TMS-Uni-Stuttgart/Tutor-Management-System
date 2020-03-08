@@ -17,9 +17,9 @@ import {
 import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
-import { ITutorial, ISubstituteDTO } from '../../shared/model/Tutorial';
+import { ITutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
-import { TutorialDTO, SubstituteDTO } from './tutorial.dto';
+import { SubstituteDTO, TutorialDTO } from './tutorial.dto';
 
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {

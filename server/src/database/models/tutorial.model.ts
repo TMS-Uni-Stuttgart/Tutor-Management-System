@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { DateTime, ToISOTimeOptions } from 'luxon';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';

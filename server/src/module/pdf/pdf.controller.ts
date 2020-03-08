@@ -1,10 +1,11 @@
 import { Controller, Get, Param, Res, UseGuards, Query } from '@nestjs/common';
-import { IDField } from '../../decorators/idField.decorator';
+import { IDField } from '../../guards/decorators/idField.decorator';
 import { PdfService } from './pdf.service';
 import { Response } from 'express';
 import { TutorialGuard } from '../../guards/tutorial.guard';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { Role } from '../../shared/model/Role';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 
 @Controller('pdf')
 export class PdfController {
@@ -65,6 +66,7 @@ export class PdfController {
 
   @Get('/grading/tutorial/:tutorialId/sheet/:sheetId')
   @UseGuards(TutorialGuard)
+  @AllowCorrectors()
   @IDField('tutorialId')
   async getCorrectionZIP(
     @Param('tutorialId') tutorialId: string,
@@ -79,6 +81,7 @@ export class PdfController {
 
   @Get('/grading/tutorial/:tutorialId/sheet/:sheetId/team/:teamId')
   @UseGuards(TutorialGuard)
+  @AllowCorrectors()
   @IDField('tutorialId')
   async getCorrectionPDFForTeam(
     @Param('tutorialId') tutorialId: string,

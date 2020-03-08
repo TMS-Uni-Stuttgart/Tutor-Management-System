@@ -18,6 +18,8 @@ import { TeamService } from './team.service';
 import { TeamDTO } from './team.dto';
 import { TeamGuard } from '../../guards/team.guard';
 import { GradingDTO } from '../student/student.dto';
+import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 
 @Controller('tutorial/:id/team')
 export class TeamController {
@@ -25,6 +27,8 @@ export class TeamController {
 
   @Get()
   @UseGuards(TeamGuard)
+  @AllowSubstitutes()
+  @AllowCorrectors()
   async getAllTeamsInTutorial(@Param('id') tutorialId: string): Promise<ITeam[]> {
     const teams = await this.teamService.findAllTeamsInTutorial(tutorialId);
 
@@ -45,6 +49,8 @@ export class TeamController {
 
   @Get('/:teamId')
   @UseGuards(TeamGuard)
+  @AllowSubstitutes()
+  @AllowCorrectors()
   async getTeamInTutorial(
     @Param('id') tutorialId: string,
     @Param('teamId') teamId: string
@@ -56,6 +62,7 @@ export class TeamController {
 
   @Patch('/:teamId')
   @UseGuards(TeamGuard)
+  @AllowCorrectors()
   @UsePipes(ValidationPipe)
   async updateTeamInTutorial(
     @Param('id') tutorialId: string,
