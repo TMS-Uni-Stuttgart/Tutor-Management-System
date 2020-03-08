@@ -1,6 +1,6 @@
 import { IsArray, IsOptional, IsString, IsMongoId } from 'class-validator';
 import { ITutorialDTO, ISubstituteDTO } from '../../shared/model/Tutorial';
-import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
+import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 
 export class TutorialDTO implements ITutorialDTO {
   @IsString()

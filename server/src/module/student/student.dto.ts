@@ -9,7 +9,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { IsLuxonDateTime } from '../../helpers/validators/luxon.validators';
+import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
 import { AttendanceState, IAttendanceDTO } from '../../shared/model/Attendance';
 import {
