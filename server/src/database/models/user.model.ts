@@ -30,7 +30,7 @@ type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToC
 
 @plugin(fieldEncryption, {
   secret: databaseConfig.secret,
-  fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email'],
+  fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email', 'roles'],
   // saltGenerator: function(secret: string) {
   // TODO: Make deterministic salt generator to be able to encrypt username?! If so, change `getUserWithUsername()` in UserService
   //   return "1234567890123456"; // should ideally use the secret to return a string of length 16
