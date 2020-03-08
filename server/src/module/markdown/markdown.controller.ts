@@ -1,8 +1,9 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { IDField } from '../../decorators/idField.decorator';
+import { IDField } from '../../guards/decorators/idField.decorator';
 import { TutorialGuard } from '../../guards/tutorial.guard';
 import { MarkdownService } from './markdown.service';
 import { StudentGuard } from '../../guards/student.guard';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 
 @Controller('markdown')
 export class MarkdownController {
@@ -10,6 +11,7 @@ export class MarkdownController {
 
   @Get('/grading/:sheetId/tutorial/:tutorialId/team/:teamId')
   @UseGuards(TutorialGuard)
+  @AllowCorrectors()
   @IDField('tutorialId')
   async getMarkdown(
     @Param('sheetId') sheetId: string,
@@ -26,6 +28,7 @@ export class MarkdownController {
 
   @Get('/grading/:sheetId/student/:studentId')
   @UseGuards(StudentGuard)
+  @AllowCorrectors()
   @IDField('studentId')
   async getMarkdownForStudentGrading(
     @Param('sheetId') sheetId: string,

@@ -1,10 +1,12 @@
 import { ExecutionContext, ForbiddenException, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { ID_FIELD_METADATA_KEY } from '../../decorators/idField.decorator';
-import { ROLE_METADATA_KEY } from '../../decorators/roles.decorator';
+import { ID_FIELD_METADATA_KEY } from '../decorators/idField.decorator';
+import { ROLE_METADATA_KEY } from '../decorators/roles.decorator';
 import { Role } from '../../shared/model/Role';
 import { UseUserFromRequest } from './UseUserFromRequest';
+import { ALLOW_SUBSTITUTES_METADATA_KEY } from '../decorators/allowSubstitutes.decorator';
+import { ALLOW_CORRECTORS_METADATA_KEY } from '../decorators/allowCorrectors.decorator';
 
 export abstract class UseMetadata extends UseUserFromRequest {
   constructor(protected readonly reflector: Reflector) {
@@ -53,6 +55,24 @@ export abstract class UseMetadata extends UseUserFromRequest {
     }
 
     return request.params[idField];
+  }
+
+  protected isAllowedForSubstitutes(context: ExecutionContext): boolean {
+    const isAllowed = this.reflector.get<boolean>(
+      ALLOW_SUBSTITUTES_METADATA_KEY,
+      context.getHandler()
+    );
+
+    return Boolean(isAllowed);
+  }
+
+  protected isAllowedForCorrectors(context: ExecutionContext): boolean {
+    const isAllowed = this.reflector.get<boolean>(
+      ALLOW_CORRECTORS_METADATA_KEY,
+      context.getHandler()
+    );
+
+    return Boolean(isAllowed);
   }
 
   private getIdField(context: ExecutionContext): string {

@@ -20,6 +20,8 @@ import { ITutorial } from '../../shared/model/Tutorial';
 import { TutorialDTO, SubstituteDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
 import { IStudent } from '../../shared/model/Student';
+import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 
 @Controller('tutorial')
 export class TutorialController {
@@ -44,6 +46,8 @@ export class TutorialController {
 
   @Get('/:id')
   @UseGuards(TutorialGuard)
+  @AllowSubstitutes()
+  @AllowCorrectors()
   async getTutorial(@Param('id') id: string): Promise<ITutorial> {
     const tutorial = await this.tutorialService.findById(id);
 
@@ -68,6 +72,8 @@ export class TutorialController {
 
   @Get('/:id/student')
   @UseGuards(TutorialGuard)
+  @AllowSubstitutes()
+  @AllowCorrectors()
   async getAllStudentsOfTutorial(@Param('id') id: string): Promise<IStudent[]> {
     const students = await this.tutorialService.getAllStudentsOfTutorial(id);
 

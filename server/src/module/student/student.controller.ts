@@ -26,6 +26,8 @@ import { Role } from '../../shared/model/Role';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
 import { IAttendance } from '../../shared/model/Attendance';
+import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 
 @Controller('student')
 export class StudentController {
@@ -51,6 +53,8 @@ export class StudentController {
 
   @Get('/:id')
   @UseGuards(StudentGuard)
+  @AllowSubstitutes()
+  @AllowCorrectors()
   async getStudent(@Param('id') id: string): Promise<IStudent> {
     const student = await this.studentService.findById(id);
 
@@ -75,6 +79,7 @@ export class StudentController {
 
   @Put('/:id/attendance')
   @UseGuards(StudentGuard)
+  @AllowSubstitutes()
   @UsePipes(ValidationPipe)
   async updateAttendance(
     @Param('id') id: string,
@@ -88,6 +93,7 @@ export class StudentController {
   @Put('/:id/presentation')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(StudentGuard)
+  @AllowSubstitutes()
   @UsePipes(ValidationPipe)
   async updatePresentationPoint(
     @Param('id') id: string,
@@ -99,6 +105,7 @@ export class StudentController {
   @Put('/:id/grading')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(StudentGuard)
+  @AllowCorrectors()
   @UsePipes(ValidationPipe)
   async updatePoints(@Param('id') id: string, @Body() dto: GradingDTO): Promise<void> {
     await this.studentService.setGrading(id, dto);
@@ -107,6 +114,7 @@ export class StudentController {
   @Put('/:id/cakecount')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(StudentGuard)
+  @AllowSubstitutes()
   @UsePipes(ValidationPipe)
   async updateCakeCount(@Param('id') id: string, @Body() dto: CakeCountDTO): Promise<void> {
     await this.studentService.setCakeCount(id, dto);
