@@ -47,9 +47,9 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
 
   const substitutes: Map<string, UserInEntity> = new Map();
 
-  for (const [date, doc] of expected.substitutes.entries()) {
-    substitutes.set(date, { id: doc._id, firstname: doc.firstname, lastname: doc.lastname });
-  }
+  // for (const [date, doc] of expected.substitutes.entries()) {
+  //   substitutes.set(date, { id: doc._id, firstname: doc.firstname, lastname: doc.lastname });
+  // }
 
   expect(actual.id).toEqual(_id);
   expect(actual.slot).toEqual(slot);

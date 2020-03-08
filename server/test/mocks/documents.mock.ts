@@ -107,7 +107,6 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     dates: createDatesForTutorial('2020-02-18'),
     startTime: DateTime.fromISO('08:00:00'),
     endTime: DateTime.fromISO('09:30:00'),
-    substitutes: new Map(),
   },
   {
     _id: '5e5014186db2b69773038a9d',
@@ -124,7 +123,6 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     dates: createDatesForTutorial('2020-02-21'),
     startTime: DateTime.fromISO('14:00:00'),
     endTime: DateTime.fromISO('15:30:00'),
-    substitutes: new Map(),
   },
   {
     _id: '5e51421a7fd4b19a4cbe933f',
@@ -136,7 +134,6 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     dates: createDatesForTutorial('2020-02-21'),
     startTime: DateTime.fromISO('14:00:00'),
     endTime: DateTime.fromISO('15:30:00'),
-    substitutes: new Map(),
   },
   {
     _id: '5e5a4cfc318e40b25051a877',
@@ -148,7 +145,6 @@ export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
     dates: createDatesForTutorial('2020-02-21'),
     startTime: DateTime.fromISO('14:00:00'),
     endTime: DateTime.fromISO('15:30:00'),
-    substitutes: new Map(),
   },
 ];
 
