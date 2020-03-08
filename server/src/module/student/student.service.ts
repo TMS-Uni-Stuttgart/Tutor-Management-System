@@ -21,6 +21,7 @@ import {
   StudentDTO,
   PresentationPointsDTO,
 } from './student.dto';
+import { SheetDocument } from '../../database/models/sheet.model';
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
@@ -177,9 +178,15 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    */
   async setGrading(id: string, dto: GradingDTO): Promise<void> {
     const student = await this.findById(id);
+    const sheet = await this.sheetService.findById(dto.sheetId);
     const grading = await this.getGradingFromDTO(dto);
 
+    const prevGrading = student.getGrading(sheet);
+
+    prevGrading?.removeStudent(student);
     grading.addStudent(student);
+
+    await prevGrading?.save();
     await grading.save();
   }
 
@@ -197,8 +204,6 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    * @throws `NotFoundException` - If the DTO contains a `gradingId` but no GradingDocument with such an ID could be found.
    */
   async getGradingFromDTO(dto: GradingDTO): Promise<GradingDocument> {
-    await this.sheetService.hasSheetWithId(dto.sheetId);
-
     let grading: GradingDocument | null;
 
     if (!!dto.gradingId) {
