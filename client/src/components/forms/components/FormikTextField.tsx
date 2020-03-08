@@ -24,6 +24,7 @@ function FormikTextField({
   helperText,
   InputProps,
   disableSelectAllOnFocus,
+  onChange,
   ...textfieldProps
 }: FormikTextFieldProps): JSX.Element {
   function getValue(fieldValue: any): any {
@@ -58,10 +59,12 @@ function FormikTextField({
           onChange={e => {
             if (isPercentage) {
               form.setFieldValue(name, Number.parseInt(e.target.value, 10) / 100);
-            } else if (textfieldProps.type === 'number') {
-              form.setFieldValue(name, Number.parseInt(e.target.value, 10));
             } else {
               form.setFieldValue(name, e.target.value);
+            }
+
+            if (onChange && !e.isPropagationStopped) {
+              onChange(e);
             }
           }}
           helperText={(!!touched && error) || helperText}
