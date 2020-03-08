@@ -1,16 +1,24 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { AttendanceModel } from '../../database/models/attendance.model';
-import { GradingModel, GradingDocument } from '../../database/models/grading.model';
+import { HasExerciseDocuments } from '../../database/models/exercise.model';
+import { GradingDocument, GradingModel } from '../../database/models/grading.model';
 import {
+  populateStudentDocument,
   StudentDocument,
   StudentModel,
-  populateStudentDocument,
 } from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IStudent } from '../../shared/model/Student';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
@@ -18,10 +26,9 @@ import {
   AttendanceDTO,
   CakeCountDTO,
   GradingDTO,
-  StudentDTO,
   PresentationPointsDTO,
+  StudentDTO,
 } from './student.dto';
-import { SheetDocument } from '../../database/models/sheet.model';
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
@@ -30,6 +37,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     @Inject(forwardRef(() => TeamService))
     private readonly teamService: TeamService,
     private readonly sheetService: SheetService,
+    private readonly scheinexamService: ScheinexamService,
     @InjectModel(StudentModel)
     private readonly studentModel: ReturnModelType<typeof StudentModel>,
     @InjectModel(GradingModel)
@@ -178,10 +186,10 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    */
   async setGrading(id: string, dto: GradingDTO): Promise<void> {
     const student = await this.findById(id);
-    const sheet = await this.sheetService.findById(dto.sheetId);
+    const entityWithExercises = await this.getEntityWithExercisesFromDTO(dto);
     const grading = await this.getGradingFromDTO(dto);
 
-    const prevGrading = student.getGrading(sheet);
+    const prevGrading = student.getGrading(entityWithExercises);
 
     prevGrading?.removeStudent(student);
     grading.addStudent(student);
@@ -250,5 +258,36 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
 
     student.cakeCount = dto.cakeCount;
     await student.save();
+  }
+
+  /**
+   * Returns either a ScheinexamDocument or an ScheinexamDocument associated to the given DTO.
+   *
+   * If both fields, `sheetId` and `examId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
+   *
+   * @param dto DTO to return the associated document with exercises for.
+   *
+   * @returns Associated document with exercises.
+   *
+   * @throws `BadRequestException` - If either both fields (`sheetId` and `examId`) or none of those fields are set.
+   */
+  async getEntityWithExercisesFromDTO(dto: GradingDTO): Promise<HasExerciseDocuments> {
+    const { sheetId, examId } = dto;
+
+    if (!!sheetId && !!examId) {
+      throw new BadRequestException(
+        'You have to set exactly one of the two fields sheetId and examId - not both'
+      );
+    }
+
+    if (!!sheetId) {
+      return this.sheetService.findById(sheetId);
+    }
+
+    if (!!examId) {
+      return this.scheinexamService.findById(examId);
+    }
+
+    throw new BadRequestException('You have to either set the sheetId or the examId field.');
   }
 }

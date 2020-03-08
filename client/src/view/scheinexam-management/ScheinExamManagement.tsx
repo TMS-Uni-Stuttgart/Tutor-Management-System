@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { IScheinExamDTO } from 'shared/model/Scheinexam';
+import { IScheinexamDTO } from 'shared/model/Scheinexam';
 import ScheinExamForm, {
   getInitialExamFormState,
   ScheinExamFormState,
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = WithSnackbarProps;
 
-function generateScheinExamDTO(values: ScheinExamFormState): IScheinExamDTO {
+function generateScheinExamDTO(values: ScheinExamFormState): IScheinexamDTO {
   const date = DateTime.fromISO(values.date);
 
   return {

@@ -108,7 +108,7 @@ function EnterScheinexamPoints(): JSX.Element {
     const prevGrading = student.getGrading(examId);
     const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
-      entityId: examId,
+      examId,
       prevGrading,
     });
 

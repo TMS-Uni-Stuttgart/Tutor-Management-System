@@ -161,11 +161,11 @@ export class TeamService {
    */
   async setGrading(teamId: TeamID, dto: GradingDTO): Promise<void> {
     const team = await this.findById(teamId);
-    const sheet = await this.sheetService.findById(dto.sheetId);
+    const docWithExercises = await this.studentService.getEntityWithExercisesFromDTO(dto);
     const grading = await this.studentService.getGradingFromDTO(dto);
 
     for (const student of team.students) {
-      const gradingOfStudent = student.getGrading(sheet);
+      const gradingOfStudent = student.getGrading(docWithExercises);
 
       if (!gradingOfStudent) {
         grading.addStudent(student);

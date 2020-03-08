@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CRUDService } from '../../helpers/CRUDService';
 import { IScheinExam } from '../../shared/model/Scheinexam';
-import { ScheinExamDTO } from './scheinexam.dto';
+import { ScheinexamDTO } from './scheinexam.dto';
 import { ScheinexamDocument, ScheinexamModel } from '../../database/models/scheinexam.model';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 
 @Injectable()
 export class ScheinexamService
-  implements CRUDService<IScheinExam, ScheinExamDTO, ScheinexamDocument> {
+  implements CRUDService<IScheinExam, ScheinexamDTO, ScheinexamDocument> {
   constructor(
     @InjectModel(ScheinexamModel)
     private readonly scheinexamModel: ReturnModelType<typeof ScheinexamModel>
@@ -49,7 +49,7 @@ export class ScheinexamService
    *
    * @returns Created scheinexam.
    */
-  async create(dto: ScheinExamDTO): Promise<IScheinExam> {
+  async create(dto: ScheinexamDTO): Promise<IScheinExam> {
     const scheinexam = ScheinexamModel.fromDTO(dto);
     const created = await this.scheinexamModel.create(scheinexam);
 
@@ -68,7 +68,7 @@ export class ScheinexamService
    *
    * @throws `NotFoundException` - If no scheinexam with the given ID could be found.
    */
-  async update(id: string, dto: ScheinExamDTO): Promise<IScheinExam> {
+  async update(id: string, dto: ScheinexamDTO): Promise<IScheinExam> {
     const scheinexam = await this.findById(id);
     scheinexam.updateFromDTO(dto);
 

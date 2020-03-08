@@ -23,7 +23,8 @@ export interface IExerciseGradingDTO {
 }
 
 export interface IGradingDTO {
-  sheetId: string;
+  sheetId?: string;
+  examId?: string;
   exerciseGradings: [string, IExerciseGradingDTO][];
   gradingId?: string;
   comment?: string;

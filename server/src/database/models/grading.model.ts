@@ -121,7 +121,28 @@ export class GradingModel {
   }
 
   @prop()
-  sheetId!: string;
+  sheetId?: string;
+
+  @prop()
+  examId?: string;
+
+  get entityId(): string {
+    if (this.sheetId && this.examId) {
+      throw new Error(
+        'Both fields (sheetId and examId) are set. This is not a valid property set.'
+      );
+    }
+
+    if (this.sheetId) {
+      return this.sheetId;
+    }
+
+    if (this.examId) {
+      return this.examId;
+    }
+
+    throw new Error('Neither the sheetId nor the examId field is set.');
+  }
 
   @prop()
   comment?: string;
@@ -209,13 +230,18 @@ export class GradingModel {
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
   updateFromDTO(this: GradingDocument, dto: GradingDTO) {
-    const { exerciseGradings, additionalPoints, comment, gradingId, sheetId } = dto;
+    const { exerciseGradings, additionalPoints, comment, gradingId, sheetId, examId } = dto;
 
     if (!!gradingId) {
       this.id = gradingId;
     }
 
+    if (!sheetId && !examId) {
+      throw new Error('Either the sheetId or the examId has to be provided through the DTO.');
+    }
+
     this.sheetId = sheetId;
+    this.examId = examId;
     this.comment = comment;
     this.additionalPoints = additionalPoints;
     this.exerciseGradings = new Map();

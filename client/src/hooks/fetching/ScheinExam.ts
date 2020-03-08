@@ -1,4 +1,4 @@
-import { IScheinExam, IScheinExamDTO } from 'shared/model/Scheinexam';
+import { IScheinExam, IScheinexamDTO } from 'shared/model/Scheinexam';
 import axios from './Axios';
 import { Scheinexam } from '../../model/Scheinexam';
 import { plainToClass } from 'class-transformer';
@@ -24,7 +24,7 @@ export async function getScheinexam(examId: string): Promise<Scheinexam> {
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createScheinExam(exam: IScheinExamDTO): Promise<Scheinexam> {
+export async function createScheinExam(exam: IScheinexamDTO): Promise<Scheinexam> {
   const response = await axios.post<IScheinExam>(`scheinexam`, exam);
 
   if (response.status === 201) {
@@ -34,7 +34,7 @@ export async function createScheinExam(exam: IScheinExamDTO): Promise<Scheinexam
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editScheinExam(examId: string, exam: IScheinExamDTO): Promise<Scheinexam> {
+export async function editScheinExam(examId: string, exam: IScheinexamDTO): Promise<Scheinexam> {
   const response = await axios.patch<IScheinExam>(`scheinexam/${examId}`, exam);
 
   if (response.status === 200) {

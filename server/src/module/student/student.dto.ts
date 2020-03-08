@@ -98,8 +98,13 @@ export class ExerciseGradingDTO implements IExerciseGradingDTO {
 }
 
 export class GradingDTO implements IGradingDTO {
+  @IsOptional()
   @IsString()
-  sheetId!: string;
+  sheetId?: string;
+
+  @IsOptional()
+  @IsString()
+  examId?: string;
 
   @IsOptional()
   @IsString()
