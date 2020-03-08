@@ -36,7 +36,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
     const sheet: SheetDocument | null = await this.sheetModel.findById(id).exec();
 
     if (!sheet) {
-      throw new NotFoundException(`Sheet with the ID '${id} could not be found.`);
+      throw new NotFoundException(`Sheet with the ID '${id}' could not be found.`);
     }
 
     return sheet;
