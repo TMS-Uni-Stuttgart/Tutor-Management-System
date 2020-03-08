@@ -23,6 +23,7 @@ import { Scheinexam } from '../../model/Scheinexam';
 import { getDisplayStringOfScheinExam, saveBlob } from '../../util/helperFunctions';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import ScheinExamRow from './components/ScheinExamRow';
+import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,13 +39,13 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = WithSnackbarProps;
 
 function generateScheinExamDTO(values: ScheinExamFormState): IScheinExamDTO {
-  const date = new Date(values.date);
+  const date = DateTime.fromISO(values.date);
 
   return {
     scheinExamNo: Number.parseFloat(values.scheinExamNo),
     exercises: convertFormExercisesToDTOs(values.exercises),
     percentageNeeded: values.percentageNeeded,
-    date: date.toDateString(),
+    date: date.toISODate(),
   };
 }
 

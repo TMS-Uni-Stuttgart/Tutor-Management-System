@@ -72,7 +72,8 @@ function ScheinCriteriaRow({
               {`${valueAsString}` === 'true' || `${valueAsString}` === 'false' ? (
                 <Typography component='span'>{t(valueAsString)}</Typography>
               ) : key.startsWith('percentage') ? (
-                <Typography component='span'>{`${valueAsString} %`}</Typography>
+                <Typography component='span'>{`${Number.parseFloat(valueAsString) *
+                  100} %`}</Typography>
               ) : (
                 <Typography component='span'>{`${valueAsString}`}</Typography>
               )}
