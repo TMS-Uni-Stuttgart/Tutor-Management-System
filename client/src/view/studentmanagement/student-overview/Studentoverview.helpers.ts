@@ -81,12 +81,12 @@ export function handleCreateStudent({
         data: {
           firstname,
           lastname,
-          matriculationNo,
-          email,
-          courseOfStudies,
           status,
-          team,
           tutorial: tutorialId,
+          matriculationNo: matriculationNo || undefined,
+          email: email || undefined,
+          courseOfStudies: courseOfStudies || undefined,
+          team: team || undefined,
         },
       });
       const teams = await getTeamsOfTutorial(tutorialId);
@@ -122,12 +122,12 @@ export function handleEditStudent({
           dto: {
             firstname,
             lastname,
-            matriculationNo,
-            email,
-            courseOfStudies,
             status,
-            team,
             tutorial: tutorialId || student.tutorial.id,
+            matriculationNo: matriculationNo || undefined,
+            email: email || undefined,
+            courseOfStudies: courseOfStudies || undefined,
+            team: team || undefined,
           },
         },
       });
