@@ -9,6 +9,8 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
@@ -58,6 +60,7 @@ export class ScheincriteriaController {
   }
 
   @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   async deleteCriteria(@Param('id') id: string): Promise<void> {
     await this.scheincriteriaService.delete(id);

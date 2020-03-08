@@ -58,6 +58,7 @@ export class UserController {
   }
 
   @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(new HasRoleGuard(Role.ADMIN))
   async deleteUser(@Param('id') id: string): Promise<void> {
     await this.userService.delete(id);

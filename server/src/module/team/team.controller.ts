@@ -68,8 +68,8 @@ export class TeamController {
   }
 
   @Delete('/:teamId')
-  @UseGuards(TeamGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(TeamGuard)
   async deleteTeamFromTutorial(
     @Param('id') tutorialId: string,
     @Param('teamId') teamId: string
