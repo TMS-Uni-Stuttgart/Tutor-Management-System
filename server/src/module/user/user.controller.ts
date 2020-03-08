@@ -66,7 +66,7 @@ export class UserController {
 
   @Post('/:id/password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(new SameUserGuard())
   @UsePipes(ValidationPipe)
   async updatePassword(@Param('id') id: string, @Body() body: PasswordDTO) {
     await this.userService.setPassword(id, body.password);
