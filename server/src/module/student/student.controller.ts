@@ -29,6 +29,7 @@ import {
   StudentDTO,
 } from './student.dto';
 import { StudentService } from './student.service';
+import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
 
 @Controller('student')
 export class StudentController {
@@ -44,11 +45,10 @@ export class StudentController {
   }
 
   @Post()
-  @UseGuards(HasRoleGuard)
+  @UseGuards(HasRoleGuard, CreatedInOwnTutorialGuard)
   @Roles(Role.ADMIN, Role.TUTOR)
   @UsePipes(ValidationPipe)
   async createStudent(@Body() dto: StudentDTO): Promise<IStudent> {
-    // TODO: Guard -- Check if the student is created IN the tutorial of the calling tutor.
     const student = await this.studentService.create(dto);
 
     return student;
