@@ -9,7 +9,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import { getNameOfEntity } from 'shared/util/helpers';
-import { TeamInStudent } from '../../../../../../server/src/shared/model/Student';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
@@ -43,15 +42,24 @@ interface Props extends PaperTableRowProps {
   onChangeTutorial?: StudentCallback;
   subtextPrefix?: string;
   scheinStatus?: ScheinCriteriaSummary;
+  showTutorial?: boolean;
 }
 
 interface GetSubtextParams {
-  team?: TeamInStudent;
+  student?: Student;
   prefix?: string;
+  showTutorial?: boolean;
 }
 
-function getSubtext({ team, prefix }: GetSubtextParams): string {
-  let subText: string = team ? `Team: #${team.teamNo.toString().padStart(2, '0')}` : 'Kein Team.';
+function getSubtext({ student, showTutorial, prefix }: GetSubtextParams): string {
+  const { team, tutorial } = student ?? { team: undefined, tutorial: undefined };
+  let subText = '';
+
+  if (showTutorial) {
+    subText = tutorial ? `Tutorium: ${tutorial.slot}` : 'In keinem Tutorium.';
+  } else {
+    subText = team ? `Team: #${team.teamNo.toString().padStart(2, '0')}` : 'Kein Team.';
+  }
 
   if (!!prefix) {
     subText = `${prefix} - ${subText}`;
@@ -68,6 +76,7 @@ function StudentRow({
   onDelete,
   onChangeTutorial,
   scheinStatus,
+  showTutorial,
   ...props
 }: Props): JSX.Element {
   const classes = useStyles();
@@ -96,7 +105,7 @@ function StudentRow({
     <PaperTableRow
       {...props}
       label={getNameOfEntity(student)}
-      subText={getSubtext({ team: student.team, prefix: subtextPrefix })}
+      subText={getSubtext({ student, prefix: subtextPrefix, showTutorial })}
       Avatar={<StudentAvatar student={student} />}
       className={className}
       buttonCellContent={

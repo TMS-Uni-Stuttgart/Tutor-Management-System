@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   tutorials?: Tutorial[];
   allowChangeTutorial?: boolean;
+  showTutorialOnStudentBar?: boolean;
   additionalTopBarItem?: React.ReactNode;
 }
 
@@ -53,6 +54,7 @@ function Studentoverview({
   tutorials,
   allowChangeTutorial,
   additionalTopBarItem,
+  showTutorialOnStudentBar,
 }: Props): JSX.Element {
   const classes = useStyles();
 
@@ -188,6 +190,7 @@ function Studentoverview({
       onEdit={openEditDialog}
       onDelete={openDeleteDialog}
       onChangeTutorial={allowChangeTutorial ? openChangeTutorialDialog : undefined}
+      showTutorial={showTutorialOnStudentBar}
     />
   );
 

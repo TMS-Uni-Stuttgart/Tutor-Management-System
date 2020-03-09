@@ -125,6 +125,7 @@ function AdminStudentManagement(): JSX.Element {
     <Studentoverview
       tutorials={tutorials}
       allowChangeTutorial
+      showTutorialOnStudentBar
       additionalTopBarItem={
         <div className={classes.topBar}>
           <SplitButton
