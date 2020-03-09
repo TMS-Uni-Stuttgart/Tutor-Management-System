@@ -50,9 +50,10 @@ export class MailService {
     const mails: Promise<MailingResponse>[] = [];
     const userToSendMailTo = users.filter(u => u.username !== 'admin' && !!u.temporaryPassword);
 
-    // TODO: Check that e-mail is valid.
     for (const user of userToSendMailTo) {
-      mails.push(this.sendMail(user, smtpTransport, options));
+      if (this.isValidEmail(user.email)) {
+        mails.push(this.sendMail(user, smtpTransport, options));
+      }
     }
 
     const status = this.generateMailingStatus(await Promise.all(mails), users);
@@ -74,7 +75,7 @@ export class MailService {
 
     const user = await this.userService.findById(userId);
 
-    if (!user.temporaryPassword) {
+    if (!user.temporaryPassword || !this.isValidEmail(user.email)) {
       return { successFullSend: 0, failedMailsInfo: [{ userId: user.id }] };
     }
 
