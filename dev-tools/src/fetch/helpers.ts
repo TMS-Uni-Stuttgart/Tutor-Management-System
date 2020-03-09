@@ -1,10 +1,10 @@
 import { AxiosInstance } from 'axios';
-import { AttendanceDTO, Attendance } from 'shared/src/model/Attendance';
-import { UpdatePointsDTO } from 'shared/src/model/Points';
-import { SheetDTO, Sheet } from 'shared/src/model/Sheet';
+import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
+import { IGradingDTO } from 'shared/model/Points';
+import { ISheet, ISheetDTO } from 'shared/model/Sheet';
 
-export async function createSheet(sheetInfo: SheetDTO, axios: AxiosInstance): Promise<Sheet> {
-  const response = await axios.post<Sheet>('sheet', sheetInfo);
+export async function createSheet(sheetInfo: ISheetDTO, axios: AxiosInstance): Promise<ISheet> {
+  const response = await axios.post<ISheet>('sheet', sheetInfo);
 
   if (response.status === 201) {
     return response.data;
@@ -15,10 +15,10 @@ export async function createSheet(sheetInfo: SheetDTO, axios: AxiosInstance): Pr
 
 export async function setAttendanceOfStudent(
   id: string,
-  attendanceInfo: AttendanceDTO,
+  attendanceInfo: IAttendanceDTO,
   axios: AxiosInstance
-): Promise<Attendance> {
-  const response = await axios.put<Attendance>(`student/${id}/attendance`, attendanceInfo);
+): Promise<IAttendance> {
+  const response = await axios.put<IAttendance>(`student/${id}/attendance`, attendanceInfo);
 
   if (response.status === 200) {
     return response.data;
@@ -29,7 +29,7 @@ export async function setAttendanceOfStudent(
 
 export async function setPointsOfStudent(
   studentId: string,
-  points: UpdatePointsDTO,
+  points: IGradingDTO,
   axios: AxiosInstance
 ): Promise<void> {
   const response = await axios.put(`student/${studentId}/point`, points);

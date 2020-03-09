@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
 import Axios from 'axios';
-import { LoggedInUser } from 'shared/src/model/User';
-import { StudentDTO, StudentStatus, Student } from 'shared/src/model/Student';
-import { TutorialDTO, Tutorial } from 'shared/src/model/Tutorial';
-import { Sheet, SheetDTO, ExerciseDTO } from 'shared/src/model/Sheet';
+import { IExerciseGradingDTO, IGradingDTO } from '../../server/src/shared/model/Points';
+import { IExerciseDTO, ISheet, ISheetDTO } from '../../server/src/shared/model/Sheet';
+import { IStudent, IStudentDTO, StudentStatus } from '../../server/src/shared/model/Student';
+import { ITutorial, ITutorialDTO } from '../../server/src/shared/model/Tutorial';
+import { ILoggedInUser } from '../../server/src/shared/model/User';
 import { createSheet, setPointsOfStudent } from './fetch/helpers';
-import { PointMap, PointId, PointsOfSubexercises } from 'shared/src/model/Points';
 
 function createBaseURL(): string {
   return 'http://localhost:8080/api';
@@ -12,7 +13,6 @@ function createBaseURL(): string {
 
 const axios = Axios.create({
   baseURL: createBaseURL(),
-  // withCredentials: true,
   withCredentials: true,
   headers: {
     // This header prevents the spring backend to add a header which will make a popup appear if the credentials are wrong.
@@ -33,14 +33,14 @@ function roundNumber(number: number, places: number = 2): number {
 
 async function login(username: string, password: string): Promise<void> {
   // We build the Authorization header by ourselfs because the axios library does NOT use UTF-8 to encode the string as base64.
-  const encodedAuth = Buffer.from(username + ':' + password, 'utf8').toString('base64');
-  const response = await axios.post<LoggedInUser>('/login', null, {
-    headers: {
-      Authorization: `Basic ${encodedAuth}`,
-    },
-    // Override the behaviour of checking the response status to not be 401 (session timed out)
-    validateStatus: () => true,
-  });
+  const response = await axios.post<ILoggedInUser>(
+    '/auth/login',
+    { username, password },
+    {
+      // Override the behaviour of checking the response status to not be 401 (session timed out)
+      validateStatus: () => true,
+    }
+  );
 
   const [cookie] = response.headers['set-cookie'] || [undefined];
 
@@ -51,8 +51,8 @@ async function login(username: string, password: string): Promise<void> {
   }
 }
 
-async function createTutorial(): Promise<Tutorial> {
-  const tutorialDTO: TutorialDTO = {
+async function createTutorial(): Promise<ITutorial> {
+  const tutorialDTO: ITutorialDTO = {
     slot: 'G1',
     startTime: '09:45:00',
     endTime: '11:15:00',
@@ -60,7 +60,7 @@ async function createTutorial(): Promise<Tutorial> {
     correctorIds: [],
   };
 
-  const tutorialResponse = await axios.post<Tutorial>('/tutorial', tutorialDTO);
+  const tutorialResponse = await axios.post<ITutorial>('/tutorial', tutorialDTO);
   if (tutorialResponse.status !== 201) {
     throw new Error('Tutorial could not be created.');
   }
@@ -68,13 +68,13 @@ async function createTutorial(): Promise<Tutorial> {
   return tutorialResponse.data;
 }
 
-async function createSheets(): Promise<Sheet[]> {
-  const sheets: Sheet[] = [];
+async function createSheets(): Promise<ISheet[]> {
+  const sheets: ISheet[] = [];
 
   for (let i = 0; i < 12; i++) {
     const sheetNo = i + 1;
     const hasSubexercises = Math.random() >= 0.5;
-    const subexercises: ExerciseDTO[] = [];
+    const subexercises: IExerciseDTO[] = [];
 
     if (hasSubexercises) {
       for (let i = 0; i < Math.round(Math.random() * 2 + 1); i++) {
@@ -92,7 +92,7 @@ async function createSheets(): Promise<Sheet[]> {
         ? subexercises.reduce((sum, ex) => ex.maxPoints + sum, 0)
         : roundNumber(Math.random() * 10 + 5, 0);
 
-    const sheetDTO: SheetDTO = {
+    const sheetDTO: ISheetDTO = {
       sheetNo,
       exercises: [
         {
@@ -116,39 +116,52 @@ async function createSheets(): Promise<Sheet[]> {
   return sheets;
 }
 
-async function createStudent(i: number, tutorial: Tutorial, sheets: Sheet[]): Promise<Student> {
-  const studentDTO: StudentDTO = {
+async function createStudent(i: number, tutorial: ITutorial, sheets: ISheet[]): Promise<IStudent> {
+  const studentDTO: IStudentDTO = {
     firstname: 'Test',
     lastname: `Student #${i.toString().padStart(3, '0')}`,
     status: StudentStatus.ACTIVE,
     tutorial: tutorial.id,
     matriculationNo: i.toString().padStart(7, '0'),
-    // TODO: Rest of properties?
   };
 
-  const student = (await axios.post<Student>('/student', studentDTO)).data;
-  const pointMap = new PointMap();
+  const student = (await axios.post<IStudent>('/student', studentDTO)).data;
+  const gradings: IGradingDTO[] = [];
 
-  for (const sheet of sheets) {
-    for (const exercise of sheet.exercises) {
+  sheets.forEach(sheet => {
+    const exerciseGradings: Map<string, IExerciseGradingDTO> = new Map();
+
+    sheet.exercises.forEach(exercise => {
       if (exercise.subexercises.length > 0) {
-        const entry: PointsOfSubexercises = {};
+        const subExercisePoints: Map<string, number> = new Map();
 
         exercise.subexercises.forEach(subEx => {
-          entry[subEx.id] = roundNumber(Math.random() * subEx.maxPoints);
+          subExercisePoints.set(subEx.id, roundNumber(Math.random() * subEx.maxPoints));
         });
 
-        pointMap.setPointEntry(new PointId(sheet.id, exercise), { comment: '', points: entry });
-      } else {
-        pointMap.setPointEntry(new PointId(sheet.id, exercise), {
+        exerciseGradings.set(exercise.id, {
           comment: '',
+          additionalPoints: 0,
+          subExercisePoints: [...subExercisePoints],
+        });
+      } else {
+        exerciseGradings.set(exercise.id, {
+          comment: '',
+          additionalPoints: 0,
           points: roundNumber(Math.random() * exercise.maxPoints),
         });
       }
-    }
-  }
+    });
 
-  await setPointsOfStudent(student.id, { points: pointMap.toDTO() }, axios);
+    gradings.push({
+      sheetId: sheet.id,
+      additionalPoints: 0,
+      comment: '',
+      exerciseGradings: [...exerciseGradings],
+    });
+  });
+
+  await Promise.all(gradings.map(gradingDTO => setPointsOfStudent(student.id, gradingDTO, axios)));
 
   return student;
 }
@@ -160,7 +173,7 @@ async function run() {
     const tutorial = await createTutorial();
     const sheets = await createSheets();
 
-    const promises: Promise<Student>[] = [];
+    const promises: Promise<IStudent>[] = [];
 
     for (let i = 0; i < 600; i++) {
       if (i > 0 && i % 200 === 0) {
