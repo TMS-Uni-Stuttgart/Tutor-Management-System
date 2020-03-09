@@ -188,8 +188,8 @@ export function handleChangeTutorial({
           studentId: student.id,
           dto: {
             ...student,
-            team: student.team ? student.team.id : undefined,
             tutorial,
+            team: undefined, // After the change the student must NOT have a team.
           },
         },
       });
