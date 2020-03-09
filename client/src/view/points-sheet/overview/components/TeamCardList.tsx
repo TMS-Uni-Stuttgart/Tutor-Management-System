@@ -3,6 +3,7 @@ import CardList from '../../../../components/cardlist/CardList';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
 import TeamCard from './TeamCard';
+import Placeholder from '../../../../components/Placeholder';
 
 interface Props {
   tutorialId: string;
@@ -20,18 +21,20 @@ function TeamCardList({
   onGeneratePdfClicked,
 }: Props): JSX.Element {
   return (
-    <CardList>
-      {teams.map(team => (
-        <TeamCard
-          key={team.id}
-          tutorialId={tutorialId}
-          team={team}
-          sheet={sheet}
-          onPdfPreviewClicked={onPdfPreviewClicked}
-          onGeneratePdfClicked={onGeneratePdfClicked}
-        />
-      ))}
-    </CardList>
+    <Placeholder placeholderText='Keine Teams verfügbar.' showPlaceholder={teams.length === 0}>
+      <CardList>
+        {teams.map(team => (
+          <TeamCard
+            key={team.id}
+            tutorialId={tutorialId}
+            team={team}
+            sheet={sheet}
+            onPdfPreviewClicked={onPdfPreviewClicked}
+            onGeneratePdfClicked={onGeneratePdfClicked}
+          />
+        ))}
+      </CardList>
+    </Placeholder>
   );
 }
 
