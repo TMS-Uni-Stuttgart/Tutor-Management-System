@@ -4,8 +4,6 @@ import React from 'react';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Scheinexam } from '../../../model/Scheinexam';
-import { getDisplayStringOfScheinExam } from '../../../util/helperFunctions';
-import { getPointsOfEntityAsString } from '../../points-sheet/util/helper';
 
 interface Props extends PaperTableRowProps {
   exam: Scheinexam;
@@ -23,7 +21,7 @@ function ScheinExamRow({
 }: Props): JSX.Element {
   return (
     <PaperTableRow
-      label={getDisplayStringOfScheinExam(exam)}
+      label={exam.toDisplayString()}
       buttonCellContent={
         <EntityListItemMenu
           onEditClicked={() => onEditExamClicked(exam)}
@@ -41,7 +39,7 @@ function ScheinExamRow({
     >
       <TableCell>
         <Typography variant='body2'>Anzahl Aufgaben: {exam.exercises.length}</Typography>
-        <Typography variant='body2'>Gesamtpunktzahl: {getPointsOfEntityAsString(exam)}</Typography>
+        <Typography variant='body2'>Gesamtpunktzahl: {exam.getPointInfoAsString()}</Typography>
       </TableCell>
     </PaperTableRow>
   );

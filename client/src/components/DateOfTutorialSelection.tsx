@@ -9,7 +9,6 @@ interface Props extends FormControlProps {
   value?: string;
 }
 
-// TODO: Replace Select with a date picker in which one can only select the specific dates!
 function DateOfTutorialSelection({
   availableDates,
   onDateSelected,

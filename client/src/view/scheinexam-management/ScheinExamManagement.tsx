@@ -1,4 +1,5 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { DateTime } from 'luxon';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { IScheinexamDTO } from 'shared/model/Scheinexam';
@@ -20,10 +21,9 @@ import {
   getAllScheinExams,
 } from '../../hooks/fetching/ScheinExam';
 import { Scheinexam } from '../../model/Scheinexam';
-import { getDisplayStringOfScheinExam, saveBlob } from '../../util/helperFunctions';
+import { saveBlob } from '../../util/helperFunctions';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import ScheinExamRow from './components/ScheinExamRow';
-import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -150,9 +150,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   function handleDeleteExam(exam: Scheinexam) {
     dialog.show({
       title: 'Nutzer löschen',
-      content: `Soll ${getDisplayStringOfScheinExam(
-        exam
-      )} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden!`,
+      content: `Soll ${exam.toDisplayString()} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden!`,
       actions: [
         {
           label: 'Nicht löschen',

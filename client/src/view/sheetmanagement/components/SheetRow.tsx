@@ -1,14 +1,13 @@
 import { TableCell, Typography } from '@material-ui/core';
 import React from 'react';
-import { ISheet } from 'shared/model/Sheet';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { getPointsOfEntityAsString } from '../../points-sheet/util/helper';
+import { Sheet } from '../../../model/Sheet';
 
 interface Props extends PaperTableRowProps {
-  sheet: ISheet;
-  onEditSheetClicked: (sheet: ISheet) => void;
-  onDeleteSheetClicked: (sheet: ISheet) => void;
+  sheet: Sheet;
+  onEditSheetClicked: (sheet: Sheet) => void;
+  onDeleteSheetClicked: (sheet: Sheet) => void;
 }
 
 function SheetRow({
@@ -31,7 +30,7 @@ function SheetRow({
     >
       <TableCell>
         <Typography variant='body2'>Anzahl Aufgaben: {sheet.exercises.length}</Typography>
-        <Typography variant='body2'>Gesamtpunktzahl: {getPointsOfEntityAsString(sheet)}</Typography>
+        <Typography variant='body2'>Gesamtpunktzahl: {sheet.getPointInfoAsString()}</Typography>
       </TableCell>
     </PaperTableRow>
   );

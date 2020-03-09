@@ -7,7 +7,6 @@ import PointsTable from '../../../../components/points-table/PointsTable';
 import { Grading } from '../../../../model/Grading';
 import { Scheinexam } from '../../../../model/Scheinexam';
 import { Student } from '../../../../model/Student';
-import { getDisplayStringOfScheinExam } from '../../../../util/helperFunctions';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -59,7 +58,7 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
           nameOfNoneItem='Keine Scheinklausur'
           className={classes.sheetSelect}
           items={exams}
-          itemToString={getDisplayStringOfScheinExam}
+          itemToString={exam => exam.toDisplayString()}
           itemToValue={exam => exam.id}
           onChange={handleScheinExamSelectionChange}
           value={selectedExam?.id ?? ''}

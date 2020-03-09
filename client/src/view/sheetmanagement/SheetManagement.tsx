@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { ISheet, ISheetDTO } from 'shared/model/Sheet';
+import { ISheetDTO } from 'shared/model/Sheet';
 import SheetForm, {
   convertFormExercisesToDTOs,
   getInitialSheetFormState,
@@ -11,6 +11,7 @@ import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { useAxios } from '../../hooks/FetchingService';
+import { Sheet } from '../../model/Sheet';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import SheetRow from './components/SheetRow';
 
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
-  const [sheets, setSheets] = useState<ISheet[]>([]);
+  const [sheets, setSheets] = useState<Sheet[]>([]);
   const {
     getAllSheets,
     createSheet,
@@ -83,7 +84,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     }
   };
 
-  const editSheet: (sheet: ISheet) => SheetFormSubmitCallback = sheet => async (
+  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback = sheet => async (
     { sheetNo, exercises, bonusSheet },
     { setSubmitting }
   ) => {
@@ -115,7 +116,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     }
   };
 
-  function handleEditSheet(sheet: ISheet) {
+  function handleEditSheet(sheet: Sheet) {
     dialog.show({
       title: 'Blatt bearbeiten',
       content: (
@@ -131,7 +132,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     });
   }
 
-  function handleDeleteSheet(sheet: ISheet) {
+  function handleDeleteSheet(sheet: Sheet) {
     const sheetNo: string = sheet.sheetNo.toString().padStart(2, '0');
     dialog.show({
       title: 'Blatt löschen',
@@ -152,7 +153,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     });
   }
 
-  function deleteSheet(sheet: ISheet) {
+  function deleteSheet(sheet: Sheet) {
     deleteSheetRequest(sheet.id)
       .then(() => {
         setSheets(sheets.filter(s => s.id !== sheet.id));
