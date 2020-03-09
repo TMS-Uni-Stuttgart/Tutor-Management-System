@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 import { TutorialInEntity } from '../../../../server/src/shared/model/Common';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
-import { getDisplayStringForTutorial } from '../../util/helperFunctions';
 import FormikSelect from './components/FormikSelect';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 
@@ -61,7 +60,7 @@ function TutorialChangeForm({
           label='Tutorium'
           emptyPlaceholder='Keine Tutorien vorhanden.'
           items={allTutorials}
-          itemToString={getDisplayStringForTutorial}
+          itemToString={t => t.toDisplayString()}
           itemToValue={t => t.id}
           fullWidth
           className={classes.tutorDropdown}

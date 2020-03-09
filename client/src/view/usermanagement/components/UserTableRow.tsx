@@ -3,10 +3,10 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Account as PersonIcon, ContactMail as MailIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Role } from 'shared/model/Role';
+import { IUser } from 'shared/model/User';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-import { IUser } from 'shared/model/User';
+import { Tutorial } from '../../../model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,7 +61,7 @@ function UserTableRow({
         {user.tutorials.map(tutorial => (
           <Chip
             key={tutorial.id}
-            label={getDisplayStringForTutorial(tutorial)}
+            label={Tutorial.getDisplayString(tutorial)}
             className={classes.tutorialChip}
             color='primary'
           />
@@ -72,7 +72,7 @@ function UserTableRow({
             {user.tutorialsToCorrect.map(tutorial => (
               <Chip
                 key={tutorial.id}
-                label={`Korrigiert: ${getDisplayStringForTutorial(tutorial)}`}
+                label={`Korrigiert: ${Tutorial.getDisplayString(tutorial)}`}
                 className={classes.tutorialChip}
                 color='default'
               />

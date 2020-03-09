@@ -1,13 +1,12 @@
 import { Button, Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { DateTime } from 'luxon';
 import React from 'react';
 import { renderLink } from '../../../components/drawer/components/renderLink';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
 import { RoutingPath } from '../../../routes/Routing.routes';
-import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
-import { DateTime } from 'luxon';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,7 +49,7 @@ function TutorialTableRow({
 
   return (
     <PaperTableRow
-      label={getDisplayStringForTutorial(tutorial)}
+      label={tutorial.toDisplayString()}
       buttonCellContent={
         <>
           <Button

@@ -30,7 +30,8 @@ import { getTutorialXLSX } from '../hooks/fetching/Files';
 import { useLogin } from '../hooks/LoginService';
 import { getTutorialRelatedPath } from '../routes/Routing.helpers';
 import { ROUTES, RouteType } from '../routes/Routing.routes';
-import { getDisplayStringForTutorial, saveBlob } from '../util/helperFunctions';
+import { saveBlob } from '../util/helperFunctions';
+import { Tutorial } from '../model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -183,7 +184,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
                       onClick={() => handleDownloadXLSX(tutorial)}
                       isSubmitting={!!creatingXLSX[tutorial.slot]}
                     >
-                      {getDisplayStringForTutorial(tutorial)}
+                      {Tutorial.getDisplayString(tutorial)}
                     </SubmitButton>
                   ))}
                 </ButtonGroup>

@@ -1,6 +1,5 @@
 import { createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import React from 'react';
-import { getDisplayStringForTutorial } from '../../../util/helperFunctions';
 import { TutorialSummaryInfo } from '../Dashboard';
 import ScheinCriteriaStatsCard from './ScheinCrtieriaStatsCard';
 import ScheinPassedStatsCard from './ScheinPassedStatsCard';
@@ -46,7 +45,7 @@ function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
   return (
     <>
       <Paper className={classes.tutorialHeading}>
-        <Typography variant='h5'>{getDisplayStringForTutorial(value.tutorial)}</Typography>
+        <Typography variant='h5'>{value.tutorial.toDisplayString()}</Typography>
       </Paper>
       <div className={classes.cardsContainer}>
         <TutorialStatsCard value={value} />
