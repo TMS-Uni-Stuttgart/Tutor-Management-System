@@ -12,12 +12,23 @@ interface HeaderData {
   column: number;
 }
 
-interface CellData {
-  // TODO: Better typesafety regarding the actual type?
-  content: any;
+interface CellDataBase {
+  content: string | number;
   row: number;
   type?: 'string' | 'number';
 }
+
+interface CellStringData extends CellDataBase {
+  type?: 'string';
+  content: string;
+}
+
+interface CellNumberData extends CellDataBase {
+  type: 'number';
+  content: number;
+}
+
+type CellData = CellStringData | CellNumberData;
 
 type HeaderDataCollection<T extends string> = {
   [key in T]: HeaderData;
@@ -112,7 +123,7 @@ export class ExcelService {
       const { firstname, lastname, matriculationNo, courseOfStudies, email } = student;
       cellData['firstname'].push({ content: firstname, row });
       cellData['lastname'].push({ content: lastname, row });
-      cellData['matriculationNo'].push({ content: matriculationNo, row });
+      cellData['matriculationNo'].push({ content: matriculationNo || 'N/A', row });
       cellData['courseOfStudies'].push({ content: courseOfStudies || 'N/A', row });
       cellData['email'].push({ content: email || 'N/A', row });
 
@@ -172,11 +183,11 @@ export class ExcelService {
           row,
         });
 
-        data[ex.id].push({
-          content: grading?.points ?? 'N/A',
-          type: !!grading ? 'number' : 'string',
-          row,
-        });
+        if (!!grading) {
+          data[ex.id].push({ content: grading.points, type: 'number', row });
+        } else {
+          data[ex.id].push({ content: 'N/A', row });
+        }
 
         data['presentation'].push({
           content: student.getPresentationPoints(sheet) ?? 0,
