@@ -22,6 +22,7 @@ export interface GenerateAllTeamsGradingParams {
 export interface TeamMarkdownData {
   teamName: string;
   markdown: string;
+  invalid?: boolean;
 }
 
 export interface AllTeamGradings {
@@ -43,6 +44,7 @@ interface GeneratingParams {
 interface GenerateFromTeamParams {
   team: TeamDocument;
   sheet: SheetDocument;
+  ignoreInvalidTeams: boolean;
 }
 
 interface GenerateSubExTableParams {
@@ -69,6 +71,12 @@ export class MarkdownService {
    *
    * The sheet number is also returned as a string for convenience.
    *
+   * The returned gradings only include gradings for teams which:
+   * - Have at least one student.
+   * - Have a grading for the given sheet.
+   *
+   * All other teams are ignored.
+   *
    * @param params Must contain the ID of the tutorial and the sheet to generate the gradings for.
    *
    * @returns Gradings for all the teams in the tutorial as markdown and the `sheetNo`.
@@ -86,10 +94,10 @@ export class MarkdownService {
     const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 
     teams.forEach(team => {
-      gradingsMD.push(this.generateFromTeam({ team, sheet }));
+      gradingsMD.push(this.generateFromTeam({ team, sheet, ignoreInvalidTeams: true }));
     });
 
-    return { markdownForGradings: gradingsMD, sheetNo };
+    return { markdownForGradings: gradingsMD.filter(grad => !grad.invalid), sheetNo };
   }
 
   /**
@@ -107,7 +115,7 @@ export class MarkdownService {
     const team = await this.teamService.findById(teamId);
     const sheet = await this.sheetService.findById(sheetId);
 
-    return this.generateFromTeam({ team, sheet }).markdown;
+    return this.generateFromTeam({ team, sheet, ignoreInvalidTeams: false }).markdown;
   }
 
   /**
@@ -139,26 +147,49 @@ export class MarkdownService {
     });
   }
 
-  private generateFromTeam({ team, sheet }: GenerateFromTeamParams): TeamMarkdownData {
-    if (team.students.length === 0) {
-      throw new BadRequestException(`Can not generate markdown for an empty team.`);
+  /**
+   * Generates the markdown for the team for the given sheet.
+   *
+   * If `ignoreInvalidTeams` is true, than no exceptions are thrown but a data entry is returned which has it's `invalid` field set to true.
+   *
+   * @param params Options for the markdown generation
+   *
+   * @returns MarkdownData for the team of the grading for the given sheet. Can be marked as `invalid` (see above).
+   *
+   * @throws `BadRequestException` - If `ignoreInvalidTeams` is false AND either the team has no students or the team has no gradings for the given sheet.
+   */
+  private generateFromTeam({
+    team,
+    sheet,
+    ignoreInvalidTeams,
+  }: GenerateFromTeamParams): TeamMarkdownData {
+    try {
+      if (team.students.length === 0) {
+        throw new BadRequestException(`Can not generate markdown for an empty team.`);
+      }
+
+      // TODO: How to handle if the students have different gradings?!
+      const grading = team.students[0].getGrading(sheet);
+
+      if (!grading) {
+        throw new BadRequestException(
+          `There is no grading available of the given sheet for the students in the given team.`
+        );
+      }
+
+      const teamName: string = team.students.map(s => s.lastname).join('');
+
+      return {
+        markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
+        teamName,
+      };
+    } catch (err) {
+      if (ignoreInvalidTeams) {
+        return { markdown: '', teamName: '', invalid: true };
+      } else {
+        throw err;
+      }
     }
-
-    // TODO: How to handle if the students have different gradings?!
-    const grading = team.students[0].getGrading(sheet);
-
-    if (!grading) {
-      throw new BadRequestException(
-        `There is no grading available of the given sheet for the students in the given team.`
-      );
-    }
-
-    const teamName: string = team.students.map(s => s.lastname).join('');
-
-    return {
-      markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
-      teamName,
-    };
   }
 
   private generateFromGrading({ sheet, grading, nameOfEntity }: GeneratingParams): string {
