@@ -1,11 +1,10 @@
-import { Controller, Get, Param, Res, UseGuards, Query } from '@nestjs/common';
-import { IDField } from '../../guards/decorators/idField.decorator';
-import { PdfService } from './pdf.service';
+import { Controller, Get, Param, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { TutorialGuard } from '../../guards/tutorial.guard';
-import { HasRoleGuard } from '../../guards/has-role.guard';
-import { Role } from '../../shared/model/Role';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { IDField } from '../../guards/decorators/idField.decorator';
+import { HasRoleGuard } from '../../guards/has-role.guard';
+import { TutorialGuard } from '../../guards/tutorial.guard';
+import { PdfService } from './pdf.service';
 
 @Controller('pdf')
 export class PdfController {
@@ -26,7 +25,7 @@ export class PdfController {
   }
 
   @Get('/scheinoverview')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async getScheinstatusPDF(
     @Query('clearMatriculationNos') clearMatriculationNos: string,
     @Res() res: Response
@@ -40,7 +39,7 @@ export class PdfController {
   }
 
   @Get('/scheinexam/:id/result')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async getScheinexamResultPDF(
     @Param('id') id: string,
     @Query('clearMatriculationNos') clearMatriculationNos: string,
@@ -56,7 +55,7 @@ export class PdfController {
   }
 
   @Get('/credentials')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async getCredentialsPDF(@Res() res: Response): Promise<void> {
     const buffer = await this.pdfService.generateCredentialsPDF();
 

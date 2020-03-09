@@ -1,40 +1,42 @@
 import {
   Body,
   Controller,
-  Post,
-  UsePipes,
-  ValidationPipe,
-  Get,
-  UseGuards,
-  Param,
-  Patch,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
   Put,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { IStudent } from '../../shared/model/Student';
-import {
-  StudentDTO,
-  CakeCountDTO,
-  AttendanceDTO,
-  PresentationPointsDTO,
-  GradingDTO,
-} from './student.dto';
-import { StudentService } from './student.service';
-import { Role } from '../../shared/model/Role';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
+import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
 import { IAttendance } from '../../shared/model/Attendance';
-import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
-import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { Role } from '../../shared/model/Role';
+import { IStudent } from '../../shared/model/Student';
+import {
+  AttendanceDTO,
+  CakeCountDTO,
+  GradingDTO,
+  PresentationPointsDTO,
+  StudentDTO,
+} from './student.dto';
+import { StudentService } from './student.service';
 
 @Controller('student')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
   @Get()
-  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
+  @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async getAllStudents(): Promise<IStudent[]> {
     const students = await this.studentService.findAll();
 
@@ -42,7 +44,8 @@ export class StudentController {
   }
 
   @Post()
-  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.TUTOR]))
+  @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.TUTOR)
   @UsePipes(ValidationPipe)
   async createStudent(@Body() dto: StudentDTO): Promise<IStudent> {
     // TODO: Guard -- Check if the student is created IN the tutorial of the calling tutor.

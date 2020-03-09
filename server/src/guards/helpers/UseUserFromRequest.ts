@@ -1,4 +1,4 @@
-import { ExecutionContext, ForbiddenException, Logger, CanActivate } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Logger, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthenticatedGuard } from '../authenticated.guard';
 
@@ -23,7 +23,7 @@ export abstract class UseUserFromRequest implements CanActivate {
 
     if (!isAuthenticated || !request.user || !request.user.roles) {
       Logger.error('Request does not contain a user', undefined, UseUserFromRequest.name);
-      throw new ForbiddenException('Forbidden ressource');
+      throw new UnauthorizedException('Forbidden ressource');
     }
 
     return request.user;

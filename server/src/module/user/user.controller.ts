@@ -13,10 +13,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { IUser } from 'src/shared/model/User';
+import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { SameUserGuard } from '../../guards/same-user.guard';
 import { Role } from '../../shared/model/Role';
-import { PasswordDTO, CreateUserDTO, UserDTO } from './user.dto';
+import { CreateUserDTO, PasswordDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -24,7 +25,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
+  @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async getAllUsers(): Promise<IUser[]> {
     const users = await this.userService.findAll();
 
@@ -32,7 +34,7 @@ export class UserController {
   }
 
   @Post()
-  @UseGuards(new SameUserGuard())
+  @UseGuards(SameUserGuard)
   @UsePipes(ValidationPipe)
   async createUser(@Body() user: CreateUserDTO): Promise<IUser> {
     const createdUser = await this.userService.create(user);
@@ -41,7 +43,8 @@ export class UserController {
   }
 
   @Get('/:id')
-  @UseGuards(new SameUserGuard({ roles: [Role.ADMIN, Role.EMPLOYEE] }))
+  @UseGuards(SameUserGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async getUser(@Param('id') id: string): Promise<IUser> {
     const user = await this.userService.findById(id);
 
@@ -49,7 +52,7 @@ export class UserController {
   }
 
   @Patch('/:id')
-  @UseGuards(new SameUserGuard())
+  @UseGuards(SameUserGuard)
   @UsePipes(ValidationPipe)
   async updateUser(@Param('id') id: string, @Body() dto: UserDTO): Promise<IUser> {
     const updatedUser = await this.userService.update(id, dto);
@@ -59,14 +62,14 @@ export class UserController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async deleteUser(@Param('id') id: string): Promise<void> {
     await this.userService.delete(id);
   }
 
   @Post('/:id/password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(new SameUserGuard())
+  @UseGuards(SameUserGuard)
   @UsePipes(ValidationPipe)
   async updatePassword(@Param('id') id: string, @Body() body: PasswordDTO) {
     await this.userService.setPassword(id, body.password);
@@ -74,7 +77,7 @@ export class UserController {
 
   @Post('/:id/temporaryPassword')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async updateTemporaryPassword(@Param('id') id: string, @Body() body: PasswordDTO) {
     await this.userService.setTemporaryPassword(id, body.password);

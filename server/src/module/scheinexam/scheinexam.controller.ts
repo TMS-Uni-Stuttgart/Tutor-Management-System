@@ -1,23 +1,22 @@
 import {
-  Controller,
-  Get,
-  UseGuards,
   Body,
-  Post,
-  UsePipes,
-  ValidationPipe,
-  Param,
-  Patch,
+  Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { ScheinexamService } from './scheinexam.service';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
+import { HasRoleGuard } from '../../guards/has-role.guard';
 import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ScheinexamDTO } from './scheinexam.dto';
-import { HasRoleGuard } from '../../guards/has-role.guard';
-import { Role } from '../../shared/model/Role';
+import { ScheinexamService } from './scheinexam.service';
 
 @Controller('scheinexam')
 export class ScheinexamController {
@@ -32,7 +31,7 @@ export class ScheinexamController {
   }
 
   @Post()
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async createScheinexam(@Body() dto: ScheinexamDTO): Promise<IScheinExam> {
     const scheinexam = await this.scheinexamService.create(dto);
@@ -49,7 +48,7 @@ export class ScheinexamController {
   }
 
   @Patch('/:id')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async updateScheinexam(
     @Param('id') id: string,
@@ -62,7 +61,7 @@ export class ScheinexamController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async deleteScheinexam(@Param('id') id: string): Promise<void> {
     await this.scheinexamService.delete(id);
   }

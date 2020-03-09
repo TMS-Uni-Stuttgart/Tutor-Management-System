@@ -3,25 +3,26 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
   UseGuards,
   UsePipes,
   ValidationPipe,
-  HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
+import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
 import { FormDataResponse } from '../../shared/model/FormTypes';
 import { Role } from '../../shared/model/Role';
 import {
+  CriteriaInformation,
   IScheinCriteria,
   ScheinCriteriaSummary,
   ScheincriteriaSummaryByStudents,
-  CriteriaInformation,
 } from '../../shared/model/ScheinCriteria';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaService } from './scheincriteria.service';
@@ -31,7 +32,8 @@ export class ScheincriteriaController {
   constructor(private readonly scheincriteriaService: ScheincriteriaService) {}
 
   @Get()
-  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
+  @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async getAllCriterias(): Promise<IScheinCriteria[]> {
     const scheincriterias = await this.scheincriteriaService.findAll();
 
@@ -39,7 +41,7 @@ export class ScheincriteriaController {
   }
 
   @Post()
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async createCriteria(@Body() dto: ScheinCriteriaDTO): Promise<IScheinCriteria> {
     const scheincriteria = await this.scheincriteriaService.create(dto);
@@ -48,7 +50,7 @@ export class ScheincriteriaController {
   }
 
   @Patch('/:id')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async updateCriteria(
     @Param('id') id: string,
@@ -61,13 +63,13 @@ export class ScheincriteriaController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async deleteCriteria(@Param('id') id: string): Promise<void> {
     await this.scheincriteriaService.delete(id);
   }
 
   @Get('/:id/info')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async getInformation(@Param('id') id: string): Promise<CriteriaInformation> {
     const information = await this.scheincriteriaService.getInfoAboutCriteria(id);
 
@@ -75,7 +77,7 @@ export class ScheincriteriaController {
   }
 
   @Get('/form')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async getFormData(): Promise<FormDataResponse> {
     const formData = await this.scheincriteriaService.getFormData();
 
@@ -83,7 +85,8 @@ export class ScheincriteriaController {
   }
 
   @Get('/student')
-  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
+  @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async getResultsOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
     const summary = await this.scheincriteriaService.getResultsOfAllStudents();
 

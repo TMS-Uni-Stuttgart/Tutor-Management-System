@@ -8,27 +8,29 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Put,
 } from '@nestjs/common';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
+import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
 import { Role } from '../../shared/model/Role';
-import { ITutorial } from '../../shared/model/Tutorial';
-import { TutorialDTO, SubstituteDTO } from './tutorial.dto';
-import { TutorialService } from './tutorial.service';
 import { IStudent } from '../../shared/model/Student';
-import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
-import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { ITutorial } from '../../shared/model/Tutorial';
+import { SubstituteDTO, TutorialDTO } from './tutorial.dto';
+import { TutorialService } from './tutorial.service';
 
 @Controller('tutorial')
 export class TutorialController {
   constructor(private readonly tutorialService: TutorialService) {}
 
   @Get()
-  @UseGuards(new HasRoleGuard([Role.ADMIN, Role.EMPLOYEE]))
+  @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async getAllTutorials(): Promise<ITutorial[]> {
     const tutorials = await this.tutorialService.findAll();
 
@@ -36,7 +38,7 @@ export class TutorialController {
   }
 
   @Post()
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async createTutorial(@Body() dto: TutorialDTO): Promise<ITutorial> {
     const tutorial = await this.tutorialService.create(dto);
@@ -55,7 +57,7 @@ export class TutorialController {
   }
 
   @Patch('/:id')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async updateTutorial(@Param('id') id: string, @Body() dto: TutorialDTO): Promise<ITutorial> {
     const tutorial = await this.tutorialService.update(id, dto);
@@ -65,7 +67,7 @@ export class TutorialController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   async deleteTutorial(@Param('id') id: string): Promise<void> {
     await this.tutorialService.delete(id);
   }
@@ -81,7 +83,7 @@ export class TutorialController {
   }
 
   @Put('/:id/substitute')
-  @UseGuards(new HasRoleGuard(Role.ADMIN))
+  @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async setSubstituteOfTutorial(
     @Param('id') id: string,
