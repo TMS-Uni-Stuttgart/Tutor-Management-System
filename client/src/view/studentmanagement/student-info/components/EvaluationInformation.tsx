@@ -11,7 +11,6 @@ import { getStudentCorrectionCommentMarkdown } from '../../../../hooks/fetching/
 import { Grading } from '../../../../model/Grading';
 import { Sheet } from '../../../../model/Sheet';
 import { Student } from '../../../../model/Student';
-import { getDisplayStringOfSheet } from '../../../../util/helperFunctions';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -88,7 +87,7 @@ function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Elemen
           nameOfNoneItem='Kein Übungsblatt'
           className={classes.sheetSelect}
           items={sheets}
-          itemToString={getDisplayStringOfSheet}
+          itemToString={sheet => sheet.toDisplayString()}
           itemToValue={sheet => sheet.id}
           onChange={handleSheetSelectionChange}
           value={selectedSheet?.id ?? ''}

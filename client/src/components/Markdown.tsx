@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
           theme.palette.type === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(174, 183, 191, .2)',
         color: theme.palette.text.primary,
       },
-      // TODO: Implement markdown with dark theme (take CSS and convert it to JSS).
     },
   })
 );

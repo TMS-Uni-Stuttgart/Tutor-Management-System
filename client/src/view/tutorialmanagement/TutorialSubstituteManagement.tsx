@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { RouteComponentProps, withRouter, Prompt } from 'react-router';
 import { Role } from 'shared/model/Role';
 import { ISubstituteDTO } from 'shared/model/Tutorial';
 import { IUser } from 'shared/model/User';
@@ -167,13 +167,17 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
 
   return (
     <div className={classes.root}>
-      {/* TODO: Add dialog if there are unsaved changes and the user wants to go back. -- Move this component insied the Formik component to be able to do this? */}
       <BackButton className={classes.backButton} to={RoutingPath.MANAGE_TUTORIALS} />
 
       {tutorial ? (
         <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          {({ values, isSubmitting, resetForm, initialValues, handleSubmit }) => (
+          {({ values, isSubmitting, resetForm, initialValues, handleSubmit, dirty }) => (
             <>
+              <Prompt
+                when={dirty}
+                message='Es gibt ungespeichert Änderungen. Soll die Seite wirklich verlassen werden?'
+              />
+
               <Typography variant='h6'>{`Gewählt: ${getDisplayStringForTutorial(
                 tutorial
               )}`}</Typography>

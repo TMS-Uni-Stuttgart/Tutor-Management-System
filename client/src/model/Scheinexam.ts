@@ -15,4 +15,8 @@ export class Scheinexam extends HasExercises implements Modify<IScheinExam, Modi
 
   @Transform(value => DateTime.fromISO(value))
   readonly date!: DateTime;
+
+  toDisplayString(): string {
+    return `Scheinklausur #${this.scheinExamNo} (${this.date.toLocaleString(DateTime.DATE_MED)})`;
+  }
 }

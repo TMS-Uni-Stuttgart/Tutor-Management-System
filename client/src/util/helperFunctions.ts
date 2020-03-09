@@ -1,19 +1,8 @@
 import { DateTime } from 'luxon';
-import { Scheinexam } from '../model/Scheinexam';
-import { Sheet } from '../model/Sheet';
 
-// TODO: Move many of those helpers in the classes.
-
+// TODO: Move in tutorial class.
 export function getDisplayStringForTutorial(tutorial: { slot: string }): string {
   return `Tutorium ${tutorial.slot.padStart(2, '0')}`;
-}
-
-export function getDisplayStringOfSheet(sheet: Sheet): string {
-  return `Übungsblatt #${sheet.sheetNo.toString().padStart(2, '0')}`;
-}
-
-export function getDisplayStringOfScheinExam(exam: Scheinexam): string {
-  return `Scheinklausur #${exam.scheinExamNo} (${exam.date.toLocaleString(DateTime.DATE_MED)})`;
 }
 
 export function compareDateTimes(a: DateTime, b: DateTime): number {

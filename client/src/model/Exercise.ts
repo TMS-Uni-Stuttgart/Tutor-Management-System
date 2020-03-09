@@ -1,6 +1,9 @@
 import { Type } from 'class-transformer';
 import { HasId } from '../../../server/src/shared/model/Common';
-import { ExercisePointInfo } from '../../../server/src/shared/model/Points';
+import {
+  ExercisePointInfo,
+  convertExercisePointInfoToString,
+} from '../../../server/src/shared/model/Points';
 import { IExercise, ISubexercise } from '../../../server/src/shared/model/Sheet';
 
 export class Subexercise implements ISubexercise {
@@ -67,6 +70,9 @@ export abstract class HasExercises implements HasId {
     return this.exercises.reduce((sum, current) => sum + current.points, 0);
   }
 
+  /**
+   * Information about the total points of this entity split into `must` and `bonus` points.
+   */
   get pointInfo(): ExercisePointInfo {
     return this.exercises.reduce<ExercisePointInfo>(
       (prev, current) => {
@@ -79,5 +85,12 @@ export abstract class HasExercises implements HasId {
       },
       { must: 0, bonus: 0 }
     );
+  }
+
+  /**
+   * @returns Information about the total points of the entity as a readable string.
+   */
+  getPointInfoAsString(): string {
+    return convertExercisePointInfoToString(this.pointInfo);
   }
 }

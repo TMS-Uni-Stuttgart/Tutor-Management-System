@@ -40,8 +40,6 @@ function PointsTable({
   ...props
 }: Props): JSX.Element {
   const achieved = grading?.totalPoints ?? 0;
-
-  // TODO: Add operation to sheet / scheinexam to get pointInfo.
   const total = convertExercisePointInfoToString(sheet.pointInfo);
 
   const TableComp = (
