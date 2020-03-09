@@ -27,8 +27,7 @@ export class TutorialGuard extends UseMetadata {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const roles = this.getRolesFromContext(context);
-    const roleGuard = new HasRoleGuard(roles);
+    const roleGuard = new HasRoleGuard(this.reflector);
 
     if (roleGuard.canActivate(context)) {
       return true;

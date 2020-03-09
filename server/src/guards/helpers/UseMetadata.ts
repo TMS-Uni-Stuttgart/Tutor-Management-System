@@ -22,7 +22,7 @@ export abstract class UseMetadata extends UseUserFromRequest {
    *
    * @returns Roles given from the context or only the ADMIN role if no roles are given from the context.
    */
-  protected getRolesFromContext(context: ExecutionContext): Role[] {
+  protected getAllowedRolesFromContext(context: ExecutionContext): Role[] {
     const roles: Role[] | undefined = this.reflector.get<Role[]>(
       ROLE_METADATA_KEY,
       context.getHandler()

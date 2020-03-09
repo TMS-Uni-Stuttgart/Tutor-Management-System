@@ -26,8 +26,7 @@ export class StudentGuard extends TutorialGuard {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const roles = this.getRolesFromContext(context);
-    const hasRoleGuard = new HasRoleGuard(roles);
+    const hasRoleGuard = new HasRoleGuard(this.reflector);
 
     if (hasRoleGuard.canActivate(context)) {
       return true;

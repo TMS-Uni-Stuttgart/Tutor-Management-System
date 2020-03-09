@@ -1,28 +1,18 @@
-import { ExecutionContext, ForbiddenException, Injectable, Logger } from '@nestjs/common';
-import { Request } from 'express';
-import { Role } from '../shared/model/Role';
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { HasRoleGuard } from './has-role.guard';
-
-interface SameUserGuardOptions {
-  userIdField?: string;
-  roles?: Role[];
-}
 
 /**
  * Checks if the request is made on a user ID which belongs to the user making the request.
  *
- * By default the `id` param is assumed to be the one beloging to the user. If the user ID is in a different param field one can provide the _name_ of the field to the constructor of this class as `userIdField` option.
+ * By default the `id` param is assumed to be the one beloging to the user. If the user ID is in a different param field one can provide the _name_ of the field through the `@IDField()` decorator.
  *
- * Any user with the ADMIN role will get access to the endpoint. The roles getting access immediatly can be configured by providing the `roles` option to the constructor.
+ * Any user with the ADMIN role will get access to the endpoint. The roles getting access immediatly can be configured with the `@Roles()` decorator.
  */
 @Injectable()
 export class SameUserGuard extends HasRoleGuard {
-  private readonly userIdField: string;
-
-  constructor({ userIdField, roles }: SameUserGuardOptions = {}) {
-    super(roles ?? Role.ADMIN);
-
-    this.userIdField = userIdField ?? 'id';
+  constructor(reflector: Reflector) {
+    super(reflector);
   }
 
   canActivate(context: ExecutionContext): boolean {
@@ -30,23 +20,9 @@ export class SameUserGuard extends HasRoleGuard {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<Request>();
     const user = this.getUserFromRequest(context);
-    const paramId = this.getIdFromRequest(request);
+    const paramId = this.getIdFieldContentFromContext(context);
 
     return user._id.toString() === paramId;
-  }
-
-  protected getIdFromRequest(request: Request): string {
-    if (!request.params[this.userIdField]) {
-      Logger.error(
-        `Request params must contain a '${this.userIdField}' field.`,
-        undefined,
-        SameUserGuard.name
-      );
-      throw new ForbiddenException('Forbidden ressource.');
-    }
-
-    return request.params[this.userIdField];
   }
 }
