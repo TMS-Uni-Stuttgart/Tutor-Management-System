@@ -98,7 +98,7 @@ function ScheinexamPointsOverview(): JSX.Element {
       <Placeholder
         placeholderText='Keine Scheinklausur ausgewählt.'
         showPlaceholder={!selectedExam}
-        loading={(!!examId && !selectedExam) || (!!selectedExam && students.length === 0)}
+        loading={!!examId && !selectedExam}
       >
         {selectedExam && (
           <StudentCardList students={students} exam={selectedExam} tutorialId={tutorialId} />
