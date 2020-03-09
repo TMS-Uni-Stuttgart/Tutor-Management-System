@@ -29,6 +29,7 @@ import {
   PresentationPointsDTO,
   StudentDTO,
 } from './student.dto';
+import { TeamDocument } from '../../database/models/team.model';
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
@@ -114,16 +115,15 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   async update(id: string, dto: StudentDTO): Promise<IStudent> {
     const student = await this.findById(id);
 
+    const team = await this.getTeamFromDTO(dto, student);
+    student.team = team;
+
     if (dto.tutorial !== student.tutorial.id) {
       const tutorial = await this.tutorialService.findById(dto.tutorial);
       student.tutorial = tutorial;
+      student.team = undefined;
     }
 
-    const team = !!dto.team
-      ? await this.teamService.findById({ tutorialId: student.tutorial.id, teamId: dto.team })
-      : undefined;
-
-    student.team = team;
     student.markModified('team');
 
     student.firstname = dto.firstname;
@@ -289,5 +289,16 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     }
 
     throw new BadRequestException('You have to either set the sheetId or the examId field.');
+  }
+
+  private async getTeamFromDTO(
+    dto: StudentDTO,
+    student: StudentDocument
+  ): Promise<TeamDocument | undefined> {
+    if (!dto.team) {
+      return undefined;
+    }
+
+    return this.teamService.findById({ tutorialId: student.tutorial.id, teamId: dto.team });
   }
 }
