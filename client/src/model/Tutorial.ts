@@ -31,6 +31,10 @@ export class Tutorial implements Modify<ITutorial, Modified> {
   @Transform(value => new Map(value))
   readonly substitutes!: Map<string, UserInEntity>;
 
+  static getDisplayString(hasSlot: { slot: string }) {
+    return `Tutorium ${hasSlot.slot.padStart(2, '0')}`;
+  }
+
   /**
    * Returns basic information of the substitute of the given date. If there is no substitute `undefined` is returned.
    *
@@ -40,5 +44,9 @@ export class Tutorial implements Modify<ITutorial, Modified> {
    */
   getSubstitute(date: DateTime): UserInEntity | undefined {
     return this.substitutes.get(parseDateToMapKey(date));
+  }
+
+  toDisplayString(): string {
+    return Tutorial.getDisplayString(this);
   }
 }

@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps, withRouter, Prompt } from 'react-router';
+import { Prompt, RouteComponentProps, withRouter } from 'react-router';
 import { Role } from 'shared/model/Role';
 import { ISubstituteDTO } from 'shared/model/Tutorial';
 import { IUser } from 'shared/model/User';
@@ -21,11 +21,7 @@ import { getUsersWithRole } from '../../hooks/fetching/User';
 import { Tutorial } from '../../model/Tutorial';
 import { RoutingPath } from '../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../types';
-import {
-  compareDateTimes,
-  getDisplayStringForTutorial,
-  parseDateToMapKey,
-} from '../../util/helperFunctions';
+import { compareDateTimes, parseDateToMapKey } from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -178,9 +174,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                 message='Es gibt ungespeichert Änderungen. Soll die Seite wirklich verlassen werden?'
               />
 
-              <Typography variant='h6'>{`Gewählt: ${getDisplayStringForTutorial(
-                tutorial
-              )}`}</Typography>
+              <Typography variant='h6'>{`Gewählt: ${tutorial.toDisplayString()}`}</Typography>
 
               <Typography
                 variant='subtitle1'

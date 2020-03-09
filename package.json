@@ -11,7 +11,7 @@
     "build": "yarn build:client && yarn build:server && yarn copy:app",
     "build:client": "cd ./client && yarn build",
     "build:server": "cd ./server && yarn build",
-    "ts:check": "yarn ts:check:client && yarn ts:check:server",
+    "ts:check": "yarn workspaces run ts:check",
     "ts:check:client": "echo Type checking client && cd ./client && yarn ts:check",
     "ts:check:server": "echo Type checking server && cd ./server && yarn ts:check",
     "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/build/src/app",

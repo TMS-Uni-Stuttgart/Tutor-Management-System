@@ -1,10 +1,5 @@
 import { DateTime } from 'luxon';
 
-// TODO: Move in tutorial class.
-export function getDisplayStringForTutorial(tutorial: { slot: string }): string {
-  return `Tutorium ${tutorial.slot.padStart(2, '0')}`;
-}
-
 export function compareDateTimes(a: DateTime, b: DateTime): number {
   return a.diff(b).milliseconds;
 }

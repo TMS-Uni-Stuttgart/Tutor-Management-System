@@ -23,7 +23,7 @@ import {
 } from '../../hooks/fetching/Tutorial';
 import { getUsersWithRole } from '../../hooks/fetching/User';
 import { Tutorial } from '../../model/Tutorial';
-import { getDisplayStringForTutorial, compareDateTimes } from '../../util/helperFunctions';
+import { compareDateTimes } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -151,11 +151,9 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
   }
 
   function handleDeleteTutorial(tutorial: Tutorial) {
-    const tutorialDisplay = getDisplayStringForTutorial(tutorial);
-
     dialog.show({
       title: 'Tutorium löschen',
-      content: `Soll das ${tutorialDisplay} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.`,
+      content: `Soll das ${tutorial.toDisplayString()} wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.`,
       actions: [
         {
           label: 'Nicht löschen',
@@ -176,7 +174,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     deleteTutorial(tutorial.id)
       .then(() => {
         setTutorials(tutorials.filter(t => t.id !== tutorial.id));
-        enqueueSnackbar(`${getDisplayStringForTutorial(tutorial)} wurde gelöscht.`, {
+        enqueueSnackbar(`${tutorial.toDisplayString()} wurde gelöscht.`, {
           variant: 'success',
         });
       })
