@@ -2,11 +2,11 @@ import { CssBaseline, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import Drawer from '../components/drawer/Drawer';
 import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
 import { ROUTES, RouteType, RoutingPath } from '../routes/Routing.routes';
 import AppBar from './AppBar';
+import NavigationRail from './navigation-rail/NavigationRail';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,7 +75,9 @@ function App() {
         <AppBar onMenuButtonClicked={() => setDrawerOpen(!isDrawerOpen)} />
 
         <div className={classes.contentWrapper}>
-          {isLoggedIn() && <Drawer open={isDrawerOpen} onClose={() => setDrawerOpen(false)} />}
+          {isLoggedIn() && (
+            <NavigationRail open={isDrawerOpen} onClose={() => setDrawerOpen(false)} />
+          )}
 
           <div className={classes.content}>
             <Switch>
