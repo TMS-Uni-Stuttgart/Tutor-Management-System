@@ -1,6 +1,15 @@
-import { Divider, Drawer, DrawerProps, List, ListSubheader } from '@material-ui/core';
+import {
+  Divider,
+  Drawer,
+  DrawerProps,
+  Link,
+  List,
+  ListSubheader,
+  Typography,
+} from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { OpenInNew as ExternalLinkIcon } from 'mdi-material-ui';
 import React, { useEffect, useMemo, useState } from 'react';
 import { getVersionOfApp } from '../../hooks/fetching/Information';
 import { useLogin } from '../../hooks/LoginService';
@@ -42,6 +51,13 @@ const useStyles = makeStyles(theme =>
       overflowY: 'auto',
       overflowX: 'hidden',
       ...theme.mixins.scrollbar(4),
+    },
+    version: {
+      position: 'absolute',
+      bottom: theme.spacing(1),
+      left: theme.spacing(1),
+      right: theme.spacing(1),
+      textAlign: 'center',
     },
   })
 );
@@ -116,6 +132,22 @@ function NavigationRail({
           </>
         )}
       </List>
+
+      {version && (
+        <Typography className={classes.version} variant='caption'>
+          {open && <>Version: </>}
+
+          <Link
+            color='inherit'
+            href={`https://github.com/Dudrie/Tutor-Management-System/releases/tag/v${version}`}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            {version}
+            <ExternalLinkIcon fontSize='inherit' />
+          </Link>
+        </Typography>
+      )}
     </Drawer>
   );
 }
