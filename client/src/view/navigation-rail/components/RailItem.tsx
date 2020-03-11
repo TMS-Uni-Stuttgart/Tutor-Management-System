@@ -14,8 +14,9 @@ import {
 import clsx from 'clsx';
 import { ChevronRight } from 'mdi-material-ui';
 import React, { MouseEventHandler, useState } from 'react';
-import { useRouteMatch } from 'react-router';
 import { renderLink } from '../../../components/drawer/components/renderLink';
+import { getTargetLink, useIsCurrentPath } from './RailItem.helpers';
+import RailSubItem, { RailSubItemProps } from './RailSubItem';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,19 +41,13 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type ButtonListItemProps = ListItemProps<'div', { button?: true }>;
-
-export interface RailSubItem extends ButtonListItemProps {
-  subPath: string;
-  icon: React.ComponentType<SvgIconProps>;
-  text: string;
-}
+export type ButtonListItemProps = ListItemProps<'div', { button?: true }>;
 
 interface RailItemProps extends ButtonListItemProps {
   path: string;
   icon: React.ComponentType<SvgIconProps>;
   text: string;
-  subItems?: RailSubItem[];
+  subItems?: RailSubItemProps[];
 }
 
 interface RootItemProps extends ButtonListItemProps {
@@ -60,16 +55,6 @@ interface RootItemProps extends ButtonListItemProps {
   path: string;
   onMouseEnter: MouseEventHandler<HTMLElement>;
   onMouseLeave: MouseEventHandler<HTMLElement>;
-}
-
-function getTargetLink(path: string): string {
-  if (!path.endsWith('?')) {
-    return path;
-  }
-
-  const idx = path.lastIndexOf('/');
-
-  return path.substring(0, idx);
 }
 
 function RootItem({
@@ -104,7 +89,7 @@ function RailItem({
   ...other
 }: RailItemProps): JSX.Element {
   const classes = useStyles();
-  const isCurrentPath = useRouteMatch(path);
+  const isCurrentPath = useIsCurrentPath(path, subItems);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement>();
 
   const hasSubItems = subItems && subItems.length > 0;
@@ -124,7 +109,7 @@ function RailItem({
   }
 
   function handleItemClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    // FIXME: Does not work on first (!) click bc it opens (handleMouseEnter) and immediatly closes again (handleItemClick).
+    // FIXME: Does not work on first (!) touch bc it opens (handleMouseEnter) and immediatly closes again (handleItemClick).
     setMenuAnchor(menuAnchor ? undefined : e.currentTarget);
 
     if (!!onClick && !e.isPropagationStopped()) {
@@ -145,7 +130,10 @@ function RailItem({
         <Icon />
       </ListItemIcon>
 
-      <ListItemText className={classes.text} disableTypography>
+      <ListItemText
+        className={clsx(classes.text, isCurrentPath && classes.currentPath)}
+        disableTypography
+      >
         <Typography>{text}</Typography>
 
         {hasSubItems && <ChevronRight className={classes.menuIcon} />}
@@ -158,19 +146,8 @@ function RailItem({
         className={classes.popper}
       >
         <Paper className={classes.popperPaper}>
-          {subItems?.map(({ text, subPath, icon: Icon, ...other }) => (
-            <ListItem
-              key={subPath + text}
-              {...other}
-              button
-              component={renderLink(getTargetLink(subPath))}
-            >
-              <ListItemIcon>
-                <Icon />
-              </ListItemIcon>
-
-              <ListItemText>{text}</ListItemText>
-            </ListItem>
+          {subItems?.map(props => (
+            <RailSubItem key={props.subPath} {...props} />
           ))}
         </Paper>
       </Popper>
