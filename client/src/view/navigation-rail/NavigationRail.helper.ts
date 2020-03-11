@@ -1,7 +1,7 @@
 import { Role } from '../../../../server/src/shared/model/Role';
 import { ROUTES, RouteType } from '../../routes/Routing.routes';
 import { LoggedInUser } from '../../model/LoggedInUser';
-import { RailSubItem } from './components/RailItem';
+import { RailSubItemProps } from './components/RailSubItem';
 import { getTutorialRelatedPath } from '../../routes/Routing.helpers';
 import { Tutorial } from '../../model/Tutorial';
 import {
@@ -55,8 +55,8 @@ export function filterRoutes(userRoles: Role[]) {
   };
 }
 
-export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubItem[] {
-  const subItems: RailSubItem[] = [];
+export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubItemProps[] {
+  const subItems: RailSubItemProps[] = [];
 
   userData.tutorials.forEach(tutorial => {
     subItems.push({
