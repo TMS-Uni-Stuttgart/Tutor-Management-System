@@ -13,6 +13,7 @@ import { Sheet } from '../../../model/Sheet';
 import { Team } from '../../../model/Team';
 import { getPointOverviewPath } from '../../../routes/Routing.helpers';
 import TeamCardList from './components/TeamCardList';
+import { useSheetSelector } from '../../presentation-points/components/SheetSelector';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,18 +50,27 @@ enum PDFGeneratingState {
 
 function PointsOverview(): JSX.Element {
   const classes = useStyles();
+  const { tutorialId } = useParams<RouteParams>();
 
-  const history = useHistory();
-  const { tutorialId, sheetId } = useParams<RouteParams>();
+  // const history = useHistory();
+  // const [sheets, setSheets] = useState<Sheet[]>([]);
+  // const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>();
+  // const [isLoadingSheet, setLoadingSheet] = useState(false);
+  const { SheetSelector, currentSheet, isLoadingSheets: isLoadingSheet } = useSheetSelector({
+    generatePath: ({ sheetId }) => {
+      if (!tutorialId) {
+        throw new Error('The path needs to contain a tutorialId parameter.');
+      }
+
+      return getPointOverviewPath({ tutorialId, sheetId });
+    },
+    componentProps: { className: classes.sheetSelect },
+  });
 
   const { setError } = useErrorSnackbar();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [sheets, setSheets] = useState<Sheet[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
-
-  const [currentSheet, setCurrentSheet] = useState<Sheet | undefined>();
-  const [isLoadingSheet, setLoadingSheet] = useState(false);
 
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
@@ -75,41 +85,41 @@ function PointsOverview(): JSX.Element {
       return;
     }
 
-    if (!!sheetId) {
-      setLoadingSheet(true);
-    }
+    // if (!!sheetId) {
+    //   setLoadingSheet(true);
+    // }
 
-    Promise.all([getAllSheets(), getTeamsOfTutorial(tutorialId)])
-      .then(([sheetResponse, teamResponse]) => {
+    Promise.all([getTeamsOfTutorial(tutorialId)])
+      .then(([teamResponse]) => {
         setError(undefined);
 
-        setSheets(sheetResponse);
+        // setSheets(sheetResponse);
         setTeams(teamResponse);
       })
-      .catch(() => setError('Daten konnten nicht abgerufen werden.'))
-      .finally(() => setLoadingSheet(false));
-  }, [tutorialId, setError, sheetId]);
+      .catch(() => setError('Daten konnten nicht abgerufen werden.'));
+    // .finally(() => setLoadingSheet(false));
+  }, [tutorialId, setError]);
 
-  useEffect(() => {
-    if (currentSheet?.id === sheetId) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (currentSheet?.id === sheetId) {
+  //     return;
+  //   }
 
-    if (!!sheetId) {
-      setCurrentSheet(sheets.find(s => s.id === sheetId));
-    } else {
-      setCurrentSheet(undefined);
-    }
-  }, [sheets, sheetId, currentSheet]);
+  //   if (!!sheetId) {
+  //     setCurrentSheet(sheets.find(s => s.id === sheetId));
+  //   } else {
+  //     setCurrentSheet(undefined);
+  //   }
+  // }, [sheets, sheetId, currentSheet]);
 
-  function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
-    if (!tutorialId || typeof e.target.value !== 'string') {
-      return;
-    }
+  // function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
+  //   if (!tutorialId || typeof e.target.value !== 'string') {
+  //     return;
+  //   }
 
-    const sheetId: string = e.target.value;
-    history.push(getPointOverviewPath({ tutorialId, sheetId }));
-  }
+  //   const sheetId: string = e.target.value;
+  //   history.push(getPointOverviewPath({ tutorialId, sheetId }));
+  // }
 
   async function handlePdfPreviewClicked(team: Team) {
     if (!currentSheet || !tutorialId) {
@@ -158,15 +168,15 @@ function PointsOverview(): JSX.Element {
   return (
     <div className={classes.root}>
       <div className={classes.topBar}>
-        <CustomSelect
-          label='Blatt wählen'
-          emptyPlaceholder='Keine Bätter vorhanden.'
-          className={classes.sheetSelect}
-          items={sheets}
-          itemToString={sheet => `Übungsblatt #${sheet.sheetNo.toString().padStart(2, '0')}`}
-          itemToValue={sheet => sheet.id}
-          value={currentSheet ? currentSheet.id : ''}
-          onChange={onSheetSelection}
+        <SheetSelector
+        // label='Blatt wählen'
+        // emptyPlaceholder='Keine Bätter vorhanden.'
+        // className={classes.sheetSelect}
+        // items={sheets}
+        // itemToString={sheet => `Übungsblatt #${sheet.sheetNo.toString().padStart(2, '0')}`}
+        // itemToValue={sheet => sheet.id}
+        // value={currentSheet ? currentSheet.id : ''}
+        // onChange={onSheetSelection}
         />
 
         <SubmitButton
