@@ -49,7 +49,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     { sheetNo, exercises, bonusSheet },
     { setSubmitting, resetForm, setFieldError }
   ) => {
-    const isNoInUse = sheets.find(t => t.sheetNo === sheetNo) !== undefined;
+    const isNoInUse = sheets.find(t => t.sheetNo.toString() === sheetNo) !== undefined;
     const duplicateName: string | undefined = getDuplicateExerciseName(exercises);
 
     if (duplicateName) {
@@ -63,7 +63,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     }
 
     const sheetDTO: ISheetDTO = {
-      sheetNo,
+      sheetNo: Number.parseInt(sheetNo),
       exercises: convertFormExercisesToDTOs(exercises),
       bonusSheet,
     };
@@ -89,7 +89,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     { setSubmitting }
   ) => {
     const sheetDTO: ISheetDTO = {
-      sheetNo,
+      sheetNo: Number.parseInt(sheetNo),
       exercises: convertFormExercisesToDTOs(exercises),
       bonusSheet,
     };

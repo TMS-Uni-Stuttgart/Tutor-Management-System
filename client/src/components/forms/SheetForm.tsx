@@ -22,7 +22,7 @@ const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
 );
 
 const validationSchema = Yup.object().shape<SheetFormState>({
-  sheetNo: Yup.number().required('Benötigt'),
+  sheetNo: Yup.string().required('Benötigt'),
   bonusSheet: Yup.boolean().required('Benötigt'),
   exercises: Yup.array<ExerciseFormExercise>()
     .of(exerciseValidationSchema)
@@ -30,7 +30,7 @@ const validationSchema = Yup.object().shape<SheetFormState>({
 });
 
 interface SheetFormState {
-  sheetNo: number;
+  sheetNo: string;
   exercises: ExerciseFormExercise[];
   bonusSheet: boolean;
 }
@@ -55,7 +55,7 @@ export function getInitialSheetFormState(sheet?: ISheet, sheets?: ISheet[]): She
   if (!!sheet) {
     const exercises: ExerciseFormExercise[] = sheet.exercises.map(mapExerciseToFormExercise);
 
-    return { sheetNo: sheet.sheetNo, bonusSheet: sheet.bonusSheet, exercises };
+    return { sheetNo: sheet.sheetNo.toString(), bonusSheet: sheet.bonusSheet, exercises };
   }
 
   let lastSheetNo = 0;
@@ -64,7 +64,7 @@ export function getInitialSheetFormState(sheet?: ISheet, sheets?: ISheet[]): She
   }
 
   return {
-    sheetNo: lastSheetNo + 1,
+    sheetNo: (lastSheetNo + 1).toString(),
     exercises: [],
     bonusSheet: false,
   };
@@ -79,6 +79,7 @@ function SheetForm({ onSubmit, className, sheet, sheets, ...other }: Props): JSX
       initialValues={initialFormState}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
+      enableDebug
     >
       {() => (
         <>
