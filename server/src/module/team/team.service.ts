@@ -1,9 +1,9 @@
 import {
+  BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
-  BadRequestException,
-  Inject,
-  forwardRef,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
@@ -11,11 +11,11 @@ import { StudentDocument } from '../../database/models/student.model';
 import { populateTeamDocument, TeamDocument, TeamModel } from '../../database/models/team.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { ITeam } from '../../shared/model/Team';
+import { SheetService } from '../sheet/sheet.service';
+import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { TeamDTO } from './team.dto';
-import { GradingDTO } from '../student/student.dto';
-import { SheetService } from '../sheet/sheet.service';
 
 export interface TeamID {
   tutorialId: string;
@@ -39,7 +39,7 @@ export class TeamService {
    * @returns All teams in the given tutorial.
    */
   async findAllTeamsInTutorial(tutorialId: string): Promise<TeamDocument[]> {
-    const teams = await this.teamModel.find({ tutorial: tutorialId }).exec();
+    const teams = await this.teamModel.find({ tutorial: tutorialId as any }).exec();
 
     await Promise.all(teams.map(team => populateTeamDocument(team)));
 
@@ -56,7 +56,7 @@ export class TeamService {
    * @throws `NotFoundException` - If no team inside the given tutorial with the given ID could be found.
    */
   async findById({ tutorialId, teamId }: TeamID): Promise<TeamDocument> {
-    const team = await this.teamModel.findOne({ _id: teamId, tutorial: tutorialId }).exec();
+    const team = await this.teamModel.findOne({ _id: teamId, tutorial: tutorialId as any }).exec();
 
     if (!team) {
       throw new NotFoundException(
