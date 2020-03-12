@@ -4,6 +4,7 @@ import React, { useContext, useState } from 'react';
 import { LoggedInUser } from '../model/LoggedInUser';
 import { getUser, removeUser, saveUser } from '../util/userStorage';
 import axios from './fetching/Axios';
+import { ILoggedInUser } from '../../../server/src/shared/model/User';
 
 export type LoggedInFunction = (isLoggedIn: boolean) => void;
 
@@ -24,7 +25,7 @@ const LoginContext = React.createContext<LoginState>({
 });
 
 async function login(username: string, password: string): Promise<LoggedInUser> {
-  const response = await axios.post<LoggedInUser>(
+  const response = await axios.post<ILoggedInUser>(
     'auth/login',
     { username, password },
     {
@@ -88,7 +89,7 @@ function isLoggedIn(): boolean {
   return true;
 }
 
-async function handleResponse(response: AxiosResponse<LoggedInUser>): Promise<LoggedInUser> {
+async function handleResponse(response: AxiosResponse<ILoggedInUser>): Promise<LoggedInUser> {
   const data = response.data;
 
   if (!(response.status === 200)) {
@@ -98,6 +99,10 @@ async function handleResponse(response: AxiosResponse<LoggedInUser>): Promise<Lo
 
     return Promise.reject(response.statusText);
   }
+
+  data.tutorials.sort((a, b) => a.slot.localeCompare(b.slot));
+  data.tutorialsToCorrect.sort((a, b) => a.slot.localeCompare(b.slot));
+  data.substituteTutorials.sort((a, b) => a.slot.localeCompare(b.slot));
 
   return plainToClass(LoggedInUser, data);
 }
