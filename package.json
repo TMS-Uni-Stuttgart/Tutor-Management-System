@@ -7,6 +7,8 @@
     "dev-tools"
   ],
   "scripts": {
+    "start:client": "yarn workspace client start",
+    "start:server": "yarn workspace server start",
     "format": "yarn workspaces run format",
     "build": "yarn build:client && yarn build:server && yarn copy:app",
     "build:client": "cd ./client && yarn build",
