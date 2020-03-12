@@ -1,10 +1,20 @@
-import React, { ChangeEvent, useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router';
-import CustomSelect from '../../../components/CustomSelect';
-import { Sheet } from '../../../model/Sheet';
 import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
-import { getAllSheets } from '../../../hooks/fetching/Sheet';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router';
+import CustomSelect from '../CustomSelect';
+import { getAllSheets } from '../../hooks/fetching/Sheet';
+import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
+import { Sheet } from '../../model/Sheet';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+
+const useStyles = makeStyles(theme =>
+  createStyles({
+    select: {
+      flex: 1,
+    },
+  })
+);
 
 interface RouteParams {
   sheetId?: string;
@@ -15,7 +25,6 @@ interface GenerateOptions {
 }
 
 interface SheetSelectorOptions {
-  componentProps: OuterProps;
   generatePath: ({ sheetId }: GenerateOptions) => string;
 }
 
@@ -31,7 +40,7 @@ interface Props extends OuterProps {
   onChange: SelectInputProps['onChange'];
 }
 
-export function useSheetSelector({ generatePath, componentProps }: SheetSelectorOptions) {
+export function useSheetSelector({ generatePath }: SheetSelectorOptions) {
   const history = useHistory();
   const { setError } = useErrorSnackbar();
   const { sheetId } = useParams<RouteParams>();
@@ -41,9 +50,7 @@ export function useSheetSelector({ generatePath, componentProps }: SheetSelector
   const [currentSheet, setCurrentSheet] = useState<Sheet>();
 
   useEffect(() => {
-    if (!!sheetId) {
-      setLoadingSheets(true);
-    }
+    setLoadingSheets(true);
 
     getAllSheets()
       .then(sheets => {
@@ -51,7 +58,7 @@ export function useSheetSelector({ generatePath, componentProps }: SheetSelector
       })
       .catch(() => setError('Blätter konnten nicht abgerufen werden'))
       .finally(() => setLoadingSheets(false));
-  }, [setError, sheetId]);
+  }, [setError]);
 
   useEffect(() => {
     if (currentSheet?.id === sheetId) {
@@ -75,9 +82,9 @@ export function useSheetSelector({ generatePath, componentProps }: SheetSelector
   }
 
   return {
-    SheetSelector: () => (
+    SheetSelector: (props: OuterProps) => (
       <SheetSelector
-        {...componentProps}
+        {...props}
         onChange={onSheetSelection}
         sheets={sheets}
         currentSheet={currentSheet}
@@ -97,11 +104,13 @@ function SheetSelector({
   isLoadingSheets,
   onChange,
 }: Props): JSX.Element {
+  const classes = useStyles();
+
   return (
     <CustomSelect
       label='Blatt wählen'
       emptyPlaceholder='Keine Bätter vorhanden.'
-      className={className}
+      className={clsx(classes.select, className)}
       items={sheets}
       itemToString={sheet => sheet.toDisplayString()}
       itemToValue={sheet => sheet.id}

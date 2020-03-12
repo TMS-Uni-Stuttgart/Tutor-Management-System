@@ -56,6 +56,16 @@ export function getPointOverviewPath({ tutorialId, sheetId }: PointsOverviewPara
   }
 }
 
+export function getPresentationPointsPath({ tutorialId, sheetId }: PointsOverviewParams): string {
+  const path = getPathOfRouteWithTutorial(RoutingPath.PRESENTATION_POINTS, tutorialId);
+
+  if (!!sheetId) {
+    return path.replace(':sheetId?', sheetId);
+  } else {
+    return path.replace('/:sheetId?', '');
+  }
+}
+
 export function getScheinexamPointsOverviewPath({
   tutorialId,
   examId,
