@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { TutorialInEntity } from '../../../server/src/shared/model/Common';
 import { Role } from '../../../server/src/shared/model/Role';
@@ -10,9 +10,11 @@ interface Modified {
 }
 
 class LoggedInSubstituteTutorial {
-  id!: string;
-  slot!: string;
-  dates!: DateTime[];
+  readonly id!: string;
+  readonly slot!: string;
+
+  @Transform((values: string[]) => values.map(val => DateTime.fromISO(val)), { toClassOnly: true })
+  readonly dates!: DateTime[];
 }
 
 export class LoggedInUser implements Modify<ILoggedInUser, Modified> {
