@@ -20,8 +20,8 @@
     "docker:build": "yarn version && ts-node ./build-docker-image.ts",
     "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre --skip-bundle",
     "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server",
-    "upgrade-pgk:client": "cd ./client && npm-upgrade",
-    "upgrade-pgk:server": "cd ./server && npm-upgrade"
+    "upgrade-pkg:client": "cd ./client && npm-upgrade",
+    "upgrade-pkg:server": "cd ./server && npm-upgrade"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",
