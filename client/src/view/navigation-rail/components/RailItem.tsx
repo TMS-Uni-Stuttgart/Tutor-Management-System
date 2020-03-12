@@ -109,6 +109,10 @@ function RailItem({
   }
 
   function handleItemClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (!hasSubItems) {
+      return;
+    }
+
     // FIXME: Does not work on first (!) touch bc it opens (handleMouseEnter) and immediatly closes again (handleItemClick).
     setMenuAnchor(menuAnchor ? undefined : e.currentTarget);
 
