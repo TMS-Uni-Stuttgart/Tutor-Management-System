@@ -1,14 +1,5 @@
 import { Role } from '../../../../server/src/shared/model/Role';
 import { ROUTES, RouteType } from '../../routes/Routing.routes';
-import { LoggedInUser } from '../../model/LoggedInUser';
-import { RailSubItemProps } from './components/RailSubItem';
-import { getTutorialRelatedPath } from '../../routes/Routing.helpers';
-import { Tutorial } from '../../model/Tutorial';
-import {
-  Teach as TutorialIcon,
-  AccountConvert as SubstituteTutorialIcon,
-  CheckboxMarkedCircleOutline as TutorialToCorrectIcon,
-} from 'mdi-material-ui';
 
 function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean {
   if (routeRoles === 'all') {
@@ -53,38 +44,4 @@ export function filterRoutes(userRoles: Role[]) {
     tutorialRoutes,
     managementRoutes,
   };
-}
-
-export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubItemProps[] {
-  const subItems: RailSubItemProps[] = [];
-
-  userData.tutorials.forEach(tutorial => {
-    subItems.push({
-      subPath: getTutorialRelatedPath(route, tutorial.id),
-      icon: TutorialIcon,
-      text: Tutorial.getDisplayString(tutorial),
-    });
-  });
-
-  if (route.roles.includes(Role.CORRECTOR)) {
-    userData.tutorialsToCorrect.forEach(tutorial => {
-      subItems.push({
-        subPath: getTutorialRelatedPath(route, tutorial.id),
-        icon: TutorialToCorrectIcon,
-        text: Tutorial.getDisplayString(tutorial),
-      });
-    });
-  }
-
-  if (route.isAccessibleBySubstitute) {
-    userData.substituteTutorials.forEach(tutorial => {
-      subItems.push({
-        subPath: getTutorialRelatedPath(route, tutorial.id),
-        icon: SubstituteTutorialIcon,
-        text: Tutorial.getDisplayString(tutorial),
-      });
-    });
-  }
-
-  return subItems;
 }
