@@ -78,6 +78,7 @@ export class ScheincriteriaController {
 
   @Get('/form')
   @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async getFormData(): Promise<FormDataResponse> {
     const formData = await this.scheincriteriaService.getFormData();
 
