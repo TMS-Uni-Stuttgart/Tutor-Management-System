@@ -57,7 +57,6 @@ export class TestModule implements OnApplicationShutdown {
       instance: {
         dbName: 'tms',
       },
-      debug: false,
     });
     const connectionUri = await mongodb.getConnectionString();
     const featureModule = TypegooseModule.forFeature(models);
