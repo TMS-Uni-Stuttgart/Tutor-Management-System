@@ -44,13 +44,19 @@ function SubmitButton({
   disabled,
   modalText,
   tooltipText,
+  startIcon,
   ...other
 }: Props): JSX.Element {
   const classes = useStyles();
   const isDisabled = isSubmitting || disabled;
 
   const ButtomComp = (
-    <Button {...other} type='submit' disabled={isDisabled}>
+    <Button
+      {...other}
+      type='submit'
+      disabled={isDisabled}
+      startIcon={!isSubmitting ? startIcon : undefined}
+    >
       {isSubmitting && (
         <CircularProgress
           size={24}
