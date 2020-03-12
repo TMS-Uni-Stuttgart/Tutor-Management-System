@@ -1,46 +1,37 @@
 import React from 'react';
 import { LoggedInUser } from '../../../model/LoggedInUser';
-import { RouteType } from '../../../routes/Routing.routes';
-import { getSubItems } from '../NavigationRail.helper';
-import RailItem from './RailItem';
 import { getTutorialRelatedPath } from '../../../routes/Routing.helpers';
-import { Role } from '../../../../../server/src/shared/model/Role';
+import { RouteType } from '../../../routes/Routing.routes';
+import RailItem from './RailItem';
+import { getSubItems } from './TutorialRailItem.helpers';
 
 interface Props {
   route: RouteType;
   userData: LoggedInUser;
 }
 
-function TutorialRailItem({ route, userData }: Props): JSX.Element {
-  const tutorial = userData.tutorials[0];
-  const component = (
-    <RailItem
-      key={route.path}
-      path={getTutorialRelatedPath(route, tutorial.id)}
-      text={route.title}
-      icon={route.icon}
-      subItems={getSubItems(route, userData)}
-    />
-  );
+function TutorialRailItem({ route, userData }: Props): JSX.Element | null {
+  const subItems = getSubItems(route, userData);
 
-  if (userData.tutorials.length > 1) {
-    return component;
+  if (subItems.length === 0) {
+    return null;
   }
 
-  if (route.roles.includes(Role.CORRECTOR) && userData.tutorialsToCorrect.length > 0) {
-    return component;
+  if (subItems.length === 1) {
+    return (
+      <RailItem key={route.path} path={subItems[0].subPath} text={route.title} icon={route.icon} />
+    );
   }
 
-  if (route.isAccessibleBySubstitute && userData.substituteTutorials.length > 0) {
-    return component;
-  }
-
+  const tutorial =
+    userData.tutorials[0] || userData.tutorialsToCorrect[0] || userData.substituteTutorials[0];
   return (
     <RailItem
       key={route.path}
       path={getTutorialRelatedPath(route, tutorial.id)}
       text={route.title}
       icon={route.icon}
+      subItems={getSubItems(route, userData)}
     />
   );
 }
