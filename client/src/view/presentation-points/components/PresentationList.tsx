@@ -1,6 +1,7 @@
 import { createStyles, makeStyles, TableCell, Typography } from '@material-ui/core';
-import { FormikHelpers, isPromise } from 'formik';
-import React, { useState, useEffect } from 'react';
+import { FormikHelpers, isPromise, FormikErrors } from 'formik';
+import { useSnackbar } from 'notistack';
+import React, { useEffect, useState } from 'react';
 import { Prompt } from 'react-router';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import FormikBaseForm from '../../../components/forms/FormikBaseForm';
@@ -9,7 +10,6 @@ import StudentAvatar from '../../../components/student-icon/StudentAvatar';
 import TableWithPadding from '../../../components/TableWithPadding';
 import { Sheet } from '../../../model/Sheet';
 import { Student } from '../../../model/Student';
-import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -37,8 +37,6 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-// TODO: Add validation
-
 type SubmitFunction = (student: Student, points: number) => void | Promise<any>;
 
 interface Props {
@@ -61,6 +59,20 @@ function generateInitialState(students: Student[], sheet: Sheet): FormikState {
   });
 
   return state;
+}
+
+function validateState(state: FormikState): FormikErrors<FormikState> {
+  const errors: FormikErrors<FormikState> = {};
+
+  Object.entries(state).forEach(([key, value]) => {
+    const parsed = Number.parseFloat(value);
+
+    if (Number.isNaN(parsed) || !Number.isInteger(parsed) || parsed < 0) {
+      errors[key] = 'Muss eine positive ganze Zahl sein.';
+    }
+  });
+
+  return errors;
 }
 
 function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
@@ -106,6 +118,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
       className={classes.form}
       initialValues={initialState}
       onSubmit={handleFormikSubmit}
+      validate={validateState}
       enableReinitialize
       disableSubmitButtonIfClean
       enableDebug
@@ -130,7 +143,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
                     name={student.id}
                     className={classes.textField}
                     type='number'
-                    inputProps={{ min: 0, steps: 1, className: classes.input }}
+                    inputProps={{ className: classes.input }}
                     size='small'
                   />
                 </TableCell>
