@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, TableCell, Typography } from '@material-ui/core';
 import { FormikHelpers, isPromise } from 'formik';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Prompt } from 'react-router';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import FormikBaseForm from '../../../components/forms/FormikBaseForm';
@@ -9,9 +9,23 @@ import StudentAvatar from '../../../components/student-icon/StudentAvatar';
 import TableWithPadding from '../../../components/TableWithPadding';
 import { Sheet } from '../../../model/Sheet';
 import { Student } from '../../../model/Student';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(theme =>
   createStyles({
+    form: {
+      overflowY: 'auto',
+      gridTemplateColumns: '1fr',
+      gridTemplateRows: 'auto 1fr',
+    },
+    tableWrapper: {
+      marginRight: theme.spacing(-1),
+      paddingRight: theme.spacing(0.5),
+      overflowY: 'auto',
+    },
+    table: {
+      marginBottom: 0,
+    },
     textField: {
       width: '100%',
     },
@@ -23,11 +37,7 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-interface SubmitParams {
-  student: Student;
-  values: FormikState;
-  helpers: FormikHelpers<FormikState>;
-}
+// TODO: Add validation
 
 type SubmitFunction = (student: Student, points: number) => void | Promise<any>;
 
@@ -58,6 +68,11 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
   const [initialState, setInitialState] = useState<FormikState>(
     generateInitialState(students, sheet)
   );
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    setInitialState(generateInitialState(students, sheet));
+  }, [students, sheet]);
 
   async function handleFormikSubmit(values: FormikState, helpers: FormikHelpers<FormikState>) {
     const promises: Promise<void>[] = [];
@@ -74,18 +89,32 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
       }
     });
 
-    await Promise.all(promises);
+    try {
+      await Promise.all(promises);
 
-    setInitialState(values);
-    helpers.resetForm({ values });
+      setInitialState(values);
+      helpers.resetForm({ values });
+
+      enqueueSnackbar('Präsentationspunkte erfolgreich eingetragen.', { variant: 'success' });
+    } catch {
+      enqueueSnackbar('Präsentationspunkte eingetragen fehlgeschlagen.', { variant: 'error' });
+    }
   }
 
   return (
-    <FormikBaseForm initialValues={initialState} onSubmit={handleFormikSubmit} enableDebug>
+    <FormikBaseForm
+      className={classes.form}
+      initialValues={initialState}
+      onSubmit={handleFormikSubmit}
+      enableReinitialize
+      disableSubmitButtonIfClean
+      enableDebug
+    >
       {({ dirty }) => (
-        <>
+        <div className={classes.tableWrapper}>
           <TableWithPadding
             items={students}
+            className={classes.table}
             createRowFromItem={student => (
               <PaperTableRow
                 key={student.id}
@@ -105,17 +134,6 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
                     size='small'
                   />
                 </TableCell>
-
-                {/* <TableCell align='right'>
-              <SubmitButton
-              isSubmitting={isSubmitting}
-              variant='outlined'
-              color='secondary'
-              startIcon={<SaveIcon />}
-              >
-              Speichern
-              </SubmitButton>
-            </TableCell> */}
               </PaperTableRow>
             )}
           />
@@ -124,7 +142,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
             message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
             when={dirty}
           />
-        </>
+        </div>
       )}
     </FormikBaseForm>
   );

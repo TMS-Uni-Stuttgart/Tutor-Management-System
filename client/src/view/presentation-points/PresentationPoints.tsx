@@ -1,8 +1,10 @@
 import { Box } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { IPresentationPointsDTO } from '../../../../server/src/shared/model/Points';
 import Placeholder from '../../components/Placeholder';
 import { useSheetSelector } from '../../components/sheet-selector/SheetSelector';
+import { getStudent, setPresentationPointsOfStudent } from '../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
 import { Student } from '../../model/Student';
@@ -46,6 +48,22 @@ function PresentationPoints(): JSX.Element {
       .finally(() => setLoading(false));
   }, [tutorialId, setError]);
 
+  async function handleSubmit(student: Student, points: number) {
+    if (!currentSheet || Number.isNaN(points)) {
+      return;
+    }
+
+    const dto: IPresentationPointsDTO = {
+      points,
+      sheetId: currentSheet.id,
+    };
+
+    await setPresentationPointsOfStudent(student.id, dto);
+
+    const updatedStudent = await getStudent(student.id);
+    setStudents(students => students.map(st => (st.id === student.id ? updatedStudent : st)));
+  }
+
   return (
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={2} alignItems='center'>
@@ -58,13 +76,7 @@ function PresentationPoints(): JSX.Element {
         loading={isLoading || isLoadingSheets}
       >
         {currentSheet && (
-          <PresentationList
-            students={students}
-            sheet={currentSheet}
-            onSubmit={(student, points) => {
-              console.log(`${student.name} -- ${points}`);
-            }}
-          />
+          <PresentationList students={students} sheet={currentSheet} onSubmit={handleSubmit} />
         )}
       </Placeholder>
     </Box>
