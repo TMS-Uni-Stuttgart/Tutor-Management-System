@@ -48,7 +48,7 @@ function TableWithPadding<T>({
           <TableBody>
             {items.map((item, idx) => (
               <React.Fragment key={idx}>
-                <TableRow className={classes.spacingRow} />
+                {idx !== 0 && <TableRow className={classes.spacingRow} />}
 
                 {createRowFromItem(item)}
               </React.Fragment>
