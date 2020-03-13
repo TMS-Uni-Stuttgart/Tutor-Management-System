@@ -13,8 +13,6 @@ const useStyles = makeStyles((theme: Theme) =>
       gridTemplateColumns: '1fr 1fr',
       gridColumnGap: theme.spacing(1),
       gridRowGap: theme.spacing(2),
-      marginLeft: 'auto',
-      marginRight: 'auto',
     },
     buttonRow: {
       gridColumn: '1 / span 2',
@@ -39,6 +37,7 @@ export interface FormikBaseFormProps<VALUES> extends FormikConfig<VALUES> {
   enableErrorsInDebug?: boolean;
   className?: string;
   formProps?: FormProps;
+  disableSubmitButtonIfClean?: boolean;
 }
 
 function FormikBaseForm<VALUES>({
@@ -48,6 +47,7 @@ function FormikBaseForm<VALUES>({
   className,
   children,
   formProps,
+  disableSubmitButtonIfClean,
   ...other
 }: FormikBaseFormProps<VALUES>): JSX.Element {
   const classes = useStyles();
@@ -69,7 +69,12 @@ function FormikBaseForm<VALUES>({
               </Button>
             )}
 
-            <SubmitButton color='primary' variant='outlined' isSubmitting={formik.isSubmitting}>
+            <SubmitButton
+              color='primary'
+              variant='outlined'
+              isSubmitting={formik.isSubmitting}
+              disabled={!!disableSubmitButtonIfClean && !formik.dirty}
+            >
               Speichern
             </SubmitButton>
           </div>
