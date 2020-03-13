@@ -29,7 +29,6 @@ export class Student implements Modify<IStudent, Modified> {
   @Transform(value => new Map(value))
   readonly attendances!: Map<string, IAttendance>;
 
-  @Type(() => Number)
   @Transform(value => new Map(value))
   readonly presentationPoints!: Map<string, number>;
 
