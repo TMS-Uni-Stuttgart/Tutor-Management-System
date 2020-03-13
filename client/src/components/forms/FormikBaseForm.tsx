@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik, FormikConfig } from 'formik';
@@ -18,11 +18,16 @@ const useStyles = makeStyles((theme: Theme) =>
       gridColumn: '1 / span 2',
       display: 'flex',
       justifyContent: 'flex-end',
+      alignItems: 'center',
       // This prevents a flashing scrollbar if the form spinner is shown.
       marginBottom: theme.spacing(0.5),
     },
     cancelButton: {
       marginRight: theme.spacing(2),
+    },
+    unsavedChangesMessage: {
+      marginRight: theme.spacing(2),
+      textAlign: 'right',
     },
   })
 );
@@ -38,6 +43,7 @@ export interface FormikBaseFormProps<VALUES> extends FormikConfig<VALUES> {
   className?: string;
   formProps?: FormProps;
   disableSubmitButtonIfClean?: boolean;
+  enableUnsavedChangesWarning?: boolean;
 }
 
 function FormikBaseForm<VALUES>({
@@ -48,6 +54,7 @@ function FormikBaseForm<VALUES>({
   children,
   formProps,
   disableSubmitButtonIfClean,
+  enableUnsavedChangesWarning,
   ...other
 }: FormikBaseFormProps<VALUES>): JSX.Element {
   const classes = useStyles();
@@ -63,6 +70,12 @@ function FormikBaseForm<VALUES>({
           {children && typeof children === 'function' ? children({ ...formik }) : children}
 
           <div className={classes.buttonRow}>
+            {enableUnsavedChangesWarning && formik.dirty && (
+              <Typography className={classes.unsavedChangesMessage}>
+                Es gibt ungespeicherte Änderungen.
+              </Typography>
+            )}
+
             {onCancelClicked && (
               <Button variant='outlined' onClick={onCancelClicked} className={classes.cancelButton}>
                 Abbrechen

@@ -120,42 +120,45 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
       onSubmit={handleFormikSubmit}
       validate={validateState}
       enableReinitialize
+      enableUnsavedChangesWarning
       disableSubmitButtonIfClean
       enableDebug
     >
       {({ dirty }) => (
-        <div className={classes.tableWrapper}>
-          <TableWithPadding
-            items={students}
-            className={classes.table}
-            createRowFromItem={student => (
-              <PaperTableRow
-                key={student.id}
-                label={student.name}
-                Avatar={<StudentAvatar student={student} />}
-              >
-                <TableCell align='left'>
-                  <Typography>Insgesamt: {student.getPresentationPointsSum()}</Typography>
-                </TableCell>
+        <>
+          <div className={classes.tableWrapper}>
+            <TableWithPadding
+              items={students}
+              className={classes.table}
+              createRowFromItem={student => (
+                <PaperTableRow
+                  key={student.id}
+                  label={student.name}
+                  Avatar={<StudentAvatar student={student} />}
+                >
+                  <TableCell align='left'>
+                    <Typography>Insgesamt: {student.getPresentationPointsSum()}</Typography>
+                  </TableCell>
 
-                <TableCell align='right'>
-                  <FormikTextField
-                    name={student.id}
-                    className={classes.textField}
-                    type='number'
-                    inputProps={{ className: classes.input }}
-                    size='small'
-                  />
-                </TableCell>
-              </PaperTableRow>
-            )}
-          />
+                  <TableCell align='right'>
+                    <FormikTextField
+                      name={student.id}
+                      className={classes.textField}
+                      type='number'
+                      inputProps={{ className: classes.input }}
+                      size='small'
+                    />
+                  </TableCell>
+                </PaperTableRow>
+              )}
+            />
+          </div>
 
           <Prompt
             message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
             when={dirty}
           />
-        </div>
+        </>
       )}
     </FormikBaseForm>
   );
