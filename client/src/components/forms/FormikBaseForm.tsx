@@ -1,7 +1,7 @@
 import { Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { Formik, FormikConfig } from 'formik';
+import { Formik, FormikConfig, FormikHelpers } from 'formik';
 import React from 'react';
 import FormikDebugDisplay from './components/FormikDebugDisplay';
 import SubmitButton from '../loading/SubmitButton';
@@ -37,7 +37,7 @@ export type CommonlyUsedFormProps = 'onSubmit' | 'initialValues' | 'validationSc
 type FormProps = Omit<React.ReactHTML['form'], 'onSubmit' | 'className'>;
 
 export interface FormikBaseFormProps<VALUES> extends FormikConfig<VALUES> {
-  onCancelClicked?: React.MouseEventHandler<HTMLButtonElement>;
+  onCancelClicked?: (formikBag: FormikHelpers<VALUES>) => void;
   enableDebug?: boolean;
   enableErrorsInDebug?: boolean;
   className?: string;
@@ -77,7 +77,11 @@ function FormikBaseForm<VALUES>({
             )}
 
             {onCancelClicked && (
-              <Button variant='outlined' onClick={onCancelClicked} className={classes.cancelButton}>
+              <Button
+                variant='outlined'
+                onClick={() => onCancelClicked(formik)}
+                className={classes.cancelButton}
+              >
                 Abbrechen
               </Button>
             )}

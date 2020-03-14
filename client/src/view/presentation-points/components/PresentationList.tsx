@@ -118,6 +118,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
       className={classes.form}
       initialValues={initialState}
       onSubmit={handleFormikSubmit}
+      onCancelClicked={({ resetForm }) => resetForm()}
       validate={validateState}
       enableReinitialize
       enableUnsavedChangesWarning
