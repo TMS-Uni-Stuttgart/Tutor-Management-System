@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
       marginTop: theme.spacing(1),
       justifyContent: 'flex-end',
+      marginBottom: theme.spacing(2),
     },
     list: {
       marginBottom: theme.spacing(1),
