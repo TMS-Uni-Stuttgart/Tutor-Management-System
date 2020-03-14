@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'absolute',
-      top: 50,
+      bottom: 50,
       left: 50,
       zIndex: theme.zIndex.modal + 1000,
       padding: theme.spacing(2),
@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
     titleBar: {
       display: 'flex',
       alignItems: 'center',
+      cursor: 'pointer',
     },
     collapseButton: {
       marginLeft: 'auto',
@@ -54,18 +55,6 @@ function FormikDebugDisplay({
   return (
     <Portal container={document.body}>
       <Paper className={classes.root} elevation={24}>
-        <div className={classes.titleBar}>
-          <Typography variant='h6' color='error'>
-            Formik Debug Display
-          </Typography>
-
-          <CollapseButton
-            isCollapsed={isCollapsed}
-            onClick={() => setCollapsed(prev => !prev)}
-            className={classes.collapseButton}
-          />
-        </div>
-
         {!isCollapsed && (
           <div className={classes.codeContainer}>
             <code className={classes.code}>
@@ -81,6 +70,14 @@ function FormikDebugDisplay({
             </code>
           </div>
         )}
+
+        <div className={classes.titleBar} onClick={() => setCollapsed(prev => !prev)}>
+          <Typography variant='h6' color='error'>
+            Formik Debug Display
+          </Typography>
+
+          <CollapseButton isCollapsed={isCollapsed} className={classes.collapseButton} />
+        </div>
       </Paper>
     </Portal>
   );
