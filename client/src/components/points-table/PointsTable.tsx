@@ -1,10 +1,10 @@
 import {
   Paper,
+  PaperProps,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableContainerBaseProps,
   TableContainerProps,
   TableHead,
   TableProps,
@@ -23,7 +23,7 @@ interface Props extends Omit<TableContainerProps, 'ref'> {
   size?: TableProps['size'];
 }
 
-function TablePaper({ children, ...props }: TableContainerBaseProps): JSX.Element {
+function TablePaper({ children, ...props }: PaperProps): JSX.Element {
   return (
     <Paper {...props} variant='outlined'>
       {children}
