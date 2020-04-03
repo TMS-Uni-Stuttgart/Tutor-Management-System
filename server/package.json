@@ -32,7 +32,7 @@
     "@typegoose/typegoose": "^6.4.0",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.11.1",
-    "config": "^3.3.0",
+    "config": "^3.3.1",
     "connect-mongo": "^3.2.0",
     "excel4node": "^1.7.2",
     "express-session": "^1.17.0",
