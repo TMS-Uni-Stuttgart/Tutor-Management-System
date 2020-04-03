@@ -36,7 +36,7 @@
     "connect-mongo": "^3.2.0",
     "excel4node": "^1.7.2",
     "express-session": "^1.17.0",
-    "jszip": "^3.2.2",
+    "jszip": "^3.3.0",
     "luxon": "^1.23.0",
     "mongoose": "^5.9.7",
     "mongoose-autopopulate": "^0.12.0",
