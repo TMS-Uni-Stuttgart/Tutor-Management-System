@@ -23,7 +23,7 @@ import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,
 } from './components/ScheinexamPointsForm';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     backButton: {
       marginRight: theme.spacing(2),
@@ -62,7 +62,7 @@ function EnterScheinexamPoints(): JSX.Element {
 
   useEffect(() => {
     getScheinexam(examId)
-      .then(response => {
+      .then((response) => {
         setExam(response);
       })
       .catch(() => {
@@ -72,7 +72,7 @@ function EnterScheinexamPoints(): JSX.Element {
 
   useEffect(() => {
     getStudent(studentId)
-      .then(response => {
+      .then((response) => {
         setStudent(response);
       })
       .catch(() => {
@@ -82,7 +82,7 @@ function EnterScheinexamPoints(): JSX.Element {
 
   useEffect(() => {
     getStudentsOfTutorial(tutorialId)
-      .then(response => {
+      .then((response) => {
         setAllStudents(response);
       })
       .catch(() => {
@@ -163,7 +163,7 @@ function EnterScheinexamPoints(): JSX.Element {
           className={classes.studentSelect}
           items={allStudents.length > 0 ? allStudents : student ? [student] : []}
           itemToString={getNameOfEntity}
-          itemToValue={s => s.id}
+          itemToValue={(s) => s.id}
           value={student?.id ?? ''}
           onChange={handleStudentChange}
         />

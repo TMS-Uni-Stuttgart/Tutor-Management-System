@@ -18,7 +18,7 @@ function StudentCardList({ students, tutorialId, exam }: Props): JSX.Element {
       showPlaceholder={students.length === 0}
     >
       <CardList>
-        {students.map(student => (
+        {students.map((student) => (
           <StudentCard key={student.id} student={student} exam={exam} tutorialId={tutorialId} />
         ))}
       </CardList>

@@ -40,7 +40,7 @@ export function getFilteredStudents(students: Student[], filterText: string): St
     return students;
   }
 
-  return students.filter(s => {
+  return students.filter((s) => {
     const name = getNameOfEntity(s, { firstNameFirst: true });
 
     return unifyFilterableText(name).includes(unifyFilterableText(filterText));

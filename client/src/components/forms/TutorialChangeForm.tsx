@@ -60,8 +60,8 @@ function TutorialChangeForm({
           label='Tutorium'
           emptyPlaceholder='Keine Tutorien vorhanden.'
           items={allTutorials}
-          itemToString={t => t.toDisplayString()}
-          itemToValue={t => t.id}
+          itemToString={(t) => t.toDisplayString()}
+          itemToValue={(t) => t.id}
           fullWidth
           className={classes.tutorDropdown}
         />

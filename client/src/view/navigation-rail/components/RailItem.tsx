@@ -150,7 +150,7 @@ function RailItem({
         className={classes.popper}
       >
         <Paper className={classes.popperPaper}>
-          {subItems?.map(props => (
+          {subItems?.map((props) => (
             <RailSubItem key={props.subPath} {...props} />
           ))}
         </Paper>

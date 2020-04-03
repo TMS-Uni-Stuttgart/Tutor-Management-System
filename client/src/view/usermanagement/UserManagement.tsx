@@ -131,7 +131,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
     }
   };
 
-  const handleEditUserSubmit: (user: IUser) => UserFormSubmitCallback = user => async (
+  const handleEditUserSubmit: (user: IUser) => UserFormSubmitCallback = (user) => async (
     formState,
     { setSubmitting, setFieldError }
   ) => {
@@ -139,12 +139,12 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       const { password } = formState;
       const userInformation: IUserDTO = convertFormStateToUserDTO(
         formState,
-        users.filter(u => u.id !== user.id)
+        users.filter((u) => u.id !== user.id)
       );
 
       const updatedUser = await editUser(user.id, userInformation);
       setUsers(
-        users.map(u => {
+        users.map((u) => {
           if (u.id !== updatedUser.id) {
             return u;
           }
@@ -172,7 +172,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   function handleDeleteUserSubmit(user: IUser) {
     deleteUser(user.id)
       .then(() => {
-        setUsers(users.filter(u => u.id !== user.id));
+        setUsers(users.filter((u) => u.id !== user.id));
       })
       .finally(() => {
         dialog.hide();
@@ -252,8 +252,8 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
       if (failedMailsInfo.length === 0) {
         enqueueSnackbar('Zugangsdaten wurden erfolgreich verschickt.', { variant: 'success' });
       } else {
-        const failedNames: string[] = failedMailsInfo.map(info => {
-          const user = users.find(u => u.id === info.userId);
+        const failedNames: string[] = failedMailsInfo.map((info) => {
+          const user = users.find((u) => u.id === info.userId);
 
           return user ? getNameOfEntity(user) : 'NOT_FOUND';
         });
@@ -349,7 +349,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
             </>
           }
           items={users}
-          createRowFromItem={user => (
+          createRowFromItem={(user) => (
             <UserTableRow
               user={user}
               onEditUserClicked={handleEditUser}

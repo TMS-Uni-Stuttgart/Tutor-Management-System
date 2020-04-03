@@ -71,7 +71,7 @@ function FormikDebugDisplay({
           </div>
         )}
 
-        <div className={classes.titleBar} onClick={() => setCollapsed(prev => !prev)}>
+        <div className={classes.titleBar} onClick={() => setCollapsed((prev) => !prev)}>
           <Typography variant='h6' color='error'>
             Formik Debug Display
           </Typography>

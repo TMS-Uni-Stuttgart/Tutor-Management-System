@@ -85,7 +85,7 @@ function TutorialTableRow({
 
           {correctors.length > 0 && (
             <>
-              {correctors.map(cor => (
+              {correctors.map((cor) => (
                 <Chip
                   key={cor}
                   label={`Korrektor: ${cor}`}
@@ -99,7 +99,7 @@ function TutorialTableRow({
 
         {substitutes.length > 0 && (
           <div>
-            {substitutes.map(sub => (
+            {substitutes.map((sub) => (
               <Chip
                 key={sub.date.toISO()}
                 label={`Vertr. ${sub.date.toFormat('dd.MM.yy')}: ${sub.name}`}

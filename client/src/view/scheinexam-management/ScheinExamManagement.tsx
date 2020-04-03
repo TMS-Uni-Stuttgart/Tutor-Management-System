@@ -59,7 +59,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
 
   useEffect(() => {
     setIsLoading(true);
-    getAllScheinExams().then(exams => {
+    getAllScheinExams().then((exams) => {
       setExams(exams);
       setIsLoading(false);
     });
@@ -70,7 +70,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     { resetForm, setSubmitting, setFieldError }
   ) => {
     const isNotInUse =
-      exams.find(t => t.scheinExamNo.toString() === values.scheinExamNo) !== undefined;
+      exams.find((t) => t.scheinExamNo.toString() === values.scheinExamNo) !== undefined;
     const duplicateName = getDuplicateExerciseName(values.exercises);
 
     if (duplicateName) {
@@ -96,7 +96,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  const handleGenerateResultPDF: (exam: Scheinexam) => void = async exam => {
+  const handleGenerateResultPDF: (exam: Scheinexam) => void = async (exam) => {
     setGeneratingResults(true);
 
     const blob = await getScheinexamResultPDF(exam.id);
@@ -105,14 +105,14 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     setGeneratingResults(false);
   };
 
-  const editExam: (exam: Scheinexam) => ScheinExamFormSubmitCallback = exam => async (
+  const editExam: (exam: Scheinexam) => ScheinExamFormSubmitCallback = (exam) => async (
     values,
     { setSubmitting }
   ) => {
     try {
       const updatedExam = await editScheinExam(exam.id, generateScheinExamDTO(values));
 
-      setExams(exams.map(e => (e.id === exam.id ? updatedExam : e)));
+      setExams(exams.map((e) => (e.id === exam.id ? updatedExam : e)));
       enqueueSnackbar('Scheinklausur erfolgreich bearbeitet.', { variant: 'success' });
       dialog.hide();
     } catch (reason) {
@@ -122,11 +122,11 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     }
   };
 
-  const deleteExam: (exam: Scheinexam) => void = async exam => {
+  const deleteExam: (exam: Scheinexam) => void = async (exam) => {
     try {
       await deleteScheinExam(exam.id);
 
-      setExams(exams.filter(e => e.id !== exam.id));
+      setExams(exams.filter((e) => e.id !== exam.id));
       enqueueSnackbar(`Scheinklausur wurde erfolgreich gelöscht.`, { variant: 'success' });
     } catch (reason) {
       enqueueSnackbar(`Scheinklausur konnte nicht gelöscht werden.`, { variant: 'error' });
@@ -177,7 +177,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
             title='Neue Scheinklausur erstellen'
             form={<ScheinExamForm exams={exams} onSubmit={handleSubmit} />}
             items={exams}
-            createRowFromItem={exam => (
+            createRowFromItem={(exam) => (
               <ScheinExamRow
                 key={exam.id}
                 exam={exam}

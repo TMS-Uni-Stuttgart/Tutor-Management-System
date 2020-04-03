@@ -50,8 +50,8 @@ function assertUser({ expected, actual }: AssertUserParam) {
   expect(actualId).toBeDefined();
   expect(actualUser).toEqual(expectedUser);
 
-  expect(actualTutorials.map(t => t.id)).toEqual(tutorials.map(t => t._id));
-  expect(actualTutorialsToCorrect.map(t => t.id)).toEqual(tutorialsToCorrect.map(t => t._id));
+  expect(actualTutorials.map((t) => t.id)).toEqual(tutorials.map((t) => t._id));
+  expect(actualTutorialsToCorrect.map((t) => t.id)).toEqual(tutorialsToCorrect.map((t) => t._id));
 }
 
 /**
@@ -96,8 +96,8 @@ function assertUserDTO({ expected, actual }: AssertUserDTOParams) {
 
   expect(id).toBeDefined();
 
-  expect(actualTutorials.map(tutorial => tutorial.id)).toEqual(tutorials);
-  expect(actualToCorrect.map(tutorial => tutorial.id)).toEqual(tutorialsToCorrect);
+  expect(actualTutorials.map((tutorial) => tutorial.id)).toEqual(tutorials);
+  expect(actualToCorrect.map((tutorial) => tutorial.id)).toEqual(tutorialsToCorrect);
 
   expect(restActual).toEqual(restExpected);
 }
@@ -132,7 +132,7 @@ describe('UserService', () => {
 
     assertUserList({
       expected: USER_DOCUMENTS,
-      actual: sanitizeObject(allUsers.map(user => user.toDTO())),
+      actual: sanitizeObject(allUsers.map((user) => user.toDTO())),
     });
   });
 

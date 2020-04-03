@@ -27,7 +27,7 @@ function DateOfTutorialSelection({
       return;
     }
 
-    const date: DateTime | undefined = availableDates.find(d => d.toISODate() === e.target.value);
+    const date: DateTime | undefined = availableDates.find((d) => d.toISODate() === e.target.value);
 
     onDateSelected(date);
     setValue(e.target.value);
@@ -42,8 +42,8 @@ function DateOfTutorialSelection({
       className={className}
       FormControlProps={other}
       items={availableDates}
-      itemToString={date => date.toLocaleString(DateTime.DATE_MED)}
-      itemToValue={date => date.toISODate()}
+      itemToString={(date) => date.toLocaleString(DateTime.DATE_MED)}
+      itemToValue={(date) => date.toISODate()}
     />
   );
 }

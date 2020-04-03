@@ -28,7 +28,7 @@ import ScheinExamInformation from './components/ScheinExamInformation';
 import ScheinStatusBox from './components/ScheinStatusBox';
 import StudentDetails from './components/StudentDetails';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     backButton: {
       marginRight: theme.spacing(2),
@@ -68,7 +68,7 @@ function StudentInfo(): JSX.Element {
 
   useEffect(() => {
     getStudent(studentId)
-      .then(response => setStudent(response))
+      .then((response) => setStudent(response))
       .catch(() => setError('Studierende/r konnte nicht abgerufen werden.'));
   }, [studentId, setError]);
 
@@ -79,7 +79,7 @@ function StudentInfo(): JSX.Element {
     }
 
     getScheinCriteriaSummaryOfStudent(student.id)
-      .then(response => {
+      .then((response) => {
         setScheinStatus(response);
       })
       .catch(() => {
@@ -87,7 +87,7 @@ function StudentInfo(): JSX.Element {
       });
 
     getTutorial(student.tutorial.id)
-      .then(response => {
+      .then((response) => {
         setTutorialOfStudent(response);
       })
       .catch(() => {
@@ -97,13 +97,13 @@ function StudentInfo(): JSX.Element {
 
   useEffect(() => {
     getAllSheets()
-      .then(response => setSheets(response))
+      .then((response) => setSheets(response))
       .catch(() => {
         enqueueSnackbar('Übungsblätter konnten nicht abgerufen werden.', { variant: 'error' });
       });
 
     getAllScheinExams()
-      .then(response => setExams(response))
+      .then((response) => setExams(response))
       .catch(() => {
         enqueueSnackbar('Scheinklausuren konnten nicht abgerufen werden.', { variant: 'error' });
       });

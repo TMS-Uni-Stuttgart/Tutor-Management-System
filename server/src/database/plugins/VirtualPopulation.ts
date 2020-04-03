@@ -25,7 +25,7 @@ export default function VirtualPopulation<M>(
     return;
   }
 
-  const populateFunction = async function(result: any, next: () => void) {
+  const populateFunction = async function (result: any, next: () => void) {
     await populateDocument(result);
 
     next();

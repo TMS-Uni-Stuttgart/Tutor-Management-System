@@ -81,11 +81,7 @@ function FormikFilterableSelect<T>({
       return true;
     }
 
-    const itemString = deburr(
-      itemToString(item)
-        .trim()
-        .toLowerCase()
-    );
+    const itemString = deburr(itemToString(item).trim().toLowerCase());
 
     return itemString.indexOf(filter) > -1;
   }
@@ -93,7 +89,7 @@ function FormikFilterableSelect<T>({
   return (
     <FieldArray
       name={name}
-      render={arrayHelpers => (
+      render={(arrayHelpers) => (
         <div {...other} className={clsx(classes.root, className)}>
           <div className={classes.label}>{label}</div>
 
@@ -101,7 +97,7 @@ function FormikFilterableSelect<T>({
             variant='standard'
             placeholder={filterPlaceholder}
             className={classes.textField}
-            onChange={e => setFilter(deburr(e.target.value.trim().toLowerCase()))}
+            onChange={(e) => setFilter(deburr(e.target.value.trim().toLowerCase()))}
             InputProps={{
               className: classes.inputField,
             }}
@@ -109,7 +105,7 @@ function FormikFilterableSelect<T>({
 
           <div className={classes.list}>
             <List>
-              {items.filter(isItemMatchingFilter).map(item => {
+              {items.filter(isItemMatchingFilter).map((item) => {
                 const itemValue = itemToValue(item);
                 const itemString = itemToString(item);
 

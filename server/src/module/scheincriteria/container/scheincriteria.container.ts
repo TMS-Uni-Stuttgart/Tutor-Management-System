@@ -164,7 +164,7 @@ class SCContainer {
     }
 
     if (metadata.type === 'enum') {
-      const enumValues = metadata.enumEntries.map(entry => new FormSelectValue(entry, entry));
+      const enumValues = metadata.enumEntries.map((entry) => new FormSelectValue(entry, entry));
 
       return new FormEnumFieldData(enumValues);
     }

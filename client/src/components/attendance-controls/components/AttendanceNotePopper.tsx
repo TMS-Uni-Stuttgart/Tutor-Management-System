@@ -21,7 +21,7 @@ import FormikTextField from '../../forms/components/FormikTextField';
 import SubmitButton from '../../loading/SubmitButton';
 import clsx from 'clsx';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     popperPaper: {
       display: 'flex',

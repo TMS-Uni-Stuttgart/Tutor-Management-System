@@ -279,7 +279,7 @@ export class ScheincriteriaService
   }: MultipleCalculationParams): ScheincriteriaSummaryByStudents {
     const summaries: ScheincriteriaSummaryByStudents = {};
 
-    students.forEach(student => {
+    students.forEach((student) => {
       const result = this.calculateResultOfSingleStudent({ criterias, student, sheets, exams });
 
       summaries[student.id] = result;

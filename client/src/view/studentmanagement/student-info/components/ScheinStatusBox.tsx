@@ -4,7 +4,7 @@ import { Box, Typography, CircularProgress, BoxProps } from '@material-ui/core';
 import clsx from 'clsx';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     statusLoadingSpinner: {
       marginRight: theme.spacing(1),

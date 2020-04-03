@@ -12,7 +12,7 @@ import { Grading } from '../../../../model/Grading';
 import { Sheet } from '../../../../model/Sheet';
 import { Student } from '../../../../model/Student';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     sheetSelect: {
       marginLeft: theme.spacing(2),
@@ -56,7 +56,7 @@ function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Elemen
     setGradingOfSelected(student.getGrading(selectedSheet));
 
     getStudentCorrectionCommentMarkdown(selectedSheet.id, student.id)
-      .then(response => {
+      .then((response) => {
         setStudentMarkdown(response);
       })
       .catch(() => {
@@ -65,13 +65,13 @@ function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Elemen
       });
   }, [selectedSheet, student, enqueueSnackbar]);
 
-  const handleSheetSelectionChange: OnChangeHandler = e => {
+  const handleSheetSelectionChange: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
       return;
     }
 
     const sheetId = e.target.value as string;
-    const sheet = sheets.find(s => s.id === sheetId);
+    const sheet = sheets.find((s) => s.id === sheetId);
 
     setSelectedSheet(sheet);
   };
@@ -87,8 +87,8 @@ function EvaluationInformation({ student, sheets, ...props }: Props): JSX.Elemen
           nameOfNoneItem='Kein Übungsblatt'
           className={classes.sheetSelect}
           items={sheets}
-          itemToString={sheet => sheet.toDisplayString()}
-          itemToValue={sheet => sheet.id}
+          itemToString={(sheet) => sheet.toDisplayString()}
+          itemToValue={(sheet) => sheet.id}
           onChange={handleSheetSelectionChange}
           value={selectedSheet?.id ?? ''}
         />

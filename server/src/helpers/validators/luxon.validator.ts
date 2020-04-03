@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsLuxonDateTime(validationOptions?: ValidationOptions) {
-  return function(object: object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     const message: any = {
       message: validationOptions?.each
         ? `each date in ${propertyName} must be in a valid ISO format`

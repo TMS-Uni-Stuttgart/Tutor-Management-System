@@ -37,7 +37,7 @@ function EnterStudentPoints(): JSX.Element {
     }
 
     getStudent(studentId)
-      .then(response => {
+      .then((response) => {
         setStudent(response);
       })
       .catch(() => setError('Studierende/r konnte nicht abgerufen werden.'));
@@ -49,7 +49,7 @@ function EnterStudentPoints(): JSX.Element {
     }
 
     getTeamOfTutorial(tutorialId, teamId)
-      .then(response => {
+      .then((response) => {
         setTeam(response);
       })
       .catch(() => setError('Team konnte nicht abgerufen werden.'));
@@ -117,7 +117,7 @@ function EnterStudentPoints(): JSX.Element {
       entitySelectProps={{
         label: 'Student',
         emptyPlaceholder: 'Keine Studierenden verfügbar.',
-        itemToString: s => getNameOfEntity(s),
+        itemToString: (s) => getNameOfEntity(s),
         onChange: handleStudentChange,
       }}
     />

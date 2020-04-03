@@ -52,7 +52,7 @@ async function showSinglePdfPreview({
 
 async function generateSinglePdf({ tutorialId, sheet, team }: CorrectionPdfOptions) {
   const blob = await getTeamCorrectionCommentPDF(tutorialId, sheet.id, team.id);
-  const teamName = team.students.map(s => s.lastname).join('');
+  const teamName = team.students.map((s) => s.lastname).join('');
   const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 
   saveBlob(blob, `Ex${sheetNo}_${teamName}.pdf`);

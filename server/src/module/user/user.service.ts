@@ -60,7 +60,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
   async findAll(): Promise<UserDocument[]> {
     const users = (await this.userModel.find().exec()) as UserDocument[];
 
-    await Promise.all(users.map(doc => populateUserDocument(doc)));
+    await Promise.all(users.map((doc) => populateUserDocument(doc)));
 
     return users;
   }
@@ -132,14 +132,14 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     const result = (await this.userModel.create(userDocument)) as UserDocument;
 
     await Promise.all(
-      tutorials.map(tutorial => {
+      tutorials.map((tutorial) => {
         tutorial.tutor = result;
         return tutorial.save();
       })
     );
 
     await Promise.all(
-      tutorialsToCorrect.map(tutorial => {
+      tutorialsToCorrect.map((tutorial) => {
         tutorial.correctors.push(result);
         return tutorial.save();
       })
@@ -175,8 +175,8 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     // Remove user as tutor from all tutorials he/she is not the tutor of anymore.
     await Promise.all(
       tutorials
-        .filter(tut => !dto.tutorials.includes(tut.id))
-        .map(tutorial => {
+        .filter((tut) => !dto.tutorials.includes(tut.id))
+        .map((tutorial) => {
           tutorial.tutor = undefined;
           return tutorial.save();
         })
@@ -184,12 +184,12 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
     // Add user as tutor to all tutorials he/she is the tutor of.
     const idsOfTutorialsToAdd: string[] = dto.tutorials.filter(
-      id => !tutorials.map(tut => tut.id).includes(id)
+      (id) => !tutorials.map((tut) => tut.id).includes(id)
     );
     const tutorialsToAdd = await this.getAllTutorials(idsOfTutorialsToAdd);
 
     await Promise.all(
-      tutorialsToAdd.map(tutorial => {
+      tutorialsToAdd.map((tutorial) => {
         tutorial.tutor = user.id;
         return tutorial.save();
       })
@@ -198,10 +198,10 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     // Remove user from all tutorial to correct he's not the corrector of anymore.
     await Promise.all(
       tutorialsToCorrect
-        .filter(tutorial => !dto.tutorialsToCorrect.includes(tutorial.id))
-        .map(tutorial => {
+        .filter((tutorial) => !dto.tutorialsToCorrect.includes(tutorial.id))
+        .map((tutorial) => {
           tutorial.correctors = [
-            ...tutorial.correctors.filter(corrector => corrector.id !== user.id),
+            ...tutorial.correctors.filter((corrector) => corrector.id !== user.id),
           ];
 
           return tutorial.save();
@@ -210,12 +210,12 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
     // Add user as corrector to all tutorials he's corrector of, now (old correctors stay).
     const idsOfTutorialsToCorrect = dto.tutorialsToCorrect.filter(
-      id => !tutorialsToCorrect.map(t => t.id).includes(id)
+      (id) => !tutorialsToCorrect.map((t) => t.id).includes(id)
     );
     const additionalToCorrect = await this.getAllTutorials(idsOfTutorialsToCorrect);
 
     await Promise.all(
-      additionalToCorrect.map(tutorial => {
+      additionalToCorrect.map((tutorial) => {
         tutorial.correctors.push(user);
         return tutorial.save();
       })
@@ -246,7 +246,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     const user = await this.findById(id);
 
     await Promise.all(
-      user.tutorials.map(tutorial => {
+      user.tutorials.map((tutorial) => {
         tutorial.tutor = undefined;
         return tutorial.save();
       })
@@ -326,7 +326,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
     const substituteTutorials: Map<string, ILoggedInUserSubstituteTutorial> = new Map();
 
-    allTutorials.forEach(tutorial => {
+    allTutorials.forEach((tutorial) => {
       tutorial.getAllSubstitutes().forEach((substitute, dateKey) => {
         if (substitute.id !== userId) {
           return;
@@ -423,7 +423,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    * @returns Tutorials matching the given IDs.
    */
   private async getAllTutorials(ids: string[]): Promise<TutorialDocument[]> {
-    return Promise.all(ids.map(id => this.tutorialService.findById(id)));
+    return Promise.all(ids.map((id) => this.tutorialService.findById(id)));
   }
 
   /**

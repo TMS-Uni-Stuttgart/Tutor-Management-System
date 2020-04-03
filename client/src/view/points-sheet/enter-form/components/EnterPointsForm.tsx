@@ -127,7 +127,7 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
     });
   };
 
-  useKeyboardShortcut([{ key: 's', modifiers: { ctrlKey: true } }], e => {
+  useKeyboardShortcut([{ key: 's', modifiers: { ctrlKey: true } }], (e) => {
     e.preventDefault();
 
     if (!dirty) {

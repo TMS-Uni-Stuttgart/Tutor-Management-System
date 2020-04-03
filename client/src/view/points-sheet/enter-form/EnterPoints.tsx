@@ -81,7 +81,7 @@ function EnterPoints<T extends HasGradings>({
     }
 
     getSheet(sheetId)
-      .then(response => {
+      .then((response) => {
         setSheet(response);
         setSelectedExercise(response.exercises[0]);
       })
@@ -94,7 +94,7 @@ function EnterPoints<T extends HasGradings>({
     }
 
     const exerciseId: string = event.target.value as string;
-    const exercise = sheet.exercises.find(ex => ex.id === exerciseId);
+    const exercise = sheet.exercises.find((ex) => ex.id === exerciseId);
 
     if (exercise) {
       setSelectedExercise(exercise);
@@ -126,8 +126,8 @@ function EnterPoints<T extends HasGradings>({
           label='Aufgabe'
           emptyPlaceholder='Keine Aufgaben verfügbar'
           items={sheet ? sheet.exercises : []}
-          itemToString={ex => `Aufgabe ${ex.exName}`}
-          itemToValue={ex => ex.id}
+          itemToString={(ex) => `Aufgabe ${ex.exName}`}
+          itemToValue={(ex) => ex.id}
           value={selectedExercise?.id ?? ''}
           onChange={handleExerciseChange}
         />
@@ -135,7 +135,7 @@ function EnterPoints<T extends HasGradings>({
         <CustomSelect
           className={classes.topBarSelect}
           items={allEntities}
-          itemToValue={item => item.id}
+          itemToValue={(item) => item.id}
           value={entity?.id ?? ''}
           {...entitySelectProps}
         />

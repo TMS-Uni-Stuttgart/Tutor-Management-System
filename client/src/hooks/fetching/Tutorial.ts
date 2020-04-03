@@ -93,8 +93,8 @@ export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): 
   ]);
 
   Object.entries(summaries).forEach(([studentId, summary]) => {
-    tutorials.forEach(tutorial => {
-      if (tutorial.students.findIndex(id => id === studentId) !== -1) {
+    tutorials.forEach((tutorial) => {
+      if (tutorial.students.findIndex((id) => id === studentId) !== -1) {
         const key: string = tutorial.slot.toString();
 
         if (!data[key]) {

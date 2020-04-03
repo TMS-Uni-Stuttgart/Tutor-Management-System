@@ -93,11 +93,11 @@ export class MarkdownService {
     const gradingsMD: TeamMarkdownData[] = [];
     const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 
-    teams.forEach(team => {
+    teams.forEach((team) => {
       gradingsMD.push(this.generateFromTeam({ team, sheet, ignoreInvalidTeams: true }));
     });
 
-    return { markdownForGradings: gradingsMD.filter(grad => !grad.invalid), sheetNo };
+    return { markdownForGradings: gradingsMD.filter((grad) => !grad.invalid), sheetNo };
   }
 
   /**
@@ -177,7 +177,7 @@ export class MarkdownService {
         );
       }
 
-      const teamName: string = team.students.map(s => s.lastname).join('');
+      const teamName: string = team.students.map((s) => s.lastname).join('');
 
       return {
         markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
@@ -196,7 +196,7 @@ export class MarkdownService {
     const pointInfo: SheetPointInfo = { achieved: 0, total: { must: 0, bonus: 0 } };
     let exerciseMarkdown: string = '';
 
-    sheet.exercises.forEach(exercise => {
+    sheet.exercises.forEach((exercise) => {
       const gradingForExercise = grading.getExerciseGrading(exercise);
 
       if (!gradingForExercise) {

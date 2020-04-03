@@ -41,7 +41,7 @@ function SplitButton({ options, variant, color, ...props }: Props): JSX.Element 
   };
 
   const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen);
+    setOpen((prevOpen) => !prevOpen);
   };
 
   const handleClose = (event: React.MouseEvent<Document, MouseEvent>) => {
@@ -89,7 +89,7 @@ function SplitButton({ options, variant, color, ...props }: Props): JSX.Element 
                       key={option.label}
                       disabled={option.disabled ?? false}
                       selected={index === selectedIndex}
-                      onClick={event => handleMenuItemClick(event, index)}
+                      onClick={(event) => handleMenuItemClick(event, index)}
                     >
                       {option.label}
                     </MenuItem>

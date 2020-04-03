@@ -6,7 +6,7 @@ function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean 
     return true;
   }
 
-  return routeRoles.findIndex(role => userRoles.includes(role)) !== -1;
+  return routeRoles.findIndex((role) => userRoles.includes(role)) !== -1;
 }
 
 export function filterRoutes(userRoles: Role[]) {

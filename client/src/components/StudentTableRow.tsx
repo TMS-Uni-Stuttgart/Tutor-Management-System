@@ -59,7 +59,7 @@ function StudentTableRow({
   );
 
   useEffect(() => {
-    getScheinCriteriaSummaryOfStudent(student.id).then(response => setCriteriaResult(response));
+    getScheinCriteriaSummaryOfStudent(student.id).then((response) => setCriteriaResult(response));
   }, [getScheinCriteriaSummaryOfStudent, student]);
 
   return (

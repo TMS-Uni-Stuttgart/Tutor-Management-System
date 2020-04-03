@@ -45,7 +45,7 @@ export class AttendancePDFGenerator extends PDFGenerator<GeneratorOptions> {
     const tutorName = getNameOfEntity(tutor);
     const tableRows: string[] = students
       .sort(sortByName)
-      .map(student => `<tr><td>${getNameOfEntity(student)}</td><td width="50%"></td></tr>`);
+      .map((student) => `<tr><td>${getNameOfEntity(student)}</td><td width="50%"></td></tr>`);
 
     const body = this.replacePlaceholdersInTemplate({
       tutorialSlot: tutorial.slot,
@@ -80,8 +80,8 @@ export class AttendancePDFGenerator extends PDFGenerator<GeneratorOptions> {
       .replace(/{{tutorialSlot}}/g, tutorialSlot)
       .replace(/{{tutorName}}/g, tutorName)
       .replace(/{{students}}/g, tableRows.join(''))
-      .replace(/{{date.*}}/g, substring => {
-        const dateFormat = substring.split(',').map(s => s.replace(/{{|}}/, ''))[1];
+      .replace(/{{date.*}}/g, (substring) => {
+        const dateFormat = substring.split(',').map((s) => s.replace(/{{|}}/, ''))[1];
 
         try {
           if (dateFormat) {

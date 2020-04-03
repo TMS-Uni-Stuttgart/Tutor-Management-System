@@ -32,7 +32,7 @@ export class ScheincriteriaModule implements OnModuleInit {
       ScheinexamCriteria,
     ];
 
-    criterias.forEach(criteria => this.registerCriteria(criteria));
+    criterias.forEach((criteria) => this.registerCriteria(criteria));
   }
 
   /**

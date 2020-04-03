@@ -66,7 +66,7 @@ function DateList({ dates, className, onDateClicked, ...other }: Props): JSX.Ele
                 DateTime.fromISO(b.dateValueString)
               )
             )
-            .map(date => (
+            .map((date) => (
               <ListItem
                 key={date.dateValueString}
                 onClick={() => onDateClicked(date.dateValueString)}

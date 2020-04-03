@@ -100,11 +100,11 @@ function CreateTeamDialog({ open, onSave, onClose, students, ...other }: Props):
             label='Teamnummer'
             type='number'
             inputProps={{ min: 0 }}
-            onChange={e => setTeamNr(e.target.value)}
+            onChange={(e) => setTeamNr(e.target.value)}
           />
 
           <List className={classes.list}>
-            {students.map(student => (
+            {students.map((student) => (
               <ListItem
                 key={student.id}
                 button
@@ -116,7 +116,7 @@ function CreateTeamDialog({ open, onSave, onClose, students, ...other }: Props):
                     tabIndex={-1}
                     disableRipple
                     checked={selected[student.id] || false}
-                    onChange={e => onStudentSelectionChanged(student, e.target.checked)}
+                    onChange={(e) => onStudentSelectionChanged(student, e.target.checked)}
                   />
                 </ListItemIcon>
                 <ListItemText primary={`${student.lastname}, ${student.firstname} `} />

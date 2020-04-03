@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const titleText: Map<string, string> = new Map(ROUTES.map(route => [route.path, route.title]));
+const titleText: Map<string, string> = new Map(ROUTES.map((route) => [route.path, route.title]));
 
 interface Props {
   onMenuButtonClicked: (ev: React.MouseEvent<HTMLButtonElement>) => void;
@@ -82,7 +82,7 @@ function getTitleFromLocation(location: Location): string {
     return title;
   }
 
-  const matchingRoute: RouteType | undefined = ROUTES.find(route => {
+  const matchingRoute: RouteType | undefined = ROUTES.find((route) => {
     const path = route.isTutorialRelated
       ? getTutorialRelatedPath(route, ':tutorialId')
       : route.path;
@@ -117,7 +117,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
 
   async function handleDownloadXLSX(tutorial: TutorialInEntity) {
     const snackId = enqueueSnackbar('Erstelle XLSX...', { variant: 'info', persist: true });
-    setCreatingXLSX(state => ({ ...state, [tutorial.slot]: true }));
+    setCreatingXLSX((state) => ({ ...state, [tutorial.slot]: true }));
 
     try {
       const blob = await getTutorialXLSX(tutorial.id);
@@ -126,7 +126,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
     } catch {
       enqueueSnackbar('XLSX konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
-      setCreatingXLSX(state => ({ ...state, [tutorial.slot]: false }));
+      setCreatingXLSX((state) => ({ ...state, [tutorial.slot]: false }));
       closeSnackbar(snackId || undefined);
     }
   }
@@ -153,7 +153,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
             <Button
               color='inherit'
               endIcon={<DownloadIcon />}
-              onClick={e => setBackupAnchor(e.currentTarget)}
+              onClick={(e) => setBackupAnchor(e.currentTarget)}
             >
               Backup
             </Button>
@@ -178,7 +178,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
                   color='default'
                   variant='text'
                 >
-                  {[...userData.tutorials, ...userData.tutorialsToCorrect].map(tutorial => (
+                  {[...userData.tutorials, ...userData.tutorialsToCorrect].map((tutorial) => (
                     <SubmitButton
                       key={tutorial.slot}
                       onClick={() => handleDownloadXLSX(tutorial)}

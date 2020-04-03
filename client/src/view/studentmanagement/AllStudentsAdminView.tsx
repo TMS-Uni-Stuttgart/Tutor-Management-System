@@ -40,7 +40,7 @@ function AdminStudentManagement(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    getAllTutorials().then(response => setTutorials(response));
+    getAllTutorials().then((response) => setTutorials(response));
   }, [enqueueSnackbar]);
 
   async function printOverviewSheet() {

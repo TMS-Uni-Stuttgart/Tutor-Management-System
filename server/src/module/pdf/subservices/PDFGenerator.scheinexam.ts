@@ -51,8 +51,8 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
       this.studentService.findAll(),
     ]);
     const students = allStudents
-      .filter(student => !!student.matriculationNo)
-      .filter(student => student.status !== StudentStatus.INACTIVE);
+      .filter((student) => !!student.matriculationNo)
+      .filter((student) => student.status !== StudentStatus.INACTIVE);
     const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
     const results = this.getResultsOfAllStudents({ exam, students });
 
@@ -62,7 +62,7 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
       if (enableShortMatriculationNo) {
         rows.push(`<tr><td>${shortenedNo}</td><td>{{${passedState}}}</td></tr>`);
       } else {
-        const student = students.find(s => s.id === studentId);
+        const student = students.find((s) => s.id === studentId);
         rows.push(
           `<tr><td>${student?.matriculationNo} (${shortenedNo})</td><td>{{${passedState}}}</td></tr>`
         );
@@ -124,7 +124,7 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
   private getResultsOfAllStudents({ exam, students }: GetResultsParams): ExamResultsByStudents {
     const results: ExamResultsByStudents = {};
 
-    students.forEach(student => {
+    students.forEach((student) => {
       const examGrading = student.getGrading(exam);
       const hasAttended = examGrading !== undefined;
 

@@ -20,9 +20,9 @@ interface StyleProps {
   isContained: boolean;
 }
 
-const useStyles = makeStyles<Theme, StyleProps>(theme =>
+const useStyles = makeStyles<Theme, StyleProps>((theme) =>
   createStyles({
-    button: props => {
+    button: (props) => {
       const css: CreateCSSProperties = { marginLeft: theme.spacing(2) };
 
       if (props.attendanceState) {

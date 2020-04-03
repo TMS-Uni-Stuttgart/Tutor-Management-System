@@ -79,7 +79,7 @@ async function reduceUpdateStudent(
   const teams = state.teams ? await getTeamsOfTutorial(tutorial) : undefined;
 
   const students = state.students
-    .map(stud => {
+    .map((stud) => {
       if (stud.id === action.data.studentId) {
         return response;
       }
@@ -97,7 +97,7 @@ async function reduceDeleteStudent(
 ): Promise<StudentStore> {
   await deleteStudent(action.data.studentId);
 
-  return { ...state, students: state.students.filter(s => s.id !== action.data.studentId) };
+  return { ...state, students: state.students.filter((s) => s.id !== action.data.studentId) };
 }
 
 async function reduceReinitializeStore(
@@ -156,7 +156,7 @@ async function studentStoreReducer(
       return reduceDeleteStudent(state, action);
 
     case StudentStoreActionType.REINITIALIZE_START:
-      reduceReinitializeStore(state, action).then(state => {
+      reduceReinitializeStore(state, action).then((state) => {
         action.data.dispatch({
           type: StudentStoreActionType.REINITIALIZE_FINISHED,
           data: state,

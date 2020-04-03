@@ -98,7 +98,7 @@ function Component(
         <Paper className={classes.collapse}>
           <Typography>{textBeforeList}</Typography>
           <List dense>
-            {items.map(item => (
+            {items.map((item) => (
               <ListItem key={item}>
                 <ListItemText primary={item} />
               </ListItem>

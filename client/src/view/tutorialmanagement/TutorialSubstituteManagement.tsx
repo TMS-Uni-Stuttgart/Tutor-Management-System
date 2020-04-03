@@ -85,7 +85,7 @@ function getInitialValues(tutorial?: Tutorial): TutorialSubstituteFormState {
   const dates = tutorial.dates.sort(compareDateTimes).map(parseDateToMapKey);
   const substitutes: { [key: string]: string } = {};
 
-  tutorial.dates.forEach(date => {
+  tutorial.dates.forEach((date) => {
     substitutes[parseDateToMapKey(date)] = tutorial.getSubstitute(date)?.id || '';
   });
 
@@ -101,16 +101,16 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
 
   useEffect(() => {
     getTutorial(params.tutorialid)
-      .then(tutorial => setTutorial(tutorial))
-      .catch(reason => console.log(reason));
+      .then((tutorial) => setTutorial(tutorial))
+      .catch((reason) => console.log(reason));
 
-    getUsersWithRole(Role.TUTOR).then(tutors => setTutors(tutors));
+    getUsersWithRole(Role.TUTOR).then((tutors) => setTutors(tutors));
   }, [params.tutorialid]);
 
   const initialValues: TutorialSubstituteFormState = getInitialValues(tutorial);
 
   const handleDateClicked: DateClickedHandler = (date, selectedDays) => {
-    if (!Array.isArray(selectedDays) || selectedDays.findIndex(d => d === date) === -1) {
+    if (!Array.isArray(selectedDays) || selectedDays.findIndex((d) => d === date) === -1) {
       return;
     }
 
@@ -204,8 +204,8 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                         emptyPlaceholder='Keine Tutoren vorhanden.'
                         nameOfNoneItem='Keine Vertretung'
                         items={tutors}
-                        itemToString={tutor => getNameOfEntity(tutor)}
-                        itemToValue={t => t.id}
+                        itemToString={(tutor) => getNameOfEntity(tutor)}
+                        itemToValue={(t) => t.id}
                       />
                     </>
                   ) : (

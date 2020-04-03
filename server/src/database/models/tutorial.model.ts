@@ -20,10 +20,7 @@ export async function populateTutorialDocument(doc?: TutorialDocument) {
     return;
   }
 
-  await doc
-    .populate('students')
-    .populate('teams')
-    .execPopulate();
+  await doc.populate('students').populate('teams').execPopulate();
 
   doc.loadSubstituteMap();
 }
@@ -65,11 +62,11 @@ export class TutorialModel {
   private _dates!: string[];
 
   get dates(): DateTime[] {
-    return this._dates.map(date => DateTime.fromISO(date));
+    return this._dates.map((date) => DateTime.fromISO(date));
   }
 
   set dates(dates: DateTime[]) {
-    this._dates = dates.map(date => date.toISODate());
+    this._dates = dates.map((date) => date.toISODate());
   }
 
   @prop({ required: true })
@@ -210,17 +207,17 @@ export class TutorialModel {
       tutor: tutor
         ? { id: tutor.id, firstname: tutor.firstname, lastname: tutor.lastname }
         : undefined,
-      dates: dates.map(date => date.toISODate()),
+      dates: dates.map((date) => date.toISODate()),
       startTime: startTime.toISOTime(dateOptions),
       endTime: endTime.toISOTime(dateOptions),
-      students: students.map(student => student.id),
-      correctors: correctors.map(corrector => ({
+      students: students.map((student) => student.id),
+      correctors: correctors.map((corrector) => ({
         id: corrector.id,
         firstname: corrector.firstname,
         lastname: corrector.lastname,
       })),
       substitutes: [...substitutes],
-      teams: teams.map(team => team.id),
+      teams: teams.map((team) => team.id),
     };
   }
 

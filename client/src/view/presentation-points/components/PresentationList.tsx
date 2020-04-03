@@ -11,7 +11,7 @@ import TableWithPadding from '../../../components/TableWithPadding';
 import { Sheet } from '../../../model/Sheet';
 import { Student } from '../../../model/Student';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     form: {
       overflowY: 'auto',
@@ -52,7 +52,7 @@ interface FormikState {
 function generateInitialState(students: Student[], sheet: Sheet): FormikState {
   const state: FormikState = {};
 
-  students.forEach(student => {
+  students.forEach((student) => {
     const points = student.getPresentationPoints(sheet);
 
     state[student.id] = points?.toString() ?? '0';
@@ -89,7 +89,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
   async function handleFormikSubmit(values: FormikState, helpers: FormikHelpers<FormikState>) {
     const promises: Promise<void>[] = [];
 
-    students.forEach(student => {
+    students.forEach((student) => {
       const key = student.id;
 
       if (values[key] !== initialState[key]) {
@@ -131,7 +131,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
             <TableWithPadding
               items={students}
               className={classes.table}
-              createRowFromItem={student => (
+              createRowFromItem={(student) => (
                 <PaperTableRow
                   key={student.id}
                   label={student.name}

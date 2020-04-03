@@ -27,7 +27,7 @@ export async function getUser(id: string): Promise<IUser> {
 export async function getUsersWithRole(role: Role): Promise<IUser[]> {
   const allUsers = await getUsers();
 
-  return allUsers.filter(u => u.roles.indexOf(role) !== -1);
+  return allUsers.filter((u) => u.roles.indexOf(role) !== -1);
 }
 
 export async function createUser(userInformation: ICreateUserDTO): Promise<IUser> {

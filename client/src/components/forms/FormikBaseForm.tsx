@@ -61,7 +61,7 @@ function FormikBaseForm<VALUES>({
 
   return (
     <Formik {...other}>
-      {formik => (
+      {(formik) => (
         <form
           {...formProps}
           onSubmit={formik.handleSubmit}

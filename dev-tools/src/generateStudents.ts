@@ -128,14 +128,14 @@ async function createStudent(i: number, tutorial: ITutorial, sheets: ISheet[]): 
   const student = (await axios.post<IStudent>('/student', studentDTO)).data;
   const gradings: IGradingDTO[] = [];
 
-  sheets.forEach(sheet => {
+  sheets.forEach((sheet) => {
     const exerciseGradings: Map<string, IExerciseGradingDTO> = new Map();
 
-    sheet.exercises.forEach(exercise => {
+    sheet.exercises.forEach((exercise) => {
       if (exercise.subexercises.length > 0) {
         const subExercisePoints: Map<string, number> = new Map();
 
-        exercise.subexercises.forEach(subEx => {
+        exercise.subexercises.forEach((subEx) => {
           subExercisePoints.set(subEx.id, roundNumber(Math.random() * subEx.maxPoints));
         });
 
@@ -161,7 +161,9 @@ async function createStudent(i: number, tutorial: ITutorial, sheets: ISheet[]): 
     });
   });
 
-  await Promise.all(gradings.map(gradingDTO => setPointsOfStudent(student.id, gradingDTO, axios)));
+  await Promise.all(
+    gradings.map((gradingDTO) => setPointsOfStudent(student.id, gradingDTO, axios))
+  );
 
   return student;
 }

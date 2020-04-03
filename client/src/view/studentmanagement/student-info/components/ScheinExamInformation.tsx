@@ -8,7 +8,7 @@ import { Grading } from '../../../../model/Grading';
 import { Scheinexam } from '../../../../model/Scheinexam';
 import { Student } from '../../../../model/Student';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     sheetSelect: {
       marginLeft: theme.spacing(2),
@@ -36,13 +36,13 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
     }
   }, [student, selectedExam]);
 
-  const handleScheinExamSelectionChange: OnChangeHandler = e => {
+  const handleScheinExamSelectionChange: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
       return;
     }
 
     const examId = e.target.value as string;
-    const exam = exams.find(s => s.id === examId);
+    const exam = exams.find((s) => s.id === examId);
 
     setSelectedExam(exam);
   };
@@ -58,8 +58,8 @@ function ScheinExamInformation({ student, exams, ...props }: Props): JSX.Element
           nameOfNoneItem='Keine Scheinklausur'
           className={classes.sheetSelect}
           items={exams}
-          itemToString={exam => exam.toDisplayString()}
-          itemToValue={exam => exam.id}
+          itemToString={(exam) => exam.toDisplayString()}
+          itemToValue={(exam) => exam.id}
           onChange={handleScheinExamSelectionChange}
           value={selectedExam?.id ?? ''}
         />

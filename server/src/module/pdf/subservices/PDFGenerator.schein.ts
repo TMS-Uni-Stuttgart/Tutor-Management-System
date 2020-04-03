@@ -31,7 +31,7 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
       this.scheincriteriaService.getResultsOfAllStudents(),
     ]);
 
-    const students = allStudents.filter(student => !!student.matriculationNo);
+    const students = allStudents.filter((student) => !!student.matriculationNo);
     const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
 
     const tableRows: string[] = [];
@@ -42,7 +42,7 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
       if (enableShortMatriculatinNo) {
         tableRows.push(`<tr><td>${shortenedNo}</td><td>${passedString}</td></tr>`);
       } else {
-        const student = students.find(s => s.id === studentId);
+        const student = students.find((s) => s.id === studentId);
         tableRows.push(
           `<tr><td>${student?.matriculationNo} (${shortenedNo})</td><td>${passedString}</td></tr>`
         );
@@ -63,7 +63,7 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
   private replacePlaceholdersInTemplate(tableRows: string[]): string {
     const template = this.getTemplate();
 
-    return template.replace(/{{statuses.*}}/g, substring => {
+    return template.replace(/{{statuses.*}}/g, (substring) => {
       const wordArray = substring.match(/(\[(\w|\s)*,(\w|\s)*\])/g);
       const replacements = { yes: 'yes', no: 'no' };
 

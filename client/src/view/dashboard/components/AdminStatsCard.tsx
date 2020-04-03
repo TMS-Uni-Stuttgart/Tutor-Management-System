@@ -44,7 +44,7 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
     Object.entries(summaries).forEach(([slot, summaries]) => {
       let passed = 0;
       let notPassed = 0;
-      summaries.forEach(summary => {
+      summaries.forEach((summary) => {
         if (summary.passed) {
           passed += 1;
         } else {

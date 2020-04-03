@@ -69,7 +69,7 @@ const validationSchema = Yup.object().shape({
   endDate: Yup.string()
     .required('Benötigt')
     .test({
-      test: function(this, date: string) {
+      test: function (this, date: string) {
         const startDate: DateTime = DateTime.fromISO(this.resolve(Yup.ref('startDate')));
         const endDate: DateTime = DateTime.fromISO(date);
 
@@ -82,7 +82,7 @@ const validationSchema = Yup.object().shape({
     .nullable()
     .required('Benötigt')
     .test({
-      test: function(this, time: string) {
+      test: function (this, time: string) {
         const startTime: DateTime = DateTime.fromISO(this.resolve(Yup.ref('startTime')));
         const endTime: DateTime = DateTime.fromISO(time);
 
@@ -141,8 +141,8 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
       : endDate,
     startTime: tutorial.startTime.toISO(),
     endTime: tutorial.endTime.toISO(),
-    correctors: tutorial.correctors.map(c => c.id),
-    selectedDates: tutorial.dates.map(DateTime => DateTime.toISODate()),
+    correctors: tutorial.correctors.map((c) => c.id),
+    selectedDates: tutorial.dates.map((DateTime) => DateTime.toISODate()),
   };
 }
 
@@ -179,7 +179,7 @@ function TutorialForm({
             name='tutor'
             label='Tutor'
             emptyPlaceholder='Keine Tutoren vorhanden.'
-            items={tutors.filter(tutor => tutor.roles.indexOf(Role.TUTOR) > -1)}
+            items={tutors.filter((tutor) => tutor.roles.indexOf(Role.TUTOR) > -1)}
             {...userConverterFunctions}
           />
 
@@ -202,7 +202,7 @@ function TutorialForm({
 
                   setFieldValue(
                     'selectedDates',
-                    dates.map(date => date.toISODate())
+                    dates.map((date) => date.toISODate())
                   );
                 }
               }}
@@ -222,7 +222,7 @@ function TutorialForm({
 
                   setFieldValue(
                     'selectedDates',
-                    dates.map(date => date.toISODate())
+                    dates.map((date) => date.toISODate())
                   );
                 }
               }}
@@ -257,7 +257,7 @@ function TutorialForm({
             items={correctors}
             {...userConverterFunctions}
             multiple
-            isItemSelected={corrector => values['correctors'].indexOf(corrector.id) > -1}
+            isItemSelected={(corrector) => values['correctors'].indexOf(corrector.id) > -1}
             fullWidth
           />
 

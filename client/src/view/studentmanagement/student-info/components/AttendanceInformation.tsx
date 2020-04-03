@@ -31,7 +31,7 @@ function AttendanceInformation({
       </TableHead>
 
       <TableBody>
-        {tutorialOfStudent.dates.map(date => {
+        {tutorialOfStudent.dates.map((date) => {
           const formattedDate = date.toLocaleString(DateTime.DATE_FULL);
           const attendance: IAttendance | undefined = student.getAttendance(date);
 
@@ -41,7 +41,7 @@ function AttendanceInformation({
               <TableCell align='right'>
                 <AttendanceControls
                   attendance={attendance}
-                  onAttendanceChange={attendance => onAttendanceChange(date, attendance)}
+                  onAttendanceChange={(attendance) => onAttendanceChange(date, attendance)}
                   onNoteChange={({ note }) => onNoteChange(date, note)}
                   justifyContent='flex-end'
                 />

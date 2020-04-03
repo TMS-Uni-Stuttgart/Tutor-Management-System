@@ -81,9 +81,6 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
    * @returns The reversed string.
    */
   private reverseString(string: string): string {
-    return string
-      .split('')
-      .reverse()
-      .join('');
+    return string.split('').reverse().join('');
   }
 }

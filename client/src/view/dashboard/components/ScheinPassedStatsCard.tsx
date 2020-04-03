@@ -48,7 +48,7 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
     let notPassedValue = 0;
     const data: (string | number)[][] = [];
 
-    Object.values(value.studentInfos).forEach(item => {
+    Object.values(value.studentInfos).forEach((item) => {
       item.passed ? (passedValue += 1) : (notPassedValue += 1);
     });
 

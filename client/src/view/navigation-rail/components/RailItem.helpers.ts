@@ -15,7 +15,7 @@ export function useIsCurrentPath(path: string, subItems: RailSubItemProps[] | un
   const pathsToCheck: string[] = [path];
 
   if (!!subItems && subItems.length > 0) {
-    pathsToCheck.push(...subItems.map(item => item.subPath));
+    pathsToCheck.push(...subItems.map((item) => item.subPath));
   }
 
   return !!useRouteMatch(pathsToCheck);

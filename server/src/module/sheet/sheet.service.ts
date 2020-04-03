@@ -66,7 +66,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
     const sheet = new SheetModel({
       sheetNo,
       bonusSheet,
-      exercises: exercises.map(exerciseDTO => ExerciseModel.fromDTO(exerciseDTO)),
+      exercises: exercises.map((exerciseDTO) => ExerciseModel.fromDTO(exerciseDTO)),
     });
 
     const created = await this.sheetModel.create(sheet);
@@ -91,7 +91,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
 
     sheet.sheetNo = dto.sheetNo;
     sheet.bonusSheet = dto.bonusSheet;
-    sheet.exercises = dto.exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+    sheet.exercises = dto.exercises.map((ex) => ExerciseModel.fromDTO(ex) as ExerciseDocument);
 
     const updated = await sheet.save();
 

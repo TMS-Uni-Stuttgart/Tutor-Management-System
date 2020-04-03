@@ -18,7 +18,7 @@ export async function populateTeamDocument(doc?: TeamDocument) {
   }
 
   await doc.populate('students').execPopulate();
-  await Promise.all(doc.students.map(student => populateStudentDocument(student)));
+  await Promise.all(doc.students.map((student) => populateStudentDocument(student)));
 }
 
 type AssignableFields = Omit<NoFunctions<TeamModel>, 'students'>;
@@ -53,7 +53,7 @@ export class TeamModel {
 
     return {
       id,
-      students: students.map(s => s.toDTO()),
+      students: students.map((s) => s.toDTO()),
       teamNo,
       tutorial: tutorial.id,
     };

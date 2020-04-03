@@ -102,7 +102,7 @@ function ExerciseBox({ name, exercise, className, ...props }: Props): JSX.Elemen
         </div>
 
         {subexercises.length > 0 ? (
-          subexercises.map(subEx => (
+          subexercises.map((subEx) => (
             <div key={subEx.id} className={classes.subexerciseTextFieldContainer}>
               <Typography className={classes.subexerciseName}>{subEx.exName}</Typography>
 
