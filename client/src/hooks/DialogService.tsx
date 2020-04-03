@@ -20,7 +20,7 @@ interface DialogOptions {
   content: React.ReactNode;
   actions: ActionParams[];
   onClose?: () => void;
-  DialogProps?: Omit<DialogProps, 'open' | 'onClose'>;
+  DialogProps?: Omit<DialogProps, 'open' | 'onClose' | 'children'>;
 }
 
 export interface DialogHelpers {
