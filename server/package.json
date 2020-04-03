@@ -42,7 +42,7 @@
     "mongoose-autopopulate": "^0.12.1",
     "mongoose-field-encryption": "^3.0.4",
     "nestjs-typegoose": "^7.1.12",
-    "nodemailer": "^6.4.5",
+    "nodemailer": "^6.4.6",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "puppeteer": "1.19.0",
