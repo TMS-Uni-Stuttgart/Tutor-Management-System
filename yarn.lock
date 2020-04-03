@@ -6865,10 +6865,10 @@ html-parse-stringify2@2.0.1:
   dependencies:
     void-elements "^2.0.1"
 
-html-react-parser@^0.10.1:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.10.1.tgz#1a83c635f234645ee48b29f8dae31d55459e3043"
-  integrity sha512-AjqgYb4vwysX6i5Cma8CYffN716u9IcqtKU4Zp2wUIDSRw2PlQCpPPlKOr73t9eXCF+R8LrVS4byGnf9M8FTzA==
+html-react-parser@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.10.3.tgz#d4a8eedc7f143b661d58e9ac4a77193751d3b1d2"
+  integrity sha512-9Q/r6lyp5R3dvtiNBt1PJ/9XIKvsP6GQ7ppJA/82e9qFZOJuMJFMHj+HYjRDfFrFvAhRxYsjA4yNmFEDffZW1g==
   dependencies:
     "@types/domhandler" "2.4.1"
     html-dom-parser "0.2.3"
