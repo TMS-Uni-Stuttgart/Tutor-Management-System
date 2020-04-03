@@ -1,5 +1,5 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
+import { useSnackbar, SnackbarKey } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
@@ -74,12 +74,13 @@ function convertFormStateToUserDTO(
   };
 }
 
-function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): JSX.Element {
+function UserManagement(): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dialog = useDialog();
 
   useEffect(() => {
@@ -260,7 +261,7 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
 
         enqueueSnackbar('', {
           persist: true,
-          children: (id: any) => (
+          content: (id: SnackbarKey) => (
             <SnackbarWithList
               id={id}
               title={'Nicht zugestellte Zugangsdaten'}
@@ -363,4 +364,4 @@ function UserManagement({ enqueueSnackbar, closeSnackbar }: WithSnackbarProps): 
   );
 }
 
-export default withSnackbar(UserManagement);
+export default UserManagement;
