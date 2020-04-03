@@ -5,28 +5,28 @@
 
   The following replacement options are available (one can inlucde spaces after '{{' and before '}}'):
   - {{ statuses, { "passed": "Passed", "notPassed": "Not passed", "notAttended": "Not attended" } }}: 
-    Generated table rows (2 columns: 'matriculation no', 'passed' / not passed') for all students. The inner object is optional and must be valid JSON. If provided one can customize the text for 'passed'/'not passed'/'not attended' ('passed' for 'passed', 'notPassed' for 'Not passed', 'notAttended' for 'Not attended'). If it's not provided the literal strings 'passed'/'Not passed'/'Not attended' will be used.
+    Generated table rows (2 columns: 'matriculation no', 'passed / not passed') for all students. The inner object is optional and must be valid JSON. If provided one can customize the text for 'passed'/'not passed'/'not attended' ('passed' for 'passed', 'notPassed' for 'Not passed', 'notAttended' for 'Not attended'). If it's not provided the literal strings 'passed'/'Not passed'/'Not attended' will be used.
 
  -->
 
- <h3 style="text-align: center">Scheinklausur Nr. {{ scheinExamNo }}</h3>
+<h3 style="text-align: center">Scheinklausur Nr. {{ scheinExamNo }}</h3>
 
- <table>
-   <style scoped>
-     td {
-       padding: 0.5em 1em;
-       font-family: 'Courier New', Courier, monospace;
-     }
-   </style>
- 
-   <thead>
-     <tr>
-       <th>Matrikelnummer</th>
-       <th>Bestanden / Nicht bestanden</th>
-     </tr>
-   </thead>
-   <tbody>
-     {{ statuses, { "passed": "Bestanden", "notPassed": "Nicht bestanden", "notAttended": "Abwesend" } }}
-   </tbody>
- </table>
- 
+<table>
+  <style scoped>
+    td {
+      padding: 0.5em 1em;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+
+  <thead>
+    <tr>
+      <th>Matrikelnummer</th>
+      <th>Bestanden / Nicht bestanden</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ statuses, { "passed": "Bestanden", "notPassed": "Nicht bestanden", "notAttended": "Abwesend"
+    } }}
+  </tbody>
+</table>

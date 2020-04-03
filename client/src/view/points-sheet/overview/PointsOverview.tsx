@@ -78,7 +78,7 @@ function PointsOverview(): JSX.Element {
     }
 
     getTeamsOfTutorial(tutorialId)
-      .then(teamResponse => {
+      .then((teamResponse) => {
         setError(undefined);
 
         setTeams(teamResponse);

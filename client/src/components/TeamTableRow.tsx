@@ -49,7 +49,7 @@ function TeamTableRow({
             <Typography>
               {team.students.length > 0
                 ? `Mitglieder: ${team.students
-                    .map(student => `${student.firstname} ${student.lastname}`)
+                    .map((student) => `${student.firstname} ${student.lastname}`)
                     .join(', ')}`
                 : 'Keine Mitglieder.'}
             </Typography>

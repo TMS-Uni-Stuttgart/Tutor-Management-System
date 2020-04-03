@@ -34,8 +34,8 @@ function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
   const classes = useStyles();
   const activeCriteria: string[] = [];
 
-  Object.values(value.studentInfos).forEach(summary => {
-    Object.values(summary.scheinCriteriaSummary).forEach(status => {
+  Object.values(value.studentInfos).forEach((summary) => {
+    Object.values(summary.scheinCriteriaSummary).forEach((status) => {
       if (!activeCriteria.includes(status.id)) {
         activeCriteria.push(status.id);
       }

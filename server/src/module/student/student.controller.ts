@@ -41,7 +41,7 @@ export class StudentController {
   async getAllStudents(): Promise<IStudent[]> {
     const students = await this.studentService.findAll();
 
-    return students.map(user => user.toDTO());
+    return students.map((user) => user.toDTO());
   }
 
   @Post()

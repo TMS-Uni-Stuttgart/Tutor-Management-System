@@ -23,7 +23,7 @@ function TeamCardList({
   return (
     <Placeholder placeholderText='Keine Teams verfügbar.' showPlaceholder={teams.length === 0}>
       <CardList>
-        {teams.map(team => (
+        {teams.map((team) => (
           <TeamCard
             key={team.id}
             tutorialId={tutorialId}

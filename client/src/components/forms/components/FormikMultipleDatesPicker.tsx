@@ -171,7 +171,7 @@ function FormikMultipleDatesPicker({
     selectedDays: unknown,
     arrayHelpers: ArrayHelpers
   ) => (date: string) => void = (selectedDays, arrayHelpers) => {
-    return date => {
+    return (date) => {
       if (!date) {
         return <></>;
       }
@@ -201,7 +201,7 @@ function FormikMultipleDatesPicker({
         <div className={classes.root}>
           <div className={classes.dateList}>
             <DateList
-              dates={(form.values[name] as string[]).map<DateInList>(date => ({
+              dates={(form.values[name] as string[]).map<DateInList>((date) => ({
                 dateValueString: date,
                 dateDisplayString: DateTime.fromISO(date).toLocaleString(DateTime.DATE_MED),
               }))}
@@ -219,7 +219,7 @@ function FormikMultipleDatesPicker({
             name={name}
             value={value}
             disableToolbar
-            onChange={date => setValue(date)}
+            onChange={(date) => setValue(date)}
             renderDay={renderDay(form.values[name], arrayHelpers)}
           />
         </div>

@@ -34,7 +34,7 @@ export class TutorialController {
   async getAllTutorials(): Promise<ITutorial[]> {
     const tutorials = await this.tutorialService.findAll();
 
-    return tutorials.map(tutorial => tutorial.toDTO());
+    return tutorials.map((tutorial) => tutorial.toDTO());
   }
 
   @Post()
@@ -79,7 +79,7 @@ export class TutorialController {
   async getAllStudentsOfTutorial(@Param('id') id: string): Promise<IStudent[]> {
     const students = await this.tutorialService.getAllStudentsOfTutorial(id);
 
-    return students.map(s => s.toDTO());
+    return students.map((s) => s.toDTO());
   }
 
   @Put('/:id/substitute')

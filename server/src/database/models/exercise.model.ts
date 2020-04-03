@@ -119,7 +119,7 @@ export class ExerciseModel {
 
   static fromDTO(dto: ExerciseDTO): ExerciseModel {
     const { exName, bonus, maxPoints, subexercises } = dto;
-    const subExModels = subexercises?.map(sub => SubExerciseModel.fromDTO(sub));
+    const subExModels = subexercises?.map((sub) => SubExerciseModel.fromDTO(sub));
 
     return new ExerciseModel({
       exName,
@@ -135,7 +135,7 @@ export class ExerciseModel {
       bonus: this.bonus,
       exName: this.exName,
       maxPoints: this.maxPoints,
-      subexercises: this.subexercises.map(ex => ex.toDTO()),
+      subexercises: this.subexercises.map((ex) => ex.toDTO()),
     };
   }
 }

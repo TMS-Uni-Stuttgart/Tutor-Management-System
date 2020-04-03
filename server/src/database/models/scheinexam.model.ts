@@ -61,7 +61,7 @@ export class ScheinexamModel {
     model.scheinExamNo = scheinExamNo;
     model.percentageNeeded = percentageNeeded;
     model.date = DateTime.fromISO(date);
-    model.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+    model.exercises = exercises.map((ex) => ExerciseModel.fromDTO(ex) as ExerciseDocument);
 
     return model;
   }
@@ -100,7 +100,7 @@ export class ScheinexamModel {
       scheinExamNo: this.scheinExamNo,
       percentageNeeded: this.percentageNeeded,
       date: this.date.toISODate(),
-      exercises: this.exercises.map(ex => ex.toDTO()),
+      exercises: this.exercises.map((ex) => ex.toDTO()),
     };
   }
 }

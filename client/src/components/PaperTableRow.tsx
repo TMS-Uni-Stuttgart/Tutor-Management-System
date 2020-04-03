@@ -11,7 +11,7 @@ interface StyleProps {
   colorOfBottomBar?: string;
 }
 
-const useStyles = makeStyles<Theme, StyleProps>(theme =>
+const useStyles = makeStyles<Theme, StyleProps>((theme) =>
   createStyles({
     content: {
       '&:hover': {
@@ -33,7 +33,7 @@ const useStyles = makeStyles<Theme, StyleProps>(theme =>
         },
       },
     },
-    coloredBar: props => {
+    coloredBar: (props) => {
       if (props.colorOfBottomBar) {
         return {
           borderBottom: `4px solid ${props.colorOfBottomBar}`,

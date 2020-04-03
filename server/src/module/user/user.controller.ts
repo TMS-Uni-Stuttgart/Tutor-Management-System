@@ -30,7 +30,7 @@ export class UserController {
   async getAllUsers(): Promise<IUser[]> {
     const users = await this.userService.findAll();
 
-    return users.map(user => user.toDTO());
+    return users.map((user) => user.toDTO());
   }
 
   @Post()

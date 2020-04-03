@@ -25,7 +25,7 @@ import { getPointsFromState } from '../../../points-sheet/enter-form/EnterPoints
 
 export type ScheinexamPointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',
@@ -103,7 +103,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
   const total = getPointsOfAllExercises(exam);
   const totalPoints = convertExercisePointInfoToString(total);
 
-  useKeyboardShortcut([{ key: 's', modifiers: { ctrlKey: true } }], e => {
+  useKeyboardShortcut([{ key: 's', modifiers: { ctrlKey: true } }], (e) => {
     e.preventDefault();
 
     if (!dirty) {
@@ -157,7 +157,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
 
         <Paper variant='outlined' className={classes.exerciseBox}>
           <Grid container spacing={1}>
-            {exam.exercises.map(exercise => (
+            {exam.exercises.map((exercise) => (
               <Grid key={exercise.id} item sm={12} md={6} lg={4} xl={3}>
                 <Box display='flex' alignItems='center' marginBottom={1} padding={2}>
                   <Typography className={classes.exerciseName}>

@@ -63,7 +63,7 @@ function ListItemMenu({ items, stopClickPropagation, ...other }: ListItemMenuPro
   return (
     <>
       <IconButton
-        onClick={e => {
+        onClick={(e) => {
           if (stopClickPropagation) {
             e.stopPropagation();
           }
@@ -82,7 +82,7 @@ function ListItemMenu({ items, stopClickPropagation, ...other }: ListItemMenuPro
         anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         getContentAnchorEl={undefined}
-        onClick={e => {
+        onClick={(e) => {
           if (stopClickPropagation) {
             e.stopPropagation();
           }
@@ -90,7 +90,7 @@ function ListItemMenu({ items, stopClickPropagation, ...other }: ListItemMenuPro
           setMenuAnchor(undefined);
         }}
       >
-        {items.map(item => generateListItem(item))}
+        {items.map((item) => generateListItem(item))}
       </Menu>
     </>
   );

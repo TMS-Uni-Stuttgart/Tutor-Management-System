@@ -62,7 +62,7 @@ function GeneratedField({ fieldData, name, values }: FieldProps): JSX.Element {
           label={label}
           emptyPlaceholder={t(`FIELD_EMPTY_PLACHOLDER_${name}`)}
           items={fieldData.values}
-          itemToString={val => {
+          itemToString={(val) => {
             if (typeof val.value === 'object' && !val.displayValue) {
               console.error(
                 'If the value of this item is an object you must provide the "displayValue" property to display this item in the dropdown menu.',
@@ -74,7 +74,7 @@ function GeneratedField({ fieldData, name, values }: FieldProps): JSX.Element {
 
             return val.displayValue ? val.displayValue : val.value;
           }}
-          itemToValue={val => val.identifier}
+          itemToValue={(val) => val.identifier}
         />
       );
 
@@ -85,7 +85,7 @@ function GeneratedField({ fieldData, name, values }: FieldProps): JSX.Element {
           label={label}
           emptyPlaceholder={t(`FIELD_EMPTY_PLACHOLDER_${name}`)}
           items={fieldData.enumValues}
-          itemToString={val => {
+          itemToString={(val) => {
             if (typeof val.value === 'object' && !val.displayValue) {
               console.error(
                 'If the value of this item is an object you must provide the "displayValue" property to display this item in the dropdown menu.',
@@ -97,7 +97,7 @@ function GeneratedField({ fieldData, name, values }: FieldProps): JSX.Element {
 
             return val.displayValue ? val.displayValue : val.value;
           }}
-          itemToValue={val => val.identifier}
+          itemToValue={(val) => val.identifier}
         />
       );
 

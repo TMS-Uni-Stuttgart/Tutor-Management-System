@@ -23,7 +23,7 @@ export function IsNonNegativeNumberValue(
   options?: IsNonNegativeValueOptions,
   validationOptions?: ValidationOptions
 ) {
-  return function(object: object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     const message: any = {
       message: validationOptions?.each
         ? `each value in ${propertyName} must a number or parsable to a non-negative number`

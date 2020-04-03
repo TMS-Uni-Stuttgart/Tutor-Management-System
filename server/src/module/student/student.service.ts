@@ -51,7 +51,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   async findAll(): Promise<StudentDocument[]> {
     const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
 
-    await Promise.all(allStudents.map(student => populateStudentDocument(student)));
+    await Promise.all(allStudents.map((student) => populateStudentDocument(student)));
 
     return allStudents;
   }

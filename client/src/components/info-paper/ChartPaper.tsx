@@ -5,7 +5,7 @@ import Chart from 'react-google-charts';
 import { ReactGoogleChartProps } from 'react-google-charts/dist/types';
 import InfoPaper from './InfoPaper';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     summaryPaper: {
       flex: 1,

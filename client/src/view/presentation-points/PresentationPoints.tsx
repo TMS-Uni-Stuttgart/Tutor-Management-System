@@ -41,7 +41,7 @@ function PresentationPoints(): JSX.Element {
     setLoading(true);
 
     getStudentsOfTutorial(tutorialId)
-      .then(students => {
+      .then((students) => {
         setStudents(students);
       })
       .catch(() => setError('Studierende konnte nicht abgerufen werden.'))
@@ -61,7 +61,7 @@ function PresentationPoints(): JSX.Element {
     await setPresentationPointsOfStudent(student.id, dto);
 
     const updatedStudent = await getStudent(student.id);
-    setStudents(students => students.map(st => (st.id === student.id ? updatedStudent : st)));
+    setStudents((students) => students.map((st) => (st.id === student.id ? updatedStudent : st)));
   }
 
   return (

@@ -4,7 +4,7 @@ import React from 'react';
 import BackButton from '../../components/BackButton';
 import { RoutingPath } from '../../routes/Routing.routes';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     backButton: {
       marginRight: theme.spacing(2),

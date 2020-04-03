@@ -19,16 +19,18 @@ export class Tutorial implements Modify<ITutorial, Modified> {
   readonly teams!: string[];
   readonly correctors!: UserInEntity[];
 
-  @Transform((values: string[]) => values.map(val => DateTime.fromISO(val)), { toClassOnly: true })
+  @Transform((values: string[]) => values.map((val) => DateTime.fromISO(val)), {
+    toClassOnly: true,
+  })
   readonly dates!: DateTime[];
 
-  @Transform(value => DateTime.fromISO(value), { toClassOnly: true })
+  @Transform((value) => DateTime.fromISO(value), { toClassOnly: true })
   readonly startTime!: DateTime;
 
-  @Transform(value => DateTime.fromISO(value), { toClassOnly: true })
+  @Transform((value) => DateTime.fromISO(value), { toClassOnly: true })
   readonly endTime!: DateTime;
 
-  @Transform(value => new Map(value))
+  @Transform((value) => new Map(value))
   readonly substitutes!: Map<string, UserInEntity>;
 
   static getDisplayString(hasSlot: { slot: string }) {

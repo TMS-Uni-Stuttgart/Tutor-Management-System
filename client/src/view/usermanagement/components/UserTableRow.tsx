@@ -58,7 +58,7 @@ function UserTableRow({
       {...rest}
     >
       <TableCell>
-        {user.tutorials.map(tutorial => (
+        {user.tutorials.map((tutorial) => (
           <Chip
             key={tutorial.id}
             label={Tutorial.getDisplayString(tutorial)}
@@ -69,7 +69,7 @@ function UserTableRow({
 
         {user.tutorialsToCorrect.length > 0 && (
           <div>
-            {user.tutorialsToCorrect.map(tutorial => (
+            {user.tutorialsToCorrect.map((tutorial) => (
               <Chip
                 key={tutorial.id}
                 label={`Korrigiert: ${Tutorial.getDisplayString(tutorial)}`}

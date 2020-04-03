@@ -58,17 +58,17 @@ function renderValue<T>(
   itemToValue: ItemToString<T>,
   chipClassName: string
 ): (selected: unknown) => JSX.Element | null {
-  return function(selected: unknown) {
+  return function (selected: unknown) {
     if (!Array.isArray(selected)) {
       return null;
     }
 
-    if (!selected.every(item => typeof item === 'string')) {
+    if (!selected.every((item) => typeof item === 'string')) {
       return null;
     }
 
-    const chipsToRender = selected.map(selValue => {
-      const item = items.find(i => itemToValue(i) === selValue);
+    const chipsToRender = selected.map((selValue) => {
+      const item = items.find((i) => itemToValue(i) === selValue);
 
       if (!item) {
         return null;
@@ -140,7 +140,7 @@ function CustomSelect<T>({
         renderValue={
           multiple
             ? renderValue(
-                items.filter(i => !(i instanceof EmptyItem)) as T[],
+                items.filter((i) => !(i instanceof EmptyItem)) as T[],
                 itemToString,
                 itemToValue,
                 classes.chip
@@ -152,7 +152,7 @@ function CustomSelect<T>({
           icon: clsx(classesFromProps && classesFromProps.icon, classes.dropdownIcon),
         }}
       >
-        {items.map(item => {
+        {items.map((item) => {
           if (item instanceof EmptyItem) {
             return (
               <MenuItem key={NONE_ITEM.id} value={''}>

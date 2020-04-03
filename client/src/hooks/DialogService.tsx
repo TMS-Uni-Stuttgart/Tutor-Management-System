@@ -78,7 +78,7 @@ function DialogService({ children }: PropsWithChildren<{}>): JSX.Element {
           </DialogContent>
 
           <DialogActions>
-            {dialog.actions.map(action => (
+            {dialog.actions.map((action) => (
               <Button key={action.label} onClick={action.onClick} {...action.buttonProps}>
                 {action.label}
               </Button>

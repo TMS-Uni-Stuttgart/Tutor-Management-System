@@ -20,7 +20,7 @@ import { filterRoutes } from './NavigationRail.helper';
 const DRAWER_WIDTH_OPEN = 280;
 const DRAWER_WIDTH_CLOSED = 56;
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     drawer: {
       maxWidth: DRAWER_WIDTH_OPEN,
@@ -85,7 +85,7 @@ function NavigationRail({
 
   useEffect(() => {
     getVersionOfApp()
-      .then(version => setVersion(version))
+      .then((version) => setVersion(version))
       .catch(() => setVersion(undefined));
   }, []);
 
@@ -110,13 +110,13 @@ function NavigationRail({
       <div className={classes.toolbar} />
 
       <List className={classes.list}>
-        {withoutTutorialRoutes.map(route => (
+        {withoutTutorialRoutes.map((route) => (
           <RailItem key={route.path} path={route.path} text={route.title} icon={route.icon} />
         ))}
 
         <Divider />
 
-        {tutorialRoutes.map(route => (
+        {tutorialRoutes.map((route) => (
           <TutorialRailItem key={route.path} route={route} userData={userData} />
         ))}
 
@@ -126,7 +126,7 @@ function NavigationRail({
 
             <ListSubheader className={clsx(!open && classes.displayNone)}>Verwaltung</ListSubheader>
 
-            {managementRoutes.map(route => (
+            {managementRoutes.map((route) => (
               <RailItem key={route.path} path={route.path} text={route.title} icon={route.icon} />
             ))}
           </>

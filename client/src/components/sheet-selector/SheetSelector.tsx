@@ -8,7 +8,7 @@ import { Sheet } from '../../model/Sheet';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     select: {
       flex: 1,
@@ -53,7 +53,7 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions) {
     setLoadingSheets(true);
 
     getAllSheets()
-      .then(sheets => {
+      .then((sheets) => {
         setSheets(sheets);
       })
       .catch(() => setError('Blätter konnten nicht abgerufen werden'))
@@ -66,7 +66,7 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions) {
     }
 
     if (!!sheetId) {
-      setCurrentSheet(sheets.find(s => s.id === sheetId));
+      setCurrentSheet(sheets.find((s) => s.id === sheetId));
     } else {
       setCurrentSheet(undefined);
     }
@@ -112,8 +112,8 @@ function SheetSelector({
       emptyPlaceholder='Keine Bätter vorhanden.'
       className={clsx(classes.select, className)}
       items={sheets}
-      itemToString={sheet => sheet.toDisplayString()}
-      itemToValue={sheet => sheet.id}
+      itemToString={(sheet) => sheet.toDisplayString()}
+      itemToValue={(sheet) => sheet.id}
       value={currentSheet ? currentSheet.id : ''}
       onChange={onChange}
     />

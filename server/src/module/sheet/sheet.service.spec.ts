@@ -113,7 +113,7 @@ describe('SheetService', () => {
   it('find all sheets', async () => {
     const sheets = await service.findAll();
 
-    assertSheetList({ expected: SHEET_DOCUMENTS, actual: sheets.map(sheet => sheet.toDTO()) });
+    assertSheetList({ expected: SHEET_DOCUMENTS, actual: sheets.map((sheet) => sheet.toDTO()) });
   });
 
   it('find sheet by ID', async () => {

@@ -53,7 +53,7 @@ function PointsTable({
       </TableHead>
 
       <TableBody>
-        {sheet.exercises.map(ex => (
+        {sheet.exercises.map((ex) => (
           <TableRow key={ex.id} hover>
             <TableCell>Aufgabe {ex.exName}</TableCell>
             <TableCell align='right'>{grading?.getExerciseGrading(ex)?.totalPoints ?? 0}</TableCell>

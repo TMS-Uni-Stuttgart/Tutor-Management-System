@@ -76,10 +76,9 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
     }
   };
 
-  const editCriteria: (criteria: ScheinCriteria) => ScheinCriteriaFormCallback = criteria => async (
-    { name, identifier, ...values },
-    { setSubmitting }
-  ) => {
+  const editCriteria: (criteria: ScheinCriteria) => ScheinCriteriaFormCallback = (
+    criteria
+  ) => async ({ name, identifier, ...values }, { setSubmitting }) => {
     const dto: IScheinCriteriaDTO = {
       identifier,
       name,
@@ -91,7 +90,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
     try {
       const response = await editScheinCriteria(criteria.id, dto);
 
-      setCriterias(criterias.map(crit => (crit.id === criteria.id ? response : crit)));
+      setCriterias(criterias.map((crit) => (crit.id === criteria.id ? response : crit)));
 
       dialog.hide();
       enqueueSnackbar(`Kriterium "${dto.name}" erfolgreich bearbeitet.`, {
@@ -146,7 +145,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   function deleteCriteria(criteria: ScheinCriteria) {
     deleteScheinCriteria(criteria.id)
       .then(() => {
-        setCriterias(criterias.filter(c => c.id !== criteria.id));
+        setCriterias(criterias.filter((c) => c.id !== criteria.id));
 
         enqueueSnackbar(`Kriterium erfolgreich gelöscht.`, {
           variant: 'success',
@@ -170,7 +169,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
           placeholder='Keine Scheinkritrien vorhanden.'
           form={<ScheinCriteriaForm formData={formData} onSubmit={handleCreateCriteria} />}
           items={criterias}
-          createRowFromItem={crit => (
+          createRowFromItem={(crit) => (
             <ScheinCriteriaRow
               criteria={crit}
               onEditCriteriaClicked={handleEditCriteria}

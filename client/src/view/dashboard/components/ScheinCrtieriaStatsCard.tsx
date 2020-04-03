@@ -55,14 +55,14 @@ function ScheinCriteriaStatsCard({
 
   function filterSummaries(critId: string): ScheinCriteriaStatus[] {
     return Object.values(value.studentInfos)
-      .filter(studentInfo => Object.keys(studentInfo.scheinCriteriaSummary).includes(critId))
-      .map(summary => summary.scheinCriteriaSummary[critId]);
+      .filter((studentInfo) => Object.keys(studentInfo.scheinCriteriaSummary).includes(critId))
+      .map((summary) => summary.scheinCriteriaSummary[critId]);
   }
 
   function summaryHasInfo(critId: string) {
     let hasInfo: boolean = false;
 
-    filterSummaries(critId).forEach(status => {
+    filterSummaries(critId).forEach((status) => {
       if (Object.values(status.infos).length > 0) {
         hasInfo = true;
       } else {
@@ -87,8 +87,8 @@ function ScheinCriteriaStatsCard({
 
   function getAdditionlaStatusTicks(critId: string) {
     const elements: number[] = [];
-    filterSummaries(critId).forEach(item => {
-      Object.values(item.infos).forEach(info => {
+    filterSummaries(critId).forEach((item) => {
+      Object.values(item.infos).forEach((info) => {
         if (!elements.includes(info.no)) {
           elements.push(info.no);
         }
@@ -100,7 +100,7 @@ function ScheinCriteriaStatsCard({
   function getStatusStats(critId: string) {
     const counts: { [totalValue: number]: number } = {};
 
-    filterSummaries(critId).forEach(item => {
+    filterSummaries(critId).forEach((item) => {
       const achieved = item.achieved;
       const prevStudentCount = counts[achieved] || 0;
 
@@ -114,8 +114,8 @@ function ScheinCriteriaStatsCard({
 
   function getAdditionalStatusStats(critId: string) {
     const counts: [number, number][] = [];
-    filterSummaries(critId).forEach(item => {
-      Object.values(item.infos).forEach(info => {
+    filterSummaries(critId).forEach((item) => {
+      Object.values(item.infos).forEach((info) => {
         const element = info.no;
         const achieved = info.achieved;
 

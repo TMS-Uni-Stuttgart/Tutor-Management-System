@@ -57,16 +57,16 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
   expect(actual.tutor?.firstname).toEqual(tutor?.firstname);
   expect(actual.tutor?.lastname).toEqual(tutor?.lastname);
 
-  expect(actual.students).toEqual(students.map(s => s._id));
+  expect(actual.students).toEqual(students.map((s) => s._id));
   expect(actual.correctors).toEqual(
-    correctors.map(c => ({ id: c.id, firstname: c.firstname, lastname: c.lastname }))
+    correctors.map((c) => ({ id: c.id, firstname: c.firstname, lastname: c.lastname }))
   );
 
   const options: ToISOTimeOptions = {
     suppressMilliseconds: true,
   };
 
-  expect(actual.dates).toEqual(dates.map(date => date.toISODate()));
+  expect(actual.dates).toEqual(dates.map((date) => date.toISODate()));
   expect(actual.startTime).toEqual(startTime.toISOTime(options));
   expect(actual.endTime).toEqual(endTime.toISOTime(options));
 
@@ -103,7 +103,7 @@ function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOP
   expect(tutor?.id).toEqual(tutorId);
   expect(slot).toEqual(expected.slot);
 
-  expect(dates).toEqual(expected.dates.map(date => DateTime.fromISO(date).toISODate()));
+  expect(dates).toEqual(expected.dates.map((date) => DateTime.fromISO(date).toISODate()));
 
   const options: ToISOTimeOptions = {
     suppressMilliseconds: true,
@@ -112,7 +112,7 @@ function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOP
   expect(actual.startTime).toEqual(DateTime.fromISO(expectedStart).toISOTime(options));
   expect(actual.endTime).toEqual(DateTime.fromISO(expectedEnd).toISOTime(options));
 
-  expect(correctors.map(c => c.id)).toEqual(correctorIds);
+  expect(correctors.map((c) => c.id)).toEqual(correctorIds);
 
   if (!!oldTutorial) {
     expect(teams).toEqual(oldTutorial.teams);
@@ -155,7 +155,7 @@ describe('TutorialService', () => {
 
     assertTutorialList({
       expected: TUTORIAL_DOCUMENTS,
-      actual: allTutorials.map(tutorial => tutorial.toDTO()),
+      actual: allTutorials.map((tutorial) => tutorial.toDTO()),
     });
   });
 
@@ -212,7 +212,7 @@ describe('TutorialService', () => {
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
-      correctorIds: correctorDocs.map(corrector => corrector._id),
+      correctorIds: correctorDocs.map((corrector) => corrector._id),
     };
 
     const tutorial = await service.create(dto);
@@ -230,7 +230,7 @@ describe('TutorialService', () => {
       startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
       endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
       dates: createDatesForTutorialAsStrings(),
-      correctorIds: correctorDocs.map(corrector => corrector._id),
+      correctorIds: correctorDocs.map((corrector) => corrector._id),
     };
 
     const tutorial = await service.create(dto);
@@ -255,7 +255,7 @@ describe('TutorialService', () => {
 
   it('fail on creating a tutorial with a non corrector', async () => {
     const tutorDoc = getUserDocWithRole(Role.ADMIN);
-    const correctors = getAllUserDocsWithRole(Role.CORRECTOR).map(corrector => corrector._id);
+    const correctors = getAllUserDocsWithRole(Role.CORRECTOR).map((corrector) => corrector._id);
 
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
@@ -486,7 +486,7 @@ describe('TutorialService', () => {
 
     const students = await service.getAllStudentsOfTutorial(tutorialWithStudents._id);
 
-    expect(students.map(s => s.id)).toEqual(tutorialWithStudents.students.map(s => s._id));
+    expect(students.map((s) => s.id)).toEqual(tutorialWithStudents.students.map((s) => s._id));
   });
 
   it('fail on getting all student of a non-existing tutorial', async () => {

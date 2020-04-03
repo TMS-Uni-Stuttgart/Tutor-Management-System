@@ -70,7 +70,7 @@ function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean 
     return true;
   }
 
-  return routeRoles.findIndex(role => userRoles.includes(role)) !== -1;
+  return routeRoles.findIndex((role) => userRoles.includes(role)) !== -1;
 }
 
 function filterRoutes(userRoles: Role[]) {
@@ -143,7 +143,7 @@ function Drawer({
 
   useEffect(() => {
     getVersionOfApp()
-      .then(version => setVersion(version))
+      .then((version) => setVersion(version))
       .catch(() => setVersion(undefined));
   }, []);
 
@@ -172,11 +172,11 @@ function Drawer({
       <div className={classes.toolbar} />
 
       <List className={classes.drawerList}>
-        {userRoutesWithoutTutorialRoutes.map(route => (
+        {userRoutesWithoutTutorialRoutes.map((route) => (
           <DrawerListItem key={route.path} path={route.path} text={route.title} icon={route.icon} />
         ))}
 
-        {tutorials.map(tutorial => (
+        {tutorials.map((tutorial) => (
           <React.Fragment key={tutorial.id}>
             <Divider />
 
@@ -188,13 +188,13 @@ function Drawer({
           </React.Fragment>
         ))}
 
-        {tutorialsToCorrect.map(tutorial => (
+        {tutorialsToCorrect.map((tutorial) => (
           <React.Fragment key={tutorial.id}>
             <Divider />
 
             <TutorialSubList
               tutorial={tutorial}
-              tutorialRoutes={tutorialRoutes.filter(route =>
+              tutorialRoutes={tutorialRoutes.filter((route) =>
                 isRoleMatching([Role.CORRECTOR], route.roles)
               )}
               isDrawerOpen={!!open}
@@ -203,7 +203,7 @@ function Drawer({
           </React.Fragment>
         ))}
 
-        {substituteTutorials.map(tutorial => (
+        {substituteTutorials.map((tutorial) => (
           <React.Fragment key={tutorial.id}>
             <Divider />
 
@@ -222,7 +222,7 @@ function Drawer({
 
             <ListSubheader className={clsx(!open && classes.displayNone)}>Verwaltung</ListSubheader>
 
-            {managementRoutes.map(route => (
+            {managementRoutes.map((route) => (
               <DrawerListItem
                 key={route.path}
                 path={route.path}

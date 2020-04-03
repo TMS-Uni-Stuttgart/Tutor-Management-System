@@ -20,7 +20,7 @@ function transformCriteriaToInstance(doc: ScheincriteriaModel | null) {
   doc.criteria = Scheincriteria.fromDTO({ identifier, data, name: doc.name });
 }
 
-@post<ScheincriteriaModel>('find', function(result) {
+@post<ScheincriteriaModel>('find', function (result) {
   result.forEach(transformCriteriaToInstance);
 })
 @post<ScheincriteriaModel>('findOne', transformCriteriaToInstance)

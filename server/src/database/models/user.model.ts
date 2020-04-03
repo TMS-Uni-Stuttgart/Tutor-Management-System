@@ -20,10 +20,7 @@ export async function populateUserDocument(doc?: UserDocument) {
     return;
   }
 
-  await doc
-    .populate('tutorials')
-    .populate('tutorialsToCorrect')
-    .execPopulate();
+  await doc.populate('tutorials').populate('tutorialsToCorrect').execPopulate();
 }
 
 type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToCorrect'>;
@@ -37,7 +34,7 @@ type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToC
   // }
 })
 @plugin(mongooseAutopopulate)
-@pre<UserModel>('save', async function(next) {
+@pre<UserModel>('save', async function (next) {
   const isHashed = /^\$2[ayb]\$.{56}$/.test(this.password);
 
   if (isHashed) {
@@ -123,11 +120,11 @@ export class UserModel {
       roles,
       email,
       temporaryPassword,
-      tutorials: tutorials.map(tutorial => ({
+      tutorials: tutorials.map((tutorial) => ({
         id: tutorial.id,
         slot: tutorial.slot,
       })),
-      tutorialsToCorrect: tutorialsToCorrect.map(tutorial => ({
+      tutorialsToCorrect: tutorialsToCorrect.map((tutorial) => ({
         id: tutorial.id,
         slot: tutorial.slot,
       })),

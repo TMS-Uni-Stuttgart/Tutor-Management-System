@@ -59,16 +59,16 @@ export class ScheinexamCriteria extends Scheincriteria {
     // TODO: Clean me up or rewrite me to prevent duplicate code!
     const information: CriteriaInformationWithoutName['information'] = {};
 
-    exams.forEach(exam => {
+    exams.forEach((exam) => {
       const averages: { [exName: string]: number[] } = {};
       const distribution: CriteriaDistributionInformation = {};
       const achieved = { achieved: 0, notAchieved: 0, notPresent: 0 };
 
-      exam.exercises.forEach(exercise => {
+      exam.exercises.forEach((exercise) => {
         averages[exercise.exName] = [];
       });
 
-      students.forEach(student => {
+      students.forEach((student) => {
         const grading = student.getGrading(exam);
 
         if (grading === undefined) {
@@ -82,7 +82,7 @@ export class ScheinexamCriteria extends Scheincriteria {
           aboveThreshhold: result.achieved / result.total.must >= exam.percentageNeeded,
         };
 
-        exam.exercises.forEach(exercise => {
+        exam.exercises.forEach((exercise) => {
           averages[exercise.exName].push(grading.getExerciseGrading(exercise)?.points ?? 0);
         });
 
@@ -117,10 +117,10 @@ export class ScheinexamCriteria extends Scheincriteria {
 
     return {
       identifier: this.identifier,
-      sheetsOrExams: exams.map<CriteriaSheetOrExamInformation>(exam => ({
+      sheetsOrExams: exams.map<CriteriaSheetOrExamInformation>((exam) => ({
         id: exam.id,
         no: exam.scheinExamNo,
-        exercises: exam.exercises.map(ex => ex.toDTO()),
+        exercises: exam.exercises.map((ex) => ex.toDTO()),
       })),
       information,
     };

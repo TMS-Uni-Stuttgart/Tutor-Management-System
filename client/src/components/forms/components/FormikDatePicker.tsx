@@ -19,7 +19,7 @@ function FormikDatePicker({ name, className, ...other }: PropType): JSX.Element 
           fullWidth
           {...field}
           {...other}
-          onChange={date => form.setFieldValue(field.name, date, true)}
+          onChange={(date) => form.setFieldValue(field.name, date, true)}
           helperText={!!touched && error}
           error={touched && !!error}
           className={className}

@@ -27,7 +27,7 @@ export class SheetController {
   async getAllSheets(): Promise<ISheet[]> {
     const sheets = await this.sheetService.findAll();
 
-    return sheets.map(sheet => sheet.toDTO());
+    return sheets.map((sheet) => sheet.toDTO());
   }
 
   @Post()

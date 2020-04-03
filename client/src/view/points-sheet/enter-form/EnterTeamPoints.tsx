@@ -36,7 +36,7 @@ function EnterTeamPoints(): JSX.Element {
     }
 
     getTeamsOfTutorial(tutorialId)
-      .then(response => {
+      .then((response) => {
         setTeams(response);
       })
       .catch(() => setError('Teams konnten nicht abgerufen werden.'));
@@ -47,7 +47,7 @@ function EnterTeamPoints(): JSX.Element {
       return;
     }
 
-    const newSelectedTeam = teams.find(t => t.id === teamId);
+    const newSelectedTeam = teams.find((t) => t.id === teamId);
 
     if (newSelectedTeam) {
       setSelectedTeam(newSelectedTeam);
@@ -76,7 +76,7 @@ function EnterTeamPoints(): JSX.Element {
       await setPointsOfTeam(tutorialId, teamId, updateDTO);
       const updatedTeam = await getTeamOfTutorial(tutorialId, teamId);
 
-      setTeams(teams => teams.map(t => (t.id === teamId ? updatedTeam : t)));
+      setTeams((teams) => teams.map((t) => (t.id === teamId ? updatedTeam : t)));
 
       resetForm({ values: { ...values } });
       enqueueSnackbar(
@@ -114,7 +114,7 @@ function EnterTeamPoints(): JSX.Element {
       entitySelectProps={{
         label: 'Teams',
         emptyPlaceholder: 'Keine Teams verfügbar',
-        itemToString: team => team.toString(),
+        itemToString: (team) => team.toString(),
         onChange: handleTeamChange,
       }}
     />

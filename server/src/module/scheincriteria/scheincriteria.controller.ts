@@ -37,7 +37,7 @@ export class ScheincriteriaController {
   async getAllCriterias(): Promise<IScheinCriteria[]> {
     const scheincriterias = await this.scheincriteriaService.findAll();
 
-    return scheincriterias.map(criteria => criteria.toDTO());
+    return scheincriterias.map((criteria) => criteria.toDTO());
   }
 
   @Post()

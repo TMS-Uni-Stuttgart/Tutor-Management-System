@@ -104,7 +104,7 @@ function registerAllCriterias() {
     ScheinexamCriteria,
   ];
 
-  criterias.forEach(criteria => registerCriteria(criteria));
+  criterias.forEach((criteria) => registerCriteria(criteria));
 }
 
 function registerCriteria(criteriaClass: ScheincriteriaClass) {
@@ -151,7 +151,7 @@ describe('ScheincriteriaService', () => {
 
     assertScheincriteriaList({
       expected: SCHEINCRITERIA_DOCUMENTS,
-      actual: criterias.map(criteria => criteria.toDTO()),
+      actual: criterias.map((criteria) => criteria.toDTO()),
     });
   });
 

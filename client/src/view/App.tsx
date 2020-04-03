@@ -65,7 +65,7 @@ function App() {
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { ROOT, LOGIN } = RoutingPath;
 
-  const routes = ROUTES.map(route => getRouteElementForRoute(route));
+  const routes = ROUTES.map((route) => getRouteElementForRoute(route));
 
   return (
     <>

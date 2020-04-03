@@ -37,7 +37,7 @@ function Dashboard(): JSX.Element {
   useEffect(() => {
     setIsLoading(true);
 
-    (async function() {
+    (async function () {
       if (!userData) {
         return;
       }
@@ -56,7 +56,7 @@ function Dashboard(): JSX.Element {
           loggedInTutorial.id
         );
 
-        setTutorialsWithScheinCriteriaSummaries(prevState => [
+        setTutorialsWithScheinCriteriaSummaries((prevState) => [
           ...prevState,
           { tutorial, studentInfos },
         ]);
@@ -80,7 +80,7 @@ function Dashboard(): JSX.Element {
 
           <AllTutorialStatistics
             items={tutorialsWithScheinCriteriaSummaries}
-            createRowFromItem={item => <TutorialStatistics value={item} />}
+            createRowFromItem={(item) => <TutorialStatistics value={item} />}
             placeholder='Keine Tutorien vorhanden'
           />
         </>

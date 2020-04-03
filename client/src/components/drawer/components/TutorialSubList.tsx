@@ -79,7 +79,7 @@ function TutorialSubList({
       </ListItem>
       <Collapse in={isOpen} timeout='auto' unmountOnExit>
         <List component='div' disablePadding>
-          {tutorialRoutes.map(route => {
+          {tutorialRoutes.map((route) => {
             return (
               <DrawerListItem
                 key={`${tutorial.id}-${route.path}`}

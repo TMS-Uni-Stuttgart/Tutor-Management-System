@@ -4,7 +4,7 @@ export function calculateProgress(summary: ScheinCriteriaSummary) {
   let achieved = 0;
   let total = 0;
 
-  Object.values(summary.scheinCriteriaSummary).forEach(status => {
+  Object.values(summary.scheinCriteriaSummary).forEach((status) => {
     const infos = Object.values(status.infos);
 
     if (status.passed) {
@@ -12,7 +12,7 @@ export function calculateProgress(summary: ScheinCriteriaSummary) {
       total += 1;
     } else {
       if (infos.length > 0) {
-        infos.forEach(info => {
+        infos.forEach((info) => {
           achieved += info.achieved / info.total;
           total += 1;
         });

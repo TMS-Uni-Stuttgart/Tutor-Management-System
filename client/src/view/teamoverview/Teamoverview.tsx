@@ -45,8 +45,8 @@ function updateStudentsArray(
 ) {
   const updatedStudents = [...students];
 
-  studentsToUpdate.forEach(student => {
-    const ind = updatedStudents.findIndex(s => s.id === student.id);
+  studentsToUpdate.forEach((student) => {
+    const ind = updatedStudents.findIndex((s) => s.id === student.id);
 
     if (ind > -1) {
       updatedStudents[ind] = student;
@@ -67,7 +67,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   useEffect(() => {
     setIsLoading(true);
 
-    (async function() {
+    (async function () {
       const [studentsResponse, teams] = await Promise.all([
         getStudentsOfTutorial(params.tutorialId),
         getTeamsOfTutorial(params.tutorialId),
@@ -122,10 +122,10 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   function handleDeleteTeamSubmit(team: Team) {
     deleteTeam(params.tutorialId, team.id)
       .then(async () => {
-        setTeams(teams.filter(u => u.id !== team.id));
+        setTeams(teams.filter((u) => u.id !== team.id));
 
         const studentsWithoutDeletedTeam = await Promise.all(
-          team.students.map(stud => getStudent(stud.id))
+          team.students.map((stud) => getStudent(stud.id))
         );
 
         updateStudentsArray(studentsWithoutDeletedTeam, students, setStudents);
@@ -136,7 +136,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       });
   }
 
-  const handleEditTeamSubmit: (team: Team) => TeamFormSubmitCallback = team => async (
+  const handleEditTeamSubmit: (team: Team) => TeamFormSubmitCallback = (team) => async (
     { students },
     { setSubmitting }
   ) => {
@@ -146,7 +146,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       const response = await editTeam(params.tutorialId, team.id, teamDTO);
 
       setTeams(
-        teams.map(group => {
+        teams.map((group) => {
           if (group.id === team.id) {
             return response;
           }
@@ -170,7 +170,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       content: (
         <TeamForm
           team={team}
-          students={students.filter(student => !student.team || student.team.id === team.id)}
+          students={students.filter((student) => !student.team || student.team.id === team.id)}
           onSubmit={handleEditTeamSubmit(team)}
           onCancelClicked={dialog.hide}
         />
@@ -188,13 +188,13 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
           placeholder='Kein Team vorhanden.'
           form={
             <TeamForm
-              students={students.filter(student => !student.team)}
+              students={students.filter((student) => !student.team)}
               onSubmit={handleCreateTeam}
               className={classes.teamForm}
             />
           }
           items={teams}
-          createRowFromItem={team => (
+          createRowFromItem={(team) => (
             <TeamTableRow
               team={team}
               onEditTeamClicked={handleEditTeam}

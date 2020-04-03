@@ -53,9 +53,9 @@ function assertTeam({ expected, actual }: AssertTeamParams) {
   expect(actualTutorial).toEqual(tutorial._id);
   expect(actualTeamNo).toEqual(teamNo);
 
-  expect(actualStudents.map(s => s.id)).toEqual(students.map(s => s._id));
+  expect(actualStudents.map((s) => s.id)).toEqual(students.map((s) => s._id));
 
-  actualStudents.forEach(student => {
+  actualStudents.forEach((student) => {
     expect(student.team?.id).toEqual(_id);
   });
 }
@@ -90,9 +90,9 @@ function assertTeamDTO({ expected, actual }: AssertTeamDTOParams) {
   const { id, students: actualStudents } = actual;
 
   expect(id).toBeDefined();
-  expect(actualStudents.map(s => s.id)).toEqual(students);
+  expect(actualStudents.map((s) => s.id)).toEqual(students);
 
-  actualStudents.forEach(student => {
+  actualStudents.forEach((student) => {
     expect(student.team?.id).toEqual(id);
   });
 }
@@ -134,7 +134,7 @@ describe('TeamService', () => {
   it('find all teams in tutorial', async () => {
     const teams = await service.findAllTeamsInTutorial(TUTORIAL_OF_ALL_TEAMS._id);
 
-    assertTeamList({ expected: TEAM_DOCUMENTS, actual: teams.map(team => team.toDTO()) });
+    assertTeamList({ expected: TEAM_DOCUMENTS, actual: teams.map((team) => team.toDTO()) });
   });
 
   it('find specific team', async () => {

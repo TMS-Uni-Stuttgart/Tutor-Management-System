@@ -13,7 +13,7 @@ import { RailSubItemProps } from './RailSubItem';
 export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubItemProps[] {
   const subItems: RailSubItemProps[] = [];
 
-  userData.tutorials.forEach(tutorial => {
+  userData.tutorials.forEach((tutorial) => {
     subItems.push({
       subPath: getTutorialRelatedPath(route, tutorial.id),
       icon: TutorialIcon,
@@ -22,7 +22,7 @@ export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubIt
   });
 
   if (route.roles.includes(Role.CORRECTOR)) {
-    userData.tutorialsToCorrect.forEach(tutorial => {
+    userData.tutorialsToCorrect.forEach((tutorial) => {
       subItems.push({
         subPath: getTutorialRelatedPath(route, tutorial.id),
         icon: TutorialToCorrectIcon,
@@ -32,7 +32,7 @@ export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubIt
   }
 
   if (route.isAccessibleBySubstitute) {
-    userData.substituteTutorials.forEach(tutorial => {
+    userData.substituteTutorials.forEach((tutorial) => {
       subItems.push({
         subPath: getTutorialRelatedPath(route, tutorial.id),
         icon: SubstituteTutorialIcon,

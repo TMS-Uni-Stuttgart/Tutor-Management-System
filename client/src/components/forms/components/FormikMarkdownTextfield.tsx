@@ -48,7 +48,7 @@ function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldP
 
   const [isPreview, setPreview] = useState(false);
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = event => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
     if (event.ctrlKey && event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();

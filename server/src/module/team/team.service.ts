@@ -41,7 +41,7 @@ export class TeamService {
   async findAllTeamsInTutorial(tutorialId: string): Promise<TeamDocument[]> {
     const teams = await this.teamModel.find({ tutorial: tutorialId as any }).exec();
 
-    await Promise.all(teams.map(team => populateTeamDocument(team)));
+    await Promise.all(teams.map((team) => populateTeamDocument(team)));
 
     return teams;
   }
@@ -81,7 +81,7 @@ export class TeamService {
    */
   async createTeamInTutorial(tutorialId: string, { students }: TeamDTO): Promise<ITeam> {
     const tutorial = await this.tutorialService.findById(tutorialId);
-    const studentDocs = await Promise.all(students.map(id => this.studentService.findById(id)));
+    const studentDocs = await Promise.all(students.map((id) => this.studentService.findById(id)));
 
     this.assertAllStudentsInSameTutorial(tutorialId, studentDocs);
 
@@ -115,7 +115,7 @@ export class TeamService {
   async updateTeamInTutorial(teamId: TeamID, { students }: TeamDTO): Promise<ITeam> {
     const team = await this.findById(teamId);
     const newStudentsOfTeam = await Promise.all(
-      students.map(id => this.studentService.findById(id))
+      students.map((id) => this.studentService.findById(id))
     );
 
     this.assertAllStudentsInSameTutorial(teamId.tutorialId, newStudentsOfTeam);
@@ -190,7 +190,7 @@ export class TeamService {
     students: StudentDocument[]
   ): Promise<StudentDocument[]> {
     return Promise.all(
-      students.map(student => {
+      students.map((student) => {
         student.team = team;
         student.markModified('team');
 
@@ -208,7 +208,7 @@ export class TeamService {
    */
   private async removeAllStudentsFromTeam(team: TeamDocument): Promise<StudentDocument[]> {
     return Promise.all(
-      team.students.map(student => {
+      team.students.map((student) => {
         student.team = undefined;
         student.markModified('team');
 

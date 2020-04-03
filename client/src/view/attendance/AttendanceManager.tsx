@@ -70,11 +70,11 @@ function getAvailableDates(
   }
 
   if (user && !isAdminPage) {
-    const substituteTutorial = user.substituteTutorials.find(sub => sub.id === tutorial.id);
+    const substituteTutorial = user.substituteTutorials.find((sub) => sub.id === tutorial.id);
 
     if (substituteTutorial) {
       return tutorial.dates.filter(
-        date => substituteTutorial.dates.findIndex(d => date.hasSame(d, 'day')) !== -1
+        (date) => substituteTutorial.dates.findIndex((d) => date.hasSame(d, 'day')) !== -1
       );
     }
   }
@@ -83,7 +83,7 @@ function getAvailableDates(
 }
 
 function getFilteredStudents(allStudents: Student[], filterOption: FilterOption): Student[] {
-  return allStudents.filter(stud => {
+  return allStudents.filter((stud) => {
     switch (filterOption) {
       case FilterOption.ACTIVE_ONLY:
         return stud.status === StudentStatus.ACTIVE;
@@ -158,7 +158,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       return;
     }
 
-    const tutorial: Tutorial | undefined = tutorials.find(t => t.id === e.target.value);
+    const tutorial: Tutorial | undefined = tutorials.find((t) => t.id === e.target.value);
     setTutorial(tutorial);
     setDate(undefined);
   }
@@ -167,8 +167,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     const date = DateTime.fromISO(attendance.date);
     const dateKey = parseDateToMapKey(date);
 
-    setFetchedStudents(students =>
-      students.map(innerStudent => {
+    setFetchedStudents((students) =>
+      students.map((innerStudent) => {
         if (innerStudent.id === student.id) {
           innerStudent.attendances.set(dateKey, attendance);
         }
@@ -235,7 +235,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     }
 
     const selectedOption: FilterOption | undefined = Object.values(FilterOption).find(
-      op => op === e.target.value
+      (op) => op === e.target.value
     );
 
     if (!selectedOption) {
@@ -291,8 +291,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       try {
         await setCakeCountForStudent(student.id, { cakeCount });
 
-        setFetchedStudents(students =>
-          students.map(s => {
+        setFetchedStudents((students) =>
+          students.map((s) => {
             if (s.id === student.id) {
               s.cakeCount = cakeCount;
             }
@@ -321,8 +321,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
                 className={classes.barItem}
                 value={tutorial?.id ?? ''}
                 items={tutorials}
-                itemToString={tutorial => `Tutorium Slot #${tutorial.slot}`}
-                itemToValue={tutorial => tutorial.id}
+                itemToString={(tutorial) => `Tutorium Slot #${tutorial.slot}`}
+                itemToValue={(tutorial) => tutorial.id}
                 onChange={handleTutoriumSelectionChanged}
               />
             )}
@@ -330,7 +330,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
             <DateOfTutorialSelection
               className={classes.barItem}
               availableDates={availableDates}
-              onDateSelected={date => setDate(date)}
+              onDateSelected={(date) => setDate(date)}
               disabled={!tutorial}
               value={date?.toISODate() ?? ''}
             />
@@ -341,8 +341,8 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
               className={classes.barItem}
               value={filterOption ?? ''}
               items={Object.values(FilterOption)}
-              itemToString={option => option}
-              itemToValue={option => option}
+              itemToString={(option) => option}
+              itemToValue={(option) => option}
               onChange={handleFilteroptionChange}
               disabled={!tutorial || !date}
             />
@@ -375,7 +375,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
           {date ? (
             <TableWithPadding
               items={filteredStudents}
-              createRowFromItem={student => {
+              createRowFromItem={(student) => {
                 const attendance: IAttendance | undefined = student.getAttendance(date);
 
                 return (
@@ -383,7 +383,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
                     key={student.id}
                     student={student}
                     attendance={attendance}
-                    onAttendanceSelection={state => handleStudentAttendanceChange(student, state)}
+                    onAttendanceSelection={(state) => handleStudentAttendanceChange(student, state)}
                     onNoteSave={handleStudentNoteChange(student)}
                     onCakeCountChanged={handleCakeCountChange(student)}
                   />

@@ -36,7 +36,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
   async findAll(): Promise<TutorialDocument[]> {
     const tutorials: TutorialDocument[] = await this.tutorialModel.find().exec();
 
-    await Promise.all(tutorials.map(doc => populateTutorialDocument(doc)));
+    await Promise.all(tutorials.map((doc) => populateTutorialDocument(doc)));
 
     return tutorials;
   }
@@ -76,7 +76,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     const { slot, tutorId, correctorIds, startTime, endTime, dates } = dto;
     const [tutor, correctors] = await Promise.all([
       tutorId ? this.userService.findById(tutorId) : undefined,
-      Promise.all(correctorIds.map(id => this.userService.findById(id))),
+      Promise.all(correctorIds.map((id) => this.userService.findById(id))),
     ]);
 
     this.assertTutorHasTutorRole(tutor);
@@ -90,7 +90,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
       tutor,
       startTime: startDate,
       endTime: endDate,
-      dates: dates.map(date => DateTime.fromISO(date)),
+      dates: dates.map((date) => DateTime.fromISO(date)),
       correctors,
     });
 
@@ -114,14 +114,14 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     const tutorial = await this.findById(id);
     const tutor = !!dto.tutorId ? await this.userService.findById(dto.tutorId) : undefined;
     const correctors = await Promise.all(
-      dto.correctorIds.map(corrId => this.userService.findById(corrId))
+      dto.correctorIds.map((corrId) => this.userService.findById(corrId))
     );
 
     this.assertTutorHasTutorRole(tutor);
     this.assertCorrectorsHaveCorrectorRole(correctors);
 
     tutorial.slot = dto.slot;
-    tutorial.dates = dto.dates.map(date => DateTime.fromISO(date));
+    tutorial.dates = dto.dates.map((date) => DateTime.fromISO(date));
     tutorial.startTime = DateTime.fromISO(dto.startTime);
     tutorial.endTime = DateTime.fromISO(dto.endTime);
 
@@ -160,12 +160,12 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     const { dates, tutorId } = dto;
 
     if (!tutorId) {
-      dates.forEach(date => tutorial.removeSubstitute(DateTime.fromISO(date)));
+      dates.forEach((date) => tutorial.removeSubstitute(DateTime.fromISO(date)));
     } else {
       const tutor = await this.userService.findById(tutorId);
       this.assertTutorHasTutorRole(tutor);
 
-      dates.forEach(date => tutorial.setSubstitute(DateTime.fromISO(date), tutor));
+      dates.forEach((date) => tutorial.setSubstitute(DateTime.fromISO(date), tutor));
     }
 
     const updated = await tutorial.save();

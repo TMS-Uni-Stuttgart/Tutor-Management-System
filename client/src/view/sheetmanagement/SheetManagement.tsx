@@ -38,18 +38,18 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   useEffect(() => {
     setIsLoading(true);
     getAllSheets()
-      .then(response => {
+      .then((response) => {
         setSheets(response);
         setIsLoading(false);
       })
-      .catch(reason => console.error(reason));
+      .catch((reason) => console.error(reason));
   }, [getAllSheets]);
 
   const handleSubmit: SheetFormSubmitCallback = async (
     { sheetNo, exercises, bonusSheet },
     { setSubmitting, resetForm, setFieldError }
   ) => {
-    const isNoInUse = sheets.find(t => t.sheetNo.toString() === sheetNo) !== undefined;
+    const isNoInUse = sheets.find((t) => t.sheetNo.toString() === sheetNo) !== undefined;
     const duplicateName: string | undefined = getDuplicateExerciseName(exercises);
 
     if (duplicateName) {
@@ -84,7 +84,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
     }
   };
 
-  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback = sheet => async (
+  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback = (sheet) => async (
     { sheetNo, exercises, bonusSheet },
     { setSubmitting }
   ) => {
@@ -98,7 +98,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
       const response = await editSheetRequest(sheet.id, sheetDTO);
 
       setSheets(
-        sheets.map(s => {
+        sheets.map((s) => {
           if (s.id === sheet.id) {
             return response;
           }
@@ -156,7 +156,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   function deleteSheet(sheet: Sheet) {
     deleteSheetRequest(sheet.id)
       .then(() => {
-        setSheets(sheets.filter(s => s.id !== sheet.id));
+        setSheets(sheets.filter((s) => s.id !== sheet.id));
         enqueueSnackbar('Blatt wurde erfolgreich gelöscht', { variant: 'success' });
       })
       .finally(() => dialog.hide());
@@ -171,7 +171,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
           title='Neues Übungsblatt erstellen'
           form={<SheetForm sheets={sheets} onSubmit={handleSubmit} />}
           items={sheets}
-          createRowFromItem={sheet => (
+          createRowFromItem={(sheet) => (
             <SheetRow
               key={sheet.id}
               sheet={sheet}

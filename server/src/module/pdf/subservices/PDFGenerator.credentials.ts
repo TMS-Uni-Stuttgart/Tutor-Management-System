@@ -16,7 +16,7 @@ export class CredentialsPDFGenerator extends PDFGenerator {
    */
   public async generatePDF(): Promise<Buffer> {
     const users = await this.userService.findAll();
-    const tableRows: string[] = users.map(user => {
+    const tableRows: string[] = users.map((user) => {
       const tempPwd = user.temporaryPassword || 'NO TMP PASSWORD';
       const nameOfUser = getNameOfEntity(user);
 

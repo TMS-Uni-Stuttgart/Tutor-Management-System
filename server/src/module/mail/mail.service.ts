@@ -48,7 +48,7 @@ export class MailService {
 
     const users = await this.userService.findAll();
     const mails: Promise<MailingResponse>[] = [];
-    const userToSendMailTo = users.filter(u => u.username !== 'admin' && !!u.temporaryPassword);
+    const userToSendMailTo = users.filter((u) => u.username !== 'admin' && !!u.temporaryPassword);
 
     for (const user of userToSendMailTo) {
       if (this.isValidEmail(user.email)) {
@@ -113,7 +113,7 @@ export class MailService {
 
     for (const mail of mails) {
       if (mail instanceof MailingError) {
-        const user = users.find(u => u.id === mail.userId) as UserDocument;
+        const user = users.find((u) => u.id === mail.userId) as UserDocument;
 
         failedMailsInfo.push({
           userId: user.id,

@@ -49,8 +49,8 @@ function generateCreateTutorialDTO({
   const endTime = DateTime.fromISO(endTimeString).set({ second: 0, millisecond: 0 });
 
   const dates: string[] = selectedDates
-    .map(date => DateTime.fromISO(date))
-    .map(date => date.toISODate());
+    .map((date) => DateTime.fromISO(date))
+    .map((date) => date.toISODate());
 
   return {
     slot,
@@ -88,7 +88,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     values,
     { setSubmitting, resetForm, setFieldError }
   ) => {
-    const isSlotInUse = tutorials.find(t => t.slot === values.slot) !== undefined;
+    const isSlotInUse = tutorials.find((t) => t.slot === values.slot) !== undefined;
 
     if (isSlotInUse) {
       setFieldError('slot', 'Dieser Slot ist bereits vergeben.');
@@ -109,14 +109,14 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
     }
   };
 
-  const handleEditTutorialSubmit: (
-    tutorial: HasId
-  ) => TutorialFormSubmitCallback = tutorial => async (values, { setSubmitting }) => {
+  const handleEditTutorialSubmit: (tutorial: HasId) => TutorialFormSubmitCallback = (
+    tutorial
+  ) => async (values, { setSubmitting }) => {
     try {
       const updatedTutorial = await editTutorial(tutorial.id, generateCreateTutorialDTO(values));
 
       setTutorials(
-        tutorials.map(t => {
+        tutorials.map((t) => {
           if (t.id !== updatedTutorial.id) {
             return t;
           }
@@ -173,7 +173,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
   function handleDeleteTutorialSubmit(tutorial: Tutorial) {
     deleteTutorial(tutorial.id)
       .then(() => {
-        setTutorials(tutorials.filter(t => t.id !== tutorial.id));
+        setTutorials(tutorials.filter((t) => t.id !== tutorial.id));
         enqueueSnackbar(`${tutorial.toDisplayString()} wurde gelöscht.`, {
           variant: 'success',
         });
@@ -192,13 +192,13 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
             <TutorialForm tutors={tutors} correctors={correctors} onSubmit={handleCreateTutorial} />
           }
           items={tutorials}
-          createRowFromItem={tutorial => (
+          createRowFromItem={(tutorial) => (
             <TutorialTableRow
               tutorial={tutorial}
-              correctors={tutorial.correctors.map(corr => getNameOfEntity(corr))}
+              correctors={tutorial.correctors.map((corr) => getNameOfEntity(corr))}
               substitutes={[...tutorial.substitutes]
                 .map(([date, substitute]) => {
-                  const tutor = tutors.find(t => t.id === substitute.id);
+                  const tutor = tutors.find((t) => t.id === substitute.id);
 
                   return {
                     date: DateTime.fromISO(date),

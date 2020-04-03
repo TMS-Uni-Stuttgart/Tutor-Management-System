@@ -34,7 +34,7 @@ export function getFilteredStudents(
   sortOption: StudentSortOption
 ): Student[] {
   return students
-    .filter(s => {
+    .filter((s) => {
       if (!filterText) {
         return true;
       }

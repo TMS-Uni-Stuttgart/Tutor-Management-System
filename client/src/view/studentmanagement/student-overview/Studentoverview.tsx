@@ -77,7 +77,7 @@ function Studentoverview({
       content: (
         <StudentForm
           student={student}
-          otherStudents={students.filter(s => s.id !== student.id)}
+          otherStudents={students.filter((s) => s.id !== student.id)}
           teams={teams}
           onSubmit={handleEditStudent({ student, dialog, ...handlerParams })}
           onCancelClicked={() => dialog.hide()}
@@ -145,7 +145,7 @@ function Studentoverview({
     }
 
     const selectedOption: StudentSortOption | undefined = Object.values(StudentSortOption).find(
-      op => op === e.target.value
+      (op) => op === e.target.value
     );
 
     if (!selectedOption) {
@@ -160,7 +160,7 @@ function Studentoverview({
       <TextField
         variant='outlined'
         label='Suche'
-        onChange={e => setFilterText(e.target.value)}
+        onChange={(e) => setFilterText(e.target.value)}
         className={classes.searchField}
         InputProps={{
           startAdornment: <SearchIcon color='disabled' />,
@@ -173,8 +173,8 @@ function Studentoverview({
         className={classes.sortSelect}
         value={sortOption}
         items={Object.values(StudentSortOption)}
-        itemToString={option => option}
-        itemToValue={option => option}
+        itemToString={(option) => option}
+        itemToValue={(option) => option}
         onChange={handleSortOptionChange}
       />
 

@@ -15,7 +15,7 @@ export async function getTeamsOfTutorial(tutorialId: string): Promise<Team[]> {
 
   if (response.status === 200) {
     const data = plainToClass(Team, response.data);
-    data.forEach(team => sortStudentsOfTeam(team));
+    data.forEach((team) => sortStudentsOfTeam(team));
     data.sort((a, b) => a.teamNo - b.teamNo);
 
     return data;

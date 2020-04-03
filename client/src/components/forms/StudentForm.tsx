@@ -28,7 +28,7 @@ const validationSchema = Yup.object().shape({
   firstname: Yup.string().required('Benötigt'),
   email: Yup.string().email('Keine gültige E-Mailadresse'),
   matriculationNo: Yup.string().test({
-    test: function(this, matriculationNo: string | undefined) {
+    test: function (this, matriculationNo: string | undefined) {
       if (matriculationNo === undefined || matriculationNo === '') {
         return true;
       }
@@ -215,9 +215,7 @@ function StudentForm({
               endAdornment:
                 values['matriculationNo'] === '' ? (
                   <AlertIcon className={classes.warningColor} />
-                ) : (
-                  undefined
-                ),
+                ) : undefined,
               classes: {
                 notchedOutline:
                   values['matriculationNo'] === '' ? classes.warningBorder : undefined,
@@ -256,7 +254,7 @@ function StudentForm({
             emptyPlaceholder='Keine Status vorhanden.'
             items={availableStatuses}
             itemToString={statusToString}
-            itemToValue={s => s}
+            itemToValue={(s) => s}
           />
         </>
       )}

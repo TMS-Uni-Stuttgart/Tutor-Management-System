@@ -20,7 +20,7 @@ function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
           {...other}
           helperText={!!touched && error}
           error={touched && !!error}
-          onChange={time => {
+          onChange={(time) => {
             form.setFieldValue(field.name, time, true);
 
             if (onChange) {

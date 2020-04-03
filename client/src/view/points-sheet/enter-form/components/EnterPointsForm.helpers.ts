@@ -49,7 +49,7 @@ export function generateInitialValues({ entity, sheet }: InitialValuesOptions): 
   const gradingOfTeam = entity.getGrading(sheet);
   const exercises: { [id: string]: PointsFormExerciseState } = {};
 
-  sheet.exercises.forEach(exercise => {
+  sheet.exercises.forEach((exercise) => {
     const gradingOfExercise = gradingOfTeam?.getExerciseGrading(exercise);
 
     if (exercise.subexercises.length > 0) {

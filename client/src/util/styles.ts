@@ -113,7 +113,7 @@ export function createTheme(type: PaletteType): Theme {
   return createMuiTheme({
     palette,
     mixins: {
-      scrollbar: width => ({
+      scrollbar: (width) => ({
         ...generateScrollbarCSS({ type, width }),
       }),
       chart: generateChartStyle,

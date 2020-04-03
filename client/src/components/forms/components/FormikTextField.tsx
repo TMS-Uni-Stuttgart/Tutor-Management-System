@@ -56,7 +56,7 @@ function FormikTextField({
           {...field}
           variant='outlined'
           value={getValue(field.value)}
-          onChange={e => {
+          onChange={(e) => {
             if (isPercentage) {
               form.setFieldValue(name, Number.parseInt(e.target.value, 10) / 100);
             } else {

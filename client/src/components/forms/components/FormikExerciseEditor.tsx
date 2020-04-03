@@ -204,7 +204,7 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
   return (
     <FieldArray
       name={name}
-      render={arrayHelpers => (
+      render={(arrayHelpers) => (
         <div className={classes.exerciseBox}>
           {exercises.map((ex, idx) => (
             <React.Fragment key={idx}>

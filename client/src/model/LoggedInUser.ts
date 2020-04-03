@@ -13,7 +13,9 @@ class LoggedInSubstituteTutorial {
   readonly id!: string;
   readonly slot!: string;
 
-  @Transform((values: string[]) => values.map(val => DateTime.fromISO(val)), { toClassOnly: true })
+  @Transform((values: string[]) => values.map((val) => DateTime.fromISO(val)), {
+    toClassOnly: true,
+  })
   readonly dates!: DateTime[];
 }
 

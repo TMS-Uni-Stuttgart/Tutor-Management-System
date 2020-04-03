@@ -114,7 +114,7 @@ describe('ScheinexamService', () => {
 
     assertScheinexamList({
       expected: SCHEINEXAM_DOCUMENTS,
-      actual: scheinexams.map(exam => exam.toDTO()),
+      actual: scheinexams.map((exam) => exam.toDTO()),
     });
   });
 

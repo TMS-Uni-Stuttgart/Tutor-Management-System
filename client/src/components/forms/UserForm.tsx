@@ -64,8 +64,8 @@ function getInitialFormState(user?: IUser): UserFormState {
     firstname: user.firstname,
     lastname: user.lastname,
     roles: user.roles,
-    tutorials: user.tutorials.map(t => t.id),
-    tutorialsToCorrect: user.tutorialsToCorrect.map(t => t.id),
+    tutorials: user.tutorials.map((t) => t.id),
+    tutorialsToCorrect: user.tutorialsToCorrect.map((t) => t.id),
     username: user.username,
     email: user.email,
     password: '',
@@ -81,9 +81,7 @@ function getValidationSchema(
   } = {
     firstname: Yup.string().required('Benötigt'),
     lastname: Yup.string().required('Benötigt'),
-    email: Yup.string()
-      .email('Keine gültige E-Mailadresse')
-      .required('Benötigt'),
+    email: Yup.string().email('Keine gültige E-Mailadresse').required('Benötigt'),
     roles: Yup.array()
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
@@ -181,10 +179,10 @@ function UserForm({
               }
             }}
             items={availableRoles}
-            itemToString={role => Role[role].toString()}
-            itemToValue={role => role}
+            itemToString={(role) => Role[role].toString()}
+            itemToValue={(role) => role}
             multiple
-            isItemSelected={role => values['roles'].indexOf(role) > -1}
+            isItemSelected={(role) => values['roles'].indexOf(role) > -1}
           />
 
           <FormikTextFieldWithButtons
@@ -230,10 +228,10 @@ function UserForm({
             helperText='Tutorien, die gehalten werden.'
             emptyPlaceholder='Keine Tutorien vorhanden.'
             items={tutorials}
-            itemToString={tutorial => `Slot ${tutorial.slot}`}
-            itemToValue={tutorial => tutorial.id}
+            itemToString={(tutorial) => `Slot ${tutorial.slot}`}
+            itemToValue={(tutorial) => tutorial.id}
             multiple
-            isItemSelected={tutorial => values['tutorials'].indexOf(tutorial.id) > -1}
+            isItemSelected={(tutorial) => values['tutorials'].indexOf(tutorial.id) > -1}
             disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
           />
 
@@ -243,10 +241,10 @@ function UserForm({
             helperText='Tutorien, die korrigiert werden.'
             emptyPlaceholder='Keine Tutorien vorhanden.'
             items={tutorials}
-            itemToString={tutorial => `Slot ${tutorial.slot}`}
-            itemToValue={tutorial => tutorial.id}
+            itemToString={(tutorial) => `Slot ${tutorial.slot}`}
+            itemToValue={(tutorial) => tutorial.id}
             multiple
-            isItemSelected={tutorial => values['tutorialsToCorrect'].indexOf(tutorial.id) > -1}
+            isItemSelected={(tutorial) => values['tutorialsToCorrect'].indexOf(tutorial.id) > -1}
             disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
           />
         </>

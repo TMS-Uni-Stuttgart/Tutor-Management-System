@@ -47,7 +47,7 @@ function ScheinexamPointsOverview(): JSX.Element {
 
   useEffect(() => {
     getAllScheinExams()
-      .then(response => {
+      .then((response) => {
         setExams(response);
       })
       .catch(() => setError('Scheinklausuren konnten nicht abgerufen werden.'));
@@ -59,13 +59,13 @@ function ScheinexamPointsOverview(): JSX.Element {
       return;
     }
 
-    const newSelected = exams.find(e => e.id === examId);
+    const newSelected = exams.find((e) => e.id === examId);
     setSelectedExam(newSelected);
   }, [examId, exams]);
 
   useEffect(() => {
     getStudentsOfTutorial(tutorialId)
-      .then(response => {
+      .then((response) => {
         setStudents(response);
       })
       .catch(() => setError('Scheinklausuren konnten nicht abgerufen werden.'));
@@ -88,8 +88,8 @@ function ScheinexamPointsOverview(): JSX.Element {
           emptyPlaceholder='Keine Scheinklausuren vorhanden.'
           className={classes.examSelect}
           items={exams}
-          itemToString={exam => `Scheinklausur #${exam.scheinExamNo.toString().padStart(2, '0')}`}
-          itemToValue={exam => exam.id}
+          itemToString={(exam) => `Scheinklausur #${exam.scheinExamNo.toString().padStart(2, '0')}`}
+          itemToValue={(exam) => exam.id}
           value={selectedExam?.id ?? ''}
           onChange={handleScheinexamSelection}
         />

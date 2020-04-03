@@ -82,10 +82,7 @@ export function getEnterPointsForTeamPath({
 }: EnterPointsForTeamParams): string {
   const path: string = getPathOfRouteWithTutorial(RoutingPath.ENTER_POINTS_TEAM, tutorialId);
 
-  return path
-    .replace(':sheetId', sheetId)
-    .replace(':teamId', teamId)
-    .replace(/\/\/+/, '/');
+  return path.replace(':sheetId', sheetId).replace(':teamId', teamId).replace(/\/\/+/, '/');
 }
 
 export function getEnterPointsForStudentPath({
@@ -110,10 +107,7 @@ export function getEnterPointsForScheinexamPath({
 }: EnterPointsForScheinexamParams): string {
   const path = getPathOfRouteWithTutorial(RoutingPath.SCHEIN_EXAMS_STUDENT, tutorialId);
 
-  return path
-    .replace(':examId', examId)
-    .replace(':studentId', studentId)
-    .replace(/\/\/+/, '/');
+  return path.replace(':examId', examId).replace(':studentId', studentId).replace(/\/\/+/, '/');
 }
 
 export function getStudentOverviewPath(tutorialId?: string): string {

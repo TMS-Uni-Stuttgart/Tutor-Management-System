@@ -212,7 +212,7 @@ describe('StudentService', () => {
 
     assertStudentList({
       expected: STUDENT_DOCUMENTS,
-      actual: students.map(student => student.toDTO()),
+      actual: students.map((student) => student.toDTO()),
     });
   });
 

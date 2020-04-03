@@ -46,7 +46,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
 
     if (url.startsWith(`/${API_PREFIX}`)) {
       return response.status(status).send(exception.message);
-    } else if (ALLOWED_EXTENSIONS.filter(ext => url.indexOf(ext) > 0).length > 0) {
+    } else if (ALLOWED_EXTENSIONS.filter((ext) => url.indexOf(ext) > 0).length > 0) {
       this.sendFile(url, response);
     } else {
       this.sendFile('index.html', response);
@@ -58,7 +58,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
   }
 
   private sendFile(file: string, response: Response) {
-    response.sendFile(this.resolvePath(file), err => {
+    response.sendFile(this.resolvePath(file), (err) => {
       if (err && !response.headersSent) {
         response.status(404).send(this.getFileNotFoundExceptionMessage(file));
       }

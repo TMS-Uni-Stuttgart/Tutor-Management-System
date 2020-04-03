@@ -39,7 +39,7 @@ export class ExerciseGradingModel {
 
     let sum = 0;
 
-    this.subExercisePoints.forEach(value => {
+    this.subExercisePoints.forEach((value) => {
       sum += value;
     });
 
@@ -171,7 +171,7 @@ export class GradingModel {
    * @param student Student to add to this grading.
    */
   addStudent(this: GradingDocument, student: StudentDocument) {
-    const idx = this.students.findIndex(s => s.id === student.id);
+    const idx = this.students.findIndex((s) => s.id === student.id);
 
     if (idx === -1) {
       this.students.push(student);
@@ -187,7 +187,7 @@ export class GradingModel {
    * @param student Student to remove.
    */
   removeStudent(this: GradingDocument, student: StudentDocument) {
-    const idx = this.students.findIndex(s => s.id === student.id);
+    const idx = this.students.findIndex((s) => s.id === student.id);
 
     if (idx !== -1) {
       this.students.splice(idx, 1);

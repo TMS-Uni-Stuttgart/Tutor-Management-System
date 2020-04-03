@@ -87,7 +87,7 @@ export function FormikTextFieldWithButtons({
             {...field}
             {...(TextFieldProps as any)}
             error={touched && !!error}
-            onFocus={e => e.target.select()}
+            onFocus={(e) => e.target.select()}
             InputProps={{
               endAdornment: <>{buttonComps}</>,
             }}

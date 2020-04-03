@@ -18,7 +18,7 @@ import { getStudentInfoPath } from '../../../../routes/Routing.helpers';
 import ScheinStatusBox from '../../student-info/components/ScheinStatusBox';
 import { useStudentStore } from '../../student-store/StudentStore';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     statusProgress: {
       maxWidth: '200px',

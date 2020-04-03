@@ -136,7 +136,7 @@ function ScheinCriteriaStatusTable({ summary }: Props): JSX.Element {
         className={classes.infoRowTable}
         placeholder='Keine Kriterien vorhanden'
         items={Object.values(summary)}
-        createRowFromItem={status => (
+        createRowFromItem={(status) => (
           <TableRow>
             {status.name.length > 0 ? (
               <TableCell>{status.name}</TableCell>

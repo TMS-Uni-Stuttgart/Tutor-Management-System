@@ -24,7 +24,7 @@ function getInitialFormState(team?: Team): TeamFormState {
     return {
       filter: '',
       teamNo: team.teamNo,
-      students: team.students.map(student => student.id),
+      students: team.students.map((student) => student.id),
     };
   }
 
@@ -46,9 +46,9 @@ function TeamForm({ students, onSubmit, team, ...other }: Props): JSX.Element {
             emptyPlaceholder='Keine Studierenden vorhanden.'
             filterPlaceholder='Suche nach Namen'
             items={students}
-            itemToString={student => `${student.lastname}, ${student.firstname}`}
-            itemToValue={student => student.id}
-            isItemSelected={student => values['students'].indexOf(student.id) > -1}
+            itemToString={(student) => `${student.lastname}, ${student.firstname}`}
+            itemToValue={(student) => student.id}
+            isItemSelected={(student) => values['students'].indexOf(student.id) > -1}
             style={{ gridColumn: '1 / span 2' }}
           />
         </>

@@ -17,7 +17,7 @@ export class SheetModel {
     const { exercises, ...rest } = fields;
     Object.assign(this, rest);
 
-    this.exercises = exercises.map(ex => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+    this.exercises = exercises.map((ex) => ExerciseModel.fromDTO(ex) as ExerciseDocument);
   }
 
   @prop({ required: true })
@@ -41,7 +41,7 @@ export class SheetModel {
       id: this.id,
       sheetNo: this.sheetNo,
       bonusSheet: this.bonusSheet,
-      exercises: this.exercises.map(ex => ex.toDTO()),
+      exercises: this.exercises.map((ex) => ex.toDTO()),
     };
   }
 }
