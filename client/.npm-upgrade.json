@@ -1,8 +1,8 @@
 {
   "ignore": {
     "@date-io/luxon": {
-      "versions": "2.4.0",
-      "reason": "Not compatible with @material-ui/pickers right now."
+      "versions": "^2.5.1",
+      "reason": "Not compatible with @material-ui/pickers v3."
     }
   }
 }
