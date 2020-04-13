@@ -23,7 +23,7 @@ Here are the most important libraries listed which are used in any part of the p
 - [Material-UI](https://material-ui.com) - Frontend component library.
 - [Formik](https://jaredpalmer.com/formik/) - Used to clean up the React mess in forms.
 - [axios](https://github.com/axios/axios) - Used to make the REST calls against the backend.
-- [Express](http://expressjs.com/) - Backend framework used.
+- [NestJS](https://nestjs.com/) - Backend framework used.
 - [mongoose](https://mongoosejs.com/) - Used to connect to the MongoDB.
 - [typegoose](https://github.com/typegoose/typegoose) - Makes working with mongoose documents & typescript easier.
 
