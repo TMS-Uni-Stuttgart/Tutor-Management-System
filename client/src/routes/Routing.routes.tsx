@@ -1,14 +1,14 @@
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import {
   Account as StudentIcon,
-  AccountBadge as UserIcon,
+  BadgeAccount as UserIcon,
   AccountMultiple as TeamIcon,
   AccountMultipleCheck as AttendancesIcon,
   Book as EnterPointsIcon,
   Comment as PresentationIcon,
   File as SheetIcon,
-  FileDocumentBox as ScheinexamPointsIcon,
-  FileDocumentBoxMultiple as ScheinexamManagementIcon,
+  TextBox as ScheinexamPointsIcon,
+  TextBoxMultiple as ScheinexamManagementIcon,
   Login as LoginIcon,
   ScriptText as ScheincriteriaIcon,
   Teach as TutorialIcon,
