@@ -1,6 +1,6 @@
 import { Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Account as PersonIcon, ContactMail as MailIcon } from 'mdi-material-ui';
+import { Account as PersonIcon, Email as MailIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';

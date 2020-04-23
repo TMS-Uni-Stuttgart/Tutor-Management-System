@@ -17,7 +17,7 @@ import {
   Brightness5 as LightIcon,
   Brightness7 as DarkIcon,
   Download as DownloadIcon,
-  GithubCircle as GitHubIcon,
+  Github as GitHubIcon,
   Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
