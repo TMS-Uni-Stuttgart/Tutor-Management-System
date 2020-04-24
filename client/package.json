@@ -43,7 +43,7 @@
     "i18next-sync-fs-backend": "^1.1.1",
     "i18next-xhr-backend": "^3.2.2",
     "mdi-material-ui": "^6.13.2",
-    "notistack": "^0.9.9",
+    "notistack": "^0.9.11",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-google-charts": "^3.0.15",
