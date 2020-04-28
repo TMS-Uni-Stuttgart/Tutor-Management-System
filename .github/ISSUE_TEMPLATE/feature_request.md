@@ -7,8 +7,5 @@ assignees: ''
 
 ---
 
-# :mag_right: Short
-<!-- Provide a short summary of the feature request -->
-
 # :ticket: Description
 <!-- Describe the feature request -->

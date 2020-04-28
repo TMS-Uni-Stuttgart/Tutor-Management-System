@@ -2,7 +2,7 @@
 name: Darkmode bug
 about: Report a bug related to the darkmode.
 title: ''
-labels: ":dark_sunglasses:darkmode, \U0001F41E bug, \U0001F4BB client"
+labels: "\U0001F41E bug, \U0001F4BB client"
 assignees: ''
 
 ---
