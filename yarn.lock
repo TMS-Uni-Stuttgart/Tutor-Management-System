@@ -9559,10 +9559,10 @@ mongodb@3.5.7, mongodb@^3.1.0, mongodb@^3.5.4:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongoose-autopopulate@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.12.1.tgz#bc3bb624f1afbd999fb47e409503a0d8d5b1bb32"
-  integrity sha512-XPGtNGH+ly/Wc8ZKWg34saeIVzTgUHd2xe1dGX07bs9FISc7LZcsL5J++PY0UqzV0JAWguIceVY0KNq9g+IaYw==
+mongoose-autopopulate@^0.12.2:
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.12.2.tgz#5209c7f9934b2642d2eac1afc84d289316138a84"
+  integrity sha512-ZpjylV6ty0iqNjSWPgQWDMaBExnXrvCNhci9EnX49O0fOIVES1Qc7r1d+nxYBKvQutYW5UWs+fauahOTTlpjww==
 
 mongoose-field-encryption@^3.0.4:
   version "3.0.4"
