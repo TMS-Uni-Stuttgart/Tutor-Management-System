@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.150",
     "@types/luxon": "^1.22.0",
-    "@types/markdown-it": "^10.0.0",
+    "@types/markdown-it": "^10.0.1",
     "@types/node": "^13.13.2",
     "@types/yup": "^0.28.0",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
