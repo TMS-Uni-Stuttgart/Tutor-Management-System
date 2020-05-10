@@ -1,4 +1,4 @@
-import { DocumentType, modelOptions, post, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, post, prop, mongoose, Severity } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { Scheincriteria } from '../../module/scheincriteria/container/Scheincriteria';
@@ -24,7 +24,10 @@ function transformCriteriaToInstance(doc: ScheincriteriaModel | null) {
   result.forEach(transformCriteriaToInstance);
 })
 @post<ScheincriteriaModel>('findOne', transformCriteriaToInstance)
-@modelOptions({ schemaOptions: { collection: CollectionName.SCHEINCRITERIA } })
+@modelOptions({
+  schemaOptions: { collection: CollectionName.SCHEINCRITERIA },
+  options: { allowMixed: Severity.ALLOW },
+})
 export class ScheincriteriaModel {
   constructor(fields: NoFunctions<ScheincriteriaModel>) {
     Object.assign(this, fields);
@@ -33,7 +36,7 @@ export class ScheincriteriaModel {
   @prop({ required: true })
   name!: string;
 
-  @prop({ required: true })
+  @prop({ required: true, type: mongoose.Schema.Types.Mixed })
   criteria!: Scheincriteria;
 
   toDTO(this: ScheincriteriaDocument): IScheinCriteria {
