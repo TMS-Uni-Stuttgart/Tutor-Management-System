@@ -398,5 +398,5 @@ export function createDatesForTutorialAsStrings(startISODate: string = '2020-02-
     dates.push(baseDate.plus({ weeks: i }));
   }
 
-  return dates.map(date => date.toISODate());
+  return dates.map((date) => date.toISODate());
 }

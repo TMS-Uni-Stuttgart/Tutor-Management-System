@@ -52,7 +52,7 @@ export class TestModule implements OnApplicationShutdown {
    * @return Promise which resolves to the generated DynamicModule.
    */
   static async forRootAsync(): Promise<DynamicModule> {
-    const models = MODEL_OPTIONS.map(opt => opt.model);
+    const models = MODEL_OPTIONS.map((opt) => opt.model);
     const mongodb = new MongoMemoryServer({
       instance: {
         dbName: 'tms',
@@ -92,7 +92,7 @@ export class TestModule implements OnApplicationShutdown {
     }
 
     await Promise.all(
-      Object.values(this.connection.collections).map(collection => collection.deleteMany({}))
+      Object.values(this.connection.collections).map((collection) => collection.deleteMany({}))
     );
 
     await this.fillCollections();

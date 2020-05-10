@@ -13,14 +13,14 @@ const packageInfo = getPackageInfo();
 
 function getLatestOrPre(): 'pre' | 'latest' {
   const args = process.argv;
-  const preArgument = args.find(arg => arg === '--pre');
+  const preArgument = args.find((arg) => arg === '--pre');
 
   return preArgument ? 'pre' : 'latest';
 }
 
 function getVersion(): string {
   const args = process.argv;
-  const versionArgument = args.find(arg => arg.includes('--version=') || arg.includes('-v='));
+  const versionArgument = args.find((arg) => arg.includes('--version=') || arg.includes('-v='));
 
   if (versionArgument === undefined) {
     return packageInfo.version;
@@ -36,14 +36,14 @@ function getVersion(): string {
 
 function isVersionInTar(): boolean {
   const args = process.argv;
-  const versionArgument = args.find(arg => arg == '--no-version-in-tar-name');
+  const versionArgument = args.find((arg) => arg == '--no-version-in-tar-name');
 
   return !versionArgument;
 }
 
 function isSkipBundleStep(): boolean {
   const args = process.argv;
-  const isSkipBundleArgument = args.find(arg => arg === '--skip-bundle');
+  const isSkipBundleArgument = args.find((arg) => arg === '--skip-bundle');
 
   return !!isSkipBundleArgument;
 }
