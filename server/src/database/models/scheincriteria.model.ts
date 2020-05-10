@@ -1,4 +1,4 @@
-import { DocumentType, modelOptions, mongoose, post, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, post, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { Scheincriteria } from '../../module/scheincriteria/container/Scheincriteria';
@@ -33,7 +33,7 @@ export class ScheincriteriaModel {
   @prop({ required: true })
   name!: string;
 
-  @prop({ required: true, type: mongoose.Schema.Types.Mixed })
+  @prop({ required: true })
   criteria!: Scheincriteria;
 
   toDTO(this: ScheincriteriaDocument): IScheinCriteria {

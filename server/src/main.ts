@@ -2,11 +2,11 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { databaseConfig, getSessionTimeout } from './helpers/config';
 import { isDevelopment } from './helpers/isDevelopment';
 import session = require('express-session');
 import passport = require('passport');
 import { NotFoundExceptionFilter } from './filter/not-found-exception.filter';
+import { SettingsService } from './module/settings/settings.service';
 
 export const API_PREFIX = 'api';
 
@@ -19,28 +19,16 @@ export const API_PREFIX = 'api';
  */
 function initSecurityMiddleware(app: INestApplication) {
   const loggerContext = 'Init session';
+  const settings = app.get(SettingsService);
   Logger.log('Setting up passport...', loggerContext);
 
-  // const MongoStore = ConnectMongo(session);
-  // const mongoStoreOptions: { secret: string } & (
-  //   | MongoUrlOptions
-  //   | MongooseConnectionOptions
-  //   | NativeMongoOptions
-  //   | NativeMongoPromiseOptions
-  // ) = {
-  //   mongooseConnection: mongoose.connection,
-  //   secret: databaseConfig.secret,
-  // };
-  const timeoutSetting = getSessionTimeout();
+  const timeoutSetting = settings.getSessionTimeout();
 
   Logger.log(`Setting timeout to: ${timeoutSetting} minutes`, loggerContext);
 
   app.use(
     session({
-      // genid: () => {
-      //   return uuid();
-      // },
-      secret: databaseConfig.secret,
+      secret: settings.getDatabaseConfig().secret,
       resave: false,
       // Is used to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
       rolling: true,
@@ -51,8 +39,6 @@ function initSecurityMiddleware(app: INestApplication) {
       },
     })
   );
-
-  // initPassport(passport);
 
   app.use(passport.initialize());
   app.use(passport.session());
