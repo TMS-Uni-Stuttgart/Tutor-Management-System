@@ -40,7 +40,7 @@ export class MongooseMockModelProvider<T> {
   private readonly documents: MockedDocument<T>[];
 
   constructor(documents: T[], private readonly additionalProperties?: AdditionalProperties) {
-    this.documents = documents.map(doc => this.adjustDocument(doc, additionalProperties));
+    this.documents = documents.map((doc) => this.adjustDocument(doc, additionalProperties));
   }
 
   find(conditions?: any): MockedQuery<T> {
@@ -85,7 +85,7 @@ export class MongooseMockModelProvider<T> {
   }
 
   save(docToSave: MockedDocument<T>): MockedDocument<T> {
-    const index = this.documents.findIndex(doc => doc.id === docToSave.id);
+    const index = this.documents.findIndex((doc) => doc.id === docToSave.id);
 
     if (index === -1) {
       return this.create(docToSave);
@@ -96,7 +96,7 @@ export class MongooseMockModelProvider<T> {
   }
 
   remove(docToRemove: MockedDocument<T>): MockedDocument<T> | null {
-    const index = this.documents.findIndex(doc => doc.id === docToRemove.id);
+    const index = this.documents.findIndex((doc) => doc.id === docToRemove.id);
 
     if (index === -1) {
       throw new Error('Document to remove could not be found');
