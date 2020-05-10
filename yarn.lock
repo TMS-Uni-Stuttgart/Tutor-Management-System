@@ -2491,6 +2491,14 @@
     "@types/bson" "*"
     "@types/node" "*"
 
+"@types/mongoose@^5.7.1":
+  version "5.7.16"
+  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.7.16.tgz#ea23f027fdb2ee2a79c42114c0a1a1d1fc8bf38a"
+  integrity sha512-QuWb8Tqjq1r/ZEpBi9MBWpuu8upe+4Co89GExyIFb0Q7TCmeMQsxG1lVfkmjk8GVm/qMIwUMdpuopVLPhmnFUA==
+  dependencies:
+    "@types/mongodb" "*"
+    "@types/node" "*"
+
 "@types/mongoose@^5.7.14":
   version "5.7.14"
   resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.7.14.tgz#f0bc55e2cbb19c96cd7826c7fe7965d48f41bb58"
@@ -5594,6 +5602,14 @@ entities@^2.0.0, entities@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
   integrity sha512-D9f7V0JSRwIxlRI2mjMqufDrRDnx8p+eEOz7aUM9SuvF8gsBzra0/6tbjl1m8eQHrZlYj6PxqE00hZ1SAIKPLw==
+
+env-cmd@^10.1.0:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/env-cmd/-/env-cmd-10.1.0.tgz#c7f5d3b550c9519f137fdac4dd8fb6866a8c8c4b"
+  integrity sha512-mMdWTT9XKN7yNth/6N6g2GuKuJTsKMDHlQFUDacb/heQRRWOTIZ42t1rMHnQu4jYxU1ajdTeJM+9eEETlqToMA==
+  dependencies:
+    commander "^4.0.0"
+    cross-spawn "^7.0.0"
 
 errno@^0.1.3, errno@~0.1.7:
   version "0.1.7"

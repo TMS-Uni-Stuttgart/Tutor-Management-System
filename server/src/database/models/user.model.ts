@@ -4,11 +4,11 @@ import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'src/shared/model/Role';
 import { CollectionName } from '../../helpers/CollectionName';
-import { databaseConfig } from '../../helpers/config';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { IUser } from '../../shared/model/User';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { TutorialDocument } from './tutorial.model';
+import { SettingsService } from '../../module/settings/settings.service';
 
 /**
  * Populates the fields in the given UserDocument. If no document is provided this functions does nothing.
@@ -26,7 +26,7 @@ export async function populateUserDocument(doc?: UserDocument) {
 type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToCorrect'>;
 
 @plugin(fieldEncryption, {
-  secret: databaseConfig.secret,
+  secret: SettingsService.getSecret(),
   fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email', 'roles'],
   // saltGenerator: function(secret: string) {
   // TODO: Make deterministic salt generator to be able to encrypt username?! If so, change `getUserWithUsername()` in UserService
