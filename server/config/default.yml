@@ -3,14 +3,14 @@ sessionTimeout: 120
 
 database:
   databaseURL: 'mongodb://localhost:27017/tms-nestjs'
-  secret: 'keyboard cat'
+  # secret: 'keyboard cat'
   maxRetries: 2
   config:
     # This is needed bc of the docker-compose file
     authSource: 'admin'
-    auth:
-      user: 'root'
-      password: 'example'
+    # auth:
+    #   user: 'root'
+    #   password: 'example'
     authMechanism: 'SCRAM-SHA-1'
 
 mailing:

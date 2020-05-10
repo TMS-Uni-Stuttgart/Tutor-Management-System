@@ -14,7 +14,7 @@ import { IExerciseGrading, IGrading } from '../../shared/model/Points';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 import { StudentDocument, StudentModel } from './student.model';
 import { fieldEncryption } from 'mongoose-field-encryption';
-import { databaseConfig } from '../../helpers/config';
+import { SettingsService } from '../../module/settings/settings.service';
 
 export class ExerciseGradingModel {
   constructor({ points }: { points: number }) {
@@ -119,7 +119,7 @@ export class ExerciseGradingModel {
 
 @modelOptions({ schemaOptions: { collection: CollectionName.GRADING } })
 @plugin(fieldEncryption, {
-  secret: databaseConfig.secret,
+  secret: SettingsService.getSecret(),
   fields: ['comment', 'additionalPoints', 'exerciseGradings'],
 })
 export class GradingModel {

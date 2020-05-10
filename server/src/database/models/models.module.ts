@@ -1,14 +1,14 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { AttendanceModel } from './attendance.model';
+import { GradingModel } from './grading.model';
 import { ScheincriteriaModel } from './scheincriteria.model';
 import { ScheinexamModel } from './scheinexam.model';
 import { SheetModel } from './sheet.model';
 import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
-import { TutorialModel, SubstituteModel } from './tutorial.model';
+import { SubstituteModel, TutorialModel } from './tutorial.model';
 import { UserModel } from './user.model';
-import { GradingModel } from './grading.model';
 
 @Global()
 @Module({})
