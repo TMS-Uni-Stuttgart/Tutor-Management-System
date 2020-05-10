@@ -15,6 +15,7 @@ import { PdfModule } from './module/pdf/pdf.module';
 import { MarkdownModule } from './module/markdown/markdown.module';
 import { MailModule } from './module/mail/mail.module';
 import { ExcelModule } from './module/excel/excel.module';
+import { SettingsModule } from './module/settings/settings.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ExcelModule } from './module/excel/excel.module';
     MarkdownModule,
     MailModule,
     ExcelModule,
+    SettingsModule,
   ],
   controllers: [],
   providers: [],
