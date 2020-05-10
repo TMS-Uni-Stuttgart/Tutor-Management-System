@@ -1,18 +1,18 @@
-import { Logger, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { DecoratorKeys } from '@typegoose/typegoose/lib/internal/constants';
 import {
   FormBooleanFieldData,
+  FormDataResponse,
+  FormDataSet,
   FormEnumFieldData,
   FormFieldData,
   FormFloatFieldData,
   FormIntegerFieldData,
   FormSelectValue,
   FormStringFieldData,
-  FormDataResponse,
-  FormDataSet,
 } from '../../../shared/model/FormTypes';
 import { Scheincriteria } from './Scheincriteria';
-import { ScheincriteriaForm, ScheincriteriaClass } from './scheincriteria.form';
+import { ScheincriteriaClass, ScheincriteriaForm } from './scheincriteria.form';
 import { ScheincriteriaMetadata, ScheincriteriaMetadataKey } from './scheincriteria.metadata';
 
 class SCContainer {
@@ -103,7 +103,9 @@ class SCContainer {
     const bluePrint = this.criteriaBluePrints.get(identifier);
 
     if (!bluePrint) {
-      throw new NotFoundException(`No criteria blue print found for identifier '${identifier}'.`);
+      throw new InternalServerErrorException(
+        `No criteria blue print found for identifier '${identifier}'.`
+      );
     }
 
     return bluePrint;
