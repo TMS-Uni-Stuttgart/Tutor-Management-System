@@ -10,13 +10,13 @@ export const ENV_VARIABLE_NAMES = {
 export class EnvironmentConfig {
   @IsString()
   @Expose({ name: ENV_VARIABLE_NAMES.mongoDbUser })
-  mongoDbUser!: string;
+  readonly mongoDbUser!: string;
 
   @IsString()
   @Expose({ name: ENV_VARIABLE_NAMES.mongoDbPassword })
-  mongoDbPassword!: string;
+  readonly mongoDbPassword!: string;
 
   @IsString()
   @Expose({ name: ENV_VARIABLE_NAMES.secret })
-  secret!: string;
+  readonly secret!: string;
 }

@@ -1,10 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
-import config from 'config';
+import fs from 'fs';
 import { ConnectionOptions } from 'mongoose';
+import path from 'path';
+import YAML from 'yaml';
 import { StartUpException } from '../../exceptions/StartUpException';
+import { ApplicationConfiguration } from './model/ApplicationConfiguration';
+import { DatabaseConfiguration } from './model/DatabaseConfiguration';
 import { EnvironmentConfig, ENV_VARIABLE_NAMES } from './model/EnvironmentConfig';
+import { MailingConfiguration } from './model/MailingConfiguration';
 
 export interface DatabaseConfig {
   databaseURL: string;
@@ -13,17 +18,17 @@ export interface DatabaseConfig {
   maxRetries?: number;
 }
 
-type DatabaseConfigFromFile = Pick<DatabaseConfig, 'databaseURL' | 'maxRetries'> & {
-  config: Omit<DatabaseConfig['config'], 'auth'>;
-};
-
 @Injectable()
 export class SettingsService {
+  private readonly API_PREFIX = 'api';
   private static service: SettingsService | undefined;
+  private readonly config: ApplicationConfiguration;
   private readonly databaseConfig: Readonly<DatabaseConfig>;
   private readonly envConfig: EnvironmentConfig;
 
   constructor() {
+    this.config = this.loadConfigFile();
+
     this.envConfig = this.loadEnvironmentVariables();
     this.databaseConfig = this.loadDatabaseConfig();
 
@@ -39,16 +44,15 @@ export class SettingsService {
   }
 
   static getSecret(): string {
-    // TODO: Find a better solution to get the secret before the SettingsModule gets fully loaded (due to mongoose-field-encryption needing that secret first).
     const service = this.getService();
 
-    return service.getDatabaseConfig().secret;
+    return service.getDatabaseConfiguration().secret;
   }
 
   /**
    * @returns Configuration for the database.
    */
-  getDatabaseConfig(): DatabaseConfig {
+  getDatabaseConfiguration(): DatabaseConfig {
     return this.databaseConfig;
   }
 
@@ -60,37 +64,53 @@ export class SettingsService {
    * @returns The specified session timeout in _minutes_.
    */
   getSessionTimeout(): number {
-    try {
-      const timeoutSetting = config.get('sessionTimeout');
-
-      if (typeof timeoutSetting === 'number') {
-        return timeoutSetting;
-      }
-
-      if (typeof timeoutSetting === 'string') {
-        const timeout = Number.parseInt(timeoutSetting, 10);
-
-        if (!Number.isNaN(timeout)) {
-          return timeout;
-        }
-      }
-
+    if (this.config.sessionTimeout !== undefined) {
+      return this.config.sessionTimeout;
+    } else {
       Logger.warn(
-        `Invalid setting for 'sessionTimeout' provided (got: '${timeoutSetting}'). It has to be a number or a string which could be parsed to an integer. Falling back to a default value of 2h.`
-      );
-
-      return 120;
-    } catch {
-      Logger.warn(
-        "No setting for 'sessionTimeout' got provided. Falling back to the default value of 2h."
+        "No 'sessionTimeout' setting was provided. Falling back to a default value of 120 minutes."
       );
 
       return 120;
     }
   }
 
+  /**
+   * @returns Prefix for the app or `null` if none is provided.
+   */
+  getPathPrefix(): string | null {
+    return this.config.prefix ?? null;
+  }
+
+  /**
+   * @returns Prefix for the API path.
+   */
+  getAPIPrefix(): string {
+    const pathPrefix = this.getPathPrefix();
+
+    if (pathPrefix) {
+      return `${pathPrefix}/${this.API_PREFIX}`.replace('//', '/');
+    } else {
+      return this.API_PREFIX;
+    }
+  }
+
+  /**
+   * @returns Configuration for the mailing service.
+   */
+  getMailingConfiguration(): MailingConfiguration {
+    return this.config.mailing;
+  }
+
+  /**
+   * Loads the configuration of the database.
+   *
+   * This is achieved by combining the required options from the config-file and the required environment variables.
+   *
+   * @returns Configuration options for the database.
+   */
   private loadDatabaseConfig(): DatabaseConfig {
-    const configFromFile: DatabaseConfigFromFile = config.get('database');
+    const configFromFile: DatabaseConfiguration = this.config.database;
 
     return {
       databaseURL: configFromFile.databaseURL,
@@ -117,7 +137,7 @@ export class SettingsService {
       excludeExtraneousValues: true,
     });
 
-    this.assertNoErrors(validateSync(envConfig));
+    this.assertEnvNoErrors(validateSync(envConfig));
 
     return envConfig;
   }
@@ -128,7 +148,7 @@ export class SettingsService {
    * @param errors Array containing validation errors from class-validator (or empty).
    * @throws `StartUpException` - If `errors` is not empty.
    */
-  private assertNoErrors(errors: ValidationError[]) {
+  private assertEnvNoErrors(errors: ValidationError[]) {
     if (errors.length === 0) {
       return;
     }
@@ -142,5 +162,91 @@ export class SettingsService {
     }
 
     throw new StartUpException(message);
+  }
+
+  private assertConfigNoErrors(errors: ValidationError[]) {
+    if (errors.length === 0) {
+      return;
+    }
+
+    let message: string = 'Validation for configuration failed. For more details see below:';
+
+    for (const error of errors) {
+      message += '\n' + this.getStringForError(error);
+    }
+
+    throw new StartUpException(message);
+  }
+
+  private getStringForError(error: ValidationError, depth: number = 1): string {
+    const { property, children, constraints } = error;
+    let tabs: string = '';
+
+    for (let i = 0; i < depth; i++) {
+      tabs += '\t';
+    }
+
+    let message = `The following validation error(s) occured for the "${property}" property:`;
+
+    if (children.length > 0) {
+      for (const childError of children) {
+        message += '\n' + tabs + this.getStringForError(childError, depth + 1);
+      }
+    } else {
+      if (!!constraints) {
+        for (const [constraint, msg] of Object.entries(constraints)) {
+          message += '\n' + tabs + `\t${constraint} - ${msg}`;
+        }
+      } else {
+        message += '\n' + tabs + '\tUnknown error';
+      }
+    }
+
+    return message;
+  }
+
+  private loadConfigFile(): ApplicationConfiguration {
+    const environment = process.env.NODE_ENV || 'development';
+    const filePath = path.join(this.getConfigPath(), `${environment}.yml`);
+
+    try {
+      const content = fs.readFileSync(filePath, { encoding: 'utf8' }).toString();
+
+      return this.initConfig(content, environment);
+    } catch (err) {
+      if (err instanceof StartUpException) {
+        throw err;
+      } else {
+        Logger.error(err);
+
+        throw new StartUpException(
+          `Could not load the configuration for the "${environment}" environment. Make sure a corresponding configuration file exists and is readable.`
+        );
+      }
+    }
+  }
+
+  private initConfig(fileContent: string, environment: string): ApplicationConfiguration {
+    try {
+      const configString = YAML.parse(fileContent);
+      const config = plainToClass(ApplicationConfiguration, configString);
+
+      this.assertConfigNoErrors(validateSync(config));
+
+      Logger.log(`Configuration loaded for "${environment}" environment`);
+      return config;
+    } catch (err) {
+      if (err instanceof StartUpException) {
+        throw err;
+      } else {
+        throw new StartUpException(
+          `The loaded configuration for the ${environment} environment is not a valid YAML file.`
+        );
+      }
+    }
+  }
+
+  private getConfigPath(): string {
+    return path.join(process.cwd(), 'config');
   }
 }
