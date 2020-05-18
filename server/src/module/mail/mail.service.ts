@@ -1,4 +1,3 @@
-import config from 'config';
 import { Injectable, Logger } from '@nestjs/common';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
@@ -10,12 +9,11 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { MailingStatus, FailedMail } from '../../shared/model/Mail';
 import { UserService } from '../user/user.service';
 import { UserDocument } from '../../database/models/user.model';
+import { SettingsService } from '../settings/settings.service';
 
 interface AdditionalOptions {
   testingMode?: boolean;
-  templates: {
-    credentials: string;
-  };
+  template: string;
 }
 
 class MailingError {
@@ -33,7 +31,10 @@ export class InvalidConfigurationException {
 export class MailService {
   private readonly logger = new Logger(MailService.name);
 
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly settings: SettingsService
+  ) {}
 
   /**
    * Sends a mail with the credentials to all users with their credentials.
@@ -136,15 +137,16 @@ export class MailService {
     return { successFullSend, failedMailsInfo };
   }
 
-  private getTextOfMail(user: UserDocument, { templates }: TransportOptions): string {
-    return templates.credentials
+  private getTextOfMail(user: UserDocument, { template }: TransportOptions): string {
+    return template
       .replace('{{name}}', `${user.firstname} ${user.lastname}`)
       .replace('{{username}}', user.username)
       .replace('{{password}}', user.temporaryPassword || '');
   }
 
   private getConfig(): TransportOptions {
-    const options = config.get<TransportOptions>('mailing');
+    const options = this.settings.getMailingConfiguration();
+    // const options = config.get<TransportOptions>('mailing');
 
     if (options.testingMode) {
       const auth = options.auth as AuthenticationTypeLogin | undefined;
@@ -162,9 +164,7 @@ export class MailService {
       }
 
       return {
-        templates: {
-          credentials: options.templates.credentials,
-        },
+        template: options.template,
         host: 'smtp.ethereal.email',
         port: 587,
         auth: {
@@ -204,14 +204,8 @@ export class MailService {
   }
 
   private assertValidConfig(config: TransportOptions) {
-    if (!config.templates) {
-      throw new InvalidConfigurationException('No template settings were provided');
-    }
-
-    if (!config.templates.credentials) {
-      throw new InvalidConfigurationException(
-        'No template settings for the credentials mail were provided'
-      );
+    if (!config.template) {
+      throw new InvalidConfigurationException('No template setting was provided');
     }
 
     if (!config.auth) {

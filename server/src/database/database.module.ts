@@ -30,7 +30,7 @@ export class DatabaseModule {
 
   private static connectToDB(): Promise<Connection> {
     return new Promise((resolve, reject) => {
-      const databaseConfig = SettingsService.getService().getDatabaseConfig();
+      const databaseConfig = SettingsService.getService().getDatabaseConfiguration();
       const maxRetries = databaseConfig.maxRetries ?? 2;
 
       async function tryToConnect(prevTries: number) {
