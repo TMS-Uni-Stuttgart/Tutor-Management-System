@@ -1,6 +1,7 @@
 import i18n from 'i18next';
-import { initReactI18next, useTranslation as usei18nTranslation } from 'react-i18next';
 import Backend from 'i18next-xhr-backend';
+import { initReactI18next, useTranslation as usei18nTranslation } from 'react-i18next';
+import { getApiUrl } from '../../hooks/fetching/Axios';
 import { isDevelopment } from '../isDevelopmentMode';
 
 export enum i18nNamespace {
@@ -29,13 +30,8 @@ i18n
     },
     backend: {
       loadPath: '/static/locales/{{lng}}/{{ns}}.json',
-      addPath: 'http://localhost:8080/api/locales/{{lng}}/{{ns}}',
+      addPath: `${getApiUrl()}/locales/{{lng}}/{{ns}}`,
       withCredentials: true,
-      // overrideMimeType: true,
-      // ajax: function(_url: string, _options: any, _cb: any, data: any) {
-      //   console.log(_url);
-      //   console.log(data);
-      // },
     },
     react: {
       useSuspense: false,
