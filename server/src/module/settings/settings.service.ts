@@ -35,6 +35,13 @@ export class SettingsService {
     SettingsService.service = this;
   }
 
+  /**
+   * Returns the currently active service.
+   *
+   * If no service was previously created a new one is created and returned.
+   *
+   * @returns Current SettingsService.
+   */
   static getService() {
     if (!SettingsService.service) {
       return new SettingsService();
@@ -43,6 +50,13 @@ export class SettingsService {
     return SettingsService.service;
   }
 
+  /**
+   * Returns the encryption secret.
+   *
+   * If no SettingsService was previously created a new one is created.
+   *
+   * @returns Encrytion secret.
+   */
   static getSecret(): string {
     const service = this.getService();
 
@@ -164,6 +178,15 @@ export class SettingsService {
     throw new StartUpException(message);
   }
 
+  /**
+   * Checks if the `errors` array is empty.
+   *
+   * If it is not empty an exception is thrown.
+   *
+   * @param errors Array containing the validation errors.
+   *
+   * @throws `StartUpException` - If the `errors` array is not empty.
+   */
   private assertConfigNoErrors(errors: ValidationError[]) {
     if (errors.length === 0) {
       return;
@@ -178,6 +201,14 @@ export class SettingsService {
     throw new StartUpException(message);
   }
 
+  /**
+   * Converts the given ValidationError to a formatted String.
+   *
+   * @param error Error to convert to a string.
+   * @param depth Current recursion depth. Used for appending an appropriate "\t" infront of the message.
+   *
+   * @returns String for the given ValidationError.
+   */
   private getStringForError(error: ValidationError, depth: number = 1): string {
     const { property, children, constraints } = error;
     let tabs: string = '';
@@ -205,6 +236,14 @@ export class SettingsService {
     return message;
   }
 
+  /**
+   * Loads the configuration file and returns the parsed configuration.
+   *
+   * The configuration file for the current environment gets loaded and parsed.
+   *
+   * @returns Parsed and validated ApplicationConfiguration.
+   * @throws `StartUpException` - If the configuration file does not exist or if the configuration is not valid.
+   */
   private loadConfigFile(): ApplicationConfiguration {
     const environment = process.env.NODE_ENV || 'development';
     const filePath = path.join(this.getConfigPath(), `${environment}.yml`);
@@ -226,6 +265,17 @@ export class SettingsService {
     }
   }
 
+  /**
+   * Loads the configuration from the given file content.
+   *
+   * If the content is not a valid configuration or valid YAML an exception is thrown.
+   *
+   * @param fileContent Content of the config file. Needs to be a valid YAML string and must contain a valid configuration.
+   * @param environment Value of the NodeJS environment setting.
+   *
+   * @returns Parsed and validated ApplicationConfiguration.
+   * @throws `StartUpException` - If either the YAML or the configuration is not valid.
+   */
   private initConfig(fileContent: string, environment: string): ApplicationConfiguration {
     try {
       const configString = YAML.parse(fileContent);
@@ -246,6 +296,9 @@ export class SettingsService {
     }
   }
 
+  /**
+   * @returns Path to the configuration folder.
+   */
   private getConfigPath(): string {
     return path.join(process.cwd(), 'config');
   }
