@@ -6,7 +6,7 @@ import LoginForm, { LoginFormState } from '../../components/forms/LoginForm';
 import { FormikSubmitCallback } from '../../types';
 
 const axios = Axios.create({
-  baseURL: createBaseURL() + '/api',
+  baseURL: getApiUrl(),
   withCredentials: true,
   headers: {
     // This header prevents the spring backend to add a header which will make a popup appear if the credentials are wrong.
@@ -15,9 +15,29 @@ const axios = Axios.create({
   validateStatus: validateStatus,
 });
 
-function createBaseURL() {
+/**
+ * Returns the URL to the API server. The URL includes a route prefix if the server is configured to have one.
+ *
+ * @returns URL to the API server.
+ */
+export function getApiUrl(): string {
+  const baseUrl = createBaseURL();
+  const apiUrl = baseUrl + '/api';
+
+  // Replace all doubles slashes with single ones. However, we have to restore the '://' after the protocol.
+  return apiUrl.replace('//', '/').replace(':/', '://');
+}
+
+function createBaseURL(): string {
   const url: URL = new URL(window.location.href);
-  return `${url.origin}`;
+  const host: string = url.origin;
+
+  // The first check is needed bc ROUTE_PREFIX will not exist in development environments
+  if (typeof ROUTE_PREFIX !== 'undefined' && !!ROUTE_PREFIX) {
+    return `${host}/${ROUTE_PREFIX}`;
+  } else {
+    return `${host}`;
+  }
 }
 
 function validateStatus(status: number): boolean {
