@@ -12,6 +12,7 @@ import { StudentModule } from '../student/student.module';
 import { ScheincriteriaModule } from '../scheincriteria/scheincriteria.module';
 import { ScheinexamModule } from '../scheinexam/scheinexam.module';
 import { MarkdownModule } from '../markdown/markdown.module';
+import { TemplateModule } from '../template/template.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MarkdownModule } from '../markdown/markdown.module';
     ScheincriteriaModule,
     ScheinexamModule,
     MarkdownModule,
+    TemplateModule,
   ],
   providers: [
     PdfService,

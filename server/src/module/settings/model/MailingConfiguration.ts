@@ -13,10 +13,6 @@ export class MailingConfiguration {
   @IsBoolean()
   readonly testingMode!: boolean;
 
-  // TODO: Move into general HTML-Template folder!
-  @IsString()
-  readonly template!: string;
-
   @IsString()
   readonly host!: string;
 
