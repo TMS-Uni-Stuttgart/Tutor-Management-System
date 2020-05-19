@@ -19,9 +19,6 @@ export class MailingConfiguration {
   @IsNumber()
   readonly port!: number;
 
-  @IsString()
-  readonly from!: string;
-
   @ValidateNested()
   @Type(() => MailingAuthConfiguration)
   readonly auth!: MailingAuthConfiguration;
