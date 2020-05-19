@@ -10,10 +10,11 @@ import { MailingStatus, FailedMail } from '../../shared/model/Mail';
 import { UserService } from '../user/user.service';
 import { UserDocument } from '../../database/models/user.model';
 import { SettingsService } from '../settings/settings.service';
+import { TemplateService } from '../template/template.service';
+import { getNameOfEntity } from '../../shared/util/helpers';
 
 interface AdditionalOptions {
   testingMode?: boolean;
-  template: string;
 }
 
 class MailingError {
@@ -33,7 +34,8 @@ export class MailService {
 
   constructor(
     private readonly userService: UserService,
-    private readonly settings: SettingsService
+    private readonly settings: SettingsService,
+    private readonly templateService: TemplateService
   ) {}
 
   /**
@@ -97,7 +99,7 @@ export class MailService {
         from: this.getUser(),
         to: `${user.email}`,
         subject: 'Credentials',
-        text: this.getTextOfMail(user, options),
+        text: this.getTextOfMail(user),
         envelope: {
           to: `${user.email}`,
           ...options.envelope,
@@ -137,16 +139,18 @@ export class MailService {
     return { successFullSend, failedMailsInfo };
   }
 
-  private getTextOfMail(user: UserDocument, { template }: TransportOptions): string {
-    return template
-      .replace('{{name}}', `${user.firstname} ${user.lastname}`)
-      .replace('{{username}}', user.username)
-      .replace('{{password}}', user.temporaryPassword || '');
+  private getTextOfMail(user: UserDocument): string {
+    const template = this.templateService.getMailTemplate();
+
+    return template({
+      name: getNameOfEntity(user, { firstNameFirst: true }),
+      username: user.username,
+      password: user.temporaryPassword ?? '',
+    });
   }
 
   private getConfig(): TransportOptions {
     const options = this.settings.getMailingConfiguration();
-    // const options = config.get<TransportOptions>('mailing');
 
     if (options.testingMode) {
       const auth = options.auth as AuthenticationTypeLogin | undefined;
@@ -164,7 +168,6 @@ export class MailService {
       }
 
       return {
-        template: options.template,
         host: 'smtp.ethereal.email',
         port: 587,
         auth: {
@@ -204,10 +207,6 @@ export class MailService {
   }
 
   private assertValidConfig(config: TransportOptions) {
-    if (!config.template) {
-      throw new InvalidConfigurationException('No template setting was provided');
-    }
-
     if (!config.auth) {
       throw new InvalidConfigurationException('No authentication settings were provided');
     }
