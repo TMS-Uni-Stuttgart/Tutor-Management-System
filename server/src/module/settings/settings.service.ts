@@ -20,8 +20,11 @@ export interface DatabaseConfig {
 
 @Injectable()
 export class SettingsService {
-  private readonly API_PREFIX = 'api';
   private static service: SettingsService | undefined;
+
+  private readonly API_PREFIX = 'api';
+  private readonly logger = new Logger(SettingsService.name);
+
   private readonly config: ApplicationConfiguration;
   private readonly databaseConfig: Readonly<DatabaseConfig>;
   private readonly envConfig: EnvironmentConfig;
@@ -81,7 +84,7 @@ export class SettingsService {
     if (this.config.sessionTimeout !== undefined) {
       return this.config.sessionTimeout;
     } else {
-      Logger.warn(
+      this.logger.warn(
         "No 'sessionTimeout' setting was provided. Falling back to a default value of 120 minutes."
       );
 
@@ -94,6 +97,13 @@ export class SettingsService {
    */
   getPathPrefix(): string | null {
     return this.config.prefix ?? null;
+  }
+
+  /**
+   * @returns Path to the configuration folder.
+   */
+  getConfigPath(): string {
+    return path.join(process.cwd(), 'config');
   }
 
   /**
@@ -256,7 +266,7 @@ export class SettingsService {
       if (err instanceof StartUpException) {
         throw err;
       } else {
-        Logger.error(err);
+        this.logger.error(err);
 
         throw new StartUpException(
           `Could not load the configuration for the "${environment}" environment. Make sure a corresponding configuration file exists and is readable.`
@@ -283,7 +293,7 @@ export class SettingsService {
 
       this.assertConfigNoErrors(validateSync(config));
 
-      Logger.log(`Configuration loaded for "${environment}" environment`);
+      this.logger.log(`Configuration loaded for "${environment}" environment`);
       return config;
     } catch (err) {
       if (err instanceof StartUpException) {
@@ -294,12 +304,5 @@ export class SettingsService {
         );
       }
     }
-  }
-
-  /**
-   * @returns Path to the configuration folder.
-   */
-  private getConfigPath(): string {
-    return path.join(process.cwd(), 'config');
   }
 }
