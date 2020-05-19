@@ -1,13 +1,22 @@
 import { StartUpException } from './exceptions/StartUpException';
-import { Logger } from '@nestjs/common';
+import { Logger, HttpException } from '@nestjs/common';
 
 export function setupProcess() {
-  process.on('uncaughtException', (err) => {
+  function handleError(err: any) {
+    const logger = new Logger('Process');
+
     if (err instanceof StartUpException) {
-      Logger.error(err.message);
-      process.exit(1);
+      logger.error(err.message);
+    } else if (err instanceof HttpException) {
+      logger.error(err.message);
     } else {
       throw err;
     }
-  });
+
+    logger.error('Ending process');
+    process.exit(1);
+  }
+
+  process.on('unhandledRejection', handleError);
+  process.on('uncaughtException', handleError);
 }
