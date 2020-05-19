@@ -1,23 +1,11 @@
-import fs from 'fs';
-import path from 'path';
+import { Logger } from '@nestjs/common';
 import puppeteer from 'puppeteer';
-import { BadRequestException, Logger } from '@nestjs/common';
 import GITHUB_MARKDOWN_CSS from './css/githubMarkdown';
 
 /**
  * @param T Type of the options passed to `generatePDF`.
  */
 export abstract class PDFGenerator<T = {}> {
-  private readonly filename?: string;
-
-  protected constructor(filename?: string) {
-    this.filename = filename;
-
-    if (!!filename) {
-      this.checkIfTemplateFileExists();
-    }
-  }
-
   /**
    * Generates a PDF from the given options.
    *
@@ -28,43 +16,14 @@ export abstract class PDFGenerator<T = {}> {
   public abstract async generatePDF(options: T): Promise<Buffer>;
 
   /**
-   * Loads and returns the given HTML template file. The returned string does NOT contain any comments anymore and additional spaces after `{{` and before `}}` were removed aswell.
-   *
-   * The `filename` property of the object this function is called on has to be set.
-   *
-   * @returns Cleaned up HTML template file.
-   *
-   * @throws `BadRequestError`: If the given html file could not be found or if the `filename` property is not set.
-   */
-  protected getTemplate(): string {
-    if (!this.filename) {
-      throw new BadRequestException(
-        `To get a template the 'filename' property of the object must be set.`
-      );
-    }
-
-    try {
-      const filePath = path.join(process.cwd(), 'config', 'html', this.filename);
-      const template = fs.readFileSync(filePath).toString();
-
-      return this.prepareTemplate(template);
-    } catch {
-      throw new BadRequestException(
-        `No template file present for filename '${this.filename}' in ./config/html folder`
-      );
-    }
-  }
-
-  /**
    * Generates a PDF from the given body. The body gets put in a HTML wrapper first.
    *
    * @param body Body content to be put in the PDF as HTML body.
    *
    * @returns Buffer containing the generated PDF.
    */
-  protected async generatePDFFromBody(body: string): Promise<Buffer> {
+  protected async generatePDFFromBodyContent(body: string): Promise<Buffer> {
     const html = this.putBodyInHTML(body);
-
     let browser: puppeteer.Browser | undefined;
 
     Logger.debug('Starting browser...');
@@ -121,31 +80,6 @@ export abstract class PDFGenerator<T = {}> {
    */
   private putBodyInHTML(body: string): string {
     return `<html><head><style>${this.getGithubMarkdownCSS()}</style><style>${this.getCustomCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
-  }
-
-  /**
-   * Checks if the template file associated with this class exists. If it does NOT exist an error gets thrown else nothing happens.
-   *
-   * @throws `BadRequestError`: If the HTML template file could not be loaded.
-   */
-  private checkIfTemplateFileExists() {
-    this.getTemplate();
-  }
-
-  /**
-   * Prepares the given html template string to be used in further operations.
-   *
-   * This operations removes all HTML comments as well as spaced after `{{` and before `}}`.
-   *
-   * @param template Template string to adjust
-   *
-   * @returns Cleaned up HTML template file.
-   */
-  private prepareTemplate(template: string): string {
-    return template
-      .replace(/{{\s+/g, '{{')
-      .replace(/\s+}}/g, '}}')
-      .replace(/(?=<!--)([\s\S]*?)-->/gim, '');
   }
 
   /**

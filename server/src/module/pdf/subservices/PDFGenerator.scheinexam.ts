@@ -1,16 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ScheinexamDocument } from '../../../database/models/scheinexam.model';
 import { StudentDocument } from '../../../database/models/student.model';
 import { StudentStatus } from '../../../shared/model/Student';
-import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
-import { StudentService } from '../../student/student.service';
 import { ScheinexamService } from '../../scheinexam/scheinexam.service';
-
-enum ExamPassedState {
-  PASSED = 'PASSED',
-  NOT_PASSED = 'NOT_PASSED',
-  NOT_ATTENDED = 'NOT_ATTENDED',
-}
+import { StudentService } from '../../student/student.service';
+import { TemplateService } from '../../template/template.service';
+import { PassedState, ScheinexamStatus } from '../../template/template.types';
+import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
 
 interface PDFGeneratorOptions {
   id: string;
@@ -23,16 +19,17 @@ interface GetResultsParams {
 }
 
 interface ExamResultsByStudents {
-  [studentId: string]: ExamPassedState;
+  [studentId: string]: PassedState;
 }
 
 @Injectable()
 export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGeneratorOptions> {
   constructor(
     private readonly studentService: StudentService,
-    private readonly scheinexamService: ScheinexamService
+    private readonly scheinexamService: ScheinexamService,
+    private readonly templateService: TemplateService
   ) {
-    super('scheinexam.html');
+    super();
   }
 
   /**
@@ -56,62 +53,21 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
     const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
     const results = this.getResultsOfAllStudents({ exam, students });
 
-    const rows: string[] = [];
+    const statuses: ScheinexamStatus[] = [];
+    const template = this.templateService.getScheinexamTemplate();
+
     shortenedMatriculationNumbers.forEach(({ studentId, shortenedNo }) => {
-      const passedState: ExamPassedState = results[studentId] ?? ExamPassedState.NOT_ATTENDED;
+      const state = results[studentId] ?? PassedState.NOT_ATTENDED;
+
       if (enableShortMatriculationNo) {
-        rows.push(`<tr><td>${shortenedNo}</td><td>{{${passedState}}}</td></tr>`);
+        statuses.push({ matriculationNo: shortenedNo, state });
       } else {
-        const student = students.find((s) => s.id === studentId);
-        rows.push(
-          `<tr><td>${student?.matriculationNo} (${shortenedNo})</td><td>{{${passedState}}}</td></tr>`
-        );
+        const matriculationNo = students.find((s) => s.id === studentId)?.matriculationNo;
+        statuses.push({ matriculationNo: `${matriculationNo} (${shortenedNo})`, state });
       }
     });
 
-    const body = this.replacePlaceholdersInTemplate(rows, exam);
-
-    return this.generatePDFFromBody(body);
-  }
-
-  /**
-   * Replaces the placeholdes `{{statuses}}` and `{{scheinExamNo}}` in the template by their actual values. The adjusted template gets returned.
-   *
-   * @param tableRows Rows to add to the template instead of `{{statuses}}`
-   * @param exam Exam to get the `{{scheinExamNo}}` of.
-   *
-   * @returns String containing the template but with the actual information.
-   */
-  private replacePlaceholdersInTemplate(tableRows: string[], exam: ScheinexamDocument): string {
-    const template = this.getTemplate();
-
-    return template
-      .replace(/{{scheinExamNo}}/g, exam.scheinExamNo.toString())
-      .replace(/{{statuses(?:,\s*(.*))?}}/g, (_, option) => {
-        let replacements = {
-          passed: 'Passed',
-          notPassed: 'Not passed',
-          notAttended: 'Not attended',
-        };
-
-        try {
-          replacements = { ...replacements, ...JSON.parse(option) };
-        } catch (err) {
-          Logger.warn(
-            `Could not parse option argument in schein exam html template. Falling back to defaults instead.`
-          );
-          Logger.warn(`\tProvided option: ${option}`);
-        }
-
-        return tableRows
-          .join('')
-          .replace(new RegExp(`{{${ExamPassedState.PASSED}}}`, 'g'), replacements.passed)
-          .replace(new RegExp(`{{${ExamPassedState.NOT_PASSED}}}`, 'g'), replacements.notPassed)
-          .replace(
-            new RegExp(`{{${ExamPassedState.NOT_ATTENDED}}}`, 'g'),
-            replacements.notAttended
-          );
-      });
+    return this.generatePDFFromBodyContent(template({ scheinExamNo: exam.scheinExamNo, statuses }));
   }
 
   /**
@@ -130,10 +86,10 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
 
       if (hasAttended) {
         results[student.id] = exam.hasPassed(student).passed
-          ? ExamPassedState.PASSED
-          : ExamPassedState.NOT_PASSED;
+          ? PassedState.PASSED
+          : PassedState.NOT_PASSED;
       } else {
-        results[student.id] = ExamPassedState.NOT_ATTENDED;
+        results[student.id] = PassedState.NOT_ATTENDED;
       }
     });
 

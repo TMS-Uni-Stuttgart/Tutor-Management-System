@@ -3,7 +3,6 @@ h3(style='text-align: center') Anwesenheitsliste
 div(style='display: flex; width: 100%;')
   span Tutorium #{tutorialSlot}
   span(style='margin-left: auto; float: right;') Datum: #{date.toFormat('dd.MM.yyyy')}
-  //- TODO: Date formatting -> Pass in Luxon object!
 
 div(style='margin-bottom: 16px;')
   span Tutor: #{tutorName}
@@ -15,7 +14,6 @@ table
       th Unterschrift
 
   tbody
-    //- TODO: Pass in Array with {name: String} objects.
     each student in students
       tr
         td #{student.name}

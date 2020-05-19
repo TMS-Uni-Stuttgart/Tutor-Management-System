@@ -9,13 +9,13 @@ interface GeneratorOptions {
 @Injectable()
 export class MarkdownPDFGenerator extends PDFGenerator<GeneratorOptions> {
   constructor() {
-    super(undefined);
+    super();
   }
 
   public generatePDF(options: GeneratorOptions): Promise<Buffer> {
     const body = this.generateHTMLFromMarkdown(options.markdown);
 
-    return this.generatePDFFromBody(body);
+    return this.generatePDFFromBodyContent(body);
   }
 
   private generateHTMLFromMarkdown(markdown: string): string {
