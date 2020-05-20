@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Typography, Table, TableBody, TableRow } from '@material-ui/core';
+import { Typography, Table, TableBody, TableRow, Box } from '@material-ui/core';
 import { TableProps } from '@material-ui/core/Table';
 import clsx from 'clsx';
 
@@ -38,7 +38,7 @@ function TableWithPadding<T>({
   const classes = useStyles();
 
   return (
-    <>
+    <Box marginTop={2} marginBottom={1}>
       {items.length === 0 ? (
         <Typography variant='h6' className={classes.placeholder}>
           {placeholder}
@@ -56,7 +56,7 @@ function TableWithPadding<T>({
           </TableBody>
         </Table>
       )}
-    </>
+    </Box>
   );
 }
 
