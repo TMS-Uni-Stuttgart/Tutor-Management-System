@@ -2,7 +2,6 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import OpenableFormWithFab, { EditorOpenState } from './OpenableFormWithFab';
 import TableWithPadding, { TableWithPaddingProps } from './TableWithPadding';
-import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -12,12 +11,6 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: theme.spacing(1),
       justifyContent: 'flex-end',
       marginBottom: theme.spacing(2),
-    },
-    list: {
-      marginBottom: theme.spacing(1),
-    },
-    listWithOpenEditor: {
-      marginTop: 0,
     },
     tableWithoutBorders: {
       '& td': {
@@ -57,13 +50,7 @@ function TableWithForm<T>({ title, form, topBarContent, ...other }: Props<T>): J
         </OpenableFormWithFab>
       </div>
 
-      <div
-        className={clsx(classes.list, {
-          [classes.listWithOpenEditor]: isEditorOpen,
-        })}
-      >
-        <TableWithPadding {...other} />
-      </div>
+      <TableWithPadding {...other} />
     </>
   );
 }
