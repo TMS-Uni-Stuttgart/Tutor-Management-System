@@ -28,10 +28,6 @@ type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToC
 @plugin(fieldEncryption, {
   secret: SettingsService.getSecret(),
   fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email', 'roles'],
-  // saltGenerator: function(secret: string) {
-  // TODO: Make deterministic salt generator to be able to encrypt username?! If so, change `getUserWithUsername()` in UserService
-  //   return "1234567890123456"; // should ideally use the secret to return a string of length 16
-  // }
 })
 @plugin(mongooseAutopopulate)
 @pre<UserModel>('save', async function (next) {
