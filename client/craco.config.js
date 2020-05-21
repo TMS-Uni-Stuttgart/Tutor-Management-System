@@ -15,7 +15,7 @@ module.exports = {
   webpack: {
     configure: (config, { env: webpackEnv }) => {
       const isEnvProduction = webpackEnv === 'production';
-      const loader = {
+      const serverSharedLoader = {
         test: /\.(js|mjs|jsx|ts|tsx)$/,
         include: resolvePath('../server/src/shared'),
         loader: require.resolve('babel-loader'),
@@ -42,7 +42,7 @@ module.exports = {
 
       config.module.rules.forEach((rule) => {
         if (typeof rule.oneOf !== 'undefined') {
-          rule.oneOf.splice(rule.oneOf.length - 2, 0, loader);
+          rule.oneOf.splice(rule.oneOf.length - 2, 0, serverSharedLoader);
         }
       });
 
@@ -59,7 +59,13 @@ module.exports = {
         return new HtmlWebpackPlugin(
           Object.assign(
             {},
-            { inject: true, template: resolvePath('public/index.html') },
+            {
+              inject: true,
+              template: '!!pug-loader!public/index.pug',
+              templateParameters: {
+                ROUTE_PREFIX: isEnvProduction ? '#{ROUTE_PREFIX}' : '',
+              },
+            },
             isEnvProduction
               ? {
                   minify: {
