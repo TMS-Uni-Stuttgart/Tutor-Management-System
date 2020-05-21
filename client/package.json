@@ -6,7 +6,7 @@
   "proxy": "http://localhost:8080",
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "cross-env NODE_ENV=production craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "format": "eslint --fix \"src/**/*.ts?(x)\"",
