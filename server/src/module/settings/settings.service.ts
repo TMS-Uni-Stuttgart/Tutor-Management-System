@@ -23,6 +23,8 @@ export class SettingsService {
   private static service: SettingsService | undefined;
 
   private readonly API_PREFIX = 'api';
+  private readonly STATIC_FOLDER = 'static';
+
   private readonly logger = new Logger(SettingsService.name);
 
   private readonly config: ApplicationConfiguration;
@@ -126,6 +128,13 @@ export class SettingsService {
     } else {
       return this.API_PREFIX;
     }
+  }
+
+  /**
+   * @returns Path to the static folder.
+   */
+  getStaticFolder(): string {
+    return this.STATIC_FOLDER;
   }
 
   /**
