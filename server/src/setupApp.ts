@@ -72,10 +72,12 @@ export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const settings: SettingsService = app.get(SettingsService);
+
+  Logger.log(`Setting API prefix to ${settings.getAPIPrefix()}`, 'App');
   app.setGlobalPrefix(settings.getAPIPrefix());
 
   // This filter enables serving an SPA from the given static folder.
-  app.useGlobalFilters(new NotFoundExceptionFilter(settings, '/static'));
+  app.useGlobalFilters(new NotFoundExceptionFilter(settings));
 
   initSecurityMiddleware(app);
   initSwagger(app, settings.getAPIPrefix());
