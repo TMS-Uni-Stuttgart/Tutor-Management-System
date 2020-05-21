@@ -66,10 +66,13 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
    */
   private sendIndexFile(response: Response): void {
     const index: string = fs.readFileSync(this.resolvePath('index.html')).toString();
-    const replaced = index.replace(
-      /<!--{{global}}-->/g,
-      `<script>\n\tconst ROUTE_PREFIX = ${this.getStringForPrefix()};\n</script>`
-    );
+    const prefix = this.settings.getPathPrefix();
+    const replaced = index
+      .replace(
+        /<!--{{global}}-->/g,
+        `<script>\n\tconst ROUTE_PREFIX = ${this.getStringForPrefix()};\n</script>`
+      )
+      .replace('#{ROUTE_PREFIX}', prefix ?? '');
 
     response.send(replaced);
   }

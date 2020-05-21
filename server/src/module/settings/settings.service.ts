@@ -93,10 +93,19 @@ export class SettingsService {
   }
 
   /**
+   * Returns the prefix for the app if there is one.
+   *
+   * If there is one any trailing '/' will be removed before returning the prefix.
+   *
    * @returns Prefix for the app or `null` if none is provided.
    */
   getPathPrefix(): string | null {
-    return this.config.prefix ?? null;
+    const { prefix } = this.config;
+    if (!prefix) {
+      return null;
+    }
+
+    return prefix.endsWith('/') ? prefix.substr(0, prefix.length - 1) : prefix;
   }
 
   /**

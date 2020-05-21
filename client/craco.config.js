@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const CracoAlias = require('craco-alias');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const path = require('path');
 const fs = require('fs');
@@ -8,7 +9,7 @@ const fs = require('fs');
 // Make sure any symlinks in the project folder are resolved:
 // https://github.com/facebook/create-react-app/issues/637
 const appDirectory = fs.realpathSync(process.cwd());
-const resolvePath = relativePath => path.resolve(appDirectory, relativePath);
+const resolvePath = (relativePath) => path.resolve(appDirectory, relativePath);
 
 module.exports = {
   webpack: {
@@ -39,15 +40,45 @@ module.exports = {
         },
       };
 
-      config.module.rules.forEach(rule => {
+      config.module.rules.forEach((rule) => {
         if (typeof rule.oneOf !== 'undefined') {
           rule.oneOf.splice(rule.oneOf.length - 2, 0, loader);
         }
       });
 
       config.resolve.plugins = config.resolve.plugins.filter(
-        plugin => !(plugin instanceof ModuleScopePlugin)
+        (plugin) => !(plugin instanceof ModuleScopePlugin)
       );
+
+      config.output.publicPath = isEnvProduction ? '#{ROUTE_PREFIX}' : '';
+      config.plugins = config.plugins.map((plugin) => {
+        if (!(plugin instanceof HtmlWebpackPlugin)) {
+          return plugin;
+        }
+
+        return new HtmlWebpackPlugin(
+          Object.assign(
+            {},
+            { inject: true, template: resolvePath('public/index.html') },
+            isEnvProduction
+              ? {
+                  minify: {
+                    removeComments: false,
+                    collapseWhitespace: true,
+                    removeRedundantAttributes: true,
+                    useShortDoctype: true,
+                    removeEmptyAttributes: true,
+                    removeStyleLinkTypeAttributes: true,
+                    keepClosingSlash: true,
+                    minifyJS: true,
+                    minifyCSS: true,
+                    minifyURLs: true,
+                  },
+                }
+              : undefined
+          )
+        );
+      });
 
       return config;
     },
