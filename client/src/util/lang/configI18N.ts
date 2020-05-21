@@ -3,6 +3,7 @@ import Backend from 'i18next-xhr-backend';
 import { initReactI18next, useTranslation as usei18nTranslation } from 'react-i18next';
 import { getApiUrl } from '../../hooks/fetching/Axios';
 import { isDevelopment } from '../isDevelopmentMode';
+import { getRouteWithPrefix } from '../routePrefix';
 
 export enum i18nNamespace {
   DEFAULT = 'translation',
@@ -29,7 +30,7 @@ i18n
       escapeValue: false, // not needed for react as it escapes by default
     },
     backend: {
-      loadPath: '/static/locales/{{lng}}/{{ns}}.json',
+      loadPath: getRouteWithPrefix('/static/locales/{{lng}}/{{ns}}.json'),
       addPath: `${getApiUrl()}/locales/{{lng}}/{{ns}}`,
       withCredentials: true,
     },

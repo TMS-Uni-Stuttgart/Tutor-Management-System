@@ -76,6 +76,7 @@ interface CreatingState {
 }
 
 function getTitleFromLocation(location: Location): string {
+  console.log('Current location: ' + location.pathname);
   const title: string | undefined = titleText.get(location.pathname);
 
   if (title) {

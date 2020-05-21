@@ -11,6 +11,7 @@ import DialogService, { getDialogOutsideContext } from '../hooks/DialogService';
 import { LoginContextProvider } from '../hooks/LoginService';
 import i18n from '../util/lang/configI18N';
 import { createTheme } from '../util/styles';
+import { getRouteWithPrefix } from '../util/routePrefix';
 
 interface Props {
   Router: React.ComponentType<MemoryRouterProps | BrowserRouterProps>;
@@ -76,7 +77,7 @@ function handleUserConfirmation(message: string, callback: (ok: boolean) => void
 
 function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Element {
   return (
-    <Router getUserConfirmation={handleUserConfirmation}>
+    <Router getUserConfirmation={handleUserConfirmation} basename={getRouteWithPrefix('')}>
       <I18nextProvider i18n={i18n}>
         <CustomThemeProvider>
           <LoginContextProvider>
