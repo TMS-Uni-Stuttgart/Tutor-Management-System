@@ -21,8 +21,9 @@ import { TutorialGuard } from '../../guards/tutorial.guard';
 import { Role } from '../../shared/model/Role';
 import { IStudent } from '../../shared/model/Student';
 import { ITutorial } from '../../shared/model/Tutorial';
-import { SubstituteDTO, TutorialDTO } from './tutorial.dto';
+import { SubstituteDTO, TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
+import { ClassTransformerPipe } from '../../pipes/class-transformer.pipe';
 
 @Controller('tutorial')
 export class TutorialController {
@@ -44,6 +45,15 @@ export class TutorialController {
     const tutorial = await this.tutorialService.create(dto);
 
     return tutorial;
+  }
+
+  @Post('/generate')
+  @UseGuards(HasRoleGuard)
+  @UsePipes(ClassTransformerPipe)
+  async createManyTutorials(@Body() dto: TutorialGenerationDTO): Promise<ITutorial[]> {
+    const tutorials = await this.tutorialService.createMany(dto);
+
+    return tutorials;
   }
 
   @Get('/:id')

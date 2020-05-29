@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
 import { StudentDocument } from '../../database/models/student.model';
 import {
@@ -19,7 +19,12 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { ITutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
-import { SubstituteDTO, TutorialDTO } from './tutorial.dto';
+import {
+  ExcludedTutorialDate,
+  SubstituteDTO,
+  TutorialDTO,
+  TutorialGenerationDTO,
+} from './tutorial.dto';
 
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {
@@ -79,22 +84,14 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
       Promise.all(correctorIds.map((id) => this.userService.findById(id))),
     ]);
 
-    this.assertTutorHasTutorRole(tutor);
-    this.assertCorrectorsHaveCorrectorRole(correctors);
-
-    const startDate = DateTime.fromISO(startTime);
-    const endDate = DateTime.fromISO(endTime);
-
-    const tutorial = new TutorialModel({
+    const created = await this.createTutorial({
       slot,
       tutor,
-      startTime: startDate,
-      endTime: endDate,
-      dates: dates.map((date) => DateTime.fromISO(date)),
       correctors,
+      startTime: DateTime.fromISO(startTime),
+      endTime: DateTime.fromISO(endTime),
+      dates: dates.map((date) => DateTime.fromISO(date)),
     });
-
-    const created = await this.tutorialModel.create(tutorial);
 
     return created.toDTO();
   }
@@ -155,6 +152,19 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     return tutorial.remove();
   }
 
+  /**
+   * Sets the substitute for the given dates to the given tutor.
+   *
+   * If the DTO does not contain a `tutorId` field (ie it is `undefined`) the substitutes of the given dates will be removed. If there is already a substitute for a given date in the DTO the previous substitute gets overridden.
+   *
+   * @param id ID of the tutorial.
+   * @param dto DTO containing the information of the substitute.
+   *
+   * @returns Updated tutorial.
+   *
+   * @throws `BadRequestException` - If the tutorial of the given `id` parameter could not be found.
+   * @throws `BadRequestException` - If the `tutorId` field contains a user ID which can not be found or which does not belong to a tutor.
+   */
   async setSubstitute(id: string, dto: SubstituteDTO): Promise<ITutorial> {
     const tutorial = await this.findById(id);
     const { dates, tutorId } = dto;
@@ -188,6 +198,131 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     return tutorial.students;
   }
 
+  /**
+   * Creates multiple tutorials with the given information.
+   *
+   * The created tutorials will **not** have any correctors or a tutor assigned but will have all dates specified in the DTO.
+   *
+   * @param dto DTO with the informatio of the tutorials to generate.
+   *
+   * @returns Array containing the response DTOs of the created tutorials.
+   */
+  async createMany(dto: TutorialGenerationDTO): Promise<ITutorial[]> {
+    const { excludedDates, generationDatas } = dto;
+    const createdTutorials: TutorialDocument[] = [];
+    const interval = Interval.fromDateTimes(dto.getFirstDay(), dto.getLastDay());
+    const daysInInterval = this.datesInIntervalGroupedByWeekday(interval);
+
+    for (const data of generationDatas) {
+      const { amount, prefix, weekday } = data;
+      const days = daysInInterval.get(weekday) ?? [];
+      const timeInterval = data.getInterval();
+
+      for (let i = 0; i < amount; i++) {
+        const created = await this.createTutorial({
+          slot: `${prefix}${i.toString().padStart(2, '0')}`,
+          dates: this.removeExcludedDates(days, excludedDates),
+          startTime: timeInterval.start,
+          endTime: timeInterval.end,
+          tutor: undefined,
+          correctors: [],
+        });
+
+        createdTutorials.push(created);
+      }
+    }
+
+    return createdTutorials.map((t) => t.toDTO());
+  }
+
+  /**
+   * Creates a new tutorial and adds it to the database.
+   *
+   * This function first checks if the given `tutor` and `correctors` are all valid. Afterwards a new TutorialDocument is created and saved in the database. This document is returned in the end.
+   *
+   * @param params Parameters needed to create a tutorial.
+   *
+   * @returns Document of the created tutorial.
+   *
+   * @throws `BadRequestException` - If the given `tutor` is not a TUTOR or one of the given `correctors` is not a CORRECTOR.
+   */
+  private async createTutorial({
+    slot,
+    tutor,
+    startTime,
+    endTime,
+    dates,
+    correctors,
+  }: CreateParameters): Promise<TutorialDocument> {
+    this.assertTutorHasTutorRole(tutor);
+    this.assertCorrectorsHaveCorrectorRole(correctors);
+
+    const tutorial = new TutorialModel({
+      slot,
+      tutor,
+      startTime,
+      endTime,
+      dates,
+      correctors,
+    });
+
+    return this.tutorialModel.create(tutorial);
+  }
+
+  /**
+   * Returns all dates in the interval grouped by their weekday.
+   *
+   * Groups all dates in the interval by their weekday (1 - monday, 7 - sunday) and returns a map with those weekdays as keys. The map only contains weekdays as keys which are present in the interval (ie if only a monday and a tuesday are in the interval the map will only contain the keys `1` and `2`).
+   *
+   * @param interval Interval to get dates from.
+   *
+   * @returns Map with weekdays as keys and all dates from the interval on the corresponding weekday. Note: Not all weekdays may be present in the returned map.
+   */
+  private datesInIntervalGroupedByWeekday(interval: Interval): Map<number, DateTime[]> {
+    const datesInInterval: Map<number, DateTime[]> = new Map();
+    let cursor = interval.start.startOf('day');
+
+    while (cursor < interval.end) {
+      const dates = datesInInterval.get(cursor.weekday) ?? [];
+
+      dates.push(cursor);
+      datesInInterval.set(cursor.weekday, dates);
+
+      cursor = cursor.plus({ day: 1 });
+    }
+
+    return datesInInterval;
+  }
+
+  /**
+   * Creates a copy of the `dates` array without the excluded dates.
+   *
+   * The `dates` array itself will **not** be changed but copied in the process.
+   *
+   * @param dates Dates to remove the excludedDates from.
+   * @param excludedDates Information about the dates which should be excluded.
+   *
+   * @returns A copy of the `dates` array but without the excluded dates.
+   */
+  private removeExcludedDates(
+    dates: DateTime[],
+    excludedDates: ExcludedTutorialDate[]
+  ): DateTime[] {
+    const dateArray = [...dates];
+
+    for (const excluded of excludedDates) {
+      for (const excludedDate of excluded.getDates()) {
+        const idx = dateArray.findIndex((date) => date.hasSame(excludedDate, 'day'));
+
+        if (idx !== -1) {
+          dateArray.splice(idx, 1);
+        }
+      }
+    }
+
+    return dateArray;
+  }
+
   private assertTutorHasTutorRole(tutor?: UserDocument) {
     if (tutor && !tutor.roles.includes(Role.TUTOR)) {
       throw new BadRequestException('The tutor of a tutorial needs to have the TUTOR role.');
@@ -211,4 +346,13 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
       throw new BadRequestException(`A tutorial with the slot '${slot} already exists.`);
     }
   }
+}
+
+interface CreateParameters {
+  slot: string;
+  tutor: UserDocument | undefined;
+  startTime: DateTime;
+  endTime: DateTime;
+  dates: DateTime[];
+  correctors: UserDocument[];
 }

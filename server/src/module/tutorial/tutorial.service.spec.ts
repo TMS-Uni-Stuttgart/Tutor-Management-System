@@ -494,4 +494,12 @@ describe('TutorialService', () => {
 
     await expect(service.getAllStudentsOfTutorial(nonExisting)).rejects.toThrow(NotFoundException);
   });
+
+  it('generate multiple tutorials', async () => {
+    fail('Not implemented');
+  });
+
+  it('fail generating multiple tutorials', async () => {
+    fail('Not implemented');
+  });
 });
