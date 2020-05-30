@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DateTime, ToISOTimeOptions } from 'luxon';
+import { DateTime, ToISOTimeOptions, Interval } from 'luxon';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
@@ -14,10 +14,12 @@ import {
 } from '../../../test/mocks/documents.mock.helpers';
 import { TutorialModel } from '../../database/models/tutorial.model';
 import { Role } from '../../shared/model/Role';
-import { ITutorial, UserInEntity } from '../../shared/model/Tutorial';
+import { ITutorial, UserInEntity, ITutorialGenerationDTO } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
 import { TutorialService } from './tutorial.service';
-import { TutorialDTO } from './tutorial.dto';
+import { TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
+import { hasUncaughtExceptionCaptureCallback } from 'process';
+import { plainToClass } from 'class-transformer';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
@@ -495,11 +497,46 @@ describe('TutorialService', () => {
     await expect(service.getAllStudentsOfTutorial(nonExisting)).rejects.toThrow(NotFoundException);
   });
 
-  it('generate multiple tutorials', async () => {
-    fail('Not implemented');
+  it('generate multiple tutorials without excluded dates', async () => {
+    const dto: ITutorialGenerationDTO = {
+      firstDay: '2020-05-28', // Thursday
+      lastDay: '2020-06-12', // Friday
+      excludedDates: [],
+      generationDatas: [
+        {
+          // Generate 2 in the slot Monady, 08:00 - 09:30
+          amount: 2,
+          weekday: 1,
+          interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
+          prefix: 'Mo',
+        },
+        {
+          // Generate 1 in the slot Wednesday, 15:45 - 17:15
+          amount: 1,
+          weekday: 3,
+          interval: '2020-05-28T15:45:00Z/2020-05-28T17:00:00Z',
+          prefix: 'We',
+        },
+        {
+          // Generate 1 in the slot Thursday, 14:00 - 15:30
+          amount: 1,
+          weekday: 4,
+          interval: '2020-05-28T14:00:00Z/2020-05-28T15:30:00Z',
+          prefix: 'Th',
+        },
+      ],
+    };
+    const tutorialCountBefore = (await service.findAll()).length;
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+    const tutorialCountAfter = (await service.findAll()).length;
+
+    expect(generatedTutorials.length).toBe(4);
+    expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
+
+    throw new Error('Check if generated tutorials match the dto.');
   });
 
   it('fail generating multiple tutorials', async () => {
-    fail('Not implemented');
+    throw new Error('Not implemented');
   });
 });
