@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DateTime, ToISOTimeOptions, Interval } from 'luxon';
+import { plainToClass } from 'class-transformer';
+import { DateTime, Interval, ToISOTimeOptions } from 'luxon';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
@@ -14,12 +15,10 @@ import {
 } from '../../../test/mocks/documents.mock.helpers';
 import { TutorialModel } from '../../database/models/tutorial.model';
 import { Role } from '../../shared/model/Role';
-import { ITutorial, UserInEntity, ITutorialGenerationDTO } from '../../shared/model/Tutorial';
+import { ITutorial, ITutorialGenerationDTO, UserInEntity } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
+import { ExcludedTutorialDate, TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
-import { TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
-import { hasUncaughtExceptionCaptureCallback } from 'process';
-import { plainToClass } from 'class-transformer';
 
 interface AssertTutorialParams {
   expected: MockedModel<TutorialModel>;
@@ -35,6 +34,11 @@ interface AssertTutorialDTOParams {
   expected: TutorialDTO;
   actual: ITutorial;
   oldTutorial?: ITutorial;
+}
+
+interface AssertGenerateTutorialsParams {
+  expected: TutorialGenerationDTO;
+  actual: ITutorial[];
 }
 
 /**
@@ -125,6 +129,92 @@ function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOP
     expect(students).toEqual([]);
     expect(substitutes).toEqual([]);
   }
+}
+
+/**
+ * Returns a map organized by weekdays containing the ISO dates of all dates within the given interval which are NOT excluded via the `excludedDates` parameter.
+ *
+ * @param interval Interval to get dates from.
+ * @param excludedDates Information about all dates to exclude.
+ *
+ * @returns Map with weekdays as keys and arrays of ISO dates. Does not have some weekdays as keys if no day in the interval of that weekday is present.
+ */
+function getDatesInInterval(
+  interval: Interval,
+  excludedDates: ExcludedTutorialDate[]
+): Map<number, string[]> {
+  const dates: Map<number, string[]> = new Map();
+  let current = interval.start.startOf('day');
+
+  while (current < interval.end) {
+    const datesInMap = dates.get(current.weekday) ?? [];
+    let isExcluded = false;
+    for (const excluded of excludedDates) {
+      if (!!excluded.getDates().find((date) => date.hasSame(current, 'day'))) {
+        isExcluded = true;
+        break;
+      }
+    }
+
+    if (!isExcluded) {
+      datesInMap.push(current.toISODate());
+      dates.set(current.weekday, datesInMap);
+    }
+    current = current.plus({ days: 1 });
+  }
+
+  return dates;
+}
+
+/**
+ * Checks if the given generated tutorials (`actual`) match the information in the DTO.
+ *
+ * They match if:
+ * - `actual` has as many tutorials as `expected` defines.
+ * - Every generation information in `expected` has a corresponding tutorial.
+ * - These tutorials each match their generation data and each does NOT have a tutor or any correctors.
+ *
+ * @param expected DTO containing the information about the expected tutorials
+ * @param actual Array of actually generated tutorials.
+ */
+function assertGeneratedTutorials({ expected, actual }: AssertGenerateTutorialsParams) {
+  const { excludedDates, generationDatas } = expected;
+  const dates = getDatesInInterval(
+    Interval.fromDateTimes(expected.getFirstDay(), expected.getLastDay()),
+    excludedDates
+  );
+  let amountToGenerate = 0;
+
+  for (const data of generationDatas) {
+    const { amount, prefix, weekday } = data;
+    const time = data.getInterval();
+    const tutorials = actual.filter((t) => {
+      const tutorialWeekDay = DateTime.fromISO(t.dates[0]).weekday;
+
+      // We us toFormat() due to hasSame with 'hours' respecting days aswell - which is what we do NOT want here, we only want to compare hours and minutes (and the timezones).
+      const format = 'HH:mmZZ';
+      const startTime = DateTime.fromISO(t.startTime);
+      const endTime = DateTime.fromISO(t.endTime);
+
+      return (
+        tutorialWeekDay === weekday &&
+        time.start.toFormat(format) === startTime.toFormat(format) &&
+        time.end.toFormat(format) === endTime.toFormat(format)
+      );
+    });
+
+    expect(tutorials.length).toBe(amount);
+    amountToGenerate += amount;
+
+    for (const tutorial of tutorials) {
+      expect(tutorial.slot.startsWith(prefix)).toBeTruthy();
+      expect(tutorial.dates).toEqual(dates.get(weekday) ?? []);
+      expect(tutorial.tutor).toBeUndefined();
+      expect(tutorial.correctors.length).toBe(0);
+    }
+  }
+
+  expect(actual.length).toBe(amountToGenerate);
 }
 
 describe('TutorialService', () => {
@@ -533,7 +623,10 @@ describe('TutorialService', () => {
     expect(generatedTutorials.length).toBe(4);
     expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
 
-    throw new Error('Check if generated tutorials match the dto.');
+    assertGeneratedTutorials({
+      expected: plainToClass(TutorialGenerationDTO, dto),
+      actual: generatedTutorials,
+    });
   });
 
   it('fail generating multiple tutorials', async () => {
