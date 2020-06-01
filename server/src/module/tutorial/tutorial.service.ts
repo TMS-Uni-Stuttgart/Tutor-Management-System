@@ -259,6 +259,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
   }: CreateParameters): Promise<TutorialDocument> {
     this.assertTutorHasTutorRole(tutor);
     this.assertCorrectorsHaveCorrectorRole(correctors);
+    this.assertAtLeastOneDate(dates);
 
     const tutorial = new TutorialModel({
       slot,
@@ -347,6 +348,14 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
     if (!!tutorialWithSameSlot) {
       throw new BadRequestException(`A tutorial with the slot '${slot} already exists.`);
+    }
+  }
+
+  private async assertAtLeastOneDate(dates: DateTime[]) {
+    if (dates.length === 0) {
+      throw new BadRequestException(
+        `A tutorial without dates should be generated. This is not allowed.`
+      );
     }
   }
 }
