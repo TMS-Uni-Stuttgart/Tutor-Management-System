@@ -38,7 +38,7 @@ export class SubstituteModel {
 type SubstituteDocument = DocumentType<SubstituteModel>;
 
 @plugin(mongooseAutoPopulate)
-@plugin<VirtualPopulationOptions<TutorialModel>>(VirtualPopulation, {
+@plugin<typeof VirtualPopulation, VirtualPopulationOptions<TutorialModel>>(VirtualPopulation, {
   populateDocument: populateTutorialDocument,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })

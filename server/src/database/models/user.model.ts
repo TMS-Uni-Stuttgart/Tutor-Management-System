@@ -43,7 +43,7 @@ type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToC
   this.password = hashedPassword;
   next();
 })
-@plugin<VirtualPopulationOptions<UserModel>>(VirtualPopulation, {
+@plugin<typeof VirtualPopulation, VirtualPopulationOptions<UserModel>>(VirtualPopulation, {
   populateDocument: populateUserDocument as any,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.USER, toObject: { virtuals: true } } })
