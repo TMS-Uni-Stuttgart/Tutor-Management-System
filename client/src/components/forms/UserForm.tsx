@@ -96,7 +96,7 @@ function getValidationSchema(
     };
   }
 
-  return Yup.object().shape(validationShape);
+  return Yup.object().shape(validationShape).defined();
 }
 
 function UserForm({
