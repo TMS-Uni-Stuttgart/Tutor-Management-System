@@ -216,19 +216,22 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     for (const data of generationDatas) {
       const { amount, prefix, weekday } = data;
       const days = daysInInterval.get(weekday) ?? [];
+      const dates = this.removeExcludedDates(days, excludedDates);
       const timeInterval = data.getInterval();
 
-      for (let i = 0; i < amount; i++) {
-        const created = await this.createTutorial({
-          slot: `${prefix}${i.toString().padStart(2, '0')}`,
-          dates: this.removeExcludedDates(days, excludedDates),
-          startTime: timeInterval.start,
-          endTime: timeInterval.end,
-          tutor: undefined,
-          correctors: [],
-        });
+      if (dates.length > 0) {
+        for (let i = 0; i < amount; i++) {
+          const created = await this.createTutorial({
+            slot: `${prefix}${i.toString().padStart(2, '0')}`,
+            dates,
+            startTime: timeInterval.start,
+            endTime: timeInterval.end,
+            tutor: undefined,
+            correctors: [],
+          });
 
-        createdTutorials.push(created);
+          createdTutorials.push(created);
+        }
       }
     }
 
