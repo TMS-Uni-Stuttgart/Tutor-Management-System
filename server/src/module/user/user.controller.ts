@@ -42,6 +42,15 @@ export class UserController {
     return createdUser;
   }
 
+  @Post('/generate')
+  @UseGuards(HasRoleGuard)
+  @UsePipes(ValidationPipe)
+  async createManyUsers(@Body() users: CreateUserDTO[]): Promise<IUser[]> {
+    const createdUsers = await this.userService.createMany(users);
+
+    return createdUsers;
+  }
+
   @Get('/:id')
   @UseGuards(SameUserGuard)
   @Roles(Role.ADMIN, Role.EMPLOYEE)
