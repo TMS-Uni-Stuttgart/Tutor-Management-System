@@ -629,7 +629,149 @@ describe('TutorialService', () => {
     });
   });
 
-  it('fail generating multiple tutorials', async () => {
-    throw new Error('Not implemented');
+  it('generate multiple tutorials with single excluded dates', async () => {
+    const dto: ITutorialGenerationDTO = {
+      firstDay: '2020-05-28', // Thursday
+      lastDay: '2020-06-12', // Friday
+      excludedDates: [{ date: '2020-06-01' }, { date: '2020-06-11' }],
+      generationDatas: [
+        {
+          // Generate 2 in the slot Monady, 08:00 - 09:30
+          amount: 2,
+          weekday: 1,
+          interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
+          prefix: 'Mo',
+        },
+        {
+          // Generate 1 in the slot Wednesday, 15:45 - 17:15
+          amount: 1,
+          weekday: 3,
+          interval: '2020-05-28T15:45:00Z/2020-05-28T17:00:00Z',
+          prefix: 'We',
+        },
+        {
+          // Generate 1 in the slot Thursday, 14:00 - 15:30
+          amount: 1,
+          weekday: 4,
+          interval: '2020-05-28T14:00:00Z/2020-05-28T15:30:00Z',
+          prefix: 'Th',
+        },
+      ],
+    };
+    const tutorialCountBefore = (await service.findAll()).length;
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+    const tutorialCountAfter = (await service.findAll()).length;
+
+    expect(generatedTutorials.length).toBe(4);
+    expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
+
+    assertGeneratedTutorials({
+      expected: plainToClass(TutorialGenerationDTO, dto),
+      actual: generatedTutorials,
+    });
+  });
+
+  it('generate multiple tutorials with an excluded interval', async () => {
+    const dto: ITutorialGenerationDTO = {
+      firstDay: '2020-05-28', // Thursday
+      lastDay: '2020-06-12', // Friday
+      excludedDates: [{ interval: '2020-06-08/2020-06-14' }],
+      generationDatas: [
+        {
+          // Generate 2 in the slot Monady, 08:00 - 09:30
+          amount: 2,
+          weekday: 1,
+          interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
+          prefix: 'Mo',
+        },
+        {
+          // Generate 1 in the slot Wednesday, 15:45 - 17:15
+          amount: 1,
+          weekday: 3,
+          interval: '2020-05-28T15:45:00Z/2020-05-28T17:00:00Z',
+          prefix: 'We',
+        },
+        {
+          // Generate 1 in the slot Thursday, 14:00 - 15:30
+          amount: 1,
+          weekday: 4,
+          interval: '2020-05-28T14:00:00Z/2020-05-28T15:30:00Z',
+          prefix: 'Th',
+        },
+      ],
+    };
+    const tutorialCountBefore = (await service.findAll()).length;
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+    const tutorialCountAfter = (await service.findAll()).length;
+
+    expect(generatedTutorials.length).toBe(4);
+    expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
+
+    assertGeneratedTutorials({
+      expected: plainToClass(TutorialGenerationDTO, dto),
+      actual: generatedTutorials,
+    });
+  });
+
+  it('generate multiple tutorials with mixed excluded dates', async () => {
+    const dto: ITutorialGenerationDTO = {
+      firstDay: '2020-05-28', // Thursday
+      lastDay: '2020-06-12', // Friday
+      excludedDates: [{ date: '2020-06-04' }, { interval: '2020-06-08/2020-06-14' }],
+      generationDatas: [
+        {
+          // Generate 2 in the slot Monady, 08:00 - 09:30
+          amount: 2,
+          weekday: 1,
+          interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
+          prefix: 'Mo',
+        },
+        {
+          // Generate 1 in the slot Wednesday, 15:45 - 17:15
+          amount: 1,
+          weekday: 3,
+          interval: '2020-05-28T15:45:00Z/2020-05-28T17:00:00Z',
+          prefix: 'We',
+        },
+        {
+          // Generate 1 in the slot Thursday, 14:00 - 15:30
+          amount: 1,
+          weekday: 4,
+          interval: '2020-05-28T14:00:00Z/2020-05-28T15:30:00Z',
+          prefix: 'Th',
+        },
+      ],
+    };
+    const tutorialCountBefore = (await service.findAll()).length;
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+    const tutorialCountAfter = (await service.findAll()).length;
+
+    expect(generatedTutorials.length).toBe(4);
+    expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
+
+    assertGeneratedTutorials({
+      expected: plainToClass(TutorialGenerationDTO, dto),
+      actual: generatedTutorials,
+    });
+  });
+
+  it('do NOT generate a tutorial if no dates are available', async () => {
+    const dto: ITutorialGenerationDTO = {
+      firstDay: '2020-05-28', // Thursday
+      lastDay: '2020-06-12', // Friday
+      excludedDates: [{ date: '2020-06-03' }, { interval: '2020-06-08/2020-06-14' }], // All wednesdays are excluded!
+      generationDatas: [
+        {
+          // Effectivly generate 0 in the slot Wednesday, 15:45 - 17:15
+          amount: 1,
+          weekday: 3,
+          interval: '2020-05-28T15:45:00Z/2020-05-28T17:00:00Z',
+          prefix: 'We',
+        },
+      ],
+    };
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+
+    expect(generatedTutorials.length).toBe(0);
   });
 });
