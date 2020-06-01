@@ -72,7 +72,7 @@
     "@types/supertest": "^2.0.9",
     "env-cmd": "^10.1.0",
     "jest": "^25.5.4",
-    "mongodb-memory-server": "^6.5.2",
+    "mongodb-memory-server": "^6.6.1",
     "prettier": "^2.0.5",
     "supertest": "^4.0.2",
     "ts-jest": "^25.5.1",
