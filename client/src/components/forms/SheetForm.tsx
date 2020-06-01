@@ -16,8 +16,10 @@ const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
   Yup.object().shape<ExerciseFormExercise>({
     exName: Yup.string().required('Benötigt'),
     bonus: Yup.boolean().required('Benötigt'),
-    maxPoints: Yup.string().matches(/^\d+(\.\d+)?$/, 'Punkte dürfen nur Zahlen sein'),
-    subexercises: Yup.array().of(exerciseValidationSchema),
+    maxPoints: Yup.string()
+      .matches(/^\d+(\.\d+)?$/, 'Punkte dürfen nur Zahlen sein')
+      .defined(),
+    subexercises: Yup.array().of(exerciseValidationSchema).defined(),
   })
 );
 
