@@ -295,6 +295,18 @@ describe('UserService', () => {
     await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
   });
 
+  it('create mutliple users with one tutorial each', async () => {
+    throw new Error('Not implemented');
+  });
+
+  it('create multiple users with one tutorial to correct each', async () => {
+    throw new Error('Not implemented');
+  });
+
+  it('create multiple users with tutorials and tutorials to correct.', async () => {
+    throw new Error('Not implemented');
+  });
+
   it('get a user with a specific ID', async () => {
     const expected = USER_DOCUMENTS[0];
     const user = await service.findById(expected._id);

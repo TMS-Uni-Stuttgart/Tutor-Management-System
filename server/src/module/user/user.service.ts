@@ -109,44 +109,18 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    * @returns Created user.
    */
   async create(user: CreateUserDTO): Promise<IUser> {
-    const {
-      tutorials: tutorialIds,
-      tutorialsToCorrect: toCorrectIds,
-      password,
-      username,
-      ...dto
-    } = user;
-
-    await this.checkUserDTO(user);
-
-    const tutorials = await this.getAllTutorials(tutorialIds);
-    const tutorialsToCorrect = await this.getAllTutorials(toCorrectIds);
-
-    const userDocument: UserModel = new UserModel({
-      ...dto,
-      username,
-      password,
-      temporaryPassword: password,
-    });
-
-    const result = (await this.userModel.create(userDocument)) as UserDocument;
-
-    await Promise.all(
-      tutorials.map((tutorial) => {
-        tutorial.tutor = result;
-        return tutorial.save();
-      })
-    );
-
-    await Promise.all(
-      tutorialsToCorrect.map((tutorial) => {
-        tutorial.correctors.push(result);
-        return tutorial.save();
-      })
-    );
-
-    const createdUser = await this.findById(result.id);
+    const createdUser = await this.createUser(user);
     return createdUser.toDTO();
+  }
+
+  async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
+    const created: UserDocument[] = [];
+
+    for (const user of users) {
+      created.push(await this.createUser(user));
+    }
+
+    return created.map((u) => u.toDTO());
   }
 
   /**
@@ -358,6 +332,70 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
   }
 
   /**
+   * Creates a new user based on the given information.
+   *
+   * This function also updates all related tutorials which the user is tutor or corrector of.
+   *
+   * @param user Information about the user to create.
+   *
+   * @returns Created UserDocument.
+   */
+  private async createUser(user: CreateUserDTO): Promise<UserDocument> {
+    await this.checkUserDTO(user);
+    const {
+      tutorials: tutorialIds,
+      tutorialsToCorrect: toCorrectIds,
+      password,
+      username,
+      ...dto
+    } = user;
+    const userDocument: UserModel = new UserModel({
+      ...dto,
+      username,
+      password,
+      temporaryPassword: password,
+    });
+
+    const [tutorials, tutorialsToCorrect] = await Promise.all([
+      this.getAllTutorials(tutorialIds),
+      this.getAllTutorials(toCorrectIds),
+    ]);
+
+    const result = (await this.userModel.create(userDocument)) as UserDocument;
+
+    await this.updateTutorialsWithUser({ tutor: result, tutorials, tutorialsToCorrect });
+
+    return this.findById(result.id);
+  }
+
+  /**
+   * Sets the given `tutor` as tutor for all given `tutorials` and as corrector for all given `tutorialsToCorrect`.
+   *
+   * @param tutor Tutor or corrector to set as tutor of the `tutorials` and as corrector of the `tutorialsToCorrect`.
+   * @param tutorials Tutorials to set the given `tutor` as tutor.
+   * @param tutorialsToCorrect Tutorials to set the given `tutor` as corrector.
+   */
+  private async updateTutorialsWithUser({
+    tutor,
+    tutorials,
+    tutorialsToCorrect,
+  }: UpdateTutorialsParams): Promise<void> {
+    await Promise.all(
+      tutorials.map((tutorial) => {
+        tutorial.tutor = tutor;
+        return tutorial.save();
+      })
+    );
+
+    await Promise.all(
+      tutorialsToCorrect.map((tutorial) => {
+        tutorial.correctors.push(tutor);
+        return tutorial.save();
+      })
+    );
+  }
+
+  /**
    * Checks if there is already a user with the given username saved in the database.
    *
    * @param username Username to check
@@ -458,4 +496,10 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
       );
     }
   }
+}
+
+interface UpdateTutorialsParams {
+  tutor: UserDocument;
+  tutorials: TutorialDocument[];
+  tutorialsToCorrect: TutorialDocument[];
 }
