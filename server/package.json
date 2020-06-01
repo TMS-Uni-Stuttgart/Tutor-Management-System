@@ -46,7 +46,7 @@
     "nodemailer": "^6.4.6",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "pug": "^2.0.4",
+    "pug": "^3.0.0",
     "puppeteer": "1.19.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
