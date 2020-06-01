@@ -24,7 +24,7 @@ export async function populateTeamDocument(doc?: TeamDocument) {
 type AssignableFields = Omit<NoFunctions<TeamModel>, 'students'>;
 
 @plugin(mongooseAutoPopulate)
-@plugin<VirtualPopulationOptions<TeamModel>>(VirtualPopulation, {
+@plugin<typeof VirtualPopulation, VirtualPopulationOptions<TeamModel>>(VirtualPopulation, {
   populateDocument: populateTeamDocument,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })

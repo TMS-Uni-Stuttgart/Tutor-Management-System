@@ -41,7 +41,7 @@ export async function populateStudentDocument(doc?: StudentDocument) {
   fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
 @plugin(mongooseAutoPopulate)
-@plugin<VirtualPopulationOptions<StudentModel>>(VirtualPopulation, {
+@plugin<typeof VirtualPopulation, VirtualPopulationOptions<StudentModel>>(VirtualPopulation, {
   populateDocument: populateStudentDocument as any,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
