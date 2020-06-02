@@ -38,6 +38,7 @@ import Teamoverview from '../view/teamoverview/Teamoverview';
 import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
 import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
 import UserManagement from '../view/usermanagement/UserManagement';
+import ImportData from '../view/import-data/ImportData';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -62,6 +63,7 @@ export enum RoutingPath {
   MANAGE_SHEETS = '/admin/sheets',
   MANAGE_ALL_STUDENTS = '/admin/students',
   MANAGE_SCHEIN_EXAMS = '/admin/scheinexams',
+  IMPORT_TUTORIALS_AND_USERS = '/admin/import',
 }
 
 type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
@@ -79,6 +81,7 @@ export interface RouteType {
   isExact?: boolean;
 }
 
+export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.LOGIN;
 export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
 
 export const ROUTES: readonly RouteType[] = [
@@ -227,6 +230,16 @@ export const ROUTES: readonly RouteType[] = [
     component: TutorialManagement,
     icon: TutorialIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
+    isInDrawer: true,
+    isPrivate: true,
+    isExact: true,
+  },
+  {
+    path: RoutingPath.IMPORT_TUTORIALS_AND_USERS,
+    title: 'Importiere Daten',
+    component: ImportData,
+    icon: TutorialIcon, // FIXME: Change icon.
+    roles: [Role.ADMIN],
     isInDrawer: true,
     isPrivate: true,
     isExact: true,
