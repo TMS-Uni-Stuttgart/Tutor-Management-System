@@ -1,56 +1,107 @@
-import { Box, Paper, Step, StepLabel, Stepper, StepperProps } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import React from 'react';
+import { Box } from '@material-ui/core';
+import React, { useCallback, useEffect, useState } from 'react';
+import StepperContent from './components/StepperContent';
+import StepperHeader, { StepperHeaderProps } from './components/StepperHeader';
+import { NextStepCallback, StepData, StepperContext } from './context/StepperContext';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    paper: {
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center',
-    },
-    button: {
-      margin: theme.spacing(0, 2),
-    },
-    stepper: {
-      flex: 1,
-      padding: theme.spacing(3, 1),
-    },
-  })
-);
+export interface StepInformation {
+  label: string;
+  component: React.FunctionComponent;
+}
 
-interface Props extends Omit<StepperProps, 'children'> {
-  backButton: React.ReactNode;
-  nextButton: React.ReactNode;
-  steps: string[];
-  activeStep?: number;
+export interface StepperWithButtonsProps extends StepperHeaderProps {
+  steps: StepInformation[];
+}
+
+interface State {
+  callback: NextStepCallback | undefined;
 }
 
 function StepperWithButtons({
-  steps,
-  backButton,
-  nextButton,
-  className,
-  activeStep,
+  steps: stepsFromProps,
   ...props
-}: Props): JSX.Element {
-  const classes = useStyles();
+}: StepperWithButtonsProps): JSX.Element {
+  const [activeStep, setActiveStep] = useState(0);
+  const [state, setState] = useState<State>({ callback: undefined });
+  const [isWaitingOnNextCallback, setWaitingOnNextCallback] = useState(false);
+  const [steps, setSteps] = useState<StepData[]>([]);
+
+  useEffect(() => {
+    setSteps([...stepsFromProps]);
+  }, [stepsFromProps]);
+
+  async function nextStep() {
+    if (isWaitingOnNextCallback) {
+      return;
+    }
+
+    const { callback } = state;
+
+    if (!callback) {
+      return setActiveStep(activeStep + 1);
+    }
+
+    setWaitingOnNextCallback(true);
+    const { goToNext, error } = await callback();
+
+    if (error !== undefined) {
+      setSteps(
+        steps.map((step, index) => {
+          if (index !== activeStep) {
+            return step;
+          }
+
+          return {
+            ...step,
+            error,
+          };
+        })
+      );
+    }
+
+    if (goToNext) {
+      setActiveStep(activeStep + 1);
+    }
+
+    setWaitingOnNextCallback(false);
+  }
+
+  async function prevStep() {
+    setActiveStep(activeStep - 1);
+  }
+
+  const setNextCallback = useCallback((cb: NextStepCallback) => {
+    setState({ callback: cb });
+  }, []);
+
+  const removeNextCallback = useCallback(() => {
+    setState({ callback: undefined });
+  }, []);
+
+  const getNextCallback = useCallback(() => {
+    return state.callback;
+  }, [state.callback]);
 
   return (
-    <Paper className={clsx(classes.paper, className)}>
-      <Box className={classes.button}>{backButton}</Box>
+    <StepperContext.Provider
+      value={{
+        activeStep,
+        nextStep,
+        prevStep,
+        steps,
+        setNextCallback,
+        getNextCallback,
+        removeNextCallback,
+        isWaitingOnNextCallback,
+        setWaitingOnNextCallback,
+      }}
+    >
+      <Box className={props.className}>
+        <StepperHeader {...props} />
 
-      <Stepper className={classes.stepper} {...props} activeStep={activeStep}>
-        {steps.map((label, index) => (
-          <Step key={label} completed={activeStep !== undefined && index < activeStep}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-
-      <Box className={classes.button}>{nextButton}</Box>
-    </Paper>
+        <StepperContent />
+      </Box>
+    </StepperContext.Provider>
   );
 }
 
