@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, BoxProps } from '@material-ui/core';
 import React, { useCallback, useEffect, useState } from 'react';
 import StepperContent from './components/StepperContent';
 import StepperHeader, { StepperHeaderProps } from './components/StepperHeader';
@@ -96,10 +96,10 @@ function StepperWithButtons({
         setWaitingOnNextCallback,
       }}
     >
-      <Box className={props.className}>
+      <Box className={props.className} display='flex' flexDirection='column'>
         <StepperHeader {...props} />
 
-        <StepperContent />
+        <StepperContent flex={1} display='flex' />
       </Box>
     </StepperContext.Provider>
   );

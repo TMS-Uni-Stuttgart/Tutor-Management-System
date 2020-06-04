@@ -69,6 +69,7 @@ function StepperHeader({
         <SubmitButton
           isSubmitting={isWaitingOnNextCallback}
           variant='outlined'
+          color='primary'
           onClick={nextStep}
           disabled={activeStep === steps.length}
         >

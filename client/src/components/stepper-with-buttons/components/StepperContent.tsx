@@ -1,14 +1,14 @@
-import { Box } from '@material-ui/core';
+import { Box, BoxProps } from '@material-ui/core';
 import React from 'react';
 import { useStepper } from '../context/StepperContext';
 
-function StepperContent() {
+function StepperContent(props: BoxProps) {
   const { activeStep, steps } = useStepper();
   const StepElement =
     steps[activeStep]?.component ?? (() => <div>NO ELEMENT FOUND FOR STEP {activeStep}</div>);
 
   return (
-    <Box marginTop={2}>
+    <Box marginTop={2} {...props}>
       <StepElement />
     </Box>
   );
