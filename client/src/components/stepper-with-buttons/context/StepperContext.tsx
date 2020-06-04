@@ -16,11 +16,13 @@ export interface StepData {
 interface StepperContextValue {
   activeStep: number;
   isWaitingOnNextCallback: boolean;
+  isNextDisabled: boolean;
   steps: StepData[];
   nextStep: () => Promise<void>;
   prevStep: () => Promise<void>;
   setWaitingOnNextCallback: (waiting: boolean) => void;
   setNextCallback: (cb: NextStepCallback) => void;
+  setNextDisabled: (isDisabled: boolean) => void;
   removeNextCallback: () => void;
   getNextCallback: () => NextStepCallback | undefined;
 }
@@ -32,10 +34,12 @@ function notInitialised(): any {
 export const StepperContext = React.createContext<StepperContextValue>({
   activeStep: -1,
   isWaitingOnNextCallback: false,
+  isNextDisabled: false,
   steps: [],
   setWaitingOnNextCallback: notInitialised,
   prevStep: notInitialised,
   nextStep: notInitialised,
+  setNextDisabled: notInitialised,
   setNextCallback: notInitialised,
   removeNextCallback: notInitialised,
   getNextCallback: notInitialised,

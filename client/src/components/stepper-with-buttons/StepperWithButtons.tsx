@@ -1,4 +1,4 @@
-import { Box, BoxProps } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import React, { useCallback, useEffect, useState } from 'react';
 import StepperContent from './components/StepperContent';
 import StepperHeader, { StepperHeaderProps } from './components/StepperHeader';
@@ -25,6 +25,7 @@ function StepperWithButtons({
   const [state, setState] = useState<State>({ callback: undefined });
   const [isWaitingOnNextCallback, setWaitingOnNextCallback] = useState(false);
   const [steps, setSteps] = useState<StepData[]>([]);
+  const [isNextDisabled, setNextDisabled] = useState(false);
 
   useEffect(() => {
     setSteps([...stepsFromProps]);
@@ -94,6 +95,8 @@ function StepperWithButtons({
         removeNextCallback,
         isWaitingOnNextCallback,
         setWaitingOnNextCallback,
+        isNextDisabled,
+        setNextDisabled,
       }}
     >
       <Box className={props.className} display='flex' flexDirection='column'>

@@ -45,7 +45,14 @@ function StepperHeader({
   ...props
 }: StepperHeaderProps) {
   const classes = useStyles();
-  const { activeStep, nextStep, prevStep, isWaitingOnNextCallback, steps } = useStepper();
+  const {
+    activeStep,
+    nextStep,
+    prevStep,
+    isWaitingOnNextCallback,
+    steps,
+    isNextDisabled,
+  } = useStepper();
 
   return (
     <Paper className={clsx(classes.paper)}>
@@ -71,7 +78,7 @@ function StepperHeader({
           variant='outlined'
           color='primary'
           onClick={nextStep}
-          disabled={activeStep === steps.length}
+          disabled={isNextDisabled || activeStep === steps.length}
         >
           {!!nextButtonDoneLabel
             ? activeStep < steps.length - 1
