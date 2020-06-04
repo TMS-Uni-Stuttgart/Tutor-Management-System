@@ -1,7 +1,7 @@
 import React from 'react';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
-import GenerateTutorials from './components/GenerateTutorials';
-import ImportUsers from './components/ImportUsers';
+import GenerateTutorials from './generate-tutorials/GenerateTutorials';
+import ImportUsers from './import-users/ImportUsers';
 
 function ImportData(): JSX.Element {
   return (

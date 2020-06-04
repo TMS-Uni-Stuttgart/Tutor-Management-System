@@ -1,4 +1,4 @@
-import { Box, Button, Tab, Tabs, Typography } from '@material-ui/core';
+import { Box, Tab, Tabs, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
@@ -10,39 +10,57 @@ import {
   useStepper,
 } from '../../../components/stepper-with-buttons/context/StepperContext';
 import TabPanel from '../../../components/TabPanel';
+import FormikExcludedDates, { FormExcludedDate } from './components/FormikExcludedDates';
+import FormikWeekdaySlot from './components/FormikWeekdaySlot';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     form: {
       flex: 1,
     },
-    addButton: {
-      marginLeft: 'auto',
+    weekdayEntry: {
+      padding: theme.spacing(1),
+      display: 'flex',
+      marginTop: theme.spacing(1),
+      alignItems: 'center',
+      '&:first-of-type': {
+        marginTop: 0,
+      },
     },
   })
 );
 
 interface WeekdayTimeSlot {
+  _id: number;
   interval: string;
-  count: number;
+  count: string;
 }
 
 interface FormState {
   startDate: string;
   endDate: string;
-  excludedDates: string[];
+  excludedDates: FormExcludedDate[];
   weekdays: { [day: string]: WeekdayTimeSlot[] };
 }
 
 function GenerateTutorials(): JSX.Element {
   const classes = useStyles();
-  const { setNextCallback, removeNextCallback } = useStepper();
+  const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
   const [selectedTab, setSelectedTab] = useState(0);
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate(),
     endDate: DateTime.local().toISODate(),
-    excludedDates: [],
-    weekdays: {},
+    excludedDates: ['1', '2', '3', '4', '5'],
+    weekdays: {
+      monday: [
+        { _id: 0, interval: DateTime.local().toISO(), count: '3' },
+        { _id: 1, interval: DateTime.local().toISO(), count: '3' },
+        { _id: 2, interval: DateTime.local().toISO(), count: '3' },
+        { _id: 3, interval: DateTime.local().toISO(), count: '3' },
+        { _id: 4, interval: DateTime.local().toISO(), count: '3' },
+        { _id: 5, interval: DateTime.local().toISO(), count: '3' },
+      ],
+    },
   };
 
   const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
@@ -50,6 +68,9 @@ function GenerateTutorials(): JSX.Element {
   };
 
   useEffect(() => {
+    setNextDisabled(true);
+    setTimeout(() => setNextDisabled(false), 10000);
+
     console.log('GenerateTutorials - registering next callback');
     const callback = async () => {
       console.log('Next clicked');
@@ -61,12 +82,12 @@ function GenerateTutorials(): JSX.Element {
     setNextCallback(callback);
 
     return () => removeNextCallback();
-  }, [setNextCallback, removeNextCallback]);
+  }, [setNextCallback, removeNextCallback, setNextDisabled]);
 
   // FIXME: Add proper onSubmit handler.
   return (
     <Formik initialValues={initialValues} onSubmit={() => {}}>
-      {({ values, errors }) => (
+      {({ values, errors, getFieldProps }) => (
         <form className={classes.form}>
           <Box
             display='grid'
@@ -76,30 +97,13 @@ function GenerateTutorials(): JSX.Element {
             gridColumnGap={16}
             height='100%'
           >
+            <Typography variant='h6'>Terminbereich</Typography>
+
             <FormikDatePicker name='startDate' label='Startdatum' />
 
-            <Box
-              border={2}
-              borderColor='divider'
-              borderRadius='borderRadius'
-              gridRow='span 3'
-              padding={1}
-              position='relative'
-              display='flex'
-              flexDirection='column'
-            >
-              <Box display='flex' marginBottom={1}>
-                <Typography variant='h6'>Ausgeschlossene Zeitspannen</Typography>
-                <Button variant='outlined' color='secondary' className={classes.addButton}>
-                  Hinzufügen
-                </Button>
-              </Box>
-              <Box overflow='auto' flex={1}>
-                EXCLUDED_SPANS_AREA
-              </Box>
-            </Box>
-
             <FormikDatePicker name='endDate' label='Enddatum' />
+
+            <FormikExcludedDates name='excludedDates' gridColumn='2' gridRow='1 / span 3' />
 
             <Box
               gridArea='4 / 1 / span 1 / span 2'
@@ -123,7 +127,17 @@ function GenerateTutorials(): JSX.Element {
               </Tabs>
 
               <TabPanel index={0} value={selectedTab}>
-                MONDAY PANEL
+                <Box display='flex' flexDirection='column'>
+                  {getFieldProps<WeekdayTimeSlot[]>(`weekdays.${'monday'}`).value.map(
+                    (val, idx) => (
+                      <FormikWeekdaySlot
+                        key={val._id}
+                        namePrefix={`weekdays.${'monday'}[${idx}]`}
+                        className={classes.weekdayEntry}
+                      />
+                    )
+                  )}
+                </Box>
               </TabPanel>
               <TabPanel index={1} value={selectedTab}>
                 TUESDAY PANEL
