@@ -64,7 +64,7 @@ function StudentInfo(): JSX.Element {
   const [exams, setExams] = useState<Scheinexam[]>([]);
   const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
   const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
-  const [selectedTab, setSelectedTab] = React.useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
     getStudent(studentId)
