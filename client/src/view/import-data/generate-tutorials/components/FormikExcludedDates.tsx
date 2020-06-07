@@ -6,6 +6,7 @@ import { Delete as DeleteIcon, SquareEditOutline as EditIcon } from 'mdi-materia
 import React, { useState } from 'react';
 import ExcludedDateDialog from './ExcludedDateDialog';
 import ExcludedDateDisplay from './ExcludedDateDisplay';
+import { useDialog } from '../../../../hooks/DialogService';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -23,14 +24,27 @@ const useStyles = makeStyles((theme) =>
 
 export type FormExcludedDate = DateTime | Interval;
 
+interface DialogClosedState {
+  isShowDialog: false;
+}
+
+interface DialogOpenState {
+  isShowDialog: true;
+  onAccept: (excluded: FormExcludedDate) => void;
+  excludedDate?: FormExcludedDate;
+}
+
+type DialogState = DialogOpenState | DialogClosedState;
+
 interface Props extends BoxProps {
   name: string;
 }
 
 function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
   const classes = useStyles();
-  const [field, meta, helpers] = useField<FormExcludedDate[]>(name);
-  const [isShowAddDialog, setShowAddDialog] = useState(false);
+  const [, meta, helpers] = useField<FormExcludedDate[]>(name);
+  const [dialogState, setDialogState] = useState<DialogState>({ isShowDialog: false });
+  const dialog = useDialog();
 
   const { value } = meta;
 
@@ -43,6 +57,48 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
     });
 
     helpers.setValue(newValue);
+  };
+
+  const addExcludedDate = (excluded: FormExcludedDate) => {
+    setFieldValue([...value, excluded]);
+    setDialogState({ isShowDialog: false });
+  };
+
+  const replaceExcludedDate = (idx: number) => (excluded: FormExcludedDate) => {
+    const newValue = [...value];
+    newValue[idx] = excluded;
+
+    setFieldValue([...newValue]);
+    setDialogState({ isShowDialog: false });
+  };
+
+  const deleteExcludedDate = (idx: number) => {
+    const newValues = [...value];
+    newValues.splice(idx, 1);
+
+    dialog.hide();
+    setFieldValue(newValues);
+  };
+
+  const handleDeleteExcludedDateClicked = (idx: number) => () => {
+    dialog.show({
+      title: 'Ausgeschlossene Zeitspanne löschen',
+      content:
+        'Soll die ausgewählte Zeitspanne wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden.',
+      actions: [
+        {
+          label: 'Nicht löschen',
+          onClick: () => dialog.hide(),
+        },
+        {
+          label: 'Löschen',
+          onClick: () => deleteExcludedDate(idx),
+          buttonProps: {
+            className: classes.deleteButton,
+          },
+        },
+      ],
+    });
   };
 
   return (
@@ -62,11 +118,12 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
           variant='outlined'
           color='secondary'
           className={classes.addButton}
-          onClick={() => setShowAddDialog(true)}
+          onClick={() => setDialogState({ isShowDialog: true, onAccept: addExcludedDate })}
         >
           Hinzufügen
         </Button>
       </Box>
+
       <Box
         overflow='auto'
         flex={1}
@@ -89,19 +146,23 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
             <ExcludedDateDisplay excluded={val} />
 
             <Box marginLeft='auto'>
-              <IconButton size='small'>
+              <IconButton
+                size='small'
+                onClick={() => {
+                  setDialogState({
+                    isShowDialog: true,
+                    excludedDate: val,
+                    onAccept: replaceExcludedDate(idx),
+                  });
+                }}
+              >
                 <EditIcon />
               </IconButton>
 
               <IconButton
                 size='small'
                 className={classes.deleteButton}
-                onClick={() => {
-                  const newValues = [...value];
-                  newValues.splice(idx, 1);
-
-                  setFieldValue(newValues);
-                }}
+                onClick={handleDeleteExcludedDateClicked(idx)}
               >
                 <DeleteIcon />
               </IconButton>
@@ -110,14 +171,12 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
         ))}
       </Box>
 
-      {isShowAddDialog && (
+      {dialogState.isShowDialog && (
         <ExcludedDateDialog
-          open={isShowAddDialog}
-          onClose={() => setShowAddDialog(false)}
-          onAccept={(excluded) => {
-            setFieldValue([...value, excluded]);
-            setShowAddDialog(false);
-          }}
+          open={dialogState.isShowDialog}
+          excluded={dialogState.excludedDate}
+          onClose={() => setDialogState({ isShowDialog: false })}
+          onAccept={dialogState.onAccept}
         />
       )}
     </Box>

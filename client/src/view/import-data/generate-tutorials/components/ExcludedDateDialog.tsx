@@ -31,17 +31,43 @@ interface ValueState {
   interval: Interval;
 }
 
-function getDefaultValue(): ValueState {
-  return {
-    single: DateTime.local(),
-    interval: Interval.fromDateTimes(DateTime.local(), DateTime.local().plus({ days: 7 })),
-  };
+function getDefaultValue(excluded?: FormExcludedDate): ValueState {
+  const defaultSingle = DateTime.local();
+  const defaultInterval = Interval.fromDateTimes(
+    DateTime.local(),
+    DateTime.local().plus({ days: 7 })
+  );
+
+  if (excluded instanceof DateTime) {
+    return { single: excluded, interval: defaultInterval };
+  }
+
+  if (excluded instanceof Interval) {
+    return {
+      single: defaultSingle,
+      interval: Interval.fromDateTimes(excluded.start, excluded.end),
+    };
+  }
+
+  return { single: defaultSingle, interval: defaultInterval };
+}
+
+function getSelectedTab(excluded?: FormExcludedDate): number {
+  if (excluded instanceof DateTime) {
+    return 0;
+  }
+
+  if (excluded instanceof Interval) {
+    return 1;
+  }
+
+  return 0;
 }
 
 function ExcludedDateDialog({ excluded, onClose, onAccept, ...props }: Props): JSX.Element {
   const classes = useStyles();
-  const [value, setValue] = useState<ValueState>(getDefaultValue);
-  const [selected, setSelected] = useState(0);
+  const [value, setValue] = useState<ValueState>(() => getDefaultValue(excluded));
+  const [selected, setSelected] = useState(() => getSelectedTab(excluded));
 
   const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
     setSelected(newValue);

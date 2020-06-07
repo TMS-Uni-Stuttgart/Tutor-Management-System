@@ -51,8 +51,11 @@ function GenerateTutorials(): JSX.Element {
     startDate: DateTime.local().toISODate(),
     endDate: DateTime.local().toISODate(),
     excludedDates: [
-      DateTime.local(),
-      Interval.fromDateTimes(DateTime.local(), DateTime.local().plus({ days: 4 })),
+      DateTime.fromISO('2020-06-04'),
+      Interval.fromDateTimes(
+        DateTime.local().minus({ days: 1 }),
+        DateTime.local().plus({ days: 4 })
+      ),
     ],
     weekdays: {
       monday: [
