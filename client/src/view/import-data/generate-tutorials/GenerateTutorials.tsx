@@ -1,7 +1,7 @@
 import { Box, Tab, Tabs, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik } from 'formik';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import React, { useEffect, useState } from 'react';
 import FormikDatePicker from '../../../components/forms/components/FormikDatePicker';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
@@ -50,7 +50,10 @@ function GenerateTutorials(): JSX.Element {
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate(),
     endDate: DateTime.local().toISODate(),
-    excludedDates: ['1', '2', '3', '4', '5'],
+    excludedDates: [
+      DateTime.local(),
+      Interval.fromDateTimes(DateTime.local(), DateTime.local().plus({ days: 4 })),
+    ],
     weekdays: {
       monday: [
         { _id: 0, interval: DateTime.local().toISO(), count: '3' },
@@ -92,7 +95,7 @@ function GenerateTutorials(): JSX.Element {
           <Box
             display='grid'
             gridTemplateColumns='1fr 3fr'
-            gridTemplateRows='repeat(3, 60px) 1fr'
+            gridTemplateRows='30px repeat(2, 60px) 1fr'
             gridRowGap={16}
             gridColumnGap={16}
             height='100%'

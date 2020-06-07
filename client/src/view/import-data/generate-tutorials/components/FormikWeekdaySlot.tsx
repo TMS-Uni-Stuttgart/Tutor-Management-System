@@ -1,9 +1,9 @@
-import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Paper, IconButton, PaperProps } from '@material-ui/core';
-import FormikTimePicker from '../../../../components/forms/components/FormikTimePicker';
-import FormikTextField from '../../../../components/forms/components/FormikTextField';
+import { IconButton, Paper, PaperProps } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Delete as DeleteIcon } from 'mdi-material-ui';
+import React from 'react';
+import FormikTextField from '../../../../components/forms/components/FormikTextField';
+import FormikTimePicker from '../../../../components/forms/components/FormikTimePicker';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
