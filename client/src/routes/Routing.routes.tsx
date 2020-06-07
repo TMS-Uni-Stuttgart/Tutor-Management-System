@@ -81,7 +81,7 @@ export interface RouteType {
   isExact?: boolean;
 }
 
-export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.LOGIN;
+export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.IMPORT_TUTORIALS_AND_USERS;
 export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
 
 export const ROUTES: readonly RouteType[] = [
@@ -241,7 +241,7 @@ export const ROUTES: readonly RouteType[] = [
     icon: TutorialIcon, // FIXME: Change icon.
     roles: [Role.ADMIN],
     isInDrawer: true,
-    isPrivate: true,
+    isPrivate: false, // FIXME: Change icon
     isExact: true,
   },
   {

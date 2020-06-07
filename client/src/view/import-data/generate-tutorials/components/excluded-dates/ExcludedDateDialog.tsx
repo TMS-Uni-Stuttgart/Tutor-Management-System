@@ -12,7 +12,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DatePicker } from '@material-ui/pickers';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
-import TabPanel from '../../../../components/TabPanel';
+import SelectInterval from '../../../../../components/select-interval/SelectInterval';
+import TabPanel from '../../../../../components/TabPanel';
 import { FormExcludedDate } from './FormikExcludedDates';
 
 const useStyles = makeStyles(() =>
@@ -100,37 +101,12 @@ function ExcludedDateDialog({ excluded, onClose, onAccept, ...props }: Props): J
           />
         </TabPanel>
         <TabPanel index={1} value={selected} className={classes.tabContent}>
-          <DatePicker
-            label='Von'
-            value={value.interval.start}
-            variant='inline'
-            format='EEE, dd MMMM yyyy'
-            autoOk
-            fullWidth
-            inputVariant='outlined'
-            onChange={(date) => {
-              if (!!date) {
-                const { interval } = value;
-                const endDate = date <= interval.end ? interval.end : date.plus({ days: 7 });
-
-                setValue({ ...value, interval: Interval.fromDateTimes(date, endDate) });
-              }
-            }}
-          />
-          <DatePicker
-            label='Bis'
-            value={value.interval.end}
-            variant='inline'
-            format='EEE, dd MMMM yyyy'
-            autoOk
-            fullWidth
-            inputVariant='outlined'
-            minDate={value.interval.start.plus({ days: 1 })}
-            onChange={(date) => {
-              const { interval } = value;
-              if (!!date && date >= interval.start) {
-                setValue({ ...value, interval: Interval.fromDateTimes(interval.start, date) });
-              }
+          <SelectInterval
+            value={value.interval}
+            flex='1'
+            autoIncreaseStep={6}
+            onChange={(interval) => {
+              setValue({ ...value, interval });
             }}
           />
         </TabPanel>

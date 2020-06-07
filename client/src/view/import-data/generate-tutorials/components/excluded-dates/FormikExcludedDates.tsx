@@ -1,12 +1,11 @@
-import { Box, BoxProps, Button, IconButton, Typography } from '@material-ui/core';
+import { Box, BoxProps, Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
 import { DateTime, Interval } from 'luxon';
-import { Delete as DeleteIcon, SquareEditOutline as EditIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
+import { useDialog } from '../../../../../hooks/DialogService';
+import ExcludedDateBox from './ExcludedDateBox';
 import ExcludedDateDialog from './ExcludedDateDialog';
-import ExcludedDateDisplay from './ExcludedDateDisplay';
-import { useDialog } from '../../../../hooks/DialogService';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -134,40 +133,18 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
         maxHeight='max-content'
       >
         {value.map((val, idx) => (
-          <Box
+          <ExcludedDateBox
             key={val.toISODate() + idx}
-            border={1}
-            borderColor='divider'
-            borderRadius='borderRadius'
-            padding={1}
-            display='flex'
-            alignItems='center'
-          >
-            <ExcludedDateDisplay excluded={val} />
-
-            <Box marginLeft='auto'>
-              <IconButton
-                size='small'
-                onClick={() => {
-                  setDialogState({
-                    isShowDialog: true,
-                    excludedDate: val,
-                    onAccept: replaceExcludedDate(idx),
-                  });
-                }}
-              >
-                <EditIcon />
-              </IconButton>
-
-              <IconButton
-                size='small'
-                className={classes.deleteButton}
-                onClick={handleDeleteExcludedDateClicked(idx)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          </Box>
+            excluded={val}
+            onEdit={() => {
+              setDialogState({
+                isShowDialog: true,
+                excludedDate: val,
+                onAccept: replaceExcludedDate(idx),
+              });
+            }}
+            onDelete={handleDeleteExcludedDateClicked(idx)}
+          />
         ))}
       </Box>
 

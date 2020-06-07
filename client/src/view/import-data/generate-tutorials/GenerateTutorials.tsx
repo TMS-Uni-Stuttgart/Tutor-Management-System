@@ -10,7 +10,9 @@ import {
   useStepper,
 } from '../../../components/stepper-with-buttons/context/StepperContext';
 import TabPanel from '../../../components/TabPanel';
-import FormikExcludedDates, { FormExcludedDate } from './components/FormikExcludedDates';
+import FormikExcludedDates, {
+  FormExcludedDate,
+} from './components/excluded-dates/FormikExcludedDates';
 import FormikWeekdaySlot from './components/FormikWeekdaySlot';
 
 const useStyles = makeStyles((theme) =>

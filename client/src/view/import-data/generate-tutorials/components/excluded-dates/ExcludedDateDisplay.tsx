@@ -7,7 +7,7 @@ interface Props {
   excluded: FormExcludedDate;
 }
 
-function ExcludedDateDisplay({ excluded }: Props): JSX.Element {
+function ExcludedDateText({ excluded }: Props): JSX.Element {
   const format: DateTimeFormatOptions = {
     weekday: 'short',
     year: 'numeric',
@@ -24,4 +24,4 @@ function ExcludedDateDisplay({ excluded }: Props): JSX.Element {
   );
 }
 
-export default ExcludedDateDisplay;
+export default ExcludedDateText;
