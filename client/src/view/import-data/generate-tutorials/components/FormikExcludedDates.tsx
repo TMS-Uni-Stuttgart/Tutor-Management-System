@@ -1,7 +1,11 @@
-import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Box, Typography, Button, BoxProps, Paper } from '@material-ui/core';
+import { Box, BoxProps, Button, IconButton, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
+import { DateTime, Interval } from 'luxon';
+import { Delete as DeleteIcon, SquareEditOutline as EditIcon } from 'mdi-material-ui';
+import React, { useState } from 'react';
+import ExcludedDateDialog from './ExcludedDateDialog';
+import ExcludedDateDisplay from './ExcludedDateDisplay';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -11,10 +15,13 @@ const useStyles = makeStyles((theme) =>
     paper: {
       padding: theme.spacing(1),
     },
+    deleteButton: {
+      color: theme.palette.red.main,
+    },
   })
 );
 
-export type FormExcludedDate = string;
+export type FormExcludedDate = DateTime | Interval;
 
 interface Props extends BoxProps {
   name: string;
@@ -23,8 +30,20 @@ interface Props extends BoxProps {
 function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
   const classes = useStyles();
   const [field, meta, helpers] = useField<FormExcludedDate[]>(name);
+  const [isShowAddDialog, setShowAddDialog] = useState(false);
+
   const { value } = meta;
-  const { setValue } = helpers;
+
+  const setFieldValue = (newValue: FormExcludedDate[]) => {
+    newValue.sort((a, b) => {
+      const dateA = a instanceof Interval ? a.start : a;
+      const dateB = b instanceof Interval ? b.start : b;
+
+      return dateA.toMillis() - dateB.toMillis();
+    });
+
+    helpers.setValue(newValue);
+  };
 
   return (
     <Box
@@ -43,9 +62,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
           variant='outlined'
           color='secondary'
           className={classes.addButton}
-          onClick={() => {
-            setValue([...value, `Eintrag: ${value.length + 1}`]);
-          }}
+          onClick={() => setShowAddDialog(true)}
         >
           Hinzufügen
         </Button>
@@ -57,13 +74,52 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
         gridTemplateColumns='1fr 1fr'
         gridRowGap={8}
         gridColumnGap={8}
+        maxHeight='max-content'
       >
         {value.map((val, idx) => (
-          <Paper key={val + idx} elevation={2} className={classes.paper}>
-            {val}
-          </Paper>
+          <Box
+            key={val.toISODate() + idx}
+            border={1}
+            borderColor='divider'
+            borderRadius='borderRadius'
+            padding={1}
+            display='flex'
+            alignItems='center'
+          >
+            <ExcludedDateDisplay excluded={val} />
+
+            <Box marginLeft='auto'>
+              <IconButton size='small'>
+                <EditIcon />
+              </IconButton>
+
+              <IconButton
+                size='small'
+                className={classes.deleteButton}
+                onClick={() => {
+                  const newValues = [...value];
+                  newValues.splice(idx, 1);
+
+                  setFieldValue(newValues);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          </Box>
         ))}
       </Box>
+
+      {isShowAddDialog && (
+        <ExcludedDateDialog
+          open={isShowAddDialog}
+          onClose={() => setShowAddDialog(false)}
+          onAccept={(excluded) => {
+            setFieldValue([...value, excluded]);
+            setShowAddDialog(false);
+          }}
+        />
+      )}
     </Box>
   );
 }
