@@ -15,9 +15,6 @@ const useStyles = makeStyles((theme) =>
     paper: {
       padding: theme.spacing(1),
     },
-    deleteButton: {
-      color: theme.palette.red.main,
-    },
   })
 );
 
@@ -92,9 +89,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
         {
           label: 'Löschen',
           onClick: () => deleteExcludedDate(idx),
-          buttonProps: {
-            className: classes.deleteButton,
-          },
+          deleteButton: true,
         },
       ],
     });

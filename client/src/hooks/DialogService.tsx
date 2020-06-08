@@ -8,11 +8,22 @@ import {
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import { DialogProps } from '@material-ui/core/Dialog';
 import React, { PropsWithChildren, useContext, useState } from 'react';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    deleteButton: {
+      color: theme.palette.red.main,
+    },
+  })
+);
 
 interface ActionParams {
   label: string;
   onClick: React.MouseEventHandler<HTMLElement>;
   buttonProps?: ButtonProps;
+  deleteButton?: boolean;
 }
 
 interface DialogOptions {
@@ -44,6 +55,7 @@ let showDialogGlobal: CreateDialogFunction | undefined;
 let closeDialogGlobal: (() => void) | undefined;
 
 function DialogService({ children }: PropsWithChildren<{}>): JSX.Element {
+  const classes = useStyles();
   const [dialog, setDialog] = useState<DialogOptions | undefined>(undefined);
 
   function handleSetDialog(dialog: DialogOptions | undefined) {
@@ -79,7 +91,15 @@ function DialogService({ children }: PropsWithChildren<{}>): JSX.Element {
 
           <DialogActions>
             {dialog.actions.map((action) => (
-              <Button key={action.label} onClick={action.onClick} {...action.buttonProps}>
+              <Button
+                key={action.label}
+                onClick={action.onClick}
+                {...action.buttonProps}
+                className={clsx(
+                  action.buttonProps?.className,
+                  action.deleteButton && classes.deleteButton
+                )}
+              >
                 {action.label}
               </Button>
             ))}
