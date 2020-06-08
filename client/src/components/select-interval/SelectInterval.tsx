@@ -1,7 +1,7 @@
 import { Box, BoxProps } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { DatePicker } from '@material-ui/pickers';
-import { DateTime, Interval } from 'luxon';
+import { DatePicker, TimePicker, DatePickerProps, TimePickerProps } from '@material-ui/pickers';
+import { DateTime, Interval, DurationObject } from 'luxon';
 import React, { useEffect, useState } from 'react';
 
 const useStyles = makeStyles(() =>
@@ -17,10 +17,28 @@ const useStyles = makeStyles(() =>
   })
 );
 
+export enum SelectIntervalMode {
+  DATE,
+  TIME,
+}
+
 interface Props extends Omit<BoxProps, 'onChange'> {
   value?: Interval;
-  autoIncreaseStep?: number;
   onChange?: (newValue: Interval, oldValue: Interval) => void;
+
+  /**
+   * Mode of the picker component. Defaults to `DATE` if not present.
+   *
+   * Changes the behaviour of the component and what one wants to select:
+   * - `DATE`: Select a range of dates.
+   * - `TIME`: Select a range of time (hour & minutes) on the same day.
+   */
+  mode?: SelectIntervalMode;
+
+  /**
+   * The unit depends on the selected `mode`: If `mode` is set to `DATE` the unit is 'days'. If it is set to `TIME` the unit is 'minutes'.
+   */
+  autoIncreaseStep?: number;
 }
 
 interface TouchedState {
@@ -32,17 +50,56 @@ function getDefaultInterval(): Interval {
   return Interval.fromDateTimes(DateTime.local(), DateTime.local().plus({ days: 1 }));
 }
 
+function getFormatForMode(mode: SelectIntervalMode): string {
+  switch (mode) {
+    case SelectIntervalMode.DATE:
+      return 'EEE, dd MMMM yyyy';
+    case SelectIntervalMode.TIME:
+      return 'HH:mm';
+    default:
+      return 'EEE, dd MMMM yyyy';
+  }
+}
+
+function getComponentForMode(
+  mode: SelectIntervalMode
+): React.FC<DatePickerProps> | React.FC<TimePickerProps> {
+  switch (mode) {
+    case SelectIntervalMode.DATE:
+      return DatePicker;
+    case SelectIntervalMode.TIME:
+      return TimePicker;
+    default:
+      throw new Error(`No component available for mode ${mode}`);
+  }
+}
+
+function getDurationToAdd(mode: SelectIntervalMode, steps: number = 1): DurationObject {
+  switch (mode) {
+    case SelectIntervalMode.DATE:
+      return { days: steps };
+    case SelectIntervalMode.TIME:
+      return { minutes: steps };
+    default:
+      throw new Error(`No duration available for mode ${mode}`);
+  }
+}
+
 function SelectInterval({
   value: valueFromProps,
   autoIncreaseStep,
   onChange,
+  mode: modeFromProps,
   ...props
 }: Props): JSX.Element {
   const classes = useStyles();
+  const [touched, setTouched] = useState<TouchedState>({ start: false, end: false });
   const [value, setInternalValue] = useState<Interval>(
     () => valueFromProps ?? getDefaultInterval()
   );
-  const [touched, setTouched] = useState<TouchedState>({ start: false, end: false });
+  const mode = modeFromProps ?? SelectIntervalMode.DATE;
+  const format = getFormatForMode(mode);
+  const Component = getComponentForMode(mode);
 
   useEffect(() => {
     setInternalValue(valueFromProps ?? getDefaultInterval());
@@ -59,11 +116,12 @@ function SelectInterval({
 
   return (
     <Box display='flex' {...props}>
-      <DatePicker
+      <Component
         label='Von'
         value={value.start}
         variant='inline'
-        format='EEE, dd MMMM yyyy'
+        format={format}
+        ampm={false}
         fullWidth
         inputVariant='outlined'
         InputProps={{ className: classes.startPicker }}
@@ -71,11 +129,12 @@ function SelectInterval({
         onChange={(date) => {
           if (!!date) {
             let endDate: DateTime;
+            const durationToAdd = getDurationToAdd(mode, autoIncreaseStep);
 
             if (date <= value.end) {
-              endDate = touched.end ? value.end : date.plus({ days: autoIncreaseStep ?? 1 });
+              endDate = touched.end ? value.end : date.plus(durationToAdd);
             } else {
-              endDate = date.plus({ days: autoIncreaseStep ?? 1 });
+              endDate = date.plus(durationToAdd);
               setTouched({ ...touched, end: false });
             }
 
@@ -83,12 +142,13 @@ function SelectInterval({
           }
         }}
       />
-      <DatePicker
+      <Component
         label='Bis'
         value={value.end}
         InputProps={{ className: classes.endPicker }}
         variant='inline'
-        format='EEE, dd MMMM yyyy'
+        format={format}
+        ampm={false}
         autoOk
         fullWidth
         inputVariant='outlined'

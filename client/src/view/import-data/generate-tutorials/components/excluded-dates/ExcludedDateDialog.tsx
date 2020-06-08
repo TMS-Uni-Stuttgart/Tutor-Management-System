@@ -12,7 +12,9 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DatePicker } from '@material-ui/pickers';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
-import SelectInterval from '../../../../../components/select-interval/SelectInterval';
+import SelectInterval, {
+  SelectIntervalMode,
+} from '../../../../../components/select-interval/SelectInterval';
 import TabPanel from '../../../../../components/TabPanel';
 import { FormExcludedDate } from './FormikExcludedDates';
 
@@ -105,6 +107,7 @@ function ExcludedDateDialog({ excluded, onClose, onAccept, ...props }: Props): J
             value={value.interval}
             flex='1'
             autoIncreaseStep={6}
+            mode={SelectIntervalMode.DATE}
             onChange={(interval) => {
               setValue({ ...value, interval });
             }}
