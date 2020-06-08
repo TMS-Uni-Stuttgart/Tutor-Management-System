@@ -1,9 +1,14 @@
 import { IconButton, Paper, PaperProps } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useField } from 'formik';
+import { Interval } from 'luxon';
 import { Delete as DeleteIcon } from 'mdi-material-ui';
 import React from 'react';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
-import FormikTimePicker from '../../../../components/forms/components/FormikTimePicker';
+import SelectInterval, {
+  SelectIntervalMode,
+} from '../../../../components/select-interval/SelectInterval';
+import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -16,24 +21,43 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-interface Props extends PaperProps {
-  namePrefix: string;
+export interface WeekdayTimeSlot {
+  _id: number;
+  interval: Interval;
+  count: string;
 }
 
-function FormikWeekdaySlot({ namePrefix, ...props }: Props): JSX.Element {
+interface Props extends PaperProps {
+  name: string;
+  onDelete: () => void;
+}
+
+function FormikWeekdaySlot({ name, onDelete, ...props }: Props): JSX.Element {
   const classes = useStyles();
+  const [, meta, helpers] = useField<WeekdayTimeSlot>(name);
+  const { value } = meta;
 
   return (
     <Paper {...props}>
-      <FormikTimePicker name={`${namePrefix}.interval`} label='Anzahl' />
+      <SelectInterval
+        mode={SelectIntervalMode.TIME}
+        autoIncreaseStep={90}
+        value={value.interval}
+        onChange={(interval) => helpers.setValue({ ...value, interval })}
+      />
+
       <FormikTextField
-        name={`${namePrefix}.count`}
+        name={`${name}.count`}
         label='Anzahl'
+        type='number'
         className={classes.weekdayCountField}
       />
-      <IconButton className={classes.weekdayEntryDeleteButton}>
+
+      <IconButton className={classes.weekdayEntryDeleteButton} onClick={onDelete}>
         <DeleteIcon />
       </IconButton>
+
+      <FormikDebugDisplay />
     </Paper>
   );
 }

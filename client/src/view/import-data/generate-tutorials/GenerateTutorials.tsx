@@ -1,10 +1,9 @@
 import { Box, Tab, Tabs, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik } from 'formik';
-import { DateTime, Interval } from 'luxon';
+import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
 import FormikDatePicker from '../../../components/forms/components/FormikDatePicker';
-import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import {
   NextStepInformation,
   useStepper,
@@ -13,30 +12,16 @@ import TabPanel from '../../../components/TabPanel';
 import FormikExcludedDates, {
   FormExcludedDate,
 } from './components/excluded-dates/FormikExcludedDates';
-import FormikWeekdaySlot from './components/FormikWeekdaySlot';
+import { WeekdayTimeSlot } from './components/FormikWeekdaySlot';
+import WeekdayBox from './components/weekday-slots/WeekdayBox';
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     form: {
       flex: 1,
     },
-    weekdayEntry: {
-      padding: theme.spacing(1),
-      display: 'flex',
-      marginTop: theme.spacing(1),
-      alignItems: 'center',
-      '&:first-of-type': {
-        marginTop: 0,
-      },
-    },
   })
 );
-
-interface WeekdayTimeSlot {
-  _id: number;
-  interval: string;
-  count: string;
-}
 
 interface FormState {
   startDate: string;
@@ -52,23 +37,8 @@ function GenerateTutorials(): JSX.Element {
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate(),
     endDate: DateTime.local().toISODate(),
-    excludedDates: [
-      DateTime.fromISO('2020-06-04'),
-      Interval.fromDateTimes(
-        DateTime.local().minus({ days: 1 }),
-        DateTime.local().plus({ days: 4 })
-      ),
-    ],
-    weekdays: {
-      monday: [
-        { _id: 0, interval: DateTime.local().toISO(), count: '3' },
-        { _id: 1, interval: DateTime.local().toISO(), count: '3' },
-        { _id: 2, interval: DateTime.local().toISO(), count: '3' },
-        { _id: 3, interval: DateTime.local().toISO(), count: '3' },
-        { _id: 4, interval: DateTime.local().toISO(), count: '3' },
-        { _id: 5, interval: DateTime.local().toISO(), count: '3' },
-      ],
-    },
+    excludedDates: [],
+    weekdays: {},
   };
 
   const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
@@ -76,6 +46,7 @@ function GenerateTutorials(): JSX.Element {
   };
 
   useEffect(() => {
+    // TODO: Implement correct logic.
     setNextDisabled(true);
     setTimeout(() => setNextDisabled(false), 10000);
 
@@ -95,7 +66,7 @@ function GenerateTutorials(): JSX.Element {
   // FIXME: Add proper onSubmit handler.
   return (
     <Formik initialValues={initialValues} onSubmit={() => {}}>
-      {({ values, errors, getFieldProps }) => (
+      {({ handleSubmit }) => (
         <form className={classes.form}>
           <Box
             display='grid'
@@ -135,37 +106,25 @@ function GenerateTutorials(): JSX.Element {
               </Tabs>
 
               <TabPanel index={0} value={selectedTab}>
-                <Box display='flex' flexDirection='column'>
-                  {getFieldProps<WeekdayTimeSlot[]>(`weekdays.${'monday'}`).value.map(
-                    (val, idx) => (
-                      <FormikWeekdaySlot
-                        key={val._id}
-                        namePrefix={`weekdays.${'monday'}[${idx}]`}
-                        className={classes.weekdayEntry}
-                      />
-                    )
-                  )}
-                </Box>
+                <WeekdayBox name={'weekdays.monday'} />
               </TabPanel>
               <TabPanel index={1} value={selectedTab}>
-                TUESDAY PANEL
+                <WeekdayBox name={'weekdays.tuesday'} />
               </TabPanel>
               <TabPanel index={2} value={selectedTab}>
-                WEDNESDAY PANEL
+                <WeekdayBox name={'weekdays.wednesday'} />
               </TabPanel>
               <TabPanel index={3} value={selectedTab}>
-                THURSDAY PANEL
+                <WeekdayBox name={'weekdays.thursday'} />
               </TabPanel>
               <TabPanel index={4} value={selectedTab}>
-                FRIDAY PANEL
+                <WeekdayBox name={'weekdays.friday'} />
               </TabPanel>
               <TabPanel index={5} value={selectedTab}>
-                SATURDAY PANEL
+                <WeekdayBox name={'weekdays.saturday'} />
               </TabPanel>
             </Box>
           </Box>
-
-          <FormikDebugDisplay values={values} errors={errors} />
         </form>
       )}
     </Formik>
