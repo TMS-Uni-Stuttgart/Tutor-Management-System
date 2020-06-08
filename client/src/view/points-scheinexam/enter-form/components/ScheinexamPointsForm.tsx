@@ -87,15 +87,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
   const classes = useStyles();
 
   const formikContext = useFormikContext<PointsFormState>();
-  const {
-    values,
-    errors,
-    handleSubmit,
-    resetForm,
-    isSubmitting,
-    dirty,
-    submitForm,
-  } = formikContext;
+  const { values, handleSubmit, resetForm, isSubmitting, dirty, submitForm } = formikContext;
 
   const dialog = useDialog();
 
@@ -195,7 +187,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
           </SubmitButton>
         </Box>
 
-        <FormikDebugDisplay values={values} errors={errors} />
+        <FormikDebugDisplay showErrors />
       </form>
     </>
   );

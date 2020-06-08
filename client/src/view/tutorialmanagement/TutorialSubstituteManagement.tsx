@@ -239,7 +239,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
                 </div>
               </form>
 
-              <FormikDebugDisplay values={values} />
+              <FormikDebugDisplay />
             </>
           )}
         </Formik>
