@@ -9,9 +9,9 @@ import {
   Tabs,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { DatePicker } from '@material-ui/pickers';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
+import CustomDatePicker from '../../../../../components/date-picker/DatePicker';
 import SelectInterval, {
   SelectIntervalMode,
 } from '../../../../../components/select-interval/SelectInterval';
@@ -87,14 +87,10 @@ function ExcludedDateDialog({ excluded, onClose, onAccept, ...props }: Props): J
         </Tabs>
 
         <TabPanel index={0} value={selected} className={classes.tabContent}>
-          <DatePicker
+          <CustomDatePicker
             label='Tag'
             value={value.single}
-            variant='inline'
-            format='EEE, dd MMMM yyyy'
-            autoOk
             fullWidth
-            inputVariant='outlined'
             onChange={(date) => {
               if (!!date) {
                 setValue({ ...value, single: date });

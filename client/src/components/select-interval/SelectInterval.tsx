@@ -6,8 +6,9 @@ import {
   DatePickerProps,
   TimePickerProps,
   KeyboardTimePicker,
+  KeyboardDatePicker,
 } from '@material-ui/pickers';
-import { DateTime, Interval, DurationObject } from 'luxon';
+import { DateTime, Interval, DurationObject, DateTimeFormatOptions } from 'luxon';
 import React, { useEffect, useState } from 'react';
 
 const useStyles = makeStyles(() =>
@@ -63,14 +64,24 @@ function getDefaultInterval(): Interval {
   return Interval.fromDateTimes(DateTime.local(), DateTime.local().plus({ days: 1 }));
 }
 
-function getFormatForMode(mode: SelectIntervalMode): string {
+function getFormatForMode(
+  mode: SelectIntervalMode
+): { display: DateTimeFormatOptions; mask: string } {
   switch (mode) {
     case SelectIntervalMode.DATE:
-      return 'EEE, dd MMMM yyyy';
+      return {
+        mask: 'dd.MM.yyyy',
+        display: {
+          weekday: 'short',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        },
+      };
     case SelectIntervalMode.TIME:
-      return 'HH:mm';
+      return { mask: 'HH:mm', display: { hour: '2-digit', minute: '2-digit', hour12: false } };
     default:
-      return 'EEE, dd MMMM yyyy';
+      throw new Error(`No format available for mode ${mode}`);
   }
 }
 
@@ -80,7 +91,7 @@ function getComponentForMode(
 ): React.FC<DatePickerProps> | React.FC<TimePickerProps> {
   switch (mode) {
     case SelectIntervalMode.DATE:
-      return DatePicker;
+      return isKeyboardDisabled ? DatePicker : KeyboardDatePicker;
     case SelectIntervalMode.TIME:
       return isKeyboardDisabled ? TimePicker : KeyboardTimePicker;
     default:
@@ -132,30 +143,41 @@ function SelectInterval({
     }
   };
 
+  const labelFunc = (date: DateTime | null, invalidLabel: string) => {
+    if (!date || !date.isValid) {
+      return invalidLabel;
+    }
+
+    return date.toLocaleString(format.display);
+  };
+
   return (
     <Box display='flex' {...props}>
       <Component
         label='Von'
         value={value.start}
         variant='inline'
-        format={format}
+        format={format.mask}
+        labelFunc={labelFunc}
         ampm={false}
         fullWidth
         inputVariant='outlined'
         InputProps={{ className: classes.startPicker }}
         onBlur={() => setTouched({ ...touched, start: true })}
-        onChange={(date) => {
+        onChange={(date: DateTime | null) => {
           if (!!date && date.isValid) {
-            let endDate: DateTime;
             const durationToAdd = getDurationToAdd(mode, autoIncreaseStep);
+            let endTouched = touched.end;
+            let endDate: DateTime;
 
             if (date <= value.end) {
               endDate = touched.end ? value.end : date.plus(durationToAdd);
             } else {
               endDate = date.plus(durationToAdd);
-              setTouched({ ...touched, end: false });
+              endTouched = false;
             }
 
+            setTouched({ start: true, end: endTouched });
             setValue(Interval.fromDateTimes(date, endDate));
           }
         }}
@@ -165,15 +187,16 @@ function SelectInterval({
         value={value.end}
         InputProps={{ className: classes.endPicker }}
         variant='inline'
-        format={format}
+        format={format.mask}
+        labelFunc={labelFunc}
         ampm={false}
-        autoOk
         fullWidth
         inputVariant='outlined'
         minDate={value.start.plus({ days: 1 })}
         onBlur={() => setTouched({ ...touched, end: true })}
-        onChange={(date) => {
+        onChange={(date: DateTime | null) => {
           if (!!date && date >= value.start) {
+            setTouched({ ...touched, end: true });
             setValue(Interval.fromDateTimes(value.start, date));
           }
         }}
