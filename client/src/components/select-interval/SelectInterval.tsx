@@ -1,6 +1,12 @@
 import { Box, BoxProps } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { DatePicker, TimePicker, DatePickerProps, TimePickerProps } from '@material-ui/pickers';
+import {
+  DatePicker,
+  TimePicker,
+  DatePickerProps,
+  TimePickerProps,
+  KeyboardTimePicker,
+} from '@material-ui/pickers';
 import { DateTime, Interval, DurationObject } from 'luxon';
 import React, { useEffect, useState } from 'react';
 
@@ -39,6 +45,13 @@ interface Props extends Omit<BoxProps, 'onChange'> {
    * The unit depends on the selected `mode`: If `mode` is set to `DATE` the unit is 'days'. If it is set to `TIME` the unit is 'minutes'.
    */
   autoIncreaseStep?: number;
+
+  /**
+   * Disables keyboard input. Defaults to `false`.
+   *
+   * **Currently only `TIME` is using keyboard input**.
+   */
+  disableKeyboard?: boolean;
 }
 
 interface TouchedState {
@@ -62,13 +75,14 @@ function getFormatForMode(mode: SelectIntervalMode): string {
 }
 
 function getComponentForMode(
-  mode: SelectIntervalMode
+  mode: SelectIntervalMode,
+  isKeyboardDisabled: boolean
 ): React.FC<DatePickerProps> | React.FC<TimePickerProps> {
   switch (mode) {
     case SelectIntervalMode.DATE:
       return DatePicker;
     case SelectIntervalMode.TIME:
-      return TimePicker;
+      return isKeyboardDisabled ? TimePicker : KeyboardTimePicker;
     default:
       throw new Error(`No component available for mode ${mode}`);
   }
@@ -90,6 +104,7 @@ function SelectInterval({
   autoIncreaseStep,
   onChange,
   mode: modeFromProps,
+  disableKeyboard,
   ...props
 }: Props): JSX.Element {
   const classes = useStyles();
@@ -99,7 +114,7 @@ function SelectInterval({
   );
   const mode = modeFromProps ?? SelectIntervalMode.DATE;
   const format = getFormatForMode(mode);
-  const Component = getComponentForMode(mode);
+  const Component = getComponentForMode(mode, disableKeyboard ?? false);
 
   useEffect(() => {
     setInternalValue(valueFromProps ?? getDefaultInterval());
@@ -107,7 +122,10 @@ function SelectInterval({
 
   const setValue = (newValue: Interval) => {
     const oldValue = value;
-    setInternalValue(newValue);
+
+    if (!valueFromProps) {
+      setInternalValue(newValue);
+    }
 
     if (onChange) {
       onChange(newValue, oldValue);
@@ -127,7 +145,7 @@ function SelectInterval({
         InputProps={{ className: classes.startPicker }}
         onBlur={() => setTouched({ ...touched, start: true })}
         onChange={(date) => {
-          if (!!date) {
+          if (!!date && date.isValid) {
             let endDate: DateTime;
             const durationToAdd = getDurationToAdd(mode, autoIncreaseStep);
 
