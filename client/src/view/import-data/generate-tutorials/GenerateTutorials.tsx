@@ -13,6 +13,8 @@ import FormikExcludedDates, {
 } from './components/excluded-dates/FormikExcludedDates';
 import { WeekdayTimeSlot } from './components/FormikWeekdaySlot';
 import WeekdayBox from './components/weekday-slots/WeekdayBox';
+import { validationSchema } from './GenerateTutorials.validation';
+import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -22,7 +24,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-interface FormState {
+export interface FormState {
   startDate: string;
   endDate: string;
   excludedDates: FormExcludedDate[];
@@ -130,6 +132,8 @@ function GenerateTutorialsContent(): JSX.Element {
           </TabPanel>
         </Box>
       </Box>
+
+      <FormikDebugDisplay showErrors />
     </form>
   );
 }
@@ -137,7 +141,7 @@ function GenerateTutorialsContent(): JSX.Element {
 function GenerateTutorials(): JSX.Element {
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate(),
-    endDate: DateTime.local().toISODate(),
+    endDate: DateTime.local().plus({ days: 1 }).toISODate(),
     excludedDates: [],
     weekdays: {},
   };
@@ -190,7 +194,7 @@ function GenerateTutorials(): JSX.Element {
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
       <GenerateTutorialsContent />
     </Formik>
   );
