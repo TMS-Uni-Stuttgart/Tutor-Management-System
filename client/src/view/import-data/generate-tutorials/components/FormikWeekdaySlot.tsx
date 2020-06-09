@@ -8,7 +8,6 @@ import FormikTextField from '../../../../components/forms/components/FormikTextF
 import SelectInterval, {
   SelectIntervalMode,
 } from '../../../../components/select-interval/SelectInterval';
-import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -56,8 +55,6 @@ function FormikWeekdaySlot({ name, onDelete, ...props }: Props): JSX.Element {
       <IconButton className={classes.weekdayEntryDeleteButton} onClick={onDelete}>
         <DeleteIcon />
       </IconButton>
-
-      <FormikDebugDisplay />
     </Paper>
   );
 }

@@ -138,7 +138,7 @@ function SelectInterval({
       setInternalValue(newValue);
     }
 
-    if (onChange) {
+    if (onChange && newValue.isValid) {
       onChange(newValue, oldValue);
     }
   };

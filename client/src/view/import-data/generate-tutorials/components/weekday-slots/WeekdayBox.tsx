@@ -2,7 +2,7 @@ import { Box, BoxProps, Button, Paper } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
 import { Plus as AddIcon } from 'mdi-material-ui';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDialog } from '../../../../../hooks/DialogService';
 import FormikWeekdaySlot, { WeekdayTimeSlot } from '../FormikWeekdaySlot';
 import AddSlotForm, { AddSlotFormData } from './AddSlotForm';
@@ -53,15 +53,16 @@ function WeekdayBox({ name, ...props }: Props): JSX.Element {
     );
   };
 
-  const deleteSlot = (idx: number) => {
+  const deleteSlot = (id: number) => {
     const newValue = [...value];
+    const idx = newValue.findIndex((val) => val._id === id);
     newValue.splice(idx, 1);
 
     dialog.hide();
     setValue(newValue);
   };
 
-  const handleDeleteSlotClicked = (idx: number) => () => {
+  const handleDeleteSlotClicked = (id: number) => () => {
     dialog.show({
       title: 'Slot löschen',
       content:
@@ -73,7 +74,7 @@ function WeekdayBox({ name, ...props }: Props): JSX.Element {
         },
         {
           label: 'Löschen',
-          onClick: () => deleteSlot(idx),
+          onClick: () => deleteSlot(id),
           deleteButton: true,
         },
       ],
@@ -95,7 +96,7 @@ function WeekdayBox({ name, ...props }: Props): JSX.Element {
           key={val._id}
           name={`${name}[${idx}]`}
           className={classes.weekdayEntry}
-          onDelete={handleDeleteSlotClicked(idx)}
+          onDelete={handleDeleteSlotClicked(val._id)}
         />
       ))}
 
