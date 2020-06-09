@@ -1,14 +1,13 @@
 import { Box, Tab, Tabs, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Formik } from 'formik';
-import { DateTime } from 'luxon';
+import { Formik, useFormikContext } from 'formik';
+import { DateTime, Interval } from 'luxon';
 import React, { useEffect, useState } from 'react';
+import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
 import FormikDatePicker from '../../../components/forms/components/FormikDatePicker';
-import {
-  NextStepInformation,
-  useStepper,
-} from '../../../components/stepper-with-buttons/context/StepperContext';
+import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
 import TabPanel from '../../../components/TabPanel';
+import { FormikSubmitCallback } from '../../../types';
 import FormikExcludedDates, {
   FormExcludedDate,
 } from './components/excluded-dates/FormikExcludedDates';
@@ -30,16 +29,33 @@ interface FormState {
   weekdays: { [day: string]: WeekdayTimeSlot[] };
 }
 
-function GenerateTutorials(): JSX.Element {
+function mapKeyToWeekday(key: string): Weekday {
+  switch (key.toLowerCase()) {
+    case 'monday':
+      return Weekday.MONDAY;
+    case 'tuesday':
+      return Weekday.TUESDAY;
+    case 'wednesday':
+      return Weekday.WEDNESDAY;
+    case 'thursday':
+      return Weekday.THURSDAY;
+    case 'friday':
+      return Weekday.FRIDAY;
+    case 'saturday':
+      return Weekday.SATURDAY;
+    case 'sunday':
+      return Weekday.SUNDAY;
+    default:
+      throw new Error(`No weekday mapped to given key '${key}'`);
+  }
+}
+
+function GenerateTutorialsContent(): JSX.Element {
   const classes = useStyles();
-  const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
   const [selectedTab, setSelectedTab] = useState(0);
-  const initialValues: FormState = {
-    startDate: DateTime.local().toISODate(),
-    endDate: DateTime.local().toISODate(),
-    excludedDates: [],
-    weekdays: {},
-  };
+
+  const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
+  const { submitForm } = useFormikContext<FormState>();
 
   const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
     setSelectedTab(newValue);
@@ -47,86 +63,135 @@ function GenerateTutorials(): JSX.Element {
 
   useEffect(() => {
     // TODO: Implement correct logic.
-    setNextDisabled(true);
-    setTimeout(() => setNextDisabled(false), 10000);
-
-    console.log('GenerateTutorials - registering next callback');
-    const callback = async () => {
-      console.log('Next clicked');
-      return new Promise<NextStepInformation>((resolve) => {
-        setTimeout(() => resolve({ goToNext: true }), 2000);
-      });
-    };
-
-    setNextCallback(callback);
+    setNextCallback(async () => {
+      await submitForm();
+      return { goToNext: false };
+    });
 
     return () => removeNextCallback();
-  }, [setNextCallback, removeNextCallback, setNextDisabled]);
+  }, [setNextCallback, removeNextCallback, setNextDisabled, submitForm]);
 
-  // FIXME: Add proper onSubmit handler.
   return (
-    <Formik initialValues={initialValues} onSubmit={() => {}}>
-      {({ handleSubmit }) => (
-        <form className={classes.form}>
-          <Box
-            display='grid'
-            gridTemplateColumns='1fr 3fr'
-            gridTemplateRows='30px repeat(2, 60px) 1fr'
-            gridRowGap={16}
-            gridColumnGap={16}
-            height='100%'
+    <form className={classes.form}>
+      <Box
+        display='grid'
+        gridTemplateColumns='1fr 3fr'
+        gridTemplateRows='30px repeat(2, 60px) 1fr'
+        gridRowGap={16}
+        gridColumnGap={16}
+        height='100%'
+      >
+        <Typography variant='h6'>Terminbereich</Typography>
+
+        <FormikDatePicker name='startDate' label='Startdatum' />
+
+        <FormikDatePicker name='endDate' label='Enddatum' />
+
+        <FormikExcludedDates name='excludedDates' gridColumn='2' gridRow='1 / span 3' />
+
+        <Box
+          gridArea='4 / 1 / span 1 / span 2'
+          border={2}
+          borderColor='divider'
+          padding={1}
+          marginBottom={1}
+        >
+          <Tabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            variant='scrollable'
+            scrollButtons='auto'
           >
-            <Typography variant='h6'>Terminbereich</Typography>
+            <Tab label='Montag' />
+            <Tab label='Dienstag' />
+            <Tab label='Mittwoch' />
+            <Tab label='Donnerstag' />
+            <Tab label='Freitag' />
+            <Tab label='Samstag' />
+          </Tabs>
 
-            <FormikDatePicker name='startDate' label='Startdatum' />
+          <TabPanel index={0} value={selectedTab}>
+            <WeekdayBox name={'weekdays.monday'} />
+          </TabPanel>
+          <TabPanel index={1} value={selectedTab}>
+            <WeekdayBox name={'weekdays.tuesday'} />
+          </TabPanel>
+          <TabPanel index={2} value={selectedTab}>
+            <WeekdayBox name={'weekdays.wednesday'} />
+          </TabPanel>
+          <TabPanel index={3} value={selectedTab}>
+            <WeekdayBox name={'weekdays.thursday'} />
+          </TabPanel>
+          <TabPanel index={4} value={selectedTab}>
+            <WeekdayBox name={'weekdays.friday'} />
+          </TabPanel>
+          <TabPanel index={5} value={selectedTab}>
+            <WeekdayBox name={'weekdays.saturday'} />
+          </TabPanel>
+        </Box>
+      </Box>
+    </form>
+  );
+}
 
-            <FormikDatePicker name='endDate' label='Enddatum' />
+function GenerateTutorials(): JSX.Element {
+  const initialValues: FormState = {
+    startDate: DateTime.local().toISODate(),
+    endDate: DateTime.local().toISODate(),
+    excludedDates: [],
+    weekdays: {},
+  };
 
-            <FormikExcludedDates name='excludedDates' gridColumn='2' gridRow='1 / span 3' />
+  const onSubmit: FormikSubmitCallback<FormState> = async (values, helpers) => {
+    // FIXME: Add proper onSubmit handler.
+    const { startDate, endDate, excludedDates, weekdays } = values;
 
-            <Box
-              gridArea='4 / 1 / span 1 / span 2'
-              border={2}
-              borderColor='divider'
-              padding={1}
-              marginBottom={1}
-            >
-              <Tabs
-                value={selectedTab}
-                onChange={handleTabChange}
-                variant='scrollable'
-                scrollButtons='auto'
-              >
-                <Tab label='Montag' />
-                <Tab label='Dienstag' />
-                <Tab label='Mittwoch' />
-                <Tab label='Donnerstag' />
-                <Tab label='Freitag' />
-                <Tab label='Samstag' />
-              </Tabs>
+    // TODO: Split me up / extract me into function(s)
+    const dto: ITutorialGenerationDTO = {
+      firstDay: DateTime.fromISO(startDate).toISODate(),
+      lastDay: DateTime.fromISO(endDate).toISODate(),
+      excludedDates: excludedDates.map((ex) => {
+        if (ex instanceof DateTime) {
+          return { date: ex.toISODate() };
+        } else if (ex instanceof Interval) {
+          if (ex.start.day === ex.end.day) {
+            return { date: ex.start.toISODate() };
+          } else {
+            return { interval: ex.toISODate() };
+          }
+        } else {
+          throw new Error('Given excluded date is neither a DateTime nor an Interval');
+        }
+      }),
+      generationDatas: Object.entries(weekdays)
+        .map(([key, val]) => {
+          const dataOfWeekday: ITutorialGenerationData[] = val.map((day) => {
+            return {
+              weekday: mapKeyToWeekday(key),
+              prefix: 'PREFIX', //FIXME: Add Prefixsettings!
+              amount: Number.parseInt(day.count),
+              interval: day.interval.toISOTime(),
+            };
+          });
 
-              <TabPanel index={0} value={selectedTab}>
-                <WeekdayBox name={'weekdays.monday'} />
-              </TabPanel>
-              <TabPanel index={1} value={selectedTab}>
-                <WeekdayBox name={'weekdays.tuesday'} />
-              </TabPanel>
-              <TabPanel index={2} value={selectedTab}>
-                <WeekdayBox name={'weekdays.wednesday'} />
-              </TabPanel>
-              <TabPanel index={3} value={selectedTab}>
-                <WeekdayBox name={'weekdays.thursday'} />
-              </TabPanel>
-              <TabPanel index={4} value={selectedTab}>
-                <WeekdayBox name={'weekdays.friday'} />
-              </TabPanel>
-              <TabPanel index={5} value={selectedTab}>
-                <WeekdayBox name={'weekdays.saturday'} />
-              </TabPanel>
-            </Box>
-          </Box>
-        </form>
-      )}
+          return [...dataOfWeekday];
+        })
+        .flat(),
+    };
+
+    // TODO: Real request to the server & response handling!
+    console.log('BEFORE TIMEOUT');
+    await new Promise((resolve) => {
+      setTimeout(() => resolve(), 5000);
+    });
+    console.log('AFTER TIMEOUT');
+
+    console.log(JSON.stringify(dto, null, 2));
+  };
+
+  return (
+    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      <GenerateTutorialsContent />
     </Formik>
   );
 }
