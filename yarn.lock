@@ -2009,10 +2009,10 @@
     consola "^2.3.0"
     node-fetch "^2.3.0"
 
-"@prettier/plugin-pug@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@prettier/plugin-pug/-/plugin-pug-1.4.3.tgz#5e0061feac8f530f81b162f9a633456420d64b4c"
-  integrity sha512-w7LGF+s8OTolEJ0dYqCADNVb/KnSS/2pUzOroVyGWqD5LOL3kzN6MJVO1OAwiwvGjcMigy5wLTzKhKoqcIXq+A==
+"@prettier/plugin-pug@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@prettier/plugin-pug/-/plugin-pug-1.4.4.tgz#252c8dfac574c82d1e95492b9bd4cb59c44d3ee6"
+  integrity sha512-Lb3cc0a4IwUy9oNeYuN1YHg/+J5JDsJNSKFMGpcp6cq6vnMcNyWn+KNBkTo/ZYEIT2JAsl6X+KKAvjH1p+XGeQ==
   dependencies:
     pug-lexer "~5.0.0"
 
