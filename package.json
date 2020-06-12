@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@prettier/plugin-pug": "^1.4.4",
-    "@types/lodash": "^4.14.154",
+    "@types/lodash": "^4.14.155",
     "@types/luxon": "^1.22.0",
     "@types/markdown-it": "^10.0.1",
     "@types/node": "^14.0.13",
