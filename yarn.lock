@@ -2141,10 +2141,10 @@
     "@svgr/plugin-svgo" "^4.3.1"
     loader-utils "^1.2.3"
 
-"@typegoose/typegoose@^7.1.3":
-  version "7.1.3"
-  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-7.1.3.tgz#f9c4e0be2c9cb9083c1742b5da7505abed53ea23"
-  integrity sha512-Bek9r496SG6oXs+j/LQcZjZOMQO2Ot4yihChe/85ZEyPOJRs954yCcunjQNnhBRnDZNOBbSqFm7JqrWi5Zqw5g==
+"@typegoose/typegoose@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-7.2.0.tgz#b15bc52f943e3db42515516242be481d6d23dd43"
+  integrity sha512-oNAGPlABIKOeWvrZoXTq+I1PPFn6Iu1d0jOQ5kmlDK5H46QteqRTbUOpBJKb9KuKW576gYMsnW0T/VU2S8ErdQ==
   dependencies:
     lodash "^4.17.15"
     loglevel "^1.6.8"
