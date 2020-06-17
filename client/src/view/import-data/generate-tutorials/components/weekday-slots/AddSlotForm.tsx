@@ -2,10 +2,12 @@ import { Box, BoxProps, Grow, IconButton, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DateTime, Interval } from 'luxon';
 import { Check as AcceptIcon, Close as AbortIcon } from 'mdi-material-ui';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import SelectInterval, {
   SelectIntervalMode,
 } from '../../../../../components/select-interval/SelectInterval';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -25,8 +27,15 @@ interface Props extends BoxProps {
 
 export interface AddSlotFormData {
   interval: Interval;
-  count: string;
+  count: number;
 }
+
+const validationSchema = Yup.object().shape<AddSlotFormData>({
+  count: Yup.number().min(1, 'Anzahl muss größer als 0 sein.').required('Benötigt'),
+  interval: Yup.object<Interval>()
+    .test('is-interval', 'Ist kein Luxon Interval', (obj) => obj instanceof Interval && obj.isValid)
+    .required('Benötigt'),
+});
 
 function getDefaultInterval(): Interval {
   const currentTime = DateTime.local().startOf('minute');
@@ -35,11 +44,20 @@ function getDefaultInterval(): Interval {
 
 function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
   const classes = useStyles();
-  const [interval, setInterval] = useState<Interval>(getDefaultInterval);
-  const [count, setCount] = useState('1');
+  const initialValues: AddSlotFormData = useMemo(
+    () => ({ interval: getDefaultInterval(), count: 1 }),
+    []
+  );
+  const formik = useFormik<AddSlotFormData>({
+    initialValues,
+    onSubmit: ({ count, interval }) => {
+      onAccept({ count, interval });
+    },
+    validationSchema,
+  });
 
   const handleAccept = () => {
-    onAccept({ count, interval });
+    formik.submitForm();
   };
 
   return (
@@ -48,21 +66,22 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
         <SelectInterval
           mode={SelectIntervalMode.TIME}
           autoIncreaseStep={90}
-          value={interval}
-          onChange={(i) => setInterval(i)}
+          value={formik.values.interval}
+          onChange={(i) => formik.setFieldValue('interval', i)}
         />
 
         <TextField
           type='number'
-          value={count}
+          value={formik.values.count}
           fullWidth
           variant='outlined'
           label='Anzahl'
+          name='count'
           className={classes.weekdayCountField}
-          onChange={(e) => setCount(e.target.value)}
+          onChange={formik.handleChange}
         />
 
-        <IconButton onClick={handleAccept}>
+        <IconButton onClick={handleAccept} disabled={!formik.isValid}>
           <AcceptIcon />
         </IconButton>
 

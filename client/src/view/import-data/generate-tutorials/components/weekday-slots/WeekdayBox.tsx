@@ -83,7 +83,10 @@ function WeekdayBox({ name, ...props }: Props): JSX.Element {
 
   const onAcceptClicked = ({ count, interval }: AddSlotFormData) => {
     const highestId = value.reduce((id, val) => (val._id > id ? val._id : id), -1);
-    const newValue: WeekdayTimeSlot[] = [...value, { _id: highestId + 1, count, interval }];
+    const newValue: WeekdayTimeSlot[] = [
+      ...value,
+      { _id: highestId + 1, count: `${count}`, interval },
+    ];
 
     setValue(newValue);
     setAddMode(false);

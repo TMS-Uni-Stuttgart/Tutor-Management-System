@@ -1,7 +1,8 @@
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import * as Yup from 'yup';
-import { TestContext, TestFunction } from 'yup';
+import { TestContext, TestFunction, ValidationError } from 'yup';
 import { FormExcludedDate } from './components/excluded-dates/FormikExcludedDates';
+import { WeekdayTimeSlot } from './components/FormikWeekdaySlot';
 import { FormState } from './GenerateTutorials';
 
 function isDateTime(this: TestContext, value: string): boolean {
@@ -19,6 +20,76 @@ function isAfterStartDay(field: string): TestFunction {
   };
 }
 
+const excludedDateSchema = Yup.object<FormExcludedDate>()
+  .test('excludedDate', `Not a valid excluded date`, (obj) => {
+    if (obj instanceof DateTime) {
+      return obj.isValid;
+    } else if (obj instanceof Interval) {
+      return obj.isValid;
+    }
+
+    return false;
+  })
+  .required();
+
+const singleWeekdaySlotSchema = Yup.object().shape<WeekdayTimeSlot>({
+  _id: Yup.number().required('Benötigt'),
+  count: Yup.string()
+    .matches(/^\d+(\.\d+)?$/, 'Count muss eine Zahl sein')
+    .required('Benötigt'),
+  interval: Yup.object<Interval>()
+    .test('is-interval', 'Is not a valid luxon Interval', function (this, obj) {
+      if (!(obj instanceof Interval)) {
+        return this.createError({ message: 'Not a luxon Interval object.' });
+      }
+
+      if (!obj.isValid) {
+        return this.createError({ message: 'Not a valid luxon Interval.' });
+      }
+
+      if (obj.start >= obj.end) {
+        return this.createError({ message: 'End time must be greater than start time' });
+      }
+
+      return true;
+    })
+    .required('Benötigt'),
+});
+
+function areWeekdaysValid(this: Yup.TestContext, value: unknown, path: string) {
+  if (!(value instanceof Array)) {
+    throw this.createError({ path, message: 'Value is not an array.' });
+  }
+
+  for (const val of value) {
+    singleWeekdaySlotSchema.validateSync(val);
+  }
+}
+
+const weekdaysSchema = Yup.object<FormState['weekdays']>()
+  .test('weekdays', `Not a valid weekdays object.`, function (this, obj) {
+    const entries = Object.entries(obj);
+    const inner: ValidationError[] = [];
+
+    for (const [key, value] of entries) {
+      try {
+        areWeekdaysValid.bind(this)(value, `${this.path}${key}`);
+      } catch (validationError) {
+        inner.push(validationError);
+      }
+    }
+
+    if (inner.length > 0) {
+      const error = this.createError({ message: 'Not a valid weekdays object' });
+      error.inner = inner;
+
+      return error;
+    } else {
+      return true;
+    }
+  })
+  .required('Benötigt');
+
 export const validationSchema = Yup.object().shape<FormState>({
   startDate: Yup.string()
     .required('Benötigt')
@@ -27,6 +98,6 @@ export const validationSchema = Yup.object().shape<FormState>({
     .required('Benötigt')
     .test({ test: isDateTime, message: 'Ungültiges Datum' })
     .test({ test: isAfterStartDay('startDate'), message: 'Muss nach dem Startdatum liegen' }),
-  excludedDates: Yup.array<FormExcludedDate>().required('Benötigt'),
-  weekdays: Yup.object<FormState['weekdays']>().required('Benötigt'),
+  excludedDates: Yup.array<FormExcludedDate>().of(excludedDateSchema).required('Benötigt'),
+  weekdays: weekdaysSchema,
 });
