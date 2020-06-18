@@ -37,17 +37,19 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   showErrors?: boolean;
   collapsed?: boolean;
+  disabled?: boolean;
 }
 
 function FormikDebugDisplay({
   showErrors,
   collapsed: collapsedFromProps,
+  disabled,
 }: Props): JSX.Element | null {
   const classes = useStyles();
   const [isCollapsed, setCollapsed] = useState(collapsedFromProps ?? true);
   const { values, errors } = useFormikContext();
 
-  if (!isDevelopment()) {
+  if (!isDevelopment() || disabled) {
     return null;
   }
 
