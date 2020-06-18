@@ -83,20 +83,20 @@ function GenerateTutorialsContent(): JSX.Element {
 
         <FormikDatePicker name='endDate' label='Enddatum' />
 
-        <FormikExcludedDates name='excludedDates' gridColumn='2' gridRow='1 / span 3' />
+        <FormikExcludedDates name='excludedDates' gridColumn='1' gridRow='4' />
 
         <Box
-          gridArea='4 / 1 / span 1 / span 2'
+          gridArea='1 / 2 / span 4 / span 1'
           border={2}
           borderColor='divider'
+          borderRadius='borderRadius'
           padding={1}
-          marginBottom={1}
         >
           <WeekdayTabs />
         </Box>
       </Box>
 
-      <FormikDebugDisplay showErrors />
+      <FormikDebugDisplay disabled showErrors />
     </form>
   );
 }

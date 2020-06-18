@@ -10,6 +10,7 @@ import ExcludedDateDialog from './ExcludedDateDialog';
 const useStyles = makeStyles((theme) =>
   createStyles({
     addButton: {
+      height: 'fit-content',
       marginLeft: 'auto',
     },
     paper: {
@@ -107,7 +108,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
       {...props}
     >
       <Box display='flex' marginBottom={1}>
-        <Typography variant='h6'>Ausgeschlossene Zeitspannen</Typography>
+        <Typography variant='h6'>Ausgeschlossene Zeiten</Typography>
         <Button
           variant='outlined'
           color='secondary'
@@ -122,7 +123,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
         overflow='auto'
         flex={1}
         display='grid'
-        gridTemplateColumns='1fr 1fr'
+        gridTemplateColumns='1fr'
         gridRowGap={8}
         gridColumnGap={8}
         maxHeight='max-content'
