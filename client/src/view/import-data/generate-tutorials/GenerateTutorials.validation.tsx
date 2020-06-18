@@ -2,7 +2,7 @@ import { DateTime, Interval } from 'luxon';
 import * as Yup from 'yup';
 import { TestContext, TestFunction, ValidationError } from 'yup';
 import { FormExcludedDate } from './components/excluded-dates/FormikExcludedDates';
-import { WeekdayTimeSlot } from './components/FormikWeekdaySlot';
+import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import { FormState } from './GenerateTutorials';
 
 function isDateTime(this: TestContext, value: string): boolean {

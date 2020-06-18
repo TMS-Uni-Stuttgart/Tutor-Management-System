@@ -11,7 +11,7 @@ import { FormikSubmitCallback } from '../../../types';
 import FormikExcludedDates, {
   FormExcludedDate,
 } from './components/excluded-dates/FormikExcludedDates';
-import { WeekdayTimeSlot } from './components/FormikWeekdaySlot';
+import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import WeekdayBox from './components/weekday-slots/WeekdayBox';
 import { validationSchema } from './GenerateTutorials.validation';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';

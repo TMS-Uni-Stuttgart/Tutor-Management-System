@@ -4,7 +4,7 @@ import { useField } from 'formik';
 import { Plus as AddIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { useDialog } from '../../../../../hooks/DialogService';
-import FormikWeekdaySlot, { WeekdayTimeSlot } from '../FormikWeekdaySlot';
+import FormikWeekdaySlot, { WeekdayTimeSlot } from './FormikWeekdaySlot';
 import AddSlotForm, { AddSlotFormData } from './AddSlotForm';
 
 const useStyles = makeStyles((theme) =>
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) =>
       },
     },
     addNewWeekdayEntry: {
-      height: 72,
+      minHeight: 72,
       display: 'flex',
       marginTop: theme.spacing(1),
       alignItems: 'center',
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) =>
     addSlotButton: {
       width: '100%',
       height: '100%',
+      minHeight: 'inherit',
     },
   })
 );

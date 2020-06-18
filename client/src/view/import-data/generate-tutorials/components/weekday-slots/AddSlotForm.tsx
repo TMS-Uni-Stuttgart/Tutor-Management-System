@@ -1,13 +1,13 @@
 import { Box, BoxProps, Grow, IconButton, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useFormik } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import { Check as AcceptIcon, Close as AbortIcon } from 'mdi-material-ui';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import * as Yup from 'yup';
 import SelectInterval, {
   SelectIntervalMode,
 } from '../../../../../components/select-interval/SelectInterval';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -48,7 +48,9 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
     () => ({ interval: getDefaultInterval(), count: 1 }),
     []
   );
-  const formik = useFormik<AddSlotFormData>({
+  const { values, errors, touched, setFieldValue, getFieldProps, isValid, submitForm } = useFormik<
+    AddSlotFormData
+  >({
     initialValues,
     onSubmit: ({ count, interval }) => {
       onAccept({ count, interval });
@@ -57,31 +59,46 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
   });
 
   const handleAccept = () => {
-    formik.submitForm();
+    submitForm();
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      handleAccept();
+    }
   };
 
   return (
     <Grow in style={{ transformOrigin: 'center center 0' }} timeout={500}>
-      <Box padding={1} display='flex' alignItems='center' justifyContent='center' {...props}>
+      <Box
+        padding={1}
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+        onKeyUp={handleKeyUp}
+        {...props}
+      >
         <SelectInterval
           mode={SelectIntervalMode.TIME}
           autoIncreaseStep={90}
-          value={formik.values.interval}
-          onChange={(i) => formik.setFieldValue('interval', i)}
+          value={values.interval}
+          onChange={(i) => setFieldValue('interval', i)}
         />
 
         <TextField
           type='number'
-          value={formik.values.count}
+          className={classes.weekdayCountField}
           fullWidth
           variant='outlined'
           label='Anzahl'
-          name='count'
-          className={classes.weekdayCountField}
-          onChange={formik.handleChange}
+          {...getFieldProps('count')}
+          error={!!touched.count && !!errors.count}
+          helperText={!!touched.count && errors.count}
         />
 
-        <IconButton onClick={handleAccept} disabled={!formik.isValid}>
+        <IconButton onClick={handleAccept} disabled={!isValid}>
           <AcceptIcon />
         </IconButton>
 

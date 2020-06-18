@@ -4,10 +4,10 @@ import { useField } from 'formik';
 import { Interval } from 'luxon';
 import { Delete as DeleteIcon } from 'mdi-material-ui';
 import React from 'react';
-import FormikTextField from '../../../../components/forms/components/FormikTextField';
+import FormikTextField from '../../../../../components/forms/components/FormikTextField';
 import SelectInterval, {
   SelectIntervalMode,
-} from '../../../../components/select-interval/SelectInterval';
+} from '../../../../../components/select-interval/SelectInterval';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
