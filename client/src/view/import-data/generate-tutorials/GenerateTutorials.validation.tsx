@@ -61,9 +61,21 @@ function areWeekdaysValid(this: Yup.TestContext, value: unknown, path: string) {
     throw this.createError({ path, message: 'Value is not an array.' });
   }
 
-  for (const val of value) {
-    singleWeekdaySlotSchema.validateSync(val);
-  }
+  value.forEach((val, idx) => {
+    const pathPrefix = `${path}[${idx}]`;
+    try {
+      singleWeekdaySlotSchema.validateSync(val);
+    } catch (validationError) {
+      if (validationError instanceof Yup.ValidationError) {
+        throw this.createError({
+          message: validationError.message,
+          path: `${pathPrefix}.${validationError.path}`,
+        });
+      } else {
+        throw validationError;
+      }
+    }
+  });
 }
 
 const weekdaysSchema = Yup.object<FormState['weekdays']>()
@@ -73,7 +85,7 @@ const weekdaysSchema = Yup.object<FormState['weekdays']>()
 
     for (const [key, value] of entries) {
       try {
-        areWeekdaysValid.bind(this)(value, `${this.path}${key}`);
+        areWeekdaysValid.bind(this)(value, `${this.path}.${key}`);
       } catch (validationError) {
         inner.push(validationError);
       }

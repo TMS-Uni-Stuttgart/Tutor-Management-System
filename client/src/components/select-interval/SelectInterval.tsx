@@ -114,6 +114,10 @@ function getDurationToAdd(mode: SelectIntervalMode, steps: number = 1): Duration
   }
 }
 
+function isOneTouched(touched: TouchedState): boolean {
+  return Object.values(touched).reduce((prev, current) => prev || current, false);
+}
+
 function SelectInterval({
   value: valueFromProps,
   autoIncreaseStep,
@@ -132,6 +136,7 @@ function SelectInterval({
   const mode = modeFromProps ?? SelectIntervalMode.DATE;
   const format = getFormatForMode(mode);
   const Component = getComponentForMode(mode, disableKeyboard ?? false);
+  const displayError = !!error && isOneTouched(touched);
 
   const updateInternalValue = useCallback(
     (newValue: Interval | undefined) => {
@@ -180,7 +185,6 @@ function SelectInterval({
     }
 
     const durationToAdd = getDurationToAdd(mode, autoIncreaseStep);
-    let endTouched = touched.end;
     let endDate: DateTime = lastValid.end;
 
     if (date.isValid) {
@@ -188,19 +192,14 @@ function SelectInterval({
         endDate = touched.end ? lastValid.end : date.plus(durationToAdd);
       } else {
         endDate = date.plus(durationToAdd);
-        endTouched = false;
       }
-
-      setValue(Interval.fromDateTimes(date, endDate));
     }
 
     setValue(Interval.fromDateTimes(date, endDate));
-    setTouched({ start: true, end: endTouched });
   };
 
   const handleEndChanged = (date: DateTime | null) => {
     if (!!date) {
-      setTouched({ ...touched, end: true });
       setValue(Interval.fromDateTimes(lastValid.start, date));
     }
   };
@@ -220,6 +219,7 @@ function SelectInterval({
           InputProps={{ className: classes.startPicker }}
           onBlur={() => setTouched({ ...touched, start: true })}
           onChange={handleStartChanged}
+          error={displayError}
         />
         <Component
           label='Bis'
@@ -234,10 +234,11 @@ function SelectInterval({
           minDate={lastValid.start?.plus({ days: 1 })}
           onBlur={() => setTouched({ ...touched, end: true })}
           onChange={handleEndChanged}
+          error={displayError}
         />
       </Box>
 
-      {error && <Typography color='error'>{error}</Typography>}
+      {displayError && <Typography color='error'>{error}</Typography>}
     </Box>
   );
 }
