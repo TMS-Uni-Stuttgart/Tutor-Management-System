@@ -1,20 +1,19 @@
-import { Box, Tab, Tabs, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik, useFormikContext } from 'formik';
 import { DateTime, Interval } from 'luxon';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
 import FormikDatePicker from '../../../components/forms/components/FormikDatePicker';
+import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
-import TabPanel from '../../../components/TabPanel';
 import { FormikSubmitCallback } from '../../../types';
 import FormikExcludedDates, {
   FormExcludedDate,
 } from './components/excluded-dates/FormikExcludedDates';
 import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
-import WeekdayBox from './components/weekday-slots/WeekdayBox';
+import WeekdayTabs from './components/weekday-slots/WeekdayTabs';
 import { validationSchema } from './GenerateTutorials.validation';
-import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -54,14 +53,9 @@ function mapKeyToWeekday(key: string): Weekday {
 
 function GenerateTutorialsContent(): JSX.Element {
   const classes = useStyles();
-  const [selectedTab, setSelectedTab] = useState(0);
 
   const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
   const { submitForm } = useFormikContext<FormState>();
-
-  const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
-    setSelectedTab(newValue);
-  };
 
   useEffect(() => {
     // TODO: Implement correct logic.
@@ -98,38 +92,7 @@ function GenerateTutorialsContent(): JSX.Element {
           padding={1}
           marginBottom={1}
         >
-          <Tabs
-            value={selectedTab}
-            onChange={handleTabChange}
-            variant='scrollable'
-            scrollButtons='auto'
-          >
-            <Tab label='Montag' />
-            <Tab label='Dienstag' />
-            <Tab label='Mittwoch' />
-            <Tab label='Donnerstag' />
-            <Tab label='Freitag' />
-            <Tab label='Samstag' />
-          </Tabs>
-
-          <TabPanel index={0} value={selectedTab}>
-            <WeekdayBox name={'weekdays.monday'} />
-          </TabPanel>
-          <TabPanel index={1} value={selectedTab}>
-            <WeekdayBox name={'weekdays.tuesday'} />
-          </TabPanel>
-          <TabPanel index={2} value={selectedTab}>
-            <WeekdayBox name={'weekdays.wednesday'} />
-          </TabPanel>
-          <TabPanel index={3} value={selectedTab}>
-            <WeekdayBox name={'weekdays.thursday'} />
-          </TabPanel>
-          <TabPanel index={4} value={selectedTab}>
-            <WeekdayBox name={'weekdays.friday'} />
-          </TabPanel>
-          <TabPanel index={5} value={selectedTab}>
-            <WeekdayBox name={'weekdays.saturday'} />
-          </TabPanel>
+          <WeekdayTabs />
         </Box>
       </Box>
 
