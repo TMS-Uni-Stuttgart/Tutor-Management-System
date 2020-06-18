@@ -1,15 +1,15 @@
-import { Box, BoxProps } from '@material-ui/core';
+import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   DatePicker,
-  TimePicker,
   DatePickerProps,
-  TimePickerProps,
-  KeyboardTimePicker,
   KeyboardDatePicker,
+  KeyboardTimePicker,
+  TimePicker,
+  TimePickerProps,
 } from '@material-ui/pickers';
-import { DateTime, Interval, DurationObject, DateTimeFormatOptions } from 'luxon';
-import React, { useEffect, useState } from 'react';
+import { DateTime, DateTimeFormatOptions, DurationObject, Interval } from 'luxon';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -58,6 +58,10 @@ interface Props extends Omit<BoxProps, 'onChange'> {
 interface TouchedState {
   start: boolean;
   end: boolean;
+}
+
+interface ValueState {
+  lastValid: Interval;
 }
 
 function getDefaultInterval(): Interval {
@@ -120,26 +124,45 @@ function SelectInterval({
 }: Props): JSX.Element {
   const classes = useStyles();
   const [touched, setTouched] = useState<TouchedState>({ start: false, end: false });
-  const [value, setInternalValue] = useState<Interval>(
-    () => valueFromProps ?? getDefaultInterval()
-  );
+  const [error, setError] = useState<string>();
+  const [{ lastValid }, setInternalValue] = useState<ValueState>(() => ({
+    lastValid: !!valueFromProps && valueFromProps.isValid ? valueFromProps : getDefaultInterval(),
+  }));
+
   const mode = modeFromProps ?? SelectIntervalMode.DATE;
   const format = getFormatForMode(mode);
   const Component = getComponentForMode(mode, disableKeyboard ?? false);
 
+  const updateInternalValue = useCallback(
+    (newValue: Interval | undefined) => {
+      setInternalValue({
+        lastValid: newValue?.isValid ? newValue : lastValid,
+      });
+    },
+    [lastValid]
+  );
+
   useEffect(() => {
-    setInternalValue(valueFromProps ?? getDefaultInterval());
-  }, [valueFromProps]);
+    updateInternalValue(valueFromProps);
+  }, [valueFromProps, updateInternalValue]);
 
   const setValue = (newValue: Interval) => {
-    const oldValue = value;
-
     if (!valueFromProps) {
-      setInternalValue(newValue);
+      updateInternalValue(newValue);
     }
 
-    if (onChange && newValue.isValid) {
-      onChange(newValue, oldValue);
+    if (newValue.isValid) {
+      if (onChange) {
+        onChange(newValue, lastValid);
+      }
+
+      setError(undefined);
+    } else {
+      if (onChange) {
+        onChange(newValue, lastValid);
+      }
+
+      setError('Zeitbereich ungültig.');
     }
   };
 
@@ -151,56 +174,70 @@ function SelectInterval({
     return date.toLocaleString(format.display);
   };
 
+  const handleStartChanged = (date: DateTime | null) => {
+    if (!date) {
+      return;
+    }
+
+    const durationToAdd = getDurationToAdd(mode, autoIncreaseStep);
+    let endTouched = touched.end;
+    let endDate: DateTime = lastValid.end;
+
+    if (date.isValid) {
+      if (date <= lastValid.end) {
+        endDate = touched.end ? lastValid.end : date.plus(durationToAdd);
+      } else {
+        endDate = date.plus(durationToAdd);
+        endTouched = false;
+      }
+
+      setValue(Interval.fromDateTimes(date, endDate));
+    }
+
+    setValue(Interval.fromDateTimes(date, endDate));
+    setTouched({ start: true, end: endTouched });
+  };
+
+  const handleEndChanged = (date: DateTime | null) => {
+    if (!!date) {
+      setTouched({ ...touched, end: true });
+      setValue(Interval.fromDateTimes(lastValid.start, date));
+    }
+  };
+
   return (
-    <Box display='flex' {...props}>
-      <Component
-        label='Von'
-        value={value.start}
-        variant='inline'
-        format={format.mask}
-        labelFunc={labelFunc}
-        ampm={false}
-        fullWidth
-        inputVariant='outlined'
-        InputProps={{ className: classes.startPicker }}
-        onBlur={() => setTouched({ ...touched, start: true })}
-        onChange={(date: DateTime | null) => {
-          if (!!date && date.isValid) {
-            const durationToAdd = getDurationToAdd(mode, autoIncreaseStep);
-            let endTouched = touched.end;
-            let endDate: DateTime;
+    <Box display='flex' flexDirection='column' {...props}>
+      <Box display='flex'>
+        <Component
+          label='Von'
+          value={lastValid.start}
+          variant='inline'
+          format={format.mask}
+          labelFunc={labelFunc}
+          ampm={false}
+          fullWidth
+          inputVariant='outlined'
+          InputProps={{ className: classes.startPicker }}
+          onBlur={() => setTouched({ ...touched, start: true })}
+          onChange={handleStartChanged}
+        />
+        <Component
+          label='Bis'
+          value={lastValid.end}
+          InputProps={{ className: classes.endPicker }}
+          variant='inline'
+          format={format.mask}
+          labelFunc={labelFunc}
+          ampm={false}
+          fullWidth
+          inputVariant='outlined'
+          minDate={lastValid.start?.plus({ days: 1 })}
+          onBlur={() => setTouched({ ...touched, end: true })}
+          onChange={handleEndChanged}
+        />
+      </Box>
 
-            if (date <= value.end) {
-              endDate = touched.end ? value.end : date.plus(durationToAdd);
-            } else {
-              endDate = date.plus(durationToAdd);
-              endTouched = false;
-            }
-
-            setTouched({ start: true, end: endTouched });
-            setValue(Interval.fromDateTimes(date, endDate));
-          }
-        }}
-      />
-      <Component
-        label='Bis'
-        value={value.end}
-        InputProps={{ className: classes.endPicker }}
-        variant='inline'
-        format={format.mask}
-        labelFunc={labelFunc}
-        ampm={false}
-        fullWidth
-        inputVariant='outlined'
-        minDate={value.start.plus({ days: 1 })}
-        onBlur={() => setTouched({ ...touched, end: true })}
-        onChange={(date: DateTime | null) => {
-          if (!!date && date >= value.start) {
-            setTouched({ ...touched, end: true });
-            setValue(Interval.fromDateTimes(value.start, date));
-          }
-        }}
-      />
+      {error && <Typography color='error'>{error}</Typography>}
     </Box>
   );
 }
