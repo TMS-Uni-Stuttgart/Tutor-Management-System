@@ -212,6 +212,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     const createdTutorials: TutorialDocument[] = [];
     const interval = Interval.fromDateTimes(dto.getFirstDay(), dto.getLastDay());
     const daysInInterval = this.datesInIntervalGroupedByWeekday(interval);
+    const indexForWeekday: { [key: string]: number } = {};
 
     for (const data of generationDatas) {
       const { amount, prefix, weekday } = data;
@@ -221,8 +222,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
       if (dates.length > 0) {
         for (let i = 0; i < amount; i++) {
+          const nr = (indexForWeekday[weekday] ?? 0) + 1;
           const created = await this.createTutorial({
-            slot: `${prefix}${i.toString().padStart(2, '0')}`,
+            slot: `${prefix}${nr.toString().padStart(2, '0')}`,
             dates,
             startTime: timeInterval.start,
             endTime: timeInterval.end,
@@ -230,6 +232,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
             correctors: [],
           });
 
+          indexForWeekday[weekday] = nr;
           createdTutorials.push(created);
         }
       }
