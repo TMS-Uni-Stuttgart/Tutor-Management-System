@@ -176,7 +176,12 @@ function GenerateTutorials(): JSX.Element {
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
+    <Formik
+      initialValues={initialValues}
+      isInitialValid={false}
+      onSubmit={onSubmit}
+      validationSchema={validationSchema}
+    >
       <GenerateTutorialsContent />
     </Formik>
   );

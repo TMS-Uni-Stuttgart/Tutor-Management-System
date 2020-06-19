@@ -83,6 +83,10 @@ const weekdaysSchema = Yup.object<FormState['weekdays']>()
     const entries = Object.entries(obj);
     const inner: ValidationError[] = [];
 
+    if (entries.length === 0) {
+      return this.createError({ message: 'At least one data set must be provided' });
+    }
+
     for (const [key, value] of entries) {
       try {
         areWeekdaysValid.bind(this)(value, `${this.path}.${key}`);
