@@ -36,7 +36,7 @@ export interface CustomSelectProps<T>
   extends Omit<SelectProps, 'variant' | 'input' | 'children' | 'renderValue'> {
   name?: string;
   label: string;
-  emptyPlaceholder: string;
+  emptyPlaceholder?: string;
   nameOfNoneItem?: string;
   helperText?: React.ReactNode;
   items: T[];
@@ -128,7 +128,9 @@ function CustomSelect<T>({
 
   return (
     <FormControl {...FormControlProps} className={className} variant='outlined' error={error}>
-      <InputLabel ref={inputLabel}>{label}</InputLabel>
+      <InputLabel required={other.required} ref={inputLabel}>
+        {label}
+      </InputLabel>
       <Select
         fullWidth
         {...other}
@@ -180,7 +182,7 @@ function CustomSelect<T>({
 
         {items.length === 0 && (
           <MenuItem value='' disabled>
-            <ListItemText primary={emptyPlaceholder} />
+            <ListItemText primary={emptyPlaceholder ?? 'Keine Items verfügbar'} />
           </MenuItem>
         )}
       </Select>
