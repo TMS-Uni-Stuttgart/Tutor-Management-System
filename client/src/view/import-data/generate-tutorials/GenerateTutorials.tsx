@@ -118,7 +118,14 @@ function GenerateTutorialsContent(): JSX.Element {
     });
 
     return () => removeNextCallback();
-  }, [setNextCallback, removeNextCallback, setNextDisabled, submitForm, validateForm]);
+  }, [
+    setNextCallback,
+    removeNextCallback,
+    setNextDisabled,
+    submitForm,
+    validateForm,
+    enqueueSnackbar,
+  ]);
 
   useEffect(() => {
     setNextDisabled(!isValid);
