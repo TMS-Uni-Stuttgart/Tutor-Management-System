@@ -7,6 +7,7 @@ import { NextStepCallback, StepData, StepperContext } from './context/StepperCon
 export interface StepInformation {
   label: string;
   component: React.FunctionComponent;
+  skippable?: boolean;
 }
 
 export interface StepperWithButtonsProps extends StepperHeaderProps {
@@ -31,9 +32,13 @@ function StepperWithButtons({
     setSteps([...stepsFromProps]);
   }, [stepsFromProps]);
 
-  async function nextStep() {
+  async function nextStep(skipCallback?: boolean) {
     if (isWaitingOnNextCallback) {
       return;
+    }
+
+    if (skipCallback) {
+      return setActiveStep(activeStep + 1);
     }
 
     const { callback } = state;

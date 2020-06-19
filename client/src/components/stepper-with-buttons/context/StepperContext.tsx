@@ -11,6 +11,7 @@ export interface StepData {
   label: string;
   component: React.FunctionComponent;
   error?: boolean;
+  skippable?: boolean;
 }
 
 interface StepperContextValue {
@@ -18,7 +19,7 @@ interface StepperContextValue {
   isWaitingOnNextCallback: boolean;
   isNextDisabled: boolean;
   steps: StepData[];
-  nextStep: () => Promise<void>;
+  nextStep: (skipCallback?: boolean) => Promise<void>;
   prevStep: () => Promise<void>;
   setWaitingOnNextCallback: (waiting: boolean) => void;
   setNextCallback: (cb: NextStepCallback) => void;

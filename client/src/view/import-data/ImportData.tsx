@@ -7,7 +7,7 @@ function ImportData(): JSX.Element {
   return (
     <StepperWithButtons
       steps={[
-        { label: 'Tutorien generieren', component: GenerateTutorials },
+        { label: 'Tutorien generieren', component: GenerateTutorials, skippable: true },
         { label: 'Nutzer importieren', component: ImportUsers },
         { label: 'Abschließen', component: () => <div>DONE</div> },
       ]}

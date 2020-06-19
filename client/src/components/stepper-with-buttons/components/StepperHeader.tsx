@@ -21,8 +21,11 @@ const useStyles = makeStyles((theme) =>
       display: 'flex',
       alignItems: 'center',
     },
-    button: {
+    buttonBox: {
       margin: theme.spacing(0, 2),
+    },
+    skipButton: {
+      marginRight: theme.spacing(1),
     },
     stepper: {
       flex: 1,
@@ -56,7 +59,7 @@ function StepperHeader({
 
   return (
     <Paper className={clsx(classes.paper)}>
-      <Box className={classes.button}>
+      <Box className={classes.buttonBox}>
         <Button variant='outlined' onClick={prevStep} disabled={activeStep <= 0}>
           {backButtonLabel}
         </Button>
@@ -72,12 +75,18 @@ function StepperHeader({
         })}
       </Stepper>
 
-      <Box className={classes.button}>
+      <Box className={classes.buttonBox}>
+        {steps[activeStep]?.skippable && (
+          <Button variant='outlined' className={classes.skipButton} onClick={() => nextStep(true)}>
+            Überspringen
+          </Button>
+        )}
+
         <SubmitButton
           isSubmitting={isWaitingOnNextCallback}
           variant='outlined'
           color='primary'
-          onClick={nextStep}
+          onClick={() => nextStep()}
           disabled={isNextDisabled || activeStep === steps.length}
         >
           {!!nextButtonDoneLabel
