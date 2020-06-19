@@ -6,6 +6,9 @@ import { TutorialDocument } from '../../database/models/tutorial.model';
 import { AttendanceState } from '../../shared/model/Attendance';
 import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
+import { ParseCsvDTO } from './excel.dto';
+import { parse, ParseResult } from 'papaparse';
+import { ParseCsvResult } from '../../shared/model/CSV';
 
 interface HeaderData {
   name: string;
@@ -79,6 +82,21 @@ export class ExcelService {
     }
 
     return workbook.writeToBuffer();
+  }
+
+  /**
+   * Parses the given CSV string with the given options.
+   *
+   * Internally the papaparser is used to parse the string. If parsing fails the results papaparser result is still returned but it will be in it's errornous state.
+   *
+   * @param dto DTO with the CSV string to parse and the options to use.
+   *
+   * @returns Parsed results from papaparser.
+   */
+  async parseCSV(dto: ParseCsvDTO): Promise<ParseCsvResult<unknown>> {
+    const { data, options } = dto;
+
+    return parse(data, options);
   }
 
   private createMemberWorksheet(workbook: Workbook, students: StudentDocument[]) {

@@ -2544,6 +2544,14 @@
     "@types/bson" "*"
     "@types/node" "*"
 
+"@types/mongoose@^5.7.1":
+  version "5.7.27"
+  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.7.27.tgz#8cb259fa463c466aba305937a31967727ad804d1"
+  integrity sha512-6+QFJg4jUM91dJYsJk32FuREOJ7ghgzxj4c+BV3+aK7a9fFGbghQRteB14P94fGXhJN63b2mBqf7luBHvCRFtg==
+  dependencies:
+    "@types/mongodb" "*"
+    "@types/node" "*"
+
 "@types/mongoose@^5.7.21":
   version "5.7.21"
   resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.7.21.tgz#a3f0b6875f85c2afae6a5f0f1a7991732329e7e8"
@@ -2573,6 +2581,13 @@
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
+
+"@types/papaparse@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@types/papaparse/-/papaparse-5.0.4.tgz#70792c74d9932bcc0bfa945ae7dacfef67f4ee57"
+  integrity sha512-jFv9NcRddMiW4+thmntwZ1AhvMDAX4+tAUDkWWbNcIzgqyjjkuSHOEUPoVh1/gqJTWfDOD1tvl+hSp88W3UtqA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -11046,6 +11061,11 @@ pako@~1.0.2, pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
+
+papaparse@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-5.2.0.tgz#97976a1b135c46612773029153dc64995caa3b7b"
+  integrity sha512-ylq1wgUSnagU+MKQtNeVqrPhZuMYBvOSL00DHycFTCxownF95gpLAk1HiHdUW77N8yxRq1qHXLdlIPyBSG9NSA==
 
 parallel-transform@^1.1.0:
   version "1.2.0"
