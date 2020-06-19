@@ -146,7 +146,7 @@ function getDatesInInterval(
   const dates: Map<number, string[]> = new Map();
   let current = interval.start.startOf('day');
 
-  while (current < interval.end) {
+  while (current <= interval.end) {
     const datesInMap = dates.get(current.weekday) ?? [];
     let isExcluded = false;
     for (const excluded of excludedDates) {
@@ -622,6 +622,34 @@ describe('TutorialService', () => {
 
     expect(generatedTutorials.length).toBe(4);
     expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
+
+    assertGeneratedTutorials({
+      expected: plainToClass(TutorialGenerationDTO, dto),
+      actual: generatedTutorials,
+    });
+  });
+
+  it('make sure tutorial generation does take all days in the interval into account', async () => {
+    const dto: ITutorialGenerationDTO = {
+      firstDay: '2020-05-25', // Monday
+      lastDay: '2020-06-15', // Monday
+      excludedDates: [],
+      generationDatas: [
+        {
+          // Generate 2 in the slot Monady, 08:00 - 09:30
+          amount: 2,
+          weekday: 1,
+          interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
+          prefix: 'Mo',
+        },
+      ],
+    };
+    const tutorialCountBefore = (await service.findAll()).length;
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+    const tutorialCountAfter = (await service.findAll()).length;
+
+    expect(generatedTutorials.length).toBe(2);
+    expect(tutorialCountAfter).toBe(tutorialCountBefore + 2);
 
     assertGeneratedTutorials({
       expected: plainToClass(TutorialGenerationDTO, dto),

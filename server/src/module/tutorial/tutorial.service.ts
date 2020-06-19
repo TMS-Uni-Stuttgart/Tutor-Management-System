@@ -286,7 +286,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     const datesInInterval: Map<number, DateTime[]> = new Map();
     let cursor = interval.start.startOf('day');
 
-    while (cursor < interval.end) {
+    while (cursor <= interval.end) {
       const dates = datesInInterval.get(cursor.weekday) ?? [];
 
       dates.push(cursor);
