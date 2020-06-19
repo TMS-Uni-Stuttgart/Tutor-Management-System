@@ -1,6 +1,11 @@
 import { plainToClass } from 'class-transformer';
 import { IStudent } from 'shared/model/Student';
-import { ISubstituteDTO, ITutorial, ITutorialDTO } from 'shared/model/Tutorial';
+import {
+  ISubstituteDTO,
+  ITutorial,
+  ITutorialDTO,
+  ITutorialGenerationDTO,
+} from 'shared/model/Tutorial';
 import { sortByName } from 'shared/util/helpers';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
@@ -36,6 +41,18 @@ export async function createTutorial(tutorialInformation: ITutorialDTO): Promise
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
+export async function createMultipleTutorials(
+  generationInformation: ITutorialGenerationDTO
+): Promise<Tutorial[]> {
+  const response = await axios.post<ITutorial[]>('tutorial/generate', generationInformation);
+
+  if (response.status === 201) {
+    return plainToClass(Tutorial, response.data);
+  }
+
+  return Promise.reject(`Wrong response code (${response.status})`);
 }
 
 export async function editTutorial(
