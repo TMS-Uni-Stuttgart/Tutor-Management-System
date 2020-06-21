@@ -133,9 +133,9 @@ function NavigationRail({
         )}
       </List>
 
-      {version && (
+      {open && version && (
         <Typography className={classes.version} variant='caption'>
-          {open && <>Version: </>}
+          {<>Version: </>}
 
           <Link
             color='inherit'

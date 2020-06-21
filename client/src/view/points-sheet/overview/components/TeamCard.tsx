@@ -19,7 +19,7 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getNameOfEntity } from 'shared/util/helpers';
-import { renderLink } from '../../../../components/drawer/components/renderLink';
+import { renderLink } from '../../../../components/navigation-rail/components/renderLink';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import SplitButton from '../../../../components/SplitButton';
 import { useDialog } from '../../../../hooks/DialogService';

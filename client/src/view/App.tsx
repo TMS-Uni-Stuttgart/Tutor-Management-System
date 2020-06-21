@@ -6,7 +6,7 @@ import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
 import { ROUTES, RouteType, RoutingPath, ROOT_REDIRECT_PATH } from '../routes/Routing.routes';
 import AppBar from './AppBar';
-import NavigationRail from './navigation-rail/NavigationRail';
+import NavigationRail from '../components/navigation-rail/NavigationRail';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

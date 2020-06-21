@@ -10,7 +10,7 @@ import {
 import clsx from 'clsx';
 import React from 'react';
 import { useRouteMatch } from 'react-router';
-import { renderLink } from '../../../components/drawer/components/renderLink';
+import { renderLink } from './renderLink';
 import { ButtonListItemProps } from './RailItem';
 import { getTargetLink } from './RailItem.helpers';
 
