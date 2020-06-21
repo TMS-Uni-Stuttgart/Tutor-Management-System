@@ -1,6 +1,6 @@
-import { CSVData } from '../../ImportData.context';
+import { CSVData } from '../../ImportUsers.context';
 import { Role } from 'shared/model/Role';
-import { FormState, UserFormState } from '../ImportUsers';
+import { FormState, UserFormState } from '../AdjustImportedUserDataForm';
 
 function isRole(role: Role | undefined): role is Role {
   return role !== undefined;

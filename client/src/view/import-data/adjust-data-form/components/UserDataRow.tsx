@@ -20,8 +20,8 @@ import { Role } from '../../../../../../server/src/shared/model/Role';
 import FormikSelect from '../../../../components/forms/components/FormikSelect';
 import PaperTableRow from '../../../../components/PaperTableRow';
 import { FormikSubmitCallback } from '../../../../types';
-import { useImportDataContext } from '../../ImportData.context';
-import { UserFormStateValue, FormState } from '../ImportUsers';
+import { useImportDataContext } from '../../ImportUsers.context';
+import { UserFormStateValue, FormState } from '../AdjustImportedUserDataForm';
 import { Tutorial } from '../../../../model/Tutorial';
 import { IsItemDisabledFunction } from '../../../../components/CustomSelect';
 

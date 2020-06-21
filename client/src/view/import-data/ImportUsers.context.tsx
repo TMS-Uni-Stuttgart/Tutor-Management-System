@@ -79,7 +79,7 @@ function convertParsedToInternalCSV(data: ParsedCSVData): CSVData {
   return { headers, rows };
 }
 
-function ImportDataContext({ children }: React.PropsWithChildren<{}>): JSX.Element {
+function ImportUsersContext({ children }: React.PropsWithChildren<{}>): JSX.Element {
   const [data, setInternalData] = useState<CSVData>(() =>
     convertParsedToInternalCSV({ headers: HEADERS, rows: ROWS })
   );
@@ -107,4 +107,4 @@ export function useImportDataContext(): DataContextValue {
   return value;
 }
 
-export default ImportDataContext;
+export default ImportUsersContext;

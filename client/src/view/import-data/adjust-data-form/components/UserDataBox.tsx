@@ -2,8 +2,8 @@ import { Box, Typography } from '@material-ui/core';
 import { useFormikContext } from 'formik';
 import React, { useEffect, useRef } from 'react';
 import TableWithPadding from '../../../../components/TableWithPadding';
-import { useImportDataContext } from '../../ImportData.context';
-import { FormState } from '../ImportUsers';
+import { useImportDataContext } from '../../ImportUsers.context';
+import { FormState } from '../AdjustImportedUserDataForm';
 import { convertCSVDataToFormData } from './UserDataBox.helpers';
 import UserDataRow from './UserDataRow';
 
