@@ -14,7 +14,7 @@ export interface CSVDataRow {
   data: ParsedCSVDataRow;
 }
 
-interface CSVData {
+export interface CSVData {
   headers: string[];
   rows: CSVDataRow[];
 }
