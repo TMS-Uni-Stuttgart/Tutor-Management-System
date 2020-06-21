@@ -1,4 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { Tutorial } from '../../model/Tutorial';
+import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 
 interface ParsedCSVDataRow {
   [header: string]: string;
@@ -20,11 +22,13 @@ export interface CSVData {
 }
 
 interface DataContextValue {
+  tutorials: Tutorial[];
   data: CSVData;
   setData: (data: ParsedCSVData) => void;
 }
 
 const DataContext = React.createContext<DataContextValue>({
+  tutorials: [],
   data: { headers: [], rows: [] },
   setData: () => {
     throw new Error('ImportDataContext not initialised.');
@@ -79,13 +83,22 @@ function ImportDataContext({ children }: React.PropsWithChildren<{}>): JSX.Eleme
   const [data, setInternalData] = useState<CSVData>(() =>
     convertParsedToInternalCSV({ headers: HEADERS, rows: ROWS })
   );
+  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+
+  useEffect(() => {
+    console.log('FETCHING TUTORIALS');
+
+    getAllTutorials().then((tutorials) => setTutorials(tutorials));
+  }, []);
 
   const setData = (data: ParsedCSVData) => {
     const newData = convertParsedToInternalCSV(data);
     setInternalData(newData);
   };
 
-  return <DataContext.Provider value={{ data, setData }}>{children}</DataContext.Provider>;
+  return (
+    <DataContext.Provider value={{ data, setData, tutorials }}>{children}</DataContext.Provider>
+  );
 }
 
 export function useImportDataContext(): DataContextValue {
