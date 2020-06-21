@@ -11,7 +11,11 @@ interface Props {
   name: string;
 }
 
-function didColumnChange(prev: FormState, current: FormState): boolean {
+function didColumnChange(prev: FormState | undefined, current: FormState): boolean {
+  if (!prev) {
+    return true;
+  }
+
   const keys = Object.keys(prev).filter((key) => key !== 'users') as (keyof FormState)[];
 
   for (const key of keys) {
@@ -26,12 +30,12 @@ function didColumnChange(prev: FormState, current: FormState): boolean {
 function UserDataBox({ name }: Props): JSX.Element {
   const { values, setFieldValue } = useFormikContext<FormState>();
   const { data } = useImportDataContext();
-  const prev = useRef<FormState>(values);
+  const prev = useRef<FormState>();
 
   const displayUsers = !!values.firstnameColumn && !!values.lastnameColumn && !!values.emailColumn;
 
   useEffect(() => {
-    if (didColumnChange(values, prev.current)) {
+    if (didColumnChange(prev.current, values)) {
       prev.current = values;
       setFieldValue(name, convertCSVDataToFormData(data, values));
     }

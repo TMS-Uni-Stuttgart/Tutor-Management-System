@@ -38,6 +38,8 @@ export function convertCSVDataToFormData(data: CSVData, values: ColumnsNeeded): 
       roles: convertColumnToRoles(data[values.rolesColumn]),
       username: data[values.usernameColumn],
       password: data[values.passwordColumn],
+      tutorials: [],
+      tutorialsToCorrect: [],
     };
   });
 

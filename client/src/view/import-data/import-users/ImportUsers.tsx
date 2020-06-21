@@ -37,6 +37,8 @@ export interface UserFormStateValue {
   lastname: string;
   email: string;
   roles: Role[];
+  tutorials: string[];
+  tutorialsToCorrect: string[];
   username?: string;
   password?: string;
 }
@@ -44,16 +46,6 @@ export interface UserFormStateValue {
 export interface UserFormState {
   [id: number]: UserFormStateValue;
 }
-
-const initialValues: FormState = {
-  firstnameColumn: '',
-  lastnameColumn: '',
-  emailColumn: '',
-  rolesColumn: '',
-  usernameColumn: '',
-  passwordColumn: '',
-  users: {},
-};
 
 function NO_OP() {
   /* No-Op */
@@ -67,6 +59,16 @@ function ImportUsers(): JSX.Element {
   const {
     data: { headers },
   } = useImportDataContext();
+
+  const initialValues: FormState = {
+    firstnameColumn: headers[0] ?? '',
+    lastnameColumn: headers[1] ?? '',
+    emailColumn: headers[2] ?? '',
+    rolesColumn: '',
+    usernameColumn: '',
+    passwordColumn: '',
+    users: {},
+  };
 
   useEffect(() => {
     console.log('ImportUsers - registering next callback');
