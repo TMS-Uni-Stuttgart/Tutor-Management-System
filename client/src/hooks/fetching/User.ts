@@ -40,6 +40,16 @@ export async function createUser(userInformation: ICreateUserDTO): Promise<IUser
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
+export async function createManyUsers(dto: ICreateUserDTO[]): Promise<IUser[]> {
+  const response = await axios.post<IUser[]>('user/generate', dto);
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
 export async function editUser(userid: string, userInformation: IUserDTO): Promise<IUser> {
   const response = await axios.patch<IUser>(`user/${userid}`, userInformation);
 

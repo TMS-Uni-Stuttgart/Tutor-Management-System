@@ -123,16 +123,6 @@ function GenerateTutorialsContent(): JSX.Element {
 
         <FormikExcludedDates name='excludedDates' gridColumn='1' gridRow='4' />
 
-        <Box
-          gridArea='1 / 2 / span 5 / span 1'
-          border={2}
-          borderColor='divider'
-          borderRadius='borderRadius'
-          padding={1}
-        >
-          <WeekdayTabs />
-        </Box>
-
         <Box gridColumn='1' gridRow='5' display='flex' flexDirection='column'>
           {errors.weekdays && (
             <Typography color='error' className={classes.errorLabel}>
@@ -151,6 +141,16 @@ function GenerateTutorialsContent(): JSX.Element {
           >
             Tutorien generieren
           </SubmitButton>
+        </Box>
+
+        <Box
+          gridArea='1 / 2 / span 5 / span 1'
+          border={2}
+          borderColor='divider'
+          borderRadius='borderRadius'
+          padding={1}
+        >
+          <WeekdayTabs />
         </Box>
       </Box>
 
