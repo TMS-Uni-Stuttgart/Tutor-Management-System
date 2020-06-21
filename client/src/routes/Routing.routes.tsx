@@ -39,6 +39,7 @@ import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
 import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
 import UserManagement from '../view/usermanagement/UserManagement';
 import ImportData from '../view/import-data/ImportData';
+import GenerateTutorials from '../view/import-data/generate-tutorials/GenerateTutorials';
 
 export enum RoutingPath {
   ROOT = '/',
@@ -55,8 +56,10 @@ export enum RoutingPath {
   SCHEIN_EXAMS_STUDENT = '/scheinexams/:examId/student/:studentId',
   DASHBOARD = '/dashboard',
   MANAGE_USERS = '/admin/usermanagement',
+  IMPORT_USERS = '/admin/usermanagement/generate',
   MANAGE_TUTORIALS = '/admin/tutorialmanagement',
-  MANAGE_TUTORIALS_SUBSTITUTES = '/admin/tutorialmanagement/:tutorialid/substitute',
+  GENERATE_TUTORIALS = '/admin/tutorialmanagement/generate',
+  MANAGE_TUTORIALS_SUBSTITUTES = '/admin/tutorialmanagement/substitutes/:tutorialid/substitute',
   MANAGE_SCHEIN_CRITERIAS = '/admin/scheincriterias',
   SCHEIN_CRITERIAS_INFO = '/admin/scheincriterias/info/:id',
   MANAGE_ATTENDANCES = '/admin/attendances',
@@ -214,6 +217,16 @@ export const ROUTES: readonly RouteType[] = [
     roles: [Role.ADMIN],
     isInDrawer: true,
     isPrivate: true,
+    isExact: true,
+  },
+  {
+    path: RoutingPath.IMPORT_USERS,
+    title: 'Importiere Nutzer',
+    component: ImportData,
+    icon: UserIcon,
+    roles: [Role.ADMIN],
+    isInDrawer: false,
+    isPrivate: true,
   },
   {
     path: RoutingPath.MANAGE_TUTORIALS_SUBSTITUTES,
@@ -225,21 +238,20 @@ export const ROUTES: readonly RouteType[] = [
     isPrivate: true,
   },
   {
+    path: RoutingPath.GENERATE_TUTORIALS,
+    title: 'Generiere Tutorien',
+    component: GenerateTutorials,
+    icon: TutorialIcon,
+    roles: [Role.ADMIN, Role.EMPLOYEE],
+    isInDrawer: false,
+    isPrivate: true,
+  },
+  {
     path: RoutingPath.MANAGE_TUTORIALS,
     title: 'Tutorienverwaltung',
     component: TutorialManagement,
     icon: TutorialIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
-    isInDrawer: true,
-    isPrivate: true,
-    isExact: true,
-  },
-  {
-    path: RoutingPath.IMPORT_TUTORIALS_AND_USERS,
-    title: 'Importiere Daten',
-    component: ImportData,
-    icon: TutorialIcon, // FIXME: Change icon.
-    roles: [Role.ADMIN],
     isInDrawer: true,
     isPrivate: true,
     isExact: true,

@@ -1,30 +1,38 @@
+import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useSnackbar, SnackbarKey } from 'notistack';
+import {
+  TableArrowDown as ImportIcon,
+  Printer as PrintIcon,
+  EmailSendOutline as SendIcon,
+} from 'mdi-material-ui';
+import { SnackbarKey, useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
-import { ICreateUserDTO, IUserDTO, IUser } from 'shared/model/User';
+import { ICreateUserDTO, IUser, IUserDTO } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
-import SubmitButton from '../../components/loading/SubmitButton';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
+import SubmitButton from '../../components/loading/SubmitButton';
 import SnackbarWithList from '../../components/SnackbarWithList';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
-import { saveBlob } from '../../util/helperFunctions';
-import UserTableRow from './components/UserTableRow';
+import { getCredentialsPDF } from '../../hooks/fetching/Files';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 import {
-  setTemporaryPassword,
-  getUsers,
   createUser,
+  deleteUser,
   editUser,
+  getUsers,
   sendCredentials as sendCredentialsRequest,
   sendCredentialsToSingleUser as sendCredentialsToSingleUserRequest,
-  deleteUser,
+  setTemporaryPassword,
 } from '../../hooks/fetching/User';
-import { getCredentialsPDF } from '../../hooks/fetching/Files';
 import { Tutorial } from '../../model/Tutorial';
+import { RoutingPath } from '../../routes/Routing.routes';
+import { saveBlob } from '../../util/helperFunctions';
+import UserTableRow from './components/UserTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -332,6 +340,7 @@ function UserManagement(): JSX.Element {
               <SubmitButton
                 variant='outlined'
                 isSubmitting={isSendingCredentials}
+                startIcon={<SendIcon />}
                 onClick={handleSendCredentials}
               >
                 Zugangsdaten verschicken
@@ -340,13 +349,22 @@ function UserManagement(): JSX.Element {
               <SubmitButton
                 variant='outlined'
                 isSubmitting={isSendingCredentials}
+                startIcon={<PrintIcon />}
                 onClick={handlePrintCredentials}
-                style={{
-                  marginLeft: 8,
-                }}
+                style={{ marginLeft: 8 }}
               >
                 Zugangsdaten ausdrucken
               </SubmitButton>
+
+              <Button
+                variant='outlined'
+                component={Link}
+                to={RoutingPath.IMPORT_USERS}
+                startIcon={<ImportIcon />}
+                style={{ marginLeft: 8 }}
+              >
+                Generieren
+              </Button>
             </>
           }
           items={users}
