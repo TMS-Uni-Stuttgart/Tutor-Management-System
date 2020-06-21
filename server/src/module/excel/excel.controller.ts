@@ -8,6 +8,8 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
@@ -32,6 +34,7 @@ export class ExcelController {
   }
 
   @Post('/parseCSV')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
   async parseCSV(@Body() body: ParseCsvDTO): Promise<ParseCsvResult<unknown>> {
