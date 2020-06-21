@@ -3,19 +3,18 @@ import {
   CardActions,
   Collapse,
   IconButton,
-  Paper,
-  Typography,
   List,
   ListItem,
   ListItemText,
+  Paper,
+  Typography,
 } from '@material-ui/core';
-import { amber } from '@material-ui/core/colors';
 import { SnackbarContentProps } from '@material-ui/core/SnackbarContent';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Close as CloseIcon, ChevronDown as ExpandMoreIcon } from 'mdi-material-ui';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import { ChevronDown as ExpandMoreIcon, Close as CloseIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
+import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,15 +23,17 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     typography: {
       fontWeight: 'bold',
+      marginRight: 'auto',
     },
     actionRoot: {
+      display: 'flex',
       padding: theme.spacing(1, 1, 1, 2),
-      backgroundColor: amber[700],
-    },
-    icons: {
-      marginLeft: 'auto',
+      backgroundColor: theme.palette.orange.main,
+      color: theme.palette.getContrastText(theme.palette.orange.main),
+      cursor: 'pointer',
     },
     expand: {
+      color: theme.palette.getContrastText(theme.palette.orange.main),
       padding: theme.spacing(1, 1),
       transform: 'rotate(0deg)',
       transition: theme.transitions.create('transform', {
@@ -68,18 +69,21 @@ function Component(
     setExpanded(!isExpanded);
   }
 
-  function handleDismiss() {
+  function handleDismiss(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
     closeSnackbar(id);
   }
 
   return (
     <Card ref={ref} className={classes.card}>
-      <CardActions classes={{ root: classes.actionRoot }}>
+      <CardActions classes={{ root: classes.actionRoot }} onClick={handleExpandClick}>
         <Typography variant='subtitle2' className={classes.typography}>
           {title}
         </Typography>
 
-        <div className={classes.icons}>
+        <div>
           <IconButton
             aria-label='Show more'
             className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
@@ -98,8 +102,8 @@ function Component(
         <Paper className={classes.collapse}>
           <Typography>{textBeforeList}</Typography>
           <List dense>
-            {items.map((item) => (
-              <ListItem key={item}>
+            {items.map((item, idx) => (
+              <ListItem key={idx}>
                 <ListItemText primary={item} />
               </ListItem>
             ))}
