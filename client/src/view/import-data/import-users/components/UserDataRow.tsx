@@ -14,40 +14,93 @@ import {
 } from '@material-ui/core';
 import { Formik, useField, useFormikContext } from 'formik';
 import { SquareEditOutline as EditIcon, Undo as ResetIcon } from 'mdi-material-ui';
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { Role } from '../../../../../../server/src/shared/model/Role';
 import FormikSelect from '../../../../components/forms/components/FormikSelect';
 import PaperTableRow from '../../../../components/PaperTableRow';
 import { FormikSubmitCallback } from '../../../../types';
 import { useImportDataContext } from '../../ImportData.context';
-import { UserFormStateValue } from '../ImportUsers';
+import { UserFormStateValue, FormState } from '../ImportUsers';
+import { Tutorial } from '../../../../model/Tutorial';
+import { IsItemDisabledFunction } from '../../../../components/CustomSelect';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
+    chip: {
+      margin: theme.spacing(0, 1, 1, 0),
+    },
     editButton: {
       marginRight: theme.spacing(1),
     },
   })
 );
 
+interface EditUserDialogProps {
+  parentFormValue: FormState;
+}
+
 interface EditFormState {
+  userId: number;
   roles: Role[];
   tutorials: string[];
   tutorialsToCorrect: string[];
 }
 
 function calculateInitialValues(value: UserFormStateValue): EditFormState {
-  const { roles, tutorials, tutorialsToCorrect } = value;
+  const { roles, tutorials, tutorialsToCorrect, id } = value;
 
-  return { roles, tutorials, tutorialsToCorrect };
+  return { userId: id, roles, tutorials, tutorialsToCorrect };
 }
 
-function EditUserDialogContent(): JSX.Element {
+function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.Element {
   const { values, setFieldValue } = useFormikContext<EditFormState>();
   const { tutorials } = useImportDataContext();
-  // TODO: Fetch tutorials and pass down (through import data context?!).
-  // TODO: Add form to edit user.
+
+  const tutorialsOfOthers: string[] = useMemo(
+    () =>
+      Object.values(parentFormValue.users).flatMap((user) => {
+        if (user.id === values.userId) {
+          return [];
+        }
+
+        return [...user.tutorials];
+      }),
+    [parentFormValue.users, values.userId]
+  );
+
+  const isTutorialItemDisabled: IsItemDisabledFunction<Tutorial> = useCallback(
+    (tutorial) => {
+      const isSelectedByOther = tutorialsOfOthers.findIndex((id) => id === tutorial.id) !== -1;
+
+      if (isSelectedByOther) {
+        return { isDisabled: true, reason: 'Anderem/r Nutzer/in zugeordnet.' };
+      }
+
+      const isCorrectedBySelf =
+        values.tutorialsToCorrect.findIndex((id) => id === tutorial.id) !== -1;
+
+      if (isCorrectedBySelf) {
+        return { isDisabled: true, reason: 'Nutzer/in korrigiert Tutorium bereits.' };
+      }
+
+      return { isDisabled: false };
+    },
+    [tutorialsOfOthers, values.tutorialsToCorrect]
+  );
+
+  const isTutorialToCorrectItemDisabled: IsItemDisabledFunction<Tutorial> = useCallback(
+    (tutorial) => {
+      const isHoldBySelf = values.tutorials.findIndex((id) => id === tutorial.id) !== -1;
+
+      if (isHoldBySelf) {
+        return { isDisabled: true, reason: 'Nutzer/in hält Tutorium bereits.' };
+      }
+
+      return { isDisabled: false };
+    },
+    [values.tutorials]
+  );
 
   return (
     <Box display='grid' gridTemplateRows='repeat(3, 1fr)' gridRowGap={16}>
@@ -85,6 +138,7 @@ function EditUserDialogContent(): JSX.Element {
         showLoadingIndicator={tutorials.length === 0}
         itemToString={(tutorial) => tutorial.toDisplayString()}
         itemToValue={(tutorial) => tutorial.id}
+        isItemDisabled={isTutorialItemDisabled}
         multiple
         isItemSelected={(tutorial) => values['tutorials'].indexOf(tutorial.id) > -1}
         disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
@@ -100,6 +154,7 @@ function EditUserDialogContent(): JSX.Element {
         showLoadingIndicator={tutorials.length === 0}
         itemToString={(tutorial) => tutorial.toDisplayString()}
         itemToValue={(tutorial) => tutorial.id}
+        isItemDisabled={isTutorialToCorrectItemDisabled}
         multiple
         isItemSelected={(tutorial) => values['tutorialsToCorrect'].indexOf(tutorial.id) > -1}
         disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
@@ -131,6 +186,7 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
   const classes = useStyles();
 
   const [showDialog, setShowDialog] = useState(false);
+  const { values: parentValues } = useFormikContext<FormState>();
   const [, meta, helpers] = useField<UserFormStateValue>(name);
   const { tutorials } = useImportDataContext();
 
@@ -185,7 +241,14 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
                   ? `Korrigiert: ${tutorial.toDisplayString()}`
                   : tutorial.toDisplayString();
 
-                return <Chip key={id} label={label} color={isCorrector ? 'default' : 'primary'} />;
+                return (
+                  <Chip
+                    key={id}
+                    className={classes.chip}
+                    label={label}
+                    color={isCorrector ? 'default' : 'primary'}
+                  />
+                );
               }
             })
           )}
@@ -200,7 +263,7 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
                 <DialogTitle>{getNameOfEntity({ firstname, lastname })} bearbeiten</DialogTitle>
 
                 <DialogContent style={{ minWidth: 400 }}>
-                  <EditUserDialogContent />
+                  <EditUserDialogContent parentFormValue={parentValues} />
                 </DialogContent>
 
                 <DialogActions>
