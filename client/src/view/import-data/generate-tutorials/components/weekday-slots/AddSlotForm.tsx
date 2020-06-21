@@ -62,7 +62,7 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
     submitForm();
   };
 
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
@@ -77,7 +77,7 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
         display='flex'
         alignItems='center'
         justifyContent='center'
-        onKeyUp={handleKeyUp}
+        onKeyDown={handleKeyDown}
         {...props}
       >
         <SelectInterval
