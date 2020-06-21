@@ -11,11 +11,11 @@ import {
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
-import CustomDatePicker from '../../../../../components/date-picker/DatePicker';
+import CustomDatePicker from '../../../../components/date-picker/DatePicker';
 import SelectInterval, {
   SelectIntervalMode,
-} from '../../../../../components/select-interval/SelectInterval';
-import TabPanel from '../../../../../components/TabPanel';
+} from '../../../../components/select-interval/SelectInterval';
+import TabPanel from '../../../../components/TabPanel';
 import { FormExcludedDate } from './FormikExcludedDates';
 
 const useStyles = makeStyles(() =>

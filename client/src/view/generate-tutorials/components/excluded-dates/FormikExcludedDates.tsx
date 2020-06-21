@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
-import { useDialog } from '../../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/DialogService';
 import ExcludedDateBox from './ExcludedDateBox';
 import ExcludedDateDialog from './ExcludedDateDialog';
 

@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { FormikErrors, useFormikContext } from 'formik';
 import React, { useMemo, useState } from 'react';
-import TabPanel from '../../../../../components/TabPanel';
+import TabPanel from '../../../../components/TabPanel';
 import { FormState } from '../../GenerateTutorials';
 import IconForTab from './IconForTab';
 import WeekdayBox from './WeekdayBox';

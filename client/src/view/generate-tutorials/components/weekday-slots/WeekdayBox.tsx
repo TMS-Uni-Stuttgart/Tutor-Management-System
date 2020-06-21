@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
 import { Plus as AddIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
-import { useDialog } from '../../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/DialogService';
 import FormikWeekdaySlot, { WeekdayTimeSlot } from './FormikWeekdaySlot';
 import AddSlotForm, { AddSlotFormData } from './AddSlotForm';
 

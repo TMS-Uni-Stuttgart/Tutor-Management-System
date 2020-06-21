@@ -39,7 +39,7 @@ import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
 import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
 import UserManagement from '../view/usermanagement/UserManagement';
 import ImportData from '../view/import-data/ImportData';
-import GenerateTutorials from '../view/import-data/generate-tutorials/GenerateTutorials';
+import GenerateTutorials from '../view/generate-tutorials/GenerateTutorials';
 
 export enum RoutingPath {
   ROOT = '/',

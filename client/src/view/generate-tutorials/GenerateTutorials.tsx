@@ -5,19 +5,19 @@ import { DateTime, Interval } from 'luxon';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
-import FormikDatePicker from '../../../components/forms/components/FormikDatePicker';
-import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
-import { createMultipleTutorials } from '../../../hooks/fetching/Tutorial';
-import { FormikSubmitCallback } from '../../../types';
+import FormikDatePicker from '../../components/forms/components/FormikDatePicker';
+import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
+import { createMultipleTutorials } from '../../hooks/fetching/Tutorial';
+import { FormikSubmitCallback } from '../../types';
 import FormikExcludedDates, {
   FormExcludedDate,
 } from './components/excluded-dates/FormikExcludedDates';
 import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import WeekdayTabs from './components/weekday-slots/WeekdayTabs';
 import { validationSchema } from './GenerateTutorials.validation';
-import BackButton from '../../../components/BackButton';
-import { RoutingPath } from '../../../routes/Routing.routes';
-import SubmitButton from '../../../components/loading/SubmitButton';
+import BackButton from '../../components/BackButton';
+import { RoutingPath } from '../../routes/Routing.routes';
+import SubmitButton from '../../components/loading/SubmitButton';
 import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) =>

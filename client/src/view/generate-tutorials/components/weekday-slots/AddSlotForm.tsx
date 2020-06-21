@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import * as Yup from 'yup';
 import SelectInterval, {
   SelectIntervalMode,
-} from '../../../../../components/select-interval/SelectInterval';
+} from '../../../../components/select-interval/SelectInterval';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
