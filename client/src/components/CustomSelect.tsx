@@ -1,6 +1,7 @@
 import {
   Checkbox,
   Chip,
+  CircularProgress,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -44,6 +45,7 @@ export interface CustomSelectProps<T>
   itemToValue: ItemToString<T>;
   isItemSelected?: (item: T) => boolean;
   FormControlProps?: Omit<FormControlProps, 'variant' | 'className'>;
+  showLoadingIndicator?: boolean;
 }
 
 export type OnChangeHandler = CustomSelectProps<{}>['onChange'];
@@ -97,6 +99,7 @@ function CustomSelect<T>({
   multiple,
   FormControlProps,
   classes: classesFromProps,
+  showLoadingIndicator,
   ...other
 }: CustomSelectProps<T>): JSX.Element {
   if (multiple && !isItemSelected) {
@@ -133,6 +136,11 @@ function CustomSelect<T>({
       </InputLabel>
       <Select
         fullWidth
+        IconComponent={
+          showLoadingIndicator
+            ? (props: any) => <CircularProgress {...props} size={24} />
+            : undefined
+        }
         {...other}
         name={name}
         onChange={onChange}
