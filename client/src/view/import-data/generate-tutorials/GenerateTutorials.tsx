@@ -3,11 +3,10 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik, useFormikContext } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
 import FormikDatePicker from '../../../components/forms/components/FormikDatePicker';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
-import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
 import { createMultipleTutorials } from '../../../hooks/fetching/Tutorial';
 import { FormikSubmitCallback } from '../../../types';
 import FormikExcludedDates, {
@@ -16,11 +15,20 @@ import FormikExcludedDates, {
 import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import WeekdayTabs from './components/weekday-slots/WeekdayTabs';
 import { validationSchema } from './GenerateTutorials.validation';
+import BackButton from '../../../components/BackButton';
+import { RoutingPath } from '../../../routes/Routing.routes';
+import SubmitButton from '../../../components/loading/SubmitButton';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
+    backButton: {
+      marginRight: theme.spacing(1),
+    },
     form: {
       flex: 1,
+    },
+    errorLabel: {
+      marginBottom: theme.spacing(1),
     },
   })
 );
@@ -91,57 +99,22 @@ function generateDTOFromValues(values: FormState): ITutorialGenerationDTO {
 
 function GenerateTutorialsContent(): JSX.Element {
   const classes = useStyles();
-
-  const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
-  const { enqueueSnackbar } = useSnackbar();
-  const { submitForm, validateForm, isValid } = useFormikContext<FormState>();
-
-  useEffect(() => {
-    setNextCallback(async () => {
-      // Manually validate the form to get a response. Formik's submitForm() does not respond in a manner to check if inner validation succeded or failed.
-      const errors = await validateForm();
-
-      if (Object.entries(errors).length > 0) {
-        enqueueSnackbar('Ungültige Formulardaten.', { variant: 'error' });
-        return { goToNext: false, error: true };
-      }
-
-      try {
-        await submitForm();
-
-        enqueueSnackbar('Tutorien wurden erfolgreich generiert.', { variant: 'success' });
-        return { goToNext: true };
-      } catch (err) {
-        enqueueSnackbar('Tutorien konnten nicht generiert werden.', { variant: 'error' });
-        return { goToNext: false, error: true };
-      }
-    });
-
-    return () => removeNextCallback();
-  }, [
-    setNextCallback,
-    removeNextCallback,
-    setNextDisabled,
-    submitForm,
-    validateForm,
-    enqueueSnackbar,
-  ]);
-
-  useEffect(() => {
-    setNextDisabled(!isValid);
-  }, [isValid, setNextDisabled]);
+  const { handleSubmit, isSubmitting, isValid, errors } = useFormikContext<FormState>();
 
   return (
-    <form className={classes.form}>
+    <form className={classes.form} onSubmit={handleSubmit}>
       <Box
         display='grid'
-        gridTemplateColumns='1fr 3fr'
-        gridTemplateRows='30px repeat(2, 60px) 1fr'
+        gridTemplateColumns='minmax(255px, 340px) minmax(0, 1fr)'
+        gridTemplateRows='32px repeat(2, 60px) 1fr'
         gridRowGap={16}
         gridColumnGap={16}
         height='100%'
       >
-        <Typography variant='h6'>Terminbereich</Typography>
+        <Box display='flex'>
+          <BackButton to={RoutingPath.MANAGE_TUTORIALS} className={classes.backButton} />
+          <Typography variant='h6'>Terminbereich</Typography>
+        </Box>
 
         <FormikDatePicker name='startDate' label='Startdatum' />
 
@@ -150,13 +123,33 @@ function GenerateTutorialsContent(): JSX.Element {
         <FormikExcludedDates name='excludedDates' gridColumn='1' gridRow='4' />
 
         <Box
-          gridArea='1 / 2 / span 4 / span 1'
+          gridArea='1 / 2 / span 5 / span 1'
           border={2}
           borderColor='divider'
           borderRadius='borderRadius'
           padding={1}
         >
           <WeekdayTabs />
+        </Box>
+
+        <Box gridColumn='1' gridRow='5' display='flex' flexDirection='column'>
+          {errors.weekdays && (
+            <Typography color='error' className={classes.errorLabel}>
+              {typeof errors.weekdays === 'string'
+                ? errors.weekdays
+                : 'Keine gültige Slotkonfiguration.'}
+            </Typography>
+          )}
+
+          <SubmitButton
+            isSubmitting={isSubmitting}
+            disabled={!isValid}
+            variant='contained'
+            color='primary'
+            fullWidth
+          >
+            Tutorien generieren
+          </SubmitButton>
         </Box>
       </Box>
 
@@ -166,6 +159,7 @@ function GenerateTutorialsContent(): JSX.Element {
 }
 
 function GenerateTutorials(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate(),
     endDate: DateTime.local().plus({ days: 1 }).toISODate(),
@@ -173,22 +167,35 @@ function GenerateTutorials(): JSX.Element {
     weekdays: {},
   };
 
-  const onSubmit: FormikSubmitCallback<FormState> = async (values) => {
+  const onSubmit: FormikSubmitCallback<FormState> = async (values, helpers) => {
+    console.log('HI');
     const dto: ITutorialGenerationDTO = generateDTOFromValues(values);
 
-    // TODO: Can we get the created tutorial amount as a return value to the overlying function?
-    const response = await createMultipleTutorials(dto);
+    // Manually validate the form to get a response. Formik's submitForm() does not respond in a manner to check if inner validation succeded or failed.
+    const errors = await helpers.validateForm();
+    console.log('HI2');
 
-    return response;
+    if (Object.entries(errors).length > 0) {
+      enqueueSnackbar('Ungültige Formulardaten.', { variant: 'error' });
+      return { goToNext: false, error: true };
+    }
+
+    try {
+      console.log('HI3');
+      const response = await createMultipleTutorials(dto);
+
+      enqueueSnackbar(`${response.length} Tutorien wurden erfolgreich generiert.`, {
+        variant: 'success',
+      });
+      return { goToNext: true };
+    } catch (err) {
+      enqueueSnackbar('Tutorien konnten nicht generiert werden.', { variant: 'error' });
+      return { goToNext: false, error: true };
+    }
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      isInitialValid={false}
-      onSubmit={onSubmit}
-      validationSchema={validationSchema}
-    >
+    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
       <GenerateTutorialsContent />
     </Formik>
   );

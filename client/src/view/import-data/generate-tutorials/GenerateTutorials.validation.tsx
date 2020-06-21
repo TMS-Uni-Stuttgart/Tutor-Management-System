@@ -79,12 +79,12 @@ function areWeekdaysValid(this: Yup.TestContext, value: unknown, path: string) {
 }
 
 const weekdaysSchema = Yup.object<FormState['weekdays']>()
-  .test('weekdays', `Not a valid weekdays object.`, function (this, obj) {
+  .test('weekdays', 'Keine gültige Slotkonfiguration.', function (this, obj) {
     const entries = Object.entries(obj);
     const inner: ValidationError[] = [];
 
     if (entries.length === 0) {
-      return this.createError({ message: 'At least one data set must be provided' });
+      return this.createError({ message: 'Kein Slot vorhanden.' });
     }
 
     for (const [key, value] of entries) {
@@ -96,7 +96,7 @@ const weekdaysSchema = Yup.object<FormState['weekdays']>()
     }
 
     if (inner.length > 0) {
-      const error = this.createError({ message: 'Not a valid weekdays object' });
+      const error = this.createError({ message: 'Keine gültige Slotkonfiguration.' });
       error.inner = inner;
 
       return error;

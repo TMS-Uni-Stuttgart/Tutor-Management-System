@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     addButton: {
       height: 'fit-content',
-      marginLeft: 'auto',
     },
     paper: {
       padding: theme.spacing(1),
@@ -107,16 +106,8 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
       flexDirection='column'
       {...props}
     >
-      <Box display='flex' marginBottom={1}>
+      <Box marginBottom={1}>
         <Typography variant='h6'>Ausgeschlossene Zeiten</Typography>
-        <Button
-          variant='outlined'
-          color='secondary'
-          className={classes.addButton}
-          onClick={() => setDialogState({ isShowDialog: true, onAccept: addExcludedDate })}
-        >
-          Hinzufügen
-        </Button>
       </Box>
 
       <Box
@@ -142,6 +133,16 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
             onDelete={handleDeleteExcludedDateClicked(idx)}
           />
         ))}
+
+        <Button
+          variant='outlined'
+          color='secondary'
+          className={classes.addButton}
+          onClick={() => setDialogState({ isShowDialog: true, onAccept: addExcludedDate })}
+          fullWidth
+        >
+          Hinzufügen
+        </Button>
       </Box>
 
       {dialogState.isShowDialog && (

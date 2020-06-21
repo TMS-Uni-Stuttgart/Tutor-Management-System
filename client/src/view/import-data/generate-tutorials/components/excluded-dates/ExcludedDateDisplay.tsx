@@ -17,9 +17,14 @@ function ExcludedDateText({ excluded }: Props): JSX.Element {
 
   return (
     <Typography>
-      {excluded instanceof DateTime
-        ? excluded.toLocaleString(format)
-        : `${excluded.start.toLocaleString(format)} - ${excluded.end.toLocaleString(format)}`}
+      {excluded instanceof DateTime ? (
+        excluded.toLocaleString(format)
+      ) : (
+        <>
+          <span>{excluded.start.toLocaleString(format)} - </span>
+          <span style={{ whiteSpace: 'pre' }}>{excluded.end.toLocaleString(format)}</span>
+        </>
+      )}
     </Typography>
   );
 }

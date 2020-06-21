@@ -25,6 +25,9 @@ import { getUsersWithRole } from '../../hooks/fetching/User';
 import { Tutorial } from '../../model/Tutorial';
 import { compareDateTimes } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
+import { Fab } from '@material-ui/core';
+import { RoutingPath } from '../../routes/Routing.routes';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -190,6 +193,20 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
           title='Neues Tutorium erstellen'
           form={
             <TutorialForm tutors={tutors} correctors={correctors} onSubmit={handleCreateTutorial} />
+          }
+          topBarContent={
+            <Fab
+              variant='extended'
+              component={Link}
+              to={RoutingPath.GENERATE_TUTORIALS}
+              // onClick={handleAddIconClicked}
+            >
+              {/* <AddIcon
+              className={clsx(classes.addIcon, openState.isEditorOpen && classes.addIconIsOpen)}
+            />
+            {openState.isEditorOpen ? 'Abbrechen' : 'Neu'} */}
+              Generieren
+            </Fab>
           }
           items={tutorials}
           createRowFromItem={(tutorial) => (

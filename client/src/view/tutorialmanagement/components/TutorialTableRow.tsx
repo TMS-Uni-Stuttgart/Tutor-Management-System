@@ -2,7 +2,7 @@ import { Button, Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import React from 'react';
-import { renderLink } from '../../../components/drawer/components/renderLink';
+import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
