@@ -49,7 +49,10 @@ function UserDataBox({ name }: Props): JSX.Element {
       <Typography>Nutzerdaten festlegen</Typography>
 
       {displayUsers && (
-        <TableWithPadding items={Object.values(values.users)} createRowFromItem={UserDataRow} />
+        <TableWithPadding
+          items={Object.values(values.users)}
+          createRowFromItem={(item, idx) => <UserDataRow name={`${name}.${idx}`} />}
+        />
       )}
     </Box>
   );
