@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   createStyles,
   Dialog,
   DialogActions,
@@ -10,20 +11,17 @@ import {
   makeStyles,
   TableCell,
   Typography,
-  Chip,
 } from '@material-ui/core';
 import { Formik, useField, useFormikContext } from 'formik';
 import { SquareEditOutline as EditIcon, Undo as ResetIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { Role } from '../../../../../../server/src/shared/model/Role';
-import PaperTableRow from '../../../../components/PaperTableRow';
-import { UserFormStateValue } from '../ImportUsers';
 import FormikSelect from '../../../../components/forms/components/FormikSelect';
-import { Tutorial } from '../../../../model/Tutorial';
+import PaperTableRow from '../../../../components/PaperTableRow';
 import { FormikSubmitCallback } from '../../../../types';
 import { useImportDataContext } from '../../ImportData.context';
-import DateOfTutorialSelection from '../../../../components/DateOfTutorialSelection';
+import { UserFormStateValue } from '../ImportUsers';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
