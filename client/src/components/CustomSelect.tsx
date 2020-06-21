@@ -31,7 +31,14 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type ItemToString<T> = (item: T) => string;
+export interface ItemDisabledInformation {
+  isDisabled: boolean;
+  reason?: string;
+}
+
+export type ItemToString<T> = (item: T) => string;
+export type ItemToBoolean<T> = (item: T) => boolean;
+export type IsItemDisabledFunction<T> = (item: T) => ItemDisabledInformation;
 
 export interface CustomSelectProps<T>
   extends Omit<SelectProps, 'variant' | 'input' | 'children' | 'renderValue'> {
@@ -43,7 +50,8 @@ export interface CustomSelectProps<T>
   items: T[];
   itemToString: ItemToString<T>;
   itemToValue: ItemToString<T>;
-  isItemSelected?: (item: T) => boolean;
+  isItemDisabled?: IsItemDisabledFunction<T>;
+  isItemSelected?: ItemToBoolean<T>;
   FormControlProps?: Omit<FormControlProps, 'variant' | 'className'>;
   showLoadingIndicator?: boolean;
 }
@@ -95,6 +103,7 @@ function CustomSelect<T>({
   itemToString,
   itemToValue,
   nameOfNoneItem,
+  isItemDisabled,
   isItemSelected,
   multiple,
   FormControlProps,
@@ -103,7 +112,7 @@ function CustomSelect<T>({
   ...other
 }: CustomSelectProps<T>): JSX.Element {
   if (multiple && !isItemSelected) {
-    console.error(
+    console.warn(
       `[CustomSelect] -- You have set the Select '${name}' to allow multiple selections but you have not passed an isItemSelected function via props. Therefore Checkboxes won't be shown for the items.`
     );
   }
@@ -173,13 +182,16 @@ function CustomSelect<T>({
 
           const itemString: string = itemToString(item);
           const itemValue: string = itemToValue(item);
+          const { isDisabled, reason }: ItemDisabledInformation = isItemDisabled?.(item) ?? {
+            isDisabled: false,
+          };
 
           return (
-            <MenuItem key={itemValue} value={itemValue}>
+            <MenuItem key={itemValue} value={itemValue} disabled={isDisabled}>
               {multiple ? (
                 <>
                   {isItemSelected && <Checkbox checked={isItemSelected(item)} />}
-                  <ListItemText primary={itemString} />
+                  <ListItemText primary={itemString} secondary={isDisabled ? reason : undefined} />
                 </>
               ) : (
                 itemString
