@@ -18,6 +18,7 @@ import { validationSchema } from './GenerateTutorials.validation';
 import BackButton from '../../../components/BackButton';
 import { RoutingPath } from '../../../routes/Routing.routes';
 import SubmitButton from '../../../components/loading/SubmitButton';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -160,6 +161,8 @@ function GenerateTutorialsContent(): JSX.Element {
 
 function GenerateTutorials(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
+  const history = useHistory();
+
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate(),
     endDate: DateTime.local().plus({ days: 1 }).toISODate(),
@@ -168,29 +171,26 @@ function GenerateTutorials(): JSX.Element {
   };
 
   const onSubmit: FormikSubmitCallback<FormState> = async (values, helpers) => {
-    console.log('HI');
     const dto: ITutorialGenerationDTO = generateDTOFromValues(values);
 
     // Manually validate the form to get a response. Formik's submitForm() does not respond in a manner to check if inner validation succeded or failed.
     const errors = await helpers.validateForm();
-    console.log('HI2');
 
     if (Object.entries(errors).length > 0) {
       enqueueSnackbar('Ungültige Formulardaten.', { variant: 'error' });
-      return { goToNext: false, error: true };
+      return;
     }
 
     try {
-      console.log('HI3');
       const response = await createMultipleTutorials(dto);
 
       enqueueSnackbar(`${response.length} Tutorien wurden erfolgreich generiert.`, {
         variant: 'success',
       });
-      return { goToNext: true };
+
+      history.push(RoutingPath.MANAGE_TUTORIALS);
     } catch (err) {
       enqueueSnackbar('Tutorien konnten nicht generiert werden.', { variant: 'error' });
-      return { goToNext: false, error: true };
     }
   };
 
