@@ -50,20 +50,18 @@ function StepperWithButtons({
     setWaitingOnNextCallback(true);
     const { goToNext, error } = await callback();
 
-    if (error !== undefined) {
-      setSteps(
-        steps.map((step, index) => {
-          if (index !== activeStep) {
-            return step;
-          }
+    setSteps(
+      steps.map((step, index) => {
+        if (index !== activeStep) {
+          return step;
+        }
 
-          return {
-            ...step,
-            error,
-          };
-        })
-      );
-    }
+        return {
+          ...step,
+          error,
+        };
+      })
+    );
 
     if (goToNext) {
       setActiveStep(activeStep + 1);
