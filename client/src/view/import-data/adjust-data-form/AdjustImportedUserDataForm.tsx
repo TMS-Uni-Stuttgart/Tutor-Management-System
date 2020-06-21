@@ -61,9 +61,9 @@ function AdjustImportedUserDataForm(): JSX.Element {
   } = useImportDataContext();
 
   const initialValues: FormState = {
-    firstnameColumn: headers[0] ?? '',
-    lastnameColumn: headers[1] ?? '',
-    emailColumn: headers[2] ?? '',
+    firstnameColumn: '',
+    lastnameColumn: '',
+    emailColumn: '',
     rolesColumn: '',
     usernameColumn: '',
     passwordColumn: '',
@@ -73,6 +73,7 @@ function AdjustImportedUserDataForm(): JSX.Element {
   useEffect(() => {
     console.log('ImportUsers - registering next callback');
     const callback = () => {
+      // TODO: Implement correct next callback!
       console.log('Other next clicked');
       return new Promise<NextStepInformation>((resolve) => {
         setTimeout(() => {
