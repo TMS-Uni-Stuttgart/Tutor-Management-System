@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React from 'react';
+import BackButton from '../../BackButton';
 import SubmitButton from '../../loading/SubmitButton';
 import { useStepper } from '../context/StepperContext';
 
@@ -36,33 +37,48 @@ const useStyles = makeStyles((theme) =>
 
 export interface StepperHeaderProps extends Omit<StepperProps, 'children' | 'activeStep'> {
   backButtonLabel: string;
+  backButtonRoute?: string;
   nextButtonLabel: string;
   nextButtonDoneLabel?: string;
+}
+
+export interface StepperBackButtonProps {
+  backButtonLabel: string;
+  backButtonRoute?: string;
+}
+
+function StepperBackButton({
+  backButtonLabel,
+  backButtonRoute,
+}: StepperBackButtonProps): JSX.Element {
+  const { activeStep, prevStep } = useStepper();
+
+  if (!!backButtonRoute && activeStep === 0) {
+    return <BackButton to={backButtonRoute} />;
+  }
+
+  return (
+    <Button variant='outlined' onClick={prevStep} disabled={activeStep <= 0}>
+      {backButtonLabel}
+    </Button>
+  );
 }
 
 function StepperHeader({
   backButtonLabel,
   nextButtonLabel,
   nextButtonDoneLabel,
+  backButtonRoute,
   className,
   ...props
 }: StepperHeaderProps) {
   const classes = useStyles();
-  const {
-    activeStep,
-    nextStep,
-    prevStep,
-    isWaitingOnNextCallback,
-    steps,
-    isNextDisabled,
-  } = useStepper();
+  const { activeStep, nextStep, isWaitingOnNextCallback, steps, isNextDisabled } = useStepper();
 
   return (
     <Paper className={clsx(classes.paper)}>
       <Box className={classes.buttonBox}>
-        <Button variant='outlined' onClick={prevStep} disabled={activeStep <= 0}>
-          {backButtonLabel}
-        </Button>
+        <StepperBackButton backButtonLabel={backButtonLabel} backButtonRoute={backButtonRoute} />
       </Box>
 
       <Stepper className={classes.stepper} {...props} activeStep={activeStep}>
