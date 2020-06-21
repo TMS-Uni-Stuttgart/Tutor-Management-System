@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import xl, { Workbook, Worksheet } from 'excel4node';
+import { parse } from 'papaparse';
 import { SheetDocument } from '../../database/models/sheet.model';
-import { StudentDocument, populateStudentDocument } from '../../database/models/student.model';
+import { populateStudentDocument, StudentDocument } from '../../database/models/student.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { AttendanceState } from '../../shared/model/Attendance';
+import { ParseCsvResult } from '../../shared/model/CSV';
 import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { ParseCsvDTO } from './excel.dto';
-import { parse, ParseResult } from 'papaparse';
-import { ParseCsvResult } from '../../shared/model/CSV';
 
 interface HeaderData {
   name: string;
