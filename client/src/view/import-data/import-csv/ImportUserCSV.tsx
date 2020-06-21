@@ -19,7 +19,6 @@ function ImportUserCSV(): JSX.Element {
 
   const handleSubmit: NextStepCallback = useCallback(async () => {
     try {
-      // TODO: Use entered Seperator
       const response = await getParsedCSV<{ [header: string]: string }>({
         data: csvInput.trim(),
         options: { header: true, delimiter: separator },
