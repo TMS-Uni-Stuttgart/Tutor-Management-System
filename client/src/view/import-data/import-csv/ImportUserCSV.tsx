@@ -68,7 +68,7 @@ function ImportUserCSV(): JSX.Element {
         <TextField
           variant='outlined'
           label='Seperator'
-          placeholder='Auto'
+          helperText='Leer lassen: Seperator wird automatisch bestimmt.'
           value={separator}
           onChange={(e) => setSeparator(e.target.value)}
           style={{ marginLeft: 'auto' }}

@@ -1,10 +1,10 @@
-import React from 'react';
-import { useImportDataContext } from '../ImportUsers.context';
-import { makeStyles, createStyles, Box, Typography } from '@material-ui/core';
-import { Formik } from 'formik';
-import FormikSelect from '../../../components/forms/components/FormikSelect';
+import { Box, createStyles, makeStyles, Typography } from '@material-ui/core';
+import { Formik, useFormikContext } from 'formik';
+import React, { useEffect } from 'react';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
+import FormikSelect from '../../../components/forms/components/FormikSelect';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
+import { MappedColumns, useImportDataContext } from '../ImportUsers.context';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -15,95 +15,112 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-function NO_OP() {
-  /* No-Op */
+function MapCSVColumnsContent(): JSX.Element {
+  const classes = useStyles();
+
+  const { values, isValid } = useFormikContext<MappedColumns>();
+  const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
+  const {
+    data: { headers },
+  } = useImportDataContext();
+
+  useEffect(() => {
+    setNextDisabled(!isValid);
+  }, [isValid, setNextDisabled]);
+
+  useEffect(() => {
+    setNextCallback(async () => {
+      // TODO: Implement actual next callback!
+      console.log(JSON.stringify(values, null, 2));
+
+      return { goToNext: false };
+    });
+
+    return removeNextCallback;
+  }, [setNextCallback, removeNextCallback, values]);
+
+  return (
+    <Box display='flex' flexDirection='column' padding={1}>
+      <Typography>Spalten zuordnen</Typography>
+
+      <FormikSelect
+        name='firstnameColumn'
+        label='Vorname'
+        required
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikSelect
+        name='lastnameColumn'
+        label='Nachname'
+        required
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikSelect
+        name='emailColumn'
+        label='E-Mailadresse'
+        required
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikSelect
+        name='rolesColumn'
+        label='Rollen'
+        nameOfNoneItem='Keine Spalte auswählen'
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikSelect
+        name='usernameColumn'
+        label='Nutzername'
+        nameOfNoneItem='Keine Spalte auswählen'
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikSelect
+        name='passwordColumn'
+        label='Passwort'
+        nameOfNoneItem='Keine Spalte auswählen'
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikDebugDisplay />
+    </Box>
+  );
 }
 
 function MapCSVColumns(): JSX.Element {
-  const classes = useStyles();
-
-  const { setNextCallback, removeNextCallback } = useStepper();
-  const {
-    data: { headers },
-    mappedColumns,
-  } = useImportDataContext();
-
-  // TODO: Hook nextCallback with "sending" the form.
-  // TODO: Disabled next button if form is not valid.
+  const { mappedColumns } = useImportDataContext();
+  const { nextStep } = useStepper();
 
   return (
-    <Formik initialValues={mappedColumns} onSubmit={NO_OP}>
-      <Box display='flex' flexDirection='column' padding={1}>
-        <Typography>Spalten zuordnen</Typography>
-
-        <FormikSelect
-          name='firstnameColumn'
-          label='Vorname'
-          required
-          items={headers}
-          itemToValue={(i) => i}
-          itemToString={(i) => i}
-          emptyPlaceholder='Keine Überschriften verfügbar'
-          className={classes.select}
-        />
-
-        <FormikSelect
-          name='lastnameColumn'
-          label='Nachname'
-          required
-          items={headers}
-          itemToValue={(i) => i}
-          itemToString={(i) => i}
-          emptyPlaceholder='Keine Überschriften verfügbar'
-          className={classes.select}
-        />
-
-        <FormikSelect
-          name='emailColumn'
-          label='E-Mailadresse'
-          required
-          items={headers}
-          itemToValue={(i) => i}
-          itemToString={(i) => i}
-          emptyPlaceholder='Keine Überschriften verfügbar'
-          className={classes.select}
-        />
-
-        <FormikSelect
-          name='rolesColumn'
-          label='Rollen'
-          nameOfNoneItem='Keine Spalte auswählen'
-          items={headers}
-          itemToValue={(i) => i}
-          itemToString={(i) => i}
-          emptyPlaceholder='Keine Überschriften verfügbar'
-          className={classes.select}
-        />
-
-        <FormikSelect
-          name='usernameColumn'
-          label='Nutzername'
-          nameOfNoneItem='Keine Spalte auswählen'
-          items={headers}
-          itemToValue={(i) => i}
-          itemToString={(i) => i}
-          emptyPlaceholder='Keine Überschriften verfügbar'
-          className={classes.select}
-        />
-
-        <FormikSelect
-          name='passwordColumn'
-          label='Passwort'
-          nameOfNoneItem='Keine Spalte auswählen'
-          items={headers}
-          itemToValue={(i) => i}
-          itemToString={(i) => i}
-          emptyPlaceholder='Keine Überschriften verfügbar'
-          className={classes.select}
-        />
-
-        <FormikDebugDisplay />
-      </Box>
+    <Formik initialValues={mappedColumns} onSubmit={() => nextStep()}>
+      <MapCSVColumnsContent />
     </Formik>
   );
 }
