@@ -39,6 +39,7 @@ export interface FormState {
   endDate: string;
   excludedDates: FormExcludedDate[];
   weekdays: { [day: string]: WeekdayTimeSlot[] };
+  prefixes: { [day: string]: string };
 }
 
 function mapKeyToWeekday(key: string): Weekday {
@@ -63,7 +64,7 @@ function mapKeyToWeekday(key: string): Weekday {
 }
 
 function generateDTOFromValues(values: FormState): ITutorialGenerationDTO {
-  const { startDate, endDate, excludedDates, weekdays } = values;
+  const { startDate, endDate, excludedDates, weekdays, prefixes } = values;
 
   return {
     firstDay: DateTime.fromISO(startDate).toISODate(),
@@ -86,7 +87,7 @@ function generateDTOFromValues(values: FormState): ITutorialGenerationDTO {
         const dataOfWeekday: ITutorialGenerationData[] = val.map((day) => {
           return {
             weekday: mapKeyToWeekday(key),
-            prefix: `${key.charAt(0).toUpperCase() + key.charAt(1).toLowerCase()}`, //FIXME: Add Prefixsettings!
+            prefix: prefixes[key] ?? `${key.charAt(0).toUpperCase() + key.charAt(1).toLowerCase()}`,
             amount: Number.parseInt(day.count),
             interval: day.interval.toISOTime(),
           };
@@ -159,6 +160,15 @@ function GenerateTutorialsContent(): JSX.Element {
   );
 }
 
+const initialPrefixes = {
+  monday: 'Mo',
+  tuesday: 'Di',
+  wednesday: 'Mi',
+  thursday: 'Do',
+  friday: 'Fr',
+  saturday: 'Sa',
+};
+
 function GenerateTutorials(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
@@ -168,6 +178,7 @@ function GenerateTutorials(): JSX.Element {
     endDate: DateTime.local().plus({ days: 1 }).toISODate(),
     excludedDates: [],
     weekdays: {},
+    prefixes: initialPrefixes,
   };
 
   const onSubmit: FormikSubmitCallback<FormState> = async (values, helpers) => {

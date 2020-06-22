@@ -136,7 +136,6 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
 
         <Button
           variant='outlined'
-          color='secondary'
           className={classes.addButton}
           onClick={() => setDialogState({ isShowDialog: true, onAccept: addExcludedDate })}
           fullWidth

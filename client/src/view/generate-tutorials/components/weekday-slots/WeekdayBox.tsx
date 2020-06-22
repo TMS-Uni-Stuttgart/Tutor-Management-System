@@ -3,9 +3,10 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
 import { Plus as AddIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
+import FormikTextField from '../../../../components/forms/components/FormikTextField';
 import { useDialog } from '../../../../hooks/DialogService';
-import FormikWeekdaySlot, { WeekdayTimeSlot } from './FormikWeekdaySlot';
 import AddSlotForm, { AddSlotFormData } from './AddSlotForm';
+import FormikWeekdaySlot, { WeekdayTimeSlot } from './FormikWeekdaySlot';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -35,11 +36,13 @@ const useStyles = makeStyles((theme) =>
 
 interface Props extends BoxProps {
   name: string;
+  prefixName: string;
 }
 
-function WeekdayBox({ name, ...props }: Props): JSX.Element {
+function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {
   const classes = useStyles();
   const [, meta, helpers] = useField<WeekdayTimeSlot[] | undefined>(name);
+  const [, { value: prefixValue }] = useField<string>(prefixName);
   const [isAddMode, setAddMode] = useState(false);
   const dialog = useDialog();
 
@@ -95,6 +98,13 @@ function WeekdayBox({ name, ...props }: Props): JSX.Element {
 
   return (
     <Box display='flex' flexDirection='column' {...props}>
+      <FormikTextField
+        name={prefixName}
+        label='Präfix'
+        helperText={`Präfix für Tutorien. Beispiel: "${prefixValue}01"`}
+        required
+      />
+
       {value.map((val, idx) => (
         <FormikWeekdaySlot
           key={val._id}

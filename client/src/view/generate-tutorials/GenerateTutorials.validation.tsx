@@ -116,4 +116,5 @@ export const validationSchema = Yup.object().shape<FormState>({
     .test({ test: isAfterStartDay('startDate'), message: 'Muss nach dem Startdatum liegen' }),
   excludedDates: Yup.array<FormExcludedDate>().of(excludedDateSchema).defined(),
   weekdays: weekdaysSchema,
+  prefixes: Yup.object<FormState['prefixes']>().required('Benötigt'), // TODO: Implement correct validation!
 });

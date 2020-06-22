@@ -53,7 +53,10 @@ function getTabsForAllWeekdays({
 
     panels.push(
       <TabPanel key={`panel.${lowerKeyWeekday}`} index={idx} value={selectedTab}>
-        <WeekdayBox name={`weekdays.${lowerKeyWeekday}`} />
+        <WeekdayBox
+          name={`weekdays.${lowerKeyWeekday}`}
+          prefixName={`prefixes.${lowerKeyWeekday}`}
+        />
       </TabPanel>
     );
   });
