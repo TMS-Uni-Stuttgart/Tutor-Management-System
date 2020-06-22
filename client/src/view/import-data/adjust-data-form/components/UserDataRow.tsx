@@ -21,7 +21,7 @@ import FormikSelect from '../../../../components/forms/components/FormikSelect';
 import PaperTableRow from '../../../../components/PaperTableRow';
 import { FormikSubmitCallback } from '../../../../types';
 import { useImportDataContext } from '../../ImportUsers.context';
-import { UserFormStateValue, FormState } from '../AdjustImportedUserDataForm';
+import { UserFormStateValue, UserFormState } from '../AdjustImportedUserDataForm';
 import { Tutorial } from '../../../../model/Tutorial';
 import { IsItemDisabledFunction } from '../../../../components/CustomSelect';
 
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 interface EditUserDialogProps {
-  parentFormValue: FormState;
+  parentFormValue: UserFormState;
 }
 
 interface EditFormState {
@@ -59,14 +59,14 @@ function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.El
 
   const tutorialsOfOthers: string[] = useMemo(
     () =>
-      Object.values(parentFormValue.users).flatMap((user) => {
+      Object.values(parentFormValue).flatMap((user) => {
         if (user.id === values.userId) {
           return [];
         }
 
         return [...user.tutorials];
       }),
-    [parentFormValue.users, values.userId]
+    [parentFormValue, values.userId]
   );
 
   const isTutorialItemDisabled: IsItemDisabledFunction<Tutorial> = useCallback(
@@ -186,7 +186,7 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
   const classes = useStyles();
 
   const [showDialog, setShowDialog] = useState(false);
-  const { values: parentValues } = useFormikContext<FormState>();
+  const { values: parentValues } = useFormikContext<UserFormState>();
   const [, meta, helpers] = useField<UserFormStateValue>(name);
   const { tutorials } = useImportDataContext();
 

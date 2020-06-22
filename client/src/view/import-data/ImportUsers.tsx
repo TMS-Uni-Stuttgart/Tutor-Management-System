@@ -4,6 +4,7 @@ import { RoutingPath } from '../../routes/Routing.routes';
 import AdjustImportedUserDataForm from './adjust-data-form/AdjustImportedUserDataForm';
 import ImportUserCSV from './import-csv/ImportUserCSV';
 import ImportUsersContext from './ImportUsers.context';
+import MapCSVColumns from './map-columns/MapCSVColumns';
 
 function ImportUsers(): JSX.Element {
   return (
@@ -11,7 +12,7 @@ function ImportUsers(): JSX.Element {
       <StepperWithButtons
         steps={[
           { label: 'CSV importieren', component: ImportUserCSV },
-          { label: 'Spalten zuordnen', component: () => <div>SPALTEN_ZUORDNEN</div> },
+          { label: 'Spalten zuordnen', component: MapCSVColumns },
           { label: 'Nutzer importieren', component: AdjustImportedUserDataForm },
         ]}
         alternativeLabel={false}

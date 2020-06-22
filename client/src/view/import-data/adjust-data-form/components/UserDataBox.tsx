@@ -1,45 +1,19 @@
 import { Box, Typography } from '@material-ui/core';
 import { useFormikContext } from 'formik';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import TableWithPadding from '../../../../components/TableWithPadding';
 import { useImportDataContext } from '../../ImportUsers.context';
-import { FormState } from '../AdjustImportedUserDataForm';
+import { UserFormState } from '../AdjustImportedUserDataForm';
 import { convertCSVDataToFormData } from './UserDataBox.helpers';
 import UserDataRow from './UserDataRow';
 
-interface Props {
-  name: string;
-}
-
-function didColumnChange(prev: FormState | undefined, current: FormState): boolean {
-  if (!prev) {
-    return true;
-  }
-
-  const keys = Object.keys(prev).filter((key) => key !== 'users') as (keyof FormState)[];
-
-  for (const key of keys) {
-    if (prev[key] !== current[key]) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function UserDataBox({ name }: Props): JSX.Element {
-  const { values, setFieldValue } = useFormikContext<FormState>();
-  const { data } = useImportDataContext();
-  const prev = useRef<FormState>();
-
-  const displayUsers = !!values.firstnameColumn && !!values.lastnameColumn && !!values.emailColumn;
+function UserDataBox(): JSX.Element {
+  const { values, setValues } = useFormikContext<UserFormState>();
+  const { data, mappedColumns } = useImportDataContext();
 
   useEffect(() => {
-    if (didColumnChange(prev.current, values)) {
-      prev.current = values;
-      setFieldValue(name, convertCSVDataToFormData(data, values));
-    }
-  }, [data.rows, name, setFieldValue, values, data]);
+    setValues(convertCSVDataToFormData(data, mappedColumns));
+  }, [data.rows, setValues, mappedColumns, data]);
 
   return (
     <Box
@@ -52,12 +26,10 @@ function UserDataBox({ name }: Props): JSX.Element {
     >
       <Typography>Nutzerdaten festlegen</Typography>
 
-      {displayUsers && (
-        <TableWithPadding
-          items={Object.values(values.users)}
-          createRowFromItem={(item, idx) => <UserDataRow name={`${name}.${idx}`} />}
-        />
-      )}
+      <TableWithPadding
+        items={Object.values(values)}
+        createRowFromItem={(item, idx) => <UserDataRow name={`${idx}`} />}
+      />
     </Box>
   );
 }

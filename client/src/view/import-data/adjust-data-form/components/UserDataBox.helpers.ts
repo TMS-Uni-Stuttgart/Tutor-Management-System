@@ -1,6 +1,6 @@
-import { CSVData } from '../../ImportUsers.context';
+import { CSVData, MappedColumns } from '../../ImportUsers.context';
 import { Role } from 'shared/model/Role';
-import { FormState, UserFormState } from '../AdjustImportedUserDataForm';
+import { UserFormState } from '../AdjustImportedUserDataForm';
 
 function isRole(role: Role | undefined): role is Role {
   return role !== undefined;
@@ -23,9 +23,7 @@ function convertColumnToRoles(roleData?: string): Role[] {
   return roles.length > 0 ? roles : defaultRoles;
 }
 
-type ColumnsNeeded = Omit<FormState, 'users'>;
-
-export function convertCSVDataToFormData(data: CSVData, values: ColumnsNeeded): UserFormState {
+export function convertCSVDataToFormData(data: CSVData, values: MappedColumns): UserFormState {
   const emptyString = 'N/A';
 
   const userFormState: UserFormState = {};

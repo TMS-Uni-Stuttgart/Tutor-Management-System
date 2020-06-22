@@ -1,35 +1,13 @@
-import { Box, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
+import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
+import { Role } from '../../../../../server/src/shared/model/Role';
+import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import {
   NextStepInformation,
   useStepper,
 } from '../../../components/stepper-with-buttons/context/StepperContext';
-import { useImportDataContext } from '../ImportUsers.context';
-import { Formik } from 'formik';
-import FormikSelect from '../../../components/forms/components/FormikSelect';
-import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import UserDataBox from './components/UserDataBox';
-import { Role } from '../../../../../server/src/shared/model/Role';
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    select: {
-      minWidth: 210,
-      marginTop: theme.spacing(2),
-    },
-  })
-);
-
-export interface FormState {
-  firstnameColumn: string;
-  lastnameColumn: string;
-  emailColumn: string;
-  rolesColumn: string;
-  usernameColumn: string;
-  passwordColumn: string;
-  users: UserFormState;
-}
 
 export interface UserFormStateValue {
   id: number;
@@ -52,23 +30,10 @@ function NO_OP() {
 }
 
 function AdjustImportedUserDataForm(): JSX.Element {
-  const classes = useStyles();
-
   const { setNextCallback, removeNextCallback } = useStepper();
   const [timesTried, setTimesTried] = useState(0);
-  const {
-    data: { headers },
-  } = useImportDataContext();
 
-  const initialValues: FormState = {
-    firstnameColumn: '',
-    lastnameColumn: '',
-    emailColumn: '',
-    rolesColumn: '',
-    usernameColumn: '',
-    passwordColumn: '',
-    users: {},
-  };
+  const initialValues: UserFormState = {};
 
   useEffect(() => {
     console.log('ImportUsers - registering next callback');
@@ -96,79 +61,9 @@ function AdjustImportedUserDataForm(): JSX.Element {
   return (
     <Formik initialValues={initialValues} onSubmit={NO_OP}>
       <Box display='flex' flex={1}>
-        <Box display='flex' flexDirection='column' padding={1}>
-          <Typography>Spalten zuordnen</Typography>
+        <UserDataBox />
 
-          <FormikSelect
-            name='firstnameColumn'
-            label='Vorname'
-            required
-            items={headers}
-            itemToValue={(i) => i}
-            itemToString={(i) => i}
-            emptyPlaceholder='Keine Überschriften verfügbar'
-            className={classes.select}
-          />
-
-          <FormikSelect
-            name='lastnameColumn'
-            label='Nachname'
-            required
-            items={headers}
-            itemToValue={(i) => i}
-            itemToString={(i) => i}
-            emptyPlaceholder='Keine Überschriften verfügbar'
-            className={classes.select}
-          />
-
-          <FormikSelect
-            name='emailColumn'
-            label='E-Mailadresse'
-            required
-            items={headers}
-            itemToValue={(i) => i}
-            itemToString={(i) => i}
-            emptyPlaceholder='Keine Überschriften verfügbar'
-            className={classes.select}
-          />
-
-          <FormikSelect
-            name='rolesColumn'
-            label='Rollen'
-            nameOfNoneItem='Keine Spalte auswählen'
-            items={headers}
-            itemToValue={(i) => i}
-            itemToString={(i) => i}
-            emptyPlaceholder='Keine Überschriften verfügbar'
-            className={classes.select}
-          />
-
-          <FormikSelect
-            name='usernameColumn'
-            label='Nutzername'
-            nameOfNoneItem='Keine Spalte auswählen'
-            items={headers}
-            itemToValue={(i) => i}
-            itemToString={(i) => i}
-            emptyPlaceholder='Keine Überschriften verfügbar'
-            className={classes.select}
-          />
-
-          <FormikSelect
-            name='passwordColumn'
-            label='Passwort'
-            nameOfNoneItem='Keine Spalte auswählen'
-            items={headers}
-            itemToValue={(i) => i}
-            itemToString={(i) => i}
-            emptyPlaceholder='Keine Überschriften verfügbar'
-            className={classes.select}
-          />
-
-          <FormikDebugDisplay />
-        </Box>
-
-        <UserDataBox name='users' />
+        <FormikDebugDisplay showErrors />
       </Box>
     </Formik>
   );

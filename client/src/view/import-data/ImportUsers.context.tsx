@@ -21,16 +21,40 @@ export interface CSVData {
   rows: CSVDataRow[];
 }
 
+export interface MappedColumns {
+  firstnameColumn: string;
+  lastnameColumn: string;
+  emailColumn: string;
+  rolesColumn: string;
+  usernameColumn: string;
+  passwordColumn: string;
+}
+
 interface DataContextValue {
   tutorials: Tutorial[];
   data: CSVData;
   setData: (data: ParsedCSVData) => void;
+  mappedColumns: MappedColumns;
+  setMappedColumns: (columns: MappedColumns) => void;
 }
+
+const initialMappedColumns: MappedColumns = {
+  firstnameColumn: '',
+  lastnameColumn: '',
+  emailColumn: '',
+  rolesColumn: '',
+  usernameColumn: '',
+  passwordColumn: '',
+};
 
 const DataContext = React.createContext<DataContextValue>({
   tutorials: [],
   data: { headers: [], rows: [] },
+  mappedColumns: initialMappedColumns,
   setData: () => {
+    throw new Error('ImportDataContext not initialised.');
+  },
+  setMappedColumns: () => {
     throw new Error('ImportDataContext not initialised.');
   },
 });
@@ -46,6 +70,7 @@ function ImportUsersContext({ children }: React.PropsWithChildren<{}>): JSX.Elem
   const [data, setInternalData] = useState<CSVData>(() =>
     convertParsedToInternalCSV({ headers: [], rows: [] })
   );
+  const [mappedColumns, setMappedColumns] = useState<MappedColumns>(initialMappedColumns);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
 
   useEffect(() => {
@@ -58,7 +83,9 @@ function ImportUsersContext({ children }: React.PropsWithChildren<{}>): JSX.Elem
   }, []);
 
   return (
-    <DataContext.Provider value={{ data, setData, tutorials }}>{children}</DataContext.Provider>
+    <DataContext.Provider value={{ data, setData, tutorials, mappedColumns, setMappedColumns }}>
+      {children}
+    </DataContext.Provider>
   );
 }
 
