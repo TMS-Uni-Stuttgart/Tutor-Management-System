@@ -11,6 +11,7 @@ function ImportUsers(): JSX.Element {
       <StepperWithButtons
         steps={[
           { label: 'CSV importieren', component: ImportUserCSV },
+          { label: 'Spalten zuordnen', component: () => <div>SPALTEN_ZUORDNEN</div> },
           { label: 'Nutzer importieren', component: AdjustImportedUserDataForm },
         ]}
         alternativeLabel={false}

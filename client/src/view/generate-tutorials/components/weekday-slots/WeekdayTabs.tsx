@@ -41,13 +41,14 @@ function getTabsForAllWeekdays({
 
   Object.entries(weekdaysToShow).forEach(([key, weekday], idx) => {
     const lowerKeyWeekday = key.toLowerCase();
+    const showError = !!errors.weekdays?.[lowerKeyWeekday] || !!errors.prefixes?.[lowerKeyWeekday];
 
     tabs.push(
       <Tab
         key={lowerKeyWeekday}
-        classes={{ wrapper: clsx(!!errors.weekdays?.[lowerKeyWeekday] && errorClass) }}
+        classes={{ wrapper: clsx(showError && errorClass) }}
         label={weekday}
-        icon={<IconForTab weekday={lowerKeyWeekday} />}
+        icon={<IconForTab weekday={lowerKeyWeekday} showError={showError} />}
       />
     );
 

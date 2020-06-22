@@ -106,6 +106,36 @@ const weekdaysSchema = Yup.object<FormState['weekdays']>()
   })
   .required('Benötigt');
 
+const prefixesSchema = Yup.object<FormState['prefixes']>()
+  .test('prefixes', 'Keine gültigen Präfixe', function (this, obj) {
+    if (typeof obj !== 'object') {
+      return this.createError({ message: 'Ist nicht vom Typ "object"' });
+    }
+
+    const inner: Yup.ValidationError[] = [];
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (!value) {
+        inner.push(
+          this.createError({ message: `Präfix wird benötigt.`, path: `${this.path}.${key}` })
+        );
+      } else if (typeof value !== 'string') {
+        inner.push(
+          this.createError({ message: `Präfix ist kein String.`, path: `${this.path}.${key}` })
+        );
+      }
+    }
+
+    if (inner.length > 0) {
+      const error = this.createError({ message: 'Ungültige Präfixe.' });
+      error.inner = inner;
+      return error;
+    }
+
+    return true;
+  })
+  .required('Benötigt');
+
 export const validationSchema = Yup.object().shape<FormState>({
   startDate: Yup.string()
     .required('Benötigt')
@@ -116,5 +146,5 @@ export const validationSchema = Yup.object().shape<FormState>({
     .test({ test: isAfterStartDay('startDate'), message: 'Muss nach dem Startdatum liegen' }),
   excludedDates: Yup.array<FormExcludedDate>().of(excludedDateSchema).defined(),
   weekdays: weekdaysSchema,
-  prefixes: Yup.object<FormState['prefixes']>().required('Benötigt'), // TODO: Implement correct validation!
+  prefixes: prefixesSchema,
 });

@@ -6,12 +6,11 @@ import { WeekdayTimeSlot } from './FormikWeekdaySlot';
 
 interface TabIconProps {
   weekday: string;
+  showError: boolean;
 }
 
-function IconForTab({ weekday }: TabIconProps): JSX.Element {
-  const { values, errors } = useFormikContext<FormState>();
-  const errorsOfWeekday = errors.weekdays?.[weekday];
-  const showError = !!errorsOfWeekday && errorsOfWeekday.length > 0;
+function IconForTab({ weekday, showError }: TabIconProps): JSX.Element {
+  const { values } = useFormikContext<FormState>();
 
   const weekdayValues: WeekdayTimeSlot[] | undefined = values.weekdays[weekday];
   const slotCountOnWeekday: number =
