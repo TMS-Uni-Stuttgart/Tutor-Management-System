@@ -1,31 +1,32 @@
 import { Box, TextField, Typography } from '@material-ui/core';
-import React, { useEffect, useCallback, useState } from 'react';
+import { SnackbarKey, useSnackbar } from 'notistack';
+import React, { useCallback, useEffect, useState } from 'react';
+import SnackbarWithList from '../../../components/SnackbarWithList';
 import {
-  useStepper,
   NextStepCallback,
+  useStepper,
 } from '../../../components/stepper-with-buttons/context/StepperContext';
 import { getParsedCSV } from '../../../hooks/fetching/CSV';
 import { useImportDataContext } from '../ImportUsers.context';
-import { useSnackbar, SnackbarKey } from 'notistack';
-import SnackbarWithList from '../../../components/SnackbarWithList';
 
 function ImportUserCSV(): JSX.Element {
   const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
-  const { setData } = useImportDataContext();
+  const { setData, csvFormData, setCSVFormData } = useImportDataContext();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [csvInput, setCSVInput] = useState('');
-  const [separator, setSeparator] = useState('');
+  const [csvInput, setCSVInput] = useState(csvFormData?.csvInput ?? '');
+  const [seperator, setSeparator] = useState(csvFormData?.seperator ?? '');
 
   const handleSubmit: NextStepCallback = useCallback(async () => {
     try {
       const response = await getParsedCSV<{ [header: string]: string }>({
         data: csvInput.trim(),
-        options: { header: true, delimiter: separator },
+        options: { header: true, delimiter: seperator },
       });
 
       if (response.errors.length === 0) {
         setData({ headers: response.meta.fields, rows: response.data });
+        setCSVFormData({ csvInput, seperator });
 
         enqueueSnackbar('CSV erfolgreich importiert.', { variant: 'success' });
         return { goToNext: true };
@@ -47,7 +48,7 @@ function ImportUserCSV(): JSX.Element {
       enqueueSnackbar('CSV konnte nicht importiert werden.', { variant: 'error' });
       return { goToNext: false, error: true };
     }
-  }, [csvInput, separator, setData, enqueueSnackbar]);
+  }, [csvInput, seperator, setData, setCSVFormData, enqueueSnackbar]);
 
   useEffect(() => {
     setNextDisabled(!csvInput);
@@ -69,7 +70,7 @@ function ImportUserCSV(): JSX.Element {
           variant='outlined'
           label='Seperator'
           helperText='Leer lassen: Seperator wird automatisch bestimmt.'
-          value={separator}
+          value={seperator}
           onChange={(e) => setSeparator(e.target.value)}
           style={{ marginLeft: 'auto' }}
         />

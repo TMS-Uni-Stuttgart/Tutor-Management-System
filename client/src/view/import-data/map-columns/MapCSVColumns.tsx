@@ -1,6 +1,7 @@
 import { Box, createStyles, makeStyles, Typography } from '@material-ui/core';
 import { Formik, useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
+import * as Yup from 'yup';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import FormikSelect from '../../../components/forms/components/FormikSelect';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
@@ -14,6 +15,15 @@ const useStyles = makeStyles((theme) =>
     },
   })
 );
+
+const validationSchema = Yup.object().shape({
+  firstnameColumn: Yup.string().required('Benötigt.'),
+  lastnameColumn: Yup.string().required('Benötigt.'),
+  emailColumn: Yup.string().required('Benötigt.'),
+  rolesColumn: Yup.string(),
+  usernameColumn: Yup.string(),
+  passwordColumn: Yup.string(),
+});
 
 function MapCSVColumnsContent(): JSX.Element {
   const classes = useStyles();
@@ -41,7 +51,7 @@ function MapCSVColumnsContent(): JSX.Element {
 
   return (
     <Box display='flex' flexDirection='column' padding={1}>
-      <Typography>Spalten zuordnen</Typography>
+      <Typography variant='h4'>Spalten zuordnen</Typography>
 
       <FormikSelect
         name='firstnameColumn'
@@ -109,7 +119,7 @@ function MapCSVColumnsContent(): JSX.Element {
         className={classes.select}
       />
 
-      <FormikDebugDisplay />
+      <FormikDebugDisplay showErrors />
     </Box>
   );
 }
@@ -119,7 +129,11 @@ function MapCSVColumns(): JSX.Element {
   const { nextStep } = useStepper();
 
   return (
-    <Formik initialValues={mappedColumns} onSubmit={() => nextStep()}>
+    <Formik
+      initialValues={mappedColumns}
+      validationSchema={validationSchema}
+      onSubmit={() => nextStep()}
+    >
       <MapCSVColumnsContent />
     </Formik>
   );

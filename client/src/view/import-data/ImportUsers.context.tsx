@@ -30,12 +30,19 @@ export interface MappedColumns {
   passwordColumn: string;
 }
 
+interface CSVFormData {
+  csvInput: string;
+  seperator: string;
+}
+
 interface DataContextValue {
   tutorials: Tutorial[];
   data: CSVData;
   setData: (data: ParsedCSVData) => void;
   mappedColumns: MappedColumns;
   setMappedColumns: (columns: MappedColumns) => void;
+  csvFormData?: CSVFormData;
+  setCSVFormData: (data: CSVFormData) => void;
 }
 
 const initialMappedColumns: MappedColumns = {
@@ -47,16 +54,18 @@ const initialMappedColumns: MappedColumns = {
   passwordColumn: '',
 };
 
+function notInitializied() {
+  throw new Error('ImportDataContext not initialised.');
+}
+
 const DataContext = React.createContext<DataContextValue>({
   tutorials: [],
   data: { headers: [], rows: [] },
   mappedColumns: initialMappedColumns,
-  setData: () => {
-    throw new Error('ImportDataContext not initialised.');
-  },
-  setMappedColumns: () => {
-    throw new Error('ImportDataContext not initialised.');
-  },
+  csvFormData: undefined,
+  setData: notInitializied,
+  setMappedColumns: notInitializied,
+  setCSVFormData: notInitializied,
 });
 
 function convertParsedToInternalCSV(data: ParsedCSVData): CSVData {
@@ -72,6 +81,7 @@ function ImportUsersContext({ children }: React.PropsWithChildren<{}>): JSX.Elem
   );
   const [mappedColumns, setMappedColumns] = useState<MappedColumns>(initialMappedColumns);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+  const [csvFormData, setCSVFormData] = useState<CSVFormData>();
 
   useEffect(() => {
     getAllTutorials().then((tutorials) => setTutorials(tutorials));
@@ -83,7 +93,17 @@ function ImportUsersContext({ children }: React.PropsWithChildren<{}>): JSX.Elem
   }, []);
 
   return (
-    <DataContext.Provider value={{ data, setData, tutorials, mappedColumns, setMappedColumns }}>
+    <DataContext.Provider
+      value={{
+        data,
+        setData,
+        tutorials,
+        mappedColumns,
+        setMappedColumns,
+        csvFormData,
+        setCSVFormData,
+      }}
+    >
       {children}
     </DataContext.Provider>
   );
