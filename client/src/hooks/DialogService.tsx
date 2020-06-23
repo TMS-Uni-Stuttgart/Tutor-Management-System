@@ -31,11 +31,26 @@ interface DialogOptions {
   content: React.ReactNode;
   actions: ActionParams[];
   onClose?: () => void;
+  DialogProps?: Omit<DialogProps, 'open' | 'children'>;
+}
+
+interface ConfirmationActionProps {
+  label?: string;
+  buttonProps?: ButtonProps;
+  deleteButton?: boolean;
+}
+
+interface ConfirmationDialogOptions {
+  title: string;
+  content: React.ReactNode;
+  cancelProps?: ConfirmationActionProps;
+  acceptProps?: ConfirmationActionProps;
   DialogProps?: Omit<DialogProps, 'open' | 'onClose' | 'children'>;
 }
 
 export interface DialogHelpers {
   show: (dialogOptions: Partial<DialogOptions>) => void;
+  showConfirmationDialog: (diaologOptions: ConfirmationDialogOptions) => Promise<boolean>;
   hide: () => void;
 }
 
@@ -141,11 +156,37 @@ function useDialog(): DialogHelpers {
 
       createDialogFunction(dialog);
     },
+    showConfirmationDialog: (dialogOptions: ConfirmationDialogOptions) => {
+      return new Promise<boolean>((resolve) => {
+        const { title, content, cancelProps, acceptProps, DialogProps } = dialogOptions;
+
+        const closeDialog = (isAccepted: boolean) => {
+          createDialogFunction(undefined);
+          resolve(isAccepted);
+        };
+
+        const dialog: DialogOptions = {
+          title,
+          content,
+          actions: [
+            {
+              ...cancelProps,
+              onClick: () => closeDialog(false),
+              label: cancelProps?.label ?? 'Nein',
+            },
+            { ...acceptProps, onClick: () => closeDialog(true), label: acceptProps?.label ?? 'Ja' },
+          ],
+          DialogProps: { ...DialogProps, onClose: () => closeDialog(false) },
+        };
+
+        createDialogFunction(dialog);
+      });
+    },
     hide: () => createDialogFunction(undefined),
   };
 }
 
-function getDialogOutsideContext(): DialogHelpers {
+function getDialogOutsideContext(): Pick<DialogHelpers, 'show' | 'hide'> {
   return {
     show: showDialogOutsideContext,
     hide: hideDialogOutsideContext,
