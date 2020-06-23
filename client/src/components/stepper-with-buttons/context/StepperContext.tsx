@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 export interface NextStepInformation {
   goToNext: boolean;
   error?: boolean;
+  runAfterFinished?: () => void;
 }
 
 export type NextStepCallback = () => Promise<NextStepInformation>;

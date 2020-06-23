@@ -48,7 +48,7 @@ function StepperWithButtons({
     }
 
     setWaitingOnNextCallback(true);
-    const { goToNext, error } = await callback();
+    const { goToNext, error, runAfterFinished } = await callback();
 
     setSteps(
       steps.map((step, index) => {
@@ -62,12 +62,15 @@ function StepperWithButtons({
         };
       })
     );
+    setWaitingOnNextCallback(false);
 
-    if (goToNext) {
+    if (goToNext && activeStep < steps.length - 1) {
       setActiveStep(activeStep + 1);
     }
 
-    setWaitingOnNextCallback(false);
+    if (!error && runAfterFinished) {
+      runAfterFinished();
+    }
   }
 
   async function prevStep() {

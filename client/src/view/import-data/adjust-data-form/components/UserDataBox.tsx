@@ -1,19 +1,18 @@
 import { Box, Typography } from '@material-ui/core';
 import { useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import TableWithPadding from '../../../../components/TableWithPadding';
-import { useImportDataContext } from '../../ImportUsers.context';
 import { UserFormState } from '../AdjustImportedUserDataForm';
-import { convertCSVDataToFormData } from './UserDataBox.helpers';
 import UserDataRow from './UserDataRow';
+import { getNameOfEntity } from '../../../../../../server/src/shared/util/helpers';
 
 function UserDataBox(): JSX.Element {
-  const { values, setValues } = useFormikContext<UserFormState>();
-  const { data, mappedColumns } = useImportDataContext();
-
-  useEffect(() => {
-    setValues(convertCSVDataToFormData(data, mappedColumns));
-  }, [data.rows, setValues, mappedColumns, data]);
+  const { values } = useFormikContext<UserFormState>();
+  const users = useMemo(
+    () =>
+      Object.values(values).sort((a, b) => getNameOfEntity(a).localeCompare(getNameOfEntity(b))),
+    [values]
+  );
 
   return (
     <Box
@@ -27,8 +26,8 @@ function UserDataBox(): JSX.Element {
       <Typography>Nutzerdaten festlegen</Typography>
 
       <TableWithPadding
-        items={Object.values(values)}
-        createRowFromItem={(item, idx) => <UserDataRow name={`${idx}`} />}
+        items={users}
+        createRowFromItem={(item) => <UserDataRow name={`${item.id}`} />}
       />
     </Box>
   );

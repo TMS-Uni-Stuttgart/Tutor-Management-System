@@ -41,7 +41,7 @@ interface EditUserDialogProps {
 }
 
 interface EditFormState {
-  userId: number;
+  userId: string;
   roles: Role[];
   tutorials: string[];
   tutorialsToCorrect: string[];

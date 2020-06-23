@@ -32,6 +32,7 @@ function MapCSVColumnsContent(): JSX.Element {
   const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
   const {
     data: { headers },
+    setMappedColumns,
   } = useImportDataContext();
 
   useEffect(() => {
@@ -40,14 +41,16 @@ function MapCSVColumnsContent(): JSX.Element {
 
   useEffect(() => {
     setNextCallback(async () => {
-      // TODO: Implement actual next callback!
-      console.log(JSON.stringify(values, null, 2));
+      if (!isValid) {
+        return { goToNext: false, error: true };
+      }
 
-      return { goToNext: false };
+      setMappedColumns(values);
+      return { goToNext: true };
     });
 
     return removeNextCallback;
-  }, [setNextCallback, removeNextCallback, values]);
+  }, [setNextCallback, removeNextCallback, values, setMappedColumns, isValid]);
 
   return (
     <Box display='flex' flexDirection='column' padding={1}>
