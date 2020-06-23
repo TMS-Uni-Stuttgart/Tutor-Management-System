@@ -24,6 +24,7 @@ import { useImportDataContext } from '../../ImportUsers.context';
 import { UserFormStateValue, UserFormState } from '../AdjustImportedUserDataForm';
 import { Tutorial } from '../../../../model/Tutorial';
 import { IsItemDisabledFunction } from '../../../../components/CustomSelect';
+import { useDialog } from '../../../../hooks/DialogService';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -189,6 +190,7 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
   const { values: parentValues } = useFormikContext<UserFormState>();
   const [, meta, helpers] = useField<UserFormStateValue>(name);
   const { tutorials } = useImportDataContext();
+  const { showConfirmationDialog } = useDialog();
 
   const { firstname, lastname, username, roles } = meta.value;
   const tutorialsOfUser = getTutorialsOfUser(meta.value);
@@ -209,6 +211,24 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
     setShowDialog(false);
   };
 
+  const handleResetClicked = async () => {
+    if (!meta.initialValue) {
+      return;
+    }
+
+    const name: string = getNameOfEntity({ firstname, lastname }, { firstNameFirst: true });
+    const isAcceptReset = await showConfirmationDialog({
+      title: `${name} zurücksetzen?`,
+      content: `Sollen die Erstell-Daten für "${name}" wirklich zurückgesetzt werden? Dies kann nicht rückgängig gemacht werden.`,
+      acceptProps: { label: 'Zurücksetzen', deleteButton: true },
+      cancelProps: { label: 'Nicht zurücksetzen' },
+    });
+
+    if (isAcceptReset) {
+      helpers.setValue(meta.initialValue);
+    }
+  };
+
   return (
     <>
       <PaperTableRow
@@ -219,7 +239,7 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
             <IconButton size='medium' className={classes.editButton} onClick={handleEditClicked}>
               <EditIcon />
             </IconButton>
-            <IconButton size='medium'>
+            <IconButton size='medium' onClick={handleResetClicked} disabled={!meta.initialValue}>
               <ResetIcon />
             </IconButton>
           </Box>
