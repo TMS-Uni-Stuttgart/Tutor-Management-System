@@ -48,7 +48,22 @@ export class Tutorial implements Modify<ITutorial, Modified> {
     return this.substitutes.get(parseDateToMapKey(date));
   }
 
+  /**
+   * @returns Unified display string of the tutorial including it's slot.
+   */
   toDisplayString(): string {
     return Tutorial.getDisplayString(this);
+  }
+
+  /**
+   * @returns String in the following format: '{slot} ({weekday}, {start}-{end})'
+   */
+  toDisplayStringWithTime(): string {
+    const displayString = Tutorial.getDisplayString(this);
+    const dayShort = this.dates[0]?.weekdayShort;
+    const startTime = this.startTime.toFormat('HH:mm');
+    const endTime = this.endTime.toFormat('HH:mm');
+
+    return `${displayString} (${dayShort}, ${startTime}-${endTime})`;
   }
 }

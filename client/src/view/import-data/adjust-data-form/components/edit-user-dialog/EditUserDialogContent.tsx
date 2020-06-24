@@ -96,7 +96,7 @@ function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.El
         fullWidth
         items={tutorials}
         showLoadingIndicator={tutorials.length === 0}
-        itemToString={(tutorial) => tutorial.toDisplayString()}
+        itemToString={(tutorial) => tutorial.toDisplayStringWithTime()}
         itemToValue={(tutorial) => tutorial.id}
         isItemDisabled={isTutorialItemDisabled}
         multiple
@@ -112,7 +112,7 @@ function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.El
         fullWidth
         items={tutorials}
         showLoadingIndicator={tutorials.length === 0}
-        itemToString={(tutorial) => tutorial.toDisplayString()}
+        itemToString={(tutorial) => tutorial.toDisplayStringWithTime()}
         itemToValue={(tutorial) => tutorial.id}
         isItemDisabled={isTutorialToCorrectItemDisabled}
         multiple
