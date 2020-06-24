@@ -49,7 +49,7 @@ function PointsOverview(): JSX.Element {
   const classes = useStyles();
   const { tutorialId } = useParams<RouteParams>();
 
-  const { SheetSelector, currentSheet, isLoadingSheets: isLoadingSheet } = useSheetSelector({
+  const { SheetSelector, currentSheet, isLoadingSheets } = useSheetSelector({
     generatePath: ({ sheetId }) => {
       if (!tutorialId) {
         throw new Error('The path needs to contain a tutorialId parameter.');
@@ -153,7 +153,7 @@ function PointsOverview(): JSX.Element {
       <Placeholder
         placeholderText='Kein Blatt ausgewählt.'
         showPlaceholder={!currentSheet}
-        loading={isLoadingSheet}
+        loading={isLoadingSheets}
       >
         {currentSheet && tutorialId && (
           <TeamCardList
