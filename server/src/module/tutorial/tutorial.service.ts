@@ -149,6 +149,8 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
       throw new BadRequestException(`A tutorial with students can NOT be deleted.`);
     }
 
+    await Promise.all(tutorial.teams.map((team) => team.remove()));
+
     return tutorial.remove();
   }
 
