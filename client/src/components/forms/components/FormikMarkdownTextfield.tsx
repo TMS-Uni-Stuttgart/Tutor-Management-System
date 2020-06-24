@@ -49,6 +49,7 @@ function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldP
   const [isPreview, setPreview] = useState(false);
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
+    // FIXME: Does this need to be in here? Can it use the useKeyboardShortcut() hook or better - can this be handled by the parent component?
     if (event.ctrlKey && event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();

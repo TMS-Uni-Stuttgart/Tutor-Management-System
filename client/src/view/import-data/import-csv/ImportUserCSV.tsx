@@ -12,6 +12,7 @@ import {
 import { useDialog } from '../../../hooks/DialogService';
 import { getParsedCSV } from '../../../hooks/fetching/CSV';
 import { useImportDataContext } from '../ImportUsers.context';
+import { useKeyboardShortcut } from '../../../hooks/useKeyboardShortcut';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme) =>
 function ImportUserCSV(): JSX.Element {
   const classes = useStyles();
 
-  const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
+  const { setNextCallback, removeNextCallback, setNextDisabled, nextStep } = useStepper();
   const { setData, csvFormData, setCSVFormData } = useImportDataContext();
   const { enqueueSnackbar } = useSnackbar();
   const { showConfirmationDialog } = useDialog();
@@ -33,7 +34,18 @@ function ImportUserCSV(): JSX.Element {
   const [seperator, setSeparator] = useState(csvFormData?.seperator ?? '');
   const [isLoadingCSV, setLoadingCSV] = useState(false);
 
+  useKeyboardShortcut([{ key: 'Enter', modifiers: { ctrlKey: true } }], (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    nextStep();
+  });
+
   const handleSubmit: NextStepCallback = useCallback(async () => {
+    if (!csvInput) {
+      return { goToNext: false, error: true };
+    }
+
     try {
       const response = await getParsedCSV<{ [header: string]: string }>({
         data: csvInput.trim(),
