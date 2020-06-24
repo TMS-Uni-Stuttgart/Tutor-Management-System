@@ -23,6 +23,8 @@ const validationSchema = Yup.object().shape({
   rolesColumn: Yup.string(),
   usernameColumn: Yup.string(),
   passwordColumn: Yup.string(),
+  tutorialsColumn: Yup.string(),
+  tutorialsToCorrectColumn: Yup.string(),
 });
 
 function MapCSVColumnsContent(): JSX.Element {
@@ -114,6 +116,28 @@ function MapCSVColumnsContent(): JSX.Element {
       <FormikSelect
         name='passwordColumn'
         label='Passwort'
+        nameOfNoneItem='Keine Spalte auswählen'
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikSelect
+        name='tutorialsColumn'
+        label='Tutorien'
+        nameOfNoneItem='Keine Spalte auswählen'
+        items={headers}
+        itemToValue={(i) => i}
+        itemToString={(i) => i}
+        emptyPlaceholder='Keine Überschriften verfügbar'
+        className={classes.select}
+      />
+
+      <FormikSelect
+        name='tutorialsToCorrectColumn'
+        label='Tutorien zum Korrigieren'
         nameOfNoneItem='Keine Spalte auswählen'
         items={headers}
         itemToValue={(i) => i}

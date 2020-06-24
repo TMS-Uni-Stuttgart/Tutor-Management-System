@@ -28,6 +28,8 @@ export interface MappedColumns {
   rolesColumn: string;
   usernameColumn: string;
   passwordColumn: string;
+  tutorialsColumn: string;
+  tutorialsToCorrectColumn: string;
 }
 
 interface CSVFormData {
@@ -52,6 +54,8 @@ const initialMappedColumns: MappedColumns = {
   rolesColumn: '',
   usernameColumn: '',
   passwordColumn: '',
+  tutorialsColumn: '',
+  tutorialsToCorrectColumn: '',
 };
 
 function notInitializied() {

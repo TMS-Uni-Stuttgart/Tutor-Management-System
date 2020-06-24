@@ -1,6 +1,13 @@
 import { CSVData, MappedColumns } from '../../ImportUsers.context';
 import { Role } from 'shared/model/Role';
 import { UserFormState } from '../AdjustImportedUserDataForm';
+import { Tutorial } from '../../../../model/Tutorial';
+
+interface ConversionParams {
+  data: CSVData;
+  values: MappedColumns;
+  tutorials: Tutorial[];
+}
 
 function isRole(role: Role | undefined): role is Role {
   return role !== undefined;
@@ -16,14 +23,33 @@ function convertColumnToRoles(roleData?: string): Role[] {
   const enumRoles = Object.values(Role);
   const roles: Role[] = roleData
     .split(',')
-    .map((r) => r.toUpperCase())
-    .map((r) => enumRoles.find((role) => r === role))
+    .map((r) => r.trim().toUpperCase())
+    .map((r) => enumRoles.find((role) => r === role.toString()))
     .filter(isRole);
 
   return roles.length > 0 ? roles : defaultRoles;
 }
 
-export function convertCSVDataToFormData(data: CSVData, values: MappedColumns): UserFormState {
+function convertColumnToTutorials(tutorials: Tutorial[], tutorialData?: string): string[] {
+  if (!tutorialData) {
+    return [];
+  }
+
+  const slots: string[] = tutorialData.split(',').map((s) => s.trim());
+  const tutorialIds: string[] = [];
+
+  for (const slot of slots) {
+    const tutorial = tutorials.find((t) => t.slot === slot);
+    if (!!tutorial) {
+      tutorialIds.push(tutorial.id);
+    }
+  }
+
+  return tutorialIds;
+}
+
+export function convertCSVDataToFormData(params: ConversionParams): UserFormState {
+  const { data, values, tutorials } = params;
   const emptyString = 'N/A';
 
   const userFormState: UserFormState = {};
@@ -37,8 +63,11 @@ export function convertCSVDataToFormData(data: CSVData, values: MappedColumns): 
       roles: convertColumnToRoles(data[values.rolesColumn]),
       username: data[values.usernameColumn],
       password: data[values.passwordColumn],
-      tutorials: [],
-      tutorialsToCorrect: [],
+      tutorials: convertColumnToTutorials(tutorials, data[values.tutorialsColumn]),
+      tutorialsToCorrect: convertColumnToTutorials(
+        tutorials,
+        data[values.tutorialsToCorrectColumn]
+      ),
     };
   });
 

@@ -85,12 +85,12 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
 }
 
 function AdjustImportedUserDataForm(): JSX.Element {
-  const { data, mappedColumns } = useImportDataContext();
+  const { data, mappedColumns, tutorials } = useImportDataContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const initialValues: UserFormState = useMemo(
-    () => convertCSVDataToFormData(data, mappedColumns),
-    [data, mappedColumns]
+    () => convertCSVDataToFormData({ data, values: mappedColumns, tutorials }),
+    [data, mappedColumns, tutorials]
   );
 
   const handleSubmit: FormikSubmitCallback<UserFormState> = async (values) => {
