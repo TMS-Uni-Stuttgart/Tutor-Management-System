@@ -1,7 +1,7 @@
 import { Checkbox, List, ListItem, ListItemIcon, ListItemText, TextField } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray, useField } from 'formik';
 import { deburr } from 'lodash';
 import React, { useState } from 'react';
 
@@ -66,13 +66,11 @@ function FormikFilterableSelect<T>({
 }: Props<T>): JSX.Element {
   const classes = useStyles();
   const [filter, setFilter] = useState('');
-  const { values } = useFormikContext<any>();
+  const [, meta] = useField<string[]>(name);
 
-  if (!Array.isArray(values[name])) {
+  if (!Array.isArray(meta.value)) {
     throw new Error(
-      `FormikFilterableSelect -- The values object of the Formik form should be an array at property '${name}'. This is not the case. The current type is ${typeof values[
-        name
-      ]}`
+      `FormikFilterableSelect -- The values object of the Formik form should be an array at property '${name}'. This is not the case. The current type is ${typeof meta.value}`
     );
   }
 
@@ -114,9 +112,9 @@ function FormikFilterableSelect<T>({
                     key={itemValue}
                     button
                     onClick={() => {
-                      const idx = values[name].indexOf(itemValue);
+                      const idx = meta.value.indexOf(itemValue);
                       if (idx === -1) {
-                        arrayHelpers.insert(values[name].length - 1, itemValue);
+                        arrayHelpers.insert(meta.value.length - 1, itemValue);
                       } else {
                         arrayHelpers.remove(idx);
                       }
