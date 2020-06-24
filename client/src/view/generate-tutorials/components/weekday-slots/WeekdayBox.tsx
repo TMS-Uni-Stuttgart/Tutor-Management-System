@@ -1,7 +1,7 @@
-import { Box, BoxProps, Button, Paper } from '@material-ui/core';
+import { Box, BoxProps, Button, IconButton, Paper, Tooltip } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
-import { Plus as AddIcon } from 'mdi-material-ui';
+import { Plus as AddIcon, SortAscending as SortIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
 import { useDialog } from '../../../../hooks/DialogService';
@@ -31,12 +31,21 @@ const useStyles = makeStyles((theme) =>
       height: '100%',
       minHeight: 'inherit',
     },
+    sortButton: {
+      marginLeft: theme.spacing(1),
+    },
   })
 );
 
 interface Props extends BoxProps {
   name: string;
   prefixName: string;
+}
+
+function sortSlots(intervals: WeekdayTimeSlot[]): WeekdayTimeSlot[] {
+  return [...intervals].sort((a, b) =>
+    a.interval.start.toFormat('HH:mm').localeCompare(b.interval.start.toFormat('HH:mm'))
+  );
 }
 
 function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {
@@ -49,12 +58,7 @@ function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {
   const value = meta.value ?? [];
 
   const setValue = (newValue: WeekdayTimeSlot[]) => {
-    // FIXME: Fix sorting to also work if a slot gets edited / changed!
-    helpers.setValue(
-      [...newValue].sort((a, b) =>
-        a.interval.start.toFormat('HH:mm').localeCompare(b.interval.start.toFormat('HH:mm'))
-      )
-    );
+    helpers.setValue(sortSlots(newValue));
   };
 
   const deleteSlot = (id: number) => {
@@ -96,14 +100,30 @@ function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {
     setAddMode(false);
   };
 
+  const handleSortClicked = () => {
+    helpers.setValue(sortSlots(value));
+  };
+
   return (
     <Box display='flex' flexDirection='column' {...props}>
-      <FormikTextField
-        name={prefixName}
-        label='Präfix'
-        helperText={`Präfix für Tutorien. Beispiel: "${prefixValue}01"`}
-        required
-      />
+      <Box display='flex' alignItems='flex-start'>
+        <FormikTextField
+          name={prefixName}
+          label='Präfix'
+          helperText={`Präfix für Tutorien. Beispiel: "${prefixValue}01"`}
+          required
+        />
+
+        <Tooltip title='Nach Startzeit sortieren (aufsteigend)'>
+          <IconButton
+            onClick={handleSortClicked}
+            className={classes.sortButton}
+            // disabled={value.length === 0}
+          >
+            <SortIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
       {value.map((val, idx) => (
         <FormikWeekdaySlot

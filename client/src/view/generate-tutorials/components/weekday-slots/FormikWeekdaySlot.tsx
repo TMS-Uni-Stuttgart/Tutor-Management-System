@@ -36,13 +36,17 @@ function FormikWeekdaySlot({ name, onDelete, ...props }: Props): JSX.Element {
   const [, meta, helpers] = useField<WeekdayTimeSlot>(name);
   const { value } = meta;
 
+  const handleIntervalChanged = (interval: Interval) => {
+    helpers.setValue({ ...value, interval });
+  };
+
   return (
     <Paper {...props}>
       <SelectInterval
         mode={SelectIntervalMode.TIME}
         autoIncreaseStep={90}
         value={value.interval}
-        onChange={(interval) => helpers.setValue({ ...value, interval })}
+        onChange={handleIntervalChanged}
       />
 
       <FormikTextField
