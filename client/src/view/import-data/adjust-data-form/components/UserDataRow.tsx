@@ -49,9 +49,9 @@ interface EditFormState {
 }
 
 function calculateInitialValues(value: UserFormStateValue): EditFormState {
-  const { roles, tutorials, tutorialsToCorrect, id } = value;
+  const { roles, tutorials, tutorialsToCorrect, rowNr } = value;
 
-  return { userId: id, roles, tutorials, tutorialsToCorrect };
+  return { userId: rowNr.toString(), roles, tutorials, tutorialsToCorrect };
 }
 
 function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.Element {
@@ -61,7 +61,7 @@ function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.El
   const tutorialsOfOthers: string[] = useMemo(
     () =>
       Object.values(parentFormValue).flatMap((user) => {
-        if (user.id === values.userId) {
+        if (user.rowNr.toString() === values.userId) {
           return [];
         }
 

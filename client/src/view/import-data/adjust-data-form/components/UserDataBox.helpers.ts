@@ -27,9 +27,10 @@ export function convertCSVDataToFormData(data: CSVData, values: MappedColumns): 
   const emptyString = 'N/A';
 
   const userFormState: UserFormState = {};
-  data.rows.forEach(({ id, data }) => {
-    userFormState[id.toString()] = {
-      id: id.toString(),
+  data.rows.forEach(({ rowNr, data }) => {
+    const key = rowNr.toString();
+    userFormState[key] = {
+      rowNr,
       firstname: data[values.firstnameColumn] ?? emptyString,
       lastname: data[values.lastnameColumn] ?? emptyString,
       email: data[values.emailColumn] ?? emptyString,

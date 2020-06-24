@@ -12,7 +12,7 @@ export interface ParsedCSVData {
 }
 
 export interface CSVDataRow {
-  id: number;
+  rowNr: number;
   data: ParsedCSVDataRow;
 }
 
@@ -70,8 +70,9 @@ const DataContext = React.createContext<DataContextValue>({
 
 function convertParsedToInternalCSV(data: ParsedCSVData): CSVData {
   const { headers, rows: parsedRows } = data;
-  const rows: CSVDataRow[] = parsedRows.map((row, idx) => ({ id: idx, data: row }));
+  const rows: CSVDataRow[] = parsedRows.map((row, idx) => ({ rowNr: idx, data: row }));
 
+  headers.sort((a, b) => a.localeCompare(b));
   return { headers, rows };
 }
 

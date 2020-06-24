@@ -19,7 +19,7 @@ import { convertCSVDataToFormData } from './components/UserDataBox.helpers';
 import { FormikSubmitCallback } from '../../../types';
 
 export interface UserFormStateValue {
-  id: string;
+  rowNr: number;
   firstname: string;
   lastname: string;
   email: string;
@@ -35,7 +35,7 @@ export interface UserFormState {
 }
 
 function convertValuesToDTOS(values: UserFormState): ICreateUserDTO[] {
-  return Object.values(values).map(({ id, username, password, ...user }) => ({
+  return Object.values(values).map(({ rowNr, username, password, ...user }) => ({
     ...user,
     username:
       username || generateUsernameFromName({ firstname: user.firstname, lastname: user.lastname }),
