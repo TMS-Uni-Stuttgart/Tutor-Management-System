@@ -1,30 +1,22 @@
 import {
   Box,
-  Button,
   Chip,
   createStyles,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   IconButton,
   makeStyles,
   TableCell,
   Typography,
 } from '@material-ui/core';
-import { Formik, useField, useFormikContext } from 'formik';
+import { useField, useFormikContext } from 'formik';
 import { SquareEditOutline as EditIcon, Undo as ResetIcon } from 'mdi-material-ui';
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
-import { Role } from '../../../../../../server/src/shared/model/Role';
-import FormikSelect from '../../../../components/forms/components/FormikSelect';
 import PaperTableRow from '../../../../components/PaperTableRow';
+import { useDialog } from '../../../../hooks/DialogService';
 import { FormikSubmitCallback } from '../../../../types';
 import { useImportDataContext } from '../../ImportUsers.context';
-import { UserFormStateValue, UserFormState } from '../AdjustImportedUserDataForm';
-import { Tutorial } from '../../../../model/Tutorial';
-import { IsItemDisabledFunction } from '../../../../components/CustomSelect';
-import { useDialog } from '../../../../hooks/DialogService';
+import { UserFormState, UserFormStateValue } from '../AdjustImportedUserDataForm';
+import EditUserDialog, { EditFormState } from './edit-user-dialog/EditUserDialog';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -36,133 +28,6 @@ const useStyles = makeStyles((theme) =>
     },
   })
 );
-
-interface EditUserDialogProps {
-  parentFormValue: UserFormState;
-}
-
-interface EditFormState {
-  userId: string;
-  roles: Role[];
-  tutorials: string[];
-  tutorialsToCorrect: string[];
-}
-
-function calculateInitialValues(value: UserFormStateValue): EditFormState {
-  const { roles, tutorials, tutorialsToCorrect, rowNr } = value;
-
-  return { userId: rowNr.toString(), roles, tutorials, tutorialsToCorrect };
-}
-
-function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.Element {
-  const { values, setFieldValue } = useFormikContext<EditFormState>();
-  const { tutorials } = useImportDataContext();
-
-  const tutorialsOfOthers: string[] = useMemo(
-    () =>
-      Object.values(parentFormValue).flatMap((user) => {
-        if (user.rowNr.toString() === values.userId) {
-          return [];
-        }
-
-        return [...user.tutorials];
-      }),
-    [parentFormValue, values.userId]
-  );
-
-  const isTutorialItemDisabled: IsItemDisabledFunction<Tutorial> = useCallback(
-    (tutorial) => {
-      const isSelectedByOther = tutorialsOfOthers.findIndex((id) => id === tutorial.id) !== -1;
-
-      if (isSelectedByOther) {
-        return { isDisabled: true, reason: 'Anderem/r Nutzer/in zugeordnet.' };
-      }
-
-      const isCorrectedBySelf =
-        values.tutorialsToCorrect.findIndex((id) => id === tutorial.id) !== -1;
-
-      if (isCorrectedBySelf) {
-        return { isDisabled: true, reason: 'Nutzer/in korrigiert Tutorium bereits.' };
-      }
-
-      return { isDisabled: false };
-    },
-    [tutorialsOfOthers, values.tutorialsToCorrect]
-  );
-
-  const isTutorialToCorrectItemDisabled: IsItemDisabledFunction<Tutorial> = useCallback(
-    (tutorial) => {
-      const isHoldBySelf = values.tutorials.findIndex((id) => id === tutorial.id) !== -1;
-
-      if (isHoldBySelf) {
-        return { isDisabled: true, reason: 'Nutzer/in hält Tutorium bereits.' };
-      }
-
-      return { isDisabled: false };
-    },
-    [values.tutorials]
-  );
-
-  return (
-    <Box display='grid' gridTemplateRows='repeat(3, 1fr)' gridRowGap={16}>
-      <FormikSelect
-        name='roles'
-        label='Rolle'
-        required
-        fullWidth
-        emptyPlaceholder='Keine Rollen vorhanden.'
-        onChange={(e: any) => {
-          const roles: string[] = e.target.value;
-
-          if (!roles.includes(Role.TUTOR)) {
-            setFieldValue('tutorials', []);
-          }
-
-          if (!roles.includes(Role.CORRECTOR)) {
-            setFieldValue('tutorialsToCorrect', []);
-          }
-        }}
-        items={[Role.ADMIN, Role.CORRECTOR, Role.TUTOR, Role.EMPLOYEE]}
-        itemToString={(role) => Role[role].toString()}
-        itemToValue={(role) => role}
-        multiple
-        isItemSelected={(role) => values['roles'].indexOf(role) > -1}
-      />
-
-      <FormikSelect
-        name='tutorials'
-        label='Tutorien'
-        helperText='Tutorien, die gehalten werden.'
-        emptyPlaceholder='Keine Tutorien vorhanden.'
-        fullWidth
-        items={tutorials}
-        showLoadingIndicator={tutorials.length === 0}
-        itemToString={(tutorial) => tutorial.toDisplayString()}
-        itemToValue={(tutorial) => tutorial.id}
-        isItemDisabled={isTutorialItemDisabled}
-        multiple
-        isItemSelected={(tutorial) => values['tutorials'].indexOf(tutorial.id) > -1}
-        disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
-      />
-
-      <FormikSelect
-        name='tutorialsToCorrect'
-        label='Korrigierte Tutorien'
-        helperText='Tutorien, die korrigiert werden.'
-        emptyPlaceholder='Keine Tutorien vorhanden.'
-        fullWidth
-        items={tutorials}
-        showLoadingIndicator={tutorials.length === 0}
-        itemToString={(tutorial) => tutorial.toDisplayString()}
-        itemToValue={(tutorial) => tutorial.id}
-        isItemDisabled={isTutorialToCorrectItemDisabled}
-        multiple
-        isItemSelected={(tutorial) => values['tutorialsToCorrect'].indexOf(tutorial.id) > -1}
-        disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
-      />
-    </Box>
-  );
-}
 
 interface UserDataRowProps {
   name: string;
@@ -276,27 +141,14 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
       </PaperTableRow>
 
       {showDialog && (
-        <Dialog open onClose={() => setShowDialog(false)} maxWidth='lg'>
-          <Formik initialValues={calculateInitialValues(meta.value)} onSubmit={handleFormSubmit}>
-            {({ submitForm }) => (
-              <>
-                <DialogTitle>{getNameOfEntity({ firstname, lastname })} bearbeiten</DialogTitle>
-
-                <DialogContent style={{ minWidth: 400 }}>
-                  <EditUserDialogContent parentFormValue={parentValues} />
-                </DialogContent>
-
-                <DialogActions>
-                  <Button onClick={() => setShowDialog(false)}>Abbrechen</Button>
-
-                  <Button color='primary' onClick={submitForm}>
-                    Speichern
-                  </Button>
-                </DialogActions>
-              </>
-            )}
-          </Formik>
-        </Dialog>
+        <EditUserDialog
+          open
+          onClose={() => setShowDialog(false)}
+          onCancelClicked={() => setShowDialog(false)}
+          onFormSubmit={handleFormSubmit}
+          userFormValue={meta.value}
+          parentValues={parentValues}
+        />
       )}
     </>
   );
