@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) =>
     select: {
       minWidth: 210,
       marginTop: theme.spacing(2),
+      marginRight: theme.spacing(2),
     },
   })
 );
@@ -30,7 +31,7 @@ const validationSchema = Yup.object().shape({
 function MapCSVColumnsContent(): JSX.Element {
   const classes = useStyles();
 
-  const { values, isValid } = useFormikContext<MappedColumns>();
+  const { values, isValid, validateForm } = useFormikContext<MappedColumns>();
   const { setNextCallback, removeNextCallback, setNextDisabled } = useStepper();
   const {
     data: { headers },
@@ -43,7 +44,8 @@ function MapCSVColumnsContent(): JSX.Element {
 
   useEffect(() => {
     setNextCallback(async () => {
-      if (!isValid) {
+      const results = await validateForm();
+      if (Object.entries(results).length > 0) {
         return { goToNext: false, error: true };
       }
 
@@ -52,99 +54,138 @@ function MapCSVColumnsContent(): JSX.Element {
     });
 
     return removeNextCallback;
-  }, [setNextCallback, removeNextCallback, values, setMappedColumns, isValid]);
+  }, [setNextCallback, removeNextCallback, values, setMappedColumns, isValid, validateForm]);
 
   return (
     <Box display='flex' flexDirection='column' padding={1}>
       <Typography variant='h4'>Spalten zuordnen</Typography>
 
-      <FormikSelect
-        name='firstnameColumn'
-        label='Vorname'
-        required
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+      <Box
+        display='flex'
+        flexDirection='column'
+        border={2}
+        borderColor='divider'
+        borderRadius='borderRadius'
+        padding={1}
+        marginTop={2}
+      >
+        <Typography variant='h6'>Nutzerinformationen</Typography>
+        <Box display='flex' flexWrap='wrap' marginTop={1}>
+          <FormikSelect
+            name='firstnameColumn'
+            label='Vorname'
+            required
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
 
-      <FormikSelect
-        name='lastnameColumn'
-        label='Nachname'
-        required
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+          <FormikSelect
+            name='lastnameColumn'
+            label='Nachname'
+            required
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
 
-      <FormikSelect
-        name='emailColumn'
-        label='E-Mailadresse'
-        required
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+          <FormikSelect
+            name='emailColumn'
+            label='E-Mailadresse'
+            required
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
 
-      <FormikSelect
-        name='rolesColumn'
-        label='Rollen'
-        nameOfNoneItem='Keine Spalte auswählen'
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+          <FormikSelect
+            name='rolesColumn'
+            label='Rollen'
+            nameOfNoneItem='Keine Spalte auswählen'
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
+        </Box>
+      </Box>
 
-      <FormikSelect
-        name='usernameColumn'
-        label='Nutzername'
-        nameOfNoneItem='Keine Spalte auswählen'
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+      <Box
+        display='flex'
+        flexDirection='column'
+        border={2}
+        borderColor='divider'
+        borderRadius='borderRadius'
+        padding={1}
+        marginTop={2}
+      >
+        <Typography variant='h6'>Informationen über Tutorien</Typography>
+        <Box display='flex' flexWrap='wrap' marginTop={1}>
+          <FormikSelect
+            name='tutorialsColumn'
+            label='Tutorien'
+            nameOfNoneItem='Keine Spalte auswählen'
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
 
-      <FormikSelect
-        name='passwordColumn'
-        label='Passwort'
-        nameOfNoneItem='Keine Spalte auswählen'
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+          <FormikSelect
+            name='tutorialsToCorrectColumn'
+            label='Tutorien zum Korrigieren'
+            nameOfNoneItem='Keine Spalte auswählen'
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
+        </Box>
+      </Box>
 
-      <FormikSelect
-        name='tutorialsColumn'
-        label='Tutorien'
-        nameOfNoneItem='Keine Spalte auswählen'
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+      <Box
+        display='flex'
+        flexDirection='column'
+        border={2}
+        borderColor='divider'
+        borderRadius='borderRadius'
+        padding={1}
+        marginTop={2}
+      >
+        <Typography variant='h6'>Zugangsdaten</Typography>
+        <Box display='flex' flexWrap='wrap' marginTop={1}>
+          <FormikSelect
+            name='usernameColumn'
+            label='Nutzername'
+            nameOfNoneItem='Keine Spalte auswählen'
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
 
-      <FormikSelect
-        name='tutorialsToCorrectColumn'
-        label='Tutorien zum Korrigieren'
-        nameOfNoneItem='Keine Spalte auswählen'
-        items={headers}
-        itemToValue={(i) => i}
-        itemToString={(i) => i}
-        emptyPlaceholder='Keine Überschriften verfügbar'
-        className={classes.select}
-      />
+          <FormikSelect
+            name='passwordColumn'
+            label='Passwort'
+            nameOfNoneItem='Keine Spalte auswählen'
+            items={headers}
+            itemToValue={(i) => i}
+            itemToString={(i) => i}
+            emptyPlaceholder='Keine Überschriften verfügbar'
+            className={classes.select}
+          />
+        </Box>
+      </Box>
 
       <FormikDebugDisplay showErrors />
     </Box>
