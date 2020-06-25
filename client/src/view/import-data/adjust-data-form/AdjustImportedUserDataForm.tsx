@@ -105,23 +105,6 @@ function AdjustImportedUserDataForm(): JSX.Element {
     } catch (err) {
       enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });
     }
-    // for (const data of response) {
-    //   if (!data.hasError()) {
-    //     successfullyCreated += 1;
-    //   } else {
-    //     errors.push(data.error);
-    //   }
-    // }
-
-    // if (errors.length === 0) {
-    // } else if (successfullyCreated > 0) {
-    //   enqueueSnackbarWithList({
-    //     title: 'Nutzererstellung teilweise fehlgeschlagen',
-    //     textBeforeList: `Es wurden nur ${successfullyCreated} Nutzer/innen erstellt. Folgende Fehler sind aufgetreten:`,
-    //     items: errors,
-    //   });
-    // } else {
-    // }
   };
 
   return (

@@ -69,7 +69,7 @@ function ImportUserCSV(): JSX.Element {
       enqueueSnackbar('CSV konnte nicht importiert werden.', { variant: 'error' });
       return { goToNext: false, error: true };
     }
-  }, [csvInput, seperator, setData, setCSVFormData, enqueueSnackbar]);
+  }, [csvInput, seperator, setData, setCSVFormData, enqueueSnackbar, enqueueSnackbarWithList]);
 
   useEffect(() => {
     setNextDisabled(!csvInput);

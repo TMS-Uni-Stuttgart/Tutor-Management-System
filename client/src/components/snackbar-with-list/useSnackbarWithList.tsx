@@ -8,12 +8,15 @@ interface UseSnackbarWithList {
 
 export function useSnackbarWithList() {
   const { enqueueSnackbar } = useSnackbar();
-  const enqueueSnackbarWithList = useCallback((props: Omit<SnackbarWithListProps, 'id'>) => {
-    enqueueSnackbar('', {
-      persist: true,
-      content: (id: SnackbarKey) => <SnackbarWithList {...props} id={id} />,
-    });
-  }, []);
+  const enqueueSnackbarWithList = useCallback(
+    (props: Omit<SnackbarWithListProps, 'id'>) => {
+      enqueueSnackbar('', {
+        persist: true,
+        content: (id: SnackbarKey) => <SnackbarWithList {...props} id={id} />,
+      });
+    },
+    [enqueueSnackbar]
+  );
 
   return { enqueueSnackbarWithList };
 }

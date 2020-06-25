@@ -3,7 +3,6 @@ import { Role } from 'shared/model/Role';
 import { ICreateUserDTO, INewPasswordDTO, IUser, IUserDTO } from 'shared/model/User';
 import { sortByName } from 'shared/util/helpers';
 import axios from './Axios';
-import { plainToClass } from 'class-transformer';
 
 export async function getUsers(): Promise<IUser[]> {
   const response = await axios.get<IUser[]>('user');
@@ -48,7 +47,7 @@ export async function createManyUsers(dto: ICreateUserDTO[]): Promise<IUser[]> {
     return response.data;
   }
 
-  return Promise.reject(`Wrong response code (${response.status}).`);
+  return Promise.reject((response.data as any).message ?? 'Unbekannter Fehler');
 }
 
 export async function editUser(userid: string, userInformation: IUserDTO): Promise<IUser> {
