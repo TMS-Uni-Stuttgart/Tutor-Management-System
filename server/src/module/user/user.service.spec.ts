@@ -434,7 +434,7 @@ describe('UserService', () => {
     assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
   });
 
-  it('fail on creating multiple users with tutorials where one is NOT a tutor', async () => {
+  it('return correct error on creating multiple users with tutorials where one is NOT a tutor', async () => {
     const usersToCreate: CreateUserDTO[] = [
       {
         firstname: 'Harry',
@@ -447,8 +447,8 @@ describe('UserService', () => {
         tutorialsToCorrect: [],
       },
       {
-        firstname: 'Granger',
-        lastname: 'Hermine',
+        firstname: 'Hermine',
+        lastname: 'Granger',
         email: 'herminegranger@hogwarts.com',
         username: 'grangehe',
         password: 'grangersPassword',
@@ -458,10 +458,15 @@ describe('UserService', () => {
       },
     ];
 
-    await expect(service.createMany(usersToCreate)).rejects.toThrow(BadRequestException);
+    const [userToCheck] = await service.createMany(usersToCreate);
+
+    expect(userToCheck.hasError()).toBeTruthy();
+    expect(userToCheck.error).toBe(
+      `[Potter, Harry]: A user with tutorials needs to have the 'TUTOR' role`
+    );
   });
 
-  it('fail on creating multiple users with tutorials to correct where one is NOT a corrector', async () => {
+  it('return correct error on creating multiple users with tutorials to correct where one is NOT a corrector', async () => {
     const usersToCreate: CreateUserDTO[] = [
       {
         firstname: 'Harry',
@@ -474,8 +479,8 @@ describe('UserService', () => {
         tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
       },
       {
-        firstname: 'Granger',
-        lastname: 'Hermine',
+        firstname: 'Hermine',
+        lastname: 'Granger',
         email: 'herminegranger@hogwarts.com',
         username: 'grangehe',
         password: 'grangersPassword',
@@ -485,7 +490,12 @@ describe('UserService', () => {
       },
     ];
 
-    await expect(service.createMany(usersToCreate)).rejects.toThrow(BadRequestException);
+    const [, userToCheck] = await service.createMany(usersToCreate);
+
+    expect(userToCheck.hasError()).toBeTruthy();
+    expect(userToCheck.error).toBe(
+      `[Granger, Hermine]: A user with tutorials to correct needs to have the 'CORRECTOR' role`
+    );
   });
 
   it('get a user with a specific ID', async () => {
