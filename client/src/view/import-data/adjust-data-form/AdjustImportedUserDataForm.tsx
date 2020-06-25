@@ -3,7 +3,6 @@ import { Formik, useFormikContext } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router';
-import { ValueOrError } from 'shared/model/Errors';
 import { Role } from 'shared/model/Role';
 import { ICreateUserDTO, IUser } from 'shared/model/User';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
@@ -96,33 +95,33 @@ function AdjustImportedUserDataForm(): JSX.Element {
   );
 
   const handleSubmit: FormikSubmitCallback<UserFormState> = async (values) => {
-    const dtos: ICreateUserDTO[] = convertValuesToDTOS(values);
-    const response: ValueOrError<IUser>[] = await createManyUsers(dtos);
+    try {
+      const dtos: ICreateUserDTO[] = convertValuesToDTOS(values);
+      const response: IUser[] = await createManyUsers(dtos);
 
-    let successfullyCreated: number = 0;
-    const errors: string[] = [];
-
-    for (const data of response) {
-      if (!data.hasError()) {
-        successfullyCreated += 1;
-      } else {
-        errors.push(data.error);
-      }
-    }
-
-    if (errors.length === 0) {
-      enqueueSnackbar(`${successfullyCreated} Nutzer/innen wurden erstellt.`, {
+      enqueueSnackbar(`${response.length} Nutzer/innen wurden erstellt.`, {
         variant: 'success',
       });
-    } else if (successfullyCreated > 0) {
-      enqueueSnackbarWithList({
-        title: 'Nutzererstellung teilweise fehlgeschlagen',
-        textBeforeList: `Es wurden nur ${successfullyCreated} Nutzer/innen erstellt. Folgende Fehler sind aufgetreten:`,
-        items: errors,
-      });
-    } else {
+    } catch (err) {
       enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });
     }
+    // for (const data of response) {
+    //   if (!data.hasError()) {
+    //     successfullyCreated += 1;
+    //   } else {
+    //     errors.push(data.error);
+    //   }
+    // }
+
+    // if (errors.length === 0) {
+    // } else if (successfullyCreated > 0) {
+    //   enqueueSnackbarWithList({
+    //     title: 'Nutzererstellung teilweise fehlgeschlagen',
+    //     textBeforeList: `Es wurden nur ${successfullyCreated} Nutzer/innen erstellt. Folgende Fehler sind aufgetreten:`,
+    //     items: errors,
+    //   });
+    // } else {
+    // }
   };
 
   return (

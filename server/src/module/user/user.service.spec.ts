@@ -344,7 +344,7 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
   });
 
   it('create mutliple users with one tutorial each', async () => {
@@ -373,7 +373,7 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
   });
 
   it('create multiple users with one tutorial to correct each', async () => {
@@ -402,7 +402,7 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
   });
 
   it('create multiple users with tutorials and tutorials to correct.', async () => {
@@ -431,10 +431,10 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
   });
 
-  it('return correct error on creating multiple users with tutorials where one is NOT a tutor', async () => {
+  it('fail with correct error on creating multiple users with tutorials where one is NOT a tutor', async () => {
     const usersToCreate: CreateUserDTO[] = [
       {
         firstname: 'Harry',
@@ -458,15 +458,17 @@ describe('UserService', () => {
       },
     ];
 
-    const [userToCheck] = await service.createMany(usersToCreate);
-
-    expect(userToCheck.hasError()).toBeTruthy();
-    expect(userToCheck.error).toBe(
-      `[Potter, Harry]: A user with tutorials needs to have the 'TUTOR' role`
+    const userCountBefore = (await service.findAll()).length;
+    await expect(service.createMany(usersToCreate)).rejects.toThrow(
+      `["[Potter, Harry]: A user with tutorials needs to have the 'TUTOR' role"]`
     );
+
+    // No user should have effectively been created.
+    const userCountAfter = (await service.findAll()).length;
+    expect(userCountAfter).toBe(userCountBefore);
   });
 
-  it('return correct error on creating multiple users with tutorials to correct where one is NOT a corrector', async () => {
+  it('fail with correct error on creating multiple users with tutorials to correct where one is NOT a corrector', async () => {
     const usersToCreate: CreateUserDTO[] = [
       {
         firstname: 'Harry',
@@ -490,12 +492,14 @@ describe('UserService', () => {
       },
     ];
 
-    const [, userToCheck] = await service.createMany(usersToCreate);
-
-    expect(userToCheck.hasError()).toBeTruthy();
-    expect(userToCheck.error).toBe(
-      `[Granger, Hermine]: A user with tutorials to correct needs to have the 'CORRECTOR' role`
+    const userCountBefore = (await service.findAll()).length;
+    await expect(service.createMany(usersToCreate)).rejects.toThrow(
+      `["[Granger, Hermine]: A user with tutorials to correct needs to have the 'CORRECTOR' role"]`
     );
+
+    // No user should have effectively been created.
+    const userCountAfter = (await service.findAll()).length;
+    expect(userCountAfter).toBe(userCountBefore);
   });
 
   it('get a user with a specific ID', async () => {

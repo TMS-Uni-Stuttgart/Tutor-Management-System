@@ -1,4 +1,3 @@
-import { ValueOrError } from 'shared/model/Errors';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
 import { ICreateUserDTO, INewPasswordDTO, IUser, IUserDTO } from 'shared/model/User';
@@ -42,11 +41,11 @@ export async function createUser(userInformation: ICreateUserDTO): Promise<IUser
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createManyUsers(dto: ICreateUserDTO[]): Promise<ValueOrError<IUser>[]> {
-  const response = await axios.post<ValueOrError<IUser>[]>('user/generate', dto);
+export async function createManyUsers(dto: ICreateUserDTO[]): Promise<IUser[]> {
+  const response = await axios.post<IUser[]>('user/generate', dto);
 
   if (response.status === 201) {
-    return plainToClass(ValueOrError, response.data);
+    return response.data;
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);

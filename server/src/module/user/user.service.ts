@@ -18,7 +18,6 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
-import { ValueOrError } from '../../shared/model/Errors';
 
 @Injectable()
 export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
@@ -114,22 +113,30 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     return createdUser.toDTO();
   }
 
-  async createMany(users: CreateUserDTO[]): Promise<ValueOrError<IUser>[]> {
-    const created: ValueOrError<IUser>[] = [];
+  async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
+    // TODO: Better logic in error cases due to an error state should not effectivly change the database state.
+    //       1. If creation fails save the error message in a list (like one does right now).
+    //       2.1 If this list is empty -> Leave DB as is (users are already created) and return created users.
+    //       2.2 If this list has errors -> Delete all previously created users from the DB (.remove()) and throw an Error with a list of the error message so the client can pick it up.
+    const created: UserDocument[] = [];
+    const errors: string[] = [];
 
     for (const user of users) {
       try {
         const doc = await this.createUser(user);
-        created.push(new ValueOrError(doc.toDTO()));
+        created.push(doc);
       } catch (err) {
         const message = err.message || 'Unknown error.';
-        created.push(
-          new ValueOrError<IUser>(undefined, `[${user.lastname}, ${user.firstname}]: ${message}`)
-        );
+        errors.push(`[${user.lastname}, ${user.firstname}]: ${message}`);
       }
     }
 
-    return created;
+    if (errors.length > 0) {
+      await Promise.all(created.map((u) => u.remove()));
+      throw new BadRequestException(JSON.stringify(errors));
+    }
+
+    return created.map((u) => u.toDTO());
   }
 
   /**

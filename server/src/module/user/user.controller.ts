@@ -19,7 +19,6 @@ import { SameUserGuard } from '../../guards/same-user.guard';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, PasswordDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
-import { ValueOrError } from '../../shared/model/Errors';
 
 @Controller('user')
 export class UserController {
@@ -46,7 +45,7 @@ export class UserController {
   @Post('/generate')
   @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
-  async createManyUsers(@Body() users: CreateUserDTO[]): Promise<ValueOrError<IUser>[]> {
+  async createManyUsers(@Body() users: CreateUserDTO[]): Promise<IUser[]> {
     const createdUsers = await this.userService.createMany(users);
 
     return createdUsers;
