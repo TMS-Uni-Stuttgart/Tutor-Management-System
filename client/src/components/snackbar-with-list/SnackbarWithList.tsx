@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {
+export interface SnackbarWithListProps {
   id: string | number | undefined;
   title: string;
   textBeforeList: string;
@@ -58,7 +58,7 @@ interface Props {
 }
 
 function Component(
-  { title, textBeforeList, items, id, isOpen }: Props,
+  { title, textBeforeList, items, id, isOpen }: SnackbarWithListProps,
   ref: React.Ref<SnackbarContentProps>
 ): JSX.Element {
   const [isExpanded, setExpanded] = useState(!!isOpen);
@@ -114,6 +114,6 @@ function Component(
   );
 }
 
-const SnackbarWithList = React.forwardRef<SnackbarContentProps, Props>(Component);
+const SnackbarWithList = React.forwardRef<SnackbarContentProps, SnackbarWithListProps>(Component);
 
 export default SnackbarWithList;

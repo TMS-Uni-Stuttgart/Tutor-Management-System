@@ -15,7 +15,7 @@ import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
 import { getStudent, setAttendanceOfStudent } from '../../../hooks/fetching/Student';
 import { getTutorial } from '../../../hooks/fetching/Tutorial';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Sheet } from '../../../model/Sheet';
 import { Student } from '../../../model/Student';

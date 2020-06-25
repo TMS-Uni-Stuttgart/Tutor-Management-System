@@ -11,7 +11,7 @@ import Placeholder from '../../../components/Placeholder';
 import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
 import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
 import {

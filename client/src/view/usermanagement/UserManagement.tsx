@@ -15,7 +15,7 @@ import { getNameOfEntity } from 'shared/util/helpers';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SubmitButton from '../../components/loading/SubmitButton';
-import SnackbarWithList from '../../components/SnackbarWithList';
+import SnackbarWithList from '../../components/snackbar-with-list/SnackbarWithList';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { getCredentialsPDF } from '../../hooks/fetching/Files';

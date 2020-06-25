@@ -5,7 +5,7 @@ import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
 import { getScheinexamPointsOverviewPath } from '../../../routes/Routing.helpers';

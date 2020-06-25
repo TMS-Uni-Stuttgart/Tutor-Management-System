@@ -4,7 +4,7 @@ import { Upload as UploadIcon } from 'mdi-material-ui';
 import { SnackbarKey, useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import LoadingModal from '../../../components/loading/LoadingModal';
-import SnackbarWithList from '../../../components/SnackbarWithList';
+import SnackbarWithList from '../../../components/snackbar-with-list/SnackbarWithList';
 import {
   NextStepCallback,
   useStepper,

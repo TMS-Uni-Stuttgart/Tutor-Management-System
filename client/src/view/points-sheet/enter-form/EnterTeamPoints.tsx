@@ -7,7 +7,7 @@ import {
   getTeamsOfTutorial,
   setPointsOfTeam,
 } from '../../../hooks/fetching/Team';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Team } from '../../../model/Team';
 import { getEnterPointsForTeamPath } from '../../../routes/Routing.helpers';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';

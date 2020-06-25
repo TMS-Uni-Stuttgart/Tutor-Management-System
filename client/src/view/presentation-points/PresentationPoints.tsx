@@ -6,7 +6,7 @@ import Placeholder from '../../components/Placeholder';
 import { useSheetSelector } from '../../components/sheet-selector/SheetSelector';
 import { getStudent, setPresentationPointsOfStudent } from '../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
-import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
 import { Student } from '../../model/Student';
 import { getPresentationPointsPath } from '../../routes/Routing.helpers';
 import PresentationList from './components/PresentationList';

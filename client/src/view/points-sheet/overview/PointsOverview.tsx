@@ -5,7 +5,7 @@ import { useParams } from 'react-router';
 import SubmitButton from '../../../components/loading/SubmitButton';
 import Placeholder from '../../../components/Placeholder';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
 import { Team } from '../../../model/Team';
 import { getPointOverviewPath } from '../../../routes/Routing.helpers';

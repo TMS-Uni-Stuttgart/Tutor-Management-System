@@ -3,8 +3,9 @@ import { Formik, useFormikContext } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router';
-import { Role } from '../../../../../server/src/shared/model/Role';
-import { ICreateUserDTO } from '../../../../../server/src/shared/model/User';
+import { ValueOrError } from 'shared/model/Errors';
+import { Role } from 'shared/model/Role';
+import { ICreateUserDTO, IUser } from 'shared/model/User';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import {
   generateTemporaryPassword,
@@ -12,11 +13,12 @@ import {
 } from '../../../components/forms/UserForm';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
 import { createManyUsers } from '../../../hooks/fetching/User';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { RoutingPath } from '../../../routes/Routing.routes';
+import { FormikSubmitCallback } from '../../../types';
 import { useImportDataContext } from '../ImportUsers.context';
 import UserDataBox from './components/UserDataBox';
 import { convertCSVDataToFormData } from './components/UserDataBox.helpers';
-import { FormikSubmitCallback } from '../../../types';
 
 export interface UserFormStateValue {
   rowNr: number;
@@ -86,7 +88,7 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
 
 function AdjustImportedUserDataForm(): JSX.Element {
   const { data, mappedColumns, tutorials } = useImportDataContext();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
 
   const initialValues: UserFormState = useMemo(
     () => convertCSVDataToFormData({ data, values: mappedColumns, tutorials }),
@@ -95,9 +97,32 @@ function AdjustImportedUserDataForm(): JSX.Element {
 
   const handleSubmit: FormikSubmitCallback<UserFormState> = async (values) => {
     const dtos: ICreateUserDTO[] = convertValuesToDTOS(values);
-    const createdUsers = await createManyUsers(dtos);
+    const response: ValueOrError<IUser>[] = await createManyUsers(dtos);
 
-    enqueueSnackbar(`${createdUsers.length} Nutzer wurden erstellt.`, { variant: 'success' });
+    let successfullyCreated: number = 0;
+    const errors: string[] = [];
+
+    for (const data of response) {
+      if (!data.hasError()) {
+        successfullyCreated += 1;
+      } else {
+        errors.push(data.error);
+      }
+    }
+
+    if (errors.length === 0) {
+      enqueueSnackbar(`${successfullyCreated} Nutzer/innen wurden erstellt.`, {
+        variant: 'success',
+      });
+    } else if (successfullyCreated > 0) {
+      enqueueSnackbarWithList({
+        title: 'Nutzererstellung teilweise fehlgeschlagen',
+        textBeforeList: `Es wurden nur ${successfullyCreated} Nutzer/innen erstellt. Folgende Fehler sind aufgetreten:`,
+        items: errors,
+      });
+    } else {
+      enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });
+    }
   };
 
   return (

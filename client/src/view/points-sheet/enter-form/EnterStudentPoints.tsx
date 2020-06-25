@@ -6,7 +6,7 @@ import { getNameOfEntity } from 'shared/util/helpers';
 import { IGradingDTO } from '../../../../../server/src/shared/model/Points';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
 import { getEnterPointsForStudentPath } from '../../../routes/Routing.helpers';

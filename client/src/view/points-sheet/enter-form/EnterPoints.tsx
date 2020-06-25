@@ -5,7 +5,7 @@ import BackButton from '../../../components/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getSheet } from '../../../hooks/fetching/Sheet';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Sheet } from '../../../model/Sheet';
 import { getPointOverviewPath } from '../../../routes/Routing.helpers';
