@@ -18,6 +18,7 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
+import { ValueOrError } from '../../shared/model/Errors';
 
 @Injectable()
 export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
@@ -113,14 +114,22 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     return createdUser.toDTO();
   }
 
-  async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
-    const created: UserDocument[] = [];
+  async createMany(users: CreateUserDTO[]): Promise<ValueOrError<IUser>[]> {
+    const created: ValueOrError<IUser>[] = [];
 
     for (const user of users) {
-      created.push(await this.createUser(user));
+      try {
+        const doc = await this.createUser(user);
+        created.push(new ValueOrError(doc.toDTO()));
+      } catch (err) {
+        const message = err.message || 'Unknown error.';
+        created.push(
+          new ValueOrError<IUser>(undefined, `[${user.lastname}, ${user.firstname}]: ${message}`)
+        );
+      }
     }
 
-    return created.map((u) => u.toDTO());
+    return created;
   }
 
   /**
@@ -339,6 +348,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    * @param user Information about the user to create.
    *
    * @returns Created UserDocument.
+   * @throws `BadRequestException` - If the DTO is invalid  a BadRequestException is thrown. More information: See function `checkUserDTO()`.
    */
   private async createUser(user: CreateUserDTO): Promise<UserDocument> {
     await this.checkUserDTO(user);

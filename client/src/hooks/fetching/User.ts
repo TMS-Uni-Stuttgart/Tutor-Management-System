@@ -1,8 +1,10 @@
+import { ValueOrError } from 'shared/model/Errors';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
-import { ICreateUserDTO, IUserDTO, INewPasswordDTO, IUser } from 'shared/model/User';
+import { ICreateUserDTO, INewPasswordDTO, IUser, IUserDTO } from 'shared/model/User';
 import { sortByName } from 'shared/util/helpers';
 import axios from './Axios';
+import { plainToClass } from 'class-transformer';
 
 export async function getUsers(): Promise<IUser[]> {
   const response = await axios.get<IUser[]>('user');
@@ -40,11 +42,11 @@ export async function createUser(userInformation: ICreateUserDTO): Promise<IUser
   return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createManyUsers(dto: ICreateUserDTO[]): Promise<IUser[]> {
-  const response = await axios.post<IUser[]>('user/generate', dto);
+export async function createManyUsers(dto: ICreateUserDTO[]): Promise<ValueOrError<IUser>[]> {
+  const response = await axios.post<ValueOrError<IUser>[]>('user/generate', dto);
 
   if (response.status === 201) {
-    return response.data;
+    return plainToClass(ValueOrError, response.data);
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
