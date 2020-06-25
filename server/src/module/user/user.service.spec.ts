@@ -344,7 +344,7 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
   });
 
   it('create mutliple users with one tutorial each', async () => {
@@ -373,7 +373,7 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
   });
 
   it('create multiple users with one tutorial to correct each', async () => {
@@ -402,7 +402,7 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
   });
 
   it('create multiple users with tutorials and tutorials to correct.', async () => {
@@ -431,7 +431,7 @@ describe('UserService', () => {
 
     const created = await service.createMany(usersToCreate);
 
-    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+    assertGeneratedUsers({ expected: usersToCreate, actual: created.map((c) => c.value) });
   });
 
   it('fail on creating multiple users with tutorials where one is NOT a tutor', async () => {
