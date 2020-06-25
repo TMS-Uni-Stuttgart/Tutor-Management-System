@@ -1,15 +1,14 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import SubmitButton from '../../../components/loading/SubmitButton';
 import Placeholder from '../../../components/Placeholder';
+import { useSheetSelector } from '../../../components/sheet-selector/SheetSelector';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
 import { Team } from '../../../model/Team';
 import { getPointOverviewPath } from '../../../routes/Routing.helpers';
-import { useSheetSelector } from '../../../components/sheet-selector/SheetSelector';
 import TeamCardList from './components/TeamCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,8 +58,7 @@ function PointsOverview(): JSX.Element {
     },
   });
 
-  const { setError } = useErrorSnackbar();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, setError } = useCustomSnackbar();
 
   const [teams, setTeams] = useState<Team[]>([]);
 

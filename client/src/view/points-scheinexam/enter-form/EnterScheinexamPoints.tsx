@@ -1,6 +1,5 @@
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
@@ -11,7 +10,7 @@ import Placeholder from '../../../components/Placeholder';
 import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
 import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
 import {
@@ -53,8 +52,7 @@ function EnterScheinexamPoints(): JSX.Element {
   const history = useHistory();
   const { tutorialId, examId, studentId } = useParams<RouteParams>();
 
-  const { enqueueSnackbar } = useSnackbar();
-  const { setError, isError } = useErrorSnackbar();
+  const { enqueueSnackbar, setError, isError } = useCustomSnackbar();
 
   const [exam, setExam] = useState<Scheinexam>();
   const [student, setStudent] = useState<Student>();

@@ -1,5 +1,4 @@
 import { Typography } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import {
@@ -7,7 +6,7 @@ import {
   getTeamsOfTutorial,
   setPointsOfTeam,
 } from '../../../hooks/fetching/Team';
-import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { Team } from '../../../model/Team';
 import { getEnterPointsForTeamPath } from '../../../routes/Routing.helpers';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
@@ -24,8 +23,7 @@ function EnterTeamPoints(): JSX.Element {
   const history = useHistory();
 
   const { tutorialId, sheetId, teamId } = useParams<RouteParams>();
-  const { enqueueSnackbar } = useSnackbar();
-  const { setError } = useErrorSnackbar();
+  const { enqueueSnackbar, setError } = useCustomSnackbar();
 
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team>();

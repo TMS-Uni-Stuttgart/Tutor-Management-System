@@ -1,12 +1,11 @@
 import { Typography } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { IGradingDTO } from '../../../../../server/src/shared/model/Points';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
-import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
 import { getEnterPointsForStudentPath } from '../../../routes/Routing.helpers';
@@ -25,8 +24,7 @@ function EnterStudentPoints(): JSX.Element {
   const history = useHistory();
   const { tutorialId, sheetId, teamId, studentId } = useParams<RouteParams>();
 
-  const { enqueueSnackbar } = useSnackbar();
-  const { setError } = useErrorSnackbar();
+  const { enqueueSnackbar, setError } = useCustomSnackbar();
 
   const [student, setStudent] = useState<Student>();
   const [team, setTeam] = useState<Team>();

@@ -1,18 +1,17 @@
 import { Box, Button, Divider, TextField, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Upload as UploadIcon } from 'mdi-material-ui';
-import { SnackbarKey, useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import LoadingModal from '../../../components/loading/LoadingModal';
-import SnackbarWithList from '../../../components/snackbar-with-list/SnackbarWithList';
 import {
   NextStepCallback,
   useStepper,
 } from '../../../components/stepper-with-buttons/context/StepperContext';
 import { useDialog } from '../../../hooks/DialogService';
 import { getParsedCSV } from '../../../hooks/fetching/CSV';
-import { useImportDataContext } from '../ImportUsers.context';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { useKeyboardShortcut } from '../../../hooks/useKeyboardShortcut';
+import { useImportDataContext } from '../ImportUsers.context';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -27,7 +26,7 @@ function ImportUserCSV(): JSX.Element {
 
   const { setNextCallback, removeNextCallback, setNextDisabled, nextStep } = useStepper();
   const { setData, csvFormData, setCSVFormData } = useImportDataContext();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
   const { showConfirmationDialog } = useDialog();
 
   const [csvInput, setCSVInput] = useState(csvFormData?.csvInput ?? '');
@@ -59,16 +58,10 @@ function ImportUserCSV(): JSX.Element {
         enqueueSnackbar('CSV erfolgreich importiert.', { variant: 'success' });
         return { goToNext: true };
       } else {
-        enqueueSnackbar('', {
-          persist: true,
-          content: (id: SnackbarKey) => (
-            <SnackbarWithList
-              id={id}
-              title='CSV konnte nicht importiert werden.'
-              textBeforeList='Folgende Fehler sind aufgetreten:'
-              items={response.errors.map((err) => `${err.message} (Zeile: ${err.row})`)}
-            />
-          ),
+        enqueueSnackbarWithList({
+          title: 'CSV konnte nicht importiert werden.',
+          textBeforeList: 'Folgende Fehler sind aufgetreten:',
+          items: response.errors.map((err) => `${err.message} (Zeile: ${err.row})`),
         });
         return { goToNext: false, error: true };
       }

@@ -1,11 +1,10 @@
 import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
-  TableArrowDown as ImportIcon,
-  Printer as PrintIcon,
   EmailSendOutline as SendIcon,
+  Printer as PrintIcon,
+  TableArrowDown as ImportIcon,
 } from 'mdi-material-ui';
-import { SnackbarKey, useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MailingStatus } from 'shared/model/Mail';
@@ -15,7 +14,6 @@ import { getNameOfEntity } from 'shared/util/helpers';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SubmitButton from '../../components/loading/SubmitButton';
-import SnackbarWithList from '../../components/snackbar-with-list/SnackbarWithList';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
 import { getCredentialsPDF } from '../../hooks/fetching/Files';
@@ -29,6 +27,7 @@ import {
   sendCredentialsToSingleUser as sendCredentialsToSingleUserRequest,
   setTemporaryPassword,
 } from '../../hooks/fetching/User';
+import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { Tutorial } from '../../model/Tutorial';
 import { RoutingPath } from '../../routes/Routing.routes';
 import { saveBlob } from '../../util/helperFunctions';
@@ -88,7 +87,7 @@ function UserManagement(): JSX.Element {
   const [isSendingCredentials, setSendingCredentials] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
   const dialog = useDialog();
 
   useEffect(() => {
@@ -267,19 +266,12 @@ function UserManagement(): JSX.Element {
           return user ? getNameOfEntity(user) : 'NOT_FOUND';
         });
 
-        enqueueSnackbar('', {
-          persist: true,
-          content: (id: SnackbarKey) => (
-            <SnackbarWithList
-              id={id}
-              title={'Nicht zugestellte Zugangsdaten'}
-              textBeforeList={
-                'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:'
-              }
-              items={failedNames}
-              isOpen
-            />
-          ),
+        enqueueSnackbarWithList({
+          title: 'Nicht zugestellte Zugangsdaten',
+          textBeforeList:
+            'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:',
+          items: failedNames,
+          isOpen: true,
         });
       }
     } catch {
