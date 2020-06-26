@@ -87,7 +87,7 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
 
 function AdjustImportedUserDataForm(): JSX.Element {
   const { data, mappedColumns, tutorials } = useImportDataContext();
-  const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
+  const { enqueueSnackbar } = useCustomSnackbar();
 
   const initialValues: UserFormState = useMemo(
     () => convertCSVDataToFormData({ data, values: mappedColumns, tutorials }),
