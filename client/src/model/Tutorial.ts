@@ -3,6 +3,7 @@ import { Transform } from 'class-transformer';
 import { Modify } from '../typings/Modify';
 import { ITutorial, UserInEntity } from '../../../server/src/shared/model/Tutorial';
 import { parseDateToMapKey } from '../util/helperFunctions';
+import { Timeline } from 'mdi-material-ui';
 
 interface Modified {
   dates: DateTime[];
@@ -61,9 +62,18 @@ export class Tutorial implements Modify<ITutorial, Modified> {
   toDisplayStringWithTime(): string {
     const displayString = Tutorial.getDisplayString(this);
     const dayShort = this.dates[0]?.weekdayShort;
+    const time = this.getTimeString();
+
+    return `${displayString} (${dayShort}, ${time})`;
+  }
+
+  /**
+   * @return String with start and end time in the format '{start}-{end}'.
+   */
+  getTimeString(): string {
     const startTime = this.startTime.toFormat('HH:mm');
     const endTime = this.endTime.toFormat('HH:mm');
 
-    return `${displayString} (${dayShort}, ${startTime}-${endTime})`;
+    return `${startTime}-${endTime}`;
   }
 }

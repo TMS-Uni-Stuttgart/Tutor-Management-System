@@ -50,6 +50,7 @@ function TutorialTableRow({
   return (
     <PaperTableRow
       label={tutorial.toDisplayString()}
+      subText={`Zeit: ${tutorial.getTimeString()}`}
       buttonCellContent={
         <>
           <Button
