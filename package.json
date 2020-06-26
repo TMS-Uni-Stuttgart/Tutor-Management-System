@@ -25,10 +25,10 @@
   },
   "devDependencies": {
     "@prettier/plugin-pug": "^1.4.4",
-    "@types/lodash": "^4.14.155",
-    "@types/luxon": "^1.24.0",
+    "@types/lodash": "^4.14.157",
+    "@types/luxon": "^1.24.1",
     "@types/markdown-it": "^10.0.1",
-    "@types/node": "^14.0.13",
+    "@types/node": "^14.0.14",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "cross-env": "^7.0.2",
@@ -36,7 +36,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.0",
-    "jest-circus": "^26.0.1",
+    "jest-circus": "^26.1.0",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
