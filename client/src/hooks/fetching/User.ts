@@ -1,6 +1,6 @@
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
-import { ICreateUserDTO, IUserDTO, INewPasswordDTO, IUser } from 'shared/model/User';
+import { ICreateUserDTO, INewPasswordDTO, IUser, IUserDTO } from 'shared/model/User';
 import { sortByName } from 'shared/util/helpers';
 import axios from './Axios';
 
@@ -38,6 +38,16 @@ export async function createUser(userInformation: ICreateUserDTO): Promise<IUser
   }
 
   return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
+export async function createManyUsers(dto: ICreateUserDTO[]): Promise<IUser[]> {
+  const response = await axios.post<IUser[]>('user/generate', dto);
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  return Promise.reject((response.data as any).message ?? 'Unbekannter Fehler');
 }
 
 export async function editUser(userid: string, userInformation: IUserDTO): Promise<IUser> {

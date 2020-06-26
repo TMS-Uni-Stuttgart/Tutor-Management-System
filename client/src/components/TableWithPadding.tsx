@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface TableWithPaddingProps<T> extends TableProps {
   items: T[];
-  createRowFromItem: (item: T) => React.ReactNode;
+  createRowFromItem: (item: T, idx: number) => React.ReactNode;
   placeholder?: string;
 }
 
@@ -50,7 +50,7 @@ function TableWithPadding<T>({
               <React.Fragment key={idx}>
                 {idx !== 0 && <TableRow className={classes.spacingRow} />}
 
-                {createRowFromItem(item)}
+                {createRowFromItem(item, idx)}
               </React.Fragment>
             ))}
           </TableBody>

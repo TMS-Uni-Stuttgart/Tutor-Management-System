@@ -37,13 +37,26 @@ interface Props extends Omit<FormikBaseFormProps<UserFormState>, CommonlyUsedFor
   onSubmit: UserFormSubmitCallback;
 }
 
-function generateTemporaryPassword(): string {
+interface HasName {
+  firstname: string;
+  lastname: string;
+}
+
+export function generateTemporaryPassword(): string {
   return pwGenerator.generate({
     length: 16,
     numbers: true,
     excludeSimilarCharacters: true,
     strict: true,
   });
+}
+
+export function generateUsernameFromName({ firstname, lastname }: HasName): string {
+  const charsFromLastname: string = lastname.substr(0, 6);
+  const charsFromFirstname: string = firstname.charAt(0) + firstname.charAt(firstname.length - 1);
+  const username: string = (charsFromLastname + charsFromFirstname).toLowerCase();
+
+  return username;
 }
 
 function getInitialFormState(user?: IUser): UserFormState {
@@ -114,12 +127,10 @@ function UserForm({
   const initialFormState: UserFormState = getInitialFormState(user);
 
   function generateUsername(
-    { firstname, lastname }: { firstname: string; lastname: string },
+    name: HasName,
     setFieldValue: FormikHelpers<UserFormState>['setFieldValue']
   ) {
-    const charsFromLastname: string = lastname.substr(0, 6);
-    const charsFromFirstname: string = firstname.charAt(0) + firstname.charAt(firstname.length - 1);
-    const username: string = (charsFromLastname + charsFromFirstname).toLowerCase();
+    const username: string = generateUsernameFromName(name);
 
     setFieldValue('username', username);
   }

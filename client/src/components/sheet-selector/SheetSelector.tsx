@@ -3,12 +3,12 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import CustomSelect from '../CustomSelect';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
-import { useErrorSnackbar } from '../../hooks/useErrorSnackbar';
+import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
 import { Sheet } from '../../model/Sheet';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     select: {
       flex: 1,
@@ -116,6 +116,7 @@ function SheetSelector({
       itemToValue={(sheet) => sheet.id}
       value={currentSheet ? currentSheet.id : ''}
       onChange={onChange}
+      showLoadingIndicator={isLoadingSheets}
     />
   );
 }

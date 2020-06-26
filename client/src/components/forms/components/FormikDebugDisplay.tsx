@@ -1,8 +1,8 @@
-import { FormikValues, FormikErrors } from 'formik';
+import { Paper, Portal, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { useFormikContext } from 'formik';
 import React, { useState } from 'react';
 import { isDevelopment } from '../../../util/isDevelopmentMode';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Paper, Portal, Typography } from '@material-ui/core';
 import CollapseButton from '../../CollapseButton';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -35,20 +35,21 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  values: FormikValues;
-  errors?: FormikErrors<any>;
+  showErrors?: boolean;
   collapsed?: boolean;
+  disabled?: boolean;
 }
 
 function FormikDebugDisplay({
-  values,
-  errors,
+  showErrors,
   collapsed: collapsedFromProps,
+  disabled,
 }: Props): JSX.Element | null {
   const classes = useStyles();
   const [isCollapsed, setCollapsed] = useState(collapsedFromProps ?? true);
+  const { values, errors } = useFormikContext();
 
-  if (!isDevelopment()) {
+  if (!isDevelopment() || disabled) {
     return null;
   }
 
@@ -61,7 +62,7 @@ function FormikDebugDisplay({
               Form values: <br />
               {JSON.stringify(values, null, 2)}
               <br />
-              {errors && (
+              {showErrors && (
                 <>
                   Form errors: <br />
                   {JSON.stringify(errors, null, 2)}

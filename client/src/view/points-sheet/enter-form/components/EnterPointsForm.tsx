@@ -89,15 +89,7 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
   const dialog = useDialog();
 
   const formikContext = useFormikContext<PointsFormState>();
-  const {
-    values,
-    errors,
-    handleSubmit,
-    resetForm,
-    isSubmitting,
-    dirty,
-    submitForm,
-  } = formikContext;
+  const { values, handleSubmit, resetForm, isSubmitting, dirty, submitForm } = formikContext;
 
   const achieved = getAchievedPointsFromState(values);
   const total = getPointsOfAllExercises(sheet);
@@ -181,7 +173,7 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
           </SubmitButton>
         </div>
 
-        <FormikDebugDisplay values={values} errors={errors} />
+        <FormikDebugDisplay showErrors />
       </form>
     </>
   );

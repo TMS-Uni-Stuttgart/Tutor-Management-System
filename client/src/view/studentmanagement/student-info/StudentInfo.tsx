@@ -1,7 +1,6 @@
 import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
@@ -15,7 +14,7 @@ import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../../hooks/fetching/Sheet';
 import { getStudent, setAttendanceOfStudent } from '../../../hooks/fetching/Student';
 import { getTutorial } from '../../../hooks/fetching/Tutorial';
-import { useErrorSnackbar } from '../../../hooks/useErrorSnackbar';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Sheet } from '../../../model/Sheet';
 import { Student } from '../../../model/Student';
@@ -56,15 +55,14 @@ function StudentInfo(): JSX.Element {
 
   const { studentId, tutorialId } = useParams<RouteParams>();
 
-  const { enqueueSnackbar } = useSnackbar();
-  const { setError } = useErrorSnackbar();
+  const { enqueueSnackbar, setError } = useCustomSnackbar();
 
   const [student, setStudent] = useState<Student>();
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [exams, setExams] = useState<Scheinexam[]>([]);
   const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
   const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
-  const [selectedTab, setSelectedTab] = React.useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
     getStudent(studentId)

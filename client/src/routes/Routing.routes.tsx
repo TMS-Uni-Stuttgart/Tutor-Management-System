@@ -1,17 +1,17 @@
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import {
   Account as StudentIcon,
-  BadgeAccount as UserIcon,
   AccountMultiple as TeamIcon,
   AccountMultipleCheck as AttendancesIcon,
+  BadgeAccount as UserIcon,
   Book as EnterPointsIcon,
   Comment as PresentationIcon,
   File as SheetIcon,
-  TextBox as ScheinexamPointsIcon,
-  TextBoxMultiple as ScheinexamManagementIcon,
   Login as LoginIcon,
   ScriptText as ScheincriteriaIcon,
   Teach as TutorialIcon,
+  TextBox as ScheinexamPointsIcon,
+  TextBoxMultiple as ScheinexamManagementIcon,
   ViewDashboard as DashboardIcon,
 } from 'mdi-material-ui';
 import React from 'react';
@@ -21,6 +21,8 @@ import AttendanceAdminView from '../view/attendance/AttendanceAdminView';
 import AttendanceView from '../view/attendance/AttendanceView';
 import CriteriaInfoView from '../view/criteria-info-view/CriteriaInfoView';
 import Dashboard from '../view/dashboard/Dashboard';
+import GenerateTutorials from '../view/generate-tutorials/GenerateTutorials';
+import ImportUsers from '../view/import-data/ImportUsers';
 import Login from '../view/Login';
 import EnterScheinexamPoints from '../view/points-scheinexam/enter-form/EnterScheinexamPoints';
 import ScheinexamPointsOverview from '../view/points-scheinexam/overview/ScheinexamPointsOverview';
@@ -54,14 +56,17 @@ export enum RoutingPath {
   SCHEIN_EXAMS_STUDENT = '/scheinexams/:examId/student/:studentId',
   DASHBOARD = '/dashboard',
   MANAGE_USERS = '/admin/usermanagement',
+  IMPORT_USERS = '/admin/usermanagement/generate',
   MANAGE_TUTORIALS = '/admin/tutorialmanagement',
-  MANAGE_TUTORIALS_SUBSTITUTES = '/admin/tutorialmanagement/:tutorialid/substitute',
+  GENERATE_TUTORIALS = '/admin/tutorialmanagement/generate',
+  MANAGE_TUTORIALS_SUBSTITUTES = '/admin/tutorialmanagement/substitutes/:tutorialid/substitute',
   MANAGE_SCHEIN_CRITERIAS = '/admin/scheincriterias',
   SCHEIN_CRITERIAS_INFO = '/admin/scheincriterias/info/:id',
   MANAGE_ATTENDANCES = '/admin/attendances',
   MANAGE_SHEETS = '/admin/sheets',
   MANAGE_ALL_STUDENTS = '/admin/students',
   MANAGE_SCHEIN_EXAMS = '/admin/scheinexams',
+  IMPORT_TUTORIALS_AND_USERS = '/admin/import',
 }
 
 type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
@@ -79,6 +84,7 @@ export interface RouteType {
   isExact?: boolean;
 }
 
+export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.LOGIN;
 export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
 
 export const ROUTES: readonly RouteType[] = [
@@ -211,11 +217,30 @@ export const ROUTES: readonly RouteType[] = [
     roles: [Role.ADMIN],
     isInDrawer: true,
     isPrivate: true,
+    isExact: true,
+  },
+  {
+    path: RoutingPath.IMPORT_USERS,
+    title: 'Importiere Nutzer',
+    component: ImportUsers,
+    icon: UserIcon,
+    roles: [Role.ADMIN],
+    isInDrawer: false,
+    isPrivate: true,
   },
   {
     path: RoutingPath.MANAGE_TUTORIALS_SUBSTITUTES,
     title: 'Tutorienvertretungen',
     component: TutorialSubstituteManagement,
+    icon: TutorialIcon,
+    roles: [Role.ADMIN, Role.EMPLOYEE],
+    isInDrawer: false,
+    isPrivate: true,
+  },
+  {
+    path: RoutingPath.GENERATE_TUTORIALS,
+    title: 'Generiere Tutorien',
+    component: GenerateTutorials,
     icon: TutorialIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
     isInDrawer: false,

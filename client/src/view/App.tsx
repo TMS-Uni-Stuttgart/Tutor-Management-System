@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
-import { ROUTES, RouteType, RoutingPath } from '../routes/Routing.routes';
+import { ROUTES, RouteType, RoutingPath, ROOT_REDIRECT_PATH } from '../routes/Routing.routes';
 import AppBar from './AppBar';
-import NavigationRail from './navigation-rail/NavigationRail';
+import NavigationRail from '../components/navigation-rail/NavigationRail';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,7 +63,6 @@ function App() {
   const classes = useStyles();
   const { isLoggedIn } = useLogin();
   const [isDrawerOpen, setDrawerOpen] = useState(true);
-  const { ROOT, LOGIN } = RoutingPath;
 
   const routes = ROUTES.map((route) => getRouteElementForRoute(route));
 
@@ -83,7 +82,11 @@ function App() {
             <Switch>
               {routes}
 
-              <Route exact path={ROOT} render={() => <Redirect to={LOGIN} />} />
+              <Route
+                exact
+                path={RoutingPath.ROOT}
+                render={() => <Redirect to={ROOT_REDIRECT_PATH} />}
+              />
             </Switch>
           </div>
         </div>

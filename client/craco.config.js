@@ -50,7 +50,7 @@ module.exports = {
         (plugin) => !(plugin instanceof ModuleScopePlugin)
       );
 
-      config.output.publicPath = isEnvProduction ? '#{ROUTE_PREFIX}' : '';
+      config.output.publicPath = isEnvProduction ? '/#{ROUTE_PREFIX}' : '/';
       config.plugins = config.plugins.map((plugin) => {
         if (!(plugin instanceof HtmlWebpackPlugin)) {
           return plugin;

@@ -23,8 +23,13 @@ interface AssertUserListParam {
 }
 
 interface AssertUserDTOParams {
-  expected: UserDTO;
+  expected: UserDTO & { password?: string };
   actual: IUser;
+}
+
+interface AssertGeneratedUsersParams {
+  expected: CreateUserDTO[];
+  actual: IUser[];
 }
 
 /**
@@ -80,12 +85,13 @@ function assertUserList({ expected, actual }: AssertUserListParam) {
  * Equalitiy is defined as:
  * - The IDs of the tutorials are the same.
  * - The IDS of the tutorials to correct are the same.
+ * - If `expected` has a `password` field the `temporaryPassword` field of the `actual` user must match the `password` field.
  * - The rest of `expected` matches the rest of `actual` (__excluding `id` and `temporaryPassword`__).
  *
  * @param params Must contain an expected UserDTO and an actual User.
  */
 function assertUserDTO({ expected, actual }: AssertUserDTOParams) {
-  const { tutorials, tutorialsToCorrect, ...restExpected } = expected;
+  const { tutorials, tutorialsToCorrect, password, ...restExpected } = expected;
   const {
     id,
     temporaryPassword,
@@ -99,7 +105,34 @@ function assertUserDTO({ expected, actual }: AssertUserDTOParams) {
   expect(actualTutorials.map((tutorial) => tutorial.id)).toEqual(tutorials);
   expect(actualToCorrect.map((tutorial) => tutorial.id)).toEqual(tutorialsToCorrect);
 
+  if (!!password) {
+    expect(temporaryPassword).toEqual(password);
+  }
+
   expect(restActual).toEqual(restExpected);
+}
+
+/**
+ * Checks if the two given lists match.
+ *
+ * Matching is defined as:
+ * - Both lists have the same length.
+ * - Each DTO has a corresponding user which got created using it's information.
+ *
+ * @param expected List containing the DTO holding the information of the users which should have been created.
+ * @param actual List of actually generated users.
+ */
+function assertGeneratedUsers({ expected, actual }: AssertGeneratedUsersParams) {
+  expect(actual.length).toBe(expected.length);
+
+  for (const { ...dto } of expected) {
+    const idx = actual.findIndex((u) => u.username === dto.username);
+    const user = actual[idx];
+
+    expect(idx).not.toBe(-1);
+    assertUserDTO({ expected: dto, actual: user });
+    // expect(user.temporaryPassword).toEqual(password);
+  }
 }
 
 describe('UserService', () => {
@@ -150,10 +183,8 @@ describe('UserService', () => {
 
     const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword } = sanitizeObject(createdUser);
 
     assertUserDTO({ expected, actual: createdUser });
-    expect(temporaryPassword).toBe(password);
   });
 
   it('create user with ONE tutorial', async () => {
@@ -169,10 +200,8 @@ describe('UserService', () => {
     };
     const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword } = sanitizeObject(createdUser);
 
     assertUserDTO({ expected, actual: createdUser });
-    expect(temporaryPassword).toBe(password);
   });
 
   it('create user with multiple tutorials', async () => {
@@ -189,10 +218,8 @@ describe('UserService', () => {
 
     const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword } = sanitizeObject(createdUser);
 
     assertUserDTO({ expected, actual: createdUser });
-    expect(temporaryPassword).toBe(password);
   });
 
   it('fail on creating a user with already existing username', async () => {
@@ -224,10 +251,8 @@ describe('UserService', () => {
 
     const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword } = sanitizeObject(createdUser);
 
     assertUserDTO({ expected, actual: createdUser });
-    expect(temporaryPassword).toBe(password);
   });
 
   it('create user with multiple tutorials to correct', async () => {
@@ -244,10 +269,8 @@ describe('UserService', () => {
 
     const createdUser: IUser = await service.create(userToCreate);
     const { password, ...expected } = userToCreate;
-    const { temporaryPassword } = sanitizeObject(createdUser);
 
     assertUserDTO({ expected, actual: createdUser });
-    expect(temporaryPassword).toBe(password);
   });
 
   it('fail on creating non-tutor with tutorials', async () => {
@@ -293,6 +316,190 @@ describe('UserService', () => {
     };
 
     await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+  });
+
+  it('create multiple users without tutorials', async () => {
+    const usersToCreate: CreateUserDTO[] = [
+      {
+        firstname: 'Harry',
+        lastname: 'Potter',
+        email: 'harrypotter@hogwarts.com',
+        username: 'usernameOfHarry',
+        password: 'harrysPassword',
+        roles: [Role.TUTOR],
+        tutorials: [],
+        tutorialsToCorrect: [],
+      },
+      {
+        firstname: 'Granger',
+        lastname: 'Hermine',
+        email: 'herminegranger@hogwarts.com',
+        username: 'grangehe',
+        password: 'grangersPassword',
+        roles: [Role.TUTOR],
+        tutorials: [],
+        tutorialsToCorrect: [],
+      },
+    ];
+
+    const created = await service.createMany(usersToCreate);
+
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+  });
+
+  it('create mutliple users with one tutorial each', async () => {
+    const usersToCreate: CreateUserDTO[] = [
+      {
+        firstname: 'Harry',
+        lastname: 'Potter',
+        email: 'harrypotter@hogwarts.com',
+        username: 'usernameOfHarry',
+        password: 'harrysPassword',
+        roles: [Role.TUTOR],
+        tutorials: [TUTORIAL_DOCUMENTS[0]._id],
+        tutorialsToCorrect: [],
+      },
+      {
+        firstname: 'Granger',
+        lastname: 'Hermine',
+        email: 'herminegranger@hogwarts.com',
+        username: 'grangehe',
+        password: 'grangersPassword',
+        roles: [Role.TUTOR],
+        tutorials: [TUTORIAL_DOCUMENTS[1]._id],
+        tutorialsToCorrect: [],
+      },
+    ];
+
+    const created = await service.createMany(usersToCreate);
+
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+  });
+
+  it('create multiple users with one tutorial to correct each', async () => {
+    const usersToCreate: CreateUserDTO[] = [
+      {
+        firstname: 'Harry',
+        lastname: 'Potter',
+        email: 'harrypotter@hogwarts.com',
+        username: 'usernameOfHarry',
+        password: 'harrysPassword',
+        roles: [Role.CORRECTOR],
+        tutorials: [],
+        tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
+      },
+      {
+        firstname: 'Granger',
+        lastname: 'Hermine',
+        email: 'herminegranger@hogwarts.com',
+        username: 'grangehe',
+        password: 'grangersPassword',
+        roles: [Role.CORRECTOR],
+        tutorials: [],
+        tutorialsToCorrect: [TUTORIAL_DOCUMENTS[1]._id],
+      },
+    ];
+
+    const created = await service.createMany(usersToCreate);
+
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+  });
+
+  it('create multiple users with tutorials and tutorials to correct.', async () => {
+    const usersToCreate: CreateUserDTO[] = [
+      {
+        firstname: 'Harry',
+        lastname: 'Potter',
+        email: 'harrypotter@hogwarts.com',
+        username: 'usernameOfHarry',
+        password: 'harrysPassword',
+        roles: [Role.TUTOR],
+        tutorials: [TUTORIAL_DOCUMENTS[0]._id],
+        tutorialsToCorrect: [],
+      },
+      {
+        firstname: 'Granger',
+        lastname: 'Hermine',
+        email: 'herminegranger@hogwarts.com',
+        username: 'grangehe',
+        password: 'grangersPassword',
+        roles: [Role.TUTOR, Role.CORRECTOR],
+        tutorials: [TUTORIAL_DOCUMENTS[1]._id],
+        tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
+      },
+    ];
+
+    const created = await service.createMany(usersToCreate);
+
+    assertGeneratedUsers({ expected: usersToCreate, actual: created });
+  });
+
+  it('fail with correct error on creating multiple users with tutorials where one is NOT a tutor', async () => {
+    const usersToCreate: CreateUserDTO[] = [
+      {
+        firstname: 'Harry',
+        lastname: 'Potter',
+        email: 'harrypotter@hogwarts.com',
+        username: 'usernameOfHarry',
+        password: 'harrysPassword',
+        roles: [Role.CORRECTOR],
+        tutorials: [TUTORIAL_DOCUMENTS[0]._id],
+        tutorialsToCorrect: [],
+      },
+      {
+        firstname: 'Hermine',
+        lastname: 'Granger',
+        email: 'herminegranger@hogwarts.com',
+        username: 'grangehe',
+        password: 'grangersPassword',
+        roles: [Role.TUTOR],
+        tutorials: [TUTORIAL_DOCUMENTS[1]._id],
+        tutorialsToCorrect: [],
+      },
+    ];
+
+    const userCountBefore = (await service.findAll()).length;
+    await expect(service.createMany(usersToCreate)).rejects.toThrow(
+      `["[Potter, Harry]: A user with tutorials needs to have the 'TUTOR' role"]`
+    );
+
+    // No user should have effectively been created.
+    const userCountAfter = (await service.findAll()).length;
+    expect(userCountAfter).toBe(userCountBefore);
+  });
+
+  it('fail with correct error on creating multiple users with tutorials to correct where one is NOT a corrector', async () => {
+    const usersToCreate: CreateUserDTO[] = [
+      {
+        firstname: 'Harry',
+        lastname: 'Potter',
+        email: 'harrypotter@hogwarts.com',
+        username: 'usernameOfHarry',
+        password: 'harrysPassword',
+        roles: [Role.CORRECTOR],
+        tutorials: [],
+        tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
+      },
+      {
+        firstname: 'Hermine',
+        lastname: 'Granger',
+        email: 'herminegranger@hogwarts.com',
+        username: 'grangehe',
+        password: 'grangersPassword',
+        roles: [Role.TUTOR],
+        tutorials: [],
+        tutorialsToCorrect: [TUTORIAL_DOCUMENTS[1]._id],
+      },
+    ];
+
+    const userCountBefore = (await service.findAll()).length;
+    await expect(service.createMany(usersToCreate)).rejects.toThrow(
+      `["[Granger, Hermine]: A user with tutorials to correct needs to have the 'CORRECTOR' role"]`
+    );
+
+    // No user should have effectively been created.
+    const userCountAfter = (await service.findAll()).length;
+    expect(userCountAfter).toBe(userCountBefore);
   });
 
   it('get a user with a specific ID', async () => {

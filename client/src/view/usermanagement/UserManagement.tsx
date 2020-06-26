@@ -1,30 +1,37 @@
+import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { useSnackbar, SnackbarKey } from 'notistack';
+import {
+  EmailSendOutline as SendIcon,
+  Printer as PrintIcon,
+  TableArrowDown as ImportIcon,
+} from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
-import { ICreateUserDTO, IUserDTO, IUser } from 'shared/model/User';
+import { ICreateUserDTO, IUser, IUserDTO } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
-import SubmitButton from '../../components/loading/SubmitButton';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
-import SnackbarWithList from '../../components/SnackbarWithList';
+import SubmitButton from '../../components/loading/SubmitButton';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
-import { saveBlob } from '../../util/helperFunctions';
-import UserTableRow from './components/UserTableRow';
+import { getCredentialsPDF } from '../../hooks/fetching/Files';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 import {
-  setTemporaryPassword,
-  getUsers,
   createUser,
+  deleteUser,
   editUser,
+  getUsers,
   sendCredentials as sendCredentialsRequest,
   sendCredentialsToSingleUser as sendCredentialsToSingleUserRequest,
-  deleteUser,
+  setTemporaryPassword,
 } from '../../hooks/fetching/User';
-import { getCredentialsPDF } from '../../hooks/fetching/Files';
+import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { Tutorial } from '../../model/Tutorial';
+import { RoutingPath } from '../../routes/Routing.routes';
+import { saveBlob } from '../../util/helperFunctions';
+import UserTableRow from './components/UserTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,7 +87,7 @@ function UserManagement(): JSX.Element {
   const [isSendingCredentials, setSendingCredentials] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
   const dialog = useDialog();
 
   useEffect(() => {
@@ -259,19 +266,12 @@ function UserManagement(): JSX.Element {
           return user ? getNameOfEntity(user) : 'NOT_FOUND';
         });
 
-        enqueueSnackbar('', {
-          persist: true,
-          content: (id: SnackbarKey) => (
-            <SnackbarWithList
-              id={id}
-              title={'Nicht zugestellte Zugangsdaten'}
-              textBeforeList={
-                'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:'
-              }
-              items={failedNames}
-              isOpen
-            />
-          ),
+        enqueueSnackbarWithList({
+          title: 'Nicht zugestellte Zugangsdaten',
+          textBeforeList:
+            'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:',
+          items: failedNames,
+          isOpen: true,
         });
       }
     } catch {
@@ -332,6 +332,7 @@ function UserManagement(): JSX.Element {
               <SubmitButton
                 variant='outlined'
                 isSubmitting={isSendingCredentials}
+                startIcon={<SendIcon />}
                 onClick={handleSendCredentials}
               >
                 Zugangsdaten verschicken
@@ -340,13 +341,22 @@ function UserManagement(): JSX.Element {
               <SubmitButton
                 variant='outlined'
                 isSubmitting={isSendingCredentials}
+                startIcon={<PrintIcon />}
                 onClick={handlePrintCredentials}
-                style={{
-                  marginLeft: 8,
-                }}
+                style={{ marginLeft: 8 }}
               >
                 Zugangsdaten ausdrucken
               </SubmitButton>
+
+              <Button
+                variant='outlined'
+                component={Link}
+                to={RoutingPath.IMPORT_USERS}
+                startIcon={<ImportIcon />}
+                style={{ marginLeft: 8 }}
+              >
+                Generieren
+              </Button>
             </>
           }
           items={users}

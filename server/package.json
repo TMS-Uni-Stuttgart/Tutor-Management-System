@@ -21,7 +21,7 @@
     "test": "env-cmd cross-env NODE_ENV=test jest",
     "test:watch": "yarn test --watch",
     "test:cov": "yarn test --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:debug:win": "env-cmd cross-env NODE_ENV=test node --inspect-brk -r tsconfig-paths/register -r ts-node/register ../node_modules/jest/bin/jest.js --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
@@ -44,6 +44,7 @@
     "mongoose-field-encryption": "^3.0.4",
     "nestjs-typegoose": "^7.1.28",
     "nodemailer": "^6.4.10",
+    "papaparse": "^5.2.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pug": "^3.0.0",
@@ -66,6 +67,7 @@
     "@types/mongoose": "^5.7.21",
     "@types/node": "^14.0.14",
     "@types/nodemailer": "^6.4.0",
+    "@types/papaparse": "^5.0.4",
     "@types/passport-local": "^1.0.33",
     "@types/pug": "^2.0.4",
     "@types/puppeteer": "1.19.0",

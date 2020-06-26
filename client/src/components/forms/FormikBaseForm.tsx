@@ -96,12 +96,7 @@ function FormikBaseForm<VALUES>({
             </SubmitButton>
           </div>
 
-          {enableDebug && (
-            <FormikDebugDisplay
-              values={formik.values}
-              errors={enableErrorsInDebug ? formik.errors : undefined}
-            />
-          )}
+          {enableDebug && <FormikDebugDisplay showErrors={enableErrorsInDebug} />}
         </form>
       )}
     </Formik>

@@ -14,7 +14,7 @@ import {
 import clsx from 'clsx';
 import { ChevronRight } from 'mdi-material-ui';
 import React, { MouseEventHandler, useState } from 'react';
-import { renderLink } from '../../../components/drawer/components/renderLink';
+import { renderLink } from './renderLink';
 import { getTargetLink, useIsCurrentPath } from './RailItem.helpers';
 import RailSubItem, { RailSubItemProps } from './RailSubItem';
 

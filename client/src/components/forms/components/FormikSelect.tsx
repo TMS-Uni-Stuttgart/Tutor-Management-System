@@ -29,7 +29,7 @@ function FormikSelect<T>({ onChange, name, helperText, ...other }: Props<T>): JS
           {...other}
           {...field}
           onChange={handleChange(field.onChange)}
-          helperText={!!touched && error}
+          helperText={(!!touched && error) || helperText}
           error={touched && !!error}
         />
       )}

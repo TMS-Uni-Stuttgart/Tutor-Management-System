@@ -1,7 +1,10 @@
+import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
+import { AutoFix as GenerateIcon } from 'mdi-material-ui';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { HasId } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
 import { ITutorialDTO } from 'shared/model/Tutorial';
@@ -23,6 +26,7 @@ import {
 } from '../../hooks/fetching/Tutorial';
 import { getUsersWithRole } from '../../hooks/fetching/User';
 import { Tutorial } from '../../model/Tutorial';
+import { RoutingPath } from '../../routes/Routing.routes';
 import { compareDateTimes } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
 
@@ -190,6 +194,16 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
           title='Neues Tutorium erstellen'
           form={
             <TutorialForm tutors={tutors} correctors={correctors} onSubmit={handleCreateTutorial} />
+          }
+          topBarContent={
+            <Button
+              variant='outlined'
+              component={Link}
+              to={RoutingPath.GENERATE_TUTORIALS}
+              startIcon={<GenerateIcon />}
+            >
+              Generieren
+            </Button>
           }
           items={tutorials}
           createRowFromItem={(tutorial) => (
