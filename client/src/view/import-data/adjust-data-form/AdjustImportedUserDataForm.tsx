@@ -102,6 +102,7 @@ function AdjustImportedUserDataForm(): JSX.Element {
       enqueueSnackbar(`${response.length} Nutzer/innen wurden erstellt.`, {
         variant: 'success',
       });
+      // TODO: Parse error message and show SnackbarWithList -- create a new type like "RequestError".
     } catch (err) {
       enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });
     }

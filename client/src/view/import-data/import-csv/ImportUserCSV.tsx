@@ -123,11 +123,10 @@ function ImportUserCSV(): JSX.Element {
       <Box display='flex' marginBottom={2} alignItems='center'>
         <Typography variant='h4'>CSV importieren</Typography>
 
-        {/* TODO: Oder Dropdown-Box? */}
         <TextField
           variant='outlined'
           label='Seperator'
-          helperText='Leer lassen: Seperator wird automatisch bestimmt.'
+          helperText='Der Seperator wird automatisch bestimmt, wenn Feld leer'
           value={seperator}
           onChange={(e) => setSeparator(e.target.value)}
           style={{ marginLeft: 'auto' }}
