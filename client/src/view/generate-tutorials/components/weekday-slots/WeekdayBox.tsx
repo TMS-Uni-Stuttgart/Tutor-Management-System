@@ -43,9 +43,13 @@ interface Props extends BoxProps {
 }
 
 function sortSlots(intervals: WeekdayTimeSlot[]): WeekdayTimeSlot[] {
-  return [...intervals].sort((a, b) =>
-    a.interval.start.toFormat('HH:mm').localeCompare(b.interval.start.toFormat('HH:mm'))
-  );
+  return [...intervals].sort((a, b) => {
+    if (!a.interval.isValid || !b.interval.isValid) {
+      return -1;
+    }
+
+    return a.interval.start.toFormat('HH:mm').localeCompare(b.interval.start.toFormat('HH:mm'));
+  });
 }
 
 function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {

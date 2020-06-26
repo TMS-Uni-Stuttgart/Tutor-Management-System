@@ -181,6 +181,7 @@ function SelectInterval({
 
   const handleStartChanged = (date: DateTime | null) => {
     if (!date) {
+      setValue(Interval.invalid('Start date not defined.'));
       return;
     }
 
@@ -201,6 +202,8 @@ function SelectInterval({
   const handleEndChanged = (date: DateTime | null) => {
     if (!!date) {
       setValue(Interval.fromDateTimes(lastValid.start, date));
+    } else {
+      setValue(Interval.invalid('End date not defined.'));
     }
   };
 
