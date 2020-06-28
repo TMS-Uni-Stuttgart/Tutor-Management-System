@@ -1,8 +1,8 @@
 import { arrayProp, DocumentType, mongoose, prop } from '@typegoose/typegoose';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { ExercisePointInfo } from '../../shared/model/Points';
 import { IExercise, ISubexercise } from '../../shared/model/Sheet';
+import { generateObjectId } from '../../helpers/generateObjectId';
 
 export interface HasExerciseDocuments {
   id?: string;
