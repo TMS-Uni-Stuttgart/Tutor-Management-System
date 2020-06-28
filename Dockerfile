@@ -9,7 +9,6 @@ FROM node:12 as build
 
 COPY client/ tms/client/
 COPY server/ tms/server/
-COPY shared/ tms/shared/
 
 COPY package.json tms/
 COPY yarn.lock tms/
@@ -26,26 +25,24 @@ RUN yarn build
 # =============================================
 FROM alpine:3
 
-# Installs latest Chromium (76) package.
+# Installs latest Chromium package.
 RUN apk add --no-cache \
-      chromium \
-      nss \
-      freetype \
-      freetype-dev \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont \
-      terminus-font \
-      nodejs-current \
-      yarn 
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    terminus-font \
+    nodejs-current \
+    yarn 
 
-COPY --from=build tms/server/build/src tms/server
-COPY --from=build tms/shared/dist tms/shared/dist
+COPY --from=build tms/server/dist tms/server
 
 COPY package.json /tms
 COPY yarn.lock /tms
 COPY server/package.json /tms/server
-COPY shared/package.json /tms/shared
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package. 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
@@ -53,8 +50,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 # Tell the PDFService where to find the Chrome executable.
 ENV TMS_PUPPETEER_EXEC_PATH "/usr/bin/chromium-browser"
 
-# Puppeteer v1.17.0 works with Chromium 77.
-RUN yarn add puppeteer@1.19.0
+# Fix the puppeteer version to match the one of the latest available chromium alpine package.
+RUN yarn add puppeteer@4.0.1
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
@@ -75,4 +72,4 @@ RUN yarn install --production
 EXPOSE 8080
 WORKDIR /tms/server
 
-ENTRYPOINT [ "node", "server.js" ]
+ENTRYPOINT [ "node", "main.js" ]

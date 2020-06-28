@@ -63,7 +63,7 @@ module.exports = {
               inject: true,
               template: '!!pug-loader!public/index.pug',
               templateParameters: {
-                ROUTE_PREFIX: isEnvProduction ? '#{ROUTE_PREFIX}' : '',
+                ROUTE_PREFIX: isEnvProduction ? '/#{ROUTE_PREFIX}' : '',
               },
             },
             isEnvProduction

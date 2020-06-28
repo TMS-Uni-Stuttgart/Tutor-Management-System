@@ -23,7 +23,7 @@ export class SettingsService {
   private static service: SettingsService | undefined;
 
   private readonly API_PREFIX = 'api';
-  private readonly STATIC_FOLDER = 'static';
+  private readonly STATIC_FOLDER = 'app';
 
   private readonly logger = new Logger(SettingsService.name);
 
