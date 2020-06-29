@@ -85,16 +85,16 @@ function TutorialTableRow({
           )}
 
           {correctors.length > 0 && (
-            <>
+            <div>
               {correctors.map((cor) => (
                 <Chip
                   key={cor}
                   label={`Korrektor: ${cor}`}
-                  color='secondary'
                   className={classes.tutorChip}
+                  size={!!tutorial.tutor ? 'small' : 'medium'}
                 />
               ))}
-            </>
+            </div>
           )}
         </div>
 
