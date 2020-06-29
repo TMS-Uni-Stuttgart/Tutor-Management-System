@@ -1,9 +1,8 @@
-import { DateTime } from 'luxon';
 import { Transform } from 'class-transformer';
-import { Modify } from '../typings/Modify';
+import { DateTime } from 'luxon';
 import { ITutorial, UserInEntity } from '../../../server/src/shared/model/Tutorial';
+import { Modify } from '../typings/Modify';
 import { parseDateToMapKey } from '../util/helperFunctions';
-import { Timeline } from 'mdi-material-ui';
 
 interface Modified {
   dates: DateTime[];
