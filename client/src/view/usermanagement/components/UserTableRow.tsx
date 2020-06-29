@@ -75,6 +75,7 @@ function UserTableRow({
                 label={`Korrigiert: ${Tutorial.getDisplayString(tutorial)}`}
                 className={classes.tutorialChip}
                 color='default'
+                size={user.tutorials.length > 0 ? 'small' : 'medium'}
               />
             ))}
           </div>
