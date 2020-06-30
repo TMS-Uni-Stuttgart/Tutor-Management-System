@@ -7,7 +7,9 @@ import { BASE_ROUTES } from './Routes.base';
 import { TUTORIAL_ROUTES } from './Routes.tutorial';
 import { RoutingPath } from './Routes.paths';
 
-type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
+export type RouteComponent =
+  | React.ComponentType<RouteComponentProps<any>>
+  | React.ComponentType<any>;
 
 export interface RouteType {
   path: RoutingPath;
