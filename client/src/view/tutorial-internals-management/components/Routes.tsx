@@ -7,8 +7,20 @@ interface RoutesProps {
   basePath: string;
 }
 
-export function getRouteOfSubPath(basePath: string, subRoute: string): string {
-  return `${basePath}/${subRoute}`.replace(/\/\//g, '/');
+interface RouteOfSubPathParams {
+  basePath: string;
+  subRoute: string;
+  tutorialId?: string;
+}
+
+export function getRouteOfSubPath({
+  basePath,
+  subRoute,
+  tutorialId,
+}: RouteOfSubPathParams): string {
+  const path = `${basePath}/${subRoute}`.replace(/\/\//g, '/');
+
+  return !!tutorialId ? path.replace(':tutorialId', tutorialId) : path;
 }
 
 function Routes({ routes, basePath }: RoutesProps): JSX.Element {
@@ -17,7 +29,7 @@ function Routes({ routes, basePath }: RoutesProps): JSX.Element {
       routes.map((route) => (
         <Route
           key={route.path}
-          path={getRouteOfSubPath(basePath, route.path)}
+          path={getRouteOfSubPath({ basePath, subRoute: route.path })}
           component={route.component}
         />
       )),
