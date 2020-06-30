@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useHistory, useParams, useRouteMatch } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { IGradingDTO } from '../../../../../server/src/shared/model/Points';
 import BackButton from '../../../components/BackButton';
@@ -50,6 +50,7 @@ function EnterScheinexamPoints(): JSX.Element {
   const classes = useStyles();
 
   const history = useHistory();
+  const match = useRouteMatch();
   const { tutorialId, examId, studentId } = useParams<RouteParams>();
 
   const { enqueueSnackbar, setError, isError } = useCustomSnackbar();
@@ -95,7 +96,9 @@ function EnterScheinexamPoints(): JSX.Element {
 
     const studentId = event.target.value as string;
 
-    history.push(getEnterPointsForScheinexamPath({ tutorialId, examId, studentId }));
+    history.push(
+      getEnterPointsForScheinexamPath({ tutorialId, examId, studentId, route: match.path })
+    );
   };
 
   const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {

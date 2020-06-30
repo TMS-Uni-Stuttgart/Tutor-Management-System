@@ -46,6 +46,8 @@ function Content({ routes }: Props): JSX.Element {
   const basePath = useMemo(() => getManageTutorialInternalsPath(':tutorialId'), []);
   const match = useInnerRouteMatch(routes, basePath);
 
+  const items = useMemo(() => routes.filter((r) => r.isInDrawer), [routes]);
+
   useEffect(() => {
     if (!!match) {
       const [, subPath] = match.path.split(basePath);
@@ -82,7 +84,7 @@ function Content({ routes }: Props): JSX.Element {
         <CustomSelect
           label='Bereich auswählen'
           disabled={!tutorial}
-          items={routes}
+          items={items}
           value={value}
           itemToString={(item) => item.title}
           itemToValue={(item) => item.path}
@@ -93,7 +95,7 @@ function Content({ routes }: Props): JSX.Element {
 
       <Divider />
 
-      <Box flex={1} marginTop={2}>
+      <Box flex={1} marginTop={3}>
         <Placeholder
           placeholderText={error ?? 'Kein Tutorium gefunden.'}
           showPlaceholder={!!error || !tutorial}
@@ -107,7 +109,7 @@ function Content({ routes }: Props): JSX.Element {
 }
 
 function TutorialInternalsManagement(): JSX.Element {
-  const routes = useMemo(() => TUTORIAL_ROUTES.filter((r) => r.isInDrawer), []);
+  const routes = useMemo(() => [...TUTORIAL_ROUTES], []);
 
   return <Content routes={routes} />;
 }
