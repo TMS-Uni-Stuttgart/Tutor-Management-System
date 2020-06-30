@@ -28,10 +28,10 @@ interface Props {
 }
 
 function useInnerRouteMatch(routes: RouteType[], basePath: string) {
-  const routeStrings = useMemo(() => routes.map((r) => getRouteOfSubPath(basePath, r.path)), [
-    routes,
-    basePath,
-  ]);
+  const routeStrings = useMemo(
+    () => routes.map((r) => getRouteOfSubPath({ basePath, subRoute: r.path })),
+    [routes, basePath]
+  );
   const match = useRouteMatch(routeStrings);
   return match;
 }
@@ -43,16 +43,8 @@ function Content({ routes }: Props): JSX.Element {
   const { tutorial, isLoading, error } = useTutorialFromPath();
 
   const [value, setValue] = useState('');
-  const [basePath, setBasePath] = useState(() => getManageTutorialInternalsPath('TUT_ID'));
+  const basePath = useMemo(() => getManageTutorialInternalsPath(':tutorialId'), []);
   const match = useInnerRouteMatch(routes, basePath);
-
-  useEffect(() => {
-    if (!tutorial) {
-      return;
-    }
-
-    setBasePath(getManageTutorialInternalsPath(tutorial.id));
-  }, [tutorial]);
 
   useEffect(() => {
     if (!!match) {
@@ -68,7 +60,13 @@ function Content({ routes }: Props): JSX.Element {
       return;
     }
 
-    history.push({ pathname: getRouteOfSubPath(basePath, e.target.value) });
+    if (!tutorial) {
+      return;
+    }
+
+    history.push({
+      pathname: getRouteOfSubPath({ basePath, subRoute: e.target.value, tutorialId: tutorial.id }),
+    });
   };
 
   return (
@@ -94,7 +92,7 @@ function Content({ routes }: Props): JSX.Element {
 
       <Divider />
 
-      <Box flex={1} marginTop={2} style={{ overflowY: 'auto' }}>
+      <Box flex={1} marginTop={2}>
         <Placeholder
           placeholderText={error ?? 'Kein Tutorium gefunden.'}
           showPlaceholder={!!error || !tutorial}
