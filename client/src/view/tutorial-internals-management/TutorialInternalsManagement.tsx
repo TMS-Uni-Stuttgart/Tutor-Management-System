@@ -1,12 +1,15 @@
 import { Box, Divider, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import BackButton from '../../components/BackButton';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
+import Placeholder from '../../components/Placeholder';
+import { useTutorialFromPath } from '../../hooks/useTutorialFromPath';
 import { TUTORIAL_ROUTES } from '../../routes/Routes.tutorial';
-import { RouteType, RoutingPath } from '../../routes/Routing.routes';
 import { getManageTutorialInternalsPath } from '../../routes/Routing.helpers';
+import { RouteType, RoutingPath } from '../../routes/Routing.routes';
+import Routes, { getRouteOfSubPath } from './components/Routes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -22,33 +25,6 @@ const useStyles = makeStyles((theme) =>
 
 interface Props {
   routes: RouteType[];
-  basePath: string;
-}
-
-interface Item {
-  path: string;
-  title: string;
-  component: JSX.Element;
-}
-
-function getRouteOfSubPath(basePath: string, subRoute: string): string {
-  return `${basePath}/${subRoute}`.replace(/\/\//g, '/');
-}
-
-function Routes({ routes, basePath }: Props): JSX.Element {
-  const routesToRender = useMemo(
-    () =>
-      routes.map((route) => (
-        <Route
-          key={route.path}
-          path={getRouteOfSubPath(basePath, route.path)}
-          component={route.component}
-        />
-      )),
-    [routes, basePath]
-  );
-
-  return <Switch>{routesToRender}</Switch>;
 }
 
 function useInnerRouteMatch(routes: RouteType[], basePath: string) {
@@ -60,12 +36,23 @@ function useInnerRouteMatch(routes: RouteType[], basePath: string) {
   return match;
 }
 
-function Content({ routes, basePath }: Props): JSX.Element {
+function Content({ routes }: Props): JSX.Element {
   const classes = useStyles();
-  const history = useHistory();
-  const [value, setValue] = useState('');
 
+  const history = useHistory();
+  const { tutorial, isLoading, error } = useTutorialFromPath();
+
+  const [value, setValue] = useState('');
+  const [basePath, setBasePath] = useState(() => getManageTutorialInternalsPath('TUT_ID'));
   const match = useInnerRouteMatch(routes, basePath);
+
+  useEffect(() => {
+    if (!tutorial) {
+      return;
+    }
+
+    setBasePath(getManageTutorialInternalsPath(tutorial.id));
+  }, [tutorial]);
 
   useEffect(() => {
     if (!!match) {
@@ -89,10 +76,13 @@ function Content({ routes, basePath }: Props): JSX.Element {
       <Box marginBottom={2} display='flex' alignItems='center'>
         <BackButton to={RoutingPath.MANAGE_TUTORIALS} />
 
-        <Typography className={classes.header}>Verwalte [[TUTORIAL_SLOT_NAME]]</Typography>
+        <Typography className={classes.header} variant='h5'>
+          {!!tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
+        </Typography>
 
         <CustomSelect
           label='Bereich auswählen'
+          disabled={!tutorial}
           items={routes}
           value={value}
           itemToString={(item) => item.title}
@@ -105,18 +95,22 @@ function Content({ routes, basePath }: Props): JSX.Element {
       <Divider />
 
       <Box flex={1} marginTop={2} style={{ overflowY: 'auto' }}>
-        <Routes routes={routes} basePath={basePath} />
+        <Placeholder
+          placeholderText={error ?? 'Kein Tutorium gefunden.'}
+          showPlaceholder={!!error || !tutorial}
+          loading={isLoading}
+        >
+          <Routes routes={routes} basePath={basePath} />
+        </Placeholder>
       </Box>
     </Box>
   );
 }
 
 function TutorialInternalsManagement(): JSX.Element {
-  const tutorialId = 'TUT_ID'; // TODO:
   const routes = useMemo(() => TUTORIAL_ROUTES.filter((r) => r.isInDrawer), []);
-  const basePath = useMemo(() => getManageTutorialInternalsPath(tutorialId), [tutorialId]);
 
-  return <Content basePath={basePath} routes={routes} />;
+  return <Content routes={routes} />;
 }
 
 export default TutorialInternalsManagement;

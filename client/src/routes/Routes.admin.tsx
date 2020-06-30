@@ -68,7 +68,7 @@ export const ADMIN_ROUTES: readonly RouteType[] = [
     icon: TutorialIcon,
     roles: [Role.ADMIN],
     isInDrawer: false,
-    isPrivate: false, // FIXME:
+    isPrivate: true,
     isExact: false,
   },
   {
