@@ -1,4 +1,4 @@
-import { Type, Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { TutorialInEntity } from '../../../server/src/shared/model/Common';
 import { Role } from '../../../server/src/shared/model/Role';
@@ -31,4 +31,8 @@ export class LoggedInUser implements Modify<ILoggedInUser, Modified> {
 
   @Type(() => LoggedInSubstituteTutorial)
   readonly substituteTutorials!: LoggedInSubstituteTutorial[];
+
+  isAdmin(): boolean {
+    return this.roles.includes(Role.ADMIN);
+  }
 }
