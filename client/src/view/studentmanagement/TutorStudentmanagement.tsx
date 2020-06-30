@@ -2,7 +2,7 @@ import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { RouteComponentProps, useParams } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { Student } from '../../model/Student';
 import Studentoverview from './student-overview/Studentoverview';
@@ -47,9 +47,9 @@ export function getFilteredStudents(students: Student[], filterText: string): St
   });
 }
 
-function TutorStudentmanagement({ match: { params } }: PropType): JSX.Element {
+function TutorStudentmanagement(): JSX.Element {
+  const { tutorialId } = useParams<{ tutorialId: string }>();
   const classes = useStyles();
-  const tutorialId: string = params.tutorialId;
 
   return (
     <StudentoverviewStoreProvider tutorialId={tutorialId}>
@@ -58,4 +58,4 @@ function TutorStudentmanagement({ match: { params } }: PropType): JSX.Element {
   );
 }
 
-export default withRouter(TutorStudentmanagement);
+export default TutorStudentmanagement;
