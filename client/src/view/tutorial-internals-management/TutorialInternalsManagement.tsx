@@ -64,8 +64,9 @@ function Content({ routes }: Props): JSX.Element {
       return;
     }
 
+    const subRoute = e.target.value.replace(/\/:\w+\?$/, '');
     history.push({
-      pathname: getRouteOfSubPath({ basePath, subRoute: e.target.value, tutorialId: tutorial.id }),
+      pathname: getRouteOfSubPath({ basePath, subRoute, tutorialId: tutorial.id }),
     });
   };
 

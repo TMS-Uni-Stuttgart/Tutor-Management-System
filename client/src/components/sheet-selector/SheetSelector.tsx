@@ -33,7 +33,6 @@ interface OuterProps {
 }
 
 interface Props extends OuterProps {
-  generatePath: ({ sheetId }: GenerateOptions) => string;
   sheets: Sheet[];
   isLoadingSheets: boolean;
   currentSheet?: Sheet;
@@ -50,6 +49,7 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions) {
   const [currentSheet, setCurrentSheet] = useState<Sheet>();
 
   useEffect(() => {
+    setError(undefined);
     setLoadingSheets(true);
 
     getAllSheets()
@@ -88,7 +88,6 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions) {
         onChange={onSheetSelection}
         sheets={sheets}
         currentSheet={currentSheet}
-        generatePath={generatePath}
         isLoadingSheets={isLoadingSheets}
       />
     ),
