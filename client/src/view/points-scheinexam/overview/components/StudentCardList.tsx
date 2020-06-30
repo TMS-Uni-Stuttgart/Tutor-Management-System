@@ -6,12 +6,12 @@ import StudentCard from './StudentCard';
 import Placeholder from '../../../../components/Placeholder';
 
 interface Props {
-  tutorialId: string;
   students: Student[];
   exam: Scheinexam;
+  getPathTo: (student: Student) => string;
 }
 
-function StudentCardList({ students, tutorialId, exam }: Props): JSX.Element {
+function StudentCardList({ students, exam, getPathTo }: Props): JSX.Element {
   return (
     <Placeholder
       placeholderText='Keine Studierenden verfügbar.'
@@ -19,7 +19,7 @@ function StudentCardList({ students, tutorialId, exam }: Props): JSX.Element {
     >
       <CardList>
         {students.map((student) => (
-          <StudentCard key={student.id} student={student} exam={exam} tutorialId={tutorialId} />
+          <StudentCard key={student.id} student={student} exam={exam} pathTo={getPathTo(student)} />
         ))}
       </CardList>
     </Placeholder>

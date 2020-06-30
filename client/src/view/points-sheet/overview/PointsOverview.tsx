@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useRouteMatch } from 'react-router';
 import SubmitButton from '../../../components/loading/SubmitButton';
 import Placeholder from '../../../components/Placeholder';
 import { useSheetSelector } from '../../../components/sheet-selector/SheetSelector';
@@ -47,6 +47,7 @@ enum PDFGeneratingState {
 function PointsOverview(): JSX.Element {
   const classes = useStyles();
   const { tutorialId } = useParams<RouteParams>();
+  const match = useRouteMatch();
 
   const { SheetSelector, currentSheet, isLoadingSheets } = useSheetSelector({
     generatePath: ({ sheetId }) => {
@@ -54,7 +55,7 @@ function PointsOverview(): JSX.Element {
         throw new Error('The path needs to contain a tutorialId parameter.');
       }
 
-      return getPointOverviewPath({ tutorialId, sheetId });
+      return getPointOverviewPath({ tutorialId, sheetId, route: match.path });
     },
   });
 

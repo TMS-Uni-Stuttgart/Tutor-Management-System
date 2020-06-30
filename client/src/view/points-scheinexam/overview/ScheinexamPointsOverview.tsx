@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useHistory, useParams, useRouteMatch } from 'react-router';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
@@ -8,7 +8,10 @@ import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
-import { getScheinexamPointsOverviewPath } from '../../../routes/Routing.helpers';
+import {
+  getScheinexamPointsOverviewPath,
+  getEnterPointsForScheinexamPath,
+} from '../../../routes/Routing.helpers';
 import StudentCardList from './components/StudentCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,6 +40,7 @@ function ScheinexamPointsOverview(): JSX.Element {
   const classes = useStyles();
 
   const history = useHistory();
+  const match = useRouteMatch();
   const { tutorialId, examId } = useParams<RouteParams>();
 
   const { setError } = useErrorSnackbar();
@@ -77,7 +81,7 @@ function ScheinexamPointsOverview(): JSX.Element {
     }
 
     const examId: string = e.target.value;
-    history.push(getScheinexamPointsOverviewPath({ tutorialId, examId }));
+    history.push(getScheinexamPointsOverviewPath({ tutorialId, examId, route: match.path }));
   };
 
   return (
@@ -101,7 +105,18 @@ function ScheinexamPointsOverview(): JSX.Element {
         loading={!!examId && !selectedExam}
       >
         {selectedExam && (
-          <StudentCardList students={students} exam={selectedExam} tutorialId={tutorialId} />
+          <StudentCardList
+            students={students}
+            exam={selectedExam}
+            getPathTo={(student) =>
+              getEnterPointsForScheinexamPath({
+                tutorialId,
+                examId: selectedExam.id,
+                studentId: student.id,
+                route: match.path,
+              })
+            }
+          />
         )}
       </Placeholder>
     </div>

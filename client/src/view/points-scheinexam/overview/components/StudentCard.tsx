@@ -7,7 +7,6 @@ import { getNameOfEntity } from 'shared/util/helpers';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { Scheinexam } from '../../../../model/Scheinexam';
 import { Student } from '../../../../model/Student';
-import { getEnterPointsForScheinexamPath } from '../../../../routes/Routing.helpers';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -18,12 +17,12 @@ const useStyles = makeStyles(() =>
 );
 
 interface Props {
-  tutorialId: string;
   student: Student;
   exam: Scheinexam;
+  pathTo: string;
 }
 
-function StudentCard({ student, exam, tutorialId }: Props): JSX.Element {
+function StudentCard({ student, exam, pathTo }: Props): JSX.Element {
   const classes = useStyles();
 
   return (
@@ -39,15 +38,7 @@ function StudentCard({ student, exam, tutorialId }: Props): JSX.Element {
       </CardContent>
 
       <CardActions className={classes.actions}>
-        <Button
-          variant='outlined'
-          component={Link}
-          to={getEnterPointsForScheinexamPath({
-            tutorialId,
-            examId: exam.id,
-            studentId: student.id,
-          })}
-        >
+        <Button variant='outlined' component={Link} to={pathTo}>
           Punkte eintragen
         </Button>
       </CardActions>
