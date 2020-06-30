@@ -2,19 +2,17 @@ import { Button, Chip, TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import React from 'react';
-import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
+import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
+import { getManageTutorialInternalsPath } from '../../../routes/Routing.helpers';
 import { RoutingPath } from '../../../routes/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     tutorChip: {
       margin: theme.spacing(0.5),
-    },
-    wrappingCell: {
-      // whiteSpace: 'pre-line',
     },
     substituteButton: {
       marginRight: theme.spacing(1),
@@ -33,6 +31,7 @@ interface Props extends PaperTableRowProps {
   correctors: string[];
   onEditTutorialClicked: (tutorial: Tutorial) => void;
   onDeleteTutorialClicked: (tutorial: Tutorial) => void;
+  disableManageTutorialButton?: boolean;
 }
 
 function TutorialTableRow({
@@ -41,6 +40,7 @@ function TutorialTableRow({
   correctors,
   onEditTutorialClicked,
   onDeleteTutorialClicked,
+  disableManageTutorialButton,
   ...rest
 }: Props): JSX.Element {
   const classes = useStyles();
@@ -53,6 +53,15 @@ function TutorialTableRow({
       subText={`Zeit: ${tutorial.getTimeString()}`}
       buttonCellContent={
         <>
+          <Button
+            variant='outlined'
+            className={classes.substituteButton}
+            component={renderLink(getManageTutorialInternalsPath(tutorial.id))}
+            disabled={disableManageTutorialButton}
+          >
+            Verwalten
+          </Button>
+
           <Button
             variant='outlined'
             className={classes.substituteButton}
@@ -73,7 +82,7 @@ function TutorialTableRow({
       }
       {...rest}
     >
-      <TableCell className={classes.wrappingCell}>
+      <TableCell>
         <div>
           {tutorial.tutor && (
             <Chip
