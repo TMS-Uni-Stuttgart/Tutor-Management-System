@@ -7,7 +7,8 @@ import { Role } from '../../../server/src/shared/model/Role';
 import Dashboard from '../view/dashboard/Dashboard';
 import Login from '../view/Login';
 import StudentInfo from '../view/studentmanagement/student-info/StudentInfo';
-import { RouteType, RoutingPath } from './Routing.routes';
+import { RouteType } from './Routing.routes';
+import { RoutingPath } from './Routes.paths';
 
 export const BASE_ROUTES: readonly RouteType[] = [
   {

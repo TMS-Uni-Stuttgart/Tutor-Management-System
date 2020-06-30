@@ -20,7 +20,8 @@ import TutorialInternalsManagement from '../view/tutorial-internals-management/T
 import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
 import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
 import UserManagement from '../view/usermanagement/UserManagement';
-import { RouteType, RoutingPath } from './Routing.routes';
+import { RouteType } from './Routing.routes';
+import { RoutingPath } from './Routes.paths';
 
 export const ADMIN_ROUTES: readonly RouteType[] = [
   {
@@ -68,7 +69,7 @@ export const ADMIN_ROUTES: readonly RouteType[] = [
     roles: [Role.ADMIN],
     isInDrawer: false,
     isPrivate: false, // FIXME:
-    isExact: true,
+    isExact: false,
   },
   {
     path: RoutingPath.MANAGE_TUTORIALS,
