@@ -21,7 +21,7 @@ import {
   Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { matchPath, useLocation } from 'react-router';
 import { TutorialInEntity } from '../../../server/src/shared/model/Common';
 import { useChangeTheme } from '../components/ContextWrapper';
@@ -107,6 +107,8 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
   const [backupAnchor, setBackupAnchor] = useState<HTMLElement | undefined>(undefined);
   const [creatingXLSX, setCreatingXLSX] = useState<CreatingState>({});
 
+  const title = useMemo(() => getTitleFromLocation(location), [location]);
+
   function handleThemeChangeClicked() {
     const newType: PaletteType = theme.palette.type === 'light' ? 'dark' : 'light';
     changeTheme(newType);
@@ -146,7 +148,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
         </IconButton>
 
         <Typography variant='h6' color='inherit' className={classes.grow}>
-          {getTitleFromLocation(location)}
+          {title}
         </Typography>
 
         {userIsLoggedIn && (

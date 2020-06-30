@@ -130,3 +130,8 @@ export function getStudentInfoPath({ studentId, tutorialId }: StudentInfoParams)
 export function getScheincriteriaInfoPath(criteriaId: string): string {
   return RoutingPath.SCHEIN_CRITERIAS_INFO.replace(':id', criteriaId).replace(/\/\/+/, '/');
 }
+
+export function getManageTutorialInternalsPath(tutorialId: string): string {
+  const path = RoutingPath.MANAGE_TUTORIAL_INTERNALS;
+  return path.replace(':tutorialId', tutorialId).replace(/\/\/+/g, '/');
+}
