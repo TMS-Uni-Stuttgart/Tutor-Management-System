@@ -2,6 +2,7 @@ import { RouteType, RoutingPath } from './Routing.routes';
 
 interface PointsOverviewParams {
   tutorialId: string;
+  route?: string;
   sheetId?: string;
 }
 
@@ -56,8 +57,14 @@ export function getPointOverviewPath({ tutorialId, sheetId }: PointsOverviewPara
   }
 }
 
-export function getPresentationPointsPath({ tutorialId, sheetId }: PointsOverviewParams): string {
-  const path = getPathOfRouteWithTutorial(RoutingPath.PRESENTATION_POINTS, tutorialId);
+export function getPresentationPointsPath({
+  tutorialId,
+  sheetId,
+  route,
+}: PointsOverviewParams): string {
+  const path =
+    route?.replace(':tutorialId', tutorialId) ??
+    getPathOfRouteWithTutorial(RoutingPath.PRESENTATION_POINTS, tutorialId);
 
   if (!!sheetId) {
     return path.replace(':sheetId?', sheetId);
