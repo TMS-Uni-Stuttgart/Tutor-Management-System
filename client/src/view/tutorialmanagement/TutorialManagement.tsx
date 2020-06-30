@@ -29,6 +29,7 @@ import { Tutorial } from '../../model/Tutorial';
 import { RoutingPath } from '../../routes/Routing.routes';
 import { compareDateTimes } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
+import { useLoggedInUser } from '../../hooks/LoginService';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -68,11 +69,13 @@ function generateCreateTutorialDTO({
 
 function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
+  const dialog = useDialog();
+  const user = useLoggedInUser();
+
   const [isLoading, setIsLoading] = useState(false);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [tutors, setTutors] = useState<IUser[]>([]);
   const [correctors, setCorrectors] = useState<IUser[]>([]);
-  const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
@@ -209,6 +212,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
           createRowFromItem={(tutorial) => (
             <TutorialTableRow
               tutorial={tutorial}
+              disableManageTutorialButton={!user.isAdmin()}
               correctors={tutorial.correctors.map((corr) => getNameOfEntity(corr))}
               substitutes={[...tutorial.substitutes]
                 .map(([date, substitute]) => {
