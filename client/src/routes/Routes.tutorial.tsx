@@ -16,7 +16,8 @@ import PointsOverview from '../view/points-sheet/overview/PointsOverview';
 import PresentationPoints from '../view/presentation-points/PresentationPoints';
 import TutorStudentmanagement from '../view/studentmanagement/TutorStudentmanagement';
 import Teamoverview from '../view/teamoverview/Teamoverview';
-import { RouteType, RoutingPath } from './Routing.routes';
+import { RouteType } from './Routing.routes';
+import { RoutingPath } from './Routes.paths';
 
 export const TUTORIAL_ROUTES: readonly RouteType[] = [
   {
