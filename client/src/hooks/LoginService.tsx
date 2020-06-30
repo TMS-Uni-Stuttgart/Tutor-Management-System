@@ -147,3 +147,13 @@ export function LoginContextProvider({ children }: React.PropsWithChildren<{}>) 
 export function useLogin(): LoginState {
   return useContext(LoginContext);
 }
+
+export function useLoggedInUser(): LoggedInUser {
+  const { userData } = useContext(LoginContext);
+
+  if (!userData) {
+    throw new Error('No logged in user available.');
+  }
+
+  return userData;
+}
