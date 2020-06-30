@@ -22,7 +22,7 @@ export interface RouteType {
   isExact?: boolean;
 }
 
-export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.MANAGE_TUTORIAL_INTERNALS; // FIXME:
+export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.LOGIN;
 export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
 
 export { RoutingPath };
