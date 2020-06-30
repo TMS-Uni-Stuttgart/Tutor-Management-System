@@ -118,5 +118,18 @@ export function createTheme(type: PaletteType): Theme {
       }),
       chart: generateChartStyle,
     },
+    overrides: {
+      MuiOutlinedInput: {
+        root: {
+          '&$disabled': {
+            '&$disabled': {
+              '& > fieldset': {
+                borderStyle: 'dotted',
+              },
+            },
+          },
+        },
+      },
+    },
   });
 }
