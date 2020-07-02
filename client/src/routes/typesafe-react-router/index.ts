@@ -1,2 +1,3 @@
-export { Route as RouteClass } from './Route';
+export { Route } from './Route';
 export { param } from './param';
+export type { PathPart } from './types';

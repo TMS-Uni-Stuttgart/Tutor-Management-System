@@ -1,4 +1,3 @@
-import { param } from './param';
 import { PathParam, PathPart, RouteParams } from './types';
 
 /**
