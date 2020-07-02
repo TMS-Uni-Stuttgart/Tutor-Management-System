@@ -127,6 +127,44 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
   }
 
   /**
+   * Checks if the current route only contains optional parameters (or none).
+   *
+   * @returns Type Guard of the above.
+   */
+  hasOnlyOptionalParams(): this is OnlyOptionalParamsRoute {
+    for (const part of this.pathParts) {
+      if (this.isParam(part) && !part.optional) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Checks if the current route only contains a 'tutorialId'. All other params must be optional (if present).
+   *
+   * @returns Type Guard of the above.
+   */
+  isTutorialRelatedDrawerRoute(): this is TutorialRelatedDrawerRoute {
+    if (!this.isInDrawer) {
+      return false;
+    }
+
+    for (const part of this.pathParts) {
+      if (this.isParam(part)) {
+        if (part.param !== 'tutorialId' && !part.optional) {
+          return false;
+        } else if (part.param === 'tutorialId' && part.optional) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Checks if the given options object is valid.
    *
    * The object is considered __not__ valid if:
@@ -144,6 +182,10 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
         }'. Got the following path parts:\n${JSON.stringify(options.path, null, 2)}`
       );
     }
+
+    if (options.isInDrawer) {
+      this.checkIfValidDrawerRoute(options);
+    }
   }
 
   /**
@@ -160,6 +202,51 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
       }
     }
     return false;
+  }
+
+  /**
+   * Checks if all parameters in the route:
+   * - Are either optional or the 'tutorialId' param.
+   * - Do __not__ include the 'tutorialId' param if `isTutorialRelated` is `false`.
+   *
+   * @param options Options to check.
+   *
+   * @throws `Error` - If any of the above is false an error is thrown.
+   */
+  private checkIfValidDrawerRoute(options: RouteOptions<Parts>) {
+    for (const part of options.path) {
+      if (this.isParam(part)) {
+        if (!part.optional && part.param !== 'tutorialId') {
+          this.throwInvalidDrawerRouteNonOptional(options);
+        } else if (!options.isTutorialRelated && part.param === 'tutorialId') {
+          this.throwInvalidDrawerRouteNotTutorialRelatedButId(options);
+        }
+      }
+    }
+  }
+
+  private throwInvalidDrawerRouteNonOptional(options: RouteOptions<Parts>): never {
+    throw new Error(
+      `Drawer route can only have 'tutorialId' and optional params. Route with title '${
+        options.title
+      }' violates this constrain. Got the following path parts:\n${JSON.stringify(
+        options.path,
+        null,
+        2
+      )}`
+    );
+  }
+
+  private throwInvalidDrawerRouteNotTutorialRelatedButId(options: RouteOptions<Parts>): never {
+    throw new Error(
+      `Drawer must NOT contains a 'tutorialId' parameter if not related to a tutorial. Route with title '${
+        options.title
+      }' violates this constrain. Got the following path parts:\n${JSON.stringify(
+        options.path,
+        null,
+        2
+      )}`
+    );
   }
 }
 
@@ -180,3 +267,8 @@ export class DrawerRoute<Parts extends BaseArray> extends PrivateRoute<Parts> {
     super({ ...params, isInDrawer: true });
   }
 }
+
+export type OnlyOptionalParamsRoute = CustomRoute<PathPart<string, true>[]>;
+export type TutorialRelatedDrawerRoute = CustomRoute<
+  (PathPart<'tutorialId', false> | PathPart<string, true>)[]
+>;

@@ -1,44 +1,44 @@
 import {
-  ViewDashboard as DashboardIcon,
   Account as StudentIcon,
   AccountMultiple as TeamIcon,
   AccountMultipleCheck as AttendancesIcon,
+  BadgeAccount as UserIcon,
   Book as EnterPointsIcon,
   Comment as PresentationIcon,
-  TextBox as ScheinexamPointsIcon,
-  BadgeAccount as UserIcon,
   File as SheetIcon,
   ScriptText as ScheincriteriaIcon,
   Teach as TutorialIcon,
+  TextBox as ScheinexamPointsIcon,
   TextBoxMultiple as ScheinexamManagementIcon,
+  ViewDashboard as DashboardIcon,
 } from 'mdi-material-ui';
-import Login from '../../view/Login';
-import { parts, CustomRoute, DrawerRoute, PrivateRoute } from './Routing.types';
-import { param } from '../typesafe-react-router';
-import Dashboard from '../../view/dashboard/Dashboard';
-import StudentInfo from '../../view/studentmanagement/student-info/StudentInfo';
 import { Role } from '../../../../server/src/shared/model/Role';
+import AttendanceAdminView from '../../view/attendance/AttendanceAdminView';
 import AttendanceView from '../../view/attendance/AttendanceView';
+import CriteriaInfoView from '../../view/criteria-info-view/CriteriaInfoView';
+import Dashboard from '../../view/dashboard/Dashboard';
+import GenerateTutorials from '../../view/generate-tutorials/GenerateTutorials';
+import ImportUsers from '../../view/import-data/ImportUsers';
+import Login from '../../view/Login';
+import EnterScheinexamPoints from '../../view/points-scheinexam/enter-form/EnterScheinexamPoints';
+import ScheinexamPointsOverview from '../../view/points-scheinexam/overview/ScheinexamPointsOverview';
 import EnterStudentPoints from '../../view/points-sheet/enter-form/EnterStudentPoints';
 import EnterTeamPoints from '../../view/points-sheet/enter-form/EnterTeamPoints';
 import PointsOverview from '../../view/points-sheet/overview/PointsOverview';
-import EnterScheinexamPoints from '../../view/points-scheinexam/enter-form/EnterScheinexamPoints';
 import PresentationPoints from '../../view/presentation-points/PresentationPoints';
-import ScheinexamPointsOverview from '../../view/points-scheinexam/overview/ScheinexamPointsOverview';
+import ScheinCriteriaManagement from '../../view/scheincriteriamanagement/ScheinCriteriaManagement';
+import ScheinExamManagement from '../../view/scheinexam-management/ScheinExamManagement';
+import SheetManagement from '../../view/sheetmanagement/SheetManagement';
+import AllStudentsAdminView from '../../view/studentmanagement/AllStudentsAdminView';
+import StudentInfo from '../../view/studentmanagement/student-info/StudentInfo';
 import TutorStudentmanagement from '../../view/studentmanagement/TutorStudentmanagement';
 import Teamoverview from '../../view/teamoverview/Teamoverview';
-import UserManagement from '../../view/usermanagement/UserManagement';
-import ImportUsers from '../../view/import-data/ImportUsers';
-import TutorialSubstituteManagement from '../../view/tutorialmanagement/TutorialSubstituteManagement';
-import GenerateTutorials from '../../view/generate-tutorials/GenerateTutorials';
 import TutorialInternalsManagement from '../../view/tutorial-internals-management/TutorialInternalsManagement';
 import TutorialManagement from '../../view/tutorialmanagement/TutorialManagement';
-import AllStudentsAdminView from '../../view/studentmanagement/AllStudentsAdminView';
-import CriteriaInfoView from '../../view/criteria-info-view/CriteriaInfoView';
-import ScheinCriteriaManagement from '../../view/scheincriteriamanagement/ScheinCriteriaManagement';
-import SheetManagement from '../../view/sheetmanagement/SheetManagement';
-import AttendanceAdminView from '../../view/attendance/AttendanceAdminView';
-import ScheinExamManagement from '../../view/scheinexam-management/ScheinExamManagement';
+import TutorialSubstituteManagement from '../../view/tutorialmanagement/TutorialSubstituteManagement';
+import UserManagement from '../../view/usermanagement/UserManagement';
+import { param } from '../typesafe-react-router';
+import { CustomRoute, DrawerRoute, parts, PrivateRoute } from './Routing.types';
 
 export const ROUTES = {
   LOGIN: new CustomRoute({
@@ -234,3 +234,6 @@ export const ROUTES = {
 
 export const ROOT_REDIRECT_PATH = ROUTES.LOGIN;
 export const PATH_REDIRECT_AFTER_LOGIN = ROUTES.DASHBOARD;
+
+// type RouteKeys = keyof typeof ROUTES;
+// export type RouteType = typeof ROUTES[RouteKeys];
