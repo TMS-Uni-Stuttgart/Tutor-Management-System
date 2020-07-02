@@ -69,7 +69,7 @@ interface TutorialSubstituteFormState {
 }
 
 interface Params {
-  tutorialid: string;
+  tutorialId: string;
 }
 
 type Props = RouteComponentProps<Params>;
@@ -100,12 +100,12 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
   const [selectedDate, setSelectedDate] = useState<DateTime | undefined>(undefined);
 
   useEffect(() => {
-    getTutorial(params.tutorialid)
+    getTutorial(params.tutorialId)
       .then((tutorial) => setTutorial(tutorial))
       .catch((reason) => console.log(reason));
 
     getUsersWithRole(Role.TUTOR).then((tutors) => setTutors(tutors));
-  }, [params.tutorialid]);
+  }, [params.tutorialId]);
 
   const initialValues: TutorialSubstituteFormState = getInitialValues(tutorial);
 
