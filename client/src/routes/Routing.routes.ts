@@ -24,8 +24,8 @@ export interface RouteType {
   isExact?: boolean;
 }
 
-export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.LOGIN;
-export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
+// export const ROOT_REDIRECT_PATH: RoutingPath = RoutingPath.LOGIN;
+// export const PATH_REDIRECT_AFTER_LOGIN: RoutingPath = RoutingPath.DASHBOARD;
 
-export { RoutingPath };
-export const ROUTES: readonly RouteType[] = [...BASE_ROUTES, ...TUTORIAL_ROUTES, ...ADMIN_ROUTES];
+// export { RoutingPath };
+// export const ROUTES: readonly RouteType[] = [...BASE_ROUTES, ...TUTORIAL_ROUTES, ...ADMIN_ROUTES];
