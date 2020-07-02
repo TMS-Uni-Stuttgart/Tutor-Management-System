@@ -4,7 +4,7 @@ import { PathParam, PathPart, RouteParams } from './types';
  * Route to use in the application.
  */
 export class Route<Parts extends Array<PathPart<any, any>>> {
-  private readonly pathParts: Parts;
+  protected readonly pathParts: Parts;
   private readonly _template: string;
 
   /**
