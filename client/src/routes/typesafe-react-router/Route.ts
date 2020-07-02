@@ -61,6 +61,17 @@ export class Route<Parts extends Array<PathPart<any, any>>> {
     return `/${parts.join('/')}`;
   }
 
+  /**
+   * Checks if the given `part` is a `PathParam`.
+   *
+   * @param part Part to check.
+   *
+   * @returns TypeAssertion: Is the given `part` a `PathParam`?
+   */
+  protected isParam(part: any): part is PathParam<any, any> {
+    return part.param !== undefined && part.param !== null;
+  }
+
   private createTemplate(): string {
     const parts: string[] = [];
 
@@ -81,10 +92,6 @@ export class Route<Parts extends Array<PathPart<any, any>>> {
     });
 
     return `/${parts.join('/')}`;
-  }
-
-  private isParam(part: any): part is PathParam<any, any> {
-    return part.param !== undefined && part.param !== null;
   }
 
   private throwWrongOptionalError(): never {

@@ -70,12 +70,14 @@ interface RouteOptions<Parts extends BaseArray> {
   roles?: Role[] | 'all';
 }
 
-interface PrivateRouteOptions<Parts extends BaseArray> extends RouteOptions<Parts> {
+interface PrivateRouteOptions<Parts extends BaseArray>
+  extends Omit<RouteOptions<Parts>, 'isPrivate'> {
   /** Roles allowed to access this route. */
   roles: Role[] | 'all';
 }
 
-interface DrawerRouteOptions<Parts extends BaseArray> extends PrivateRouteOptions<Parts> {
+interface DrawerRouteOptions<Parts extends BaseArray>
+  extends Omit<PrivateRouteOptions<Parts>, 'isInDrawer'> {
   /** Icon displayed in the drawer. */
   icon: React.ComponentType<SvgIconProps>;
 }
@@ -89,7 +91,7 @@ interface DrawerRouteOptions<Parts extends BaseArray> extends PrivateRouteOption
  *
  * @returns Unmodified `parts`.
  */
-export function createPathParts<Parts extends BaseArray>(...parts: Parts): Parts {
+export function parts<Parts extends BaseArray>(...parts: Parts): Parts {
   return parts;
 }
 
@@ -111,6 +113,7 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
 
   constructor(options: RouteOptions<Parts>) {
     super(...options.path);
+    this.assertOptions(options);
 
     this.title = options.title;
     this.component = options.component;
@@ -121,6 +124,42 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
     this.isTutorialRelated = options.isTutorialRelated ?? false;
     this.isAccessibleBySubstitute = options.isAccessibleBySubstitute ?? false;
     this.isExact = options.isExact ?? false;
+  }
+
+  /**
+   * Checks if the given options object is valid.
+   *
+   * The object is considered __not__ valid if:
+   * - `isTutorialRelated` is `true` but no part of the path is a 'tutorialId' param.
+   *
+   * @param options Options to check.
+   *
+   * @throws `Error` - If the options object is __not__ valid.
+   */
+  private assertOptions(options: RouteOptions<Parts>) {
+    if (options.isTutorialRelated && !this.checkIfTutorialIdParamIsPresent(options.path)) {
+      throw new Error(
+        `No 'tutorialId' param present in tutorial related route with title '${
+          options.title
+        }'. Got the following path parts:\n${JSON.stringify(options.path, null, 2)}`
+      );
+    }
+  }
+
+  /**
+   * Checks if at least one of the parameters is 'tutorialId'.
+   *
+   * @param parts Parts to check
+   *
+   * @returns Boolean indicating if one parameter of the parts is 'tutorialId'.
+   */
+  private checkIfTutorialIdParamIsPresent(parts: Parts): boolean {
+    for (const part of parts) {
+      if (this.isParam(part) && part.param === 'tutorialId') {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
