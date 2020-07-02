@@ -7,7 +7,6 @@ import { Role } from '../../../../../server/src/shared/model/Role';
 import { LoggedInUser } from '../../../model/LoggedInUser';
 import { Tutorial } from '../../../model/Tutorial';
 import { getTutorialRelatedPath } from '../../../routes/Routing.helpers';
-import { RouteType } from '../../../routes/Routing.routes';
 import { RailSubItemProps } from './RailSubItem';
 
 export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubItemProps[] {

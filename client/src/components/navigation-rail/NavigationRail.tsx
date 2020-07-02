@@ -111,13 +111,18 @@ function NavigationRail({
 
       <List className={classes.list}>
         {withoutTutorialRoutes.map((route) => (
-          <RailItem key={route.path} path={route.path} text={route.title} icon={route.icon} />
+          <RailItem
+            key={route.template}
+            path={route.create({})}
+            text={route.title}
+            icon={route.icon}
+          />
         ))}
 
         <Divider />
 
         {tutorialRoutes.map((route) => (
-          <TutorialRailItem key={route.path} route={route} userData={userData} />
+          <TutorialRailItem key={route.template} route={route} userData={userData} />
         ))}
 
         {managementRoutes.length > 0 && (
@@ -127,7 +132,12 @@ function NavigationRail({
             <ListSubheader className={clsx(!open && classes.displayNone)}>Verwaltung</ListSubheader>
 
             {managementRoutes.map((route) => (
-              <RailItem key={route.path} path={route.path} text={route.title} icon={route.icon} />
+              <RailItem
+                key={route.template}
+                path={route.create({})}
+                text={route.title}
+                icon={route.icon}
+              />
             ))}
           </>
         )}

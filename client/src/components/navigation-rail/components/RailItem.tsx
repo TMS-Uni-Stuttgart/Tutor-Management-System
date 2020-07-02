@@ -45,7 +45,7 @@ export type ButtonListItemProps = ListItemProps<'div', { button?: true }>;
 
 interface RailItemProps extends ButtonListItemProps {
   path: string;
-  icon: React.ComponentType<SvgIconProps>;
+  icon: React.ComponentType<SvgIconProps> | null;
   text: string;
   subItems?: RailSubItemProps[];
 }
@@ -130,9 +130,11 @@ function RailItem({
       onMouseLeave={handleMouseLeave}
       onClick={handleItemClick}
     >
-      <ListItemIcon className={clsx(isCurrentPath && classes.currentPath)}>
-        <Icon />
-      </ListItemIcon>
+      {!!Icon && (
+        <ListItemIcon className={clsx(isCurrentPath && classes.currentPath)}>
+          <Icon />
+        </ListItemIcon>
+      )}
 
       <ListItemText
         className={clsx(classes.text, isCurrentPath && classes.currentPath)}
