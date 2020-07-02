@@ -1,5 +1,9 @@
-import { Role } from '../../../../server/src/shared/model/Role';
-import { ROUTES, RouteType } from '../../routes/Routing.routes';
+import { Role } from 'shared/model/Role';
+import { ROUTES } from '../../routes/newVersion/Routing.routes';
+import {
+  OnlyOptionalParamsRoute,
+  TutorialRelatedDrawerRoute,
+} from '../../routes/newVersion/Routing.types';
 
 function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean {
   if (routeRoles === 'all') {
@@ -10,11 +14,11 @@ function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean 
 }
 
 export function filterRoutes(userRoles: Role[]) {
-  const userRoutesWithoutTutorialRoutes: RouteType[] = [];
-  const tutorialRoutes: RouteType[] = [];
-  const managementRoutes: RouteType[] = [];
+  const userRoutesWithoutTutorialRoutes: OnlyOptionalParamsRoute[] = [];
+  const tutorialRoutes: TutorialRelatedDrawerRoute[] = [];
+  const managementRoutes: OnlyOptionalParamsRoute[] = [];
 
-  for (const route of ROUTES) {
+  for (const route of Object.values(ROUTES)) {
     if (!route.isInDrawer) {
       continue;
     }
@@ -27,13 +31,15 @@ export function filterRoutes(userRoles: Role[]) {
       Array.isArray(route.roles) &&
       (route.roles.indexOf(Role.ADMIN) !== -1 || route.roles.indexOf(Role.EMPLOYEE) !== -1)
     ) {
-      managementRoutes.push(route);
+      if (route.hasOnlyOptionalParams()) {
+        managementRoutes.push(route);
+      }
     } else {
-      if (!route.isTutorialRelated) {
+      if (!route.isTutorialRelated && route.hasOnlyOptionalParams()) {
         userRoutesWithoutTutorialRoutes.push(route);
       }
 
-      if (route.isTutorialRelated) {
+      if (route.isTutorialRelated && route.isTutorialRelatedDrawerRoute()) {
         tutorialRoutes.push(route);
       }
     }

@@ -1,12 +1,12 @@
 import React from 'react';
 import { LoggedInUser } from '../../../model/LoggedInUser';
+import { TutorialRelatedDrawerRoute } from '../../../routes/newVersion/Routing.types';
 import { getTutorialRelatedPath } from '../../../routes/Routing.helpers';
-import { RouteType } from '../../../routes/Routing.routes';
 import RailItem from './RailItem';
 import { getSubItems } from './TutorialRailItem.helpers';
 
 interface Props {
-  route: RouteType;
+  route: TutorialRelatedDrawerRoute;
   userData: LoggedInUser;
 }
 
