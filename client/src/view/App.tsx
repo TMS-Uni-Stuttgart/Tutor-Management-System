@@ -1,12 +1,14 @@
 import { CssBaseline, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import NavigationRail from '../components/navigation-rail/NavigationRail';
 import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
-import { ROUTES, RouteType, RoutingPath, ROOT_REDIRECT_PATH } from '../routes/Routing.routes';
+import { ROOT_REDIRECT_PATH, ROUTES } from '../routes/newVersion/Routing.routes';
+import { CustomRoute } from '../routes/newVersion/Routing.types';
+import { PathPart } from '../routes/typesafe-react-router';
 import AppBar from './AppBar';
-import NavigationRail from '../components/navigation-rail/NavigationRail';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,11 +46,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function getRouteElementForRoute(route: RouteType): JSX.Element {
-  const path: string = (route.isTutorialRelated
-    ? `/tutorial/:tutorialId/${route.path}`
-    : route.path
-  ).replace(/\/\/+/, '/');
+function getRouteElementForRoute(route: CustomRoute<PathPart<any, any>[]>): JSX.Element {
+  const path = route.template;
 
   if (route.isPrivate) {
     return (
@@ -64,7 +63,10 @@ function App() {
   const { isLoggedIn } = useLogin();
   const [isDrawerOpen, setDrawerOpen] = useState(true);
 
-  const routes = ROUTES.map((route) => getRouteElementForRoute(route));
+  const routes = useMemo(
+    () => Object.values(ROUTES).map((route) => getRouteElementForRoute(route)),
+    []
+  );
 
   return (
     <>
@@ -84,8 +86,8 @@ function App() {
 
               <Route
                 exact
-                path={RoutingPath.ROOT}
-                render={() => <Redirect to={ROOT_REDIRECT_PATH} />}
+                path={'/'}
+                render={() => <Redirect to={ROOT_REDIRECT_PATH.create({})} />}
               />
             </Switch>
           </div>
