@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouteMatch } from 'react-router';
+import { useParams } from 'react-router';
 import SubmitButton from '../../../components/loading/SubmitButton';
 import Placeholder from '../../../components/Placeholder';
 import { useSheetSelector } from '../../../components/sheet-selector/SheetSelector';
@@ -8,7 +8,7 @@ import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
 import { Team } from '../../../model/Team';
-import { getPointOverviewPath } from '../../../routes/Routing.helpers';
+import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 import TeamCardList from './components/TeamCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,7 +47,6 @@ enum PDFGeneratingState {
 function PointsOverview(): JSX.Element {
   const classes = useStyles();
   const { tutorialId } = useParams<RouteParams>();
-  const match = useRouteMatch();
 
   const { SheetSelector, currentSheet, isLoadingSheets } = useSheetSelector({
     generatePath: ({ sheetId }) => {
@@ -55,7 +54,7 @@ function PointsOverview(): JSX.Element {
         throw new Error('The path needs to contain a tutorialId parameter.');
       }
 
-      return getPointOverviewPath({ tutorialId, sheetId, route: match.path });
+      return ROUTES.ENTER_POINTS_OVERVIEW.create({ tutorialId, sheetId });
     },
   });
 

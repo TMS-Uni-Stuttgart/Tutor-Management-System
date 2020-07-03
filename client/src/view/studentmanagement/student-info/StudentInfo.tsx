@@ -19,7 +19,7 @@ import { Scheinexam } from '../../../model/Scheinexam';
 import { Sheet } from '../../../model/Sheet';
 import { Student } from '../../../model/Student';
 import { Tutorial } from '../../../model/Tutorial';
-import { getStudentOverviewPath } from '../../../routes/Routing.helpers';
+import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 import AttendanceInformation from './components/AttendanceInformation';
 import CriteriaCharts from './components/CriteriaCharts';
 import EvaluationInformation from './components/EvaluationInformation';
@@ -161,7 +161,10 @@ function StudentInfo(): JSX.Element {
   return (
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={3}>
-        <BackButton to={getStudentOverviewPath(tutorialId)} className={classes.backButton} />
+        <BackButton
+          to={ROUTES.STUDENTOVERVIEW.create({ tutorialId })}
+          className={classes.backButton}
+        />
 
         <Typography variant='h4'>{student && getNameOfEntity(student)}</Typography>
 

@@ -8,7 +8,7 @@ import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
-import { getEnterPointsForStudentPath } from '../../../routes/Routing.helpers';
+import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
@@ -69,7 +69,7 @@ function EnterStudentPoints(): JSX.Element {
 
     const studentId: string = event.target.value as string;
 
-    history.push(getEnterPointsForStudentPath({ tutorialId, sheetId, teamId, studentId }));
+    history.push(ROUTES.ENTER_POINTS_STUDENT.create({ tutorialId, sheetId, teamId, studentId }));
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {

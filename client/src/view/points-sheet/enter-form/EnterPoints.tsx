@@ -8,7 +8,7 @@ import { getSheet } from '../../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Sheet } from '../../../model/Sheet';
-import { getPointOverviewPath } from '../../../routes/Routing.helpers';
+import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 import { HasGradings } from '../../../typings/types';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
@@ -105,7 +105,7 @@ function EnterPoints<T extends HasGradings>({
     <div className={classes.root}>
       <div className={classes.topBar}>
         <BackButton
-          to={getPointOverviewPath({ tutorialId, sheetId })}
+          to={ROUTES.ENTER_POINTS_OVERVIEW.create({ tutorialId, sheetId })}
           className={classes.backButton}
         />
 

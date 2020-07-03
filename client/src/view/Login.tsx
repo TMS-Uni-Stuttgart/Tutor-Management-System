@@ -9,8 +9,8 @@ import ChangePasswordForm, {
 import LoginForm, { LoginFormState } from '../components/forms/LoginForm';
 import { useLogin } from '../hooks/LoginService';
 import { FormikSubmitCallback } from '../types';
-import { PATH_REDIRECT_AFTER_LOGIN } from '../routes/Routing.routes';
 import { Information as InfoIcon } from 'mdi-material-ui';
+import { PATH_REDIRECT_AFTER_LOGIN } from '../routes/newVersion/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,7 +56,7 @@ function Login({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const { isLoggedIn, login, logout, userData, changePassword } = useLogin();
 
   if (isLoggedIn()) {
-    return <Redirect to={PATH_REDIRECT_AFTER_LOGIN} />;
+    return <Redirect to={PATH_REDIRECT_AFTER_LOGIN.create({})} />;
   }
 
   const onTemporaryPasswordChangeSubmit: FormikSubmitCallback<ChangePasswordFormState> = async (

@@ -14,7 +14,7 @@ import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
 import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
 import { Student } from '../../../../model/Student';
-import { getStudentInfoPath } from '../../../../routes/Routing.helpers';
+import { ROUTES } from '../../../../routes/newVersion/Routing.routes';
 import ScheinStatusBox from '../../student-info/components/ScheinStatusBox';
 import { useStudentStore } from '../../student-store/StudentStore';
 
@@ -124,10 +124,7 @@ function StudentRow({
         <Button
           variant='outlined'
           component={Link}
-          to={getStudentInfoPath({
-            studentId: student.id,
-            tutorialId,
-          })}
+          to={ROUTES.STUDENT_INFO.create({ tutorialId, studentId: student.id })}
           startIcon={<InfoIcon />}
         >
           Informationen

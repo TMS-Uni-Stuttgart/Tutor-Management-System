@@ -75,6 +75,8 @@ export const ROUTES = {
   }),
   ENTER_POINTS_STUDENT: new PrivateRoute({
     path: parts(
+      'tutorial',
+      param('tutorialId'),
       'enterpoints',
       param('sheetId'),
       'team',
@@ -88,14 +90,21 @@ export const ROUTES = {
     isTutorialRelated: true,
   }),
   ENTER_POINTS_TEAM: new PrivateRoute({
-    path: parts('enterpoints', param('sheetId'), 'team', param('teamId')),
+    path: parts(
+      'tutorial',
+      param('tutorialId'),
+      'enterpoints',
+      param('sheetId'),
+      'team',
+      param('teamId')
+    ),
     title: 'Punkte eintragen',
     component: EnterTeamPoints,
     roles: [Role.TUTOR, Role.CORRECTOR],
     isTutorialRelated: true,
   }),
   ENTER_POINTS_OVERVIEW: new DrawerRoute({
-    path: parts('enterpoints', param('sheetId', true)),
+    path: parts('tutorial', param('tutorialId'), 'enterpoints', param('sheetId', true)),
     title: 'Punkte verwalten',
     component: PointsOverview,
     icon: EnterPointsIcon,
@@ -103,7 +112,7 @@ export const ROUTES = {
     isTutorialRelated: true,
   }),
   PRESENTATION_POINTS: new DrawerRoute({
-    path: parts('presentations', param('sheetId', true)),
+    path: parts('tutorial', param('tutorialId'), 'presentations', param('sheetId', true)),
     title: 'Präsentationen',
     component: PresentationPoints,
     icon: PresentationIcon,
@@ -112,7 +121,14 @@ export const ROUTES = {
     isAccessibleBySubstitute: true,
   }),
   SCHEIN_EXAMS_STUDENT: new PrivateRoute({
-    path: parts('scheinexams', param('examId'), 'student', param('studentId')),
+    path: parts(
+      'tutorial',
+      param('tutorialId'),
+      'scheinexams',
+      param('examId'),
+      'student',
+      param('studentId')
+    ),
     title: 'Scheinklausuren',
     component: EnterScheinexamPoints,
     icon: ScheinexamPointsIcon,
@@ -120,7 +136,7 @@ export const ROUTES = {
     isTutorialRelated: true,
   }),
   SCHEIN_EXAMS_OVERVIEW: new DrawerRoute({
-    path: parts('scheinexams', param('examId', true)),
+    path: parts('tutorial', param('tutorialId'), 'scheinexams', param('examId', true)),
     title: 'Scheinklausuren',
     component: ScheinexamPointsOverview,
     icon: ScheinexamPointsIcon,

@@ -1,10 +1,10 @@
 import React from 'react';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
-import { RoutingPath } from '../../routes/Routing.routes';
 import AdjustImportedUserDataForm from './adjust-data-form/AdjustImportedUserDataForm';
 import ImportUserCSV from './import-csv/ImportUserCSV';
 import ImportUsersContext from './ImportUsers.context';
 import MapCSVColumns from './map-columns/MapCSVColumns';
+import { ROUTES } from '../../routes/newVersion/Routing.routes';
 
 function ImportUsers(): JSX.Element {
   return (
@@ -19,7 +19,7 @@ function ImportUsers(): JSX.Element {
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'
         nextButtonDoneLabel='Fertigstellen'
-        backButtonRoute={RoutingPath.MANAGE_USERS}
+        backButtonRoute={ROUTES.MANAGE_USERS.create({})}
       />
     </ImportUsersContext>
   );

@@ -2,7 +2,7 @@ import { Box } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import BackButton from '../../components/BackButton';
-import { RoutingPath } from '../../routes/Routing.routes';
+import { ROUTES } from '../../routes/newVersion/Routing.routes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -78,7 +78,7 @@ function CriteriaInfoView(): JSX.Element {
   return (
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={3}>
-        <BackButton to={RoutingPath.MANAGE_SCHEIN_CRITERIAS} className={classes.backButton} />
+        <BackButton to={ROUTES.MANAGE_SCHEIN_CRITERIAS.create({})} className={classes.backButton} />
 
         {/* {criteriaInfo && <Typography variant='h4'>{criteriaInfo.name}</Typography>} */}
       </Box>
