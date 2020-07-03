@@ -71,7 +71,7 @@
     "@types/passport-local": "^1.0.33",
     "@types/pug": "^2.0.4",
     "@types/puppeteer": "3.0.1",
-    "@types/supertest": "^2.0.9",
+    "@types/supertest": "^2.0.10",
     "env-cmd": "^10.1.0",
     "jest": "^26.1.0",
     "mongodb-memory-server": "^6.6.1",
