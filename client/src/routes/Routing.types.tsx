@@ -84,6 +84,24 @@ interface DrawerRouteOptions<Parts extends BaseArray>
   icon: React.ComponentType<SvgIconProps>;
 }
 
+interface CombineParams<A extends BaseArray, B extends BaseArray> {
+  /**
+   * Route which forms the first part of the path of the combined route. Must __NOT__ contain any optional parameters.
+   *
+   */
+  baseRoute: CustomRoute<A>;
+
+  /**
+   * Route which forms the later part of the path of the combined route.
+   */
+  extension: CustomRoute<B>;
+
+  /**
+   * Other options of the combined route.
+   */
+  options: Omit<RouteOptions<any>, 'path'>;
+}
+
 /**
  * This function is for typing purposes. It solves the problem that arrays are typed slighty different than spread parameters. This makes it possible to use a `path` array in the `CustomRoute` constructor parameter and also getting the correct generic type.
  *
@@ -112,6 +130,25 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
   readonly isTutorialRelated: boolean;
   readonly isAccessibleBySubstitute: boolean;
   readonly isExact: boolean;
+
+  /**
+   * Combines the two given routes to a new one with the given `options`.
+   *
+   * The `baseRoute` provides the first parts of the path, the `extension` the later paths. Other options of the two routes are ignored. Only the `extension` can have an optional parameter.
+   *
+   * @param param Parameters to create the combined route with. See description of each property for details.
+   *
+   * @returns New route combined from the given ones with the `options` provided.
+   */
+  static combine<A extends BaseArray, B extends BaseArray>({
+    baseRoute,
+    extension,
+    options,
+  }: CombineParams<A, B>): CustomRoute<[...A, ...B]> {
+    const path: [...A, ...B] = parts(...baseRoute.pathParts, ...extension.pathParts);
+
+    return new CustomRoute({ ...options, path });
+  }
 
   constructor(options: RouteOptions<Parts>) {
     super(...options.path);
