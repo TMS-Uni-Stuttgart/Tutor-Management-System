@@ -6,15 +6,18 @@ import {
 import { Role } from '../../../../../server/src/shared/model/Role';
 import { LoggedInUser } from '../../../model/LoggedInUser';
 import { Tutorial } from '../../../model/Tutorial';
-import { getTutorialRelatedPath } from '../../../routes/Routing.helpers';
 import { RailSubItemProps } from './RailSubItem';
+import { TutorialRelatedDrawerRoute } from '../../../routes/newVersion/Routing.types';
 
-export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubItemProps[] {
+export function getSubItems(
+  route: TutorialRelatedDrawerRoute,
+  userData: LoggedInUser
+): RailSubItemProps[] {
   const subItems: RailSubItemProps[] = [];
 
   userData.tutorials.forEach((tutorial) => {
     subItems.push({
-      subPath: getTutorialRelatedPath(route, tutorial.id),
+      subPath: route.create({ tutorialId: tutorial.id }),
       icon: TutorialIcon,
       text: Tutorial.getDisplayString(tutorial),
     });
@@ -23,7 +26,7 @@ export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubIt
   if (route.roles.includes(Role.CORRECTOR)) {
     userData.tutorialsToCorrect.forEach((tutorial) => {
       subItems.push({
-        subPath: getTutorialRelatedPath(route, tutorial.id),
+        subPath: route.create({ tutorialId: tutorial.id }),
         icon: TutorialToCorrectIcon,
         text: Tutorial.getDisplayString(tutorial),
       });
@@ -33,7 +36,7 @@ export function getSubItems(route: RouteType, userData: LoggedInUser): RailSubIt
   if (route.isAccessibleBySubstitute) {
     userData.substituteTutorials.forEach((tutorial) => {
       subItems.push({
-        subPath: getTutorialRelatedPath(route, tutorial.id),
+        subPath: route.create({ tutorialId: tutorial.id }),
         icon: SubstituteTutorialIcon,
         text: Tutorial.getDisplayString(tutorial),
       });
