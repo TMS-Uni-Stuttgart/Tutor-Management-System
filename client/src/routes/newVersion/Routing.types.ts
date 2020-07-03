@@ -1,7 +1,7 @@
 import { SvgIconProps } from '@material-ui/core';
 import { RouteComponentProps } from 'react-router';
 import { Role } from 'shared/model/Role';
-import { PathPart, Route } from '../typesafe-react-router';
+import { PathPart, Route, PathParam } from '../typesafe-react-router';
 
 type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
 type BaseArray = Array<PathPart<any, any>>;
@@ -268,7 +268,7 @@ export class DrawerRoute<Parts extends BaseArray> extends PrivateRoute<Parts> {
   }
 }
 
-export type OnlyOptionalParamsRoute = CustomRoute<PathPart<string, true>[]>;
+export type OnlyOptionalParamsRoute = CustomRoute<PathParam<string, true>[]>;
 export type TutorialRelatedDrawerRoute = CustomRoute<
-  (PathPart<'tutorialId', false> | PathPart<string, true>)[]
+  [PathParam<'tutorialId', false>, PathParam<string, true>]
 >;
