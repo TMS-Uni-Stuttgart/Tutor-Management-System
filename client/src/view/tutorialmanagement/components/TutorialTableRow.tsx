@@ -5,7 +5,7 @@ import React from 'react';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../routes/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

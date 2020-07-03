@@ -4,10 +4,14 @@ import { Formik, useFormikContext } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import { useSnackbar } from 'notistack';
 import React from 'react';
+import { useHistory } from 'react-router';
 import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
+import BackButton from '../../components/BackButton';
 import FormikDatePicker from '../../components/forms/components/FormikDatePicker';
 import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
+import SubmitButton from '../../components/loading/SubmitButton';
 import { createMultipleTutorials } from '../../hooks/fetching/Tutorial';
+import { ROUTES } from '../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../types';
 import FormikExcludedDates, {
   FormExcludedDate,
@@ -15,10 +19,6 @@ import FormikExcludedDates, {
 import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import WeekdayTabs from './components/weekday-slots/WeekdayTabs';
 import { validationSchema } from './GenerateTutorials.validation';
-import BackButton from '../../components/BackButton';
-import SubmitButton from '../../components/loading/SubmitButton';
-import { useHistory } from 'react-router';
-import { ROUTES } from '../../routes/newVersion/Routing.routes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

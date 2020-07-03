@@ -29,7 +29,7 @@ import {
 } from '../../hooks/fetching/User';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { Tutorial } from '../../model/Tutorial';
-import { ROUTES } from '../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../routes/Routing.routes';
 import { saveBlob } from '../../util/helperFunctions';
 import UserTableRow from './components/UserTableRow';
 

@@ -6,8 +6,8 @@ import {
 import { Role } from '../../../../../server/src/shared/model/Role';
 import { LoggedInUser } from '../../../model/LoggedInUser';
 import { Tutorial } from '../../../model/Tutorial';
+import { TutorialRelatedDrawerRoute } from '../../../routes/Routing.types';
 import { RailSubItemProps } from './RailSubItem';
-import { TutorialRelatedDrawerRoute } from '../../../routes/newVersion/Routing.types';
 
 export function getSubItems(
   route: TutorialRelatedDrawerRoute,

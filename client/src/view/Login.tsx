@@ -1,5 +1,6 @@
 import { Paper, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Information as InfoIcon } from 'mdi-material-ui';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
@@ -8,9 +9,8 @@ import ChangePasswordForm, {
 } from '../components/forms/ChangePasswordForm';
 import LoginForm, { LoginFormState } from '../components/forms/LoginForm';
 import { useLogin } from '../hooks/LoginService';
+import { PATH_REDIRECT_AFTER_LOGIN } from '../routes/Routing.routes';
 import { FormikSubmitCallback } from '../types';
-import { Information as InfoIcon } from 'mdi-material-ui';
-import { PATH_REDIRECT_AFTER_LOGIN } from '../routes/newVersion/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

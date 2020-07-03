@@ -7,7 +7,7 @@ import { useHistory } from 'react-router';
 import { IScheinCriteria } from 'shared/model/ScheinCriteria';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../routes/Routing.routes';
 import { i18nNamespace } from '../../../util/lang/configI18N';
 
 const useStyles = makeStyles((theme: Theme) =>
