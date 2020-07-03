@@ -72,7 +72,7 @@ interface Props {
 }
 
 interface CreatingState {
-  [tutorialSlot: string]: boolean;
+  [tutorialSlot: string]: boolean | undefined;
 }
 
 function getTitleFromPath(path: string): string {
