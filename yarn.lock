@@ -2035,10 +2035,10 @@
   resolved "https://registry.yarnpkg.com/@nestjs/passport/-/passport-7.0.0.tgz#c59617779b7e5888a0c72039a6980e28fd659518"
   integrity sha512-ZJk08zqLxSXY1rXIt9dAK7tcCos3DETQ88Nn/UGmA136SHMG5P0sbw+PU1zfLQyEsU5uHyr7MTD+/S+aOxXS6w==
 
-"@nestjs/platform-express@^7.2.0":
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/@nestjs/platform-express/-/platform-express-7.2.0.tgz#3829de2568cb5cb1edc59e65a745dedec307527b"
-  integrity sha512-nVk9yFrzMhtBRmj9FAEx7ILbmcUBRy2arGEtEQuuWpCUnI5LRIQq5n7f/wJsTOr5Wf70xts2Bud2S4HpMp1Rfw==
+"@nestjs/platform-express@^7.3.1":
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/platform-express/-/platform-express-7.3.1.tgz#cb7a214ea2f62cde5ad489b1ab645be515f308b1"
+  integrity sha512-3tccSPCOGO+cOIGSDnFN1SrId2cw9ZCsNHa7wXsJu9ATcPprbAnmr9EGG4vYJSxwNt2AR/bZc8ygbwnPUfLyMQ==
   dependencies:
     body-parser "1.19.0"
     cors "2.8.5"
