@@ -82,7 +82,7 @@
     "tsconfig-paths": "^3.9.0"
   },
   "resolutions": {
-    "@types/mongoose-autopopulate/@types/mongoose": "^5.7.1"
+    "@types/mongoose-autopopulate/@types/mongoose": "^5.7.29"
   },
   "jest": {
     "moduleFileExtensions": [
