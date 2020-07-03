@@ -3,7 +3,7 @@ import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Role } from 'shared/model/Role';
-import { PathParam, PathPart, Route, RouteParams } from '../typesafe-react-router';
+import { PathParam, PathPart, Route, RouteParams } from './typesafe-react-router';
 
 type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
 type BaseArray = Array<PathPart<any, any>>;
