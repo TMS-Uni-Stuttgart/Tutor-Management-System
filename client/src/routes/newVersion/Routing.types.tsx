@@ -1,7 +1,9 @@
 import { SvgIconProps } from '@material-ui/core';
+import React from 'react';
 import { RouteComponentProps } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Role } from 'shared/model/Role';
-import { PathPart, Route, PathParam } from '../typesafe-react-router';
+import { PathParam, PathPart, Route, RouteParams } from '../typesafe-react-router';
 
 type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
 type BaseArray = Array<PathPart<any, any>>;
@@ -124,6 +126,18 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
     this.isTutorialRelated = options.isTutorialRelated ?? false;
     this.isAccessibleBySubstitute = options.isAccessibleBySubstitute ?? false;
     this.isExact = options.isExact ?? false;
+  }
+
+  /**
+   * Creates a `Link` component with forwareded React `ref`. The target of that `Link` is this route.
+   *
+   * @param params Parameters to fill route with.
+   *
+   * @returns `Link` component which has this route as target. It is wrapped by `React.forwardRef`.
+   */
+  renderLink(params: RouteParams<Parts>) {
+    const to: string = this.create(params);
+    return React.forwardRef<Link, any>((props, ref) => <Link innerRef={ref} to={to} {...props} />);
   }
 
   /**

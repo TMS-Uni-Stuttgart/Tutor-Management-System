@@ -1,3 +1,3 @@
-export { Route } from './Route';
 export { param } from './param';
-export type { PathPart, PathParam } from './types';
+export { Route } from './Route';
+export type { PathParam, PathPart, RouteParams } from './types';
