@@ -19,7 +19,7 @@ import SubmitButton from '../../components/loading/SubmitButton';
 import { getTutorial, setSubstituteTutor } from '../../hooks/fetching/Tutorial';
 import { getUsersWithRole } from '../../hooks/fetching/User';
 import { Tutorial } from '../../model/Tutorial';
-import { ROUTES } from '../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../types';
 import { compareDateTimes, parseDateToMapKey } from '../../util/helperFunctions';
 

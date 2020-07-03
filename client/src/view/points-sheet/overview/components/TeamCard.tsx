@@ -24,7 +24,7 @@ import SplitButton from '../../../../components/SplitButton';
 import { useDialog } from '../../../../hooks/DialogService';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
-import { ROUTES } from '../../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../../routes/Routing.routes';
 
 const useStyles = makeStyles(() =>
   createStyles({

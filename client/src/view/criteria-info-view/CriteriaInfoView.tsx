@@ -2,7 +2,7 @@ import { Box } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import BackButton from '../../components/BackButton';
-import { ROUTES } from '../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../routes/Routing.routes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

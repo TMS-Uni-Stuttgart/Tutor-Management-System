@@ -13,11 +13,11 @@ import {
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
 import { createManyUsers } from '../../../hooks/fetching/User';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { ROUTES } from '../../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../../types';
 import { useImportDataContext } from '../ImportUsers.context';
 import UserDataBox from './components/UserDataBox';
 import { convertCSVDataToFormData } from './components/UserDataBox.helpers';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 
 export interface UserFormStateValue {
   rowNr: number;

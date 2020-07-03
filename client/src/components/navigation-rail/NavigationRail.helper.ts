@@ -1,9 +1,6 @@
 import { Role } from 'shared/model/Role';
-import { ROUTES } from '../../routes/newVersion/Routing.routes';
-import {
-  OnlyOptionalParamsRoute,
-  TutorialRelatedDrawerRoute,
-} from '../../routes/newVersion/Routing.types';
+import { ROUTES } from '../../routes/Routing.routes';
+import { OnlyOptionalParamsRoute, TutorialRelatedDrawerRoute } from '../../routes/Routing.types';
 
 function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean {
   if (routeRoles === 'all') {

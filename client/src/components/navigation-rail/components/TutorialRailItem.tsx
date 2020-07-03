@@ -1,6 +1,6 @@
 import React from 'react';
 import { LoggedInUser } from '../../../model/LoggedInUser';
-import { TutorialRelatedDrawerRoute } from '../../../routes/newVersion/Routing.types';
+import { TutorialRelatedDrawerRoute } from '../../../routes/Routing.types';
 import RailItem from './RailItem';
 import { getSubItems } from './TutorialRailItem.helpers';
 

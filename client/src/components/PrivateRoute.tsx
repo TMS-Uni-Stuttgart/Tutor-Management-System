@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router';
 import { useLogin } from '../hooks/LoginService';
-import { ROUTES } from '../routes/newVersion/Routing.routes';
+import { ROUTES } from '../routes/Routing.routes';
 
 interface PrivateRouteProps extends RouteProps {
   // Make the component required in a private route!

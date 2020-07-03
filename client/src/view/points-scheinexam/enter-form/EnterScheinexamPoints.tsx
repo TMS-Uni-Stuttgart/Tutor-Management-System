@@ -13,7 +13,7 @@ import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../routes/Routing.routes';
 import { convertFormStateToGradingDTO } from '../../points-sheet/enter-form/EnterPoints.helpers';
 import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,

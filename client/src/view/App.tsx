@@ -5,8 +5,8 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import NavigationRail from '../components/navigation-rail/NavigationRail';
 import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
-import { ROOT_REDIRECT_PATH, ROUTES } from '../routes/newVersion/Routing.routes';
-import { CustomRoute } from '../routes/newVersion/Routing.types';
+import { ROOT_REDIRECT_PATH, ROUTES } from '../routes/Routing.routes';
+import { CustomRoute } from '../routes/Routing.types';
 import { PathPart } from '../routes/typesafe-react-router';
 import AppBar from './AppBar';
 

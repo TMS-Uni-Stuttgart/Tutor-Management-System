@@ -19,7 +19,7 @@ import { Scheinexam } from '../../../model/Scheinexam';
 import { Sheet } from '../../../model/Sheet';
 import { Student } from '../../../model/Student';
 import { Tutorial } from '../../../model/Tutorial';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../routes/Routing.routes';
 import AttendanceInformation from './components/AttendanceInformation';
 import CriteriaCharts from './components/CriteriaCharts';
 import EvaluationInformation from './components/EvaluationInformation';

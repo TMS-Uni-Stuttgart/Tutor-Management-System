@@ -8,7 +8,7 @@ import { getStudent, setPresentationPointsOfStudent } from '../../hooks/fetching
 import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
 import { Student } from '../../model/Student';
-import { ROUTES } from '../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../routes/Routing.routes';
 import PresentationList from './components/PresentationList';
 
 interface RouteParams {

@@ -14,7 +14,7 @@ import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
 import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
 import { Student } from '../../../../model/Student';
-import { ROUTES } from '../../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../../routes/Routing.routes';
 import ScheinStatusBox from '../../student-info/components/ScheinStatusBox';
 import { useStudentStore } from '../../student-store/StudentStore';
 

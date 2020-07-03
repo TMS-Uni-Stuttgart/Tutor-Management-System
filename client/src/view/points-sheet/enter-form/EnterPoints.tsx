@@ -8,7 +8,7 @@ import { getSheet } from '../../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Sheet } from '../../../model/Sheet';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../routes/Routing.routes';
 import { HasGradings } from '../../../typings/types';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';

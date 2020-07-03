@@ -27,7 +27,7 @@ import {
 import { getUsersWithRole } from '../../hooks/fetching/User';
 import { useLoggedInUser } from '../../hooks/LoginService';
 import { Tutorial } from '../../model/Tutorial';
-import { ROUTES } from '../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../routes/Routing.routes';
 import { compareDateTimes } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
 

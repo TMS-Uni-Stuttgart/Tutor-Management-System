@@ -8,7 +8,7 @@ import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
 import { Team } from '../../../model/Team';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../routes/Routing.routes';
 import TeamCardList from './components/TeamCardList';
 
 const useStyles = makeStyles((theme: Theme) =>

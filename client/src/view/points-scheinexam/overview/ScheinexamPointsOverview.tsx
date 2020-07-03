@@ -8,7 +8,7 @@ import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
-import { ROUTES } from '../../../routes/newVersion/Routing.routes';
+import { ROUTES } from '../../../routes/Routing.routes';
 import StudentCardList from './components/StudentCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
