@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams, useRouteMatch } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { IGradingDTO } from '../../../../../server/src/shared/model/Points';
 import BackButton from '../../../components/BackButton';
@@ -13,10 +13,7 @@ import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
-import {
-  getEnterPointsForScheinexamPath,
-  getScheinexamPointsOverviewPath,
-} from '../../../routes/Routing.helpers';
+import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 import { convertFormStateToGradingDTO } from '../../points-sheet/enter-form/EnterPoints.helpers';
 import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,
@@ -50,7 +47,6 @@ function EnterScheinexamPoints(): JSX.Element {
   const classes = useStyles();
 
   const history = useHistory();
-  const match = useRouteMatch();
   const { tutorialId, examId, studentId } = useParams<RouteParams>();
 
   const { enqueueSnackbar, setError, isError } = useCustomSnackbar();
@@ -96,9 +92,7 @@ function EnterScheinexamPoints(): JSX.Element {
 
     const studentId = event.target.value as string;
 
-    history.push(
-      getEnterPointsForScheinexamPath({ tutorialId, examId, studentId, route: match.path })
-    );
+    history.push(ROUTES.SCHEIN_EXAMS_STUDENT.create({ tutorialId, examId, studentId }));
   };
 
   const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {
@@ -142,7 +136,7 @@ function EnterScheinexamPoints(): JSX.Element {
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={3}>
         <BackButton
-          to={getScheinexamPointsOverviewPath({ tutorialId, examId })}
+          to={ROUTES.SCHEIN_EXAMS_OVERVIEW.create({ tutorialId, examId })}
           className={classes.backButton}
         />
 

@@ -16,9 +16,9 @@ import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import WeekdayTabs from './components/weekday-slots/WeekdayTabs';
 import { validationSchema } from './GenerateTutorials.validation';
 import BackButton from '../../components/BackButton';
-import { RoutingPath } from '../../routes/Routing.routes';
 import SubmitButton from '../../components/loading/SubmitButton';
 import { useHistory } from 'react-router';
+import { ROUTES } from '../../routes/newVersion/Routing.routes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -114,7 +114,7 @@ function GenerateTutorialsContent(): JSX.Element {
         height='100%'
       >
         <Box display='flex'>
-          <BackButton to={RoutingPath.MANAGE_TUTORIALS} className={classes.backButton} />
+          <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
           <Typography variant='h6'>Terminbereich</Typography>
         </Box>
 
@@ -199,7 +199,7 @@ function GenerateTutorials(): JSX.Element {
         variant: 'success',
       });
 
-      history.push(RoutingPath.MANAGE_TUTORIALS);
+      history.push(ROUTES.MANAGE_TUTORIALS.create({}));
     } catch (err) {
       enqueueSnackbar('Tutorien konnten nicht generiert werden.', { variant: 'error' });
     }

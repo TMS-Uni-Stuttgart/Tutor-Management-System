@@ -3,12 +3,12 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { InformationOutline as InfoIcon } from 'mdi-material-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router';
 import { IScheinCriteria } from 'shared/model/ScheinCriteria';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
+import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 import { i18nNamespace } from '../../../util/lang/configI18N';
-import { useHistory } from 'react-router';
-import { getScheincriteriaInfoPath } from '../../../routes/Routing.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,7 +50,7 @@ function ScheinCriteriaRow({
               primary: 'Informationen',
               Icon: InfoIcon,
               onClick: () => {
-                history.push(getScheincriteriaInfoPath(criteria.id));
+                history.push(ROUTES.SCHEIN_CRITERIAS_INFO.create({ id: criteria.id }));
               },
             },
           ]}

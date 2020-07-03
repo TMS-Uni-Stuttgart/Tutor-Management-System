@@ -3,11 +3,9 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import React from 'react';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
-import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
-import { getManageTutorialInternalsPath } from '../../../routes/Routing.helpers';
-import { RoutingPath } from '../../../routes/Routing.routes';
+import { ROUTES } from '../../../routes/newVersion/Routing.routes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,7 +54,7 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={renderLink(getManageTutorialInternalsPath(tutorial.id))}
+            component={ROUTES.MANAGE_TUTORIAL_INTERNALS.renderLink({ tutorialId: tutorial.id })}
             disabled={disableManageTutorialButton}
           >
             Verwalten
@@ -65,9 +63,7 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={renderLink(
-              RoutingPath.MANAGE_TUTORIALS_SUBSTITUTES.replace(':tutorialid', tutorial.id)
-            )}
+            component={ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.renderLink({ tutorialId: tutorial.id })}
           >
             Vertretungen
           </Button>

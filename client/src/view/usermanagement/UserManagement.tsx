@@ -29,7 +29,7 @@ import {
 } from '../../hooks/fetching/User';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { Tutorial } from '../../model/Tutorial';
-import { RoutingPath } from '../../routes/Routing.routes';
+import { ROUTES } from '../../routes/newVersion/Routing.routes';
 import { saveBlob } from '../../util/helperFunctions';
 import UserTableRow from './components/UserTableRow';
 
@@ -351,7 +351,7 @@ function UserManagement(): JSX.Element {
               <Button
                 variant='outlined'
                 component={Link}
-                to={RoutingPath.IMPORT_USERS}
+                to={ROUTES.IMPORT_USERS.create({})}
                 startIcon={<ImportIcon />}
                 style={{ marginLeft: 8 }}
               >

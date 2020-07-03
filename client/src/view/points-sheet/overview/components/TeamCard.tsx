@@ -19,16 +19,12 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getNameOfEntity } from 'shared/util/helpers';
-import { renderLink } from '../../../../components/navigation-rail/components/renderLink';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import SplitButton from '../../../../components/SplitButton';
 import { useDialog } from '../../../../hooks/DialogService';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
-import {
-  getEnterPointsForStudentPath,
-  getEnterPointsForTeamPath,
-} from '../../../../routes/Routing.helpers';
+import { ROUTES } from '../../../../routes/newVersion/Routing.routes';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -81,14 +77,12 @@ function TeamCard({
               <ListItem
                 button
                 onClick={() => dialog.hide()}
-                component={renderLink(
-                  getEnterPointsForStudentPath({
-                    tutorialId,
-                    sheetId: sheet.id,
-                    teamId: team.id,
-                    studentId: student.id,
-                  })
-                )}
+                component={ROUTES.ENTER_POINTS_STUDENT.renderLink({
+                  tutorialId,
+                  sheetId: sheet.id,
+                  teamId: team.id,
+                  studentId: student.id,
+                })}
               >
                 <ListItemIcon>
                   <StudentIcon />
@@ -153,7 +147,11 @@ function TeamCard({
               label: 'Punkte eintragen',
               ButtonProps: {
                 component: Link,
-                to: getEnterPointsForTeamPath({ tutorialId, sheetId: sheet.id, teamId: team.id }),
+                to: ROUTES.ENTER_POINTS_TEAM.create({
+                  tutorialId,
+                  sheetId: sheet.id,
+                  teamId: team.id,
+                }),
               },
             },
             {

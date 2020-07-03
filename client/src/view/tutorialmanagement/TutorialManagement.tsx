@@ -25,11 +25,11 @@ import {
   getAllTutorials,
 } from '../../hooks/fetching/Tutorial';
 import { getUsersWithRole } from '../../hooks/fetching/User';
+import { useLoggedInUser } from '../../hooks/LoginService';
 import { Tutorial } from '../../model/Tutorial';
-import { RoutingPath } from '../../routes/Routing.routes';
+import { ROUTES } from '../../routes/newVersion/Routing.routes';
 import { compareDateTimes } from '../../util/helperFunctions';
 import TutorialTableRow from './components/TutorialTableRow';
-import { useLoggedInUser } from '../../hooks/LoginService';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -202,7 +202,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
             <Button
               variant='outlined'
               component={Link}
-              to={RoutingPath.GENERATE_TUTORIALS}
+              to={ROUTES.GENERATE_TUTORIALS.create({})}
               startIcon={<GenerateIcon />}
             >
               Generieren

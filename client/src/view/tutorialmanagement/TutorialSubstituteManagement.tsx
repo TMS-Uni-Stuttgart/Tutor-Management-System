@@ -19,7 +19,7 @@ import SubmitButton from '../../components/loading/SubmitButton';
 import { getTutorial, setSubstituteTutor } from '../../hooks/fetching/Tutorial';
 import { getUsersWithRole } from '../../hooks/fetching/User';
 import { Tutorial } from '../../model/Tutorial';
-import { RoutingPath } from '../../routes/Routing.routes';
+import { ROUTES } from '../../routes/newVersion/Routing.routes';
 import { FormikSubmitCallback } from '../../types';
 import { compareDateTimes, parseDateToMapKey } from '../../util/helperFunctions';
 
@@ -163,7 +163,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
 
   return (
     <div className={classes.root}>
-      <BackButton className={classes.backButton} to={RoutingPath.MANAGE_TUTORIALS} />
+      <BackButton className={classes.backButton} to={ROUTES.MANAGE_TUTORIALS.create({})} />
 
       {tutorial ? (
         <Formik initialValues={initialValues} onSubmit={handleSubmit}>
