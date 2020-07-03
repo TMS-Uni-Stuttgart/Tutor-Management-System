@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router';
 import { useLogin } from '../hooks/LoginService';
-import { RoutingPath } from '../routes/Routing.routes';
+import { ROUTES } from '../routes/newVersion/Routing.routes';
 
 interface PrivateRouteProps extends RouteProps {
   // Make the component required in a private route!
@@ -11,11 +11,12 @@ interface PrivateRouteProps extends RouteProps {
 function PrivateRoute(props: PrivateRouteProps) {
   const { component: Component, ...other } = props;
   const { isLoggedIn } = useLogin();
-  const { LOGIN } = RoutingPath;
 
   function render(innerProps: RouteComponentProps) {
     if (!isLoggedIn()) {
-      return <Redirect to={{ pathname: LOGIN }} from={innerProps.location.pathname} />;
+      return (
+        <Redirect to={{ pathname: ROUTES.LOGIN.create({}) }} from={innerProps.location.pathname} />
+      );
     }
 
     return <Component {...innerProps} />;
