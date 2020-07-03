@@ -39,9 +39,12 @@ export function generatePointStateWithSubexercises({
   const { subexercises } = exercise;
 
   return subexercises.reduce<PointsFormSubExerciseState>((prev, current) => {
-    const gradingOfSubEx = gradingOfExercise?.getGradingForSubexercise(current);
+    const gradingOfSubEx: number | undefined = gradingOfExercise?.getGradingForSubexercise(current);
 
-    return { ...prev, [current.id]: gradingOfSubEx?.toString() ?? '0' };
+    return {
+      ...prev,
+      [current.id]: gradingOfSubEx?.toString() ?? '0',
+    } as PointsFormSubExerciseState;
   }, {});
 }
 

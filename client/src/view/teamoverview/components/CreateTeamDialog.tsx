@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface SelectedStudents {
-  [key: string]: boolean;
+  [key: string]: boolean | undefined;
 }
 
 export interface TeamData {
@@ -58,7 +58,7 @@ function CreateTeamDialog({ open, onSave, onClose, students, ...other }: Props):
       return true;
     }
 
-    return Object.values(selected).reduce(
+    return Object.values(selected).reduce<boolean>(
       (noneSelected, isSelected) => noneSelected && !isSelected,
       true
     );
