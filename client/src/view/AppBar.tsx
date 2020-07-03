@@ -12,7 +12,6 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Location } from 'history';
 import {
   Brightness5 as LightIcon,
   Brightness7 as DarkIcon,
@@ -21,17 +20,16 @@ import {
   Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
-import React, { useState, useMemo } from 'react';
-import { matchPath, useLocation } from 'react-router';
+import React, { useMemo, useState } from 'react';
+import { useRouteMatch } from 'react-router';
 import { TutorialInEntity } from '../../../server/src/shared/model/Common';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
 import { useLogin } from '../hooks/LoginService';
-import { getTutorialRelatedPath } from '../routes/Routing.helpers';
-import { ROUTES, RouteType } from '../routes/Routing.routes';
-import { saveBlob } from '../util/helperFunctions';
 import { Tutorial } from '../model/Tutorial';
+import { ROUTES } from '../routes/newVersion/Routing.routes';
+import { saveBlob } from '../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,7 +63,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const titleText: Map<string, string> = new Map(ROUTES.map((route) => [route.path, route.title]));
+const TITLE_TEXTS: Map<string, string> = new Map(
+  Object.values(ROUTES).map((route) => [route.template, route.title])
+);
 
 interface Props {
   onMenuButtonClicked: (ev: React.MouseEvent<HTMLButtonElement>) => void;
@@ -75,39 +75,33 @@ interface CreatingState {
   [tutorialSlot: string]: boolean;
 }
 
-function getTitleFromLocation(location: Location): string {
-  console.log('Current location: ' + location.pathname);
-  const title: string | undefined = titleText.get(location.pathname);
+function getTitleFromPath(path: string): string {
+  const title = TITLE_TEXTS.get(path);
 
-  if (title) {
-    return title;
-  }
+  return title ?? 'TITLE_NOT_FOUND';
+}
 
-  const matchingRoute: RouteType | undefined = ROUTES.find((route) => {
-    const path = route.isTutorialRelated
-      ? getTutorialRelatedPath(route, ':tutorialId')
-      : route.path;
+function useTitleFromRoute(): string {
+  const match = useRouteMatch();
+  const title = useMemo(() => getTitleFromPath(match.path), [match.path]);
 
-    return !!matchPath(location.pathname, { path, exact: route.isExact });
-  });
-
-  return matchingRoute ? matchingRoute.title : 'TITLE_NOT_FOUND';
+  return title;
 }
 
 function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
-  const location = useLocation();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const classes = useStyles();
-  const { logout, isLoggedIn, userData } = useLogin();
-  const userIsLoggedIn: boolean = isLoggedIn();
   const theme = useTheme();
   const changeTheme = useChangeTheme();
 
+  const { logout, isLoggedIn, userData } = useLogin();
+  const userIsLoggedIn: boolean = isLoggedIn();
+
+  const title = useTitleFromRoute();
+
   const [backupAnchor, setBackupAnchor] = useState<HTMLElement | undefined>(undefined);
   const [creatingXLSX, setCreatingXLSX] = useState<CreatingState>({});
-
-  const title = useMemo(() => getTitleFromLocation(location), [location]);
 
   function handleThemeChangeClicked() {
     const newType: PaletteType = theme.palette.type === 'light' ? 'dark' : 'light';
