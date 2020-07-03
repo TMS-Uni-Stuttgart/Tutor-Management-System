@@ -1,11 +1,9 @@
 {
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "debug.node.autoAttach": "on",
-  "npm.packageManager": "yarn"
+  "npm.packageManager": "yarn",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
 }
