@@ -75,15 +75,19 @@ interface CreatingState {
   [tutorialSlot: string]: boolean | undefined;
 }
 
-function getTitleFromPath(path: string): string {
+function getTitleFromPath(path: string | undefined): string {
+  if (!path) {
+    return 'TITLE_NOT_FOUND';
+  }
+
   const title = TITLE_TEXTS.get(path);
 
   return title ?? 'TITLE_NOT_FOUND';
 }
 
 function useTitleFromRoute(): string {
-  const match = useRouteMatch();
-  const title = useMemo(() => getTitleFromPath(match.path), [match.path]);
+  const match = useRouteMatch([...TITLE_TEXTS.keys()]);
+  const title = useMemo(() => getTitleFromPath(match?.path), [match]);
 
   return title;
 }
