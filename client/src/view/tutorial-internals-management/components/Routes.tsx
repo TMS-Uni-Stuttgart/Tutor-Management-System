@@ -1,39 +1,18 @@
 import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router';
-import { RouteType } from '../../../routes/Routing.routes';
+import { TutorialRelatedDrawerRoute } from '../../../routes/Routing.types';
 
 interface RoutesProps {
-  routes: RouteType[];
-  basePath: string;
+  routes: TutorialRelatedDrawerRoute[];
 }
 
-interface RouteOfSubPathParams {
-  basePath: string;
-  subRoute: string;
-  tutorialId?: string;
-}
-
-export function getRouteOfSubPath({
-  basePath,
-  subRoute,
-  tutorialId,
-}: RouteOfSubPathParams): string {
-  const path = `${basePath}/${subRoute}`.replace(/\/\//g, '/');
-
-  return !!tutorialId ? path.replace(':tutorialId', tutorialId) : path;
-}
-
-function Routes({ routes, basePath }: RoutesProps): JSX.Element {
+function Routes({ routes }: RoutesProps): JSX.Element {
   const routesToRender = useMemo(
     () =>
       routes.map((route) => (
-        <Route
-          key={route.path}
-          path={getRouteOfSubPath({ basePath, subRoute: route.path })}
-          component={route.component}
-        />
+        <Route key={route.template} path={route.template} component={route.component} />
       )),
-    [routes, basePath]
+    [routes]
   );
 
   return <Switch>{routesToRender}</Switch>;
