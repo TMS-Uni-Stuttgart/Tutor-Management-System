@@ -30,6 +30,10 @@ export class Route<Parts extends Array<PathPart<any, any>>> {
     return this._template;
   }
 
+  get parts(): Parts {
+    return [...this.pathParts] as Parts;
+  }
+
   /**
    * Creates a route string based on the provided parameters.
    *

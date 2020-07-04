@@ -89,12 +89,12 @@ interface CombineParams<A extends BaseArray, B extends BaseArray> {
    * Route which forms the first part of the path of the combined route. Must __NOT__ contain any optional parameters.
    *
    */
-  baseRoute: CustomRoute<A>;
+  baseRoute: Route<A>;
 
   /**
    * Route which forms the later part of the path of the combined route.
    */
-  extension: CustomRoute<B>;
+  extension: Route<B>;
 
   /**
    * Other options of the combined route.
@@ -145,7 +145,7 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
     extension,
     options,
   }: CombineParams<A, B>): CustomRoute<[...A, ...B]> {
-    const path: [...A, ...B] = parts(...baseRoute.pathParts, ...extension.pathParts);
+    const path: [...A, ...B] = parts(...baseRoute.parts, ...extension.parts);
 
     return new CustomRoute({ ...options, path });
   }
