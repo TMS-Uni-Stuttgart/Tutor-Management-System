@@ -40,7 +40,7 @@ import UserManagement from '../view/usermanagement/UserManagement';
 import { CustomRoute, DrawerRoute, parts, PrivateRoute } from './Routing.types';
 import { param } from './typesafe-react-router';
 
-export const ROUTES = {
+const BASE_ROUTES = {
   LOGIN: new CustomRoute({
     path: parts('login'),
     title: 'Tutor Management System',
@@ -64,6 +64,9 @@ export const ROUTES = {
     icon: StudentIcon,
     roles: [Role.TUTOR, Role.ADMIN],
   }),
+};
+
+export const TUTORIAL_ROUTES = {
   ATTENDANCE: new DrawerRoute({
     path: parts('tutorial', param('tutorialId'), 'attendance'),
     title: 'Anwesenheiten',
@@ -159,6 +162,9 @@ export const ROUTES = {
     roles: [Role.TUTOR],
     isTutorialRelated: true,
   }),
+};
+
+const MANAGEMENT_ROUTES = {
   MANAGE_USERS: new DrawerRoute({
     path: parts('admin', 'usermanagement'),
     title: 'Nutzerverwaltung',
@@ -194,7 +200,6 @@ export const ROUTES = {
     component: TutorialInternalsManagement,
     icon: TutorialIcon,
     roles: [Role.ADMIN],
-    isExact: false,
   }),
   MANAGE_TUTORIALS: new DrawerRoute({
     path: parts('admin', 'tutorialmanagement'),
@@ -246,6 +251,12 @@ export const ROUTES = {
     icon: ScheinexamManagementIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
+};
+
+export const ROUTES = {
+  ...BASE_ROUTES,
+  ...TUTORIAL_ROUTES,
+  ...MANAGEMENT_ROUTES,
 };
 
 export const ROOT_REDIRECT_PATH = ROUTES.LOGIN;
