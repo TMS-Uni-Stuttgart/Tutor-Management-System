@@ -144,8 +144,9 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
     baseRoute,
     extension,
     options,
-  }: CombineParams<A, B>): CustomRoute<[...A, ...B]> {
-    const path: [...A, ...B] = parts(...baseRoute.parts, ...extension.parts);
+  }: CombineParams<A, B>): CustomRoute<Array<A[number] | B[number]>> {
+    // TODO: Fix typing (with TS 4.0).
+    const path: Array<A[number] | B[number]> = parts(...baseRoute.parts, ...extension.parts);
 
     return new CustomRoute({ ...options, path });
   }
