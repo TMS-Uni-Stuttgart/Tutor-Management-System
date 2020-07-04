@@ -9,9 +9,10 @@ import { MemoryRouterProps } from 'react-router';
 import { BrowserRouterProps } from 'react-router-dom';
 import DialogService, { getDialogOutsideContext } from '../hooks/DialogService';
 import { LoginContextProvider } from '../hooks/LoginService';
+import { RequireChildrenProp } from '../typings/RequireChildrenProp';
 import i18n from '../util/lang/configI18N';
-import { createTheme } from '../util/styles';
 import { getRouteWithPrefix } from '../util/routePrefix';
+import { createTheme } from '../util/styles';
 
 interface Props {
   Router: React.ComponentType<MemoryRouterProps | BrowserRouterProps>;
@@ -25,7 +26,7 @@ const ThemeTypeContext = React.createContext<ChangeThemeTypeFunction>(() => {
   );
 });
 
-function CustomThemeProvider({ children }: PropsWithChildren<{}>): JSX.Element {
+function CustomThemeProvider({ children }: RequireChildrenProp): JSX.Element {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [themeType, setThemeType] = useState<PaletteType>(prefersDarkMode ? 'dark' : 'light');
   const theme = createTheme(themeType);
@@ -93,7 +94,7 @@ function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Ele
   );
 }
 
-export function useChangeTheme() {
+export function useChangeTheme(): ChangeThemeTypeFunction {
   const changeTheme = useContext(ThemeTypeContext);
 
   return changeTheme;

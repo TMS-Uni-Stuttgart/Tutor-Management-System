@@ -33,7 +33,7 @@ export class Tutorial implements Modify<ITutorial, Modified> {
   @Transform((value) => new Map(value))
   readonly substitutes!: Map<string, UserInEntity>;
 
-  static getDisplayString(hasSlot: { slot: string }) {
+  static getDisplayString(hasSlot: { slot: string }): string {
     return `Tutorium ${hasSlot.slot.padStart(2, '0')}`;
   }
 

@@ -107,7 +107,7 @@ function StudentInfo(): JSX.Element {
       });
   }, [enqueueSnackbar]);
 
-  const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
+  const handleTabChange = (_: React.ChangeEvent<unknown>, newValue: number) => {
     setSelectedTab(newValue);
   };
 

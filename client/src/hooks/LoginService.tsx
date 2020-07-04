@@ -1,10 +1,11 @@
 import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import React, { useContext, useState } from 'react';
+import { ILoggedInUser } from '../../../server/src/shared/model/User';
 import { LoggedInUser } from '../model/LoggedInUser';
+import { RequireChildrenProp } from '../typings/RequireChildrenProp';
 import { getUser, removeUser, saveUser } from '../util/userStorage';
 import axios from './fetching/Axios';
-import { ILoggedInUser } from '../../../server/src/shared/model/User';
 
 export type LoggedInFunction = (isLoggedIn: boolean) => void;
 
@@ -107,7 +108,7 @@ async function handleResponse(response: AxiosResponse<ILoggedInUser>): Promise<L
   return plainToClass(LoggedInUser, data);
 }
 
-export function LoginContextProvider({ children }: React.PropsWithChildren<{}>) {
+export function LoginContextProvider({ children }: RequireChildrenProp): JSX.Element {
   const [user, setUser] = useState<LoggedInUser | undefined>(() => {
     const user: LoggedInUser | undefined = getUser();
 

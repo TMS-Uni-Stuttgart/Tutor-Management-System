@@ -10,7 +10,12 @@ import SheetForm, {
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/DialogService';
-import { useAxios } from '../../hooks/FetchingService';
+import {
+  createSheet,
+  deleteSheet as deleteSheetRequest,
+  editSheet as editSheetRequest,
+  getAllSheets,
+} from '../../hooks/fetching/Sheet';
 import { Sheet } from '../../model/Sheet';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import SheetRow from './components/SheetRow';
@@ -27,12 +32,6 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [sheets, setSheets] = useState<Sheet[]>([]);
-  const {
-    getAllSheets,
-    createSheet,
-    editSheet: editSheetRequest,
-    deleteSheet: deleteSheetRequest,
-  } = useAxios();
   const dialog = useDialog();
 
   useEffect(() => {
@@ -43,7 +42,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
         setIsLoading(false);
       })
       .catch((reason) => console.error(reason));
-  }, [getAllSheets]);
+  }, []);
 
   const handleSubmit: SheetFormSubmitCallback = async (
     { sheetNo, exercises, bonusSheet },

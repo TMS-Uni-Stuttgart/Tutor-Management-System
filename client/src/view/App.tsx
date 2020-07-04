@@ -58,7 +58,7 @@ function getRouteElementForRoute(route: CustomRoute<PathPart<any, any>[]>): JSX.
   }
 }
 
-function App() {
+function App(): JSX.Element {
   const classes = useStyles();
   const { isLoggedIn } = useLogin();
   const [isDrawerOpen, setDrawerOpen] = useState(true);

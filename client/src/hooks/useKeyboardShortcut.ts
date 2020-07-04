@@ -25,7 +25,7 @@ function areModifiersPressed(shortcutModifiers: Modifiers, pressed: Modifiers): 
   return true;
 }
 
-export function useKeyboardShortcut(shortcutKeys: ShortcutKey[], callback: ShortcutCallback) {
+export function useKeyboardShortcut(shortcutKeys: ShortcutKey[], callback: ShortcutCallback): void {
   const handleKeydown = useCallback(
     (e: KeyboardEvent) => {
       const { key, shiftKey, altKey, ctrlKey, metaKey, repeat } = e;

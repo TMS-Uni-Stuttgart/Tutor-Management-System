@@ -70,7 +70,7 @@ function WeekdayTabs(): JSX.Element {
   const [selectedTab, setSelectedTab] = useState(0);
   const { errors } = useFormikContext<FormState>();
 
-  const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
+  const handleTabChange = (_: React.ChangeEvent<unknown>, newValue: number) => {
     setSelectedTab(newValue);
   };
 

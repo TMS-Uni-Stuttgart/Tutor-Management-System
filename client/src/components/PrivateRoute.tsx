@@ -8,7 +8,7 @@ interface PrivateRouteProps extends RouteProps {
   component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
 }
 
-function PrivateRoute(props: PrivateRouteProps) {
+function PrivateRoute(props: PrivateRouteProps): JSX.Element {
   const { component: Component, ...other } = props;
   const { isLoggedIn } = useLogin();
 

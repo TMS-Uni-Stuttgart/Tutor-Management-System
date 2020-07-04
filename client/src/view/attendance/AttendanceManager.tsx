@@ -12,15 +12,19 @@ import DateOfTutorialSelection from '../../components/DateOfTutorialSelection';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SubmitButton from '../../components/loading/SubmitButton';
 import TableWithPadding from '../../components/TableWithPadding';
-import { getAllStudents } from '../../hooks/fetching/Student';
+import { getAttendancePDF } from '../../hooks/fetching/Files';
+import {
+  getAllStudents,
+  setAttendanceOfStudent,
+  setCakeCountForStudent,
+} from '../../hooks/fetching/Student';
 import { getAllTutorials, getStudentsOfTutorial, getTutorial } from '../../hooks/fetching/Tutorial';
-import { useAxios } from '../../hooks/FetchingService';
 import { useLogin } from '../../hooks/LoginService';
+import { LoggedInUser } from '../../model/LoggedInUser';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
 import { parseDateToMapKey, saveBlob } from '../../util/helperFunctions';
 import StudentAttendanceRow from './components/StudentsAttendanceRow';
-import { LoggedInUser } from '../../model/LoggedInUser';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -105,6 +109,7 @@ function getFilteredStudents(allStudents: Student[], filterOption: FilterOption)
 function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element {
   const classes = useStyles();
   const { userData } = useLogin();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingPDF, setLoadingPDF] = useState(false);
@@ -121,9 +126,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const [filterOption, setFilterOption] = useState<FilterOption>(FilterOption.ACTIVE_ONLY);
 
   const availableDates = getAvailableDates(tutorial, userData, !tutorialFromProps);
-
-  const { enqueueSnackbar } = useSnackbar();
-  const { setAttendanceOfStudent, setCakeCountForStudent, getAttendancePDF } = useAxios();
 
   useEffect(() => {
     if (!!tutorialFromProps) {

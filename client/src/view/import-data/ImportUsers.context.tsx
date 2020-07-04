@@ -1,6 +1,7 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Tutorial } from '../../model/Tutorial';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
+import { Tutorial } from '../../model/Tutorial';
+import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
 
 interface ParsedCSVDataRow {
   [header: string]: string;
@@ -80,7 +81,7 @@ function convertParsedToInternalCSV(data: ParsedCSVData): CSVData {
   return { headers, rows };
 }
 
-function ImportUsersContext({ children }: React.PropsWithChildren<{}>): JSX.Element {
+function ImportUsersContext({ children }: RequireChildrenProp): JSX.Element {
   const [data, setInternalData] = useState<CSVData>(() =>
     convertParsedToInternalCSV({ headers: [], rows: [] })
   );

@@ -1,12 +1,12 @@
 import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import CustomSelect from '../CustomSelect';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
 import { Sheet } from '../../model/Sheet';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
+import CustomSelect from '../CustomSelect';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,7 +39,13 @@ interface Props extends OuterProps {
   onChange: SelectInputProps['onChange'];
 }
 
-export function useSheetSelector({ generatePath }: SheetSelectorOptions) {
+interface UseSheetSelector {
+  SheetSelector: (props: OuterProps) => JSX.Element;
+  currentSheet: Sheet | undefined;
+  isLoadingSheets: boolean;
+}
+
+export function useSheetSelector({ generatePath }: SheetSelectorOptions): UseSheetSelector {
   const history = useHistory();
   const { setError } = useErrorSnackbar();
   const { sheetId } = useParams<RouteParams>();

@@ -21,9 +21,15 @@ interface CorrectionPdfOptions {
   team: Team;
 }
 
-interface GenerateAllPDFsOptions {
+interface GenerateAllPdfsOptions {
   tutorialId: string;
   sheet: Sheet;
+}
+
+interface UsePdfs {
+  showSinglePdfPreview: (options: CorrectionPdfOptions) => Promise<void>;
+  generateSinglePdf: (options: CorrectionPdfOptions) => Promise<void>;
+  generateAllPdfs: (options: GenerateAllPdfsOptions) => Promise<void>;
 }
 
 async function showSinglePdfPreview({
@@ -58,7 +64,7 @@ async function generateSinglePdf({ tutorialId, sheet, team }: CorrectionPdfOptio
   saveBlob(blob, `Ex${sheetNo}_${teamName}.pdf`);
 }
 
-async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPDFsOptions) {
+async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPdfsOptions) {
   const [blob, tutorial] = await Promise.all([
     getCorrectionCommentPDFs(tutorialId, sheet.id),
     getTutorial(tutorialId),
@@ -67,7 +73,7 @@ async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPDFsOptions) {
   saveBlob(blob, `Bewertungen_Ex${sheet.sheetNo.toString().padStart(2, '0')}_${tutorial.slot}.zip`);
 }
 
-export function usePDFs() {
+export function usePDFs(): UsePdfs {
   const dialog = useDialog();
 
   return {

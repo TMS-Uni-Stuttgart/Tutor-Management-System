@@ -1,10 +1,10 @@
-import { TextField, Button, PropTypes } from '@material-ui/core';
+import { Button, PropTypes, TextField } from '@material-ui/core';
+import { ButtonBaseProps } from '@material-ui/core/ButtonBase';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { TextFieldProps } from '@material-ui/core/TextField';
+import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
 import { ErrorMessage, Field, FieldProps } from 'formik';
 import React from 'react';
-import { ButtonBaseProps } from '@material-ui/core/ButtonBase';
-import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
 import { SvgIconComponent } from '../../../typings/SvgIconComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -51,7 +51,7 @@ export function FormikTextFieldWithButtons({
   DivProps,
   disabled,
   ...TextFieldProps
-}: PropType) {
+}: PropType): JSX.Element {
   const classes = useStyles();
   const buttonComps = buttons.map(({ key, Icon, onClick, color, tooltip }) => {
     const buttonComp = (

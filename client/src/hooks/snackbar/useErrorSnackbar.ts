@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useSnackbar, OptionsObject } from 'notistack';
+import { OptionsObject, useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
 
-interface UseErrorSnackbar {
+export interface UseErrorSnackbar {
   setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   isError: boolean;
 }

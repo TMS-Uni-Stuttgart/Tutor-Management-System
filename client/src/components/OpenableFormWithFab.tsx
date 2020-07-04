@@ -2,8 +2,8 @@ import { Fab, Grow, Paper, Typography } from '@material-ui/core';
 import { GrowProps } from '@material-ui/core/Grow';
 import { PaperProps } from '@material-ui/core/Paper';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Plus as AddIcon } from 'mdi-material-ui';
 import clsx from 'clsx';
+import { Plus as AddIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -82,7 +82,7 @@ function OpenableFormWithFab({
   onOpenChange,
   children,
   ...other
-}: Props) {
+}: Props): JSX.Element {
   const [openState, setOpenState] = useState<EditorOpenState>({
     isEditorOpen: false,
     isAnimating: false,

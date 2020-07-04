@@ -2,6 +2,12 @@ import { Role } from 'shared/model/Role';
 import { ROUTES } from '../../routes/Routing.routes';
 import { OnlyOptionalParamsRoute, TutorialRelatedDrawerRoute } from '../../routes/Routing.types';
 
+interface FilteredRoutes {
+  withoutTutorialRoutes: OnlyOptionalParamsRoute[];
+  tutorialRoutes: TutorialRelatedDrawerRoute[];
+  managementRoutes: OnlyOptionalParamsRoute[];
+}
+
 function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean {
   if (routeRoles === 'all') {
     return true;
@@ -10,7 +16,7 @@ function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean 
   return routeRoles.findIndex((role) => userRoles.includes(role)) !== -1;
 }
 
-export function filterRoutes(userRoles: Role[]) {
+export function filterRoutes(userRoles: Role[]): FilteredRoutes {
   const userRoutesWithoutTutorialRoutes: OnlyOptionalParamsRoute[] = [];
   const tutorialRoutes: TutorialRelatedDrawerRoute[] = [];
   const managementRoutes: OnlyOptionalParamsRoute[] = [];

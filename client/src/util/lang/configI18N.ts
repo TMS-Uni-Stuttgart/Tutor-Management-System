@@ -1,6 +1,10 @@
 import i18n from 'i18next';
 import Backend from 'i18next-xhr-backend';
-import { initReactI18next, useTranslation as usei18nTranslation } from 'react-i18next';
+import {
+  initReactI18next,
+  useTranslation as usei18nTranslation,
+  UseTranslationResponse,
+} from 'react-i18next';
 import { getApiUrl } from '../../hooks/fetching/Axios';
 import { isDevelopment } from '../isDevelopmentMode';
 import { getRouteWithPrefix } from '../routePrefix';
@@ -40,7 +44,7 @@ i18n
     },
   });
 
-export function useTranslation(namespace: string) {
+export function useTranslation(namespace: string): UseTranslationResponse {
   return usei18nTranslation(namespace);
 }
 

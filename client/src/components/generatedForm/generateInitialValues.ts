@@ -1,7 +1,7 @@
 import { FormDataSet } from './types/FieldData';
 import { FormFieldType } from './types/FormFieldType';
 
-export function generateInitialValue(formData: FormDataSet) {
+export function generateInitialValue(formData: FormDataSet): Record<string, any> {
   const initialValues: { [key: string]: any } = {};
 
   Object.entries(formData).forEach(([name, data]) => {
