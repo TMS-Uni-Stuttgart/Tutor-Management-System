@@ -1,18 +1,18 @@
 import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
-import { StudentDocument, populateStudentDocument } from './student.model';
-import { TutorialDocument, TutorialModel } from './tutorial.model';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { ITeam } from '../../shared/model/Team';
+import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
+import { populateStudentDocument, StudentDocument } from './student.model';
+import { TutorialDocument, TutorialModel } from './tutorial.model';
 
 /**
  * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.
  *
  * @param doc TeamDocument to populate.
  */
-export async function populateTeamDocument(doc?: TeamDocument) {
+export async function populateTeamDocument(doc?: TeamDocument): Promise<void> {
   if (!doc) {
     return;
   }

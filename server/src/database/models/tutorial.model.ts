@@ -15,7 +15,7 @@ import { UserDocument, UserModel } from './user.model';
  *
  * @param doc TutorialDocument to populate.
  */
-export async function populateTutorialDocument(doc?: TutorialDocument) {
+export async function populateTutorialDocument(doc?: TutorialDocument): Promise<void> {
   if (!doc || !doc.populate) {
     return;
   }
@@ -113,7 +113,7 @@ export class TutorialModel {
 
   private substitutes?: Map<string, UserDocument>;
 
-  loadSubstituteMap() {
+  loadSubstituteMap(): void {
     this.substitutes = new Map();
 
     for (const doc of this._substitutes) {
@@ -121,7 +121,7 @@ export class TutorialModel {
     }
   }
 
-  saveSubstituteMap(this: TutorialDocument) {
+  saveSubstituteMap(this: TutorialDocument): void {
     if (!this.substitutes) {
       return;
     }
@@ -146,7 +146,7 @@ export class TutorialModel {
    * @param date Date of the substitute
    * @param substitute Substitute
    */
-  setSubstitute(this: TutorialDocument, date: DateTime, substitute: UserDocument) {
+  setSubstitute(this: TutorialDocument, date: DateTime, substitute: UserDocument): void {
     this.substitutes?.set(this.getDateKey(date), substitute);
 
     this.saveSubstituteMap();
@@ -159,7 +159,7 @@ export class TutorialModel {
    *
    * @param date Date to remove the substitute from
    */
-  removeSubstitute(this: TutorialDocument, date: DateTime) {
+  removeSubstitute(this: TutorialDocument, date: DateTime): void {
     const key = this.getDateKey(date);
 
     if (this.substitutes?.has(key)) {

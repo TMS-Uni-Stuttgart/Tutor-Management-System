@@ -1,4 +1,4 @@
-import { Injectable, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { BadRequestException, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
@@ -15,7 +15,7 @@ export class LoginGuard extends AuthGuard('local') {
     super();
   }
 
-  async canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const { username, password } = request.body ?? { username: undefined, password: undefined };
 

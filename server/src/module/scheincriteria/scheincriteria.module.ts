@@ -1,4 +1,8 @@
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
+import { ScheinexamModule } from '../scheinexam/scheinexam.module';
+import { SheetModule } from '../sheet/sheet.module';
+import { StudentModule } from '../student/student.module';
+import { TutorialModule } from '../tutorial/tutorial.module';
 import { AttendanceCriteria } from './container/criterias/AttendanceCriteria';
 import { PresentationCriteria } from './container/criterias/PresentationCriteria';
 import { ScheinexamCriteria } from './container/criterias/ScheinexamCriteria';
@@ -6,13 +10,9 @@ import { SheetIndividualCriteria } from './container/criterias/SheetIndividualCr
 import { SheetTotalCriteria } from './container/criterias/SheetTotalCriteria';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
-import { ScheincriteriaService } from './scheincriteria.service';
-import { ScheincriteriaController } from './scheincriteria.controller';
-import { StudentModule } from '../student/student.module';
-import { SheetModule } from '../sheet/sheet.module';
-import { ScheinexamModule } from '../scheinexam/scheinexam.module';
-import { TutorialModule } from '../tutorial/tutorial.module';
 import { ScheincriteriaClass } from './container/scheincriteria.form';
+import { ScheincriteriaController } from './scheincriteria.controller';
+import { ScheincriteriaService } from './scheincriteria.service';
 
 export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
 
@@ -23,7 +23,7 @@ export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
   exports: [ScheincriteriaService],
 })
 export class ScheincriteriaModule implements OnModuleInit {
-  onModuleInit() {
+  onModuleInit(): void {
     const criterias: ScheincriteriaConstructor[] = [
       AttendanceCriteria,
       PresentationCriteria,

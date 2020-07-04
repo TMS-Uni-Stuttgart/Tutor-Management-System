@@ -20,7 +20,7 @@ export interface VirtualPopulationOptions<M> {
 export default function VirtualPopulation<M>(
   schema: Schema<M>,
   { populateDocument }: VirtualPopulationOptions<M>
-) {
+): void {
   if (!assertPopulateDocument(populateDocument)) {
     return;
   }

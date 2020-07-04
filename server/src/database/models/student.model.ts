@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
+import { SettingsService } from '../../module/settings/settings.service';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IGrading } from '../../shared/model/Points';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
@@ -13,7 +14,6 @@ import { GradingDocument } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
-import { SettingsService } from '../../module/settings/settings.service';
 
 interface ConstructorFields {
   firstname: string;
@@ -27,7 +27,7 @@ interface ConstructorFields {
   cakeCount: number;
 }
 
-export async function populateStudentDocument(doc?: StudentDocument) {
+export async function populateStudentDocument(doc?: StudentDocument): Promise<void> {
   if (!doc || !doc.populate) {
     return;
   }
@@ -97,7 +97,7 @@ export class StudentModel {
    *
    * This will clear the previously set map.
    */
-  loadGradingMap() {
+  loadGradingMap(): void {
     this.gradings = new Map();
 
     for (const doc of this._gradings) {
@@ -114,7 +114,7 @@ export class StudentModel {
    *
    * @param attendance Attendance to set.
    */
-  setAttendance(this: StudentDocument, attendance: AttendanceDocument) {
+  setAttendance(this: StudentDocument, attendance: AttendanceDocument): void {
     this.attendances.set(this.getDateKey(attendance.date), attendance);
     this.markModified('attendances');
   }
@@ -140,7 +140,7 @@ export class StudentModel {
    * @param sheet Sheet to save grading for.
    * @param grading Grading so save.
    */
-  setGrading(this: StudentDocument, sheet: HasExerciseDocuments, grading: GradingDocument) {
+  setGrading(this: StudentDocument, sheet: HasExerciseDocuments, grading: GradingDocument): void {
     if (!sheet.id || !this.gradings) {
       throw new Error('Given sheet needs to have an id field.');
     }
@@ -173,7 +173,7 @@ export class StudentModel {
    * @param sheet Sheet to save grading for.
    * @param points Presentation points to save.
    */
-  setPresentationPoints(this: StudentDocument, sheet: SheetDocument, points: number) {
+  setPresentationPoints(this: StudentDocument, sheet: SheetDocument, points: number): void {
     this.presentationPoints.set(sheet.id, points);
     this.markModified('presentationPoints');
   }

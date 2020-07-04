@@ -30,7 +30,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
   /**
    * Creates a new administrator on application start if there are no users present in the DB.
    */
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     const users = await this.findAll();
 
     if (users.length === 0) {

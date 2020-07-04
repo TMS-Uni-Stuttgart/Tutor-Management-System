@@ -1,5 +1,5 @@
-import { ScheincriteriaMetadataKey } from './scheincriteria.metadata';
 import { ScheincriteriaContainer } from './scheincriteria.container';
+import { ScheincriteriaMetadataKey } from './scheincriteria.metadata';
 
 interface ScheincriteriaNumberOptions {
   min?: number;
@@ -46,7 +46,7 @@ export function ScheincriteriaPossiblePercentage(toggledBy: string): PropertyDec
   };
 }
 
-export function ScheincriteriaEnum(enumObject: any): PropertyDecorator {
+export function ScheincriteriaEnum(enumObject: Record<string, string | number>): PropertyDecorator {
   return (target, propertyKey) => {
     const enumEntries: string[] = Object.values<string | number>(enumObject).filter<string>(
       isString

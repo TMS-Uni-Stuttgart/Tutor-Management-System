@@ -1,18 +1,18 @@
 import {
   Controller,
-  Post,
-  UseGuards,
-  Req,
   Get,
-  Res,
   HttpCode,
   HttpStatus,
+  Post,
+  Req,
+  Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
-import { LoginGuard } from '../guards/login.guard';
 import { Request, Response } from 'express';
-import { ILoggedInUser } from '../shared/model/User';
+import { LoginGuard } from '../guards/login.guard';
 import { UserService } from '../module/user/user.service';
+import { ILoggedInUser } from '../shared/model/User';
 
 @Controller('auth')
 export class AuthController {
@@ -30,7 +30,7 @@ export class AuthController {
   }
 
   @Get('/logout')
-  logout(@Req() req: Request, @Res() res: Response) {
+  logout(@Req() req: Request, @Res() res: Response): void {
     req.logout();
     res.clearCookie('connect.sid').send('Successfully logged out.');
   }

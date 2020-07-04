@@ -5,17 +5,17 @@ import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'src/shared/model/Role';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
+import { SettingsService } from '../../module/settings/settings.service';
 import { IUser } from '../../shared/model/User';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { TutorialDocument } from './tutorial.model';
-import { SettingsService } from '../../module/settings/settings.service';
 
 /**
  * Populates the fields in the given UserDocument. If no document is provided this functions does nothing.
  *
  * @param doc UserDocument to populate.
  */
-export async function populateUserDocument(doc?: UserDocument) {
+export async function populateUserDocument(doc?: UserDocument): Promise<void> {
   if (!doc || !doc.populate) {
     return;
   }

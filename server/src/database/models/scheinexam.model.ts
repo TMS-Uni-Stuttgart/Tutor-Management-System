@@ -3,10 +3,10 @@ import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ScheinexamDTO } from '../../module/scheinexam/scheinexam.dto';
+import { ExercisePointInfo } from '../../shared/model/Points';
 import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ExerciseDocument, ExerciseModel } from './exercise.model';
 import { StudentDocument } from './student.model';
-import { ExercisePointInfo } from '../../shared/model/Points';
 
 interface PassedInformation {
   passed: boolean;
@@ -51,7 +51,7 @@ export class ScheinexamModel {
     );
   }
 
-  static fromDTO(dto: ScheinexamDTO) {
+  static fromDTO(dto: ScheinexamDTO): ScheinexamModel {
     return this.assignDTO(new ScheinexamModel(), dto);
   }
 

@@ -1,20 +1,20 @@
 import { BadRequestException } from '@nestjs/common';
 import {
+  arrayProp,
   DocumentType,
   getModelForClass,
   mapProp,
   modelOptions,
-  prop,
-  arrayProp,
   plugin,
+  prop,
 } from '@typegoose/typegoose';
+import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
+import { SettingsService } from '../../module/settings/settings.service';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Points';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 import { StudentDocument, StudentModel } from './student.model';
-import { fieldEncryption } from 'mongoose-field-encryption';
-import { SettingsService } from '../../module/settings/settings.service';
 
 export class ExerciseGradingModel {
   constructor({ points }: { points: number }) {
@@ -170,7 +170,7 @@ export class GradingModel {
    *
    * @param student Student to add to this grading.
    */
-  addStudent(this: GradingDocument, student: StudentDocument) {
+  addStudent(this: GradingDocument, student: StudentDocument): void {
     const idx = this.students.findIndex((s) => s.id === student.id);
 
     if (idx === -1) {
@@ -186,7 +186,7 @@ export class GradingModel {
    *
    * @param student Student to remove.
    */
-  removeStudent(this: GradingDocument, student: StudentDocument) {
+  removeStudent(this: GradingDocument, student: StudentDocument): void {
     const idx = this.students.findIndex((s) => s.id === student.id);
 
     if (idx !== -1) {
@@ -236,7 +236,7 @@ export class GradingModel {
    *
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
-  updateFromDTO(this: GradingDocument, dto: GradingDTO) {
+  updateFromDTO(this: GradingDocument, dto: GradingDTO): void {
     const { exerciseGradings, additionalPoints, comment, gradingId, sheetId, examId } = dto;
 
     if (!!gradingId) {
