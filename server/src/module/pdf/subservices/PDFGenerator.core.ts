@@ -5,7 +5,7 @@ import GITHUB_MARKDOWN_CSS from './css/githubMarkdown';
 /**
  * @param T Type of the options passed to `generatePDF`.
  */
-export abstract class PDFGenerator<T = {}> {
+export abstract class PDFGenerator<T = Record<string, unknown>> {
   /**
    * Generates a PDF from the given options.
    *

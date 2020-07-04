@@ -80,7 +80,7 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(SameUserGuard)
   @UsePipes(ValidationPipe)
-  async updatePassword(@Param('id') id: string, @Body() body: PasswordDTO) {
+  async updatePassword(@Param('id') id: string, @Body() body: PasswordDTO): Promise<void> {
     await this.userService.setPassword(id, body.password);
   }
 
@@ -88,7 +88,7 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(HasRoleGuard)
   @UsePipes(ValidationPipe)
-  async updateTemporaryPassword(@Param('id') id: string, @Body() body: PasswordDTO) {
+  async updateTemporaryPassword(@Param('id') id: string, @Body() body: PasswordDTO): Promise<void> {
     await this.userService.setTemporaryPassword(id, body.password);
   }
 }

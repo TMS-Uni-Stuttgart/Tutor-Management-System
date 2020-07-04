@@ -3,7 +3,7 @@ import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class ClassTransformerPipe extends ValidationPipe {
-  async transform(value: any, metadata: ArgumentMetadata) {
+  async transform(value: unknown, metadata: ArgumentMetadata): Promise<any> {
     await super.transform(value, metadata);
 
     if (typeof value === 'object' && !!metadata.metatype) {

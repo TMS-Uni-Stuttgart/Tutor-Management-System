@@ -1,16 +1,16 @@
-import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
-import pug from 'pug';
-import path from 'path';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import fs from 'fs';
-import { SettingsService } from '../settings/settings.service';
+import path from 'path';
+import pug from 'pug';
 import { StartUpException } from '../../exceptions/StartUpException';
+import { SettingsService } from '../settings/settings.service';
 import {
-  Template,
   AttendanceAttributes,
   CredentialsAttributes,
+  MailAttribtutes,
   ScheinexamAttributes,
   ScheinstatusAttributes,
-  MailAttribtutes,
+  Template,
 } from './template.types';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class TemplateService {
     return this.getTemplate(this.TEMPLATE_FILES.scheinstatus);
   }
 
-  checkAllTemplatesPresent() {
+  checkAllTemplatesPresent(): void {
     const notExisting: string[] = [];
 
     for (const [, value] of Object.entries(this.TEMPLATE_FILES)) {

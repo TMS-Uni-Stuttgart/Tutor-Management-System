@@ -26,9 +26,11 @@ rules:
     - 'error'
     - { allows: ['private', 'readonly', 'private readonly', 'protected readonly'] }
   '@typescript-eslint/interface-name-prefix': 'off'
+  '@typescript-eslint/explicit-module-boundary-types':
+    - 'warn'
+    - { allowedNames: ['renderLink'] }
   'constructor-super': 'error'
   'no-fallthrough': 'error'
-  'no-console': 'warn'
   'react/display-name': 'off'
   'react/jsx-no-duplicate-props':
     - 'warn'

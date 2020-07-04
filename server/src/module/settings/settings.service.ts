@@ -47,7 +47,7 @@ export class SettingsService {
    *
    * @returns Current SettingsService.
    */
-  static getService() {
+  static getService(): SettingsService {
     if (!SettingsService.service) {
       return new SettingsService();
     }

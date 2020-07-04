@@ -13,6 +13,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
 import { Roles } from '../../guards/decorators/roles.decorator';
@@ -29,7 +30,6 @@ import {
   StudentDTO,
 } from './student.dto';
 import { StudentService } from './student.service';
-import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
 
 @Controller('student')
 export class StudentController {
@@ -76,7 +76,7 @@ export class StudentController {
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(StudentGuard)
-  async deleteStudent(@Param('id') id: string) {
+  async deleteStudent(@Param('id') id: string): Promise<void> {
     await this.studentService.delete(id);
   }
 

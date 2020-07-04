@@ -40,7 +40,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
    * @param exception Catched NotFoundException
    * @param host Application host
    */
-  catch(exception: NotFoundException, host: ArgumentsHost) {
+  catch(exception: NotFoundException, host: ArgumentsHost): Response<any> | undefined {
     const ctx = host.switchToHttp();
     const { url } = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();

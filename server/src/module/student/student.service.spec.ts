@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DateTime } from 'luxon';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
@@ -14,6 +15,8 @@ import { StudentModel } from '../../database/models/student.model';
 import { AttendanceState } from '../../shared/model/Attendance';
 import { IGrading } from '../../shared/model/Points';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
+import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
@@ -27,9 +30,6 @@ import {
   StudentDTO,
 } from './student.dto';
 import { StudentService } from './student.service';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
-import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
-import { DateTime } from 'luxon';
 
 interface AssertStudentParams {
   expected: MockedModel<StudentModel>;
@@ -149,7 +149,7 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
   }
 }
 
-export function assertGrading({ expected, actual }: AssertGradingParams) {
+export function assertGrading({ expected, actual }: AssertGradingParams): void {
   expect(actual).toBeDefined();
 
   if (!actual) {

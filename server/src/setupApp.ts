@@ -68,7 +68,7 @@ function initSwagger(app: INestApplication, apiPrefix: string) {
   SwaggerModule.setup(`${apiPrefix}/docs`, app, document);
 }
 
-export async function bootstrap() {
+export async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   const settings: SettingsService = app.get(SettingsService);

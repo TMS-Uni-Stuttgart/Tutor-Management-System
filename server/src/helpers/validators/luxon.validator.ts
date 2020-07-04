@@ -7,7 +7,7 @@ import { DateTime, Interval } from 'luxon';
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsLuxonDateTime(validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
+  return function (object: Record<string, any>, propertyName: string): void {
     const message: any = {
       message: validationOptions?.each
         ? `each date in ${propertyName} must be in a valid ISO format`
@@ -36,7 +36,7 @@ export function IsLuxonDateTime(validationOptions?: ValidationOptions) {
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsLuxonInterval(validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
+  return function (object: Record<string, any>, propertyName: string): void {
     const message: any = {
       message: validationOptions?.each
         ? `each interval in ${propertyName} must be in a valid ISO format`

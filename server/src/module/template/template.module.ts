@@ -8,7 +8,7 @@ import { TemplateService } from './template.service';
 export class TemplateModule implements OnApplicationBootstrap {
   constructor(private readonly templateService: TemplateService) {}
 
-  onApplicationBootstrap() {
+  onApplicationBootstrap(): void {
     this.templateService.checkAllTemplatesPresent();
   }
 }

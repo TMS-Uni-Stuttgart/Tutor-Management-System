@@ -9,7 +9,7 @@ import { registerDecorator, validate, ValidationOptions } from 'class-validator'
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsMapEntry(classType: ClassType<any>, validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
+  return function (object: Record<string, any>, propertyName: string): void {
     const message: any = {
       message: validationOptions?.each
         ? `each element in ${propertyName} must be a 2-tupel in the form [string, ${classType.name}]`
@@ -47,7 +47,7 @@ export function IsMapEntry(classType: ClassType<any>, validationOptions?: Valida
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsNumberMapEntry(validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
+  return function (object: Record<string, any>, propertyName: string): void {
     const message: any = {
       message: validationOptions?.each
         ? `each element in ${propertyName} must be a 2-tupel in the form [string, number]`

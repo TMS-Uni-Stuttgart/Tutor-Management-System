@@ -1,7 +1,7 @@
+import { HttpException, Logger } from '@nestjs/common';
 import { StartUpException } from './exceptions/StartUpException';
-import { Logger, HttpException } from '@nestjs/common';
 
-export function setupProcess() {
+export function setupProcess(): void {
   function handleError(err: any) {
     const logger = new Logger('Process');
 
