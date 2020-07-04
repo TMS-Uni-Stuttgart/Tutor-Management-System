@@ -65,7 +65,7 @@ export const ROUTES = {
     roles: [Role.TUTOR, Role.ADMIN],
   }),
   ATTENDANCE: new DrawerRoute({
-    path: parts('attendance'),
+    path: parts('tutorial', param('tutorialId'), 'attendance'),
     title: 'Anwesenheiten',
     component: AttendanceView,
     icon: AttendancesIcon,
@@ -144,7 +144,7 @@ export const ROUTES = {
     isTutorialRelated: true,
   }),
   STUDENTOVERVIEW: new DrawerRoute({
-    path: parts('studentoverview'),
+    path: parts('tutorial', param('tutorialId'), 'studentoverview'),
     title: 'Studierendenübersicht',
     component: TutorStudentmanagement,
     icon: StudentIcon,
@@ -152,7 +152,7 @@ export const ROUTES = {
     isTutorialRelated: true,
   }),
   TEAMOVERVIEW: new DrawerRoute({
-    path: parts('teamoverview'),
+    path: parts('tutorial', param('tutorialId'), 'teamoverview'),
     title: 'Teamübersicht',
     component: Teamoverview,
     icon: TeamIcon,
