@@ -1,7 +1,7 @@
-import { LoggedInUser } from '../model/LoggedInUser';
 import { plainToClass } from 'class-transformer';
+import { LoggedInUser } from '../model/LoggedInUser';
 
-export function saveUser(user: LoggedInUser) {
+export function saveUser(user: LoggedInUser): void {
   sessionStorage.setItem('user', JSON.stringify(user));
 }
 
@@ -21,6 +21,6 @@ export function getUser(): LoggedInUser | undefined {
   }
 }
 
-export function removeUser() {
+export function removeUser(): void {
   sessionStorage.removeItem('user');
 }

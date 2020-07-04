@@ -72,7 +72,7 @@ function ExcludedDateDialog({ excluded, onClose, onAccept, ...props }: Props): J
   const [value, setValue] = useState<ValueState>(() => getDefaultValue(excluded));
   const [selected, setSelected] = useState(() => getSelectedTab(excluded));
 
-  const handleTabChange = (_: React.ChangeEvent<{}>, newValue: number) => {
+  const handleTabChange = (_: React.ChangeEvent<unknown>, newValue: number) => {
     setSelected(newValue);
   };
 

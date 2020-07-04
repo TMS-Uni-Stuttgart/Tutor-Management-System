@@ -2,11 +2,11 @@ import { SnackbarKey, useSnackbar } from 'notistack';
 import React, { useCallback } from 'react';
 import SnackbarWithList, { SnackbarWithListProps } from './SnackbarWithList';
 
-interface UseSnackbarWithList {
-  showSnackbarWithList: (props: Omit<SnackbarWithListProps, 'id'>) => void;
+export interface UseSnackbarWithList {
+  enqueueSnackbarWithList: (props: Omit<SnackbarWithListProps, 'id'>) => void;
 }
 
-export function useSnackbarWithList() {
+export function useSnackbarWithList(): UseSnackbarWithList {
   const { enqueueSnackbar } = useSnackbar();
   const enqueueSnackbarWithList = useCallback(
     (props: Omit<SnackbarWithListProps, 'id'>) => {

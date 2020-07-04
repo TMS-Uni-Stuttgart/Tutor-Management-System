@@ -71,7 +71,7 @@ function StepperHeader({
   backButtonRoute,
   className,
   ...props
-}: StepperHeaderProps) {
+}: StepperHeaderProps): JSX.Element {
   const classes = useStyles();
   const { activeStep, nextStep, isWaitingOnNextCallback, steps, isNextDisabled } = useStepper();
 

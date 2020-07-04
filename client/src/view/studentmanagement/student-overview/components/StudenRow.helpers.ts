@@ -1,6 +1,6 @@
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
-export function calculateProgress(summary: ScheinCriteriaSummary) {
+export function calculateProgress(summary: ScheinCriteriaSummary): number {
   let achieved = 0;
   let total = 0;
 

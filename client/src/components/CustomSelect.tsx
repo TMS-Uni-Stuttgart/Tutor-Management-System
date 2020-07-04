@@ -56,7 +56,7 @@ export interface CustomSelectProps<T>
   showLoadingIndicator?: boolean;
 }
 
-export type OnChangeHandler = CustomSelectProps<{}>['onChange'];
+export type OnChangeHandler = CustomSelectProps<unknown>['onChange'];
 
 class EmptyItem {
   constructor(readonly id: string, readonly name: string) {}

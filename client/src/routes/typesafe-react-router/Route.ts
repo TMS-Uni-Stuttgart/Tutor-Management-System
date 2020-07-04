@@ -1,3 +1,4 @@
+import { hasOwnProperty } from '../../typings/guards';
 import { PathParam, PathPart, RouteParams } from './types';
 
 /**
@@ -72,7 +73,15 @@ export class Route<Parts extends Array<PathPart<any, any>>> {
    *
    * @returns TypeAssertion: Is the given `part` a `PathParam`?
    */
-  protected isParam(part: any): part is PathParam<any, any> {
+  protected isParam(part: unknown): part is PathParam<any, any> {
+    if (typeof part !== 'object' || part === null) {
+      return false;
+    }
+
+    if (!hasOwnProperty(part, 'param')) {
+      return false;
+    }
+
     return part.param !== undefined && part.param !== null;
   }
 

@@ -2,7 +2,7 @@ import { Box, BoxProps } from '@material-ui/core';
 import React from 'react';
 import { useStepper } from '../context/StepperContext';
 
-function StepperContent(props: BoxProps) {
+function StepperContent(props: BoxProps): JSX.Element {
   const { activeStep, steps } = useStepper();
   const StepElement =
     steps[activeStep]?.component ?? (() => <div>NO ELEMENT FOUND FOR STEP {activeStep}</div>);

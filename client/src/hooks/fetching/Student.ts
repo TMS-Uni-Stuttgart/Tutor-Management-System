@@ -87,7 +87,10 @@ export async function setPresentationPointsOfStudent(
   }
 }
 
-export async function setExamPointsOfStudent(studentId: string, points: IGradingDTO) {
+export async function setExamPointsOfStudent(
+  studentId: string,
+  points: IGradingDTO
+): Promise<void> {
   const response = await axios.put(`student/${studentId}/grading`, points);
 
   if (response.status !== 204) {
@@ -95,7 +98,10 @@ export async function setExamPointsOfStudent(studentId: string, points: IGrading
   }
 }
 
-export async function setCakeCountForStudent(studentId: string, cakeCountDTO: ICakeCountDTO) {
+export async function setCakeCountForStudent(
+  studentId: string,
+  cakeCountDTO: ICakeCountDTO
+): Promise<void> {
   const response = await axios.put(`student/${studentId}/cakecount`, cakeCountDTO);
 
   if (response.status !== 204) {

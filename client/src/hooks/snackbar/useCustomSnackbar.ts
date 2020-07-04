@@ -1,8 +1,11 @@
-import { useSnackbar } from 'notistack';
-import { useSnackbarWithList } from '../../components/snackbar-with-list/useSnackbarWithList';
-import { useErrorSnackbar } from './useErrorSnackbar';
+import { ProviderContext, useSnackbar } from 'notistack';
+import {
+  useSnackbarWithList,
+  UseSnackbarWithList,
+} from '../../components/snackbar-with-list/useSnackbarWithList';
+import { useErrorSnackbar, UseErrorSnackbar } from './useErrorSnackbar';
 
-export function useCustomSnackbar() {
+export function useCustomSnackbar(): ProviderContext & UseErrorSnackbar & UseSnackbarWithList {
   const useSnackbarFunctions = useSnackbar();
   const useErrorSnackbarFunctions = useErrorSnackbar();
   const useSnackbarWithListFunctions = useSnackbarWithList();

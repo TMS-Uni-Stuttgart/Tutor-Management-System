@@ -148,7 +148,7 @@ export function handleDeleteStudent({
   dispatch,
   enqueueSnackbar,
 }: HandlerParams & { student: Student; dialog: DialogHelpers }) {
-  return async () => {
+  return async (): Promise<void> => {
     try {
       await dispatch({
         type: StudentStoreActionType.DELETE,

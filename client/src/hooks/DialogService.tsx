@@ -7,9 +7,10 @@ import {
 } from '@material-ui/core';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import { DialogProps } from '@material-ui/core/Dialog';
-import React, { PropsWithChildren, useContext, useState } from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import React, { useContext, useState } from 'react';
+import { RequireChildrenProp } from '../typings/RequireChildrenProp';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -69,7 +70,7 @@ const defaultDialog: DialogOptions = {
 let showDialogGlobal: CreateDialogFunction | undefined;
 let closeDialogGlobal: (() => void) | undefined;
 
-function DialogService({ children }: PropsWithChildren<{}>): JSX.Element {
+function DialogService({ children }: RequireChildrenProp): JSX.Element {
   const classes = useStyles();
   const [dialog, setDialog] = useState<DialogOptions | undefined>(undefined);
 

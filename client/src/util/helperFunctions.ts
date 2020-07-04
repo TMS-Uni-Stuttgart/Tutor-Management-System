@@ -8,7 +8,7 @@ export function parseDateToMapKey(date: DateTime): string {
   return date.toISODate();
 }
 
-export function saveBlob(blob: Blob, filename: string) {
+export function saveBlob(blob: Blob, filename: string): void {
   const link = document.createElement('a');
 
   link.href = window.URL.createObjectURL(blob);
