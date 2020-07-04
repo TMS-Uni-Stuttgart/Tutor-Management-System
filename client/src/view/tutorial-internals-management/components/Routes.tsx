@@ -10,7 +10,12 @@ function Routes({ routes }: RoutesProps): JSX.Element {
   const routesToRender = useMemo(
     () =>
       routes.map((route) => (
-        <Route key={route.template} path={route.template} component={route.component} />
+        <Route
+          key={route.template}
+          path={route.template}
+          component={route.component}
+          exact={route.isExact}
+        />
       )),
     [routes]
   );
