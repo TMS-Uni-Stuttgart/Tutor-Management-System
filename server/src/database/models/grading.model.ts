@@ -93,7 +93,7 @@ export class ExerciseGradingModel {
   private updateFromDTO(this: ExerciseGradingDocument, dto: ExerciseGradingDTO) {
     const { additionalPoints, comment, points, subExercisePoints } = dto;
 
-    if (!points && !subExercisePoints) {
+    if (points === undefined && subExercisePoints === undefined) {
       throw new BadRequestException(
         `At least one of the two properties 'points' and 'subExercisePoints' has to be set in the DTO.`
       );
