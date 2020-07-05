@@ -561,6 +561,70 @@ describe('StudentService', () => {
     assertGrading({ expected: gradingDTO, actual: actualGrading });
   });
 
+  it('set a grding of a sheet with one points prop of 0 of a student', async () => {
+    const sheetService = testModule.get<SheetService>(SheetService);
+    const student = STUDENT_DOCUMENTS[0];
+    const sheetDTO: SheetDTO = {
+      sheetNo: 42,
+      bonusSheet: false,
+      exercises: [
+        {
+          exName: '1',
+          maxPoints: 10,
+          bonus: false,
+        },
+        {
+          exName: '2',
+          bonus: false,
+          maxPoints: 0,
+          subexercises: [
+            {
+              exName: '(a)',
+              maxPoints: 5,
+              bonus: false,
+            },
+            {
+              exName: '(b)',
+              maxPoints: 7,
+              bonus: false,
+            },
+          ],
+        },
+      ],
+    };
+
+    const sheet = await sheetService.create(sheetDTO);
+    const gradingDTO: GradingDTO = {
+      sheetId: sheet.id,
+      exerciseGradings: [
+        [
+          sheet.exercises[0].id,
+          { comment: 'Comment for exercise 1', additionalPoints: 0, points: 0 },
+        ],
+        [
+          sheet.exercises[1].id,
+          {
+            comment: 'Comment for exercise 2',
+            additionalPoints: 0,
+            subExercisePoints: [
+              [sheet.exercises[1].subexercises[0].id, 4],
+              [sheet.exercises[1].subexercises[1].id, 5],
+            ],
+          },
+        ],
+      ],
+      additionalPoints: 0,
+      comment: 'This is a comment for the grading',
+    };
+
+    await service.setGrading(student._id, gradingDTO);
+
+    const updatedStudent = (await service.findById(student._id)).toDTO();
+    const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
+
+    assertGrading({ expected: gradingDTO, actual: actualGrading });
+  });
+
   it('set a grading of an exam of a student', async () => {
     const scheinexamService = testModule.get<ScheinexamService>(ScheinexamService);
     const student = STUDENT_DOCUMENTS[0];
