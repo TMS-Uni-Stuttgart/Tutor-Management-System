@@ -133,7 +133,7 @@ function EnterScheinexamPoints(): JSX.Element {
   };
 
   return (
-    <Box display='flex' flexDirection='column'>
+    <Box display='flex' flexDirection='column' flex={1}>
       <Box display='flex' marginBottom={3}>
         <BackButton
           to={ROUTES.SCHEIN_EXAMS_OVERVIEW.create({ tutorialId, examId })}
