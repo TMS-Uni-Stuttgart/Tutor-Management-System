@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: 1,
       marginLeft: 'unset',
       position: 'absolute',
-      top: theme.spacing(4),
-      right: theme.spacing(3),
+      top: theme.spacing(1),
+      right: theme.spacing(2),
     },
     actionButtonNew: {
       background: theme.palette.green.main,

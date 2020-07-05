@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     topBar: {
       display: 'flex',
+      position: 'relative',
       width: '100%',
       marginTop: theme.spacing(1),
       justifyContent: 'flex-end',
