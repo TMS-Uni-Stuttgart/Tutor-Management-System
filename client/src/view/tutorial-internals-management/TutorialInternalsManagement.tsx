@@ -2,7 +2,7 @@ import { Box, Button, Divider, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { ChevronLeft as BackIcon } from 'mdi-material-ui';
 import React, { useCallback, useMemo, useState } from 'react';
-import { MemoryRouter, useHistory } from 'react-router-dom';
+import { MemoryRouter, useHistory, useLocation } from 'react-router-dom';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
 import Placeholder from '../../components/Placeholder';
 import { useTutorialFromPath } from '../../hooks/useTutorialFromPath';
@@ -38,17 +38,50 @@ interface Props {
   onBackClick: () => void;
 }
 
+interface PlaceholderDataParams {
+  error?: string;
+  tutorial?: Tutorial;
+  pathname: string;
+}
+
 function getAllRelatedRoutes(): TutorialRelatedDrawerRoute[] {
   return [...Object.values(TUTORIAL_ROUTES)] as any;
+}
+
+function getPlaceholderData({
+  error,
+  tutorial,
+  pathname,
+}: PlaceholderDataParams): { placeholderText: string; showPlaceholder: boolean } {
+  const isRootPath = pathname === '/';
+  let placeholderText = '';
+
+  if (!!error) {
+    placeholderText = error;
+  } else if (!tutorial) {
+    placeholderText = 'Kein Tutorium gefunden.';
+  } else if (isRootPath) {
+    placeholderText = 'Kein Bereich ausgewählt.';
+  }
+
+  return {
+    placeholderText,
+    showPlaceholder: !!error || !tutorial || isRootPath,
+  };
 }
 
 function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JSX.Element {
   const classes = useStyles();
 
   const history = useHistory();
+  const { pathname } = useLocation();
   const [value, setValue] = useState('');
 
   const items = useMemo(() => routes.filter((r) => r.isInDrawer && r.isTutorialRelated), [routes]);
+  const { placeholderText, showPlaceholder } = useMemo(
+    () => getPlaceholderData({ error, tutorial, pathname }),
+    [error, tutorial, pathname]
+  );
 
   const onPathSelect: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
@@ -96,10 +129,10 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
 
       <Divider />
 
-      <Box flex={1} marginTop={3}>
+      <Box flex={1} marginTop={3} display='flex' flexDirection='column'>
         <Placeholder
-          placeholderText={error ?? 'Kein Tutorium gefunden.'}
-          showPlaceholder={!!error || !tutorial}
+          placeholderText={placeholderText}
+          showPlaceholder={showPlaceholder}
           loading={isLoading}
         >
           <Routes routes={routes} />
