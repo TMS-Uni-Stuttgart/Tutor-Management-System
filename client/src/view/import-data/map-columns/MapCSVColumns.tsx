@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import * as Yup from 'yup';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import FormikSelect from '../../../components/forms/components/FormikSelect';
+import OutlinedBox from '../../../components/OutlinedBox';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
 import { MappedColumns, useImportDataContext } from '../ImportUsers.context';
 
@@ -60,15 +61,7 @@ function MapCSVColumnsContent(): JSX.Element {
     <Box display='flex' flexDirection='column' padding={1}>
       <Typography variant='h4'>Spalten zuordnen</Typography>
 
-      <Box
-        display='flex'
-        flexDirection='column'
-        border={2}
-        borderColor='divider'
-        borderRadius='borderRadius'
-        padding={1}
-        marginTop={2}
-      >
+      <OutlinedBox display='flex' flexDirection='column' marginTop={2}>
         <Typography variant='h6'>Nutzerinformationen</Typography>
         <Box display='flex' flexWrap='wrap' marginTop={1}>
           <FormikSelect
@@ -115,17 +108,9 @@ function MapCSVColumnsContent(): JSX.Element {
             className={classes.select}
           />
         </Box>
-      </Box>
+      </OutlinedBox>
 
-      <Box
-        display='flex'
-        flexDirection='column'
-        border={2}
-        borderColor='divider'
-        borderRadius='borderRadius'
-        padding={1}
-        marginTop={2}
-      >
+      <OutlinedBox display='flex' flexDirection='column' marginTop={2}>
         <Typography variant='h6'>Informationen über Tutorien</Typography>
         <Box display='flex' flexWrap='wrap' marginTop={1}>
           <FormikSelect
@@ -150,17 +135,9 @@ function MapCSVColumnsContent(): JSX.Element {
             className={classes.select}
           />
         </Box>
-      </Box>
+      </OutlinedBox>
 
-      <Box
-        display='flex'
-        flexDirection='column'
-        border={2}
-        borderColor='divider'
-        borderRadius='borderRadius'
-        padding={1}
-        marginTop={2}
-      >
+      <OutlinedBox display='flex' flexDirection='column' marginTop={2}>
         <Typography variant='h6'>Zugangsdaten</Typography>
         <Box display='flex' flexWrap='wrap' marginTop={1}>
           <FormikSelect
@@ -185,7 +162,7 @@ function MapCSVColumnsContent(): JSX.Element {
             className={classes.select}
           />
         </Box>
-      </Box>
+      </OutlinedBox>
 
       <FormikDebugDisplay showErrors />
     </Box>

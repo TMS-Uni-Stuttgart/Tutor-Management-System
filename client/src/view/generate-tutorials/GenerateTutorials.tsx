@@ -10,6 +10,7 @@ import BackButton from '../../components/BackButton';
 import FormikDatePicker from '../../components/forms/components/FormikDatePicker';
 import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../components/loading/SubmitButton';
+import OutlinedBox from '../../components/OutlinedBox';
 import { createMultipleTutorials } from '../../hooks/fetching/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../types';
@@ -144,15 +145,9 @@ function GenerateTutorialsContent(): JSX.Element {
           </SubmitButton>
         </Box>
 
-        <Box
-          gridArea='1 / 2 / span 5 / span 1'
-          border={2}
-          borderColor='divider'
-          borderRadius='borderRadius'
-          padding={1}
-        >
+        <OutlinedBox gridArea='1 / 2 / span 5 / span 1'>
           <WeekdayTabs />
-        </Box>
+        </OutlinedBox>
       </Box>
 
       <FormikDebugDisplay disabled showErrors />

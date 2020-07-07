@@ -2,6 +2,7 @@ import { Box, IconButton } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Delete as DeleteIcon, SquareEditOutline as EditIcon } from 'mdi-material-ui';
 import React from 'react';
+import OutlinedBox from '../../../../components/OutlinedBox';
 import ExcludedDateText from './ExcludedDateDisplay';
 import { FormExcludedDate } from './FormikExcludedDates';
 
@@ -23,14 +24,7 @@ function ExcludedDateBox({ excluded, onEdit, onDelete }: Props): JSX.Element {
   const classes = useStyles();
 
   return (
-    <Box
-      border={1}
-      borderColor='divider'
-      borderRadius='borderRadius'
-      padding={1}
-      display='flex'
-      alignItems='center'
-    >
+    <OutlinedBox display='flex' alignItems='center'>
       <ExcludedDateText excluded={excluded} />
 
       <Box marginLeft='auto'>
@@ -42,7 +36,7 @@ function ExcludedDateBox({ excluded, onEdit, onDelete }: Props): JSX.Element {
           <DeleteIcon />
         </IconButton>
       </Box>
-    </Box>
+    </OutlinedBox>
   );
 }
 
