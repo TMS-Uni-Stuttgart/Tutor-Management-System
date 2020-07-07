@@ -1,7 +1,7 @@
-import { createMuiTheme, Theme, PaletteType } from '@material-ui/core';
+import { createMuiTheme, PaletteType, Theme } from '@material-ui/core';
 import ORANGE from '@material-ui/core/colors/orange';
-import { CSSProperties } from '@material-ui/styles';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+import { CSSProperties } from '@material-ui/styles';
 
 interface ChartStyle {
   backgroundColor: string;
