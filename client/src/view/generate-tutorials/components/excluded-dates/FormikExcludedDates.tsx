@@ -3,6 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useField } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
+import OutlinedBox from '../../../../components/OutlinedBox';
 import { useDialog } from '../../../../hooks/DialogService';
 import ExcludedDateBox from './ExcludedDateBox';
 import ExcludedDateDialog from './ExcludedDateDialog';
@@ -96,16 +97,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
   };
 
   return (
-    <Box
-      border={2}
-      borderColor='divider'
-      borderRadius='borderRadius'
-      padding={1}
-      position='relative'
-      display='flex'
-      flexDirection='column'
-      {...props}
-    >
+    <OutlinedBox position='relative' display='flex' flexDirection='column' {...props}>
       <Box marginBottom={1}>
         <Typography variant='h6'>Ausgeschlossene Zeiten</Typography>
       </Box>
@@ -152,7 +144,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
           onAccept={dialogState.onAccept}
         />
       )}
-    </Box>
+    </OutlinedBox>
   );
 }
 
