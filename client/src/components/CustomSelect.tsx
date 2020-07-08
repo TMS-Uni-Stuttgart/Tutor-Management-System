@@ -150,6 +150,7 @@ function CustomSelect<T>({
             ? (props: any) => <CircularProgress {...props} size={24} />
             : undefined
         }
+        defaultValue={''}
         {...other}
         name={name}
         onChange={onChange}
