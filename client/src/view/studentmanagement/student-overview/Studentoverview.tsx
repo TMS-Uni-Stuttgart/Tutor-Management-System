@@ -217,7 +217,7 @@ function Studentoverview({
         placeholder='Keine Studierenden vorhanden'
         items={getFilteredStudents(students, filterText, sortOption)}
         createRowFromItem={createRowFromItem}
-        marginTop={2}
+        BoxProps={{ marginTop: 2 }}
       />
     </>
   );

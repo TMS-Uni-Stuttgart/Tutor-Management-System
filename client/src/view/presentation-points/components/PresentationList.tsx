@@ -1,5 +1,5 @@
 import { createStyles, makeStyles, TableCell, Typography } from '@material-ui/core';
-import { FormikHelpers, isPromise, FormikErrors } from 'formik';
+import { FormikErrors, FormikHelpers, isPromise } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { Prompt } from 'react-router';
@@ -131,7 +131,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
             <TableWithPadding
               items={students}
               className={classes.table}
-              marginTop={2}
+              BoxProps={{ marginTop: 2 }}
               createRowFromItem={(student) => (
                 <PaperTableRow
                   key={student.id}
