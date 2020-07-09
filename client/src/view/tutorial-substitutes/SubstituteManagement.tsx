@@ -24,12 +24,17 @@ import OutlinedBox from '../../components/OutlinedBox';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
 import DateBox from './components/DateBox';
+import SubstituteManagementContextProvider from './SubstituteManagement.context';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     backButton: {
       height: 'fit-content',
       marginRight: theme.spacing(1),
+    },
+    scrollableBox: {
+      overflowY: 'auto',
+      ...theme.mixins.scrollbar(8),
     },
     selectedSubstitute: {
       display: 'grid',
@@ -224,7 +229,11 @@ function SubstituteManagement(): JSX.Element {
   ];
   const DUMMY_TUTORIAL = plainToClass(Tutorial, DUMMY_TUTORIAL_DATA);
 
-  return <SubstituteManagementContent tutorial={DUMMY_TUTORIAL} students={DUMMY_STUDENTS} />;
+  return (
+    <SubstituteManagementContextProvider>
+      <SubstituteManagementContent tutorial={DUMMY_TUTORIAL} students={DUMMY_STUDENTS} />
+    </SubstituteManagementContextProvider>
+  );
 }
 
 export default SubstituteManagement;

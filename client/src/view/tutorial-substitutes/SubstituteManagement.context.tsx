@@ -1,15 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { PropsWithChildren, useContext } from 'react';
+import { NamedElement } from 'shared/model/Common';
+import { FetchState, useFetchState } from '../../hooks/useFetchState';
 import { Tutorial } from '../../model/Tutorial';
-import { NamedElement } from '../../../../server/src/shared/model/Common';
 
 interface Props {
-  
-}
-
-interface FetchState<T> {
-  value?: T;
-  isLoading: boolean;
-  error?: string;
+  tutorialId: string;
 }
 
 interface ContextType {
@@ -17,46 +12,39 @@ interface ContextType {
   tutors: FetchState<NamedElement[]>;
 }
 
-const ERR_NOT_INITIALIZED: FetchState<never> = {error: 'Context not initialized', isLoading: false};
+const ERR_NOT_INITIALIZED: FetchState<never> = {
+  error: 'Context not initialized',
+  isLoading: false,
+};
 
-const SubstituteManagementContext = React.createContext<ContextType>({
+const Context = React.createContext<ContextType>({
   tutorial: ERR_NOT_INITIALIZED,
   tutors: ERR_NOT_INITIALIZED,
 });
 
-interface UseFetchStateParams<T, P extends Array<any>> {
-  fetchFunction: () => Promise<T>;
-  immediate?: boolean;
-  params?: P;
+export function useSubstituteManagementContext(): ContextType {
+  const value = useContext(Context);
+  return { ...value };
 }
 
-function useFetchState<T, P extends Array<any>>({fetchFunction, immediate, params}: UseFetchStateParams<T, P>): FetchState<T> & {execute: ()=>Promise<void>} {
-  const [value, setValue] = useState<T>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
-
-  const execute = useCallback(()=> {
-    setIsLoading(true);
-    setError(undefined);
-
-    return fetchFunction().then(response=> setValue(response)).catch(error => setError(error)).finally(()=>setIsLoading(false));
-  }, [fetchFunction]);
-
-  useEffect(()=> {
-    if (immediate) {
-      execute();
-    }
-  }, [execute, immediate]);
-
-  return {execute, value, isLoading, error};
-}
-
-function SubstituteManagementContextProvider({}: Props): JSX.Element {
-  const {} = useFetchState<Tutorial>();
-  const {} = useFetchState<NamedElement[]>();
+function SubstituteManagementContextProvider({
+  children,
+  tutorialId,
+}: PropsWithChildren<Props>): JSX.Element {
+  const { execute, value } = useFetchState({
+    fetchFunction: (test: string) =>
+      new Promise<number>((resolve) => {
+        console.log(`Calling with '${test}'`);
+        setTimeout(() => resolve(5), 5000);
+      }),
+    immediate: true,
+    params: ['derpy'],
+  });
 
   return (
-    
+    <Context.Provider value={{ tutorial: ERR_NOT_INITIALIZED, tutors: ERR_NOT_INITIALIZED }}>
+      {children}
+    </Context.Provider>
   );
 }
 
