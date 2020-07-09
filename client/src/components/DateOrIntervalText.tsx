@@ -1,12 +1,13 @@
-import { Typography } from '@material-ui/core';
+import { Typography, TypographyProps } from '@material-ui/core';
 import { DateTime, DateTimeFormatOptions, Interval } from 'luxon';
 import React from 'react';
 
-interface Props {
+interface Props extends TypographyProps {
   date: DateTime | Interval;
+  prefix?: string;
 }
 
-function DateOrIntervalText({ date }: Props): JSX.Element {
+function DateOrIntervalText({ prefix, date, ...props }: Props): JSX.Element {
   const format: DateTimeFormatOptions = {
     weekday: 'short',
     year: 'numeric',
@@ -15,7 +16,8 @@ function DateOrIntervalText({ date }: Props): JSX.Element {
   };
 
   return (
-    <Typography>
+    <Typography {...props}>
+      {prefix && `${prefix} `}
       {date instanceof DateTime ? (
         date.toLocaleString(format)
       ) : (
