@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Typography, Table, TableBody, TableRow, Box } from '@material-ui/core';
+import { Typography, Table, TableBody, TableRow, Box, BoxProps } from '@material-ui/core';
 import { TableProps } from '@material-ui/core/Table';
 import clsx from 'clsx';
 
@@ -26,6 +26,7 @@ export interface TableWithPaddingProps<T> extends TableProps {
   items: T[];
   createRowFromItem: (item: T, idx: number) => React.ReactNode;
   placeholder?: string;
+  BoxProps?: BoxProps;
 }
 
 function TableWithPadding<T>({
@@ -33,12 +34,13 @@ function TableWithPadding<T>({
   createRowFromItem,
   placeholder,
   className,
+  BoxProps,
   ...other
 }: TableWithPaddingProps<T>): JSX.Element {
   const classes = useStyles();
 
   return (
-    <Box marginTop={2} marginBottom={1}>
+    <Box {...BoxProps}>
       {items.length === 0 ? (
         <Typography variant='h6' className={classes.placeholder}>
           {placeholder}

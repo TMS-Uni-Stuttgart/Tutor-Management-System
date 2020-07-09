@@ -22,6 +22,7 @@ function UserDataBox(): JSX.Element {
       <TableWithPadding
         items={users}
         createRowFromItem={(item) => <UserDataRow name={`${item.rowNr}`} />}
+        marginTop={2}
       />
     </OutlinedBox>
   );

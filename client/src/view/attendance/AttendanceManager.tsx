@@ -33,13 +33,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     topBar: {
       display: 'flex',
+      marginBottom: theme.spacing(2),
     },
     barItem: {
       flex: 1,
       marginRight: theme.spacing(2),
     },
     missingDateText: {
-      marginTop: 64,
+      marginTop: theme.spacing(8),
       textAlign: 'center',
     },
     allPresentButton: {
