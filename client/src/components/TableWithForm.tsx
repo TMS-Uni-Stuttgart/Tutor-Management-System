@@ -13,18 +13,6 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'flex-end',
       marginBottom: theme.spacing(2),
     },
-    tableWithoutBorders: {
-      '& td': {
-        borderBottom: 'none',
-      },
-    },
-    spacingRow: {
-      height: theme.spacing(1.5),
-    },
-    placeholder: {
-      marginTop: 64,
-      textAlign: 'center',
-    },
   })
 );
 

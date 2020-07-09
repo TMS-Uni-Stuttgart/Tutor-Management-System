@@ -131,6 +131,7 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
             <TableWithPadding
               items={students}
               className={classes.table}
+              marginTop={2}
               createRowFromItem={(student) => (
                 <PaperTableRow
                   key={student.id}
