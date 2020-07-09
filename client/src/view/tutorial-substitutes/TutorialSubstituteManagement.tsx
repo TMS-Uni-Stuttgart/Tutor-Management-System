@@ -1,9 +1,9 @@
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Button, Divider, IconButton, Paper, Tooltip, Typography } from '@material-ui/core';
 import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { plainToClass } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { ChevronRight as RightArrow } from 'mdi-material-ui';
+import { ChevronRight as RightArrow, Close as RemoveIcon } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { ITutorial } from '../../../../server/src/shared/model/Tutorial';
@@ -33,6 +33,19 @@ const useStyles = makeStyles((theme) =>
     },
     dateButtonIcon: {
       marginLeft: 'auto',
+    },
+    selectedSubstitute: {
+      display: 'grid',
+      gridTemplate: '1fr 1fr / 1fr fit-content(56px)',
+      padding: theme.spacing(2),
+      marginTop: theme.spacing(2),
+    },
+    removeSubstituteButton: {
+      alignSelf: 'center',
+      gridArea: '1 / 2 / span 2',
+    },
+    divider: {
+      margin: theme.spacing(2, 0),
     },
   })
 );
@@ -77,6 +90,7 @@ function TutorialSubstituteManagementContent({ tutorial }: Props): JSX.Element {
   const [datesToShow, setDatesToShow] = useState<DateTime[]>(() =>
     filterDates(tutorial, filterOption)
   );
+  const [selectedDate, setSelectedDate] = useState<DateTime>();
 
   useEffect(() => {
     setDatesToShow(filterDates(tutorial, filterOption));
@@ -141,11 +155,12 @@ function TutorialSubstituteManagementContent({ tutorial }: Props): JSX.Element {
           {datesToShow.map((date) => (
             <Button
               variant='outlined'
-              // color={idx % 2 === 1 ? 'secondary' : 'default'}
+              color={date === selectedDate ? 'primary' : 'default'}
               key={date.toISODate()}
               className={classes.dateButton}
               classes={{ endIcon: classes.dateButtonIcon }}
               endIcon={<RightArrow />}
+              onClick={() => setSelectedDate(date)}
             >
               <Box
                 display='flex'
@@ -174,9 +189,38 @@ function TutorialSubstituteManagementContent({ tutorial }: Props): JSX.Element {
         Vertretungen speichern
       </Button>
 
-      <OutlinedBox gridArea='1 / 2 / span 3 / span 1' className={classes.scrollableBox}>
-        {/* <div style={{ height: 2000 }}></div> */}
-        <span>On the right</span>
+      <OutlinedBox gridArea='1 / 2 / span 3 / span 1' display='flex' flexDirection='column'>
+        {!!selectedDate ? (
+          <>
+            <DateOrIntervalText date={selectedDate} prefix='Vertretung für' variant='h6' />
+
+            {!!tutorial.getSubstitute(selectedDate) && (
+              <Paper elevation={0} className={classes.selectedSubstitute}>
+                <Typography variant='subtitle2'>Aktuelle Vertretung:</Typography>
+                <Typography variant='subtitle1'>
+                  {getNameOfEntity(tutorial.getSubstitute(selectedDate)!)}
+                </Typography>
+
+                <Tooltip title='Vertretung entfernen'>
+                  <IconButton className={classes.removeSubstituteButton}>
+                    <RemoveIcon />
+                  </IconButton>
+                </Tooltip>
+              </Paper>
+            )}
+
+            <Divider className={classes.divider} />
+
+            <Box className={classes.scrollableBox}>
+              <div style={{ height: 2000 }}></div>
+              <span>LIST OF TUTORS</span>
+            </Box>
+          </>
+        ) : (
+          <Typography variant='h6' style={{ margin: 'auto' }}>
+            Kein Termin ausgewählt.
+          </Typography>
+        )}
       </OutlinedBox>
     </Box>
   );
