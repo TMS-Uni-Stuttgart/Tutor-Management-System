@@ -1,20 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { FilterOption } from '../SubstituteManagement.types';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { DateTime } from 'luxon';
+import React, { useCallback, useEffect, useState } from 'react';
 import CustomSelect from '../../../components/CustomSelect';
 import OutlinedBox from '../../../components/OutlinedBox';
-import DateOrIntervalText from '../../../components/DateOrIntervalText';
-import { getNameOfEntity } from '../../../../../server/src/shared/util/helpers';
-import {
-  AccountSearch as SearchIcon,
-  ChevronRight as RightArrow,
-  Close as RemoveIcon,
-} from 'mdi-material-ui';
 import { Tutorial } from '../../../model/Tutorial';
-import { DateTime } from 'luxon';
 import { compareDateTimes } from '../../../util/helperFunctions';
-import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
+import { useSubstituteManagementContext } from '../SubstituteManagement.context';
+import { FilterOption } from '../SubstituteManagement.types';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -38,7 +32,11 @@ interface Props {}
 
 type CallbackType = NonNullable<SelectInputProps['onChange']>;
 
-function filterDates(tutorial: Tutorial, option: FilterOption): DateTime[] {
+function filterDates(tutorial: Tutorial | undefined, option: FilterOption): DateTime[] {
+  if (!tutorial) {
+    return [];
+  }
+
   return tutorial.dates
     .filter((date) => {
       switch (option) {
@@ -60,6 +58,9 @@ function filterDates(tutorial: Tutorial, option: FilterOption): DateTime[] {
 
 function DateBox({}: Props): JSX.Element {
   const classes = useStyles();
+  const {
+    tutorial: { value: tutorial },
+  } = useSubstituteManagementContext();
 
   const [filterOption, setFilterOption] = useState<FilterOption>(
     () => FilterOption.ONLY_FUTURE_DATES
@@ -111,7 +112,7 @@ function DateBox({}: Props): JSX.Element {
         padding={1}
         className={classes.scrollableBox}
       >
-        {datesToShow.map((date) => (
+        {/* {datesToShow.map((date) => (
           <Button
             variant='outlined'
             color={date === selectedDate ? 'primary' : 'default'}
@@ -137,7 +138,7 @@ function DateBox({}: Props): JSX.Element {
               }
             </Box>
           </Button>
-        ))}
+        ))} */}
         {datesToShow.length === 0 && (
           <Typography align='center'>Keine entsprechenden Termine gefunden.</Typography>
         )}
