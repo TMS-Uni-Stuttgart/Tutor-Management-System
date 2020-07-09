@@ -1,12 +1,28 @@
-import { Box, Button, Divider, IconButton, Paper, Tooltip, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  InputProps,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
 import { plainToClass } from 'class-transformer';
+import _ from 'lodash';
 import { DateTime } from 'luxon';
-import { ChevronRight as RightArrow, Close as RemoveIcon } from 'mdi-material-ui';
-import React, { useEffect, useState } from 'react';
-import { getNameOfEntity } from 'shared/util/helpers';
-import { ITutorial } from '../../../../server/src/shared/model/Tutorial';
+import {
+  AccountSearch as SearchIcon,
+  ChevronRight as RightArrow,
+  Close as RemoveIcon,
+} from 'mdi-material-ui';
+import React, { useCallback, useEffect, useState } from 'react';
+import { NamedElement } from 'shared/model/Common';
+import { ITutorial } from 'shared/model/Tutorial';
+import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import BackButton from '../../components/BackButton';
 import CustomSelect from '../../components/CustomSelect';
 import DateOrIntervalText from '../../components/DateOrIntervalText';
@@ -19,7 +35,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     scrollableBox: {
       overflowY: 'auto',
-      ...theme.mixins.scrollbar(4),
+      ...theme.mixins.scrollbar(8),
     },
     backButton: {
       height: 'fit-content',
@@ -47,6 +63,15 @@ const useStyles = makeStyles((theme) =>
     divider: {
       margin: theme.spacing(2, 0),
     },
+    searchField: {
+      flex: 1,
+    },
+    studentRowBackground: {
+      borderColor: fade(theme.palette.text.primary, 0.23),
+      '&:hover': {
+        background: fade(theme.palette.text.primary, theme.palette.action.hoverOpacity),
+      },
+    },
   })
 );
 
@@ -59,6 +84,22 @@ enum FilterOption {
 
 interface Props {
   tutorial: Tutorial;
+  students: NamedElement[];
+}
+
+function filterStudents(students: NamedElement[], filterText: string): NamedElement[] {
+  return students
+    .filter((student) => {
+      if (!filterText) {
+        return true;
+      }
+
+      const name = _.deburr(getNameOfEntity(student)).toLowerCase();
+      const unifiedFilter = _.deburr(filterText).toLowerCase();
+
+      return name.includes(unifiedFilter);
+    })
+    .sort(sortByName);
 }
 
 function filterDates(tutorial: Tutorial, option: FilterOption): DateTime[] {
@@ -81,20 +122,33 @@ function filterDates(tutorial: Tutorial, option: FilterOption): DateTime[] {
     .sort(compareDateTimes);
 }
 
-function TutorialSubstituteManagementContent({ tutorial }: Props): JSX.Element {
+function TutorialSubstituteManagementContent({ tutorial, students }: Props): JSX.Element {
   const classes = useStyles();
 
   const [filterOption, setFilterOption] = useState<FilterOption>(
     () => FilterOption.ONLY_FUTURE_DATES
   );
+  const [filterText, setFilterText] = useState('');
+
   const [datesToShow, setDatesToShow] = useState<DateTime[]>(() =>
     filterDates(tutorial, filterOption)
+  );
+  const [studentsToShow, setStudentsToShow] = useState<NamedElement[]>(() =>
+    filterStudents(students, filterText)
   );
   const [selectedDate, setSelectedDate] = useState<DateTime>();
 
   useEffect(() => {
     setDatesToShow(filterDates(tutorial, filterOption));
   }, [tutorial, filterOption]);
+
+  const debouncedHandleChange = useCallback(
+    _.debounce(
+      (filterText: string) => setStudentsToShow(filterStudents(students, filterText)),
+      250
+    ),
+    []
+  );
 
   const handleChange: SelectInputProps['onChange'] = (e) => {
     if (typeof e.target.value !== 'string') {
@@ -110,6 +164,11 @@ function TutorialSubstituteManagementContent({ tutorial }: Props): JSX.Element {
     }
 
     setFilterOption(selectedOption);
+  };
+
+  const handleTextChange: InputProps['onChange'] = (e) => {
+    setFilterText(e.target.value);
+    debouncedHandleChange(e.target.value);
   };
 
   return (
@@ -195,7 +254,7 @@ function TutorialSubstituteManagementContent({ tutorial }: Props): JSX.Element {
             <DateOrIntervalText date={selectedDate} prefix='Vertretung für' variant='h6' />
 
             {!!tutorial.getSubstitute(selectedDate) && (
-              <Paper elevation={0} className={classes.selectedSubstitute}>
+              <Paper elevation={3} className={classes.selectedSubstitute}>
                 <Typography variant='subtitle2'>Aktuelle Vertretung:</Typography>
                 <Typography variant='subtitle1'>
                   {getNameOfEntity(tutorial.getSubstitute(selectedDate)!)}
@@ -211,9 +270,50 @@ function TutorialSubstituteManagementContent({ tutorial }: Props): JSX.Element {
 
             <Divider className={classes.divider} />
 
-            <Box className={classes.scrollableBox}>
-              <div style={{ height: 2000 }}></div>
-              <span>LIST OF TUTORS</span>
+            <Box display='flex' marginBottom={1}>
+              <TextField
+                variant='outlined'
+                label='Suche'
+                onChange={handleTextChange}
+                value={filterText}
+                className={classes.searchField}
+                InputProps={{
+                  startAdornment: <SearchIcon color='disabled' />,
+                }}
+              />
+
+              {/* <CustomSelect
+                label='Sortieren nach...'
+                emptyPlaceholder='Keine Sortieroptionen vorhanden.'
+                className={classes.sortSelect}
+                value={sortOption}
+                items={Object.values(StudentSortOption)}
+                itemToString={(option) => option}
+                itemToValue={(option) => option}
+                onChange={handleSortOptionChange}
+              /> */}
+            </Box>
+
+            <Box
+              display='grid'
+              gridTemplateColumns='1fr'
+              gridRowGap={8}
+              alignItems='center'
+              className={classes.scrollableBox}
+            >
+              {studentsToShow.map((student) => (
+                <OutlinedBox
+                  key={student.id}
+                  display='grid'
+                  gridTemplateColumns='1fr fit-content(50%)'
+                  padding={2}
+                  alignItems='center'
+                  className={classes.studentRowBackground}
+                >
+                  <Typography>{getNameOfEntity(student)}</Typography>
+                  <Button>Auswählen</Button>
+                </OutlinedBox>
+              ))}
             </Box>
           </>
         ) : (
@@ -241,9 +341,17 @@ function TutorialSubstituteManagement(): JSX.Element {
     endTime: '',
     correctors: [],
   };
+  const DUMMY_STUDENTS: NamedElement[] = [
+    { id: '1', firstname: 'Harry', lastname: 'Potter' },
+    { id: '2', firstname: 'Hermine', lastname: 'Granger' },
+    { id: '3', firstname: 'Ron', lastname: 'Weasley' },
+    { id: '4', firstname: 'Ginny', lastname: 'Weasley' },
+  ];
   const DUMMY_TUTORIAL = plainToClass(Tutorial, DUMMY_TUTORIAL_DATA);
 
-  return <TutorialSubstituteManagementContent tutorial={DUMMY_TUTORIAL} />;
+  return (
+    <TutorialSubstituteManagementContent tutorial={DUMMY_TUTORIAL} students={DUMMY_STUDENTS} />
+  );
 }
 
 export default TutorialSubstituteManagement;
