@@ -1,8 +1,8 @@
-import { Box, Button, ButtonProps, Typography } from '@material-ui/core';
-import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, ButtonProps, Tooltip, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
-import { ChevronRight as RightArrowIcon } from 'mdi-material-ui';
+import { AccountEditOutline as EditIcon, ChevronRight as RightArrowIcon } from 'mdi-material-ui';
 import React from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) =>
     },
     changed: {
       color: theme.palette.orange.main,
-      borderColor: fade(theme.palette.orange.main, 0.5),
     },
   })
 );
@@ -46,15 +45,24 @@ function DateButton({
     <Button
       variant='outlined'
       color={isSelected ? 'primary' : 'default'}
-      className={clsx(classes.dateButton, isChanged && classes.changed)}
+      className={classes.dateButton}
       classes={{ endIcon: classes.dateButtonIcon }}
-      endIcon={<RightArrowIcon />}
+      endIcon={
+        <Box display='flex'>
+          {isChanged && (
+            <Tooltip title='Ungespeicherte Änderungen'>
+              <EditIcon className={classes.changed} />
+            </Tooltip>
+          )}
+          <RightArrowIcon />
+        </Box>
+      }
       {...props}
     >
       <Box display='flex' flexDirection='column' textAlign='left' style={{ textTransform: 'none' }}>
-        <DateOrIntervalText date={date} />
+        <DateOrIntervalText date={date} suffix={isChanged ? '*' : undefined} />
         {
-          <Typography variant='caption'>
+          <Typography variant='caption' className={clsx(isChanged && classes.changed)}>
             {!!substitute ? `Vertretung: ${getNameOfEntity(substitute)}` : 'Keine Vertretung'}
           </Typography>
         }
