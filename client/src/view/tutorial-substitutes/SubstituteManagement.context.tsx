@@ -1,4 +1,5 @@
 import { plainToClass } from 'class-transformer';
+import _ from 'lodash';
 import { DateTime } from 'luxon';
 import React, { PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { NamedElement } from 'shared/model/Common';
@@ -21,6 +22,8 @@ export interface SubstituteManagementContextType {
   getSelectedSubstitute: (date: DateTime) => NamedElement | undefined;
   setSelectedSubstitute: (tutor: NamedElement, date: DateTime) => void;
   removeSelectedSubstitute: (date: DateTime) => void;
+  resetSelectedSubstitute: (date: DateTime) => void;
+  dirty: boolean;
 }
 
 const ERR_NOT_INITIALIZED: FetchState<never> = {
@@ -38,6 +41,8 @@ const Context = React.createContext<SubstituteManagementContextType>({
   getSelectedSubstitute: notInitializied('SubstituteManagementContext'),
   setSelectedSubstitute: notInitializied('SubstituteManagementContext'),
   removeSelectedSubstitute: notInitializied('SubstituteManagementContext'),
+  resetSelectedSubstitute: notInitializied('SubstituteManagementContext'),
+  dirty: false,
 });
 
 export function useSubstituteManagementContext(): SubstituteManagementContextType {
@@ -94,15 +99,23 @@ function SubstituteManagementContextProvider({
 
   const [selectedDate, setSelectedDate] = useState<DateTime>();
   const [selectedSubstitutes, updateSubstituteMap] = useState(new Map<string, NamedElement>());
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    console.log('Update substitutes');
     if (tutorial.value) {
       updateSubstituteMap(new Map<string, NamedElement>(tutorial.value.substitutes));
     } else {
       updateSubstituteMap(new Map());
     }
   }, [tutorial.value]);
+
+  useEffect(() => {
+    if (tutorial.value) {
+      setDirty(!_.isEqual(selectedSubstitutes, tutorial.value.substitutes));
+    } else {
+      setDirty(false);
+    }
+  }, [tutorial.value, selectedSubstitutes]);
 
   const getSelectedSubstitute = useCallback(
     (date: DateTime) => {
@@ -122,6 +135,21 @@ function SubstituteManagementContextProvider({
       updateSubstituteMap(new Map(selectedSubstitutes));
     },
     [selectedSubstitutes]
+  );
+  const resetSelectedSubstitute = useCallback(
+    (date: DateTime) => {
+      if (!tutorial.value) {
+        return;
+      }
+
+      const substitute = tutorial.value.getSubstitute(date);
+      if (!!substitute) {
+        setSelectedSubstitute(substitute, date);
+      } else {
+        removeSelectedSubstitute(date);
+      }
+    },
+    [tutorial.value, setSelectedSubstitute, removeSelectedSubstitute]
   );
   const isSubstituteChanged = useCallback(
     (date: DateTime) => {
@@ -149,6 +177,8 @@ function SubstituteManagementContextProvider({
         isSubstituteChanged,
         setSelectedSubstitute,
         removeSelectedSubstitute,
+        resetSelectedSubstitute,
+        dirty,
       }}
     >
       {children}
