@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import { useFormikContext } from 'formik';
 import React, { useMemo } from 'react';
-import { getNameOfEntity } from '../../../../../../server/src/shared/util/helpers';
+import { getNameOfEntity } from 'shared/util/helpers';
 import OutlinedBox from '../../../../components/OutlinedBox';
 import TableWithPadding from '../../../../components/TableWithPadding';
 import { UserFormState } from '../AdjustImportedUserDataForm';

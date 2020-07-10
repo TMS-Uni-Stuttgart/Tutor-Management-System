@@ -7,8 +7,8 @@ import {
 } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { Role } from 'shared/model/Role';
+import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
-import { IUser } from '../../../../server/src/shared/model/User';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
 import { passwordValidationSchema } from '../../util/validationSchemas';

@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { ITutorial, UserInEntity } from '../../../server/src/shared/model/Tutorial';
+import { ITutorial, UserInEntity } from 'shared/model/Tutorial';
 import { Modify } from '../typings/Modify';
 import { parseDateToMapKey } from '../util/helperFunctions';
 

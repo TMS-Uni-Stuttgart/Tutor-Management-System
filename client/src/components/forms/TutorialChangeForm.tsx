@@ -1,7 +1,7 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { TutorialInEntity } from 'shared/model/Common';
 import * as Yup from 'yup';
-import { TutorialInEntity } from '../../../../server/src/shared/model/Common';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
 import FormikSelect from './components/FormikSelect';

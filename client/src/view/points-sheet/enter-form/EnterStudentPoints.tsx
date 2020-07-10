@@ -1,8 +1,8 @@
 import { Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
+import { IGradingDTO } from 'shared/model/Points';
 import { getNameOfEntity } from 'shared/util/helpers';
-import { IGradingDTO } from '../../../../../server/src/shared/model/Points';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';

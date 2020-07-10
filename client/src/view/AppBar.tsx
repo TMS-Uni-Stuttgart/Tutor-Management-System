@@ -22,7 +22,7 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import { useRouteMatch } from 'react-router';
-import { TutorialInEntity } from '../../../server/src/shared/model/Common';
+import { TutorialInEntity } from 'shared/model/Common';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';

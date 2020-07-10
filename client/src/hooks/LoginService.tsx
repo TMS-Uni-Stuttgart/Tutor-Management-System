@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import React, { useContext, useState } from 'react';
-import { ILoggedInUser } from '../../../server/src/shared/model/User';
+import { ILoggedInUser } from 'shared/model/User';
 import { LoggedInUser } from '../model/LoggedInUser';
 import { RequireChildrenProp } from '../typings/RequireChildrenProp';
 import { getUser, removeUser, saveUser } from '../util/userStorage';

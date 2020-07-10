@@ -1,10 +1,10 @@
 import { Type } from 'class-transformer';
-import { ITeam } from '../../../server/src/shared/model/Team';
+import { HasId } from 'shared/model/Common';
+import { ITeam } from 'shared/model/Team';
 import { Modify } from '../typings/Modify';
-import { Student } from './Student';
 import { HasGradings } from '../typings/types';
-import { HasId } from '../../../server/src/shared/model/Common';
 import { Grading } from './Grading';
+import { Student } from './Student';
 
 interface Modified extends HasGradings {
   students: Student[];

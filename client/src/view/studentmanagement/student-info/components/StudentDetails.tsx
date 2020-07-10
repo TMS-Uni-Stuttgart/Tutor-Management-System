@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import React from 'react';
-import { StudentStatus } from '../../../../../../server/src/shared/model/Student';
+import { StudentStatus } from 'shared/model/Student';
 import InfoPaper, { InfoPaperProps } from '../../../../components/info-paper/InfoPaper';
 import { Student } from '../../../../model/Student';
 
