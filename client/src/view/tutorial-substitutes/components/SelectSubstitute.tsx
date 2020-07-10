@@ -1,6 +1,6 @@
 import {
   Box,
-  Button,
+  ButtonBase,
   Collapse,
   Divider,
   IconButton,
@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) =>
     },
     studentRowBackground: {
       borderColor: fade(theme.palette.text.primary, 0.23),
+      cursor: 'pointer',
       '&:hover': {
         background: fade(theme.palette.text.primary, theme.palette.action.hoverOpacity),
       },
@@ -190,12 +191,14 @@ function SelectSubstitute(): JSX.Element {
                   gridTemplateColumns='1fr fit-content(50%)'
                   padding={2}
                   alignItems='center'
+                  justifyContent='flex-start'
+                  textAlign='start'
                   className={classes.studentRowBackground}
+                  component={ButtonBase}
+                  onClick={() => setSelectedSubstitute(tutor, selectedDate)}
                 >
                   <Typography>{getNameOfEntity(tutor)}</Typography>
-                  <Button onClick={() => setSelectedSubstitute(tutor, selectedDate)}>
-                    Auswählen
-                  </Button>
+                  <Typography variant='button'>Auswählen</Typography>
                 </OutlinedBox>
               ))}
             </Box>
