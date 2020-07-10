@@ -171,7 +171,7 @@ function TutorialSubstituteManagement({ match: { params } }: Props): JSX.Element
             <>
               <Prompt
                 when={dirty}
-                message='Es gibt ungespeichert Änderungen. Soll die Seite wirklich verlassen werden?'
+                message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
               />
 
               <Typography variant='h6'>{`Gewählt: ${tutorial.toDisplayString()}`}</Typography>

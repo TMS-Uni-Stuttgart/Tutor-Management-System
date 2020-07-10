@@ -133,7 +133,7 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
     <>
       <Prompt
         when={dirty}
-        message='Es gibt ungespeichert Änderungen. Soll die Seite wirklich verlassen werden?'
+        message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
       />
 
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
