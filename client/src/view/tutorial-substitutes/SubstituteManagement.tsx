@@ -1,7 +1,9 @@
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import { Prompt } from 'react-router';
 import BackButton from '../../components/BackButton';
+import SubmitButton from '../../components/loading/SubmitButton';
 import { ROUTES } from '../../routes/Routing.routes';
 import DateBox from './components/DateBox';
 import SelectSubstitute from './components/SelectSubstitute';
@@ -24,11 +26,14 @@ const useStyles = makeStyles((theme) =>
 
 function SubstituteManagementContent(): JSX.Element {
   const classes = useStyles();
-  const { selectedSubstitutes } = useSubstituteManagementContext();
+  const { selectedSubstitutes, dirty } = useSubstituteManagementContext();
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLElement>) => {
       e.preventDefault();
+
+      setSubmitting(true);
       console.log(selectedSubstitutes);
     },
     [selectedSubstitutes]
@@ -49,16 +54,30 @@ function SubstituteManagementContent(): JSX.Element {
       <Box display='flex' alignItems='center'>
         <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
 
-        <Typography color='error' style={{ visibility: 'visible' }}>
+        <Typography color='error' style={{ visibility: dirty ? 'visible' : 'hidden' }}>
           Es gibt ungespeicherte Änderungen.
         </Typography>
+
+        <Prompt
+          when={dirty}
+          message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
+        />
       </Box>
 
       <DateBox />
 
-      <Button type='submit' variant='contained' color='primary' fullWidth>
+      <SubmitButton
+        isSubmitting={isSubmitting}
+        modalText={'Aktualisiere Vertretungen...'}
+        disabled={!dirty}
+        type='submit'
+        variant='contained'
+        color='primary'
+        fullWidth
+        CircularProgressProps={{ color: 'primary' }}
+      >
         Vertretungen speichern
-      </Button>
+      </SubmitButton>
 
       <Box gridArea='1 / 2 / span 3 / span 1' display='flex' flexDirection='column'>
         <SelectSubstitute />
@@ -68,7 +87,7 @@ function SubstituteManagementContent(): JSX.Element {
 }
 
 function SubstituteManagement(): JSX.Element {
-  // FIXME: Use correct tutorial ID.
+  // FIXME: Adjust route to use this component & use correct tutorial ID.
   return (
     <SubstituteManagementContextProvider tutorialId={'DERPY_ID'}>
       <SubstituteManagementContent />
