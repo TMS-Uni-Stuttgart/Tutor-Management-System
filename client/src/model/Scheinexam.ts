@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { IScheinExam } from '../../../server/src/shared/model/Scheinexam';
+import { IScheinExam } from 'shared/model/Scheinexam';
 import { Modify } from '../typings/Modify';
 import { HasExercises } from './Exercise';
 

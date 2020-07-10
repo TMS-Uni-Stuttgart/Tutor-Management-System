@@ -3,7 +3,7 @@ import {
   CheckboxMarkedCircleOutline as TutorialToCorrectIcon,
   Teach as TutorialIcon,
 } from 'mdi-material-ui';
-import { Role } from '../../../../../server/src/shared/model/Role';
+import { Role } from 'shared/model/Role';
 import { LoggedInUser } from '../../../model/LoggedInUser';
 import { Tutorial } from '../../../model/Tutorial';
 import { TutorialRelatedDrawerRoute } from '../../../routes/Routing.types';

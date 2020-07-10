@@ -1,8 +1,8 @@
 import { Transform, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { TutorialInEntity } from '../../../server/src/shared/model/Common';
-import { Role } from '../../../server/src/shared/model/Role';
-import { ILoggedInUser } from '../../../server/src/shared/model/User';
+import { TutorialInEntity } from 'shared/model/Common';
+import { Role } from 'shared/model/Role';
+import { ILoggedInUser } from 'shared/model/User';
 import { Modify } from '../typings/Modify';
 
 interface Modified {

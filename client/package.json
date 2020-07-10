@@ -9,8 +9,8 @@
     "build": "cross-env NODE_ENV=production craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "format": "eslint --fix \"src/**/*.ts?(x)\"",
-    "eslint:check": "eslint \"src/**/*.ts?(x)\"",
+    "format": "yarn --cwd ../ eslint --fix \"client/src/**/*.ts?(x)\"",
+    "eslint:check": "yarn --cwd ../ eslint \"client/src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
     "ts:check": "tsc --project . --noEmit",
     "ts:check:watch": "tsc --project . --noEmit -w"

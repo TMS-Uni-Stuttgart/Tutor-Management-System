@@ -1,14 +1,14 @@
-import { Type, Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { IAttendance } from '../../../server/src/shared/model/Attendance';
-import { HasId, TutorialInEntity } from '../../../server/src/shared/model/Common';
-import { IStudent, StudentStatus, TeamInStudent } from '../../../server/src/shared/model/Student';
-import { getNameOfEntity } from '../../../server/src/shared/util/helpers';
+import { IAttendance } from 'shared/model/Attendance';
+import { HasId, TutorialInEntity } from 'shared/model/Common';
+import { IStudent, StudentStatus, TeamInStudent } from 'shared/model/Student';
+import { getNameOfEntity } from 'shared/util/helpers';
 import { Modify } from '../typings/Modify';
+import { HasGradings } from '../typings/types';
 import { parseDateToMapKey } from '../util/helperFunctions';
 import { Grading } from './Grading';
 import { Sheet } from './Sheet';
-import { HasGradings } from '../typings/types';
 
 interface Modified extends HasGradings {
   attendances: Map<string, IAttendance>;

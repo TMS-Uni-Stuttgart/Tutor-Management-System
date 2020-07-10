@@ -1,5 +1,5 @@
-import { Type, Transform } from 'class-transformer';
-import { IExerciseGrading, IGrading } from '../../../server/src/shared/model/Points';
+import { Transform, Type } from 'class-transformer';
+import { IExerciseGrading, IGrading } from 'shared/model/Points';
 import { Modify } from '../typings/Modify';
 import { Exercise, Subexercise } from './Exercise';
 

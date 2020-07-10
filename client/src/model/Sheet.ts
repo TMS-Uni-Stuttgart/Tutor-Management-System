@@ -1,4 +1,4 @@
-import { ISheet } from '../../../server/src/shared/model/Sheet';
+import { ISheet } from 'shared/model/Sheet';
 import { HasExercises } from './Exercise';
 
 export class Sheet extends HasExercises implements ISheet {
