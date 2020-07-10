@@ -1,13 +1,13 @@
-import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
 import {
-  Modal,
   CircularProgress,
-  Typography,
-  ModalProps,
   CircularProgressProps,
+  Modal,
+  ModalProps,
+  Typography,
 } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import React from 'react';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

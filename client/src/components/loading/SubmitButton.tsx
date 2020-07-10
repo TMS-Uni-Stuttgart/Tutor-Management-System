@@ -11,26 +11,10 @@ const useStyles = makeStyles((theme: Theme) =>
     spinner: {
       marginRight: theme.spacing(1),
     },
-    modal: {
-      color: theme.palette.common.white,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    modalContent: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      outline: 'none',
-    },
-    modalText: {
-      marginTop: theme.spacing(2),
-    },
   })
 );
 
-interface Props extends Omit<ButtonProps, 'type'> {
+interface Props extends ButtonProps {
   isSubmitting: boolean;
   CircularProgressProps?: CircularProgressProps;
   modalText?: string;
@@ -52,8 +36,8 @@ function SubmitButton({
 
   const ButtomComp = (
     <Button
-      {...other}
       type='submit'
+      {...other}
       disabled={isDisabled}
       startIcon={!isSubmitting ? startIcon : undefined}
     >
