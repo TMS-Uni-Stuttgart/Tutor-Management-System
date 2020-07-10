@@ -1,25 +1,15 @@
-import {
-  Box,
-  ButtonBase,
-  Collapse,
-  Divider,
-  IconButton,
-  InputProps,
-  Paper,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Divider, InputProps, TextField, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
-import { AccountSearch as SearchIcon, Close as RemoveIcon } from 'mdi-material-ui';
+import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import DateOrIntervalText from '../../../components/DateOrIntervalText';
-import OutlinedBox from '../../../components/OutlinedBox';
 import Placeholder from '../../../components/Placeholder';
 import { useSubstituteManagementContext } from '../SubstituteManagement.context';
+import ListOfTutors from './ListOfTutors';
+import SelectedSubstituteBar from './SelectedSubstituteBar';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -27,28 +17,12 @@ const useStyles = makeStyles((theme) =>
       overflowY: 'auto',
       ...theme.mixins.scrollbar(8),
     },
-    selectedSubstitute: {
-      display: 'grid',
-      gridTemplate: '1fr 1fr / 1fr fit-content(56px)',
-      padding: theme.spacing(2),
-      marginTop: theme.spacing(2),
-    },
-    removeSubstituteButton: {
-      alignSelf: 'center',
-      gridArea: '1 / 2 / span 2',
-    },
     divider: {
       margin: theme.spacing(2, 0),
     },
     searchField: {
       flex: 1,
-    },
-    studentRowBackground: {
-      borderColor: fade(theme.palette.text.primary, 0.23),
-      cursor: 'pointer',
-      '&:hover': {
-        background: fade(theme.palette.text.primary, theme.palette.action.hoverOpacity),
-      },
+      marginRight: theme.spacing(1.5),
     },
   })
 );
@@ -106,6 +80,7 @@ function SelectSubstitute(): JSX.Element {
     getSelectedSubstitute,
     setSelectedSubstitute,
     removeSelectedSubstitute,
+    resetSelectedSubstitute,
   } = useSubstituteManagementContext();
 
   const [{ tutorsToShow }, dispatch] = useReducer(
@@ -132,7 +107,7 @@ function SelectSubstitute(): JSX.Element {
     debouncedHandleChange(e.target.value);
   };
 
-  const substitute = selectedDate ? getSelectedSubstitute(selectedDate) : undefined;
+  const selectedSubstitute = selectedDate ? getSelectedSubstitute(selectedDate) : undefined;
 
   return (
     <Placeholder
@@ -145,23 +120,10 @@ function SelectSubstitute(): JSX.Element {
           <>
             <DateOrIntervalText date={selectedDate} prefix='Vertretung für' variant='h6' />
 
-            <Collapse in={!!substitute}>
-              <Paper elevation={3} className={classes.selectedSubstitute}>
-                <Typography variant='subtitle2'>Aktuelle Vertretung:</Typography>
-                <Typography variant='subtitle1'>
-                  {!!substitute && getNameOfEntity(substitute)}
-                </Typography>
-
-                <Tooltip title='Vertretung entfernen'>
-                  <IconButton
-                    onClick={() => removeSelectedSubstitute(selectedDate)}
-                    className={classes.removeSubstituteButton}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
-                </Tooltip>
-              </Paper>
-            </Collapse>
+            <SelectedSubstituteBar
+              substitute={selectedSubstitute}
+              onRemoveClicked={() => removeSelectedSubstitute(selectedDate)}
+            />
 
             <Divider className={classes.divider} />
 
@@ -170,38 +132,23 @@ function SelectSubstitute(): JSX.Element {
                 variant='outlined'
                 label='Suche'
                 onChange={handleTextChange}
+                onKeyDown={(e) => e.key !== 'Enter'}
                 className={classes.searchField}
                 InputProps={{
                   startAdornment: <SearchIcon color='disabled' />,
                 }}
               />
+
+              <Button variant='outlined' onClick={() => resetSelectedSubstitute(selectedDate)}>
+                Zurücksetzen
+              </Button>
             </Box>
 
-            <Box
-              display='grid'
-              gridTemplateColumns='1fr'
-              gridRowGap={8}
-              alignItems='center'
-              className={classes.scrollableBox}
-            >
-              {tutorsToShow.map((tutor) => (
-                <OutlinedBox
-                  key={tutor.id}
-                  display='grid'
-                  gridTemplateColumns='1fr fit-content(50%)'
-                  padding={2}
-                  alignItems='center'
-                  justifyContent='flex-start'
-                  textAlign='start'
-                  className={classes.studentRowBackground}
-                  component={ButtonBase}
-                  onClick={() => setSelectedSubstitute(tutor, selectedDate)}
-                >
-                  <Typography>{getNameOfEntity(tutor)}</Typography>
-                  <Typography variant='button'>Auswählen</Typography>
-                </OutlinedBox>
-              ))}
-            </Box>
+            <ListOfTutors
+              tutorsToShow={tutorsToShow}
+              onSelect={(tutor) => setSelectedSubstitute(tutor, selectedDate)}
+              selectedSubstitute={selectedSubstitute}
+            />
           </>
         )
       ) : (
