@@ -1,11 +1,12 @@
-import React from 'react';
-import { ChevronRight as RightArrowIcon } from 'mdi-material-ui';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Button, ButtonProps, Box, Typography } from '@material-ui/core';
-import DateOrIntervalText from '../../../components/DateOrIntervalText';
-import { Tutorial } from '../../../model/Tutorial';
+import { Box, Button, ButtonProps, Typography } from '@material-ui/core';
+import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import { DateTime } from 'luxon';
+import { ChevronRight as RightArrowIcon } from 'mdi-material-ui';
+import React from 'react';
+import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
+import DateOrIntervalText from '../../../components/DateOrIntervalText';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -18,29 +19,34 @@ const useStyles = makeStyles((theme) =>
     dateButtonIcon: {
       marginLeft: 'auto',
     },
+    changed: {
+      color: theme.palette.orange.main,
+      borderColor: fade(theme.palette.orange.main, 0.5),
+    },
   })
 );
 
 interface Props extends ButtonProps {
   date: DateTime;
   isSelected: boolean;
-  tutorial?: Tutorial;
+  substitute?: NamedElement;
+  isChanged?: boolean;
 }
 
-function DateButton({ isSelected, tutorial, date, ...props }: Props): JSX.Element | null {
+function DateButton({
+  isSelected,
+  substitute,
+  date,
+  isChanged,
+  ...props
+}: Props): JSX.Element | null {
   const classes = useStyles();
-
-  if (!tutorial) {
-    return null;
-  }
-
-  const substitute = tutorial.getSubstitute(date);
 
   return (
     <Button
       variant='outlined'
       color={isSelected ? 'primary' : 'default'}
-      className={classes.dateButton}
+      className={clsx(classes.dateButton, isChanged && classes.changed)}
       classes={{ endIcon: classes.dateButtonIcon }}
       endIcon={<RightArrowIcon />}
       {...props}
