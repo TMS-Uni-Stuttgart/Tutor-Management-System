@@ -1,11 +1,13 @@
 import { Box, Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useCallback } from 'react';
 import BackButton from '../../components/BackButton';
 import { ROUTES } from '../../routes/Routing.routes';
 import DateBox from './components/DateBox';
 import SelectSubstitute from './components/SelectSubstitute';
-import SubstituteManagementContextProvider from './SubstituteManagement.context';
+import SubstituteManagementContextProvider, {
+  useSubstituteManagementContext,
+} from './SubstituteManagement.context';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -22,11 +24,15 @@ const useStyles = makeStyles((theme) =>
 
 function SubstituteManagementContent(): JSX.Element {
   const classes = useStyles();
+  const { selectedSubstitutes } = useSubstituteManagementContext();
 
-  const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
-    e.preventDefault();
-    console.log('HI');
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLElement>) => {
+      e.preventDefault();
+      console.log(selectedSubstitutes);
+    },
+    [selectedSubstitutes]
+  );
 
   return (
     <Box

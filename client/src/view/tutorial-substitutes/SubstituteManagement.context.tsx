@@ -11,7 +11,7 @@ interface Props {
   tutorialId: string;
 }
 
-interface ContextType {
+export interface SubstituteManagementContextType {
   tutorial: FetchState<Tutorial>;
   tutors: FetchState<NamedElement[]>;
   selectedDate?: DateTime;
@@ -28,7 +28,7 @@ const ERR_NOT_INITIALIZED: FetchState<never> = {
   isLoading: false,
 };
 
-const Context = React.createContext<ContextType>({
+const Context = React.createContext<SubstituteManagementContextType>({
   tutorial: ERR_NOT_INITIALIZED,
   tutors: ERR_NOT_INITIALIZED,
   selectedDate: undefined,
@@ -40,7 +40,7 @@ const Context = React.createContext<ContextType>({
   removeSelectedSubstitute: notInitializied('SubstituteManagementContext'),
 });
 
-export function useSubstituteManagementContext(): ContextType {
+export function useSubstituteManagementContext(): SubstituteManagementContextType {
   const value = useContext(Context);
   return { ...value };
 }
@@ -59,9 +59,7 @@ function SubstituteManagementContextProvider({
             id: 'dev-tutorial-id',
             slot: 'Mi07',
             tutor: { firstname: 'Dev', lastname: 'Tutor', id: 'tutor-id' },
-            substitutes: [
-              ['2020-07-22', { id: 'subst-id', firstname: 'Hermine', lastname: 'Granger' }],
-            ],
+            substitutes: [['2020-07-22', { id: '2', firstname: 'Hermine', lastname: 'Granger' }]],
             dates: ['2020-07-15', '2020-07-08', '2020-06-24', '2020-07-22', '2020-07-01'],
             students: [],
             teams: [],
