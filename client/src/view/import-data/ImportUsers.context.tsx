@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 import { Tutorial } from '../../model/Tutorial';
 import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
+import { notInitializied } from '../../util/throwFunctions';
 
 interface ParsedCSVDataRow {
   [header: string]: string;
@@ -59,18 +60,14 @@ const initialMappedColumns: MappedColumns = {
   tutorialsToCorrectColumn: '',
 };
 
-function notInitializied() {
-  throw new Error('ImportDataContext not initialised.');
-}
-
 const DataContext = React.createContext<DataContextValue>({
   tutorials: [],
   data: { headers: [], rows: [] },
   mappedColumns: initialMappedColumns,
   csvFormData: undefined,
-  setData: notInitializied,
-  setMappedColumns: notInitializied,
-  setCSVFormData: notInitializied,
+  setData: notInitializied('ImportUsersContext'),
+  setMappedColumns: notInitializied('ImportUsersContext'),
+  setCSVFormData: notInitializied('ImportUsersContext'),
 });
 
 function convertParsedToInternalCSV(data: ParsedCSVData): CSVData {
