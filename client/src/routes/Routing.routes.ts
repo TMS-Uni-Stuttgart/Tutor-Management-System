@@ -34,8 +34,8 @@ import StudentInfo from '../view/studentmanagement/student-info/StudentInfo';
 import TutorStudentmanagement from '../view/studentmanagement/TutorStudentmanagement';
 import Teamoverview from '../view/teamoverview/Teamoverview';
 import TutorialInternalsManagement from '../view/tutorial-internals-management/TutorialInternalsManagement';
+import SubstituteManagement from '../view/tutorial-substitutes/SubstituteManagement';
 import TutorialManagement from '../view/tutorialmanagement/TutorialManagement';
-import TutorialSubstituteManagement from '../view/tutorialmanagement/TutorialSubstituteManagement';
 import UserManagement from '../view/usermanagement/UserManagement';
 import { CustomRoute, DrawerRoute, parts, PrivateRoute } from './Routing.types';
 import { param } from './typesafe-react-router';
@@ -183,7 +183,7 @@ const MANAGEMENT_ROUTES = {
   MANAGE_TUTORIAL_SUBSTITUTES: new PrivateRoute({
     path: parts('admin', 'tutorialmanagement', 'substitutes', param('tutorialId')),
     title: 'Tutorienvertretungen',
-    component: TutorialSubstituteManagement,
+    component: SubstituteManagement,
     icon: TutorialIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
