@@ -2,7 +2,6 @@ import { Box, Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import BackButton from '../../components/BackButton';
-import OutlinedBox from '../../components/OutlinedBox';
 import { ROUTES } from '../../routes/Routing.routes';
 import DateBox from './components/DateBox';
 import SelectSubstitute from './components/SelectSubstitute';
@@ -24,6 +23,11 @@ const useStyles = makeStyles((theme) =>
 function SubstituteManagementContent(): JSX.Element {
   const classes = useStyles();
 
+  const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
+    e.preventDefault();
+    console.log('HI');
+  };
+
   return (
     <Box
       flex={1}
@@ -33,6 +37,8 @@ function SubstituteManagementContent(): JSX.Element {
       gridRowGap={16}
       gridColumnGap={16}
       height='100%'
+      component='form'
+      onSubmit={handleSubmit}
     >
       <Box display='flex' alignItems='center'>
         <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
@@ -44,13 +50,13 @@ function SubstituteManagementContent(): JSX.Element {
 
       <DateBox />
 
-      <Button variant='contained' color='primary' fullWidth>
+      <Button type='submit' variant='contained' color='primary' fullWidth>
         Vertretungen speichern
       </Button>
 
-      <OutlinedBox gridArea='1 / 2 / span 3 / span 1' display='flex' flexDirection='column'>
+      <Box gridArea='1 / 2 / span 3 / span 1' display='flex' flexDirection='column'>
         <SelectSubstitute />
-      </OutlinedBox>
+      </Box>
     </Box>
   );
 }

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Collapse,
   Divider,
   IconButton,
   InputProps,
@@ -97,7 +98,14 @@ function reducer(state: State, action: Action): State {
 
 function SelectSubstitute(): JSX.Element {
   const classes = useStyles();
-  const { tutorial, tutors, selectedDate } = useSubstituteManagementContext();
+  const {
+    tutorial,
+    tutors,
+    selectedDate,
+    getSelectedSubstitute,
+    setSelectedSubstitute,
+    removeSelectedSubstitute,
+  } = useSubstituteManagementContext();
 
   const [{ tutorsToShow }, dispatch] = useReducer(
     reducer,
@@ -123,7 +131,7 @@ function SelectSubstitute(): JSX.Element {
     debouncedHandleChange(e.target.value);
   };
 
-  const substitute = selectedDate ? tutorial.value?.getSubstitute(selectedDate) : undefined;
+  const substitute = selectedDate ? getSelectedSubstitute(selectedDate) : undefined;
 
   return (
     <Placeholder
@@ -136,18 +144,23 @@ function SelectSubstitute(): JSX.Element {
           <>
             <DateOrIntervalText date={selectedDate} prefix='Vertretung für' variant='h6' />
 
-            {!!substitute && (
+            <Collapse in={!!substitute}>
               <Paper elevation={3} className={classes.selectedSubstitute}>
                 <Typography variant='subtitle2'>Aktuelle Vertretung:</Typography>
-                <Typography variant='subtitle1'>{getNameOfEntity(substitute)}</Typography>
+                <Typography variant='subtitle1'>
+                  {!!substitute && getNameOfEntity(substitute)}
+                </Typography>
 
                 <Tooltip title='Vertretung entfernen'>
-                  <IconButton className={classes.removeSubstituteButton}>
+                  <IconButton
+                    onClick={() => removeSelectedSubstitute(selectedDate)}
+                    className={classes.removeSubstituteButton}
+                  >
                     <RemoveIcon />
                   </IconButton>
                 </Tooltip>
               </Paper>
-            )}
+            </Collapse>
 
             <Divider className={classes.divider} />
 
@@ -156,23 +169,11 @@ function SelectSubstitute(): JSX.Element {
                 variant='outlined'
                 label='Suche'
                 onChange={handleTextChange}
-                // value={filterText}
                 className={classes.searchField}
                 InputProps={{
                   startAdornment: <SearchIcon color='disabled' />,
                 }}
               />
-
-              {/* <CustomSelect
-    label='Sortieren nach...'
-    emptyPlaceholder='Keine Sortieroptionen vorhanden.'
-    className={classes.sortSelect}
-    value={sortOption}
-    items={Object.values(StudentSortOption)}
-    itemToString={(option) => option}
-    itemToValue={(option) => option}
-    onChange={handleSortOptionChange}
-  /> */}
             </Box>
 
             <Box
@@ -182,17 +183,19 @@ function SelectSubstitute(): JSX.Element {
               alignItems='center'
               className={classes.scrollableBox}
             >
-              {tutorsToShow.map((student) => (
+              {tutorsToShow.map((tutor) => (
                 <OutlinedBox
-                  key={student.id}
+                  key={tutor.id}
                   display='grid'
                   gridTemplateColumns='1fr fit-content(50%)'
                   padding={2}
                   alignItems='center'
                   className={classes.studentRowBackground}
                 >
-                  <Typography>{getNameOfEntity(student)}</Typography>
-                  <Button>Auswählen</Button>
+                  <Typography>{getNameOfEntity(tutor)}</Typography>
+                  <Button onClick={() => setSelectedSubstitute(tutor, selectedDate)}>
+                    Auswählen
+                  </Button>
                 </OutlinedBox>
               ))}
             </Box>

@@ -49,7 +49,13 @@ function filterDates(tutorial: Tutorial | undefined, option: FilterOption): Date
 
 function DateBox(): JSX.Element {
   const classes = useStyles();
-  const { tutorial, selectedDate, setSelectedDate } = useSubstituteManagementContext();
+  const {
+    tutorial,
+    selectedDate,
+    isSubstituteChanged,
+    setSelectedDate,
+    getSelectedSubstitute,
+  } = useSubstituteManagementContext();
 
   const [filterOption, setFilterOption] = useState<FilterOption>(
     () => FilterOption.ONLY_FUTURE_DATES
@@ -79,7 +85,7 @@ function DateBox(): JSX.Element {
   }, []);
 
   return (
-    <Box display='flex' flexDirection='column' className={classes.scrollableBox}>
+    <OutlinedBox display='flex' flexDirection='column' className={classes.scrollableBox}>
       <Typography variant='h6' style={{ marginBottom: 8 * 1.5 }}>
         Datum auswählen
       </Typography>
@@ -93,12 +99,11 @@ function DateBox(): JSX.Element {
         onChange={handleChange}
       />
 
-      <OutlinedBox
+      <Box
         flex={1}
         display='flex'
         flexDirection='column'
         marginTop={1.5}
-        padding={1}
         className={classes.scrollableBox}
       >
         <Placeholder
@@ -111,7 +116,8 @@ function DateBox(): JSX.Element {
               <DateButton
                 key={date.toISODate()}
                 date={date}
-                tutorial={tutorial.value}
+                substitute={getSelectedSubstitute(date)}
+                isChanged={isSubstituteChanged(date)}
                 isSelected={!!selectedDate && date.equals(selectedDate)}
                 onClick={() => setSelectedDate(date)}
               />
@@ -120,8 +126,8 @@ function DateBox(): JSX.Element {
             <Typography align='center'>Keine entsprechenden Termine gefunden.</Typography>
           )}
         </Placeholder>
-      </OutlinedBox>
-    </Box>
+      </Box>
+    </OutlinedBox>
   );
 }
 

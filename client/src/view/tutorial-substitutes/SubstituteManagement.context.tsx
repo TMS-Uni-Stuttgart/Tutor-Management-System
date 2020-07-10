@@ -1,10 +1,11 @@
 import { plainToClass } from 'class-transformer';
 import { DateTime } from 'luxon';
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { ITutorial } from 'shared/model/Tutorial';
 import { FetchState, useFetchState } from '../../hooks/useFetchState';
 import { Tutorial } from '../../model/Tutorial';
+import { notInitializied } from '../../util/throwFunctions';
 
 interface Props {
   tutorialId: string;
@@ -15,6 +16,11 @@ interface ContextType {
   tutors: FetchState<NamedElement[]>;
   selectedDate?: DateTime;
   setSelectedDate: (date: DateTime) => void;
+  selectedSubstitutes: Map<string, NamedElement>;
+  isSubstituteChanged: (date: DateTime) => boolean;
+  getSelectedSubstitute: (date: DateTime) => NamedElement | undefined;
+  setSelectedSubstitute: (tutor: NamedElement, date: DateTime) => void;
+  removeSelectedSubstitute: (date: DateTime) => void;
 }
 
 const ERR_NOT_INITIALIZED: FetchState<never> = {
@@ -26,9 +32,12 @@ const Context = React.createContext<ContextType>({
   tutorial: ERR_NOT_INITIALIZED,
   tutors: ERR_NOT_INITIALIZED,
   selectedDate: undefined,
-  setSelectedDate: () => {
-    throw new Error('Not initialized');
-  },
+  setSelectedDate: notInitializied('SubstituteManagementContext'),
+  selectedSubstitutes: new Map(),
+  isSubstituteChanged: notInitializied('SubstituteManagementContext'),
+  getSelectedSubstitute: notInitializied('SubstituteManagementContext'),
+  setSelectedSubstitute: notInitializied('SubstituteManagementContext'),
+  removeSelectedSubstitute: notInitializied('SubstituteManagementContext'),
 });
 
 export function useSubstituteManagementContext(): ContextType {
@@ -62,7 +71,7 @@ function SubstituteManagementContextProvider({
           };
 
           resolve(plainToClass(Tutorial, DUMMY_TUTORIAL_DATA));
-        }, 3500);
+        }, 1000);
       }),
     immediate: true,
     params: [tutorialId],
@@ -79,12 +88,56 @@ function SubstituteManagementContextProvider({
             { id: '4', firstname: 'Ginny', lastname: 'Weasley' },
           ];
           resolve(DUMMY_STUDENTS);
-        }, 2500);
+        }, 2000);
       }),
     immediate: true,
     params: [],
   });
+
   const [selectedDate, setSelectedDate] = useState<DateTime>();
+  const [selectedSubstitutes, updateSubstituteMap] = useState(new Map<string, NamedElement>());
+
+  useEffect(() => {
+    console.log('Update substitutes');
+    if (tutorial.value) {
+      updateSubstituteMap(new Map<string, NamedElement>(tutorial.value.substitutes));
+    } else {
+      updateSubstituteMap(new Map());
+    }
+  }, [tutorial.value]);
+
+  const getSelectedSubstitute = useCallback(
+    (date: DateTime) => {
+      return selectedSubstitutes.get(date.toISODate());
+    },
+    [selectedSubstitutes]
+  );
+  const setSelectedSubstitute = useCallback(
+    (tutor: NamedElement, date: DateTime) => {
+      updateSubstituteMap(new Map(selectedSubstitutes.set(date.toISODate(), tutor)));
+    },
+    [selectedSubstitutes]
+  );
+  const removeSelectedSubstitute = useCallback(
+    (date: DateTime) => {
+      selectedSubstitutes.delete(date.toISODate());
+      updateSubstituteMap(new Map(selectedSubstitutes));
+    },
+    [selectedSubstitutes]
+  );
+  const isSubstituteChanged = useCallback(
+    (date: DateTime) => {
+      if (!tutorial.value) {
+        return false;
+      }
+
+      const selectedSubstId = getSelectedSubstitute(date)?.id;
+      const currentSubstId = tutorial.value.getSubstitute(date)?.id;
+
+      return selectedSubstId !== currentSubstId;
+    },
+    [tutorial.value, getSelectedSubstitute]
+  );
 
   return (
     <Context.Provider
@@ -93,6 +146,11 @@ function SubstituteManagementContextProvider({
         tutors,
         selectedDate,
         setSelectedDate,
+        selectedSubstitutes,
+        getSelectedSubstitute,
+        isSubstituteChanged,
+        setSelectedSubstitute,
+        removeSelectedSubstitute,
       }}
     >
       {children}
