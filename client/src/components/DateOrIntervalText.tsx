@@ -5,9 +5,10 @@ import React from 'react';
 interface Props extends TypographyProps {
   date: DateTime | Interval;
   prefix?: string;
+  suffix?: string;
 }
 
-function DateOrIntervalText({ prefix, date, ...props }: Props): JSX.Element {
+function DateOrIntervalText({ prefix, date, suffix, ...props }: Props): JSX.Element {
   const format: DateTimeFormatOptions = {
     weekday: 'short',
     year: 'numeric',
@@ -26,6 +27,7 @@ function DateOrIntervalText({ prefix, date, ...props }: Props): JSX.Element {
           <span style={{ whiteSpace: 'pre' }}>{date.end.toLocaleString(format)}</span>
         </>
       )}
+      {suffix && `${suffix} `}
     </Typography>
   );
 }
