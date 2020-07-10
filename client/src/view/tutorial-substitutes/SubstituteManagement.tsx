@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
-import { Prompt } from 'react-router';
+import { Prompt, useParams } from 'react-router';
 import BackButton from '../../components/BackButton';
 import SubmitButton from '../../components/loading/SubmitButton';
 import { ROUTES } from '../../routes/Routing.routes';
@@ -23,6 +23,10 @@ const useStyles = makeStyles((theme) =>
     },
   })
 );
+
+interface Params {
+  tutorialId: string;
+}
 
 function SubstituteManagementContent(): JSX.Element {
   const classes = useStyles();
@@ -87,9 +91,10 @@ function SubstituteManagementContent(): JSX.Element {
 }
 
 function SubstituteManagement(): JSX.Element {
-  // FIXME: Adjust route to use this component & use correct tutorial ID.
+  const { tutorialId } = useParams<Params>();
+
   return (
-    <SubstituteManagementContextProvider tutorialId={'DERPY_ID'}>
+    <SubstituteManagementContextProvider tutorialId={tutorialId}>
       <SubstituteManagementContent />
     </SubstituteManagementContextProvider>
   );
