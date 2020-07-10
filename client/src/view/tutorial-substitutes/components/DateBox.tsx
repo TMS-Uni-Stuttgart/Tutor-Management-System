@@ -8,7 +8,10 @@ import OutlinedBox from '../../../components/OutlinedBox';
 import Placeholder from '../../../components/Placeholder';
 import { Tutorial } from '../../../model/Tutorial';
 import { compareDateTimes } from '../../../util/helperFunctions';
-import { useSubstituteManagementContext } from '../SubstituteManagement.context';
+import {
+  SubstituteManagementContextType,
+  useSubstituteManagementContext,
+} from '../SubstituteManagement.context';
 import { FilterOption } from '../SubstituteManagement.types';
 import DateButton from './DateButton';
 
@@ -23,7 +26,11 @@ const useStyles = makeStyles((theme) =>
 
 type CallbackType = NonNullable<SelectInputProps['onChange']>;
 
-function filterDates(tutorial: Tutorial | undefined, option: FilterOption): DateTime[] {
+function filterDates(
+  tutorial: Tutorial | undefined,
+  option: FilterOption,
+  getSelectedSubstitute: SubstituteManagementContextType['getSelectedSubstitute']
+): DateTime[] {
   if (!tutorial) {
     return [];
   }
@@ -37,9 +44,9 @@ function filterDates(tutorial: Tutorial | undefined, option: FilterOption): Date
         case FilterOption.ALL_DATES:
           return true;
         case FilterOption.WITH_SUBSTITUTE:
-          return tutorial.getSubstitute(date) !== undefined;
+          return getSelectedSubstitute(date) !== undefined;
         case FilterOption.WITHOUT_SUBSTITUTE:
-          return tutorial.getSubstitute(date) === undefined;
+          return getSelectedSubstitute(date) === undefined;
         default:
           return true;
       }
@@ -61,12 +68,12 @@ function DateBox(): JSX.Element {
     () => FilterOption.ONLY_FUTURE_DATES
   );
   const [datesToShow, setDatesToShow] = useState<DateTime[]>(() =>
-    filterDates(tutorial.value, filterOption)
+    filterDates(tutorial.value, filterOption, getSelectedSubstitute)
   );
 
   useEffect(() => {
-    setDatesToShow(filterDates(tutorial.value, filterOption));
-  }, [tutorial, filterOption]);
+    setDatesToShow(filterDates(tutorial.value, filterOption, getSelectedSubstitute));
+  }, [tutorial, filterOption, getSelectedSubstitute]);
 
   const handleChange = useCallback<CallbackType>((e) => {
     if (typeof e.target.value !== 'string') {
