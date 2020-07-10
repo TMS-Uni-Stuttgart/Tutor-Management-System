@@ -5,10 +5,12 @@ import { DateTime } from 'luxon';
 import React, { useCallback, useEffect, useState } from 'react';
 import CustomSelect from '../../../components/CustomSelect';
 import OutlinedBox from '../../../components/OutlinedBox';
+import Placeholder from '../../../components/Placeholder';
 import { Tutorial } from '../../../model/Tutorial';
 import { compareDateTimes } from '../../../util/helperFunctions';
 import { useSubstituteManagementContext } from '../SubstituteManagement.context';
 import { FilterOption } from '../SubstituteManagement.types';
+import DateButton from './DateButton';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -16,19 +18,8 @@ const useStyles = makeStyles((theme) =>
       overflowY: 'auto',
       ...theme.mixins.scrollbar(8),
     },
-    dateButton: {
-      marginTop: theme.spacing(1.5),
-      '&:first-of-type': {
-        marginTop: 0,
-      },
-    },
-    dateButtonIcon: {
-      marginLeft: 'auto',
-    },
   })
 );
-
-interface Props {}
 
 type CallbackType = NonNullable<SelectInputProps['onChange']>;
 
@@ -56,21 +47,19 @@ function filterDates(tutorial: Tutorial | undefined, option: FilterOption): Date
     .sort(compareDateTimes);
 }
 
-function DateBox({}: Props): JSX.Element {
+function DateBox(): JSX.Element {
   const classes = useStyles();
-  const {
-    tutorial: { value: tutorial },
-  } = useSubstituteManagementContext();
+  const { tutorial, selectedDate, setSelectedDate } = useSubstituteManagementContext();
 
   const [filterOption, setFilterOption] = useState<FilterOption>(
     () => FilterOption.ONLY_FUTURE_DATES
   );
   const [datesToShow, setDatesToShow] = useState<DateTime[]>(() =>
-    filterDates(tutorial, filterOption)
+    filterDates(tutorial.value, filterOption)
   );
 
   useEffect(() => {
-    setDatesToShow(filterDates(tutorial, filterOption));
+    setDatesToShow(filterDates(tutorial.value, filterOption));
   }, [tutorial, filterOption]);
 
   const handleChange = useCallback<CallbackType>((e) => {
@@ -112,36 +101,25 @@ function DateBox({}: Props): JSX.Element {
         padding={1}
         className={classes.scrollableBox}
       >
-        {/* {datesToShow.map((date) => (
-          <Button
-            variant='outlined'
-            color={date === selectedDate ? 'primary' : 'default'}
-            key={date.toISODate()}
-            className={classes.dateButton}
-            classes={{ endIcon: classes.dateButtonIcon }}
-            endIcon={<RightArrow />}
-            onClick={() => setSelectedDate(date)}
-          >
-            <Box
-              display='flex'
-              flexDirection='column'
-              textAlign='left'
-              style={{ textTransform: 'none' }}
-            >
-              <DateOrIntervalText date={date} />
-              {
-                <Typography variant='caption'>
-                  {!!tutorial.getSubstitute(date)
-                    ? `Vertretung: ${getNameOfEntity(tutorial.getSubstitute(date)!)}`
-                    : 'Keine Vertretung'}
-                </Typography>
-              }
-            </Box>
-          </Button>
-        ))} */}
-        {datesToShow.length === 0 && (
-          <Typography align='center'>Keine entsprechenden Termine gefunden.</Typography>
-        )}
+        <Placeholder
+          loading={tutorial.isLoading}
+          placeholderText={'Es ist ein Fehler aufgetreten'}
+          showPlaceholder={!!tutorial.error && !tutorial.isLoading}
+        >
+          {tutorial.value &&
+            datesToShow.map((date) => (
+              <DateButton
+                key={date.toISODate()}
+                date={date}
+                tutorial={tutorial.value}
+                isSelected={!!selectedDate && date.equals(selectedDate)}
+                onClick={() => setSelectedDate(date)}
+              />
+            ))}
+          {datesToShow.length === 0 && (
+            <Typography align='center'>Keine entsprechenden Termine gefunden.</Typography>
+          )}
+        </Placeholder>
       </OutlinedBox>
     </Box>
   );
