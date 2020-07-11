@@ -2,7 +2,11 @@ import { Box, Button, ButtonProps, Tooltip, Typography } from '@material-ui/core
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
-import { AccountEditOutline as EditIcon, ChevronRight as RightArrowIcon } from 'mdi-material-ui';
+import {
+  AccountEditOutline as EditIcon,
+  AccountOutline as SubstituteIcon,
+  ChevronRight as RightArrowIcon,
+} from 'mdi-material-ui';
 import React from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
@@ -52,6 +56,11 @@ function DateButton({
           {isChanged && (
             <Tooltip title='Ungespeicherte Änderungen'>
               <EditIcon className={classes.changed} />
+            </Tooltip>
+          )}
+          {!isChanged && !!substitute && (
+            <Tooltip title='Vertretung'>
+              <SubstituteIcon />
             </Tooltip>
           )}
           <RightArrowIcon />
