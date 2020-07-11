@@ -10,13 +10,11 @@ import Placeholder from '../../../components/Placeholder';
 import { useSubstituteManagementContext } from '../SubstituteManagement.context';
 import ListOfTutors from './ListOfTutors';
 import SelectedSubstituteBar from './SelectedSubstituteBar';
+import { useLoggedInUser } from '../../../hooks/LoginService';
+import { LoggedInUser } from '../../../model/LoggedInUser';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    scrollableBox: {
-      overflowY: 'auto',
-      ...theme.mixins.scrollbar(8),
-    },
     divider: {
       margin: theme.spacing(2, 0),
     },
@@ -27,13 +25,21 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-function filterTutors(filterText: string, tutors: NamedElement[] = []): NamedElement[] {
-  return tutors.filter((student) => {
+function filterTutors(
+  filterText: string,
+  currentUser: LoggedInUser,
+  tutors: NamedElement[] = []
+): NamedElement[] {
+  return tutors.filter((tutor) => {
+    if (currentUser.id === tutor.id) {
+      return false;
+    }
+
     if (!filterText) {
       return true;
     }
 
-    const name = _.deburr(getNameOfEntity(student)).toLowerCase();
+    const name = _.deburr(getNameOfEntity(tutor)).toLowerCase();
     const unifiedFilter = _.deburr(filterText).toLowerCase();
 
     return name.includes(unifiedFilter);
@@ -44,6 +50,7 @@ interface State {
   filterText: string;
   tutorsToShow: NamedElement[];
   allTutors: NamedElement[];
+  currentUser: LoggedInUser;
 }
 
 type Action =
@@ -56,12 +63,12 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         filterText: action.data,
-        tutorsToShow: filterTutors(action.data, state.allTutors),
+        tutorsToShow: filterTutors(action.data, state.currentUser, state.allTutors),
       };
     case 'changeTutors':
       return {
         ...state,
-        tutorsToShow: filterTutors(state.filterText, action.data),
+        tutorsToShow: filterTutors(state.filterText, state.currentUser, action.data),
         allTutors: action.data,
       };
     default:
@@ -71,6 +78,7 @@ function reducer(state: State, action: Action): State {
 
 function SelectSubstitute(): JSX.Element {
   const classes = useStyles();
+  const currentUser = useLoggedInUser();
   const {
     tutorial,
     tutors,
@@ -83,16 +91,16 @@ function SelectSubstitute(): JSX.Element {
 
   const [{ tutorsToShow }, dispatch] = useReducer(
     reducer,
-    { filterText: '', tutorsToShow: [], allTutors: [] },
+    { filterText: '', tutorsToShow: [], allTutors: [], currentUser },
     () => ({
       filterText: '',
-      tutorsToShow: filterTutors('', tutors.value),
+      tutorsToShow: filterTutors('', currentUser, tutors.value),
       allTutors: tutors.value ?? [],
+      currentUser,
     })
   );
 
   useEffect(() => {
-    console.log('Got new tutors...');
     dispatch({ type: 'changeTutors', data: tutors.value ?? [] });
   }, [tutors.value]);
 
