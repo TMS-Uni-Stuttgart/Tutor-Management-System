@@ -11,6 +11,7 @@ import { IUser } from '../../shared/model/User';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from './user.service';
 import { UserDTO, CreateUserDTO } from './user.dto';
+import { NamedElement } from '../../shared/model/Common';
 
 interface AssertUserParam {
   expected: MockedModel<UserModel>;
@@ -722,5 +723,15 @@ describe('UserService', () => {
 
     expect(updatedUser.temporaryPassword).toEqual(newPassword);
     expect(() => bcrypt.compareSync(newPassword, userCredentials.password)).toBeTruthy();
+  });
+
+  it('get the name of all tutors', async () => {
+    const expected: NamedElement[] = [
+      { id: '5e501290468622e257c2db16', firstname: 'Harry', lastname: 'Potter' },
+      { id: '5e5013711922d1957bcf0c30', firstname: 'Ron', lastname: 'Weasley' },
+      { id: '5e503ac11015dc73652731a6', firstname: 'Ginny', lastname: 'Weasley' },
+    ];
+    const namesOfTutors: NamedElement[] = await service.getNamesOfAllTutors();
+    expect(namesOfTutors).toEqual(expected);
   });
 });

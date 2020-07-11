@@ -28,10 +28,7 @@ interface ModelMockOptions {
 }
 
 const MODEL_OPTIONS: ModelMockOptions[] = [
-  {
-    model: UserModel,
-    initialDocuments: [...USER_DOCUMENTS],
-  },
+  { model: UserModel, initialDocuments: [...USER_DOCUMENTS] },
   { model: TutorialModel, initialDocuments: [...TUTORIAL_DOCUMENTS] },
   { model: StudentModel, initialDocuments: [...STUDENT_DOCUMENTS] },
   { model: TeamModel, initialDocuments: [...TEAM_DOCUMENTS] },

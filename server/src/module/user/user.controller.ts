@@ -19,6 +19,7 @@ import { SameUserGuard } from '../../guards/same-user.guard';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, PasswordDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
+import { NamedElement } from '../../shared/model/Common';
 
 @Controller('user')
 export class UserController {
@@ -49,6 +50,15 @@ export class UserController {
     const createdUsers = await this.userService.createMany(users);
 
     return createdUsers;
+  }
+
+  @Get('/name/tutor')
+  @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE, Role.TUTOR)
+  async getNamesOfAllTutors(): Promise<NamedElement[]> {
+    const nameOfTutors = await this.userService.getNamesOfAllTutors();
+
+    return nameOfTutors;
   }
 
   @Get('/:id')
