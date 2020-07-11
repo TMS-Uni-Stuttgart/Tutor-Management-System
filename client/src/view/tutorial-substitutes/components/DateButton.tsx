@@ -68,7 +68,13 @@ function DateButton({
       }
       {...props}
     >
-      <Box display='flex' flexDirection='column' textAlign='left' style={{ textTransform: 'none' }}>
+      <Box
+        display='flex'
+        flexDirection='column'
+        textAlign='left'
+        style={{ textTransform: 'none' }}
+        marginRight={2}
+      >
         <DateOrIntervalText date={date} suffix={isChanged ? '*' : undefined} />
         {
           <Typography variant='caption' className={clsx(isChanged && classes.changed)}>

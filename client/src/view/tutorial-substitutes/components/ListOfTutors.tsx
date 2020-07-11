@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     scrollableBox: {
       overflowY: 'auto',
+      paddingRight: theme.spacing(0.5),
       ...theme.mixins.scrollbar(8),
     },
     tutorRowBackground: {
