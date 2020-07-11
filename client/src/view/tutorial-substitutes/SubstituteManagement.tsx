@@ -1,9 +1,12 @@
 import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
 import { Prompt, useParams } from 'react-router';
+import { ISubstituteDTO } from 'shared/model/Tutorial';
 import BackButton from '../../components/BackButton';
 import SubmitButton from '../../components/loading/SubmitButton';
+import { setSubstituteTutor } from '../../hooks/fetching/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
 import DateBox from './components/DateBox';
 import SelectSubstitute from './components/SelectSubstitute';
@@ -30,17 +33,67 @@ interface Params {
 
 function SubstituteManagementContent(): JSX.Element {
   const classes = useStyles();
-  const { selectedSubstitutes, dirty } = useSubstituteManagementContext();
+
+  const { getSelectedSubstitute, dirty, tutorial } = useSubstituteManagementContext();
+  const { enqueueSnackbar } = useSnackbar();
+
   const [isSubmitting, setSubmitting] = useState(false);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLElement>) => {
+    async (e: React.FormEvent<HTMLElement>) => {
       e.preventDefault();
 
+      if (!tutorial.value) {
+        return;
+      }
+
       setSubmitting(true);
-      console.log(selectedSubstitutes);
+      const tutorialId = tutorial.value.id;
+      const datesWithSubst: Map<string, string[]> = new Map();
+      const datesWithoutSubst: string[] = [];
+
+      tutorial.value.dates.forEach((date) => {
+        const substitute = getSelectedSubstitute(date);
+
+        if (!!substitute) {
+          const datesOfSubstitute = datesWithSubst.get(substitute.id) ?? [];
+          datesOfSubstitute.push(date.toISODate());
+          datesWithSubst.set(substitute.id, datesOfSubstitute);
+        } else {
+          datesWithoutSubst.push(date.toISODate());
+        }
+      });
+
+      const noSubstituteDTO: ISubstituteDTO = { tutorId: undefined, dates: datesWithoutSubst };
+      const substituteDTOs: ISubstituteDTO[] = [];
+
+      datesWithSubst.forEach((dates, tutorId) => substituteDTOs.push({ tutorId, dates }));
+
+      const responses = await Promise.allSettled([
+        setSubstituteTutor(tutorialId, noSubstituteDTO),
+        ...substituteDTOs.map((dto) => setSubstituteTutor(tutorialId, dto)),
+      ]);
+
+      let hasRejected = false;
+
+      for (const resp of responses) {
+        if (resp.status === 'rejected') {
+          hasRejected = true;
+        }
+      }
+
+      await tutorial.execute(tutorial.value.id);
+      setSubmitting(false);
+
+      if (hasRejected) {
+        enqueueSnackbar('Einige Vertretungen konnten nicht gespeichert werden.', {
+          variant: 'error',
+        });
+      } else {
+        enqueueSnackbar('Vertretungen wurden erfolgreich gespeichert.', { variant: 'success' });
+      }
     },
-    [selectedSubstitutes]
+    [getSelectedSubstitute]
   );
 
   return (
