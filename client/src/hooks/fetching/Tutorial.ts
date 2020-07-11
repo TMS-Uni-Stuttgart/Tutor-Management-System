@@ -89,15 +89,13 @@ export async function getStudentsOfTutorial(id: string): Promise<Student[]> {
 
 export async function setSubstituteTutor(
   id: string,
-  substituteDTO: ISubstituteDTO
-): Promise<Tutorial> {
-  const response = await axios.put<ITutorial>(`tutorial/${id}/substitute`, substituteDTO);
+  substituteDTO: ISubstituteDTO | ISubstituteDTO[]
+): Promise<void> {
+  const response = await axios.put<void>(`tutorial/${id}/substitute`, substituteDTO);
 
-  if (response.status === 200) {
-    return plainToClass(Tutorial, response.data);
+  if (response.status !== 200) {
+    return Promise.reject(`Wrong response code (${response.status}).`);
   }
-
-  return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
 export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): Promise<

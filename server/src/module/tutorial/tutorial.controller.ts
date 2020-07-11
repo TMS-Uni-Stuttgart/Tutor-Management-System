@@ -97,10 +97,12 @@ export class TutorialController {
   @UsePipes(ValidationPipe)
   async setSubstituteOfTutorial(
     @Param('id') id: string,
-    @Body() dto: SubstituteDTO
-  ): Promise<ITutorial> {
-    const updated = await this.tutorialService.setSubstitute(id, dto);
-
-    return updated;
+    @Body() dto: SubstituteDTO | SubstituteDTO[]
+  ): Promise<void> {
+    if (Array.isArray(dto)) {
+      await this.tutorialService.setMultipleSubstitutes(id, dto);
+    } else {
+      await this.tutorialService.setSubstitute(id, dto);
+    }
   }
 }
