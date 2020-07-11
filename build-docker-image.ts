@@ -2,60 +2,114 @@ import * as childProcess from 'child_process';
 import { ExecSyncOptions } from 'child_process';
 import * as fs from 'fs';
 
+interface ArgumentOptions {
+  name: string;
+  short?: string;
+  hasValue?: boolean;
+}
+
+const DEFAULT_IMAGE_NAME = 'dudrie/tutor-management-system';
+
+function getArgValue({ name, short, hasValue }: ArgumentOptions): string | undefined {
+  const args = process.argv;
+  const nameExpression = `--${name}${hasValue ? '=' : ''}`;
+  const shortExpression = short ? `-${short}${hasValue ? '=' : ''}` : undefined;
+
+  const argValue = args.find((arg) => {
+    if (arg.includes(nameExpression)) {
+      return true;
+    }
+
+    if (!!shortExpression && arg.includes(shortExpression)) {
+      return true;
+    }
+
+    return false;
+  });
+
+  if (!argValue) {
+    return undefined;
+  }
+
+  if (hasValue) {
+    const shortRegexPattern: string = shortExpression ? `|(${shortExpression})` : '';
+    const regex = new RegExp(`(${nameExpression})${shortRegexPattern}`, 'g');
+    return argValue.replace(regex, '');
+  } else {
+    return argValue;
+  }
+}
+
+function getCwd(): string {
+  const cwdArgument = getArgValue({ name: 'cwd', hasValue: true });
+
+  if (!cwdArgument) {
+    return process.cwd();
+  } else {
+    return cwdArgument.replace(/(--cwd=)/g, '');
+  }
+}
+
 function getPackageInfo(): any {
   const content = fs.readFileSync('./package.json').toString();
 
   return JSON.parse(content);
 }
 
-const IMAGE_NAME = 'dudrie/tutor-management-system';
-const packageInfo = getPackageInfo();
-
 function getLatestOrPre(): 'pre' | 'latest' {
-  const args = process.argv;
-  const preArgument = args.find((arg) => arg === '--pre');
+  const preArgument = getArgValue({ name: 'pre' });
 
   return preArgument ? 'pre' : 'latest';
 }
 
 function getVersion(): string {
-  const args = process.argv;
-  const versionArgument = args.find((arg) => arg.includes('--version=') || arg.includes('-v='));
+  const version = getArgValue({ name: 'version', short: 'v', hasValue: true });
 
-  if (versionArgument === undefined) {
-    return packageInfo.version;
+  if (version === undefined) {
+    return getPackageInfo().version;
   }
-
-  const version = versionArgument.replace(/(--version=)|(-v=)/g, '');
 
   if (!/\d+\.\d+\.\d+/g.test(version)) {
     console.error('Version argument needs to follow the SemVer pattern: MAJOR.MINOR.PATCH.');
     process.exit(1);
   }
+
+  return version;
+}
+
+function getImageName(): string {
+  const nameArgument = getArgValue({ name: 'name', short: 'n', hasValue: true });
+
+  return nameArgument ?? DEFAULT_IMAGE_NAME;
 }
 
 function isVersionInTar(): boolean {
-  const args = process.argv;
-  const versionArgument = args.find((arg) => arg == '--no-version-in-tar-name');
-
-  return !versionArgument;
+  const noVersionInTar = getArgValue({ name: 'no-version-in-tar-name' });
+  return !noVersionInTar;
 }
 
-function isSkipBundleStep(): boolean {
-  const args = process.argv;
-  const isSkipBundleArgument = args.find((arg) => arg === '--skip-bundle');
+function isBundleStepActive(): boolean {
+  const isSkipBundleArgument = getArgValue({ name: 'bundle' });
 
   return !!isSkipBundleArgument;
+}
+
+function getForceRemoveContainersOptions(): string {
+  const forceRmArg = getArgValue({ name: 'force-rm' });
+
+  return !!forceRmArg ? '--force-rm' : '';
 }
 
 function getBuildCommand(): string {
   const version = getVersion();
   const preOrLatest = getLatestOrPre();
+  const imageName = getImageName();
+  const forceRemoveContainers = getForceRemoveContainersOptions();
 
   if (preOrLatest === 'latest') {
-    return `docker build -t=${IMAGE_NAME}:latest -t=${IMAGE_NAME}:${version} .`;
+    return `docker build ${forceRemoveContainers} -t=${imageName}:latest -t=${imageName}:${version} .`;
   } else {
-    return `docker build -t=${IMAGE_NAME}:${version}-pre .`;
+    return `docker build ${forceRemoveContainers} -t=${imageName}:${version}-pre .`;
   }
 }
 
@@ -80,16 +134,18 @@ function getTarName(): string {
 function getBundleCommand(): string {
   const version = getVersion();
   const preOrLatest = getLatestOrPre();
+  const imageName = getImageName();
 
   if (preOrLatest === 'latest') {
-    return `docker save -o ${getTarName()} ${IMAGE_NAME}:latest ${IMAGE_NAME}:${version}`;
+    return `docker save -o ${getTarName()} ${imageName}:latest ${imageName}:${version}`;
   } else {
-    return `docker save -o ${getTarName()} ${IMAGE_NAME}:${version}-pre`;
+    return `docker save -o ${getTarName()} ${imageName}:${version}-pre`;
   }
 }
 
 const options: ExecSyncOptions = {
   stdio: 'inherit',
+  cwd: getCwd(),
 };
 
 const buildCommand = getBuildCommand();
@@ -98,7 +154,7 @@ const bundleCommand = getBundleCommand();
 console.log(`Running: "${buildCommand}"`);
 childProcess.execSync(buildCommand, options);
 
-if (!isSkipBundleStep()) {
+if (isBundleStepActive()) {
   console.log(`Running: "${bundleCommand}"`);
   childProcess.execSync(bundleCommand, options);
 }

@@ -1,0 +1,37 @@
+version: '3.1'
+services:
+  mongo:
+    image: mongo
+    container_name: mongo_test
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - tms_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  tms-server:
+    image: dudrie/tms-test:0.0.0-pre
+    container_name: tms-test
+    depends_on:
+      - mongo
+    ports:
+      - '8080:8080'
+    networks:
+      - tms_db
+    environment:
+      TMS_MONGODB_USER: root
+      TMS_MONGODB_PW: example
+      TMS_SECRET: keyboard cat
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - ./config:/tms/server/config
+
+volumes:
+  db_data:
+
+networks:
+  tms_db:

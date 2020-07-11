@@ -1,54 +1,16 @@
 /* eslint-disable no-console */
-import Axios from 'axios';
+import { AxiosInstance } from 'axios';
 import { IExerciseGradingDTO, IGradingDTO } from '../../server/src/shared/model/Points';
 import { IExerciseDTO, ISheet, ISheetDTO } from '../../server/src/shared/model/Sheet';
 import { IStudent, IStudentDTO, StudentStatus } from '../../server/src/shared/model/Student';
 import { ITutorial, ITutorialDTO } from '../../server/src/shared/model/Tutorial';
-import { ILoggedInUser } from '../../server/src/shared/model/User';
+import { login } from '../util/login';
 import { createSheet, setPointsOfStudent } from './fetch/helpers';
 
-function createBaseURL(): string {
-  return 'http://localhost:8080/api';
-}
-
-const axios = Axios.create({
-  baseURL: createBaseURL(),
-  withCredentials: true,
-  headers: {
-    // This header prevents the spring backend to add a header which will make a popup appear if the credentials are wrong.
-    'X-Requested-With': 'XMLHttpRequest',
-  },
-  // Configure to use auth every time bc node can not save cookies.
-  // auth: {
-  //   username: 'admin',
-  //   password: 'admin',
-  // },
-});
-
-const cookies: string[] = [];
+let axios: AxiosInstance;
 
 function roundNumber(number: number, places: number = 2): number {
   return Math.round(number * Math.pow(10, places)) / Math.pow(10, places);
-}
-
-async function login(username: string, password: string): Promise<void> {
-  // We build the Authorization header by ourselfs because the axios library does NOT use UTF-8 to encode the string as base64.
-  const response = await axios.post<ILoggedInUser>(
-    '/auth/login',
-    { username, password },
-    {
-      // Override the behaviour of checking the response status to not be 401 (session timed out)
-      validateStatus: () => true,
-    }
-  );
-
-  const [cookie] = response.headers['set-cookie'] || [undefined];
-
-  if (cookie) {
-    cookies.push(cookie);
-
-    axios.defaults.headers.Cookie = cookie;
-  }
 }
 
 async function createTutorial(): Promise<ITutorial> {
@@ -170,7 +132,7 @@ async function createStudent(i: number, tutorial: ITutorial, sheets: ISheet[]): 
 
 async function run() {
   try {
-    await login('admin', 'admin');
+    axios = await login('admin', 'admin');
 
     const tutorial = await createTutorial();
     const sheets = await createSheets();

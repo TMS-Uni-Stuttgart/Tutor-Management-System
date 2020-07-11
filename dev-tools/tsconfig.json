@@ -8,14 +8,14 @@
     "sourceMap": true,
     "strict": true,
     "outDir": "build",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"],
-      "shared/*": ["../../server/src/shared/*"]
+      "shared/*": ["../server/src/shared/*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"]
+  "include": ["generate-students/**/*"]
 }

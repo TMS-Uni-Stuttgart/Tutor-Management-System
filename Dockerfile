@@ -5,7 +5,7 @@
 # This also copies the builded frontend into the server.
 #
 # =============================================
-FROM node:12 as build
+FROM node:12-alpine as build
 
 COPY client/ tms/client/
 COPY server/ tms/server/
@@ -15,8 +15,12 @@ COPY yarn.lock tms/
 
 WORKDIR /tms/
 
-RUN yarn
-RUN yarn build
+# Do not download puppeteer and mongo-memory-server binaries.
+# They are not needed for building.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV MONGOMS_DISABLE_POSTINSTALL 1
+
+RUN yarn && yarn build
 
 # =============================================
 #
@@ -50,7 +54,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 # Tell the PDFService where to find the Chrome executable.
 ENV TMS_PUPPETEER_EXEC_PATH "/usr/bin/chromium-browser"
 
-# Fix the puppeteer version to match the one of the latest available chromium alpine package.
+# Set the puppeteer version to match the one of the latest available chromium alpine package.
 RUN yarn add puppeteer@4.0.1
 
 # Add user so we don't need --no-sandbox.
