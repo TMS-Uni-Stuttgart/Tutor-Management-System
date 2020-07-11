@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Points';
 import { getNameOfEntity } from 'shared/util/helpers';
-import BackButton from '../../../components/BackButton';
+import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getScheinexam } from '../../../hooks/fetching/ScheinExam';

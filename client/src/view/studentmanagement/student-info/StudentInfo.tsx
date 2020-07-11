@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import { getNameOfEntity } from 'shared/util/helpers';
-import BackButton from '../../../components/BackButton';
+import BackButton from '../../../components/back-button/BackButton';
 import Placeholder from '../../../components/Placeholder';
 import TabPanel from '../../../components/TabPanel';
 import { getScheinCriteriaSummaryOfStudent } from '../../../hooks/fetching/Scheincriteria';

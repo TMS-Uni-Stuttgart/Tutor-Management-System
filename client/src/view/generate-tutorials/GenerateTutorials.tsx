@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router';
 import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
-import BackButton from '../../components/BackButton';
+import BackButton from '../../components/back-button/BackButton';
 import FormikDatePicker from '../../components/forms/components/FormikDatePicker';
 import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../components/loading/SubmitButton';

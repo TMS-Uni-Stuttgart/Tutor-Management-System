@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
 import { Prompt, useParams } from 'react-router';
 import { ISubstituteDTO } from 'shared/model/Tutorial';
-import BackButton from '../../components/BackButton';
+import BackButton from '../../components/back-button/BackButton';
 import SubmitButton from '../../components/loading/SubmitButton';
 import { setSubstituteTutor } from '../../hooks/fetching/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
