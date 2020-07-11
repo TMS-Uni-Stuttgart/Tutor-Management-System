@@ -1,0 +1,31 @@
+name: Docker image test
+on:
+  push:
+    branches:
+      - master
+      - v2
+  pull_request:
+    branches:
+      - v2
+
+jobs:
+  test-docker-image:
+    name: Test Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install node packages
+        run: |
+          yarn install
+        env:
+          CI: true
+      - name: Test docker image
+        working-directory: dev-tools/build-test-docker
+        run: ts-node ./buildAndTestDocker.ts
+        env:
+          CI: true
