@@ -1,4 +1,9 @@
-import { spawn, spawnSync, ChildProcessWithoutNullStreams } from 'child_process';
+import {
+  spawn,
+  spawnSync,
+  ChildProcessWithoutNullStreams,
+  SpawnOptionsWithoutStdio,
+} from 'child_process';
 import chalk from 'chalk';
 import os from 'os';
 import axios from 'axios';
@@ -73,6 +78,7 @@ async function tryPdf() {
 }
 
 async function run(): Promise<void> {
+  console.log(process.cwd());
   const IMAGE_NAME = 'dudrie/tms-test';
   spawnSync('clear');
 
@@ -97,7 +103,8 @@ async function run(): Promise<void> {
     console.log(chalk.green(`Docker image '${IMAGE_NAME}' successfully build.`));
     console.log(chalk.blue('Starting image in container...'));
 
-    const containerProcess = spawn('docker-compose', ['up', '-d']);
+    const spawnOptions: SpawnOptionsWithoutStdio = { cwd: './build-test-docker' };
+    const containerProcess = spawn('docker-compose', ['up', '-d'], spawnOptions);
     addConsoleToProcess(containerProcess);
 
     containerProcess.on('exit', (code) => {
@@ -127,7 +134,10 @@ async function run(): Promise<void> {
     } finally {
       console.log(chalk.blue('Shutting down containers...'));
 
-      const result = spawnSync('docker-compose', ['down', '-v'], { stdio: 'inherit' });
+      const result = spawnSync('docker-compose', ['down', '-v'], {
+        ...spawnOptions,
+        stdio: 'inherit',
+      });
 
       if (result.error) {
         stopOnError(result.error.message);
