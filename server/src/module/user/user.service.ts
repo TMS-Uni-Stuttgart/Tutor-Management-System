@@ -18,6 +18,7 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
+import { NamedElement } from '../../shared/model/Common';
 
 @Injectable()
 export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
@@ -113,6 +114,13 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     return createdUser.toDTO();
   }
 
+  /**
+   * Creates multiple new users from the given information and saves them to the database.
+   *
+   * @param users Information of all users to create.
+   *
+   * @returns Created users.
+   */
   async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
     const created: UserDocument[] = [];
     const errors: string[] = [];
@@ -341,6 +349,17 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
       tutorials,
       tutorialsToCorrect,
     };
+  }
+
+  /**
+   * @returns The name of all users with the `TUTOR` role in the database.
+   */
+  async getNamesOfAllTutors(): Promise<NamedElement[]> {
+    const users = await this.findAll();
+
+    return users
+      .filter((u) => u.roles.includes(Role.TUTOR))
+      .map<NamedElement>(({ id, firstname, lastname }) => ({ id, firstname, lastname }));
   }
 
   /**
