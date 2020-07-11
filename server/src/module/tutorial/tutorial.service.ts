@@ -157,18 +157,43 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
   /**
    * Sets the substitute for the given dates to the given tutor.
    *
+   * @see setTutorialSubstitute
+   */
+  async setSubstitute(id: string, dto: SubstituteDTO): Promise<void> {
+    const tutorial = await this.findById(id);
+    this.setTutorialSubstitute(tutorial, dto);
+  }
+
+  /**
+   * Sets the substitutes of a tutorial according to the given DTOs.
+   *
+   * Every DTO in the given array will be handled seperatly.
+   *
+   * @see setTutorialSubstitute
+   */
+  async setMultipleSubstitutes(id: string, dtos: SubstituteDTO[]): Promise<void> {
+    const tutorial = await this.findById(id);
+
+    for (const dto of dtos) {
+      await this.setTutorialSubstitute(tutorial, dto);
+    }
+  }
+
+  /**
+   * Sets the substitute according to the given data.
+   *
    * If the DTO does not contain a `tutorId` field (ie it is `undefined`) the substitutes of the given dates will be removed. If there is already a substitute for a given date in the DTO the previous substitute gets overridden.
    *
-   * @param id ID of the tutorial.
-   * @param dto DTO containing the information of the substitute.
-   *
-   * @returns Updated tutorial.
+   * @param tutorial Tutorial to set the substitute for.
+   * @param dto DTO containing the information of the substitutes.
    *
    * @throws `BadRequestException` - If the tutorial of the given `id` parameter could not be found.
    * @throws `BadRequestException` - If the `tutorId` field contains a user ID which can not be found or which does not belong to a tutor.
    */
-  async setSubstitute(id: string, dto: SubstituteDTO): Promise<ITutorial> {
-    const tutorial = await this.findById(id);
+  private async setTutorialSubstitute(
+    tutorial: TutorialDocument,
+    dto: SubstituteDTO
+  ): Promise<void> {
     const { dates, tutorId } = dto;
 
     if (!tutorId) {
@@ -180,9 +205,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
       dates.forEach((date) => tutorial.setSubstitute(DateTime.fromISO(date), tutor));
     }
 
-    const updated = await tutorial.save();
-
-    return updated.toDTO();
+    await tutorial.save();
   }
 
   /**
