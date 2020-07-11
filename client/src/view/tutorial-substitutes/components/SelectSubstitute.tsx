@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { NamedElement } from 'shared/model/Common';
-import { getNameOfEntity, sortByName } from 'shared/util/helpers';
+import { getNameOfEntity } from 'shared/util/helpers';
 import DateOrIntervalText from '../../../components/DateOrIntervalText';
 import Placeholder from '../../../components/Placeholder';
 import { useSubstituteManagementContext } from '../SubstituteManagement.context';
@@ -28,18 +28,16 @@ const useStyles = makeStyles((theme) =>
 );
 
 function filterTutors(filterText: string, tutors: NamedElement[] = []): NamedElement[] {
-  return tutors
-    .filter((student) => {
-      if (!filterText) {
-        return true;
-      }
+  return tutors.filter((student) => {
+    if (!filterText) {
+      return true;
+    }
 
-      const name = _.deburr(getNameOfEntity(student)).toLowerCase();
-      const unifiedFilter = _.deburr(filterText).toLowerCase();
+    const name = _.deburr(getNameOfEntity(student)).toLowerCase();
+    const unifiedFilter = _.deburr(filterText).toLowerCase();
 
-      return name.includes(unifiedFilter);
-    })
-    .sort(sortByName);
+    return name.includes(unifiedFilter);
+  });
 }
 
 interface State {

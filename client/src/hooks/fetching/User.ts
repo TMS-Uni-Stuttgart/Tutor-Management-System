@@ -1,3 +1,4 @@
+import { NamedElement } from 'shared/model/Common';
 import { MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
 import { ICreateUserDTO, INewPasswordDTO, IUser, IUserDTO } from 'shared/model/User';
@@ -6,6 +7,16 @@ import axios from './Axios';
 
 export async function getUsers(): Promise<IUser[]> {
   const response = await axios.get<IUser[]>('user');
+
+  if (response.status === 200) {
+    return response.data.sort(sortByName);
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
+export async function getUserNames(): Promise<NamedElement[]> {
+  const response = await axios.get<NamedElement[]>('user/name/tutor');
 
   if (response.status === 200) {
     return response.data.sort(sortByName);
