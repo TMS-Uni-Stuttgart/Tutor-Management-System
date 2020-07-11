@@ -181,6 +181,10 @@ export class TutorialModel {
   }
 
   getAllSubstitutes(): Map<string, UserDocument> {
+    if (!this.substitutes) {
+      this.loadSubstituteMap();
+    }
+
     return this.substitutes ?? new Map();
   }
 
