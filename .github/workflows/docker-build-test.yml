@@ -26,6 +26,6 @@ jobs:
           CI: true
       - name: Test docker image
         working-directory: dev-tools/build-test-docker
-        run: ts-node ./buildAndTestDocker.ts
+        run: yarn run ts-node ./buildAndTestDocker.ts
         env:
           CI: true
