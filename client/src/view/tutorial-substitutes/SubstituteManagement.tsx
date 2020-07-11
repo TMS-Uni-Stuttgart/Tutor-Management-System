@@ -2,9 +2,10 @@ import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
-import { Prompt, useParams } from 'react-router';
+import { Prompt, useParams, useRouteMatch } from 'react-router';
 import { ISubstituteDTO } from 'shared/model/Tutorial';
 import BackButton from '../../components/back-button/BackButton';
+import DisableBackButton from '../../components/back-button/DisableBackButton.context';
 import SubmitButton from '../../components/loading/SubmitButton';
 import { setSubstituteTutor } from '../../hooks/fetching/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
@@ -19,10 +20,6 @@ const useStyles = makeStyles((theme) =>
     backButton: {
       height: 'fit-content',
       marginRight: theme.spacing(1),
-    },
-    scrollableBox: {
-      overflowY: 'auto',
-      ...theme.mixins.scrollbar(8),
     },
   })
 );
@@ -72,12 +69,13 @@ function SubstituteManagementContent(): JSX.Element {
         await setSubstituteTutor(tutorialId, substituteDTOs);
         await tutorial.execute(tutorial.value.id);
 
-        setSubmitting(false);
         enqueueSnackbar('Vertretungen wurden erfolgreich gespeichert.', { variant: 'success' });
       } catch {
         enqueueSnackbar('Einige Vertretungen konnten nicht gespeichert werden.', {
           variant: 'error',
         });
+      } finally {
+        setSubmitting(false);
       }
     },
     [getSelectedSubstitute, tutorial, enqueueSnackbar]
@@ -87,7 +85,7 @@ function SubstituteManagementContent(): JSX.Element {
     <Box
       flex={1}
       display='grid'
-      gridTemplateColumns='fit-content(340px) minmax(0, 1fr)'
+      gridTemplateColumns='minmax(300px, 340px) minmax(0, 1fr)'
       gridTemplateRows='fit-content(80px) 1fr fit-content(80px)'
       gridRowGap={16}
       gridColumnGap={16}
@@ -98,10 +96,6 @@ function SubstituteManagementContent(): JSX.Element {
       <Box display='flex' alignItems='center'>
         <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
 
-        <Typography color='error' style={{ visibility: dirty ? 'visible' : 'hidden' }}>
-          Es gibt ungespeicherte Änderungen.
-        </Typography>
-
         <Prompt
           when={dirty}
           message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
@@ -110,18 +104,24 @@ function SubstituteManagementContent(): JSX.Element {
 
       <DateBox />
 
-      <SubmitButton
-        isSubmitting={isSubmitting}
-        modalText={'Aktualisiere Vertretungen...'}
-        disabled={!dirty}
-        type='submit'
-        variant='contained'
-        color='primary'
-        fullWidth
-        CircularProgressProps={{ color: 'primary' }}
-      >
-        Vertretungen speichern
-      </SubmitButton>
+      <Box display='grid' gridRowGap={8}>
+        <Typography color='error' style={{ display: dirty ? undefined : 'none' }}>
+          Es gibt ungespeicherte Änderungen.
+        </Typography>
+
+        <SubmitButton
+          isSubmitting={isSubmitting}
+          modalText={'Aktualisiere Vertretungen...'}
+          disabled={!dirty}
+          type='submit'
+          variant='contained'
+          color='primary'
+          fullWidth
+          CircularProgressProps={{ color: 'primary' }}
+        >
+          Vertretungen speichern
+        </SubmitButton>
+      </Box>
 
       <Box gridArea='1 / 2 / span 3 / span 1' display='flex' flexDirection='column'>
         <SelectSubstitute />
@@ -132,11 +132,15 @@ function SubstituteManagementContent(): JSX.Element {
 
 function SubstituteManagement(): JSX.Element {
   const { tutorialId } = useParams<Params>();
+  const { path } = useRouteMatch();
+  const isAdminVersion = ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template === path;
 
   return (
-    <SubstituteManagementContextProvider tutorialId={tutorialId}>
-      <SubstituteManagementContent />
-    </SubstituteManagementContextProvider>
+    <DisableBackButton isBackDisabled={!isAdminVersion}>
+      <SubstituteManagementContextProvider tutorialId={tutorialId}>
+        <SubstituteManagementContent />
+      </SubstituteManagementContextProvider>
+    </DisableBackButton>
   );
 }
 

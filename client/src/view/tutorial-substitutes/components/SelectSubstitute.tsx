@@ -12,6 +12,7 @@ import ListOfTutors from './ListOfTutors';
 import SelectedSubstituteBar from './SelectedSubstituteBar';
 import { useLoggedInUser } from '../../../hooks/LoginService';
 import { LoggedInUser } from '../../../model/LoggedInUser';
+import { Tutorial } from '../../../model/Tutorial';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -27,11 +28,11 @@ const useStyles = makeStyles((theme) =>
 
 function filterTutors(
   filterText: string,
-  currentUser: LoggedInUser,
+  tutorial: Tutorial | undefined,
   tutors: NamedElement[] = []
 ): NamedElement[] {
   return tutors.filter((tutor) => {
-    if (currentUser.id === tutor.id) {
+    if (tutorial?.tutor?.id === tutor.id) {
       return false;
     }
 
@@ -50,12 +51,13 @@ interface State {
   filterText: string;
   tutorsToShow: NamedElement[];
   allTutors: NamedElement[];
-  currentUser: LoggedInUser;
+  tutorial?: Tutorial;
 }
 
 type Action =
   | { type: 'changeFilter'; data: string }
-  | { type: 'changeTutors'; data: NamedElement[] };
+  | { type: 'changeTutors'; data: NamedElement[] }
+  | { type: 'changeTutorial'; data: Tutorial | undefined };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -63,13 +65,19 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         filterText: action.data,
-        tutorsToShow: filterTutors(action.data, state.currentUser, state.allTutors),
+        tutorsToShow: filterTutors(action.data, state.tutorial, state.allTutors),
       };
     case 'changeTutors':
       return {
         ...state,
-        tutorsToShow: filterTutors(state.filterText, state.currentUser, action.data),
+        tutorsToShow: filterTutors(state.filterText, state.tutorial, action.data),
         allTutors: action.data,
+      };
+    case 'changeTutorial':
+      return {
+        ...state,
+        tutorsToShow: filterTutors(state.filterText, action.data, state.allTutors),
+        tutorial: action.data,
       };
     default:
       return state;
@@ -78,7 +86,6 @@ function reducer(state: State, action: Action): State {
 
 function SelectSubstitute(): JSX.Element {
   const classes = useStyles();
-  const currentUser = useLoggedInUser();
   const {
     tutorial,
     tutors,
@@ -91,18 +98,22 @@ function SelectSubstitute(): JSX.Element {
 
   const [{ tutorsToShow }, dispatch] = useReducer(
     reducer,
-    { filterText: '', tutorsToShow: [], allTutors: [], currentUser },
+    { filterText: '', tutorsToShow: [], allTutors: [], tutorial: tutorial.value },
     () => ({
       filterText: '',
-      tutorsToShow: filterTutors('', currentUser, tutors.value),
+      tutorsToShow: filterTutors('', tutorial.value, tutors.value),
       allTutors: tutors.value ?? [],
-      currentUser,
+      tutorial: tutorial.value,
     })
   );
 
   useEffect(() => {
     dispatch({ type: 'changeTutors', data: tutors.value ?? [] });
   }, [tutors.value]);
+
+  useEffect(() => {
+    dispatch({ type: 'changeTutorial', data: tutorial.value });
+  }, [tutorial.value]);
 
   const debouncedHandleChange = useCallback(
     _.debounce((filterText: string) => dispatch({ type: 'changeFilter', data: filterText }), 250),
