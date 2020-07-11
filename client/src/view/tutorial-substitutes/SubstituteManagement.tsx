@@ -64,36 +64,23 @@ function SubstituteManagementContent(): JSX.Element {
         }
       });
 
-      const noSubstituteDTO: ISubstituteDTO = { tutorId: undefined, dates: datesWithoutSubst };
-      const substituteDTOs: ISubstituteDTO[] = [];
+      const substituteDTOs: ISubstituteDTO[] = [{ tutorId: undefined, dates: datesWithoutSubst }];
 
       datesWithSubst.forEach((dates, tutorId) => substituteDTOs.push({ tutorId, dates }));
 
-      const responses = await Promise.allSettled([
-        setSubstituteTutor(tutorialId, noSubstituteDTO),
-        ...substituteDTOs.map((dto) => setSubstituteTutor(tutorialId, dto)),
-      ]);
+      try {
+        await setSubstituteTutor(tutorialId, substituteDTOs);
+        await tutorial.execute(tutorial.value.id);
 
-      let hasRejected = false;
-
-      for (const resp of responses) {
-        if (resp.status === 'rejected') {
-          hasRejected = true;
-        }
-      }
-
-      await tutorial.execute(tutorial.value.id);
-      setSubmitting(false);
-
-      if (hasRejected) {
+        setSubmitting(false);
+        enqueueSnackbar('Vertretungen wurden erfolgreich gespeichert.', { variant: 'success' });
+      } catch {
         enqueueSnackbar('Einige Vertretungen konnten nicht gespeichert werden.', {
           variant: 'error',
         });
-      } else {
-        enqueueSnackbar('Vertretungen wurden erfolgreich gespeichert.', { variant: 'success' });
       }
     },
-    [getSelectedSubstitute]
+    [getSelectedSubstitute, tutorial, enqueueSnackbar]
   );
 
   return (
