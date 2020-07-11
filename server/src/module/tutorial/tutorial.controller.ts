@@ -93,7 +93,8 @@ export class TutorialController {
   }
 
   @Put('/:id/substitute')
-  @UseGuards(HasRoleGuard)
+  @UseGuards(TutorialGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   @UsePipes(ValidationPipe)
   async setSubstituteOfTutorial(
     @Param('id') id: string,

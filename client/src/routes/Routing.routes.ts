@@ -1,5 +1,6 @@
 import {
   Account as StudentIcon,
+  AccountConvert as SubstituteIcon,
   AccountMultiple as TeamIcon,
   AccountMultipleCheck as AttendancesIcon,
   BadgeAccount as UserIcon,
@@ -159,6 +160,14 @@ export const TUTORIAL_ROUTES = {
     title: 'Teamübersicht',
     component: Teamoverview,
     icon: TeamIcon,
+    roles: [Role.TUTOR],
+    isTutorialRelated: true,
+  }),
+  TUTORIAL_SUBSTITUTES: new DrawerRoute({
+    path: parts('tutorial', param('tutorialId'), 'substitutes'),
+    title: 'Vertretungen',
+    component: SubstituteManagement,
+    icon: SubstituteIcon,
     roles: [Role.TUTOR],
     isTutorialRelated: true,
   }),
