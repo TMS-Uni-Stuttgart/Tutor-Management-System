@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { ChevronLeft as BackIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useDisableBackButton } from './DisableBackButton.context';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,8 +23,13 @@ interface Props {
   className?: string;
 }
 
-function BackButton({ to, className }: Props): JSX.Element {
+function BackButton({ to, className }: Props): JSX.Element | null {
   const classes = useStyles();
+  const { isBackDisabled } = useDisableBackButton();
+
+  if (isBackDisabled) {
+    return null;
+  }
 
   return (
     <Button

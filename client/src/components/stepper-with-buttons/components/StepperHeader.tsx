@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React from 'react';
-import BackButton from '../../BackButton';
+import BackButton from '../../back-button/BackButton';
 import SubmitButton from '../../loading/SubmitButton';
 import { useStepper } from '../context/StepperContext';
 
