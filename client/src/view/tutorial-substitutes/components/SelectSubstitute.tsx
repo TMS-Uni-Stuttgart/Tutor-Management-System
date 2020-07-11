@@ -7,12 +7,10 @@ import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
 import DateOrIntervalText from '../../../components/DateOrIntervalText';
 import Placeholder from '../../../components/Placeholder';
+import { Tutorial } from '../../../model/Tutorial';
 import { useSubstituteManagementContext } from '../SubstituteManagement.context';
 import ListOfTutors from './ListOfTutors';
 import SelectedSubstituteBar from './SelectedSubstituteBar';
-import { useLoggedInUser } from '../../../hooks/LoginService';
-import { LoggedInUser } from '../../../model/LoggedInUser';
-import { Tutorial } from '../../../model/Tutorial';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
