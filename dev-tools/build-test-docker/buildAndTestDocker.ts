@@ -78,7 +78,6 @@ async function tryPdf() {
 }
 
 async function run(): Promise<void> {
-  console.log(process.cwd());
   const IMAGE_NAME = 'dudrie/tms-test';
   spawnSync('clear');
 
