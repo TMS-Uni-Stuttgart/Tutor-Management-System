@@ -16,17 +16,19 @@ interface LogOptions {
 }
 
 export class Logger {
-  static logger = new Logger();
+  static logger = new Logger('Static Logger');
 
   private readonly console: Console;
   private readonly logLevelToPrint: LogLevel;
+  private readonly context?: string;
 
-  constructor() {
+  constructor(context?: string) {
     this.console = console;
     this.logLevelToPrint = isDevelopment() ? LogLevel.DEBUG : LogLevel.WARN;
+    this.context = context;
 
     // FIXME: Remove me!!!
-    this.warn('New logger created');
+    this.warn(`New logger with context '${context}' created`);
   }
 
   /**
@@ -39,16 +41,16 @@ export class Logger {
    * @param message Message to log.
    * @param options Options for the logged message.
    */
-  log(message: string, options: LogOptions): void {
+  log(message: string, options: LogOptions = { level: LogLevel.INFO }): void {
     if (options.level < this.logLevelToPrint) {
       return;
     }
 
-    const prefix = this.getPrefixForLevel(options.level);
-    const timestamp = DateTime.local().toFormat('yyyy-MM-dd, hh:mm:ss');
+    const timestamp = DateTime.local().toFormat('HH:mm:ss');
+    const context = this.context ?? 'Logger';
 
     this.console.log(
-      `%c[${timestamp}] ${prefix} - ${message}`,
+      `%c${timestamp} - [${context}] ${message}`,
       `color: ${this.getColorForLevel(options.level)}`
     );
   }
@@ -89,25 +91,10 @@ export class Logger {
     this.log(message, { level: LogLevel.ERROR });
   }
 
-  private getPrefixForLevel(level: LogLevel): string {
-    switch (level) {
-      case LogLevel.VERBOSE:
-        return 'VERBOSE';
-      case LogLevel.DEBUG:
-        return 'DEBUG';
-      case LogLevel.INFO:
-        return 'INFO';
-      case LogLevel.WARN:
-        return 'WARN';
-      case LogLevel.ERROR:
-        return 'ERROR';
-    }
-  }
-
   private getColorForLevel(level: LogLevel): string {
     switch (level) {
       case LogLevel.DEBUG:
-        return '#1976d2';
+        return '#00a5fe';
       case LogLevel.WARN:
         return 'orange';
       case LogLevel.ERROR:
@@ -118,7 +105,7 @@ export class Logger {
   }
 }
 
-export function useLogger(): Logger {
-  const logger = useMemo(() => new Logger(), []);
+export function useLogger(context?: string): Logger {
+  const logger = useMemo(() => new Logger(context), [context]);
   return logger;
 }
