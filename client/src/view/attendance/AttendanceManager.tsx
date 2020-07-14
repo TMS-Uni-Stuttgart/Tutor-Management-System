@@ -24,6 +24,7 @@ import { LoggedInUser } from '../../model/LoggedInUser';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
 import { parseDateToMapKey, saveBlob } from '../../util/helperFunctions';
+import { useLogger } from '../../util/Logger';
 import StudentAttendanceRow from './components/StudentsAttendanceRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -111,6 +112,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const classes = useStyles();
   const { userData } = useLogin();
   const { enqueueSnackbar } = useSnackbar();
+  const logger = useLogger('AttendanceManager');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingPDF, setLoadingPDF] = useState(false);
@@ -202,7 +204,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       const response = await setAttendanceOfStudent(student.id, attendanceDTO);
       handlePutAttendanceResponse(student, response);
     } catch (reason) {
-      console.log(reason);
+      logger.error(reason);
     }
   }
 
@@ -223,7 +225,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
         const response = await setAttendanceOfStudent(student.id, attendanceDTO);
         handlePutAttendanceResponse(student, response);
       } catch (reason) {
-        console.error(reason);
+        logger.error(reason);
       }
     };
   }

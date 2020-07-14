@@ -29,6 +29,7 @@ import { useLoggedInUser } from '../../hooks/LoginService';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
 import { compareDateTimes } from '../../util/helperFunctions';
+import { useLogger } from '../../util/Logger';
 import TutorialTableRow from './components/TutorialTableRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -71,6 +72,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
   const classes = useStyles();
   const dialog = useDialog();
   const user = useLoggedInUser();
+  const logger = useLogger('TutorialManagement');
 
   const [isLoading, setIsLoading] = useState(false);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
@@ -110,7 +112,7 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
       enqueueSnackbar('Tutorium wurde erstellt.', { variant: 'success' });
       resetForm({ values: getInitialTutorialFormValues() });
     } catch (reason) {
-      console.log(reason);
+      logger.log(reason);
     } finally {
       setSubmitting(false);
     }

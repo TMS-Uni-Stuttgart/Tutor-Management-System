@@ -10,6 +10,7 @@ import { TutorialChangeFormSubmitCallback } from '../../../components/forms/Tuto
 import { DialogHelpers } from '../../../hooks/DialogService';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { Student } from '../../../model/Student';
+import { Logger } from '../../../util/Logger';
 import { StudentStoreDispatcher } from '../student-store/StudentStore';
 import { StudentStoreActionType } from '../student-store/StudentStore.actions';
 
@@ -94,7 +95,7 @@ export function handleCreateStudent({
       resetForm({ values: getInitialStudentFormState(teams) });
       enqueueSnackbar('Student/in wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
-      console.error(reason);
+      Logger.logger.error(reason, { context: 'Studentoverview' });
       enqueueSnackbar('Student/in konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
       setSubmitting(false);
@@ -135,7 +136,7 @@ export function handleEditStudent({
       enqueueSnackbar('Student/in wurde erfolgreich gespeichert.', { variant: 'success' });
       dialog.hide();
     } catch (reason) {
-      console.error(reason);
+      Logger.logger.error(reason, { context: 'Studentoverview' });
       enqueueSnackbar('Student/in konnte nicht gespeichert werden.', { variant: 'error' });
       setSubmitting(false);
     }
@@ -159,7 +160,7 @@ export function handleDeleteStudent({
 
       enqueueSnackbar('Student/in wurde erfolgreich gelöscht.', { variant: 'success' });
     } catch (reason) {
-      console.error(reason);
+      Logger.logger.error(reason, { context: 'Studentoverview' });
       enqueueSnackbar('Student/in konnte nicht gelöscht werden.', { variant: 'error' });
     } finally {
       dialog.hide();
@@ -197,7 +198,7 @@ export function handleChangeTutorial({
       enqueueSnackbar('Tutorium wurde erfolgreich geändert.', { variant: 'success' });
       dialog.hide();
     } catch (reason) {
-      console.error(reason);
+      Logger.logger.error(reason, { context: 'Studentoverview' });
       enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
     }
   };

@@ -1,3 +1,4 @@
+import { Logger } from '../../util/Logger';
 import { FormDataSet } from './types/FieldData';
 import { FormFieldType } from './types/FormFieldType';
 
@@ -26,8 +27,9 @@ export function generateInitialValue(formData: FormDataSet): Record<string, any>
 
       default:
         const { type } = data;
-        console.warn(
-          `There's no initial value for the field "${name}" with it's type "${type}" configured. Initializing it with an empty string.`
+        Logger.logger.warn(
+          `There's no initial value for the field "${name}" with it's type "${type}" configured. Initializing it with an empty string.`,
+          { context: 'generateInitialValue' }
         );
         initialValues[name] = '';
     }
