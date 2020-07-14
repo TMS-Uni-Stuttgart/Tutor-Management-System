@@ -16,6 +16,7 @@ import {
   getAllScheinCriterias,
   getScheinCriteriaFormData,
 } from '../../hooks/fetching/Scheincriteria';
+import { useLogger } from '../../util/Logger';
 import ScheinCriteriaRow from './components/ScheinCriteriaRow';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,10 +29,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
+  const dialog = useDialog();
+  const logger = useLogger('ScheinCriteriaManagement');
+
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormDataResponse>({});
   const [criterias, setCriterias] = useState<ScheinCriteria[]>([]);
-  const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
@@ -67,7 +70,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
         variant: 'success',
       });
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
       enqueueSnackbar(`Kriterium konnte nicht erstellt werden.`, {
         variant: 'error',
       });
@@ -97,7 +100,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
         variant: 'success',
       });
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
       enqueueSnackbar(`Kriterium konnte nicht bearbeitet werden.`, {
         variant: 'error',
       });

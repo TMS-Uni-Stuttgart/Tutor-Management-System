@@ -22,6 +22,7 @@ import {
 } from '../../hooks/fetching/ScheinExam';
 import { Scheinexam } from '../../model/Scheinexam';
 import { saveBlob } from '../../util/helperFunctions';
+import { useLogger } from '../../util/Logger';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import ScheinExamRow from './components/ScheinExamRow';
 
@@ -51,11 +52,12 @@ function generateScheinExamDTO(values: ScheinExamFormState): IScheinexamDTO {
 
 function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   const classes = useStyles();
+  const dialog = useDialog();
+  const logger = useLogger('ScheinExamManagement');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingResults, setGeneratingResults] = useState(false);
   const [exams, setExams] = useState<Scheinexam[]>([]);
-  const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
@@ -89,7 +91,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       resetForm({ values: getInitialExamFormState(undefined, [...exams, exam]) });
       enqueueSnackbar('Scheinklausur erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
       enqueueSnackbar('Erstellen der Scheinklausur fehlgeschlagen.', { variant: 'error' });
     } finally {
       setSubmitting(false);
@@ -116,7 +118,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       enqueueSnackbar('Scheinklausur erfolgreich bearbeitet.', { variant: 'success' });
       dialog.hide();
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
       enqueueSnackbar('Bearbeiten der Scheinklausur fehlgeschlagen.', { variant: 'error' });
       setSubmitting(false);
     }

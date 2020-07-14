@@ -1,6 +1,6 @@
+import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import { isDevelopment } from './isDevelopmentMode';
-import { DateTime } from 'luxon';
 
 enum LogLevel {
   VERBOSE = 0,
@@ -13,6 +13,9 @@ enum LogLevel {
 interface LogOptions {
   /** Severity of the logged message. */
   level: LogLevel;
+
+  /** Override used context. */
+  context?: string;
 }
 
 export class Logger {
@@ -47,7 +50,7 @@ export class Logger {
     }
 
     const timestamp = DateTime.local().toFormat('HH:mm:ss');
-    const context = this.context ?? 'Logger';
+    const context = options.context ?? this.context ?? 'Logger';
 
     this.console.log(
       `%c${timestamp} - [${context}] ${message}`,
@@ -59,36 +62,40 @@ export class Logger {
    * This will log an info message to the console.
    *
    * @param message Message to log.
+   * @param options (optional) Options for the logged message.
    */
-  info(message: string): void {
-    this.log(message, { level: LogLevel.INFO });
+  info(message: string, options?: Omit<LogOptions, 'level'>): void {
+    this.log(message, { ...options, level: LogLevel.INFO });
   }
 
   /**
    * This will log a debug message to the console.
    *
    * @param message Message to log.
+   * @param options (optional) Options for the logged message.
    */
-  debug(message: string): void {
-    this.log(message, { level: LogLevel.DEBUG });
+  debug(message: string, options?: Omit<LogOptions, 'level'>): void {
+    this.log(message, { ...options, level: LogLevel.DEBUG });
   }
 
   /**
    * This will log a warning message to the console.
    *
    * @param message Message to log.
+   * @param options (optional) Options for the logged message.
    */
-  warn(message: string): void {
-    this.log(message, { level: LogLevel.WARN });
+  warn(message: string, options?: Omit<LogOptions, 'level'>): void {
+    this.log(message, { ...options, level: LogLevel.WARN });
   }
 
   /**
    * This will log an error message to the console.
    *
    * @param message Message to log.
+   * @param options (optional) Options for the logged message.
    */
-  error(message: string): void {
-    this.log(message, { level: LogLevel.ERROR });
+  error(message: string, options?: Omit<LogOptions, 'level'>): void {
+    this.log(message, { ...options, level: LogLevel.ERROR });
   }
 
   private getColorForLevel(level: LogLevel): string {

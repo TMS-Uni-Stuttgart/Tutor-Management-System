@@ -2,6 +2,7 @@ import { Typography } from '@material-ui/core';
 import { FormikValues } from 'formik';
 import React from 'react';
 import { useTranslation } from '../../../util/lang/configI18N';
+import { useLogger } from '../../../util/Logger';
 import FormikCheckbox from '../../forms/components/FormikCheckbox';
 import FormikSelect from '../../forms/components/FormikSelect';
 import FormikTextField from '../../forms/components/FormikTextField';
@@ -16,6 +17,7 @@ interface FieldProps {
 
 function GeneratedField({ fieldData, name, values }: FieldProps): JSX.Element {
   const { STRING, INTEGER, FLOAT, SELECT, BOOLEAN, ENUM } = FormFieldType;
+  const logger = useLogger('GeneratedField');
   const { t } = useTranslation('scheincriteria');
   const label = t(`FIELD_LABEL_${name}`);
 
@@ -64,10 +66,8 @@ function GeneratedField({ fieldData, name, values }: FieldProps): JSX.Element {
           items={fieldData.values}
           itemToString={(val) => {
             if (typeof val.value === 'object' && !val.displayValue) {
-              console.error(
-                'If the value of this item is an object you must provide the "displayValue" property to display this item in the dropdown menu.',
-                '\n\nProvided object:\n',
-                val.value
+              logger.error(
+                `If the value of this item is an object you must provide the "displayValue" property to display this item in the dropdown menu.\n\nProvided object:\n${val.value}`
               );
               return null;
             }
@@ -87,10 +87,8 @@ function GeneratedField({ fieldData, name, values }: FieldProps): JSX.Element {
           items={fieldData.enumValues}
           itemToString={(val) => {
             if (typeof val.value === 'object' && !val.displayValue) {
-              console.error(
-                'If the value of this item is an object you must provide the "displayValue" property to display this item in the dropdown menu.',
-                '\n\nProvided object:\n',
-                val.value
+              logger.error(
+                `If the value of this item is an object you must provide the "displayValue" property to display this item in the dropdown menu.\n\nProvided object:\n${val.value}`
               );
               return null;
             }

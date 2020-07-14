@@ -17,6 +17,7 @@ import {
   getAllSheets,
 } from '../../hooks/fetching/Sheet';
 import { Sheet } from '../../model/Sheet';
+import { useLogger } from '../../util/Logger';
 import { getDuplicateExerciseName } from '../points-sheet/util/helper';
 import SheetRow from './components/SheetRow';
 
@@ -30,9 +31,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   const classes = useStyles();
+  const dialog = useDialog();
+  const logger = useLogger('SheetManagement');
+
   const [isLoading, setIsLoading] = useState(false);
   const [sheets, setSheets] = useState<Sheet[]>([]);
-  const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
@@ -41,7 +44,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
         setSheets(response);
         setIsLoading(false);
       })
-      .catch((reason) => console.error(reason));
+      .catch((reason) => logger.error(reason));
   }, []);
 
   const handleSubmit: SheetFormSubmitCallback = async (
@@ -76,7 +79,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
         variant: 'success',
       });
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
       enqueueSnackbar('Blatt konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
       setSubmitting(false);
@@ -109,7 +112,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
       enqueueSnackbar('Blatt wurde erfolgreich gespeichert.', { variant: 'success' });
       dialog.hide();
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
       enqueueSnackbar('Blatt konnt nicht gespeichert werden.', { variant: 'error' });
       setSubmitting(false);
     }

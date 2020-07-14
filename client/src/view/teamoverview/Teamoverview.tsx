@@ -10,10 +10,11 @@ import TableWithForm from '../../components/TableWithForm';
 import TeamTableRow from '../../components/TeamTableRow';
 import { useDialog } from '../../hooks/DialogService';
 import { getStudent } from '../../hooks/fetching/Student';
-import { createTeam, getTeamsOfTutorial, deleteTeam, editTeam } from '../../hooks/fetching/Team';
+import { createTeam, deleteTeam, editTeam, getTeamsOfTutorial } from '../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
 import { Student } from '../../model/Student';
 import { Team } from '../../model/Team';
+import { useLogger } from '../../util/Logger';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,10 +60,12 @@ function updateStudentsArray(
 function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   const { params } = match;
   const classes = useStyles();
+  const dialog = useDialog();
+  const logger = useLogger('Teamoverview');
+
   const [isLoading, setIsLoading] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
-  const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
@@ -93,7 +96,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       resetForm();
       enqueueSnackbar('Team wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
     } finally {
       setSubmitting(false);
     }
@@ -158,7 +161,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       enqueueSnackbar('Team wurde erfolgreich gespeichert.', { variant: 'success' });
       dialog.hide();
     } catch (reason) {
-      console.error(reason);
+      logger.error(reason);
       enqueueSnackbar('Team konnte nicht gespeichert werden.', { variant: 'error' });
       setSubmitting(false);
     }

@@ -15,6 +15,7 @@ import { SelectProps } from '@material-ui/core/Select';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
+import { useLogger } from '../util/Logger';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -111,9 +112,10 @@ function CustomSelect<T>({
   showLoadingIndicator,
   ...other
 }: CustomSelectProps<T>): JSX.Element {
+  const logger = useLogger('CustomSelect');
   if (multiple && !isItemSelected) {
-    console.warn(
-      `[CustomSelect] -- You have set the Select '${name}' to allow multiple selections but you have not passed an isItemSelected function via props. Therefore Checkboxes won't be shown for the items.`
+    logger.warn(
+      `You have set the Select '${name}' to allow multiple selections but you have not passed an isItemSelected function via props. Therefore Checkboxes won't be shown for the items.`
     );
   }
 
