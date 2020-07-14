@@ -29,9 +29,6 @@ export class Logger {
     this.console = console;
     this.logLevelToPrint = isDevelopment() ? LogLevel.DEBUG : LogLevel.WARN;
     this.context = context;
-
-    // FIXME: Remove me!!!
-    this.warn(`New logger with context '${context}' created`);
   }
 
   /**

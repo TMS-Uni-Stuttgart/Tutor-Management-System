@@ -45,7 +45,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
         setIsLoading(false);
       })
       .catch((reason) => logger.error(reason));
-  }, []);
+  }, [logger]);
 
   const handleSubmit: SheetFormSubmitCallback = async (
     { sheetNo, exercises, bonusSheet },
