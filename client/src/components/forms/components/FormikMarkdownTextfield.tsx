@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useField, useFormikContext } from 'formik';
 import 'github-markdown-css/github-markdown.css';
 import { FileFind as PreviewIcon } from 'mdi-material-ui';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AnimatedButton from '../../AnimatedButton';
 import Markdown from '../../Markdown';
 import FormikTextField, { FormikTextFieldProps } from './FormikTextField';
@@ -47,6 +47,12 @@ function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldP
   const [{ value }] = useField(name);
 
   const [isPreview, setPreview] = useState(false);
+
+  useEffect(() => {
+    if (!value) {
+      setPreview(false);
+    }
+  }, [value]);
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
     // FIXME: Does this need to be in here? Can it use the useKeyboardShortcut() hook or better - can this be handled by the parent component?
