@@ -35,7 +35,7 @@
     "axios": "^0.19.2",
     "clsx": "^1.1.1",
     "file-saver": "^2.0.2",
-    "formik": "^2.1.4",
+    "formik": "^2.1.5",
     "generate-password": "^1.5.1",
     "github-markdown-css": "^4.0.0",
     "html-react-parser": "^0.13.0",
