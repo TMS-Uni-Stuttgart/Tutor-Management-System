@@ -50,8 +50,9 @@ export class Logger {
     const context = options.context ?? this.context ?? 'Logger';
 
     this.console.log(
-      `%c${timestamp} - [${context}] ${message}`,
-      `color: ${this.getColorForLevel(options.level)}`
+      `%c${this.getPrefixForLevel(options.level)}%c ${timestamp} - [${context}] ${message}`,
+      this.getPrefixCSS(options.level),
+      ''
     );
   }
 
@@ -95,12 +96,34 @@ export class Logger {
     this.log(message, { ...options, level: LogLevel.ERROR });
   }
 
+  private getPrefixCSS(level: LogLevel): string {
+    const bgColor = this.getColorForLevel(level);
+    return `color: #fff; background: ${bgColor}; border-radius: 4px; padding: 2px 4px;`;
+  }
+
+  private getPrefixForLevel(level: LogLevel): string {
+    switch (level) {
+      case LogLevel.DEBUG:
+        return 'debug';
+      case LogLevel.INFO:
+        return 'info ';
+      case LogLevel.WARN:
+        return 'warn ';
+      case LogLevel.ERROR:
+        return 'error';
+      default:
+        return 'NOT_FOUND';
+    }
+  }
+
   private getColorForLevel(level: LogLevel): string {
     switch (level) {
       case LogLevel.DEBUG:
         return '#00a5fe';
+      case LogLevel.INFO:
+        return '#008000';
       case LogLevel.WARN:
-        return 'orange';
+        return '#de9000';
       case LogLevel.ERROR:
         return '#e53935';
       default:
