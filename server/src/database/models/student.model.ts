@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
@@ -81,15 +81,15 @@ export class StudentModel {
   @prop({ default: 0 })
   cakeCount!: number;
 
-  @mapProp({ of: AttendanceModel, autopopulate: true, default: new Map() })
+  @prop({ type: AttendanceModel, autopopulate: true, default: new Map() })
   attendances!: Map<string, AttendanceDocument>;
 
-  @arrayProp({ ref: 'GradingModel', foreignField: 'students', localField: '_id' })
+  @prop({ ref: 'GradingModel', foreignField: 'students', localField: '_id' })
   private _gradings!: GradingDocument[];
 
   private gradings?: Map<string, GradingDocument>;
 
-  @mapProp({ of: Number, default: new Map() })
+  @prop({ type: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
 
   /**

@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
@@ -31,7 +31,7 @@ export class ScheinexamModel {
     this._date = date.toISODate();
   }
 
-  @arrayProp({ required: true, items: ExerciseModel })
+  @prop({ required: true, type: ExerciseModel })
   exercises!: ExerciseDocument[];
 
   @prop({ required: true })

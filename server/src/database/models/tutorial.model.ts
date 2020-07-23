@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { DateTime, ToISOTimeOptions } from 'luxon';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
@@ -58,7 +58,7 @@ export class TutorialModel {
   @prop({ ref: 'UserModel', autopopulate: true })
   tutor?: UserDocument;
 
-  @arrayProp({ required: true, items: Schema.Types.String })
+  @prop({ required: true, type: Schema.Types.String })
   private _dates!: string[];
 
   get dates(): DateTime[] {
@@ -91,24 +91,24 @@ export class TutorialModel {
     this._endTime = endTime.startOf('minute').toISOTime({ suppressMilliseconds: true });
   }
 
-  @arrayProp({
+  @prop({
     ref: 'StudentModel',
     foreignField: 'tutorial',
     localField: '_id',
   })
   students!: StudentDocument[];
 
-  @arrayProp({
+  @prop({
     ref: 'TeamModel',
     foreignField: 'tutorial',
     localField: '_id',
   })
   teams!: TeamDocument[];
 
-  @arrayProp({ ref: 'UserModel', autopopulate: true, default: [] })
+  @prop({ ref: 'UserModel', autopopulate: true, default: [] })
   correctors!: UserDocument[];
 
-  @arrayProp({ type: SubstituteModel, autopopulate: true, default: [] })
+  @prop({ type: SubstituteModel, autopopulate: true, default: [] })
   private _substitutes!: SubstituteDocument[];
 
   private substitutes?: Map<string, UserDocument>;

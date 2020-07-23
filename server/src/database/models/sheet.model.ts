@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ISheet } from '../../shared/model/Sheet';
@@ -26,7 +26,7 @@ export class SheetModel {
   @prop({ required: true })
   bonusSheet!: boolean;
 
-  @arrayProp({ required: true, items: ExerciseModel })
+  @prop({ required: true, type: ExerciseModel })
   exercises!: ExerciseDocument[];
 
   get totalPoints(): number {

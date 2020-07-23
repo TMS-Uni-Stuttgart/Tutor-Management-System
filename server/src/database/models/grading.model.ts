@@ -1,13 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import {
-  arrayProp,
-  DocumentType,
-  getModelForClass,
-  mapProp,
-  modelOptions,
-  plugin,
-  prop,
-} from '@typegoose/typegoose';
+import { DocumentType, getModelForClass, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { StaticSettings } from '../../module/settings/settings.static';
@@ -50,7 +42,7 @@ export class ExerciseGradingModel {
     this._points = newPoints;
   }
 
-  @mapProp({ of: Number })
+  @prop({ type: Number })
   subExercisePoints?: Map<string, number>;
 
   getGradingForSubexercise(subExercise: SubExerciseDocument): number | undefined {
@@ -157,10 +149,10 @@ export class GradingModel {
   @prop()
   additionalPoints?: number;
 
-  @mapProp({ of: ExerciseGradingModel, autopopulate: true, default: new Map() })
+  @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
   exerciseGradings!: Map<string, ExerciseGradingDocument>;
 
-  @arrayProp({ ref: StudentModel, autopopulate: true, default: [] })
+  @prop({ ref: StudentModel, autopopulate: true, default: [] })
   students!: StudentDocument[];
 
   /**
