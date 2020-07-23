@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
-import { SettingsService } from '../../module/settings/settings.service';
+import { StaticSettings } from '../../module/settings/settings.static';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IGrading } from '../../shared/model/Points';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
@@ -37,7 +37,7 @@ export async function populateStudentDocument(doc?: StudentDocument): Promise<vo
 }
 
 @plugin(fieldEncryption, {
-  secret: SettingsService.getSecret(),
+  secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
 @plugin(mongooseAutoPopulate)

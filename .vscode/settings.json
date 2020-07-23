@@ -4,6 +4,6 @@
   "debug.node.autoAttach": "off",
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
-    "source.organizeImports": false
+    "source.organizeImports": true
   }
 }

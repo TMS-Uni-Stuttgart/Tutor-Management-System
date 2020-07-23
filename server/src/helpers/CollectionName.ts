@@ -7,4 +7,5 @@ export enum CollectionName {
   SHEET = 'sheets',
   SCHEINEXAM = 'scheinexams',
   SCHEINCRITERIA = 'scheincriterias',
+  SETTINGS = 'settings',
 }

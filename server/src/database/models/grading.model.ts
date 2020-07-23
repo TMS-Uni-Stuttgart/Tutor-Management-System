@@ -10,7 +10,7 @@ import {
 } from '@typegoose/typegoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
-import { SettingsService } from '../../module/settings/settings.service';
+import { StaticSettings } from '../../module/settings/settings.static';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Points';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
@@ -119,7 +119,7 @@ export class ExerciseGradingModel {
 
 @modelOptions({ schemaOptions: { collection: CollectionName.GRADING } })
 @plugin(fieldEncryption, {
-  secret: SettingsService.getSecret(),
+  secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['comment', 'additionalPoints', 'exerciseGradings'],
 })
 export class GradingModel {

@@ -2,7 +2,7 @@ import { DynamicModule, Global, Logger, Module, Provider } from '@nestjs/common'
 import mongoose, { Connection } from 'mongoose';
 import { getConnectionToken } from 'nestjs-typegoose';
 import { TYPEGOOSE_CONNECTION_NAME } from 'nestjs-typegoose/dist/typegoose.constants';
-import { SettingsService } from '../module/settings/settings.service';
+import { StaticSettings } from '../module/settings/settings.static';
 
 @Global()
 @Module({})
@@ -30,7 +30,7 @@ export class DatabaseModule {
 
   private static connectToDB(): Promise<Connection> {
     return new Promise((resolve, reject) => {
-      const databaseConfig = SettingsService.getService().getDatabaseConfiguration();
+      const databaseConfig = StaticSettings.getService().getDatabaseConfiguration();
       const maxRetries = databaseConfig.maxRetries ?? 2;
 
       async function tryToConnect(prevTries: number) {

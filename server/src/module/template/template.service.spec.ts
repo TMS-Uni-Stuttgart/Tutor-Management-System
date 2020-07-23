@@ -1,17 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SettingsModule } from '../settings/settings.module';
+import { TestModule } from '../../../test/helpers/test.module';
+import { SettingsService } from '../settings/settings.service';
 import { TemplateService } from './template.service';
 
 describe('TemplateService', () => {
+  let testModule: TestingModule;
   let service: TemplateService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [SettingsModule],
-      providers: [TemplateService],
+  beforeAll(async () => {
+    testModule = await Test.createTestingModule({
+      imports: [TestModule.forRootAsync()],
+      providers: [TemplateService, SettingsService],
     }).compile();
+  });
 
-    service = module.get<TemplateService>(TemplateService);
+  afterAll(async () => {
+    await testModule.close();
+  });
+
+  beforeEach(async () => {
+    await testModule.get<TestModule>(TestModule).reset();
+
+    service = testModule.get<TemplateService>(TemplateService);
   });
 
   it('should be defined', () => {
