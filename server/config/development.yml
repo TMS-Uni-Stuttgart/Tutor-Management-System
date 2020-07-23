@@ -12,6 +12,10 @@ database:
     authSource: 'admin'
     authMechanism: 'SCRAM-SHA-1'
 
+defaultSettings:
+  canTutorExcuseStudents: true
+  defaultTeamSize: 3
+
 mailing:
   testingMode: true
   host: HOST

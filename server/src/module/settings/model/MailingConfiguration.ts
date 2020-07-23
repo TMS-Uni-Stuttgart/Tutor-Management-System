@@ -1,5 +1,5 @@
-import { ValidateNested, IsString, IsBoolean, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 export class MailingAuthConfiguration {
   @IsString()

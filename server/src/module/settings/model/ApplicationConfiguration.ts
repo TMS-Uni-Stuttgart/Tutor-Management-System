@@ -1,7 +1,18 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { DatabaseConfiguration } from './DatabaseConfiguration';
 import { MailingConfiguration } from './MailingConfiguration';
+
+class DefaultSettingsConfiguration {
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  defaultTeamSize?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  canTutorExcuseStudents?: boolean;
+}
 
 export class ApplicationConfiguration {
   @IsOptional()
@@ -20,4 +31,9 @@ export class ApplicationConfiguration {
   @Type(() => MailingConfiguration)
   @ValidateNested()
   readonly mailing!: MailingConfiguration;
+
+  @IsOptional()
+  @Type(() => DefaultSettingsConfiguration)
+  @ValidateNested()
+  readonly defaultSettings: DefaultSettingsConfiguration | undefined;
 }

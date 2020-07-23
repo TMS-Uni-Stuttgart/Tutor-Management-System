@@ -2,7 +2,6 @@ import { Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import fs from 'fs';
-import { ConnectionOptions } from 'mongoose';
 import path from 'path';
 import YAML from 'yaml';
 import { StartUpException } from '../../exceptions/StartUpException';
@@ -11,24 +10,20 @@ import { DatabaseConfiguration } from './model/DatabaseConfiguration';
 import { EnvironmentConfig, ENV_VARIABLE_NAMES } from './model/EnvironmentConfig';
 import { MailingConfiguration } from './model/MailingConfiguration';
 
-export interface DatabaseConfig {
-  databaseURL: string;
-  secret: string;
-  config: ConnectionOptions;
-  maxRetries?: number;
-}
+type DatabaseConfig = DatabaseConfiguration & { secret: string };
 
 export class StaticSettings {
   private static service: StaticSettings = new StaticSettings();
 
-  private readonly API_PREFIX = 'api';
-  private readonly STATIC_FOLDER = 'app';
+  private static readonly API_PREFIX = 'api';
+  private static readonly STATIC_FOLDER = 'app';
 
-  protected readonly logger = new Logger(StaticSettings.name);
-
-  private readonly config: ApplicationConfiguration;
+  // TODO: Redo these properties to have a more readable 'loading flow'.
+  protected readonly config: ApplicationConfiguration;
   private readonly databaseConfig: Readonly<DatabaseConfig>;
   private readonly envConfig: EnvironmentConfig;
+
+  protected readonly logger = new Logger(StaticSettings.name);
 
   constructor() {
     this.config = this.loadConfigFile();
@@ -113,9 +108,9 @@ export class StaticSettings {
     const pathPrefix = this.getPathPrefix();
 
     if (pathPrefix) {
-      return `${pathPrefix}/${this.API_PREFIX}`.replace('//', '/');
+      return `${pathPrefix}/${StaticSettings.API_PREFIX}`.replace('//', '/');
     } else {
-      return this.API_PREFIX;
+      return StaticSettings.API_PREFIX;
     }
   }
 
@@ -123,7 +118,7 @@ export class StaticSettings {
    * @returns Path to the static folder.
    */
   getStaticFolder(): string {
-    return this.STATIC_FOLDER;
+    return StaticSettings.STATIC_FOLDER;
   }
 
   /**
@@ -149,10 +144,8 @@ export class StaticSettings {
       secret: this.envConfig.secret,
       config: {
         ...configFromFile.config,
-        auth: {
-          user: this.envConfig.mongoDbUser,
-          password: this.envConfig.mongoDbPassword,
-        },
+        user: this.envConfig.mongoDbUser,
+        pass: this.envConfig.mongoDbPassword,
       },
     };
   }
@@ -307,7 +300,7 @@ export class StaticSettings {
         throw err;
       } else {
         throw new StartUpException(
-          `The loaded configuration for the ${environment} environment is not a valid YAML file.`
+          `The loaded configuration for the ${environment} environment is not a valid YAML file: ${err}`
         );
       }
     }

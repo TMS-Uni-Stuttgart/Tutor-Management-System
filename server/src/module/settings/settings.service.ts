@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { SettingsDocument, SettingsModel } from '../../database/models/settings.model';
+import { StartUpException } from '../../exceptions/StartUpException';
 import { StaticSettings } from './settings.static';
 
 @Injectable()
@@ -14,24 +15,6 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
 
     // Overwrite the logger context from the parent class.
     this.logger.setContext(SettingsService.name);
-  }
-
-  /**
-   * Checks if there is a `SettingsDocument` in the database.
-   *
-   * If there is NO settings document after module initialization a new default `SettingsDocument` is created.
-   *
-   * If there is ONE nothing is done.
-   */
-  async onModuleInit(): Promise<void> {
-    const document = await this.settingsModel.find();
-
-    if (document.length === 0) {
-      this.logger.log('No settings document provided. Creating new default settings document...');
-
-      // TODO: Implement default document creation!
-      throw new Error('Not implemented');
-    }
   }
 
   /**
@@ -58,5 +41,33 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
     }
 
     return documents[0];
+  }
+
+  /**
+   * Checks if there is a `SettingsDocument` in the database.
+   *
+   * If there is NO settings document after module initialization a new default `SettingsDocument` is created.
+   *
+   * If there is ONE nothing is done.
+   */
+  async onModuleInit(): Promise<void> {
+    const document = await this.settingsModel.find();
+
+    if (document.length === 0) {
+      this.logger.log('No settings document provided. Creating new default settings document...');
+
+      try {
+        const defaultsFromConfig = this.config.defaultSettings;
+        const defaultSettings = new SettingsModel({
+          defaultTeamSize: defaultsFromConfig?.defaultTeamSize ?? 2,
+          canTutorExcuseStudents: defaultsFromConfig?.canTutorExcuseStudents ?? false,
+        });
+        await this.settingsModel.create(defaultSettings);
+
+        this.logger.log('Default settings document successfully created.');
+      } catch (err) {
+        throw new StartUpException('Could not create the default settings document.');
+      }
+    }
   }
 }
