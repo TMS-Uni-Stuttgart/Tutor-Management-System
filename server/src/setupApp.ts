@@ -1,12 +1,14 @@
 import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import ConnectMongo from 'connect-mongo';
+import session from 'express-session';
+import { getConnectionToken } from 'nestjs-typegoose';
+import passport from 'passport';
 import { AppModule } from './app.module';
 import { NotFoundExceptionFilter } from './filter/not-found-exception.filter';
 import { isDevelopment } from './helpers/isDevelopment';
 import { SettingsService } from './module/settings/settings.service';
-import session = require('express-session');
-import passport = require('passport');
 
 /**
  * Sets up the security middleware.
@@ -16,17 +18,23 @@ import passport = require('passport');
  * @param app The application itself
  */
 function initSecurityMiddleware(app: INestApplication) {
-  const loggerContext = 'Init session';
-  const settings = app.get(SettingsService);
-  Logger.log('Setting up passport...', loggerContext);
+  const loggerContext = 'Init security';
+  Logger.log('Setting up security middleware...', loggerContext);
 
+  const settings = app.get(SettingsService);
+  const connection = app.get(getConnectionToken());
+
+  const secret = settings.getDatabaseConfiguration().secret;
   const timeoutSetting = settings.getSessionTimeout();
+
+  const MongoStore = ConnectMongo(session);
 
   Logger.log(`Setting timeout to: ${timeoutSetting} minutes`, loggerContext);
 
   app.use(
     session({
-      secret: settings.getDatabaseConfiguration().secret,
+      secret,
+      store: new MongoStore({ secret, mongooseConnection: connection, ttl: timeoutSetting * 60 }),
       resave: false,
       // Is used to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
       rolling: true,
@@ -41,7 +49,7 @@ function initSecurityMiddleware(app: INestApplication) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  Logger.log('Passport setup complete.', loggerContext);
+  Logger.log('Security middleware setup complete.', loggerContext);
 }
 
 /**
