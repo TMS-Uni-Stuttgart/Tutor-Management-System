@@ -3,7 +3,7 @@ import { IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested } from '
 import { DatabaseConfiguration } from './DatabaseConfiguration';
 import { MailingConfiguration } from './MailingConfiguration';
 
-class DefaultSettingsConfiguration {
+class DefaultSettings implements Partial<ISettings> {
   @IsNumber()
   @Min(1)
   @IsOptional()
@@ -33,7 +33,7 @@ export class ApplicationConfiguration {
   readonly mailing!: MailingConfiguration;
 
   @IsOptional()
-  @Type(() => DefaultSettingsConfiguration)
+  @Type(() => DefaultSettings)
   @ValidateNested()
-  readonly defaultSettings: DefaultSettingsConfiguration | undefined;
+  readonly defaultSettings: DefaultSettings | undefined;
 }

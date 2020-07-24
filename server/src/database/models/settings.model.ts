@@ -1,18 +1,32 @@
 import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
-import { NoFunctions } from '../../helpers/NoFunctions';
 
 @modelOptions({ schemaOptions: { collection: CollectionName.SETTINGS } })
 export class SettingsModel {
-  @prop()
-  defaultTeamSize?: number;
+  private static get internalDefaults(): ISettings {
+    return { defaultTeamSize: 2, canTutorExcuseStudents: false };
+  }
 
-  @prop()
-  canTutorExcuseStudents?: boolean;
+  @prop({ required: true })
+  defaultTeamSize: number;
 
-  constructor(fields?: NoFunctions<SettingsModel>) {
-    this.defaultTeamSize = fields?.defaultTeamSize;
-    this.canTutorExcuseStudents = fields?.canTutorExcuseStudents;
+  @prop({ required: true })
+  canTutorExcuseStudents: boolean;
+
+  constructor(fields?: Partial<ISettings>) {
+    this.defaultTeamSize =
+      fields?.defaultTeamSize ?? SettingsModel.internalDefaults.defaultTeamSize;
+    this.canTutorExcuseStudents =
+      fields?.canTutorExcuseStudents ?? SettingsModel.internalDefaults.canTutorExcuseStudents;
+  }
+
+  toDTO(): ISettings {
+    const defaultSettings = SettingsModel.internalDefaults;
+
+    return {
+      defaultTeamSize: this.defaultTeamSize ?? defaultSettings.defaultTeamSize,
+      canTutorExcuseStudents: this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
+    };
   }
 }
 
