@@ -196,7 +196,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     const attendance: IAttendance | undefined = student.getAttendance(date);
     const attendanceDTO: IAttendanceDTO = {
       state: attendanceState,
-      date: date.toISODate(),
+      date: date.toISODate() ?? 'DATE_NOTE_PARSEABLE',
       note: attendance ? attendance.note : '',
     };
 
@@ -217,7 +217,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       const attendance: IAttendance | undefined = student.getAttendance(date);
       const attendanceDTO: IAttendanceDTO = {
         state: attendance ? attendance.state : undefined,
-        date: date.toISODate(),
+        date: date.toISODate() ?? 'DATE_NOTE_PARSEABLE',
         note,
       };
 

@@ -113,7 +113,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
       >
         {value.map((val, idx) => (
           <ExcludedDateBox
-            key={val.toISODate() + idx}
+            key={(val.toISODate() ?? '') + idx}
             excluded={val}
             onEdit={() => {
               setDialogState({

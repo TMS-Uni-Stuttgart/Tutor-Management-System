@@ -122,7 +122,7 @@ function StudentInfo(): JSX.Element {
     const attendance: IAttendance | undefined = student.getAttendance(date);
     const attendanceDTO: IAttendanceDTO = {
       state: attendanceState,
-      date: date.toISODate(),
+      date: date.toISODate() ?? 'DATE_NOTE_PARSEABLE',
       note: attendance?.note ?? '',
     };
 
@@ -144,7 +144,7 @@ function StudentInfo(): JSX.Element {
     const attendance: IAttendance | undefined = student.getAttendance(date);
     const attendanceDTO: IAttendanceDTO = {
       state: attendance?.state,
-      date: date.toISODate(),
+      date: date.toISODate() ?? 'DATE_NOTE_PARSEABLE',
       note,
     };
 

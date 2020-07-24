@@ -56,14 +56,14 @@ function generateCreateTutorialDTO({
 
   const dates: string[] = selectedDates
     .map((date) => DateTime.fromISO(date))
-    .map((date) => date.toISODate());
+    .map((date) => date.toISODate() ?? 'DATE_NOTE_PARSEABLE');
 
   return {
     slot,
     tutorId: tutor,
     dates,
-    startTime: startTime.toISOTime(),
-    endTime: endTime.toISOTime(),
+    startTime: startTime.toISOTime() ?? 'DATE_NOTE_PARSEABLE',
+    endTime: endTime.toISOTime() ?? 'DATE_NOTE_PARSEABLE',
     correctorIds: correctors,
   };
 }

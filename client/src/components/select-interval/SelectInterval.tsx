@@ -172,11 +172,9 @@ function SelectInterval({
   };
 
   const labelFunc = (date: DateTime | null, invalidLabel: string) => {
-    if (!date || !date.isValid) {
-      return invalidLabel;
-    }
+    const label = date?.toLocaleString(format.display);
 
-    return date.toLocaleString(format.display);
+    return label ?? invalidLabel;
   };
 
   const handleStartChanged = (date: DateTime | null) => {

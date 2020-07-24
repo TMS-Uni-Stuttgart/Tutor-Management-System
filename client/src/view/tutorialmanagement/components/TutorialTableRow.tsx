@@ -107,7 +107,7 @@ function TutorialTableRow({
           <div>
             {substitutes.map((sub) => (
               <Chip
-                key={sub.date.toISO()}
+                key={sub.date.toISO() ?? 'DATE_NOTE_PARSEABLE'}
                 label={`Vertr. ${sub.date.toFormat('dd.MM.yy')}: ${sub.name}`}
                 className={classes.tutorChip}
               />

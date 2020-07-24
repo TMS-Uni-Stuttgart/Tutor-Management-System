@@ -54,14 +54,16 @@ function SubstituteManagementContent(): JSX.Element {
 
         if (!!substitute) {
           const datesOfSubstitute = datesWithSubst.get(substitute.id) ?? [];
-          datesOfSubstitute.push(date.toISODate());
-          datesWithSubst.set(substitute.id, datesOfSubstitute);
+          datesOfSubstitute.push(date.toISODate() ?? '');
+          datesWithSubst.set(substitute.id, datesOfSubstitute.filter(Boolean));
         } else {
-          datesWithoutSubst.push(date.toISODate());
+          datesWithoutSubst.push(date.toISODate() ?? '');
         }
       });
 
-      const substituteDTOs: ISubstituteDTO[] = [{ tutorId: undefined, dates: datesWithoutSubst }];
+      const substituteDTOs: ISubstituteDTO[] = [
+        { tutorId: undefined, dates: datesWithoutSubst.filter(Boolean) },
+      ];
 
       datesWithSubst.forEach((dates, tutorId) => substituteDTOs.push({ tutorId, dates }));
 

@@ -357,7 +357,7 @@ export const SCHEINCRITERIA_DOCUMENTS: MockedScheincriteriaModel[] = [
   },
 ];
 
-function generateFakeDocument(_id: string, additional?: object): any {
+function generateFakeDocument(_id: string, additional?: Record<string, unknown>): any {
   return { _id, id: _id, ...additional };
 }
 
@@ -398,5 +398,5 @@ export function createDatesForTutorialAsStrings(startISODate: string = '2020-02-
     dates.push(baseDate.plus({ weeks: i }));
   }
 
-  return dates.map((date) => date.toISODate());
+  return dates.map((date) => date.toISODate() ?? 'DATE_NOTE_PARSEABLE');
 }

@@ -86,19 +86,22 @@ function SubstituteManagementContextProvider({
 
   const getSelectedSubstitute = useCallback(
     (date: DateTime) => {
-      return selectedSubstitutes.get(date.toISODate());
+      return selectedSubstitutes.get(date.toISODate() ?? 'DATE_NOTE_PARSEABLE');
     },
     [selectedSubstitutes]
   );
   const setSelectedSubstitute = useCallback(
     (tutor: NamedElement, date: DateTime) => {
-      updateSubstituteMap(new Map(selectedSubstitutes.set(date.toISODate(), tutor)));
+      const dateKey = date.toISODate();
+      if (dateKey) {
+        updateSubstituteMap(new Map(selectedSubstitutes.set(dateKey, tutor)));
+      }
     },
     [selectedSubstitutes]
   );
   const removeSelectedSubstitute = useCallback(
     (date: DateTime) => {
-      selectedSubstitutes.delete(date.toISODate());
+      selectedSubstitutes.delete(date.toISODate() ?? 'DATE_NOTE_PARSEABLE');
       updateSubstituteMap(new Map(selectedSubstitutes));
     },
     [selectedSubstitutes]

@@ -46,7 +46,7 @@ function generateScheinExamDTO(values: ScheinExamFormState): IScheinexamDTO {
     scheinExamNo: Number.parseFloat(values.scheinExamNo),
     exercises: convertFormExercisesToDTOs(values.exercises),
     percentageNeeded: values.percentageNeeded,
-    date: date.toISODate(),
+    date: date.toISODate() ?? 'DATE_NOTE_PARSEABLE',
   };
 }
 

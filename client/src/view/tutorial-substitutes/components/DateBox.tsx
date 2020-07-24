@@ -122,7 +122,7 @@ function DateBox(): JSX.Element {
           {tutorial.value &&
             datesToShow.map((date) => (
               <DateButton
-                key={date.toISODate()}
+                key={date.toISODate() ?? 'DATE_NOTE_PARSEABLE'}
                 date={date}
                 substitute={getSelectedSubstitute(date)}
                 isChanged={isSubstituteChanged(date)}

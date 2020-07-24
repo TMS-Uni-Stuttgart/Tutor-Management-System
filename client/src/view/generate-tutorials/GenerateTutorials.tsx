@@ -68,16 +68,16 @@ function generateDTOFromValues(values: FormState): ITutorialGenerationDTO {
   const { startDate, endDate, excludedDates, weekdays, prefixes } = values;
 
   return {
-    firstDay: DateTime.fromISO(startDate).toISODate(),
-    lastDay: DateTime.fromISO(endDate).toISODate(),
+    firstDay: DateTime.fromISO(startDate).toISODate() ?? 'DATE_NOTE_PARSEABLE',
+    lastDay: DateTime.fromISO(endDate).toISODate() ?? 'DATE_NOTE_PARSEABLE',
     excludedDates: excludedDates.map((ex) => {
       if (ex instanceof DateTime) {
-        return { date: ex.toISODate() };
+        return { date: ex.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
       } else if (ex instanceof Interval) {
         if (ex.start.day === ex.end.day) {
-          return { date: ex.start.toISODate() };
+          return { date: ex.start.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
         } else {
-          return { interval: ex.toISODate() };
+          return { interval: ex.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
         }
       } else {
         throw new Error('Given excluded date is neither a DateTime nor an Interval');
@@ -169,8 +169,8 @@ function GenerateTutorials(): JSX.Element {
   const history = useHistory();
 
   const initialValues: FormState = {
-    startDate: DateTime.local().toISODate(),
-    endDate: DateTime.local().plus({ days: 1 }).toISODate(),
+    startDate: DateTime.local().toISODate() ?? '',
+    endDate: DateTime.local().plus({ days: 1 }).toISODate() ?? '',
     excludedDates: [],
     weekdays: {},
     prefixes: initialPrefixes,

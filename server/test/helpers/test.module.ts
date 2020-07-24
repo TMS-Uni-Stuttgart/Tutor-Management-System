@@ -85,7 +85,7 @@ export class TestModule implements OnApplicationShutdown {
     @Inject(getConnectionToken()) private readonly connection: Connection
   ) {}
 
-  async reset() {
+  async reset(): Promise<void> {
     if (!this.connection) {
       return;
     }
@@ -97,7 +97,7 @@ export class TestModule implements OnApplicationShutdown {
     await this.fillCollections();
   }
 
-  async onApplicationShutdown() {
+  async onApplicationShutdown(): Promise<void> {
     if (this.mongodb) {
       await this.mongodb.stop();
     }

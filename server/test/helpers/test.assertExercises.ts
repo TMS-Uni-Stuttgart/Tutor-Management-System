@@ -46,7 +46,7 @@ function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
  *
  * @param params Must contain an expected ExerciseDocument and an actual Exercise.
  */
-export function assertExercise({ expected, actual }: AssertExerciseParams) {
+export function assertExercise({ expected, actual }: AssertExerciseParams): void {
   const { subexercises, ...restExpected } = expected;
   const { subexercises: actualSubexercises, ...restActual } = actual;
 
@@ -70,7 +70,7 @@ export function assertExercise({ expected, actual }: AssertExerciseParams) {
  *
  * @param params Must contain a list of expected DTOs and a list with the actual exercises.
  */
-export function assertExerciseDTOs({ expected, actual }: AssertExerciseDTOsParams) {
+export function assertExerciseDTOs({ expected, actual }: AssertExerciseDTOsParams): void {
   expect(actual.length).toEqual(expected.length);
 
   for (let i = 0; i < expected.length; i++) {

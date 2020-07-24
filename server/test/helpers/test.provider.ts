@@ -43,7 +43,7 @@ export class MongooseMockModelProvider<T> {
     this.documents = documents.map((doc) => this.adjustDocument(doc, additionalProperties));
   }
 
-  find(conditions?: any): MockedQuery<T> {
+  find(conditions?: unknown): MockedQuery<T> {
     if (!conditions) {
       return new MockedQuery([...this.documents]);
     }
@@ -59,7 +59,7 @@ export class MongooseMockModelProvider<T> {
     return new MockedQuery(docsToReturn);
   }
 
-  findOne(conditions: any): MockedQuery<T | null> {
+  findOne(conditions: unknown): MockedQuery<T | null> {
     for (const doc of this.documents) {
       if (this.checkConditions(doc, conditions)) {
         return new MockedQuery(doc);

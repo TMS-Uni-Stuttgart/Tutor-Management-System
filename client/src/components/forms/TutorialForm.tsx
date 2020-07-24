@@ -7,13 +7,13 @@ import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
+import { compareDateTimes } from '../../util/helperFunctions';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikMultipleDatesPicker from './components/FormikMultipleDatesPicker';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import { compareDateTimes } from '../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -114,8 +114,8 @@ function getAllWeeklyDatesBetween(startDate: DateTime, endDate: DateTime): DateT
 }
 
 export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormState {
-  const startDate = DateTime.local().toISODate();
-  const endDate = DateTime.local().toISODate();
+  const startDate = DateTime.local().toISODate() ?? '';
+  const endDate = DateTime.local().toISODate() ?? '';
 
   if (!tutorial) {
     return {
@@ -123,8 +123,8 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
       tutor: '',
       startDate,
       endDate,
-      startTime: DateTime.local().toISO(),
-      endTime: DateTime.local().toISO(),
+      startTime: DateTime.local().toISO() ?? '',
+      endTime: DateTime.local().toISO() ?? '',
       correctors: [],
       selectedDates: [],
     };
@@ -135,14 +135,14 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
   return {
     slot: tutorial.slot,
     tutor: tutorial.tutor ? tutorial.tutor.id : '',
-    startDate: sortedDates[0] ? sortedDates[0].toISODate() : startDate,
+    startDate: sortedDates[0] ? sortedDates[0].toISODate() ?? '' : startDate,
     endDate: sortedDates[sortedDates.length - 1]
-      ? sortedDates[sortedDates.length - 1].toISODate()
+      ? sortedDates[sortedDates.length - 1].toISODate() ?? ''
       : endDate,
-    startTime: tutorial.startTime.toISO(),
-    endTime: tutorial.endTime.toISO(),
+    startTime: tutorial.startTime.toISO() ?? '',
+    endTime: tutorial.endTime.toISO() ?? '',
     correctors: tutorial.correctors.map((c) => c.id),
-    selectedDates: tutorial.dates.map((DateTime) => DateTime.toISODate()),
+    selectedDates: tutorial.dates.map((DateTime) => DateTime.toISODate() ?? '').filter(Boolean),
   };
 }
 
