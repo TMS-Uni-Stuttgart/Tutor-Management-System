@@ -243,7 +243,13 @@ export class StudentModel {
   }
 
   private getDateKey(date: DateTime): string {
-    return date.toISODate();
+    const dateKey = date.toISODate();
+
+    if (!dateKey) {
+      throw new Error(`Date '${date}' is not parseable to an ISODate.`);
+    }
+
+    return dateKey;
   }
 }
 

@@ -28,7 +28,11 @@ export class ScheinexamModel {
   }
 
   set date(date: DateTime) {
-    this._date = date.toISODate();
+    const parsed = date.toISODate();
+
+    if (!!parsed) {
+      this._date = parsed;
+    }
   }
 
   @prop({ required: true, type: ExerciseModel })
@@ -99,7 +103,7 @@ export class ScheinexamModel {
       id: this.id,
       scheinExamNo: this.scheinExamNo,
       percentageNeeded: this.percentageNeeded,
-      date: this.date.toISODate(),
+      date: this.date.toISODate() ?? 'DATE_NOT_PARSEABLE',
       exercises: this.exercises.map((ex) => ex.toDTO()),
     };
   }

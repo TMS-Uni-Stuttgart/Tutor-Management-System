@@ -1,7 +1,7 @@
-import { DocumentType, modelOptions, prop, getModelForClass } from '@typegoose/typegoose';
+import { DocumentType, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
-import { AttendanceState, IAttendance } from '../../shared/model/Attendance';
 import { AttendanceDTO } from '../../module/student/student.dto';
+import { AttendanceState, IAttendance } from '../../shared/model/Attendance';
 
 interface ConstructorFields {
   date: Date | string;
@@ -25,7 +25,11 @@ export class AttendanceModel {
   }
 
   set date(date: DateTime) {
-    this._date = date.toISODate();
+    const parsed = date.toISODate();
+
+    if (!!parsed) {
+      this._date = parsed;
+    }
   }
 
   @prop()
@@ -43,9 +47,14 @@ export class AttendanceModel {
 
   toDTO(this: AttendanceDocument): IAttendance {
     const { date, note, state } = this;
+    const parsedDate = date.toISODate();
+
+    if (!parsedDate) {
+      throw new Error(`Inner date object could not be parsed to ISODate.`);
+    }
 
     return {
-      date: date.toISODate(),
+      date: parsedDate,
       note,
       state,
     };

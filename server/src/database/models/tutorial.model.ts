@@ -66,7 +66,9 @@ export class TutorialModel {
   }
 
   set dates(dates: DateTime[]) {
-    this._dates = dates.map((date) => date.toISODate());
+    this._dates = dates
+      .map((date) => date.toISODate())
+      .filter((val): val is string => val !== null);
   }
 
   @prop({ required: true })
@@ -77,7 +79,11 @@ export class TutorialModel {
   }
 
   set startTime(startTime: DateTime) {
-    this._startTime = startTime.startOf('minute').toISOTime({ suppressMilliseconds: true });
+    const time = startTime.startOf('minute').toISOTime({ suppressMilliseconds: true });
+
+    if (time) {
+      this._startTime = time;
+    }
   }
 
   @prop({ required: true })
@@ -88,7 +94,11 @@ export class TutorialModel {
   }
 
   set endTime(endTime: DateTime) {
-    this._endTime = endTime.startOf('minute').toISOTime({ suppressMilliseconds: true });
+    const time = endTime.startOf('minute').toISOTime({ suppressMilliseconds: true });
+
+    if (time) {
+      this._endTime = time;
+    }
   }
 
   @prop({
@@ -211,9 +221,9 @@ export class TutorialModel {
       tutor: tutor
         ? { id: tutor.id, firstname: tutor.firstname, lastname: tutor.lastname }
         : undefined,
-      dates: dates.map((date) => date.toISODate()),
-      startTime: startTime.toISOTime(dateOptions),
-      endTime: endTime.toISOTime(dateOptions),
+      dates: dates.map((date) => date.toISODate() ?? 'DATE_NOT_PARSEABLE'),
+      startTime: startTime.toISOTime(dateOptions) ?? 'DATE_NOT_PARSABLE',
+      endTime: endTime.toISOTime(dateOptions) ?? 'DATE_NOT_PARSEBALE',
       students: students.map((student) => student.id),
       correctors: correctors.map((corrector) => ({
         id: corrector.id,
@@ -226,7 +236,13 @@ export class TutorialModel {
   }
 
   private getDateKey(date: DateTime): string {
-    return date.toISODate();
+    const dateKey = date.toISODate();
+
+    if (!dateKey) {
+      throw new Error(`Date '${date}' is not parseable to ISODate.`);
+    }
+
+    return dateKey;
   }
 }
 
