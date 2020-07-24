@@ -129,7 +129,13 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
 
       <Divider />
 
-      <Box flex={1} marginTop={3} display='flex' flexDirection='column'>
+      <Box
+        flex={1}
+        marginTop={3}
+        display='flex'
+        flexDirection='column'
+        style={{ overflowY: 'auto' }}
+      >
         <Placeholder
           placeholderText={placeholderText}
           showPlaceholder={showPlaceholder}
