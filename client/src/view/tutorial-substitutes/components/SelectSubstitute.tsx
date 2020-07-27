@@ -2,7 +2,7 @@ import { Box, Button, Divider, InputProps, TextField, Typography } from '@materi
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
 import DateOrIntervalText from '../../../components/DateOrIntervalText';
@@ -113,9 +113,8 @@ function SelectSubstitute(): JSX.Element {
     dispatch({ type: 'changeTutorial', data: tutorial.value });
   }, [tutorial.value]);
 
-  const debouncedHandleChange = useCallback(
-    _.debounce((filterText: string) => dispatch({ type: 'changeFilter', data: filterText }), 250),
-    []
+  const { current: debouncedHandleChange } = useRef(
+    _.debounce((filterText: string) => dispatch({ type: 'changeFilter', data: filterText }), 250)
   );
 
   const handleTextChange: InputProps['onChange'] = (e) => {
