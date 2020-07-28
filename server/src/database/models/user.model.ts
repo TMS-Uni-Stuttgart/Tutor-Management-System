@@ -113,7 +113,7 @@ export class UserModel {
       username,
       firstname,
       lastname,
-      roles,
+      roles: [...roles],
       email,
       temporaryPassword,
       tutorials: tutorials.map((tutorial) => ({
