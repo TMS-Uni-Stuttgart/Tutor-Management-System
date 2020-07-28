@@ -765,9 +765,9 @@ describe('UserService', () => {
   });
 
   it('get user information on log in', async () => {
-    const idOfUser = USER_DOCUMENTS[2]._id;
-    const userInformation = await service.getLoggedInUserInformation(idOfUser);
+    const expected = USER_DOCUMENTS[2];
+    const userInformation = await service.getLoggedInUserInformation(expected._id);
 
-    assertLoggedInUser({ expected: USER_DOCUMENTS[0], actual: userInformation });
+    assertLoggedInUser({ expected, actual: userInformation });
   });
 });
