@@ -3,8 +3,9 @@ import GREEN from '@material-ui/core/colors/green';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
+import { Role } from 'shared/model/Role';
 import { StudentStatus } from 'shared/model/Student';
 import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
 import CustomSelect from '../../components/CustomSelect';
@@ -20,6 +21,7 @@ import {
 } from '../../hooks/fetching/Student';
 import { getAllTutorials, getStudentsOfTutorial, getTutorial } from '../../hooks/fetching/Tutorial';
 import { useLogin } from '../../hooks/LoginService';
+import { useSettings } from '../../hooks/useSettings';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
@@ -110,9 +112,11 @@ function getFilteredStudents(allStudents: Student[], filterOption: FilterOption)
 
 function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element {
   const classes = useStyles();
-  const { userData } = useLogin();
-  const { enqueueSnackbar } = useSnackbar();
   const logger = useLogger('AttendanceManager');
+
+  const { userData } = useLogin();
+  const { settings } = useSettings();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingPDF, setLoadingPDF] = useState(false);
@@ -128,7 +132,18 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
   const [filterOption, setFilterOption] = useState<FilterOption>(FilterOption.ACTIVE_ONLY);
 
-  const availableDates = getAvailableDates(tutorial, userData, !tutorialFromProps);
+  const availableDates = useMemo(() => getAvailableDates(tutorial, userData, !tutorialFromProps), [
+    tutorial,
+    userData,
+    tutorialFromProps,
+  ]);
+  const canStudentBeExcused = useMemo(() => {
+    if (settings.canTutorExcuseStudents) {
+      return true;
+    }
+
+    return !!userData && userData.roles.includes(Role.ADMIN);
+  }, [userData, settings.canTutorExcuseStudents]);
 
   useEffect(() => {
     if (!!tutorialFromProps) {
@@ -391,6 +406,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
                     onAttendanceSelection={(state) => handleStudentAttendanceChange(student, state)}
                     onNoteSave={handleStudentNoteChange(student)}
                     onCakeCountChanged={handleCakeCountChange(student)}
+                    canBeExcused={canStudentBeExcused}
                   />
                 );
               }}

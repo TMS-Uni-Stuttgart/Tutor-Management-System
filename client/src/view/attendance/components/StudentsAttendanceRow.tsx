@@ -2,14 +2,14 @@ import { TableCell } from '@material-ui/core';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React from 'react';
-import { IAttendance, AttendanceState } from 'shared/model/Attendance';
+import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import AttendanceControls from '../../../components/attendance-controls/AttendanceControls';
 import { NoteFormCallback } from '../../../components/attendance-controls/components/AttendanceNotePopper';
 import PaperTableRow from '../../../components/PaperTableRow';
 import StudentAvatar from '../../../components/student-icon/StudentAvatar';
+import { Student } from '../../../model/Student';
 import { getAttendanceColor } from './AttendanceButton';
 import CakeCount from './CakeCount';
-import { Student } from '../../../model/Student';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,6 +28,7 @@ interface Props {
   onAttendanceSelection: (state?: AttendanceState) => void;
   onNoteSave: NoteFormCallback;
   onCakeCountChanged?: (cakeCount: number) => void;
+  canBeExcused: boolean;
 }
 
 function StudentAttendanceRow({
@@ -36,6 +37,7 @@ function StudentAttendanceRow({
   onAttendanceSelection,
   onNoteSave,
   onCakeCountChanged,
+  canBeExcused,
   ...rest
 }: Props): JSX.Element {
   const classes = useStyles();
@@ -67,6 +69,7 @@ function StudentAttendanceRow({
           onAttendanceChange={onAttendanceSelection}
           onNoteChange={onNoteSave}
           justifyContent='flex-end'
+          excuseDisabled={!canBeExcused}
         />
       </TableCell>
     </PaperTableRow>
