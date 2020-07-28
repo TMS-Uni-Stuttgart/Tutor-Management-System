@@ -1,13 +1,15 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { FormikHelpers } from 'formik';
 import { AlertOutline as AlertIcon } from 'mdi-material-ui';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { StudentStatus } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import * as Yup from 'yup';
+import { useSettings } from '../../hooks/useSettings';
 import { Student } from '../../model/Student';
 import { Team } from '../../model/Team';
 import { FormikSubmitCallback } from '../../types';
+import Placeholder from '../Placeholder';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
@@ -65,19 +67,18 @@ interface Props extends Omit<FormikBaseFormProps<StudentFormState>, CommonlyUsed
   teams?: Team[];
 }
 
+interface InitialStateParams {
+  teams?: Team[];
+  student?: Student;
+  defaultTeamSize: number;
+}
+
 export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
 type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
 
-function getMaxTeamSize() {
-  // TODO: Replace with settings after settings are implemented.
-  return 2;
-}
-
-function getNextTeamWithSlot(teams: Team[]): string {
-  const maxTeamSize = getMaxTeamSize();
-
+function getNextTeamWithSlot(teams: Team[], defaultTeamSize: number): string {
   for (const team of teams) {
-    if (team.students.length < maxTeamSize) {
+    if (team.students.length < defaultTeamSize) {
       return team.id;
     }
   }
@@ -85,7 +86,11 @@ function getNextTeamWithSlot(teams: Team[]): string {
   return CREATE_NEW_TEAM_VALUE;
 }
 
-export function getInitialStudentFormState(teams?: Team[], student?: Student): StudentFormState {
+export function getInitialStudentFormState({
+  teams,
+  student,
+  defaultTeamSize,
+}: InitialStateParams): StudentFormState {
   if (student) {
     return {
       lastname: student.lastname,
@@ -105,7 +110,7 @@ export function getInitialStudentFormState(teams?: Team[], student?: Student): S
     email: '',
     courseOfStudies: '',
     status: StudentStatus.ACTIVE,
-    team: teams ? getNextTeamWithSlot(teams) : '',
+    team: teams ? getNextTeamWithSlot(teams, defaultTeamSize) : '',
   };
 }
 
@@ -151,7 +156,14 @@ function StudentForm({
 }: Props): JSX.Element {
   const classes = useStyles();
   const firstnameInputRef = useRef<HTMLElement>();
-  const initialFormState = getInitialStudentFormState(teamsFromProps, student);
+
+  const {
+    settings: { defaultTeamSize },
+    isLoadingSettings,
+  } = useSettings();
+  const initialFormState = useMemo(() => {
+    return getInitialStudentFormState({ teams: teamsFromProps, student, defaultTeamSize });
+  }, [teamsFromProps, student, defaultTeamSize]);
 
   const disableTeamDropdown = !teamsFromProps;
   const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...(teamsFromProps || [])];
@@ -171,94 +183,105 @@ function StudentForm({
   const availableStatuses = Object.values(StudentStatus);
 
   return (
-    <FormikBaseForm
-      {...other}
-      initialValues={initialFormState}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-      enableDebug
+    <Placeholder
+      loading={isLoadingSettings}
+      showPlaceholder={isLoadingSettings}
+      placeholderText='Lade Einstellungen...'
     >
-      {({ values }) => (
-        <>
-          <FormikTextField name='firstname' label='Vorname' inputRef={firstnameInputRef} required />
+      <FormikBaseForm
+        {...other}
+        initialValues={initialFormState}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        enableDebug
+      >
+        {({ values }) => (
+          <>
+            <FormikTextField
+              name='firstname'
+              label='Vorname'
+              inputRef={firstnameInputRef}
+              required
+            />
 
-          <FormikTextField name='lastname' label='Nachname' required />
+            <FormikTextField name='lastname' label='Nachname' required />
 
-          <FormikTextField
-            name='matriculationNo'
-            label='Matrikelnummer'
-            type='number'
-            FormikFieldProps={{
-              validate: (value: any) => {
-                if (!value) {
-                  return undefined;
-                }
-
-                for (const s of otherStudents) {
-                  if (s.matriculationNo && value === s.matriculationNo) {
-                    return `Matrikelnummer wird bereits von ${getNameOfEntity(s, {
-                      firstNameFirst: true,
-                    })} verwendet.`;
+            <FormikTextField
+              name='matriculationNo'
+              label='Matrikelnummer'
+              type='number'
+              FormikFieldProps={{
+                validate: (value: any) => {
+                  if (!value) {
+                    return undefined;
                   }
-                }
 
-                return undefined;
-              },
-            }}
-            inputProps={{
-              min: 0,
-            }}
-            helperText={
-              values['matriculationNo'] === '' ? 'Keine Matrikelnummer eingegeben.' : undefined
-            }
-            InputProps={{
-              endAdornment:
-                values['matriculationNo'] === '' ? (
-                  <AlertIcon className={classes.warningColor} />
-                ) : undefined,
-              classes: {
-                notchedOutline:
-                  values['matriculationNo'] === '' ? classes.warningBorder : undefined,
-              },
-            }}
-            InputLabelProps={{
-              classes: {
-                root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
-              },
-            }}
-            FormHelperTextProps={{
-              classes: {
-                root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
-              },
-            }}
-          />
+                  for (const s of otherStudents) {
+                    if (s.matriculationNo && value === s.matriculationNo) {
+                      return `Matrikelnummer wird bereits von ${getNameOfEntity(s, {
+                        firstNameFirst: true,
+                      })} verwendet.`;
+                    }
+                  }
 
-          <FormikTextField name='email' label='E-Mailadresse' />
+                  return undefined;
+                },
+              }}
+              inputProps={{
+                min: 0,
+              }}
+              helperText={
+                values['matriculationNo'] === '' ? 'Keine Matrikelnummer eingegeben.' : undefined
+              }
+              InputProps={{
+                endAdornment:
+                  values['matriculationNo'] === '' ? (
+                    <AlertIcon className={classes.warningColor} />
+                  ) : undefined,
+                classes: {
+                  notchedOutline:
+                    values['matriculationNo'] === '' ? classes.warningBorder : undefined,
+                },
+              }}
+              InputLabelProps={{
+                classes: {
+                  root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
+                },
+              }}
+              FormHelperTextProps={{
+                classes: {
+                  root: values['matriculationNo'] === '' ? classes.warningColor : undefined,
+                },
+              }}
+            />
 
-          <FormikTextField name='courseOfStudies' label='Studiengang' />
+            <FormikTextField name='email' label='E-Mailadresse' />
 
-          <FormikSelect
-            name='team'
-            label='Team'
-            emptyPlaceholder='Keine Teams vorhanden.'
-            nameOfNoneItem='Kein Team'
-            items={teams}
-            itemToString={parseTeamItemToString}
-            itemToValue={teamItemToValue}
-            disabled={disableTeamDropdown}
-          />
+            <FormikTextField name='courseOfStudies' label='Studiengang' />
 
-          <FormikSelect
-            name='status'
-            label='Status'
-            emptyPlaceholder='Keine Status vorhanden.'
-            items={availableStatuses}
-            itemToString={statusToString}
-            itemToValue={(s) => s}
-          />
-        </>
-      )}
-    </FormikBaseForm>
+            <FormikSelect
+              name='team'
+              label='Team'
+              emptyPlaceholder='Keine Teams vorhanden.'
+              nameOfNoneItem='Kein Team'
+              items={teams}
+              itemToString={parseTeamItemToString}
+              itemToValue={teamItemToValue}
+              disabled={disableTeamDropdown}
+            />
+
+            <FormikSelect
+              name='status'
+              label='Status'
+              emptyPlaceholder='Keine Status vorhanden.'
+              items={availableStatuses}
+              itemToString={statusToString}
+              itemToValue={(s) => s}
+            />
+          </>
+        )}
+      </FormikBaseForm>
+    </Placeholder>
   );
 }
 

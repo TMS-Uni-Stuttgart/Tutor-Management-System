@@ -6,12 +6,12 @@ import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import { TUTORIAL_DOCUMENTS, USER_DOCUMENTS } from '../../../test/mocks/documents.mock';
 import { UserModel } from '../../database/models/user.model';
-import { Role } from '../../shared/model/Role';
-import { IUser } from '../../shared/model/User';
-import { TutorialService } from '../tutorial/tutorial.service';
-import { UserService } from './user.service';
-import { UserDTO, CreateUserDTO } from './user.dto';
 import { NamedElement } from '../../shared/model/Common';
+import { Role } from '../../shared/model/Role';
+import { ILoggedInUser, IUser } from '../../shared/model/User';
+import { TutorialService } from '../tutorial/tutorial.service';
+import { CreateUserDTO, UserDTO } from './user.dto';
+import { UserService } from './user.service';
 
 interface AssertUserParam {
   expected: MockedModel<UserModel>;
@@ -31,6 +31,11 @@ interface AssertUserDTOParams {
 interface AssertGeneratedUsersParams {
   expected: CreateUserDTO[];
   actual: IUser[];
+}
+
+interface AssertLoggedInUserParams {
+  expected: MockedModel<UserModel>;
+  actual: ILoggedInUser;
 }
 
 /**
@@ -134,6 +139,30 @@ function assertGeneratedUsers({ expected, actual }: AssertGeneratedUsersParams) 
     assertUserDTO({ expected: dto, actual: user });
     // expect(user.temporaryPassword).toEqual(password);
   }
+}
+
+function assertLoggedInUser({ expected, actual }: AssertLoggedInUserParams) {
+  const {
+    _id,
+    firstname,
+    lastname,
+    roles,
+    temporaryPassword,
+    tutorials,
+    tutorialsToCorrect,
+  } = sanitizeObject(expected);
+
+  expect(actual.id).toBe(_id);
+  expect(actual.firstname).toBe(firstname);
+  expect(actual.lastname).toBe(lastname);
+  expect(actual.roles).toEqual(roles);
+  expect(actual.hasTemporaryPassword).toBe(!!temporaryPassword);
+
+  expect(actual.tutorials.map((t) => t.id)).toEqual(tutorials.map((t) => t.id));
+  expect(actual.tutorialsToCorrect.map((t) => t.id)).toEqual(tutorialsToCorrect.map((t) => t.id));
+
+  // TODO: Test substituteTutorials!
+  // expect(actual.substituteTutorials).toEqual
 }
 
 describe('UserService', () => {
@@ -733,5 +762,12 @@ describe('UserService', () => {
     ];
     const namesOfTutors: NamedElement[] = await service.getNamesOfAllTutors();
     expect(namesOfTutors).toEqual(expected);
+  });
+
+  it('get user information on log in', async () => {
+    const idOfUser = USER_DOCUMENTS[2]._id;
+    const userInformation = await service.getLoggedInUserInformation(idOfUser);
+
+    assertLoggedInUser({ expected: USER_DOCUMENTS[0], actual: userInformation });
   });
 });

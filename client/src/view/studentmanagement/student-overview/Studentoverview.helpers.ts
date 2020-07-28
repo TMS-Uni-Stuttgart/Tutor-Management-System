@@ -66,7 +66,8 @@ export function handleCreateStudent({
   tutorialId,
   dispatch,
   enqueueSnackbar,
-}: HandlerParams): StudentFormSubmitCallback {
+  defaultTeamSize,
+}: HandlerParams & { defaultTeamSize: number }): StudentFormSubmitCallback {
   return async (
     { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
     { setSubmitting, resetForm }
@@ -92,7 +93,7 @@ export function handleCreateStudent({
       });
       const teams = await getTeamsOfTutorial(tutorialId);
 
-      resetForm({ values: getInitialStudentFormState(teams) });
+      resetForm({ values: getInitialStudentFormState({ teams, defaultTeamSize }) });
       enqueueSnackbar('Student/in wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
       Logger.logger.error(reason, { context: 'Studentoverview' });

@@ -11,6 +11,7 @@ import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
 import { useDialog } from '../../../hooks/DialogService';
+import { useSettings } from '../../../hooks/useSettings';
 import { Student } from '../../../model/Student';
 import { Tutorial } from '../../../model/Tutorial';
 import { useStudentStore } from '../student-store/StudentStore';
@@ -64,6 +65,10 @@ function Studentoverview({
   const dialog = useDialog();
   const [{ students, teams, tutorialId, isInitialized, summaries }, dispatch] = useStudentStore();
   const { enqueueSnackbar } = useSnackbar();
+
+  const {
+    settings: { defaultTeamSize },
+  } = useSettings();
 
   const handlerParams: HandlerParams = { tutorialId, dispatch, enqueueSnackbar };
 
@@ -202,7 +207,7 @@ function Studentoverview({
         <StudentForm
           teams={teams}
           otherStudents={students}
-          onSubmit={handleCreateStudent(handlerParams)}
+          onSubmit={handleCreateStudent({ ...handlerParams, defaultTeamSize })}
         />
       }
       items={getFilteredStudents(students, filterText, sortOption)}
