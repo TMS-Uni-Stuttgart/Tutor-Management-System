@@ -16,6 +16,7 @@ import { UserModel } from '../../src/database/models/user.model';
 import {
   SCHEINCRITERIA_DOCUMENTS,
   SCHEINEXAM_DOCUMENTS,
+  SETTINGS_DOCUMENTS,
   SHEET_DOCUMENTS,
   STUDENT_DOCUMENTS,
   TEAM_DOCUMENTS,
@@ -37,7 +38,7 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
   { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
   { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
   { model: GradingModel, initialDocuments: [] },
-  { model: SettingsModel, initialDocuments: [] },
+  { model: SettingsModel, initialDocuments: [...SETTINGS_DOCUMENTS] },
 ];
 
 @Module({})

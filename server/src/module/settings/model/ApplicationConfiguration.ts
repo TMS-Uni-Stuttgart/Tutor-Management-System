@@ -1,18 +1,8 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { ClientSettingsDTO } from '../settings.dto';
 import { DatabaseConfiguration } from './DatabaseConfiguration';
 import { MailingConfiguration } from './MailingConfiguration';
-
-class DefaultSettings implements Partial<ISettings> {
-  @IsNumber()
-  @Min(1)
-  @IsOptional()
-  defaultTeamSize?: number;
-
-  @IsBoolean()
-  @IsOptional()
-  canTutorExcuseStudents?: boolean;
-}
 
 export class ApplicationConfiguration {
   @IsOptional()
@@ -33,7 +23,7 @@ export class ApplicationConfiguration {
   readonly mailing!: MailingConfiguration;
 
   @IsOptional()
-  @Type(() => DefaultSettings)
+  @Type(() => ClientSettingsDTO)
   @ValidateNested()
-  readonly defaultSettings: DefaultSettings | undefined;
+  readonly defaultSettings: ClientSettingsDTO | undefined;
 }

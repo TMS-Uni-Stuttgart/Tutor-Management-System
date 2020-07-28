@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { ExerciseModel, SubExerciseModel } from '../../src/database/models/exercise.model';
 import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
 import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
+import { SettingsModel } from '../../src/database/models/settings.model';
 import { SheetModel } from '../../src/database/models/sheet.model';
 import { StudentModel } from '../../src/database/models/student.model';
 import { TeamModel } from '../../src/database/models/team.model';
@@ -355,6 +356,10 @@ export const SCHEINCRITERIA_DOCUMENTS: MockedScheincriteriaModel[] = [
       percentagePerSheet: true,
     },
   },
+];
+
+export const SETTINGS_DOCUMENTS: MockedModel<SettingsModel>[] = [
+  { _id: '5e59295a14255d6110d892a8', ...new SettingsModel() },
 ];
 
 function generateFakeDocument(_id: string, additional?: Record<string, unknown>): any {

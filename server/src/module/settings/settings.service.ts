@@ -3,6 +3,8 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { SettingsDocument, SettingsModel } from '../../database/models/settings.model';
 import { StartUpException } from '../../exceptions/StartUpException';
+import { IClientSettings } from '../../shared/model/Settings';
+import { ClientSettingsDTO } from './settings.dto';
 import { StaticSettings } from './settings.static';
 
 @Injectable()
@@ -18,13 +20,27 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
   }
 
   /**
-   * @returns The current settings.
+   * @returns The current settings saved in the DB.
    *
    * @see getSettingsDocument
    */
-  async getAllSettings(): Promise<ISettings> {
+  async getClientSettings(): Promise<IClientSettings> {
     const document = await this.getSettingsDocument();
     return document.toDTO();
+  }
+
+  /**
+   * Changes the settings saved in the DB to use the new settings.
+   *
+   * If `settings` does not contain a property this setting-property will be untouched (ie the previous value will be used).
+   *
+   * @param settings New settings to use.
+   */
+  async setClientSettings(settings: ClientSettingsDTO): Promise<void> {
+    const document = await this.getSettingsDocument();
+
+    document.assignDTO(settings);
+    await document.save();
   }
 
   /**
@@ -35,9 +51,9 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
    * If there is ONE nothing is done.
    */
   async onModuleInit(): Promise<void> {
-    const document = await this.settingsModel.find();
+    const documents = await this.settingsModel.find();
 
-    if (document.length === 0) {
+    if (documents.length === 0) {
       this.logger.log('No settings document provided. Creating new default settings document...');
 
       try {
