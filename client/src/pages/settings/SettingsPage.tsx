@@ -9,6 +9,7 @@ import FormikTextField from '../../components/forms/components/FormikTextField';
 import SubmitButton from '../../components/loading/SubmitButton';
 import Placeholder from '../../components/Placeholder';
 import { setSettings } from '../../hooks/fetching/Settings';
+import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { useSettings } from '../../hooks/useSettings';
 import { FormikSubmitCallback } from '../../types';
 
@@ -40,6 +41,7 @@ function GridDivider(): JSX.Element {
 function SettingsPage(): JSX.Element {
   const classes = useStyles();
   const { isLoadingSettings, settings, updateSettings } = useSettings();
+  const { promiseWithSnackbar } = useCustomSnackbar();
 
   const initialValues: FormState = useMemo(() => {
     return {
@@ -48,18 +50,23 @@ function SettingsPage(): JSX.Element {
     };
   }, [settings]);
   const onSubmit: FormikSubmitCallback<FormState> = useCallback(
-    async (values, helpers) => {
+    async (values) => {
       const dto: IClientSettings = {
         canTutorExcuseStudents: values.canTutorExcuseStudents,
         defaultTeamSize: Number.parseInt(values.defaultTeamSize),
       };
 
-      await setSettings(dto);
-      await updateSettings();
-
-      // helpers.resetForm({ values });
+      await promiseWithSnackbar({
+        promiseFunction: setSettings,
+        successContent: 'Einstellungen erfolgreich gespeichert.',
+        errorContent: 'Einstellungen konnten nicht gespeichert werden.',
+      })(dto);
+      await promiseWithSnackbar({
+        promiseFunction: updateSettings,
+        errorContent: 'Neue Einstellungen konnten nicht abgerufen werden.',
+      })();
     },
-    [updateSettings]
+    [updateSettings, promiseWithSnackbar]
   );
 
   return (
