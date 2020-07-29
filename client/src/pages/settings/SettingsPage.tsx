@@ -2,11 +2,13 @@ import { Box, Divider, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik } from 'formik';
 import React, { useCallback, useMemo } from 'react';
+import { IClientSettings } from 'shared/model/Settings';
 import * as Yup from 'yup';
 import FormikCheckbox from '../../components/forms/components/FormikCheckbox';
 import FormikTextField from '../../components/forms/components/FormikTextField';
 import SubmitButton from '../../components/loading/SubmitButton';
 import Placeholder from '../../components/Placeholder';
+import { setSettings } from '../../hooks/fetching/Settings';
 import { useSettings } from '../../hooks/useSettings';
 import { FormikSubmitCallback } from '../../types';
 
@@ -37,7 +39,7 @@ function GridDivider(): JSX.Element {
 
 function SettingsPage(): JSX.Element {
   const classes = useStyles();
-  const { isLoadingSettings, settings } = useSettings();
+  const { isLoadingSettings, settings, updateSettings } = useSettings();
 
   const initialValues: FormState = useMemo(() => {
     return {
@@ -45,11 +47,20 @@ function SettingsPage(): JSX.Element {
       defaultTeamSize: `${settings.defaultTeamSize}`,
     };
   }, [settings]);
-  const onSubmit: FormikSubmitCallback<FormState> = useCallback(async (values, helpers) => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 5000);
-    });
-  }, []);
+  const onSubmit: FormikSubmitCallback<FormState> = useCallback(
+    async (values, helpers) => {
+      const dto: IClientSettings = {
+        canTutorExcuseStudents: values.canTutorExcuseStudents,
+        defaultTeamSize: Number.parseInt(values.defaultTeamSize),
+      };
+
+      await setSettings(dto);
+      await updateSettings();
+
+      // helpers.resetForm({ values });
+    },
+    [updateSettings]
+  );
 
   return (
     <Placeholder

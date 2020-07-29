@@ -11,6 +11,7 @@ interface ContextType {
   settings: IClientSettings;
   isLoadingSettings: boolean;
   canStudentBeExcused: () => boolean;
+  updateSettings: () => Promise<void>;
 }
 
 const DEFAULT_SETTINGS: IClientSettings = { defaultTeamSize: 1, canTutorExcuseStudents: false };
@@ -19,17 +20,21 @@ const SettingsContext = React.createContext<ContextType>({
   settings: DEFAULT_SETTINGS,
   isLoadingSettings: false,
   canStudentBeExcused: throwContextNotInitialized('SettingsContext'),
+  updateSettings: throwContextNotInitialized('SettingsContext'),
 });
 
 export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element {
   const { userData } = useLogin();
   const { value, isLoading, execute } = useFetchState({ fetchFunction: getSettings });
-
-  useEffect(() => {
+  const updateSettings = useCallback(async () => {
     if (!!userData) {
-      execute();
+      await execute();
     }
   }, [userData, execute]);
+
+  useEffect(() => {
+    updateSettings();
+  }, [updateSettings]);
 
   const canStudentBeExcused = useCallback(() => {
     if (!value) {
@@ -49,6 +54,7 @@ export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element
         settings: value ?? DEFAULT_SETTINGS,
         isLoadingSettings: isLoading,
         canStudentBeExcused,
+        updateSettings,
       }}
     >
       {children}
