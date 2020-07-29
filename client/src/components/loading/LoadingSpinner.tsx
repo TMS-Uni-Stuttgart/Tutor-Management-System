@@ -1,6 +1,6 @@
+import { CircularProgress, Theme, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { CircularProgress, Typography, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%',
       alignItems: 'center',
       justifyContent: 'center',
+      color: theme.palette.getThemeContrastColor(theme.palette.primary),
     },
     spinner: {
       marginBottom: theme.spacing(3),
@@ -23,9 +24,9 @@ function LoadingSpinner(): JSX.Element {
 
   return (
     <div className={classes.spinnerBox}>
-      <CircularProgress className={classes.spinner} />
+      <CircularProgress className={classes.spinner} color='inherit' />
 
-      <Typography variant='h5' color='primary'>
+      <Typography variant='h5' color='inherit'>
         Lade Daten...
       </Typography>
     </div>

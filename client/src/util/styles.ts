@@ -23,12 +23,18 @@ declare module '@material-ui/core/styles/createPalette' {
     green: Omit<SimplePaletteColorOptions, 'contrastText'>;
     orange: Omit<SimplePaletteColorOptions, 'contrastText'>;
     red: Omit<SimplePaletteColorOptions, 'contrastText'>;
+
+    /**
+     * @returns Color variant depending on theme type: If on a light theme the `main` part is returned else if on a dark theme the `light` part is returned (falling back to `main` if `light` does not exist).
+     */
+    getThemeContrastColor: (palette: SimplePaletteColorOptions) => string;
   }
 
   interface PaletteOptions {
     green: Palette['green'];
     orange: Palette['orange'];
     red: Palette['red'];
+    getThemeContrastColor: (palette: SimplePaletteColorOptions) => string;
   }
 }
 
@@ -111,6 +117,9 @@ export function createTheme(type: PaletteType): Theme {
       light: ORANGE[300],
       main: ORANGE[500],
       dark: ORANGE[700],
+    },
+    getThemeContrastColor: (palette: SimplePaletteColorOptions) => {
+      return type === 'light' ? palette['main'] : palette['light'] ?? palette['main'];
     },
   };
 

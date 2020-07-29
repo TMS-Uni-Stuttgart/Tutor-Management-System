@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     spinner: {
       marginRight: theme.spacing(1),
+      color: theme.palette.getThemeContrastColor(theme.palette.primary),
     },
   })
 );
