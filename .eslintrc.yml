@@ -56,6 +56,9 @@ rules:
           from: './server/src'
   'import/no-unresolved': 'off'
   'import/no-named-as-default': 'off'
+  'import/no-unused-modules':
+    - 'warn'
+    - unusedExports: true
   'react/display-name': 'off'
   'react/jsx-no-duplicate-props':
     - 'warn'
