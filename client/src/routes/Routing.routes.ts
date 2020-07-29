@@ -5,6 +5,7 @@ import {
   AccountMultipleCheck as AttendancesIcon,
   BadgeAccount as UserIcon,
   Book as EnterPointsIcon,
+  Cogs as SettingsIcon,
   Comment as PresentationIcon,
   File as SheetIcon,
   ScriptText as ScheincriteriaIcon,
@@ -29,6 +30,7 @@ import PointsOverview from '../pages/points-sheet/overview/PointsOverview';
 import PresentationPoints from '../pages/presentation-points/PresentationPoints';
 import ScheinCriteriaManagement from '../pages/scheincriteriamanagement/ScheinCriteriaManagement';
 import ScheinExamManagement from '../pages/scheinexam-management/ScheinExamManagement';
+import SettingsPage from '../pages/settings/SettingsPage';
 import SheetManagement from '../pages/sheetmanagement/SheetManagement';
 import StudentInfo from '../pages/student-info/StudentInfo';
 import AllStudentsAdminView from '../pages/studentmanagement/AllStudentsAdminView';
@@ -260,6 +262,13 @@ const MANAGEMENT_ROUTES = {
     icon: ScheinexamManagementIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
+  MANAGE_SETTINGS: new DrawerRoute({
+    path: parts('admin', 'settings'),
+    title: 'Einstellungen anpassen',
+    component: SettingsPage,
+    icon: SettingsIcon,
+    roles: [Role.ADMIN],
+  }),
 };
 
 export const ROUTES = {
@@ -270,6 +279,3 @@ export const ROUTES = {
 
 export const ROOT_REDIRECT_PATH = ROUTES.LOGIN;
 export const PATH_REDIRECT_AFTER_LOGIN = ROUTES.DASHBOARD;
-
-// type RouteKeys = keyof typeof ROUTES;
-// export type RouteType = typeof ROUTES[RouteKeys];
