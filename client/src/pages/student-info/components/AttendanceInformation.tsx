@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import React from 'react';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import AttendanceControls from '../../../components/attendance-controls/AttendanceControls';
+import { useSettings } from '../../../hooks/useSettings';
 import { Student } from '../../../model/Student';
 import { Tutorial } from '../../../model/Tutorial';
 import { parseDateToMapKey } from '../../../util/helperFunctions';
@@ -21,6 +22,7 @@ function AttendanceInformation({
   onNoteChange,
   ...props
 }: Props): JSX.Element {
+  const { canStudentBeExcused } = useSettings();
 
   return (
     <Table {...props}>
@@ -44,6 +46,7 @@ function AttendanceInformation({
                   attendance={attendance}
                   onAttendanceChange={(attendance) => onAttendanceChange(date, attendance)}
                   onNoteChange={({ note }) => onNoteChange(date, note)}
+                  excuseDisabled={!canStudentBeExcused()}
                   justifyContent='flex-end'
                 />
               </TableCell>
