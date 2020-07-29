@@ -15,11 +15,3 @@ database:
 defaultSettings:
   canTutorExcuseStudents: true
   defaultTeamSize: 3
-
-mailing:
-  testingMode: true
-  host: HOST
-  port: 587
-  auth:
-    user: USER
-    pass: PASS

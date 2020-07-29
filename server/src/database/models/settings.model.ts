@@ -1,5 +1,6 @@
 import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
+import { MailingConfiguration } from '../../module/settings/model/MailingConfiguration';
 import { ClientSettingsDTO } from '../../module/settings/settings.dto';
 import { IClientSettings } from '../../shared/model/Settings';
 
@@ -15,11 +16,15 @@ export class SettingsModel {
   @prop({ required: true })
   canTutorExcuseStudents: boolean;
 
+  @prop()
+  mailingConfig?: MailingConfiguration;
+
   constructor(fields?: Partial<IClientSettings>) {
     this.defaultTeamSize =
       fields?.defaultTeamSize ?? SettingsModel.internalDefaults.defaultTeamSize;
     this.canTutorExcuseStudents =
       fields?.canTutorExcuseStudents ?? SettingsModel.internalDefaults.canTutorExcuseStudents;
+    this.mailingConfig = fields?.mailingConfig;
   }
 
   toDTO(): IClientSettings {

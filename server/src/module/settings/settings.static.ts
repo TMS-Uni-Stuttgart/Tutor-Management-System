@@ -8,7 +8,6 @@ import { StartUpException } from '../../exceptions/StartUpException';
 import { ApplicationConfiguration } from './model/ApplicationConfiguration';
 import { DatabaseConfiguration } from './model/DatabaseConfiguration';
 import { EnvironmentConfig, ENV_VARIABLE_NAMES } from './model/EnvironmentConfig';
-import { MailingConfiguration } from './model/MailingConfiguration';
 
 type DatabaseConfig = DatabaseConfiguration & { secret: string };
 
@@ -119,13 +118,6 @@ export class StaticSettings {
    */
   getStaticFolder(): string {
     return StaticSettings.STATIC_FOLDER;
-  }
-
-  /**
-   * @returns Configuration for the mailing service.
-   */
-  getMailingConfiguration(): MailingConfiguration {
-    return this.config.mailing;
   }
 
   /**

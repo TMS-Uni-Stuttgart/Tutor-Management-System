@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IMailingAuthConfiguration, IMailingSettings } from '../../../shared/model/Settings';
 
-export class MailingAuthConfiguration {
+export class MailingAuthConfiguration implements IMailingAuthConfiguration {
   @IsString()
   readonly user!: string;
 
@@ -9,15 +10,15 @@ export class MailingAuthConfiguration {
   readonly pass!: string;
 }
 
-export class MailingConfiguration {
-  @IsBoolean()
-  readonly testingMode!: boolean;
-
+export class MailingConfiguration implements IMailingSettings {
   @IsString()
   readonly host!: string;
 
   @IsNumber()
   readonly port!: number;
+
+  @IsString()
+  readonly from!: string;
 
   @ValidateNested()
   @Type(() => MailingAuthConfiguration)
