@@ -49,6 +49,7 @@ rules:
   'constructor-super': 'error'
   'no-console': 'warn'
   'no-fallthrough': 'error'
+  'no-useless-rename': 'warn'
   'import/no-restricted-paths':
     - 'error'
     - zones:
@@ -57,7 +58,7 @@ rules:
   'import/no-unresolved': 'off'
   'import/no-named-as-default': 'off'
   'import/no-unused-modules':
-    - 'warn'
+    - 'off'
     - unusedExports: true
   'react/display-name': 'off'
   'react/jsx-no-duplicate-props':
