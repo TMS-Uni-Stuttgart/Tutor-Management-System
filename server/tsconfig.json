@@ -14,7 +14,8 @@
     },
     "strict": true,
     "incremental": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["es2020"]
   },
   "exclude": ["node_modules", "dist"]
 }
