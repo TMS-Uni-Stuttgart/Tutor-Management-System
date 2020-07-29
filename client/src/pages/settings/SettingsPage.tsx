@@ -107,7 +107,7 @@ function SettingsPage(): JSX.Element {
               maxHeight='100%'
               style={{ overflowY: 'auto' }}
             >
-              <Typography variant='h6'>Standardteamgröße</Typography>
+              <Typography style={{ fontSize: '1.1rem' }}>Standardteamgröße</Typography>
               <FormikTextField
                 label='Standardteamgröße'
                 name='defaultTeamSize'
@@ -117,7 +117,7 @@ function SettingsPage(): JSX.Element {
 
               <GridDivider />
 
-              <Typography variant='h6'>Anwesenheiten</Typography>
+              <Typography style={{ fontSize: '1.1rem' }}>Anwesenheiten</Typography>
               <FormikCheckbox
                 label='Tutoren/innen dürfen Studierende entschuldigen'
                 name='canTutorExcuseStudents'
@@ -125,7 +125,7 @@ function SettingsPage(): JSX.Element {
 
               <GridDivider />
 
-              <Typography variant='h6'>E-Maileinstellungen</Typography>
+              <Typography style={{ fontSize: '1.1rem' }}>E-Maileinstellungen</Typography>
               <Typography>🛠 Work in progress</Typography>
             </Box>
           </form>
