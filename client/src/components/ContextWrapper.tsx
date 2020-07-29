@@ -85,7 +85,10 @@ function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Ele
           <LoginContextProvider>
             <SettingsProvider>
               <MuiPickersUtilsProvider locale={navigator.language ?? 'de'} utils={LuxonUtils}>
-                <SnackbarProvider maxSnack={3}>
+                <SnackbarProvider
+                  maxSnack={3}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
                   <DialogService>{children}</DialogService>
                 </SnackbarProvider>
               </MuiPickersUtilsProvider>
