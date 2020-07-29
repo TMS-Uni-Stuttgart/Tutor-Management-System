@@ -1,6 +1,6 @@
 import { createMuiTheme, PaletteType, Theme } from '@material-ui/core';
 import ORANGE from '@material-ui/core/colors/orange';
-import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+import { PaletteOptions, SimplePaletteColorOptions } from '@material-ui/core/styles/createPalette';
 import { CSSProperties } from '@material-ui/styles';
 
 interface ChartStyle {
@@ -83,11 +83,15 @@ function generateChartStyle(theme: Theme): ChartStyle {
 }
 
 export function createTheme(type: PaletteType): Theme {
+  const primary: SimplePaletteColorOptions = {
+    light: '#00beff',
+    main: '#004191',
+    dark: '#001b63',
+    // main: type === 'light' ? '#004191' : '#00a5fe',
+  };
   const palette: PaletteOptions = {
     type,
-    primary: {
-      main: type === 'light' ? '#004191' : '#00a5fe',
-    },
+    primary,
     secondary: {
       main: '#00beff',
     },
@@ -110,6 +114,8 @@ export function createTheme(type: PaletteType): Theme {
     },
   };
 
+  const focusedColor = type === 'light' ? primary.main : primary.light;
+
   return createMuiTheme({
     palette,
     mixins: {
@@ -119,12 +125,26 @@ export function createTheme(type: PaletteType): Theme {
       chart: generateChartStyle,
     },
     overrides: {
+      MuiFormLabel: {
+        root: {
+          '&$focused': {
+            color: focusedColor,
+          },
+        },
+      },
       MuiOutlinedInput: {
         root: {
           '&$disabled': {
             '&$disabled': {
               '& > fieldset': {
                 borderStyle: 'dotted',
+              },
+            },
+          },
+          '&$focused': {
+            '&$focused': {
+              '& > fieldset': {
+                borderColor: focusedColor,
               },
             },
           },
