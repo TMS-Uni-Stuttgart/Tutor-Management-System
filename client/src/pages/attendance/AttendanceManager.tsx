@@ -5,7 +5,6 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
-import { Role } from 'shared/model/Role';
 import { StudentStatus } from 'shared/model/Student';
 import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
 import CustomSelect from '../../components/CustomSelect';
@@ -115,7 +114,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   const logger = useLogger('AttendanceManager');
 
   const { userData } = useLogin();
-  const { settings } = useSettings();
+  const { canStudentBeExcused } = useSettings();
   const { enqueueSnackbar } = useSnackbar();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -137,13 +136,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     userData,
     tutorialFromProps,
   ]);
-  const canStudentBeExcused = useMemo(() => {
-    if (settings.canTutorExcuseStudents) {
-      return true;
-    }
-
-    return !!userData && userData.roles.includes(Role.ADMIN);
-  }, [userData, settings.canTutorExcuseStudents]);
 
   useEffect(() => {
     if (!!tutorialFromProps) {
@@ -406,7 +398,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
                     onAttendanceSelection={(state) => handleStudentAttendanceChange(student, state)}
                     onNoteSave={handleStudentNoteChange(student)}
                     onCakeCountChanged={handleCakeCountChange(student)}
-                    canBeExcused={canStudentBeExcused}
+                    canBeExcused={canStudentBeExcused()}
                   />
                 );
               }}

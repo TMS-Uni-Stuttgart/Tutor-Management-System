@@ -1,7 +1,7 @@
 import { Box, BoxProps } from '@material-ui/core';
 import React from 'react';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
-import AttendanceButton from '../../view/attendance/components/AttendanceButton';
+import AttendanceButton from '../../pages/attendance/components/AttendanceButton';
 import AttendanceNotePopper, { NoteFormCallback } from './components/AttendanceNotePopper';
 
 export interface AttendanceControlsProps extends BoxProps {

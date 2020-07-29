@@ -6,7 +6,7 @@ import { getTutorial } from '../../hooks/fetching/Tutorial';
 import { getUserNames } from '../../hooks/fetching/User';
 import { UseFetchState, useFetchState } from '../../hooks/useFetchState';
 import { Tutorial } from '../../model/Tutorial';
-import { notInitializied } from '../../util/throwFunctions';
+import { throwContextNotInitialized } from '../../util/throwFunctions';
 
 interface Props {
   tutorialId: string;
@@ -28,19 +28,19 @@ export interface SubstituteManagementContextType {
 const ERR_NOT_INITIALIZED: UseFetchState<never, []> = {
   error: 'Context not initialized',
   isLoading: false,
-  execute: notInitializied('SubstituteManagementContext'),
+  execute: throwContextNotInitialized('SubstituteManagementContext'),
 };
 
 const Context = React.createContext<SubstituteManagementContextType>({
   tutorial: ERR_NOT_INITIALIZED,
   tutors: ERR_NOT_INITIALIZED,
   selectedDate: undefined,
-  setSelectedDate: notInitializied('SubstituteManagementContext'),
-  isSubstituteChanged: notInitializied('SubstituteManagementContext'),
-  getSelectedSubstitute: notInitializied('SubstituteManagementContext'),
-  setSelectedSubstitute: notInitializied('SubstituteManagementContext'),
-  removeSelectedSubstitute: notInitializied('SubstituteManagementContext'),
-  resetSelectedSubstitute: notInitializied('SubstituteManagementContext'),
+  setSelectedDate: throwContextNotInitialized('SubstituteManagementContext'),
+  isSubstituteChanged: throwContextNotInitialized('SubstituteManagementContext'),
+  getSelectedSubstitute: throwContextNotInitialized('SubstituteManagementContext'),
+  setSelectedSubstitute: throwContextNotInitialized('SubstituteManagementContext'),
+  removeSelectedSubstitute: throwContextNotInitialized('SubstituteManagementContext'),
+  resetSelectedSubstitute: throwContextNotInitialized('SubstituteManagementContext'),
   dirty: false,
 });
 

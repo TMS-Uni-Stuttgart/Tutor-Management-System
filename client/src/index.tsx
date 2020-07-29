@@ -1,10 +1,10 @@
-import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
+import 'reflect-metadata';
 import ContextWrapper from './components/ContextWrapper';
+import App from './pages/App';
 import * as serviceWorker from './serviceWorker';
-import App from './view/App';
 
 ReactDOM.render(
   <ContextWrapper Router={BrowserRouter}>

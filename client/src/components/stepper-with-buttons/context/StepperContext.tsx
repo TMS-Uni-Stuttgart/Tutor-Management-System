@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { notInitializied } from '../../../util/throwFunctions';
+import { throwContextNotInitialized } from '../../../util/throwFunctions';
 
 export interface NextStepInformation {
   goToNext: boolean;
@@ -35,13 +35,13 @@ export const StepperContext = React.createContext<StepperContextValue>({
   isWaitingOnNextCallback: false,
   isNextDisabled: false,
   steps: [],
-  setWaitingOnNextCallback: notInitializied('StepperContext'),
-  prevStep: notInitializied('StepperContext'),
-  nextStep: notInitializied('StepperContext'),
-  setNextDisabled: notInitializied('StepperContext'),
-  setNextCallback: notInitializied('StepperContext'),
-  removeNextCallback: notInitializied('StepperContext'),
-  getNextCallback: notInitializied('StepperContext'),
+  setWaitingOnNextCallback: throwContextNotInitialized('StepperContext'),
+  prevStep: throwContextNotInitialized('StepperContext'),
+  nextStep: throwContextNotInitialized('StepperContext'),
+  setNextDisabled: throwContextNotInitialized('StepperContext'),
+  setNextCallback: throwContextNotInitialized('StepperContext'),
+  removeNextCallback: throwContextNotInitialized('StepperContext'),
+  getNextCallback: throwContextNotInitialized('StepperContext'),
 });
 
 export function useStepper(): Omit<StepperContextValue, 'getNextCallback'> {

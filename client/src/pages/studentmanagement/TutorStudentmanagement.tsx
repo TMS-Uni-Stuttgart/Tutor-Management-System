@@ -2,7 +2,7 @@ import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import React from 'react';
-import { RouteComponentProps, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { Student } from '../../model/Student';
 import Studentoverview from './student-overview/Studentoverview';
@@ -28,8 +28,6 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Params {
   tutorialId: string;
 }
-
-type PropType = RouteComponentProps<Params>;
 
 function unifyFilterableText(text: string): string {
   return _.deburr(text).toLowerCase();

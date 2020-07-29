@@ -2,15 +2,15 @@ import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
-import LoadingSpinner from '../../../../components/loading/LoadingSpinner';
-import Markdown from '../../../../components/Markdown';
-import Placeholder from '../../../../components/Placeholder';
-import PointsTable from '../../../../components/points-table/PointsTable';
-import { getStudentCorrectionCommentMarkdown } from '../../../../hooks/fetching/Files';
-import { Grading } from '../../../../model/Grading';
-import { Sheet } from '../../../../model/Sheet';
-import { Student } from '../../../../model/Student';
+import CustomSelect, { OnChangeHandler } from '../../../components/CustomSelect';
+import LoadingSpinner from '../../../components/loading/LoadingSpinner';
+import Markdown from '../../../components/Markdown';
+import Placeholder from '../../../components/Placeholder';
+import PointsTable from '../../../components/points-table/PointsTable';
+import { getStudentCorrectionCommentMarkdown } from '../../../hooks/fetching/Files';
+import { Grading } from '../../../model/Grading';
+import { Sheet } from '../../../model/Sheet';
+import { Student } from '../../../model/Student';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

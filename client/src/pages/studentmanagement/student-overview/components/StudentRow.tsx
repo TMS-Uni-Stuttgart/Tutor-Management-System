@@ -15,7 +15,7 @@ import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperT
 import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
 import { Student } from '../../../../model/Student';
 import { ROUTES } from '../../../../routes/Routing.routes';
-import ScheinStatusBox from '../../student-info/components/ScheinStatusBox';
+import ScheinStatusBox from '../../../student-info/components/ScheinStatusBox';
 import { useStudentStore } from '../../student-store/StudentStore';
 
 const useStyles = makeStyles((theme) =>

@@ -80,19 +80,19 @@ function handleUserConfirmation(message: string, callback: (ok: boolean) => void
 function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Element {
   return (
     <Router getUserConfirmation={handleUserConfirmation} basename={getRouteWithPrefix('')}>
-      <SettingsProvider>
-        <I18nextProvider i18n={i18n}>
-          <CustomThemeProvider>
-            <LoginContextProvider>
+      <I18nextProvider i18n={i18n}>
+        <CustomThemeProvider>
+          <LoginContextProvider>
+            <SettingsProvider>
               <MuiPickersUtilsProvider locale={navigator.language ?? 'de'} utils={LuxonUtils}>
                 <SnackbarProvider maxSnack={3}>
                   <DialogService>{children}</DialogService>
                 </SnackbarProvider>
               </MuiPickersUtilsProvider>
-            </LoginContextProvider>
-          </CustomThemeProvider>
-        </I18nextProvider>
-      </SettingsProvider>
+            </SettingsProvider>
+          </LoginContextProvider>
+        </CustomThemeProvider>
+      </I18nextProvider>
     </Router>
   );
 }

@@ -1,12 +1,12 @@
 import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import CustomSelect, { OnChangeHandler } from '../../../../components/CustomSelect';
-import Placeholder from '../../../../components/Placeholder';
-import PointsTable from '../../../../components/points-table/PointsTable';
-import { Grading } from '../../../../model/Grading';
-import { Scheinexam } from '../../../../model/Scheinexam';
-import { Student } from '../../../../model/Student';
+import CustomSelect, { OnChangeHandler } from '../../../components/CustomSelect';
+import Placeholder from '../../../components/Placeholder';
+import PointsTable from '../../../components/points-table/PointsTable';
+import { Grading } from '../../../model/Grading';
+import { Scheinexam } from '../../../model/Scheinexam';
+import { Student } from '../../../model/Student';
 
 const useStyles = makeStyles((theme) =>
   createStyles({

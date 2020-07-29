@@ -1,8 +1,8 @@
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import React from 'react';
 import { StudentStatus } from 'shared/model/Student';
-import InfoPaper, { InfoPaperProps } from '../../../../components/info-paper/InfoPaper';
-import { Student } from '../../../../model/Student';
+import InfoPaper, { InfoPaperProps } from '../../../components/info-paper/InfoPaper';
+import { Student } from '../../../model/Student';
 
 interface Props extends Omit<InfoPaperProps, 'title'> {
   student: Student;

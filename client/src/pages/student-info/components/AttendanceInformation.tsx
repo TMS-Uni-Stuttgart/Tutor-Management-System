@@ -2,10 +2,10 @@ import { Table, TableBody, TableCell, TableHead, TableProps, TableRow } from '@m
 import { DateTime } from 'luxon';
 import React from 'react';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
-import AttendanceControls from '../../../../components/attendance-controls/AttendanceControls';
-import { Student } from '../../../../model/Student';
-import { Tutorial } from '../../../../model/Tutorial';
-import { parseDateToMapKey } from '../../../../util/helperFunctions';
+import AttendanceControls from '../../../components/attendance-controls/AttendanceControls';
+import { Student } from '../../../model/Student';
+import { Tutorial } from '../../../model/Tutorial';
+import { parseDateToMapKey } from '../../../util/helperFunctions';
 
 interface Props extends TableProps {
   student: Student;
@@ -21,6 +21,7 @@ function AttendanceInformation({
   onNoteChange,
   ...props
 }: Props): JSX.Element {
+
   return (
     <Table {...props}>
       <TableHead>
