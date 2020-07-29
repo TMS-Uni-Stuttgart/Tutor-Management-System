@@ -47,17 +47,14 @@ const useStyles = makeStyles((theme) =>
     },
     toolbar: theme.mixins.toolbar,
     list: {
-      paddingBottom: theme.spacing(4),
       overflowY: 'auto',
       overflowX: 'hidden',
       ...theme.mixins.scrollbar(4),
     },
     version: {
-      position: 'absolute',
-      bottom: theme.spacing(1),
-      left: theme.spacing(1),
-      right: theme.spacing(1),
+      margin: theme.spacing(0.5, 0),
       textAlign: 'center',
+      width: '100%',
     },
   })
 );
