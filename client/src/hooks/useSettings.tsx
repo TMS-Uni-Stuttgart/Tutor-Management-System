@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { Role } from 'shared/model/Role';
 import { IClientSettings } from 'shared/model/Settings';
 import { RequireChildrenProp } from '../typings/RequireChildrenProp';
@@ -23,11 +23,13 @@ const SettingsContext = React.createContext<ContextType>({
 
 export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element {
   const { userData } = useLogin();
-  const { value, isLoading } = useFetchState({
-    fetchFunction: getSettings,
-    immediate: true,
-    params: [],
-  });
+  const { value, isLoading, execute } = useFetchState({ fetchFunction: getSettings });
+
+  useEffect(() => {
+    if (!!userData) {
+      execute();
+    }
+  }, [userData, execute]);
 
   const canStudentBeExcused = useCallback(() => {
     if (!value) {
