@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%',
       alignItems: 'center',
       justifyContent: 'center',
-      color: theme.palette.getThemeContrastColor(theme.palette.primary),
     },
     spinner: {
       marginBottom: theme.spacing(3),
@@ -24,9 +23,9 @@ function LoadingSpinner(): JSX.Element {
 
   return (
     <div className={classes.spinnerBox}>
-      <CircularProgress className={classes.spinner} color='inherit' />
+      <CircularProgress className={classes.spinner} color='primary' />
 
-      <Typography variant='h5' color='inherit'>
+      <Typography variant='h5' color='primary'>
         Lade Daten...
       </Typography>
     </div>

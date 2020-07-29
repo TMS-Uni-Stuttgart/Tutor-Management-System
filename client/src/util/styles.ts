@@ -23,18 +23,12 @@ declare module '@material-ui/core/styles/createPalette' {
     green: Omit<SimplePaletteColorOptions, 'contrastText'>;
     orange: Omit<SimplePaletteColorOptions, 'contrastText'>;
     red: Omit<SimplePaletteColorOptions, 'contrastText'>;
-
-    /**
-     * @returns Color variant depending on theme type: If on a light theme the `main` part is returned else if on a dark theme the `light` part is returned (falling back to `main` if `light` does not exist).
-     */
-    getThemeContrastColor: (palette: SimplePaletteColorOptions) => string;
   }
 
   interface PaletteOptions {
     green: Palette['green'];
     orange: Palette['orange'];
     red: Palette['red'];
-    getThemeContrastColor: (palette: SimplePaletteColorOptions) => string;
   }
 }
 
@@ -91,9 +85,8 @@ function generateChartStyle(theme: Theme): ChartStyle {
 export function createTheme(type: PaletteType): Theme {
   const primary: SimplePaletteColorOptions = {
     light: '#00beff',
-    main: '#004191',
-    dark: '#001b63',
-    // main: type === 'light' ? '#004191' : '#00a5fe',
+    main: type === 'light' ? '#004191' : '#00a5fe',
+    dark: '#004191',
   };
   const palette: PaletteOptions = {
     type,
@@ -118,12 +111,7 @@ export function createTheme(type: PaletteType): Theme {
       main: ORANGE[500],
       dark: ORANGE[700],
     },
-    getThemeContrastColor: (palette: SimplePaletteColorOptions) => {
-      return type === 'light' ? palette['main'] : palette['light'] ?? palette['main'];
-    },
   };
-
-  const focusedColor = type === 'light' ? primary.main : primary.light;
 
   return createMuiTheme({
     palette,
@@ -134,26 +122,12 @@ export function createTheme(type: PaletteType): Theme {
       chart: generateChartStyle,
     },
     overrides: {
-      MuiFormLabel: {
-        root: {
-          '&$focused': {
-            color: focusedColor,
-          },
-        },
-      },
       MuiOutlinedInput: {
         root: {
           '&$disabled': {
             '&$disabled': {
               '& > fieldset': {
                 borderStyle: 'dotted',
-              },
-            },
-          },
-          '&$focused': {
-            '&$focused': {
-              '& > fieldset': {
-                borderColor: focusedColor,
               },
             },
           },
