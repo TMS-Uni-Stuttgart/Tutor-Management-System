@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { SentMessageInfo } from 'nodemailer/lib/smtp-transport';
 import { UserDocument } from '../../database/models/user.model';
+import { VALID_EMAIL_REGEX } from '../../helpers/validators/nodemailer.validator';
 import { FailedMail, MailingStatus } from '../../shared/model/Mail';
 import { getNameOfEntity } from '../../shared/util/helpers';
 import { MailingConfiguration } from '../settings/model/MailingConfiguration';
@@ -186,9 +187,7 @@ export class MailService {
    * @returns Is the string a valid email address?
    */
   private isValidEmail(email: string): boolean {
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-      email
-    );
+    return VALID_EMAIL_REGEX.test(email);
   }
 
   // private isOAuth2(auth: SMTPConnection.AuthenticationType): auth is AuthenticationTypeOAuth2 {

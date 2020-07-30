@@ -1,9 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested } from 'class-validator';
+import { IsValidMailSender } from '../../../helpers/validators/nodemailer.validator';
 import { IMailingAuthConfiguration, IMailingSettings } from '../../../shared/model/Settings';
 
 export class MailingAuthConfiguration implements IMailingAuthConfiguration {
   @IsString()
+  @IsNotEmpty()
   readonly user!: string;
 
   @IsString()
@@ -12,14 +14,17 @@ export class MailingAuthConfiguration implements IMailingAuthConfiguration {
 
 export class MailingConfiguration implements IMailingSettings {
   @IsString()
+  @IsNotEmpty()
   readonly host!: string;
 
   @IsNumber()
   readonly port!: number;
 
   @IsString()
+  @IsValidMailSender()
   readonly from!: string;
 
+  @IsObject()
   @ValidateNested()
   @Type(() => MailingAuthConfiguration)
   readonly auth!: MailingAuthConfiguration;
