@@ -1,6 +1,8 @@
-import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ClientSettingsDTO } from '../../module/settings/settings.dto';
+import { StaticSettings } from '../../module/settings/settings.static';
 import {
   IClientSettings,
   IMailingAuthConfiguration,
@@ -16,6 +18,10 @@ class MailingAuthModel implements IMailingAuthConfiguration {
   readonly pass!: string;
 }
 
+@plugin(fieldEncryption, {
+  secret: StaticSettings.getService().getDatabaseSecret(),
+  fields: ['host', 'port', 'from', 'auth'],
+})
 @modelOptions({ schemaOptions: { _id: false } })
 class MailingSettingsModel implements IMailingSettings {
   @prop({ required: true })
@@ -29,6 +35,15 @@ class MailingSettingsModel implements IMailingSettings {
 
   @prop({ required: true, type: MailingAuthModel })
   readonly auth!: MailingAuthModel;
+
+  constructor(fields?: IMailingSettings) {
+    Object.assign(this, fields);
+  }
+
+  toDTO(): IMailingSettings {
+    const { host, port, from, auth } = this;
+    return { host, port, from, auth };
+  }
 }
 
 @modelOptions({ schemaOptions: { collection: CollectionName.SETTINGS } })
@@ -51,7 +66,7 @@ export class SettingsModel {
       fields?.defaultTeamSize ?? SettingsModel.internalDefaults.defaultTeamSize;
     this.canTutorExcuseStudents =
       fields?.canTutorExcuseStudents ?? SettingsModel.internalDefaults.canTutorExcuseStudents;
-    this.mailingConfig = fields?.mailingConfig;
+    this.mailingConfig = new MailingSettingsModel(fields?.mailingConfig);
   }
 
   toDTO(): IClientSettings {
@@ -60,7 +75,7 @@ export class SettingsModel {
     return {
       defaultTeamSize: this.defaultTeamSize ?? defaultSettings.defaultTeamSize,
       canTutorExcuseStudents: this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
-      mailingConfig: this.mailingConfig,
+      mailingConfig: this.mailingConfig?.toDTO(),
     };
   }
 
