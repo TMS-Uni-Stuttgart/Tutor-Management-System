@@ -69,7 +69,10 @@ export class SettingsModel {
       fields?.defaultTeamSize ?? SettingsModel.internalDefaults.defaultTeamSize;
     this.canTutorExcuseStudents =
       fields?.canTutorExcuseStudents ?? SettingsModel.internalDefaults.canTutorExcuseStudents;
-    this.mailingConfig = new MailingSettingsModel(fields?.mailingConfig);
+
+    this.mailingConfig = fields?.mailingConfig
+      ? new MailingSettingsModel(fields.mailingConfig)
+      : undefined;
   }
 
   toDTO(): IClientSettings {
