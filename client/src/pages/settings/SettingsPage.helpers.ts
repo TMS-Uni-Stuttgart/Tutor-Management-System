@@ -11,6 +11,16 @@ export const validationSchema = Yup.object().shape({
     if (value?.enabled) {
       return Yup.object().shape({
         enabled: Yup.boolean().defined(),
+        host: Yup.string().required('Benötigt'),
+        subject: Yup.string().required('Benötigt'),
+        port: Yup.number()
+          .positive('Muss eine positive Zahl sein')
+          .integer('Muss eine ganze Zahl sein')
+          .required('Benötigt'),
+        auth: Yup.object().shape({
+          user: Yup.string().required('Benötigt.'),
+          pass: Yup.string().required('Benötigt.'),
+        }),
         from: Yup.string()
           .required('Benötigt')
           .test({
@@ -38,15 +48,6 @@ export const validationSchema = Yup.object().shape({
               return true;
             },
           }),
-        host: Yup.string().required('Benötigt'),
-        port: Yup.number()
-          .positive('Muss eine positive Zahl sein')
-          .integer('Muss eine ganze Zahl sein')
-          .required('Benötigt'),
-        auth: Yup.object().shape({
-          user: Yup.string().required('Benötigt.'),
-          pass: Yup.string().required('Benötigt.'),
-        }),
       });
     } else {
       return Yup.mixed();
@@ -62,6 +63,7 @@ export interface FormState {
     from: string;
     host: string;
     port: string;
+    subject: string;
     auth: { user: string; pass: string };
   };
 }
@@ -75,7 +77,8 @@ export function getInitialValues(settings: IClientSettings): FormState {
       enabled: !!mailingConfig,
       from: mailingConfig?.from ?? '',
       host: mailingConfig?.host ?? '',
-      port: `${mailingConfig?.port ?? ''}`,
+      port: `${mailingConfig?.port ?? '587'}`,
+      subject: mailingConfig?.subject ?? 'TMS Zugangsdaten',
       auth: { user: mailingConfig?.auth.user ?? '', pass: mailingConfig?.auth.pass ?? '' },
     },
   };
@@ -88,10 +91,11 @@ export function convertFormStateToDTO(values: FormState): IClientSettings {
   };
 
   if (values.mailingConfig.enabled) {
-    const { from, host, port, auth } = values.mailingConfig;
+    const { from, host, port, auth, subject } = values.mailingConfig;
     dto.mailingConfig = {
       from,
       host,
+      subject,
       port: Number.parseInt(port),
       auth: { user: auth.user, pass: auth.pass },
     };

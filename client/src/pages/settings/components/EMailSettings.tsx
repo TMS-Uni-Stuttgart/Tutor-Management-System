@@ -49,6 +49,14 @@ function EMailSettings(): JSX.Element {
       />
 
       <FormikTextField
+        label='E-Mailbetreff'
+        name='mailingConfig.subject'
+        className={classes.input}
+        disabled={!isEnabled}
+        required={isEnabled}
+      />
+
+      <FormikTextField
         label='Nutzername'
         name='mailingConfig.auth.user'
         className={classes.input}
