@@ -42,7 +42,7 @@ interface Props {
   DivProps?: React.ComponentProps<'div'>;
 }
 
-type PropType = Props & Omit<TextFieldProps, 'error'>;
+export type FormikTextFieldWithButtonsProps = Props & Omit<TextFieldProps, 'error'>;
 
 export function FormikTextFieldWithButtons({
   name,
@@ -51,7 +51,7 @@ export function FormikTextFieldWithButtons({
   DivProps,
   disabled,
   ...TextFieldProps
-}: PropType): JSX.Element {
+}: FormikTextFieldWithButtonsProps): JSX.Element {
   const classes = useStyles();
   const buttonComps = buttons.map(({ key, Icon, onClick, color, tooltip }) => {
     const buttonComp = (

@@ -1,17 +1,14 @@
 import { FormikHelpers } from 'formik';
 import pwGenerator from 'generate-password';
-import {
-  Eye as RemoveRedEyeOutlinedIcon,
-  Restore as RestoreOutlinedIcon,
-  Shuffle as ShuffleIcon,
-} from 'mdi-material-ui';
-import React, { useState } from 'react';
+import { Restore as RestoreOutlinedIcon, Shuffle as ShuffleIcon } from 'mdi-material-ui';
+import React from 'react';
 import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
 import { passwordValidationSchema } from '../../util/validationSchemas';
+import FormikPasswordField from './components/FormikPasswordField';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import { FormikTextFieldWithButtons } from './components/FormikTextFieldWithButtons';
@@ -120,8 +117,6 @@ function UserForm({
   className,
   ...other
 }: Props): JSX.Element {
-  const [hidePassword, setHidePassword] = useState(true);
-
   const isEditMode = user !== undefined;
   const ValidationSchema = getValidationSchema(availableRoles, isEditMode);
   const initialFormState: UserFormState = getInitialFormState(user);
@@ -213,18 +208,11 @@ function UserForm({
             ]}
           />
 
-          <FormikTextFieldWithButtons
+          <FormikPasswordField
             name='password'
             label={isEditMode ? 'Neues Passwort' : 'Erstes Passwort'}
-            type={hidePassword ? 'password' : 'text'}
             required={!isEditMode}
             buttons={[
-              {
-                key: 'hidePassword',
-                Icon: RemoveRedEyeOutlinedIcon,
-                color: hidePassword ? 'default' : 'secondary',
-                onClick: () => setHidePassword(!hidePassword),
-              },
               {
                 key: 'generatePassword',
                 Icon: ShuffleIcon,
