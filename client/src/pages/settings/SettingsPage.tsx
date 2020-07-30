@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Typography } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik, useFormikContext } from 'formik';
 import React, { useCallback, useMemo } from 'react';
@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import FormikCheckbox from '../../components/forms/components/FormikCheckbox';
 import FormikDebugDisplay from '../../components/forms/components/FormikDebugDisplay';
 import FormikTextField from '../../components/forms/components/FormikTextField';
+import GridDivider from '../../components/GridDivider';
 import SubmitButton from '../../components/loading/SubmitButton';
 import Placeholder from '../../components/Placeholder';
 import { useDialog } from '../../hooks/DialogService';
@@ -121,11 +122,6 @@ function convertFormStateToDTO(values: FormState): IClientSettings {
   }
 
   return dto;
-}
-
-// TODO: Extract me?!
-function GridDivider(): JSX.Element {
-  return <Divider style={{ gridColumn: '1 / -1' }} />;
 }
 
 function SettingsPageForm(): JSX.Element {
