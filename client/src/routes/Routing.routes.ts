@@ -269,6 +269,11 @@ const MANAGEMENT_ROUTES = {
     icon: SettingsIcon,
     roles: [Role.ADMIN],
   }),
+  DEBUG: new CustomRoute({
+    path: parts('debug'),
+    title: 'DEBUG',
+    component: SettingsPage,
+  }),
 };
 
 export const ROUTES = {
@@ -277,5 +282,5 @@ export const ROUTES = {
   ...MANAGEMENT_ROUTES,
 };
 
-export const ROOT_REDIRECT_PATH = ROUTES.LOGIN;
+export const ROOT_REDIRECT_PATH = ROUTES.DEBUG;
 export const PATH_REDIRECT_AFTER_LOGIN = ROUTES.DASHBOARD;

@@ -3,13 +3,12 @@ import { sanitizeObject } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import { SETTINGS_DOCUMENTS } from '../../../test/mocks/documents.mock';
-import { SettingsModel } from '../../database/models/settings.model';
 import { IClientSettings } from '../../shared/model/Settings';
 import { ClientSettingsDTO } from './settings.dto';
 import { SettingsService } from './settings.service';
 
 interface AssertSettingsParams {
-  expected: MockedModel<SettingsModel>;
+  expected: MockedModel<IClientSettings>;
   actual: IClientSettings;
 }
 

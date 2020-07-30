@@ -152,7 +152,7 @@ export class MailService {
       return await transport.sendMail({
         from: options.from,
         to: user.email,
-        subject: 'TMS Credentials', // TODO: Make configurable
+        subject: options.subject,
         html: this.getTextOfMail(user),
       });
     } catch (err) {

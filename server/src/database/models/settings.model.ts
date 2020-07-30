@@ -33,6 +33,9 @@ class MailingSettingsModel implements IMailingSettings {
   @prop({ required: true })
   readonly from!: string;
 
+  @prop({ required: true })
+  readonly subject!: string;
+
   @prop({ required: true, type: MailingAuthModel })
   readonly auth!: MailingAuthModel;
 
@@ -41,8 +44,8 @@ class MailingSettingsModel implements IMailingSettings {
   }
 
   toDTO(): IMailingSettings {
-    const { host, port, from, auth } = this;
-    return { host, port, from, auth };
+    const { host, port, from, auth, subject } = this;
+    return { host, port, from, auth, subject };
   }
 }
 

@@ -24,6 +24,10 @@ export class MailingConfiguration implements IMailingSettings {
   @IsValidMailSender()
   readonly from!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  readonly subject!: string;
+
   @IsObject()
   @ValidateNested()
   @Type(() => MailingAuthConfiguration)

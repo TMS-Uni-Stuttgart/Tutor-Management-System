@@ -7,6 +7,7 @@ export interface IMailingSettings {
   from: string;
   host: string;
   port: number;
+  subject: string;
   auth: IMailingAuthConfiguration;
 }
 
