@@ -5,8 +5,8 @@ import { SentMessageInfo } from 'nodemailer/lib/smtp-transport';
 import { UserDocument } from '../../database/models/user.model';
 import { VALID_EMAIL_REGEX } from '../../helpers/validators/nodemailer.validator';
 import { FailedMail, MailingStatus } from '../../shared/model/Mail';
+import { IMailingSettings } from '../../shared/model/Settings';
 import { getNameOfEntity } from '../../shared/util/helpers';
-import { MailingConfiguration } from '../settings/model/MailingConfiguration';
 import { SettingsService } from '../settings/settings.service';
 import { TemplateService } from '../template/template.service';
 import { UserService } from '../user/user.service';
@@ -18,7 +18,7 @@ class MailingError {
 interface SendMailParams {
   user: UserDocument;
   transport: Mail;
-  options: MailingConfiguration;
+  options: IMailingSettings;
 }
 
 @Injectable()
@@ -153,7 +153,7 @@ export class MailService {
         from: options.from,
         to: user.email,
         subject: options.subject,
-        html: this.getTextOfMail(user),
+        text: this.getTextOfMail(user),
       });
     } catch (err) {
       throw new MailingError(user.id, 'SEND_MAIL_FAILED', err);
@@ -177,9 +177,15 @@ export class MailService {
    * @param options Options to create the transport with.
    * @returns A nodemail SMTPTransport instance created with the given options.
    */
-  private createSMTPTransport(options: MailingConfiguration): Mail {
+  private createSMTPTransport(options: IMailingSettings): Mail {
     // TODO: Add testingMode with ethereal!
-    return nodemailer.createTransport(options);
+    return nodemailer.createTransport({
+      host: options.host,
+      port: options.port,
+      auth: { user: options.auth.user, pass: options.auth.pass },
+      logger: true,
+      debug: true,
+    });
   }
 
   /**

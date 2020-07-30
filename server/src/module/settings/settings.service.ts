@@ -3,8 +3,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { SettingsDocument, SettingsModel } from '../../database/models/settings.model';
 import { StartUpException } from '../../exceptions/StartUpException';
-import { IClientSettings } from '../../shared/model/Settings';
-import { MailingConfiguration } from './model/MailingConfiguration';
+import { IClientSettings, IMailingSettings } from '../../shared/model/Settings';
 import { ClientSettingsDTO } from './settings.dto';
 import { StaticSettings } from './settings.static';
 
@@ -47,9 +46,9 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
   /**
    * @returns MailingConfiguration saved in the DB or `undefined` if none are saved.
    */
-  async getMailingOptions(): Promise<MailingConfiguration | undefined> {
+  async getMailingOptions(): Promise<IMailingSettings | undefined> {
     const document = await this.getSettingsDocument();
-    return document.mailingConfig;
+    return document.mailingConfig?.toDTO();
   }
 
   /**
