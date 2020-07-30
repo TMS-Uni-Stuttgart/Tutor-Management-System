@@ -1,8 +1,35 @@
 import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
-import { MailingConfiguration } from '../../module/settings/model/MailingConfiguration';
 import { ClientSettingsDTO } from '../../module/settings/settings.dto';
-import { IClientSettings } from '../../shared/model/Settings';
+import {
+  IClientSettings,
+  IMailingAuthConfiguration,
+  IMailingSettings,
+} from '../../shared/model/Settings';
+
+@modelOptions({ schemaOptions: { _id: false } })
+class MailingAuthModel implements IMailingAuthConfiguration {
+  @prop({ required: true })
+  readonly user!: string;
+
+  @prop({ required: true })
+  readonly pass!: string;
+}
+
+@modelOptions({ schemaOptions: { _id: false } })
+class MailingSettingsModel implements IMailingSettings {
+  @prop({ required: true })
+  readonly host!: string;
+
+  @prop({ required: true })
+  readonly port!: number;
+
+  @prop({ required: true })
+  readonly from!: string;
+
+  @prop({ required: true, type: MailingAuthModel })
+  readonly auth!: MailingAuthModel;
+}
 
 @modelOptions({ schemaOptions: { collection: CollectionName.SETTINGS } })
 export class SettingsModel {
@@ -16,8 +43,8 @@ export class SettingsModel {
   @prop({ required: true })
   canTutorExcuseStudents: boolean;
 
-  @prop()
-  mailingConfig?: MailingConfiguration;
+  @prop({ type: MailingSettingsModel })
+  mailingConfig?: MailingSettingsModel;
 
   constructor(fields?: Partial<IClientSettings>) {
     this.defaultTeamSize =
@@ -47,7 +74,7 @@ export class SettingsModel {
   assignDTO(dto: ClientSettingsDTO): void {
     for (const [key, value] of Object.entries(dto)) {
       if (typeof value !== 'function' && key in this) {
-        (this as Record<string, unknown>)[key] = value;
+        (this as Record<string, unknown>)[key] = value ?? undefined;
       }
     }
   }
