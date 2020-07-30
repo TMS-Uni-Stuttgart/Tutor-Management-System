@@ -15,3 +15,5 @@ export interface IClientSettings {
   canTutorExcuseStudents: boolean;
   mailingConfig?: IMailingSettings;
 }
+
+export type IChangeSettingsDTO = { [K in keyof IClientSettings]?: IClientSettings[K] };

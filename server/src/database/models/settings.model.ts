@@ -33,6 +33,7 @@ export class SettingsModel {
     return {
       defaultTeamSize: this.defaultTeamSize ?? defaultSettings.defaultTeamSize,
       canTutorExcuseStudents: this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
+      mailingConfig: this.mailingConfig,
     };
   }
 
