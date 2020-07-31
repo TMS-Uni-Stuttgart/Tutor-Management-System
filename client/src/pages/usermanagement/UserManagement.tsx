@@ -7,7 +7,7 @@ import {
 } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MailingStatus } from 'shared/model/Mail';
+import { FailedMail, MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
 import { ICreateUserDTO, IUser, IUserDTO } from 'shared/model/User';
 import { getNameOfEntity } from 'shared/util/helpers';
@@ -28,6 +28,7 @@ import {
   setTemporaryPassword,
 } from '../../hooks/fetching/User';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
+import { useSettings } from '../../hooks/useSettings';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
 import { saveBlob } from '../../util/helperFunctions';
@@ -81,14 +82,26 @@ function convertFormStateToUserDTO(
   };
 }
 
+function convertFailedMailsInfoIntoList(failedMailsInfo: FailedMail[], users: IUser[]): string[] {
+  return failedMailsInfo.map((info) => {
+    const user = users.find((u) => u.id === info.userId);
+    const name = user ? getNameOfEntity(user) : 'USER_NOT_FOUND';
+    const reason = info.reason;
+
+    return `${name}: ${reason}`;
+  });
+}
+
 function UserManagement(): JSX.Element {
   const classes = useStyles();
+  const dialog = useDialog();
+  const { isMailingActive } = useSettings();
+  const { enqueueSnackbar, closeSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const { enqueueSnackbar, closeSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
-  const dialog = useDialog();
 
   useEffect(() => {
     setIsLoading(true);
@@ -260,17 +273,13 @@ function UserManagement(): JSX.Element {
       if (failedMailsInfo.length === 0) {
         enqueueSnackbar('Zugangsdaten wurden erfolgreich verschickt.', { variant: 'success' });
       } else {
-        const failedNames: string[] = failedMailsInfo.map((info) => {
-          const user = users.find((u) => u.id === info.userId);
-
-          return user ? getNameOfEntity(user) : 'NOT_FOUND';
-        });
+        const convertedInfo: string[] = convertFailedMailsInfoIntoList(failedMailsInfo, users);
 
         enqueueSnackbarWithList({
           title: 'Nicht zugestellte Zugangsdaten',
           textBeforeList:
             'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:',
-          items: failedNames,
+          items: convertedInfo,
           isOpen: true,
         });
       }
@@ -305,7 +314,11 @@ function UserManagement(): JSX.Element {
       if (status.failedMailsInfo.length === 0) {
         enqueueSnackbar('Zugangsdaten erfolgreich verschickt.', { variant: 'success' });
       } else {
-        enqueueSnackbar('Zugangsdaten verschicken fehlgeschlagen.', { variant: 'error' });
+        const name = getNameOfEntity(user, { firstNameFirst: true });
+        enqueueSnackbar(
+          `Zugangsdaten verschicken an ${name} fehlgeschlagen: ${status.failedMailsInfo[0].reason}`,
+          { variant: 'error' }
+        );
       }
     } catch {
       enqueueSnackbar('Zugangsdaten verschicken fehlgeschlagen.', { variant: 'error' });
@@ -334,6 +347,10 @@ function UserManagement(): JSX.Element {
                 isSubmitting={isSendingCredentials}
                 startIcon={<SendIcon />}
                 onClick={handleSendCredentials}
+                disabled={!isMailingActive()}
+                tooltipText={
+                  !isMailingActive() ? 'E-Mails sind serverseitig nicht konfiguriert.' : undefined
+                }
               >
                 Zugangsdaten verschicken
               </SubmitButton>
@@ -366,6 +383,7 @@ function UserManagement(): JSX.Element {
               onEditUserClicked={handleEditUser}
               onDeleteUserClicked={handleDeleteUser}
               onSendCredentialsClicked={sendCredentialsToSingleUser}
+              disableSendCredentials={!isMailingActive()}
             />
           )}
         />

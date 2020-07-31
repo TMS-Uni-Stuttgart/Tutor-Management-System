@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props extends PaperTableRowProps {
   user: IUser;
+  disableSendCredentials?: boolean;
   onEditUserClicked: (user: IUser) => void;
   onDeleteUserClicked: (user: IUser) => void;
   onSendCredentialsClicked: (user: IUser) => void;
@@ -29,6 +30,7 @@ function getRolesAsString(roles: Role[]): string {
 
 function UserTableRow({
   user,
+  disableSendCredentials,
   onEditUserClicked,
   onDeleteUserClicked,
   onSendCredentialsClicked,
@@ -48,9 +50,14 @@ function UserTableRow({
           additionalItems={[
             {
               primary: 'Zugangsdaten schicken',
+              secondary:
+                (disableSendCredentials && 'Vom Server nicht unterstützt.') ||
+                (!user.email && 'Nutzer/in hat keine E-Mail') ||
+                (!user.temporaryPassword && 'Nutzer/in hat kein temporäres Passwort.') ||
+                undefined,
               onClick: () => onSendCredentialsClicked(user),
               Icon: MailIcon,
-              disabled: !user.email,
+              disabled: disableSendCredentials || !user.email || !user.temporaryPassword,
             },
           ]}
         />
