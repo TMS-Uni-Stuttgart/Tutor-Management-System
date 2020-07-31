@@ -25,7 +25,7 @@ export const validationSchema = Yup.object().shape({
           .required('Benötigt')
           .test({
             name: 'isValidFrom',
-            message: 'Muss eine kommaseparierte Liste mit "{email}" oder "{name} <{email}>" sein',
+            message: 'Muss entweder in der Form "{email}" oder "{name} <{email}>" sein',
             test: (value) => {
               if (typeof value !== 'string') {
                 return false;
@@ -37,15 +37,7 @@ export const validationSchema = Yup.object().shape({
                 `^(${regexMail.source})|(${regexName.source} <${regexMail.source}>)$`,
                 'u'
               );
-              const mails = value.split(',').map((m) => m.trim());
-
-              for (const mail of mails) {
-                if (!regex.test(mail)) {
-                  return false;
-                }
-              }
-
-              return true;
+              return regex.test(value);
             },
           }),
       });
