@@ -12,6 +12,7 @@ interface ContextType {
   isLoadingSettings: boolean;
   canStudentBeExcused: () => boolean;
   updateSettings: () => Promise<void>;
+  isMailingActive: () => boolean;
 }
 
 const DEFAULT_SETTINGS: IClientSettings = { defaultTeamSize: 1, canTutorExcuseStudents: false };
@@ -21,6 +22,7 @@ const SettingsContext = React.createContext<ContextType>({
   isLoadingSettings: false,
   canStudentBeExcused: throwContextNotInitialized('SettingsContext'),
   updateSettings: throwContextNotInitialized('SettingsContext'),
+  isMailingActive: throwContextNotInitialized('SettingsContext'),
 });
 
 export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element {
@@ -48,6 +50,8 @@ export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element
     return !!userData && userData.roles.includes(Role.ADMIN);
   }, [userData, value]);
 
+  const isMailingActive = useCallback(() => !!value?.mailingConfig, [value?.mailingConfig]);
+
   return (
     <SettingsContext.Provider
       value={{
@@ -55,6 +59,7 @@ export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element
         isLoadingSettings: isLoading,
         canStudentBeExcused,
         updateSettings,
+        isMailingActive,
       }}
     >
       {children}
