@@ -29,6 +29,7 @@ function EMailSettings(): JSX.Element {
           className={classes.input}
           disabled={!isEnabled}
           required={isEnabled}
+          helperText='Hostaddresse des SMTP-EMailservers.'
         />
         <FormikTextField
           label='Mail-Port'
@@ -37,24 +38,9 @@ function EMailSettings(): JSX.Element {
           className={clsx(classes.input, classes.portInput)}
           disabled={!isEnabled}
           required={isEnabled}
+          helperText='Port des SMTP-EMailservers.'
         />
       </Box>
-
-      <FormikTextField
-        label='Absender'
-        name='mailingConfig.from'
-        className={classes.input}
-        disabled={!isEnabled}
-        required={isEnabled}
-      />
-
-      <FormikTextField
-        label='E-Mailbetreff'
-        name='mailingConfig.subject'
-        className={classes.input}
-        disabled={!isEnabled}
-        required={isEnabled}
-      />
 
       <FormikTextField
         label='Nutzername'
@@ -62,6 +48,7 @@ function EMailSettings(): JSX.Element {
         className={classes.input}
         disabled={!isEnabled}
         required={isEnabled}
+        helperText='Nutzername des Accounts, von dem aus die Mails verschickt werden sollen.'
       />
 
       <FormikPasswordField
@@ -70,6 +57,25 @@ function EMailSettings(): JSX.Element {
         className={classes.input}
         disabled={!isEnabled}
         required={isEnabled}
+        helperText='Passwort des Accounts.'
+      />
+
+      <FormikTextField
+        label='Absender'
+        name='mailingConfig.from'
+        className={classes.input}
+        disabled={!isEnabled}
+        required={isEnabled}
+        helperText='Wird als Absender angezeigt. Kann in der Form "{email}" oder "{name} <{email}>" sein.'
+      />
+
+      <FormikTextField
+        label='Zugangsdaten E-Mailbetreff'
+        name='mailingConfig.subject'
+        className={classes.input}
+        disabled={!isEnabled}
+        required={isEnabled}
+        helperText='Der Betreff für die Mails mit den Zugangsdaten.'
       />
     </Box>
   );

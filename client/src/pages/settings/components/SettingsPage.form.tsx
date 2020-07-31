@@ -82,6 +82,7 @@ function SettingsPageForm(): JSX.Element {
         <FormikTextField
           label='Standardteamgröße'
           name='defaultTeamSize'
+          helperText='Die Anzahl von Studierenden, die in einem Team sein sollten.'
           type='number'
           className={classes.input}
           required
