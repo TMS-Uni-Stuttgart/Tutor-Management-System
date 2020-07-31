@@ -6,10 +6,11 @@ import path from 'path';
 import YAML from 'yaml';
 import { StartUpException } from '../../exceptions/StartUpException';
 import { ApplicationConfiguration } from './model/ApplicationConfiguration';
-import { DatabaseConfiguration } from './model/DatabaseConfiguration';
+import {
+  DatabaseConfiguration,
+  DatabaseConfigurationValidationGroup,
+} from './model/DatabaseConfiguration';
 import { EnvironmentConfig, ENV_VARIABLE_NAMES } from './model/EnvironmentConfig';
-
-type DatabaseConfig = DatabaseConfiguration & { secret: string };
 
 export class StaticSettings {
   private static service: StaticSettings = new StaticSettings();
@@ -17,9 +18,8 @@ export class StaticSettings {
   private static readonly API_PREFIX = 'api';
   private static readonly STATIC_FOLDER = 'app';
 
-  // TODO: Redo these properties to have a more readable 'loading flow'.
   protected readonly config: ApplicationConfiguration;
-  private readonly databaseConfig: Readonly<DatabaseConfig>;
+  private readonly databaseConfig: DatabaseConfiguration;
   private readonly envConfig: EnvironmentConfig;
 
   protected readonly logger = new Logger(StaticSettings.name);
@@ -54,7 +54,7 @@ export class StaticSettings {
   /**
    * @returns Configuration for the database.
    */
-  getDatabaseConfiguration(): DatabaseConfig {
+  getDatabaseConfiguration(): DatabaseConfiguration {
     return this.databaseConfig;
   }
 
@@ -127,10 +127,9 @@ export class StaticSettings {
    *
    * @returns Configuration options for the database.
    */
-  private loadDatabaseConfig(): DatabaseConfig {
+  private loadDatabaseConfig(): DatabaseConfiguration {
     const configFromFile: DatabaseConfiguration = this.config.database;
-
-    return {
+    const config: DatabaseConfiguration = plainToClass(DatabaseConfiguration, {
       databaseURL: configFromFile.databaseURL,
       maxRetries: configFromFile.maxRetries,
       secret: this.envConfig.secret,
@@ -139,7 +138,13 @@ export class StaticSettings {
         user: this.envConfig.mongoDbUser,
         pass: this.envConfig.mongoDbPassword,
       },
-    };
+    });
+
+    this.assertConfigNoErrors(
+      validateSync(config, { groups: [DatabaseConfigurationValidationGroup.ALL] })
+    );
+
+    return config;
   }
 
   /**
@@ -283,7 +288,9 @@ export class StaticSettings {
       const configString = YAML.parse(fileContent);
       const config = plainToClass(ApplicationConfiguration, configString);
 
-      this.assertConfigNoErrors(validateSync(config));
+      this.assertConfigNoErrors(
+        validateSync(config, { groups: [DatabaseConfigurationValidationGroup.FILE] })
+      );
 
       this.logger.log(`Configuration loaded for "${environment}" environment`);
       return config;
