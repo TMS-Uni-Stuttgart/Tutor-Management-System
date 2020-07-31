@@ -41,7 +41,19 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldProps): JSX.Element {
+interface Props {
+  /** Disables the submit of the form by pressing Ctrl + Enter */
+  disableSendOnCtrlEnter?: boolean;
+}
+
+type FormikMarkdownTextfieldProps = Props & FormikTextFieldProps;
+
+function FormikMarkdownTextfield({
+  name,
+  className,
+  disableSendOnCtrlEnter,
+  ...other
+}: FormikMarkdownTextfieldProps): JSX.Element {
   const classes = useStyles();
   const { handleSubmit, dirty } = useFormikContext();
   const [{ value }] = useField(name);
@@ -55,7 +67,10 @@ function FormikMarkdownTextfield({ name, className, ...other }: FormikTextFieldP
   }, [value]);
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
-    // FIXME: Does this need to be in here? Can it use the useKeyboardShortcut() hook or better - can this be handled by the parent component?
+    if (disableSendOnCtrlEnter) {
+      return;
+    }
+
     if (event.ctrlKey && event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();

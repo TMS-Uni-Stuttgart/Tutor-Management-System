@@ -178,7 +178,6 @@ export class MailService {
    * @returns A nodemail SMTPTransport instance created with the given options.
    */
   private createSMTPTransport(options: IMailingSettings): Mail {
-    // TODO: Add testingMode with ethereal!
     return nodemailer.createTransport({
       host: options.host,
       port: options.port,
