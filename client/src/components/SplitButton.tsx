@@ -1,6 +1,7 @@
 import {
   Button,
   ButtonGroup,
+  ButtonGroupProps,
   ButtonProps,
   ClickAwayListener,
   Grow,
@@ -8,10 +9,23 @@ import {
   MenuList,
   Paper,
   Popper,
-  ButtonGroupProps,
 } from '@material-ui/core';
+import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
 import { MenuDown as ArrowDropDownIcon } from 'mdi-material-ui';
 import React from 'react';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    button: {
+      '&:hover': {
+        background: fade(theme.palette.primary.main, 0.8),
+      },
+      '&:not(:last-child)': {
+        borderRightColor: theme.palette.getContrastText(theme.palette.primary.main),
+      },
+    },
+  })
+);
 
 interface ButtonOption {
   label: string;
@@ -29,6 +43,7 @@ function SplitButton({ options, variant, color, ...props }: Props): JSX.Element 
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const classes = useStyles();
 
   const { ButtonProps: buttonProps } = options[selectedIndex];
 
@@ -60,6 +75,7 @@ function SplitButton({ options, variant, color, ...props }: Props): JSX.Element 
         ref={anchorRef}
         aria-label='split button'
         {...props}
+        classes={{ grouped: classes.button }}
       >
         <Button {...buttonProps}>{options[selectedIndex].label}</Button>
         <Button
