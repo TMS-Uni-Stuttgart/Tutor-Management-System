@@ -12,10 +12,6 @@ database:
     authSource: 'admin'
     authMechanism: 'SCRAM-SHA-1'
 
-mailing:
-  testingMode: true
-  host: HOST
-  port: 587
-  auth:
-    user: USER
-    pass: PASS
+defaultSettings:
+  canTutorExcuseStudents: true
+  defaultTeamSize: 3

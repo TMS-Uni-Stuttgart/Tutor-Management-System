@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
@@ -28,10 +28,14 @@ export class ScheinexamModel {
   }
 
   set date(date: DateTime) {
-    this._date = date.toISODate();
+    const parsed = date.toISODate();
+
+    if (!!parsed) {
+      this._date = parsed;
+    }
   }
 
-  @arrayProp({ required: true, items: ExerciseModel })
+  @prop({ required: true, type: ExerciseModel })
   exercises!: ExerciseDocument[];
 
   @prop({ required: true })
@@ -99,7 +103,7 @@ export class ScheinexamModel {
       id: this.id,
       scheinExamNo: this.scheinExamNo,
       percentageNeeded: this.percentageNeeded,
-      date: this.date.toISODate(),
+      date: this.date.toISODate() ?? 'DATE_NOT_PARSEABLE',
       exercises: this.exercises.map((ex) => ex.toDTO()),
     };
   }

@@ -1,5 +1,5 @@
-import { generateObjectId } from './test.helpers';
 import { UserModel } from '../../src/database/models/user.model';
+import { generateObjectId } from './test.helpers';
 
 type MockedModel<M> = M & { _id: string };
 
@@ -8,9 +8,12 @@ export type MockedUserModel = MockedModel<UserModel> & {
   decryptFieldsSync: () => void;
 };
 
-export function createMockModel<M, T extends {}>(model: M): MockedModel<M>;
-export function createMockModel<M, T extends {}>(model: M, additional: T): MockedModel<M & T>;
-export function createMockModel<M, T extends {}>(
+export function createMockModel<M, T extends Record<string, unknown>>(model: M): MockedModel<M>;
+export function createMockModel<M, T extends Record<string, unknown>>(
+  model: M,
+  additional: T
+): MockedModel<M & T>;
+export function createMockModel<M, T extends Record<string, unknown>>(
   model: M,
   additional?: T
 ): MockedModel<M> | MockedModel<M & T> {

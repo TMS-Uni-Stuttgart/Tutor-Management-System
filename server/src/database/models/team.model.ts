@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
@@ -41,7 +41,7 @@ export class TeamModel {
   @prop({ required: true, autopopulate: true, ref: TutorialModel })
   tutorial!: TutorialDocument;
 
-  @arrayProp({
+  @prop({
     ref: 'StudentModel',
     foreignField: 'team',
     localField: '_id',

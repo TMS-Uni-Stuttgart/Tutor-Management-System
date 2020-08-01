@@ -1,25 +1,25 @@
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 
-type Arr = readonly unknown[];
+type BaseArrayType = readonly unknown[];
 
-interface UseFetchStateParamsDelayed<T, P extends Arr> {
+interface UseFetchStateParamsDelayed<T, P extends BaseArrayType> {
   fetchFunction: (...params: P) => Promise<T>;
   immediate?: false;
   params?: never;
 }
 
-interface UseFetchStateParamsImmediate<T, P extends Arr> {
+interface UseFetchStateParamsImmediate<T, P extends BaseArrayType> {
   fetchFunction: (...params: P) => Promise<T>;
   immediate: true;
   params: P;
 }
 
-export type UseFetchStateParams<T, P extends Arr> =
+export type UseFetchStateParams<T, P extends BaseArrayType> =
   | UseFetchStateParamsDelayed<T, P>
   | UseFetchStateParamsImmediate<T, P>;
 
-export interface UseFetchState<T, P extends Arr> extends FetchState<T> {
+export interface UseFetchState<T, P extends BaseArrayType> extends FetchState<T> {
   execute: (...params: P) => Promise<void>;
 }
 
@@ -29,7 +29,7 @@ export interface FetchState<T> {
   error?: string;
 }
 
-export function useFetchState<T, P extends Arr>({
+export function useFetchState<T, P extends BaseArrayType>({
   fetchFunction,
   immediate,
   params,
@@ -55,7 +55,7 @@ export function useFetchState<T, P extends Arr>({
   useEffect(() => {
     if (immediate) {
       if (params) {
-        // Make a deep equal check to prevent infinite re-executin the callback.
+        // Make a deep equal check to prevent re-executing the callback an 'infinite' times.
         if (!_.isEqual(params, prevParams)) {
           setPrevParams(params);
           execute(...params);

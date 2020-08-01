@@ -1,5 +1,4 @@
 import { NotFoundException } from '@nestjs/common';
-import { DateTime } from 'luxon';
 import { UserModel } from '../../src/database/models/user.model';
 import { Role } from '../../src/shared/model/Role';
 import { MockedModel } from '../helpers/testdocument';

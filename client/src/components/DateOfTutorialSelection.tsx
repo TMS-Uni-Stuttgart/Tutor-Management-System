@@ -42,8 +42,8 @@ function DateOfTutorialSelection({
       className={className}
       FormControlProps={other}
       items={availableDates}
-      itemToString={(date) => date.toLocaleString(DateTime.DATE_MED)}
-      itemToValue={(date) => date.toISODate()}
+      itemToString={(date) => date.toLocaleString(DateTime.DATE_MED) ?? 'DATE_NOTE_PARSEABLE'}
+      itemToValue={(date) => date.toISODate() ?? 'DATE_NOTE_PARSEABLE'}
     />
   );
 }

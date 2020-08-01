@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { ClientSettingsDTO } from '../settings.dto';
 import { DatabaseConfiguration } from './DatabaseConfiguration';
-import { MailingConfiguration } from './MailingConfiguration';
 
 export class ApplicationConfiguration {
   @IsOptional()
@@ -17,7 +17,8 @@ export class ApplicationConfiguration {
   @ValidateNested()
   readonly database!: DatabaseConfiguration;
 
-  @Type(() => MailingConfiguration)
+  @IsOptional()
+  @Type(() => ClientSettingsDTO)
   @ValidateNested()
-  readonly mailing!: MailingConfiguration;
+  readonly defaultSettings: ClientSettingsDTO | undefined;
 }

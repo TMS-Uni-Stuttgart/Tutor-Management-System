@@ -1,16 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
-import {
-  arrayProp,
-  DocumentType,
-  getModelForClass,
-  mapProp,
-  modelOptions,
-  plugin,
-  prop,
-} from '@typegoose/typegoose';
+import { DocumentType, getModelForClass, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
-import { SettingsService } from '../../module/settings/settings.service';
+import { StaticSettings } from '../../module/settings/settings.static';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Points';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
@@ -50,7 +42,7 @@ export class ExerciseGradingModel {
     this._points = newPoints;
   }
 
-  @mapProp({ of: Number })
+  @prop({ type: Number })
   subExercisePoints?: Map<string, number>;
 
   getGradingForSubexercise(subExercise: SubExerciseDocument): number | undefined {
@@ -119,7 +111,7 @@ export class ExerciseGradingModel {
 
 @modelOptions({ schemaOptions: { collection: CollectionName.GRADING } })
 @plugin(fieldEncryption, {
-  secret: SettingsService.getSecret(),
+  secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['comment', 'additionalPoints', 'exerciseGradings'],
 })
 export class GradingModel {
@@ -157,10 +149,10 @@ export class GradingModel {
   @prop()
   additionalPoints?: number;
 
-  @mapProp({ of: ExerciseGradingModel, autopopulate: true, default: new Map() })
+  @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
   exerciseGradings!: Map<string, ExerciseGradingDocument>;
 
-  @arrayProp({ ref: StudentModel, autopopulate: true, default: [] })
+  @prop({ ref: StudentModel, autopopulate: true, default: [] })
   students!: StudentDocument[];
 
   /**

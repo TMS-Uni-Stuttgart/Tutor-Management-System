@@ -153,7 +153,7 @@ function getDatesInInterval(
     }
 
     if (!isExcluded) {
-      datesInMap.push(current.toISODate());
+      datesInMap.push(current.toISODate() ?? 'DATE_NOTE_PARSABLE');
       dates.set(current.weekday, datesInMap);
     }
     current = current.plus({ days: 1 });
@@ -263,8 +263,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -280,8 +280,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: tutorDoc._id,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -297,8 +297,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: correctorDocs.map((corrector) => corrector._id),
     };
@@ -315,8 +315,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: tutorDoc._id,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: correctorDocs.map((corrector) => corrector._id),
     };
@@ -332,8 +332,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: tutorDoc._id,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -348,8 +348,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [...correctors, tutorDoc._id],
     };
@@ -362,8 +362,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: tutorial.slot,
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -375,16 +375,16 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
     const createDTO: TutorialDTO = {
       ...updatedDTO,
       slot: 'Tutorial Prev',
-      startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('14:00:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('15:30:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings('2020-02-18'),
     };
 
@@ -399,8 +399,8 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: tutors[0]._id,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -420,8 +420,8 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -442,8 +442,8 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [correctors[0]._id],
     };
@@ -463,8 +463,8 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: nonExistingId,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -483,8 +483,8 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [nonExistingId],
     };
@@ -503,8 +503,8 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: nonTutor._id,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };
@@ -523,8 +523,8 @@ describe('TutorialService', () => {
     const updatedDTO: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: undefined,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [nonCorrector._id],
     };
@@ -544,8 +544,8 @@ describe('TutorialService', () => {
     const dto: TutorialDTO = {
       slot: 'Tutorial 3',
       tutorId: tutorDoc._id,
-      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON(),
-      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON(),
+      startTime: DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
+      endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
       dates: createDatesForTutorialAsStrings(),
       correctorIds: [],
     };

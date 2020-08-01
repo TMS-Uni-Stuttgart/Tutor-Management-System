@@ -1,11 +1,11 @@
-import { arrayProp, DocumentType, modelOptions, plugin, pre, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, pre, prop } from '@typegoose/typegoose';
 import bcrypt from 'bcryptjs';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'src/shared/model/Role';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
-import { SettingsService } from '../../module/settings/settings.service';
+import { StaticSettings } from '../../module/settings/settings.static';
 import { IUser } from '../../shared/model/User';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { TutorialDocument } from './tutorial.model';
@@ -26,7 +26,7 @@ export async function populateUserDocument(doc?: UserDocument): Promise<void> {
 type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToCorrect'>;
 
 @plugin(fieldEncryption, {
-  secret: SettingsService.getSecret(),
+  secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['firstname', 'lastname', 'temporaryPassword', 'password', 'email', 'roles'],
 })
 @plugin(mongooseAutopopulate)
@@ -61,10 +61,10 @@ export class UserModel {
   @prop({ required: true })
   lastname!: string;
 
-  @arrayProp({ required: true, items: String })
+  @prop({ required: true, type: String })
   roles!: Role[];
 
-  @prop({ required: true, unique: true })
+  @prop({ required: true })
   username!: string;
 
   @prop({ required: true })
@@ -76,14 +76,14 @@ export class UserModel {
   @prop()
   temporaryPassword?: string;
 
-  @arrayProp({
+  @prop({
     ref: 'TutorialModel',
     foreignField: 'tutor',
     localField: '_id',
   })
   tutorials!: TutorialDocument[];
 
-  @arrayProp({
+  @prop({
     ref: 'TutorialModel',
     foreignField: 'correctors',
     localField: '_id',
@@ -113,7 +113,7 @@ export class UserModel {
       username,
       firstname,
       lastname,
-      roles,
+      roles: [...roles],
       email,
       temporaryPassword,
       tutorials: tutorials.map((tutorial) => ({

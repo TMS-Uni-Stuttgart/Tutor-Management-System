@@ -1,9 +1,9 @@
-import { arrayProp, DocumentType, mapProp, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
-import { SettingsService } from '../../module/settings/settings.service';
+import { StaticSettings } from '../../module/settings/settings.static';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IGrading } from '../../shared/model/Points';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
@@ -37,7 +37,7 @@ export async function populateStudentDocument(doc?: StudentDocument): Promise<vo
 }
 
 @plugin(fieldEncryption, {
-  secret: SettingsService.getSecret(),
+  secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
 })
 @plugin(mongooseAutoPopulate)
@@ -81,15 +81,15 @@ export class StudentModel {
   @prop({ default: 0 })
   cakeCount!: number;
 
-  @mapProp({ of: AttendanceModel, autopopulate: true, default: new Map() })
+  @prop({ type: AttendanceModel, autopopulate: true, default: new Map() })
   attendances!: Map<string, AttendanceDocument>;
 
-  @arrayProp({ ref: 'GradingModel', foreignField: 'students', localField: '_id' })
+  @prop({ ref: 'GradingModel', foreignField: 'students', localField: '_id' })
   private _gradings!: GradingDocument[];
 
   private gradings?: Map<string, GradingDocument>;
 
-  @mapProp({ of: Number, default: new Map() })
+  @prop({ type: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
 
   /**
@@ -243,7 +243,13 @@ export class StudentModel {
   }
 
   private getDateKey(date: DateTime): string {
-    return date.toISODate();
+    const dateKey = date.toISODate();
+
+    if (!dateKey) {
+      throw new Error(`Date '${date}' is not parseable to an ISODate.`);
+    }
+
+    return dateKey;
   }
 }
 

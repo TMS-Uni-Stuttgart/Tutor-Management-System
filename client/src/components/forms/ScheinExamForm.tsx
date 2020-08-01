@@ -36,7 +36,7 @@ export function getInitialExamFormState(
       scheinExamNo: exam.scheinExamNo.toString(),
       exercises,
       percentageNeeded: exam.percentageNeeded,
-      date: exam.date.toISODate(),
+      date: exam.date.toISODate() ?? '',
     };
   }
 
@@ -48,7 +48,7 @@ export function getInitialExamFormState(
   return {
     scheinExamNo: (lastScheinExamNo + 1).toString(),
     exercises: [],
-    date: DateTime.local().toISODate(),
+    date: DateTime.local().toISODate() ?? '',
     percentageNeeded: 0.5,
   };
 }

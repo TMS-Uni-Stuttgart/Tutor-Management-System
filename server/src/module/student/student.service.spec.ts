@@ -631,7 +631,7 @@ describe('StudentService', () => {
     const scheinexamDTO: ScheinexamDTO = {
       scheinExamNo: 17,
       percentageNeeded: 0.5,
-      date: DateTime.fromISO('2020-02-08').toISODate(),
+      date: DateTime.fromISO('2020-02-08').toISODate() ?? 'DATE_NOTE_PARSEABLE',
       exercises: [
         {
           exName: '1',

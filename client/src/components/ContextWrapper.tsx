@@ -9,6 +9,7 @@ import { MemoryRouterProps } from 'react-router';
 import { BrowserRouterProps } from 'react-router-dom';
 import DialogService, { getDialogOutsideContext } from '../hooks/DialogService';
 import { LoginContextProvider } from '../hooks/LoginService';
+import { SettingsProvider } from '../hooks/useSettings';
 import { RequireChildrenProp } from '../typings/RequireChildrenProp';
 import i18n from '../util/lang/configI18N';
 import { getRouteWithPrefix } from '../util/routePrefix';
@@ -82,11 +83,16 @@ function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Ele
       <I18nextProvider i18n={i18n}>
         <CustomThemeProvider>
           <LoginContextProvider>
-            <MuiPickersUtilsProvider locale={navigator.language ?? 'de'} utils={LuxonUtils}>
-              <SnackbarProvider maxSnack={3}>
-                <DialogService>{children}</DialogService>
-              </SnackbarProvider>
-            </MuiPickersUtilsProvider>
+            <SettingsProvider>
+              <MuiPickersUtilsProvider locale={navigator.language ?? 'de'} utils={LuxonUtils}>
+                <SnackbarProvider
+                  maxSnack={3}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <DialogService>{children}</DialogService>
+                </SnackbarProvider>
+              </MuiPickersUtilsProvider>
+            </SettingsProvider>
           </LoginContextProvider>
         </CustomThemeProvider>
       </I18nextProvider>

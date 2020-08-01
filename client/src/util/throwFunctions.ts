@@ -4,7 +4,7 @@
  * @param contextName Name of the context.
  * @returns Function that throws an `Error` (see above).
  */
-export function notInitializied(contextName: string) {
+export function throwContextNotInitialized(contextName: string) {
   return (): never => {
     throw new Error(`Context '${contextName}' not initialised.`);
   };

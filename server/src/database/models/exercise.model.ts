@@ -1,4 +1,4 @@
-import { arrayProp, DocumentType, mongoose, prop } from '@typegoose/typegoose';
+import { DocumentType, mongoose, prop } from '@typegoose/typegoose';
 import { generateObjectId } from '../../helpers/generateObjectId';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { ExercisePointInfo } from '../../shared/model/Points';
@@ -114,7 +114,7 @@ export class ExerciseModel {
     );
   }
 
-  @arrayProp({ default: [], items: SubExerciseModel })
+  @prop({ default: [], type: SubExerciseModel })
   subexercises!: SubExerciseDocument[];
 
   static fromDTO(dto: ExerciseDTO): ExerciseModel {

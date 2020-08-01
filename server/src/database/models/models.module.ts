@@ -4,6 +4,7 @@ import { AttendanceModel } from './attendance.model';
 import { GradingModel } from './grading.model';
 import { ScheincriteriaModel } from './scheincriteria.model';
 import { ScheinexamModel } from './scheinexam.model';
+import { SettingsModel } from './settings.model';
 import { SheetModel } from './sheet.model';
 import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
@@ -25,6 +26,7 @@ export class ModelsModule {
       ScheincriteriaModel,
       GradingModel,
       SubstituteModel,
+      SettingsModel,
     ]);
 
     return {

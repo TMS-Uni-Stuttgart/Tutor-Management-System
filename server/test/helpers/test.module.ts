@@ -4,23 +4,25 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Connection, Model } from 'mongoose';
 import { getConnectionToken, getModelToken, TypegooseModule } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
-import { UserModel } from '../../src/database/models/user.model';
-import {
-  USER_DOCUMENTS,
-  TUTORIAL_DOCUMENTS,
-  STUDENT_DOCUMENTS,
-  SHEET_DOCUMENTS,
-  SCHEINEXAM_DOCUMENTS,
-  SCHEINCRITERIA_DOCUMENTS,
-  TEAM_DOCUMENTS,
-} from '../mocks/documents.mock';
-import { TutorialModel } from '../../src/database/models/tutorial.model';
+import { GradingModel } from '../../src/database/models/grading.model';
+import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
+import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
+import { SettingsModel } from '../../src/database/models/settings.model';
+import { SheetModel } from '../../src/database/models/sheet.model';
 import { StudentModel } from '../../src/database/models/student.model';
 import { TeamModel } from '../../src/database/models/team.model';
-import { SheetModel } from '../../src/database/models/sheet.model';
-import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
-import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
-import { GradingModel } from '../../src/database/models/grading.model';
+import { TutorialModel } from '../../src/database/models/tutorial.model';
+import { UserModel } from '../../src/database/models/user.model';
+import {
+  SCHEINCRITERIA_DOCUMENTS,
+  SCHEINEXAM_DOCUMENTS,
+  SETTINGS_DOCUMENTS,
+  SHEET_DOCUMENTS,
+  STUDENT_DOCUMENTS,
+  TEAM_DOCUMENTS,
+  TUTORIAL_DOCUMENTS,
+  USER_DOCUMENTS,
+} from '../mocks/documents.mock';
 
 interface ModelMockOptions {
   model: TypegooseClass;
@@ -36,6 +38,7 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
   { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
   { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
   { model: GradingModel, initialDocuments: [] },
+  { model: SettingsModel, initialDocuments: [...SETTINGS_DOCUMENTS] },
 ];
 
 @Module({})
@@ -83,7 +86,7 @@ export class TestModule implements OnApplicationShutdown {
     @Inject(getConnectionToken()) private readonly connection: Connection
   ) {}
 
-  async reset() {
+  async reset(): Promise<void> {
     if (!this.connection) {
       return;
     }
@@ -95,7 +98,7 @@ export class TestModule implements OnApplicationShutdown {
     await this.fillCollections();
   }
 
-  async onApplicationShutdown() {
+  async onApplicationShutdown(): Promise<void> {
     if (this.mongodb) {
       await this.mongodb.stop();
     }

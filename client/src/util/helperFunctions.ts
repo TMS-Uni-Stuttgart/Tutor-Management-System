@@ -5,7 +5,13 @@ export function compareDateTimes(a: DateTime, b: DateTime): number {
 }
 
 export function parseDateToMapKey(date: DateTime): string {
-  return date.toISODate();
+  const dateKey = date.toISODate();
+
+  if (!dateKey) {
+    throw new Error(`DATE_NOT_PARSABLE: {date}`);
+  }
+
+  return dateKey;
 }
 
 export function saveBlob(blob: Blob, filename: string): void {

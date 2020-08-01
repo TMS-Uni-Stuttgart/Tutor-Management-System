@@ -1,31 +1,24 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
-import SMTPConnection, {
-  AuthenticationTypeLogin,
-  AuthenticationTypeOAuth2,
-} from 'nodemailer/lib/smtp-connection';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { MailingStatus, FailedMail } from '../../shared/model/Mail';
-import { UserService } from '../user/user.service';
+import { SentMessageInfo } from 'nodemailer/lib/smtp-transport';
 import { UserDocument } from '../../database/models/user.model';
+import { VALID_EMAIL_REGEX } from '../../helpers/validators/nodemailer.validator';
+import { FailedMail, MailingStatus } from '../../shared/model/Mail';
+import { IMailingSettings } from '../../shared/model/Settings';
+import { getNameOfEntity } from '../../shared/util/helpers';
 import { SettingsService } from '../settings/settings.service';
 import { TemplateService } from '../template/template.service';
-import { getNameOfEntity } from '../../shared/util/helpers';
-
-interface AdditionalOptions {
-  testingMode?: boolean;
-}
+import { UserService } from '../user/user.service';
 
 class MailingError {
-  constructor(readonly userId: string, readonly err: Error, readonly message: string) {}
+  constructor(readonly userId: string, readonly message: string, readonly err: unknown) {}
 }
 
-type MailingResponse = SMTPTransport.SentMessageInfo | MailingError;
-type TransportOptions = SMTPTransport.Options & AdditionalOptions;
-
-export class InvalidConfigurationException {
-  constructor(readonly message?: string) {}
+interface SendMailParams {
+  user: UserDocument;
+  transport: Mail;
+  options: IMailingSettings;
 }
 
 @Injectable()
@@ -34,34 +27,42 @@ export class MailService {
 
   constructor(
     private readonly userService: UserService,
-    private readonly settings: SettingsService,
+    private readonly settingsService: SettingsService,
     private readonly templateService: TemplateService
   ) {}
 
   /**
-   * Sends a mail with the credentials to all users with their credentials.
+   * Sends a mail with the credentials to all users.
    *
-   * The mail is only sent to users which are not the 'admin' user and which did not already changed their initial password.
+   * The mail is only sent to users which are not the 'admin' user and which did not already changed their initial password (ie still have a temporary password).
    *
    * @returns Data containing information about the amount of successfully send mails and information about failed ones.
    */
   async mailCredentials(): Promise<MailingStatus> {
-    const options = this.getConfig();
-    const smtpTransport = nodemailer.createTransport(options);
+    const options = await this.settingsService.getMailingOptions();
 
-    const users = await this.userService.findAll();
-    const mails: Promise<MailingResponse>[] = [];
-    const userToSendMailTo = users.filter((u) => u.username !== 'admin' && !!u.temporaryPassword);
+    if (!options) {
+      throw new InternalServerErrorException('MISSING_MAIL_SETTINGS');
+    }
 
-    for (const user of userToSendMailTo) {
+    const transport = this.createSMTPTransport(options);
+    const usersToMail = (await this.userService.findAll()).filter(
+      (u) => u.username !== 'admin' && !!u.temporaryPassword
+    );
+    const mails: Promise<SentMessageInfo>[] = [];
+    const failedMails: FailedMail[] = [];
+
+    for (const user of usersToMail) {
       if (this.isValidEmail(user.email)) {
-        mails.push(this.sendMail(user, smtpTransport, options));
+        mails.push(this.sendMail({ user, transport, options }));
+      } else {
+        failedMails.push({ userId: user.id, reason: 'INVALID_EMAIL_ADDRESS' });
       }
     }
 
-    const status = this.generateMailingStatus(await Promise.all(mails), users);
+    const status = this.generateMailingStatus(await Promise.allSettled(mails));
+    transport.close();
 
-    smtpTransport.close();
     return status;
   }
 
@@ -73,184 +74,132 @@ export class MailService {
    * @returns Data containing information about the amount of successfully send mails (1) and information on failure.
    */
   async mailSingleCredentials(userId: string): Promise<MailingStatus> {
-    const options = this.getConfig();
-    const smtpTransport = nodemailer.createTransport(options);
+    const options = await this.settingsService.getMailingOptions();
 
+    if (!options) {
+      throw new InternalServerErrorException('MISSING_MAIL_SETTINGS');
+    }
+
+    const transport = this.createSMTPTransport(options);
     const user = await this.userService.findById(userId);
 
-    if (!user.temporaryPassword || !this.isValidEmail(user.email)) {
-      return { successFullSend: 0, failedMailsInfo: [{ userId: user.id }] };
+    if (!user.temporaryPassword) {
+      return {
+        successFullSend: 0,
+        failedMailsInfo: [{ userId: user.id, reason: 'NO_TEMP_PWD_ON_USER' }],
+      };
     }
 
-    const status = await this.sendMail(user, smtpTransport, options);
-
-    smtpTransport.close();
-
-    return this.generateMailingStatus([status], [user]);
-  }
-
-  private async sendMail(
-    user: UserDocument,
-    transport: Mail,
-    options: TransportOptions
-  ): Promise<MailingResponse> {
-    try {
-      return await transport.sendMail({
-        from: this.getUser(),
-        to: `${user.email}`,
-        subject: 'Credentials',
-        text: this.getTextOfMail(user),
-        envelope: {
-          to: `${user.email}`,
-          ...options.envelope,
-        },
-      });
-    } catch (err) {
-      return new MailingError(user.id, err, 'Could not send mail.');
+    if (!this.isValidEmail(user.email)) {
+      return {
+        successFullSend: 0,
+        failedMailsInfo: [{ userId: user.id, reason: 'INVALID_EMAIL_ADDRESS' }],
+      };
     }
+
+    const status = await Promise.allSettled([this.sendMail({ user, transport, options })]);
+    transport.close();
+
+    return this.generateMailingStatus(status);
   }
 
-  private generateMailingStatus(mails: MailingResponse[], users: UserDocument[]): MailingStatus {
-    const failedMailsInfo: FailedMail[] = [];
-    let successFullSend: number = 0;
+  /**
+   * Converts the given promise results into a `MailingStatus` object extracting the important information:
+   *
+   * - Information about all failed ones.
+   * - Amount of successfully sent ones.
+   *
+   * @param promiseResults All promise results from settled promises sending mails.
+   * @returns `MailingStatus` according to the responses.
+   */
+  private generateMailingStatus(
+    promiseResults: PromiseSettledResult<SentMessageInfo>[]
+  ): MailingStatus {
+    const status: MailingStatus = { failedMailsInfo: [], successFullSend: 0 };
 
-    for (const mail of mails) {
-      if (mail instanceof MailingError) {
-        const user = users.find((u) => u.id === mail.userId) as UserDocument;
-
-        failedMailsInfo.push({
-          userId: user.id,
-        });
-
-        this.logger.error(`${mail.message} -- ${mail.err}`);
+    for (const mail of promiseResults) {
+      if (mail.status === 'fulfilled') {
+        status.successFullSend += 1;
       } else {
-        const previewURL = nodemailer.getTestMessageUrl(mail);
-
-        if (previewURL) {
-          this.logger.log(`Mail successfully send. Preview: ${previewURL}`);
+        if (mail.reason instanceof MailingError) {
+          status.failedMailsInfo.push({
+            userId: mail.reason.userId,
+            reason: `${mail.reason.message}:\n${JSON.stringify(mail.reason.err, null, 2)}`,
+          });
         } else {
-          this.logger.log('Mail successfully send.');
+          status.failedMailsInfo.push({ userId: 'UNKNOWN', reason: 'UNKNOWN_ERROR' });
         }
-
-        successFullSend++;
       }
     }
 
-    return { successFullSend, failedMailsInfo };
+    return status;
   }
 
+  /**
+   * Tries to send a mail with the credentials of the given user.
+   *
+   * If the mail was sent successfully a `SentMessageInfo` is returned. If it fails an error is thrown.
+   *
+   * @param user User to send the mail to
+   * @param options MailingConfiguration
+   * @param transport Transport to use.
+   *
+   * @returns Info about the sent message.
+   * @throws `MailingError` - If the mail could not be successfully send.
+   */
+  private async sendMail({ user, options, transport }: SendMailParams): Promise<SentMessageInfo> {
+    try {
+      return await transport.sendMail({
+        from: options.from,
+        to: user.email,
+        subject: options.subject,
+        text: this.getTextOfMail(user),
+      });
+    } catch (err) {
+      throw new MailingError(user.id, 'SEND_MAIL_FAILED', err);
+    }
+  }
+
+  /**
+   * @param user User to get the mail text for.
+   * @returns The mail template filled with the data of the given user
+   */
   private getTextOfMail(user: UserDocument): string {
     const template = this.templateService.getMailTemplate();
-
     return template({
       name: getNameOfEntity(user, { firstNameFirst: true }),
       username: user.username,
-      password: user.temporaryPassword ?? '',
+      password: user.temporaryPassword ?? 'NO_TMP_PASSWORD',
     });
   }
 
-  private getConfig(): TransportOptions {
-    const options = this.settings.getMailingConfiguration();
-
-    if (options.testingMode) {
-      const auth = options.auth as AuthenticationTypeLogin | undefined;
-
-      if (!auth || !auth.user || !auth.pass) {
-        throw new InvalidConfigurationException(
-          'In testing mode an ethereal user & pass has to be supplied.'
-        );
-      }
-
-      if (!auth.user.includes('ethereal')) {
-        throw new InvalidConfigurationException(
-          'In testing mode mailing user has to be an ethereal user.'
-        );
-      }
-
-      return {
-        host: 'smtp.ethereal.email',
-        port: 587,
-        auth: {
-          user: auth.user,
-          pass: auth.pass,
-        },
-      };
-    } else {
-      this.assertValidConfig(options);
-
-      return options;
-    }
+  /**
+   * @param options Options to create the transport with.
+   * @returns A nodemail SMTPTransport instance created with the given options.
+   */
+  private createSMTPTransport(options: IMailingSettings): Mail {
+    return nodemailer.createTransport({
+      host: options.host,
+      port: options.port,
+      auth: { user: options.auth.user, pass: options.auth.pass },
+      logger: true,
+      debug: true,
+    });
   }
 
-  private getUser(): string {
-    const options = this.getConfig();
-
-    if (options.from) {
-      if (typeof options.from === 'string') {
-        return options.from;
-      }
-
-      if (options.from.address) {
-        return options.from.address;
-      }
-    }
-
-    if (options.auth && options.auth.user) {
-      if (this.isValidEmail(options.auth.user)) {
-        return options.auth.user;
-      }
-    }
-
-    throw new InvalidConfigurationException(
-      "Mailing must contain either a 'from' prop which contains an email address or the 'auth.user' must be a valid email address"
-    );
-  }
-
-  private assertValidConfig(config: TransportOptions) {
-    if (!config.auth) {
-      throw new InvalidConfigurationException('No authentication settings were provided');
-    }
-
-    if (this.isOAuth2(config.auth)) {
-      const { user, clientId, clientSecret, refreshToken } = config.auth;
-
-      if (!user || !clientId || !clientSecret || !refreshToken) {
-        throw new InvalidConfigurationException(
-          'user & clientId & clientSecret & refreshToken all have to be set in mailing auth options.'
-        );
-      }
-
-      return;
-    }
-
-    if (this.isBasicAuth(config.auth)) {
-      const { user, pass } = config.auth;
-
-      if (!user || !pass) {
-        throw new InvalidConfigurationException(
-          'user && pass all have to be set in mailing auth options'
-        );
-      }
-
-      return;
-    }
-
-    throw new InvalidConfigurationException(
-      "Authentication type has to be 'OAuth2' or 'Login' (or undefined which defaults to 'Login')."
-    );
-  }
-
-  private isOAuth2(auth: SMTPConnection.AuthenticationType): auth is AuthenticationTypeOAuth2 {
-    return auth.type === 'oauth2' || auth.type === 'OAuth2' || auth.type === 'OAUTH2';
-  }
-
-  private isBasicAuth(auth: SMTPConnection.AuthenticationType): auth is AuthenticationTypeLogin {
-    return !auth.type || auth.type === 'login' || auth.type === 'Login' || auth.type === 'LOGIN';
-  }
-
+  /**
+   * @param email String to check.
+   * @returns Is the string a valid email address?
+   */
   private isValidEmail(email: string): boolean {
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-      email
-    );
+    return VALID_EMAIL_REGEX.test(email);
   }
+
+  // private isOAuth2(auth: SMTPConnection.AuthenticationType): auth is AuthenticationTypeOAuth2 {
+  //   return auth.type === 'oauth2' || auth.type === 'OAuth2' || auth.type === 'OAUTH2';
+  // }
+
+  // private isBasicAuth(auth: SMTPConnection.AuthenticationType): auth is AuthenticationTypeLogin {
+  //   return !auth.type || auth.type === 'login' || auth.type === 'Login' || auth.type === 'LOGIN';
+  // }
 }

@@ -9,6 +9,7 @@ plugins:
 
 extends:
   - 'plugin:react/recommended' # Uses the recommended rules from @eslint-plugin-react
+  - 'plugin:react-hooks/recommended'
   - 'plugin:@typescript-eslint/recommended' # Uses the recommended rules from the @typescript-eslint/eslint-plugin
   - 'plugin:import/typescript'
   - 'prettier/@typescript-eslint' # Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
@@ -48,6 +49,7 @@ rules:
   'constructor-super': 'error'
   'no-console': 'warn'
   'no-fallthrough': 'error'
+  'no-useless-rename': 'warn'
   'import/no-restricted-paths':
     - 'error'
     - zones:
@@ -55,6 +57,9 @@ rules:
           from: './server/src'
   'import/no-unresolved': 'off'
   'import/no-named-as-default': 'off'
+  'import/no-unused-modules':
+    - 'off'
+    - unusedExports: true
   'react/display-name': 'off'
   'react/jsx-no-duplicate-props':
     - 'warn'

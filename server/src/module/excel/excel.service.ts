@@ -245,8 +245,12 @@ export class ExcelService {
     for (const date of tutorial.dates) {
       const dateKey = date.toISO();
 
+      if (!dateKey) {
+        throw new Error(`Date '${date}' could not be parsed to an ISODate`);
+      }
+
       headers[dateKey] = {
-        name: date.toISODate(),
+        name: date.toISODate() ?? 'DATE_NOT_PARSEABLE',
         column,
       };
       data[dateKey] = [];

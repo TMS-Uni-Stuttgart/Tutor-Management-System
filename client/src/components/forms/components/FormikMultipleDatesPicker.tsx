@@ -96,7 +96,7 @@ function isStringArray(array: unknown): array is string[] {
 }
 
 export function getDateString(date: DateTime): string {
-  return date.toISODate();
+  return date.toISODate() ?? 'DATE_NOTE_PARSEABLE';
 }
 
 function FormikMultipleDatesPicker({
@@ -203,7 +203,8 @@ function FormikMultipleDatesPicker({
             <DateList
               dates={(form.values[name] as string[]).map<DateInList>((date) => ({
                 dateValueString: date,
-                dateDisplayString: DateTime.fromISO(date).toLocaleString(DateTime.DATE_MED),
+                dateDisplayString:
+                  DateTime.fromISO(date).toLocaleString(DateTime.DATE_MED) ?? 'DATE_NOTE_PARSEABLE',
               }))}
               onDateClicked={onDateInListClicked(form.values[name], arrayHelpers)}
             />

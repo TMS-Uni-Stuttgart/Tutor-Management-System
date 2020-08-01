@@ -16,9 +16,10 @@ type UsedProps =
 
 export interface ListItem extends MenuItemProps<'button'> {
   primary: string;
+  secondary?: string;
   onClick: MouseEventHandler<HTMLElement>;
   Icon: ComponentType<SvgIconProps>;
-  listItemTextProps?: ListItemTextProps;
+  listItemTextProps?: Omit<ListItemTextProps, 'primary' | 'secondary'>;
   iconProps?: SvgIconProps;
   tooltip?: string;
 }
@@ -31,6 +32,7 @@ export interface ListItemMenuProps extends Omit<MenuProps, UsedProps> {
 function generateListItem({
   Icon,
   primary,
+  secondary,
   onClick,
   iconProps,
   listItemTextProps,
@@ -44,7 +46,7 @@ function generateListItem({
         <Icon {...iconProps} />
       </ListItemIcon>
 
-      <ListItemText {...listItemTextProps} primary={primary} />
+      <ListItemText {...listItemTextProps} primary={primary} secondary={secondary} />
     </MenuItem>
   );
 

@@ -15,10 +15,10 @@ import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { populateUserDocument, UserDocument, UserModel } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
+import { NamedElement } from '../../shared/model/Common';
 import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
-import { NamedElement } from '../../shared/model/Common';
 
 @Injectable()
 export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
@@ -326,15 +326,18 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
           return;
         }
 
-        const date = DateTime.fromISO(dateKey);
+        const date = DateTime.fromISO(dateKey).toISODate();
         const substInfo: ILoggedInUserSubstituteTutorial = substituteTutorials.get(tutorial.id) ?? {
           id: tutorial.id,
           slot: tutorial.slot,
           dates: [],
         };
 
-        substInfo.dates.push(date.toISODate());
+        if (!date) {
+          throw new Error(`Date '${dateKey}' could not be parsed to an ISODate.`);
+        }
 
+        substInfo.dates.push(date);
         substituteTutorials.set(tutorial.id, substInfo);
       });
     });
