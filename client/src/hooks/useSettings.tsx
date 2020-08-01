@@ -50,7 +50,7 @@ export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element
     return !!userData && userData.roles.includes(Role.ADMIN);
   }, [userData, value]);
 
-  const isMailingActive = useCallback(() => !!value?.mailingConfig, [value?.mailingConfig]);
+  const isMailingActive = useCallback(() => !!value?.mailingConfig, [value]);
 
   return (
     <SettingsContext.Provider
