@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) =>
     },
     version: {
       margin: theme.spacing(0.5, 0),
+      marginTop: 'auto',
       textAlign: 'center',
       width: '100%',
     },
