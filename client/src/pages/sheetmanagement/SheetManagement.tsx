@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -165,7 +166,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   }
 
   return (
-    <div>
+    <Box height='inherit'>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
@@ -184,7 +185,7 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
           placeholder='Keine Übungsblätter vorhanden.'
         />
       )}
-    </div>
+    </Box>
   );
 }
 

@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
@@ -170,7 +171,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   }
 
   return (
-    <div className={classes.root}>
+    <Box height='inherit'>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
@@ -194,7 +195,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
           <LoadingModal modalText='Erstelle Ergebnisliste...' open={isGeneratingResults} />
         </>
       )}
-    </div>
+    </Box>
   );
 }
 
