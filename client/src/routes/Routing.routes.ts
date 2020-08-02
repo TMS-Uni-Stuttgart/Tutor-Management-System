@@ -11,7 +11,6 @@ import {
   ScriptText as ScheincriteriaIcon,
   Teach as TutorialIcon,
   TextBox as ScheinexamPointsIcon,
-  TextBoxMultiple as ScheinexamManagementIcon,
   ViewDashboard as DashboardIcon,
 } from 'mdi-material-ui';
 import { Role } from 'shared/model/Role';
@@ -29,9 +28,7 @@ import EnterTeamPoints from '../pages/points-sheet/enter-form/EnterTeamPoints';
 import PointsOverview from '../pages/points-sheet/overview/PointsOverview';
 import PresentationPoints from '../pages/presentation-points/PresentationPoints';
 import ScheinCriteriaManagement from '../pages/scheincriteriamanagement/ScheinCriteriaManagement';
-import ScheinExamManagement from '../pages/scheinexam-management/ScheinExamManagement';
 import SettingsPage from '../pages/settings/SettingsPage';
-import SheetManagement from '../pages/sheetmanagement/SheetManagement';
 import StudentInfo from '../pages/student-info/StudentInfo';
 import AllStudentsAdminView from '../pages/studentmanagement/AllStudentsAdminView';
 import TutorStudentmanagement from '../pages/studentmanagement/TutorStudentmanagement';
@@ -176,6 +173,20 @@ export const TUTORIAL_ROUTES = {
 };
 
 const MANAGEMENT_ROUTES = {
+  MANAGE_ALL_STUDENTS: new DrawerRoute({
+    path: parts('admin', 'students'),
+    title: 'Studierendenübersicht',
+    component: AllStudentsAdminView,
+    icon: StudentIcon,
+    roles: [Role.ADMIN],
+  }),
+  MANAGE_ATTENDANCES: new DrawerRoute({
+    path: parts('admin', 'attendances'),
+    title: 'Anwesenheiten',
+    component: AttendanceAdminView,
+    icon: AttendancesIcon,
+    roles: [Role.ADMIN, Role.EMPLOYEE],
+  }),
   MANAGE_USERS: new DrawerRoute({
     path: parts('admin', 'usermanagement'),
     title: 'Nutzerverwaltung',
@@ -220,13 +231,6 @@ const MANAGEMENT_ROUTES = {
     roles: [Role.ADMIN, Role.EMPLOYEE],
     isExact: true,
   }),
-  MANAGE_ALL_STUDENTS: new DrawerRoute({
-    path: parts('admin', 'students'),
-    title: 'Studierendenübersicht',
-    component: AllStudentsAdminView,
-    icon: StudentIcon,
-    roles: [Role.ADMIN],
-  }),
   SCHEIN_CRITERIAS_INFO: new PrivateRoute({
     path: parts('admin', 'scheincriterias', 'info', param('id')),
     title: 'Info Scheinkriterium',
@@ -239,27 +243,6 @@ const MANAGEMENT_ROUTES = {
     title: 'Scheinkriterien',
     component: ScheinCriteriaManagement,
     icon: ScheincriteriaIcon,
-    roles: [Role.ADMIN, Role.EMPLOYEE],
-  }),
-  MANAGE_SHEETS: new DrawerRoute({
-    path: parts('admin', 'sheets'),
-    title: 'Übungsblätter',
-    component: SheetManagement,
-    icon: SheetIcon,
-    roles: [Role.ADMIN, Role.EMPLOYEE],
-  }),
-  MANAGE_ATTENDANCES: new DrawerRoute({
-    path: parts('admin', 'attendances'),
-    title: 'Anwesenheiten',
-    component: AttendanceAdminView,
-    icon: AttendancesIcon,
-    roles: [Role.ADMIN, Role.EMPLOYEE],
-  }),
-  MANAGE_SCHEIN_EXAMS: new DrawerRoute({
-    path: parts('admin', 'scheinexams'),
-    title: 'Scheinklausuren',
-    component: ScheinExamManagement,
-    icon: ScheinexamManagementIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
   MANAGE_SETTINGS: new DrawerRoute({
