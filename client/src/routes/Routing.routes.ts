@@ -19,6 +19,7 @@ import AttendanceView from '../pages/attendance/AttendanceView';
 import CriteriaInfoView from '../pages/criteria-info-view/CriteriaInfoView';
 import Dashboard from '../pages/dashboard/Dashboard';
 import GenerateTutorials from '../pages/generate-tutorials/GenerateTutorials';
+import HandInsPage from '../pages/hand-ins/HandInsPage';
 import ImportUsers from '../pages/import-data/ImportUsers';
 import Login from '../pages/Login';
 import EnterScheinexamPoints from '../pages/points-scheinexam/enter-form/EnterScheinexamPoints';
@@ -185,6 +186,13 @@ const MANAGEMENT_ROUTES = {
     title: 'Anwesenheiten',
     component: AttendanceAdminView,
     icon: AttendancesIcon,
+    roles: [Role.ADMIN, Role.EMPLOYEE],
+  }),
+  MANAGE_HAND_INS: new DrawerRoute({
+    path: parts('admin', 'handins'),
+    title: 'Abgaben',
+    component: HandInsPage,
+    icon: SheetIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
   MANAGE_USERS: new DrawerRoute({
