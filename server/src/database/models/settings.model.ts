@@ -20,7 +20,7 @@ class MailingAuthModel implements IMailingAuthConfiguration {
 
 @plugin(fieldEncryption, {
   secret: StaticSettings.getService().getDatabaseSecret(),
-  fields: ['host', 'port', 'from', 'auth'],
+  fields: ['host', 'port', 'from', 'subject', 'auth'],
 })
 @modelOptions({ schemaOptions: { _id: false } })
 class MailingSettingsModel implements IMailingSettings {
