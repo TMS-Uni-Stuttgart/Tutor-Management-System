@@ -66,20 +66,25 @@ function TeamCard({
   const classes = useStyles();
   const dialog = useDialog();
 
+  const teamGrading = useMemo(() => team.getGrading(sheet), [team, sheet]);
+
   const studentsInTeam: string =
     team.students.length > 0
       ? team.students
           .map((student) => getNameOfEntity(student, { firstNameFirst: true }))
           .join(', ')
       : 'Keine Studierende in diesem Team.';
-  const teamGrading = useMemo(() => team.getGrading(sheet), [team, sheet]);
-  const placeholderText = useMemo(
-    () =>
-      team.getAllGradings(sheet).length === 0
+
+  const { placeholderText, pdfDisabled } = useMemo(() => {
+    const gradingCount = team.getAllGradings(sheet).length;
+    const placeholderText =
+      gradingCount === 0
         ? 'Keine Bewertung für das Team vorhanden.'
-        : 'Studierende haben unterschiedliche Bewertungen.',
-    [team, sheet]
-  );
+        : 'Studierende haben unterschiedliche Bewertungen.';
+    const pdfDisabled = gradingCount === 0;
+
+    return { placeholderText, pdfDisabled };
+  }, [team, sheet]);
 
   const handleEnterStudents = () => {
     dialog.show({
@@ -134,13 +139,17 @@ function TeamCard({
             additionalItems={[
               {
                 primary: 'PDF Vorschau',
+                secondary: pdfDisabled ? 'Keine Bewertung vorhanden.' : undefined,
                 Icon: PdfPreviewIcon,
                 onClick: () => onPdfPreviewClicked(team),
+                disabled: pdfDisabled,
               },
               {
                 primary: 'PDF herunterladen',
+                secondary: pdfDisabled ? 'Keine Bewertung vorhanden.' : undefined,
                 Icon: PdfIcon,
                 onClick: () => onGeneratePdfClicked(team),
+                disabled: pdfDisabled,
               },
             ]}
           />
