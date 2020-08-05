@@ -4,6 +4,8 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { ITeam } from '../../shared/model/Team';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
+import { GradingDocument } from './grading.model';
+import { SheetDocument } from './sheet.model';
 import { populateStudentDocument, StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
 
@@ -47,6 +49,27 @@ export class TeamModel {
     localField: '_id',
   })
   students!: StudentDocument[];
+
+  /**
+   * Returns the gradings of all students for the given sheet.
+   *
+   * If only one grading is assigned to the while team this one gets returned. If the students have different gradings all of those gradings are returned.
+   *
+   * @param sheet Sheet to get the gradings for.
+   * @returns List containing all gradings related to the given sheet of the students.
+   */
+  getGradings(sheet: SheetDocument): GradingDocument[] {
+    const gradings = new Map<string, GradingDocument>();
+
+    this.students.forEach((student) => {
+      const gradingOfStudent = student.getGrading(sheet);
+      if (gradingOfStudent) {
+        gradings.set(gradingOfStudent.id, gradingOfStudent);
+      }
+    });
+
+    return [...gradings.values()];
+  }
 
   toDTO(this: TeamDocument): ITeam {
     const { id, students, teamNo, tutorial } = this;

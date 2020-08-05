@@ -4,6 +4,7 @@ import { ExerciseGradingDocument, GradingDocument } from '../../database/models/
 import { SheetDocument } from '../../database/models/sheet.model';
 import { TeamDocument } from '../../database/models/team.model';
 import { convertExercisePointInfoToString, ExercisePointInfo } from '../../shared/model/Gradings';
+import { ITeamMarkdownData } from '../../shared/model/Markdown';
 import { getNameOfEntity } from '../../shared/util/helpers';
 import { SheetService } from '../sheet/sheet.service';
 import { StudentService } from '../student/student.service';
@@ -19,14 +20,12 @@ export interface GenerateAllTeamsGradingParams {
   sheetId: string;
 }
 
-export interface TeamMarkdownData {
-  teamName: string;
-  markdown: string;
+export interface TeamMarkdownData extends ITeamMarkdownData {
   invalid?: boolean;
 }
 
-export interface AllTeamGradings {
-  markdownForGradings: TeamMarkdownData[];
+interface TeamGradings {
+  markdownData: TeamMarkdownData[];
   sheetNo: string;
 }
 
@@ -86,7 +85,7 @@ export class MarkdownService {
   async getAllTeamsGradings({
     tutorialId,
     sheetId,
-  }: GenerateAllTeamsGradingParams): Promise<AllTeamGradings> {
+  }: GenerateAllTeamsGradingParams): Promise<TeamGradings> {
     const teams = await this.teamService.findAllTeamsInTutorial(tutorialId);
     const sheet = await this.sheetService.findById(sheetId);
 
@@ -94,28 +93,40 @@ export class MarkdownService {
     const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 
     teams.forEach((team) => {
-      gradingsMD.push(this.generateFromTeam({ team, sheet, ignoreInvalidTeams: true }));
+      gradingsMD.push(...this.generateFromTeam({ team, sheet, ignoreInvalidTeams: true }));
     });
 
-    return { markdownForGradings: gradingsMD.filter((grad) => !grad.invalid), sheetNo };
+    return { markdownData: gradingsMD.filter((grad) => !grad.invalid), sheetNo };
   }
 
   /**
-   * Generates a markdown string for the grading of the given team for the given sheet.
+   * Generates a list with markdown for the grading of the given team for the given sheet.
    *
    * @param teamId TeamID of the team to get markdown for.
    * @param sheetId ID of the sheet.
    *
-   * @returns Generated markdown.
+   * @returns List of generated markdown.
    *
    * @throws `NotFoundException` - If either no team with the given ID or no sheet with the given ID could be found.
    * @throws `BadRequestException` - If the given team does not have any students or the students do not hold a grading for the given sheet.
    */
-  async getTeamGrading({ teamId, sheetId }: GenerateTeamGradingParams): Promise<string> {
+  async getTeamGrading({ teamId, sheetId }: GenerateTeamGradingParams): Promise<TeamGradings> {
     const team = await this.teamService.findById(teamId);
     const sheet = await this.sheetService.findById(sheetId);
 
-    return this.generateFromTeam({ team, sheet, ignoreInvalidTeams: false }).markdown;
+    const markdownForTeam = this.generateFromTeam({ team, sheet, ignoreInvalidTeams: false });
+
+    const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
+    const markdownData = markdownForTeam.reduce<ITeamMarkdownData[]>((list, data) => {
+      list.push({ markdown: data.markdown, teamName: data.teamName });
+
+      return list;
+    }, []);
+
+    return {
+      markdownData: markdownData,
+      sheetNo,
+    };
   }
 
   /**
@@ -154,7 +165,7 @@ export class MarkdownService {
    *
    * @param params Options for the markdown generation
    *
-   * @returns MarkdownData for the team of the grading for the given sheet. Can be marked as `invalid` (see above).
+   * @returns List with MarkdownData for the team of the grading for the given sheet. Can be marked as `invalid` (see above).
    *
    * @throws `BadRequestException` - If `ignoreInvalidTeams` is false AND either the team has no students or the team has no gradings for the given sheet.
    */
@@ -162,7 +173,7 @@ export class MarkdownService {
     team,
     sheet,
     ignoreInvalidTeams,
-  }: GenerateFromTeamParams): TeamMarkdownData {
+  }: GenerateFromTeamParams): TeamMarkdownData[] {
     try {
       if (team.students.length === 0) {
         throw new BadRequestException(`Can not generate markdown for an empty team.`);
@@ -179,13 +190,15 @@ export class MarkdownService {
 
       const teamName: string = team.students.map((s) => s.lastname).join('');
 
-      return {
-        markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
-        teamName,
-      };
+      return [
+        {
+          markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
+          teamName,
+        },
+      ];
     } catch (err) {
       if (ignoreInvalidTeams) {
-        return { markdown: '', teamName: '', invalid: true };
+        return [{ markdown: '', teamName: '', invalid: true }];
       } else {
         throw err;
       }

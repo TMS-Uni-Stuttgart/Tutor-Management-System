@@ -88,12 +88,17 @@ export class PdfController {
     @Param('teamId') teamId: string,
     @Res() res: Response
   ): Promise<void> {
-    const buffer = await this.pdfService.generateGradingPDF({
+    const pdfData: Buffer | NodeJS.ReadableStream = await this.pdfService.generateGradingPDF({
       teamId: { tutorialId, teamId },
       sheetId,
     });
 
-    res.contentType('pdf');
-    res.send(buffer);
+    if (pdfData instanceof Buffer) {
+      res.contentType('pdf');
+      res.send(pdfData);
+    } else {
+      res.contentType('zip');
+      pdfData.pipe(res);
+    }
   }
 }

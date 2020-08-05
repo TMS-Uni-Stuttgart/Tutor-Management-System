@@ -1,9 +1,10 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { IDField } from '../../guards/decorators/idField.decorator';
-import { TutorialGuard } from '../../guards/tutorial.guard';
-import { MarkdownService } from './markdown.service';
-import { StudentGuard } from '../../guards/student.guard';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { IDField } from '../../guards/decorators/idField.decorator';
+import { StudentGuard } from '../../guards/student.guard';
+import { TutorialGuard } from '../../guards/tutorial.guard';
+import { ITeamMarkdownData } from '../../shared/model/Markdown';
+import { MarkdownService } from './markdown.service';
 
 @Controller('markdown')
 export class MarkdownController {
@@ -17,13 +18,13 @@ export class MarkdownController {
     @Param('sheetId') sheetId: string,
     @Param('tutorialId') tutorialId: string,
     @Param('teamId') teamId: string
-  ): Promise<string> {
-    const markdown = await this.markdownService.getTeamGrading({
+  ): Promise<ITeamMarkdownData[]> {
+    const gradings = await this.markdownService.getTeamGrading({
       teamId: { tutorialId, teamId },
       sheetId,
     });
 
-    return markdown;
+    return gradings.markdownData.map(({ markdown, teamName }) => ({ markdown, teamName }));
   }
 
   @Get('/grading/:sheetId/student/:studentId')

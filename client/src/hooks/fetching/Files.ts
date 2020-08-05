@@ -1,3 +1,4 @@
+import { ITeamMarkdownData } from 'shared/model/Markdown';
 import axios from './Axios';
 
 export async function getAttendancePDF(tutorialId: string, date: string): Promise<Blob> {
@@ -79,8 +80,8 @@ export async function getTeamCorrectionCommentMarkdown(
   tutorialId: string,
   sheetId: string,
   teamId: string
-): Promise<string> {
-  const response = await axios.get(
+): Promise<ITeamMarkdownData[]> {
+  const response = await axios.get<ITeamMarkdownData[]>(
     `/markdown/grading/${sheetId}/tutorial/${tutorialId}/team/${teamId}`
   );
 
@@ -101,12 +102,15 @@ export async function getTeamCorrectionCommentPDF(
     {
       responseType: 'arraybuffer',
       headers: {
-        Accept: 'application/pdf',
+        Accept: 'application/pdf, application/zip',
       },
     }
   );
 
   if (response.status === 200) {
+    // TODO: Response can be a ZIP file aswell.
+    //       Use corresponding result header?
+    console.log(response.headers);
     return new Blob([response.data], { type: 'application/pdf' });
   }
 
