@@ -60,8 +60,9 @@ async function generateSinglePdf({ tutorialId, sheet, team }: CorrectionPdfOptio
   const blob = await getTeamCorrectionCommentPDF(tutorialId, sheet.id, team.id);
   const teamName = team.students.map((s) => s.lastname).join('');
   const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
+  const fileEnding = blob.type === 'application/pdf' ? 'pdf' : 'zip';
 
-  saveBlob(blob, `Ex${sheetNo}_${teamName}.pdf`);
+  saveBlob(blob, `Ex${sheetNo}_${teamName}.${fileEnding}`);
 }
 
 async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPdfsOptions) {

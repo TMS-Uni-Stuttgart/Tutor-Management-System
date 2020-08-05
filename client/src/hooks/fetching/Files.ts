@@ -108,10 +108,13 @@ export async function getTeamCorrectionCommentPDF(
   );
 
   if (response.status === 200) {
-    // TODO: Response can be a ZIP file aswell.
-    //       Use corresponding result header?
-    console.log(response.headers);
-    return new Blob([response.data], { type: 'application/pdf' });
+    const contentType = response.headers['content-type'];
+
+    if (!contentType) {
+      return Promise.reject('No "content-type" header was present in response.');
+    }
+
+    return new Blob([response.data], { type: contentType });
   }
 
   return Promise.reject(`Wrong response code (${response.status})`);
