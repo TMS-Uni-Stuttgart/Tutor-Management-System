@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'right',
     },
     popoverRoot: {
-      margin: theme.spacing(2),
+      margin: theme.spacing(1),
     },
   })
 );
