@@ -47,7 +47,7 @@ rules:
     - 'warn'
     - allowedNames: ['renderLink']
   'constructor-super': 'error'
-  'no-console': 'warn'
+  'no-console': 'error'
   'no-fallthrough': 'error'
   'no-useless-rename': 'warn'
   'import/no-restricted-paths':
