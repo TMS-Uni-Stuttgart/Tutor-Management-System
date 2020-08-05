@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { DocumentType, getModelForClass, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { StaticSettings } from '../../module/settings/settings.static';
@@ -114,6 +115,7 @@ export class ExerciseGradingModel {
   secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['comment', 'additionalPoints', 'exerciseGradings'],
 })
+@plugin(mongooseAutoPopulate)
 export class GradingModel {
   @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
   exerciseGradings!: Map<string, ExerciseGradingDocument>;

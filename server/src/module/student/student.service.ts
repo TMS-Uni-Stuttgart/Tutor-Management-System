@@ -15,6 +15,7 @@ import {
   StudentDocument,
   StudentModel,
 } from '../../database/models/student.model';
+import { TeamDocument } from '../../database/models/team.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IStudent } from '../../shared/model/Student';
@@ -29,7 +30,6 @@ import {
   PresentationPointsDTO,
   StudentDTO,
 } from './student.dto';
-import { TeamDocument } from '../../database/models/team.model';
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
