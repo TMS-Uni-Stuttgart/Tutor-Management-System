@@ -39,6 +39,14 @@ async function showSinglePdfPreview({
   team,
 }: CorrectionPdfOptions & DialogOption) {
   const markdownSource = await getTeamCorrectionCommentMarkdown(tutorialId, sheet.id, team.id);
+  let content: React.ReactNode;
+
+  if (markdownSource.length <= 1) {
+    content = <Markdown markdown={markdownSource[0]?.markdown ?? ''} />;
+  } else {
+    // TODO: Implement this!!!
+    content = <div>MULTIPLE PDFS</div>;
+  }
 
   dialog.show({
     actions: [
@@ -51,7 +59,7 @@ async function showSinglePdfPreview({
       maxWidth: 'lg',
     },
     title: 'Markdown-Vorschau',
-    content: <Markdown markdown={markdownSource} />,
+    content,
     onClose: () => dialog.hide(),
   });
 }
