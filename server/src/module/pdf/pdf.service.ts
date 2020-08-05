@@ -102,10 +102,11 @@ export class PdfService {
     params: GenerateTeamGradingParams
   ): Promise<Buffer | NodeJS.ReadableStream> {
     const teamData = await this.markdownService.getTeamGrading(params);
+    const dataCount = teamData.markdownData.length;
 
-    if (teamData.markdownData.length === 0) {
+    if (dataCount <= 1) {
       return this.markdownPDF.generatePDF({
-        markdown: teamData.markdownData[0].markdown,
+        markdown: teamData.markdownData[0]?.markdown ?? '',
       });
     } else {
       const data: ZipData[] = [];
