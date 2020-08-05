@@ -115,9 +115,20 @@ export class ExerciseGradingModel {
   fields: ['comment', 'additionalPoints', 'exerciseGradings'],
 })
 export class GradingModel {
-  constructor() {
-    this.exerciseGradings = new Map();
-  }
+  @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
+  exerciseGradings!: Map<string, ExerciseGradingDocument>;
+
+  @prop({ required: true })
+  belongsToTeam!: boolean;
+
+  @prop()
+  comment?: string;
+
+  @prop()
+  additionalPoints?: number;
+
+  @prop({ ref: StudentModel, autopopulate: true, default: [] })
+  students!: StudentDocument[];
 
   @prop()
   sheetId?: string;
@@ -143,17 +154,9 @@ export class GradingModel {
     throw new Error('Neither the sheetId nor the examId field is set.');
   }
 
-  @prop()
-  comment?: string;
-
-  @prop()
-  additionalPoints?: number;
-
-  @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
-  exerciseGradings!: Map<string, ExerciseGradingDocument>;
-
-  @prop({ ref: StudentModel, autopopulate: true, default: [] })
-  students!: StudentDocument[];
+  constructor() {
+    this.exerciseGradings = new Map();
+  }
 
   /**
    * Adds a student to this grading to "use" it.
@@ -229,7 +232,15 @@ export class GradingModel {
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
   updateFromDTO(this: GradingDocument, dto: GradingDTO): void {
-    const { exerciseGradings, additionalPoints, comment, gradingId, sheetId, examId } = dto;
+    const {
+      exerciseGradings,
+      additionalPoints,
+      comment,
+      gradingId,
+      sheetId,
+      examId,
+      belongsToTeam,
+    } = dto;
 
     if (!!gradingId) {
       this.id = gradingId;
@@ -243,6 +254,7 @@ export class GradingModel {
     this.examId = examId;
     this.comment = comment;
     this.additionalPoints = additionalPoints;
+    this.belongsToTeam = belongsToTeam;
     this.exerciseGradings = new Map();
 
     for (const [key, exerciseGradingDTO] of exerciseGradings) {
@@ -251,7 +263,7 @@ export class GradingModel {
   }
 
   toDTO(this: GradingDocument): IGrading {
-    const { id, comment, additionalPoints, points } = this;
+    const { id, comment, additionalPoints, points, belongsToTeam } = this;
     const exerciseGradings: Map<string, IExerciseGrading> = new Map();
 
     for (const [key, exGrading] of this.exerciseGradings) {
@@ -261,6 +273,7 @@ export class GradingModel {
     return {
       id,
       points,
+      belongsToTeam,
       exerciseGradings: [...exerciseGradings],
       comment,
       additionalPoints,

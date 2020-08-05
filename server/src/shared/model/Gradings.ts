@@ -10,6 +10,7 @@ export interface IExerciseGrading {
 export interface IGrading {
   id: string;
   exerciseGradings: [string, IExerciseGrading][];
+  belongsToTeam: boolean;
   points: number;
   comment?: string;
   additionalPoints?: number;
@@ -24,6 +25,7 @@ export interface IExerciseGradingDTO {
 
 export interface IGradingDTO {
   exerciseGradings: [string, IExerciseGradingDTO][];
+  belongsToTeam: boolean;
   sheetId?: string;
   examId?: string;
   gradingId?: string;

@@ -68,7 +68,12 @@ function EnterTeamPoints(): JSX.Element {
     }
 
     const prevGrading = selectedTeam.getGrading(sheetId);
-    const updateDTO = convertFormStateToGradingDTO({ values, sheetId, prevGrading });
+    const updateDTO = convertFormStateToGradingDTO({
+      values,
+      belongsToTeam: true,
+      sheetId,
+      prevGrading,
+    });
 
     try {
       await setPointsOfTeam(tutorialId, teamId, updateDTO);

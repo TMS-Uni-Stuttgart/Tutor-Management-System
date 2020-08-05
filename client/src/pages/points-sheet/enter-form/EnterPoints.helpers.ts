@@ -4,6 +4,7 @@ import { PointsFormExerciseState, PointsFormState } from './components/EnterPoin
 
 interface ConvertToGradingDTOParams {
   values: PointsFormState;
+  belongsToTeam: boolean;
   sheetId?: string;
   examId?: string;
   prevGrading?: Grading;
@@ -69,6 +70,7 @@ export function getPointsFromState(values: PointsFormState): number {
 
 export function convertFormStateToGradingDTO({
   values,
+  belongsToTeam,
   sheetId,
   examId,
   prevGrading,
@@ -81,6 +83,7 @@ export function convertFormStateToGradingDTO({
 
   return {
     sheetId,
+    belongsToTeam,
     examId,
     exerciseGradings: [...exerciseGradings],
     gradingId: prevGrading?.id,

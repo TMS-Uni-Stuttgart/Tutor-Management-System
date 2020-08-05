@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
-  IsMongoId,
 } from 'class-validator';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
@@ -98,6 +99,13 @@ export class ExerciseGradingDTO implements IExerciseGradingDTO {
 }
 
 export class GradingDTO implements IGradingDTO {
+  @IsArray()
+  @IsMapEntry(ExerciseGradingDTO, { each: true })
+  exerciseGradings!: [string, ExerciseGradingDTO][];
+
+  @IsBoolean()
+  belongsToTeam!: boolean;
+
   @IsOptional()
   @IsString()
   sheetId?: string;
@@ -109,10 +117,6 @@ export class GradingDTO implements IGradingDTO {
   @IsOptional()
   @IsString()
   gradingId?: string;
-
-  @IsArray()
-  @IsMapEntry(ExerciseGradingDTO, { each: true })
-  exerciseGradings!: [string, ExerciseGradingDTO][];
 
   @IsOptional()
   @IsString()

@@ -19,26 +19,34 @@ export class Team implements Modify<ITeam, Modified> {
   readonly students!: Student[];
 
   getGrading(entity: HasId | string): Grading | undefined {
-    if (this.students.length === 0) {
+    const gradings = this.getAllGradings(entity);
+
+    if (!gradings || gradings.length === 0) {
       return undefined;
     }
 
-    let gradingId: string | undefined;
-
-    for (const student of this.students) {
-      const grading = student.getGrading(entity);
-
-      if (!gradingId) {
-        gradingId = grading?.id;
-      }
-
-      if (gradingId !== grading?.id) {
-        // TODO: What to do if students have different gradings?
-        throw new Error('Students of team have different gradings');
-      }
+    if (gradings.length === 1) {
+      return gradings[0];
     }
 
-    return this.students[0].getGrading(entity);
+    return gradings.filter((grading) => grading.belongsToTeam)[0];
+  }
+
+  private getAllGradings(entity: HasId | string): Grading[] | undefined {
+    if (this.students.length === 0) {
+      return;
+    }
+
+    const gradings = new Map<string, Grading>();
+    this.students.forEach((student) => {
+      const gradingOfStudent = student.getGrading(entity);
+
+      if (gradingOfStudent) {
+        gradings.set(gradingOfStudent.id, gradingOfStudent);
+      }
+    });
+
+    return [...gradings.values()];
   }
 
   getTeamNoAsString(): string {

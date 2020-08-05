@@ -57,6 +57,7 @@ export class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModifie
 export class Grading implements Modify<IGrading, Modified> {
   readonly id!: string;
   readonly points!: number;
+  readonly belongsToTeam!: boolean;
   readonly comment?: string;
   readonly additionalPoints?: number;
 

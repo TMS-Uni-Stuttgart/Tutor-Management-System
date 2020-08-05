@@ -337,6 +337,7 @@ describe('TeamService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
+      belongsToTeam: true,
       exerciseGradings: [
         [
           sheet.exercises[0].id,
