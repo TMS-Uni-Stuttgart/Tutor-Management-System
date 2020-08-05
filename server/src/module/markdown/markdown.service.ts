@@ -179,23 +179,27 @@ export class MarkdownService {
         throw new BadRequestException(`Can not generate markdown for an empty team.`);
       }
 
-      // TODO: How to handle if the students have different gradings?!
-      const grading = team.students[0].getGrading(sheet);
+      const gradings = team.getGradings(sheet);
+      const markdownData: TeamMarkdownData[] = [];
 
-      if (!grading) {
+      if (gradings.length === 0) {
         throw new BadRequestException(
           `There is no grading available of the given sheet for the students in the given team.`
         );
       }
 
-      const teamName: string = team.students.map((s) => s.lastname).join('');
-
-      return [
-        {
-          markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
+      gradings.forEach((grading) => {
+        const teamName = grading.students
+          .map((s) => s.lastname)
+          .sort()
+          .join('');
+        markdownData.push({
           teamName,
-        },
-      ];
+          markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
+        });
+      });
+
+      return markdownData;
     } catch (err) {
       if (ignoreInvalidTeams) {
         return [{ markdown: '', teamName: '', invalid: true }];
