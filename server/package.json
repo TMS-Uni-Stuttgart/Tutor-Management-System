@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "nest build --path \"./tsconfig.build.json\"",
     "format": "eslint --fix \"src/**/*.ts?(x)\" \"test/**/*.ts?(x)\"",
     "lint": "yarn eslint:check",
     "eslint:check": "eslint \"src/**/*.ts?(x)\" \"test/**/*.ts?(x)\"",
