@@ -1,6 +1,6 @@
-import { HasId, NamedElement, TutorialInEntity } from './Common';
 import { IAttendance } from './Attendance';
-import { IGrading } from './Points';
+import { HasId, NamedElement, TutorialInEntity } from './Common';
+import { IGrading } from './Gradings';
 
 export interface TeamInStudent extends HasId {
   teamNo: number;

@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ScheinexamDTO } from '../../module/scheinexam/scheinexam.dto';
-import { ExercisePointInfo } from '../../shared/model/Points';
+import { ExercisePointInfo } from '../../shared/model/Gradings';
 import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ExerciseDocument, ExerciseModel } from './exercise.model';
 import { StudentDocument } from './student.model';

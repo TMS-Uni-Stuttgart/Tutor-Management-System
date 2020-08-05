@@ -1,7 +1,7 @@
 import { DocumentType, mongoose, prop } from '@typegoose/typegoose';
 import { generateObjectId } from '../../helpers/generateObjectId';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
-import { ExercisePointInfo } from '../../shared/model/Points';
+import { ExercisePointInfo } from '../../shared/model/Gradings';
 import { IExercise, ISubexercise } from '../../shared/model/Sheet';
 
 export interface HasExerciseDocuments {

@@ -13,7 +13,7 @@ import {
 import { ExerciseGradingModel, GradingModel } from '../../database/models/grading.model';
 import { StudentModel } from '../../database/models/student.model';
 import { AttendanceState } from '../../shared/model/Attendance';
-import { IGrading } from '../../shared/model/Points';
+import { IGrading } from '../../shared/model/Gradings';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
 import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';

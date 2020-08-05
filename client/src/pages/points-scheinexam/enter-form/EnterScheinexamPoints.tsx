@@ -2,7 +2,7 @@ import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { IGradingDTO } from 'shared/model/Points';
+import { IGradingDTO } from 'shared/model/Gradings';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect from '../../../components/CustomSelect';

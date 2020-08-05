@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { Prompt } from 'react-router';
-import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Points';
+import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Gradings';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
 import { useDialog } from '../../../../hooks/DialogService';

@@ -8,7 +8,7 @@ import {
   convertExercisePointInfoToString,
   getPointsOfAllExercises,
   getPointsOfExercise,
-} from 'shared/model/Points';
+} from 'shared/model/Gradings';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
 import PointsTextField from '../../../../components/PointsTextField';

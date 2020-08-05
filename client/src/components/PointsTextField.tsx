@@ -1,9 +1,9 @@
 import { Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import React from 'react';
-import { ExercisePointInfo, convertExercisePointInfoToString } from 'shared/model/Points';
+import { convertExercisePointInfoToString, ExercisePointInfo } from 'shared/model/Gradings';
 import FormikTextField from './forms/components/FormikTextField';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() =>
   createStyles({

@@ -5,7 +5,7 @@ import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { StaticSettings } from '../../module/settings/settings.static';
 import { IAttendance } from '../../shared/model/Attendance';
-import { IGrading } from '../../shared/model/Points';
+import { IGrading } from '../../shared/model/Gradings';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';

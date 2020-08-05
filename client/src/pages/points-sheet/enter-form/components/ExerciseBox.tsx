@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { useField } from 'formik';
 import React from 'react';
-import { convertExercisePointInfoToString, getPointsOfExercise } from 'shared/model/Points';
+import { convertExercisePointInfoToString, getPointsOfExercise } from 'shared/model/Gradings';
 import FormikMarkdownTextfield from '../../../../components/forms/components/FormikMarkdownTextfield';
 import PointsTextField from '../../../../components/PointsTextField';
 import { Exercise } from '../../../../model/Exercise';

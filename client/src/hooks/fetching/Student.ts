@@ -1,6 +1,6 @@
 import { plainToClass } from 'class-transformer';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
-import { IGradingDTO, IPresentationPointsDTO } from 'shared/model/Points';
+import { IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
 import { ICakeCountDTO, IStudent, IStudentDTO } from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
 import { Student } from '../../model/Student';

@@ -1,6 +1,6 @@
-import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Points';
-import { PointsFormExerciseState, PointsFormState } from './components/EnterPointsForm.helpers';
+import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings';
 import { Grading } from '../../../model/Grading';
+import { PointsFormExerciseState, PointsFormState } from './components/EnterPointsForm.helpers';
 
 interface ConvertToGradingDTOParams {
   values: PointsFormState;

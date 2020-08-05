@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { HasId } from 'shared/model/Common';
-import { convertExercisePointInfoToString, ExercisePointInfo } from 'shared/model/Points';
+import { convertExercisePointInfoToString, ExercisePointInfo } from 'shared/model/Gradings';
 import { IExercise, ISubexercise } from 'shared/model/Sheet';
 
 export class Subexercise implements ISubexercise {

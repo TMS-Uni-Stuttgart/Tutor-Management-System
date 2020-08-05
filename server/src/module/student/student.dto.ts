@@ -17,7 +17,7 @@ import {
   IExerciseGradingDTO,
   IGradingDTO,
   IPresentationPointsDTO,
-} from '../../shared/model/Points';
+} from '../../shared/model/Gradings';
 import { ICakeCountDTO, IStudentDTO, StudentStatus } from '../../shared/model/Student';
 
 export class StudentDTO implements IStudentDTO {

@@ -4,7 +4,7 @@ import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { StaticSettings } from '../../module/settings/settings.static';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
-import { IExerciseGrading, IGrading } from '../../shared/model/Points';
+import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 import { StudentDocument, StudentModel } from './student.model';
 

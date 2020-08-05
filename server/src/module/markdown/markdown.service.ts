@@ -3,7 +3,7 @@ import { SubExerciseDocument } from '../../database/models/exercise.model';
 import { ExerciseGradingDocument, GradingDocument } from '../../database/models/grading.model';
 import { SheetDocument } from '../../database/models/sheet.model';
 import { TeamDocument } from '../../database/models/team.model';
-import { convertExercisePointInfoToString, ExercisePointInfo } from '../../shared/model/Points';
+import { convertExercisePointInfoToString, ExercisePointInfo } from '../../shared/model/Gradings';
 import { getNameOfEntity } from '../../shared/util/helpers';
 import { SheetService } from '../sheet/sheet.service';
 import { StudentService } from '../student/student.service';

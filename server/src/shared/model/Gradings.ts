@@ -1,4 +1,4 @@
-import { IExercise, HasExercises } from './Sheet';
+import { HasExercises, IExercise } from './Sheet';
 
 export interface IExerciseGrading {
   points: number;
@@ -9,10 +9,10 @@ export interface IExerciseGrading {
 
 export interface IGrading {
   id: string;
+  exerciseGradings: [string, IExerciseGrading][];
   points: number;
   comment?: string;
   additionalPoints?: number;
-  exerciseGradings: [string, IExerciseGrading][];
 }
 
 export interface IExerciseGradingDTO {
@@ -23,9 +23,9 @@ export interface IExerciseGradingDTO {
 }
 
 export interface IGradingDTO {
+  exerciseGradings: [string, IExerciseGradingDTO][];
   sheetId?: string;
   examId?: string;
-  exerciseGradings: [string, IExerciseGradingDTO][];
   gradingId?: string;
   comment?: string;
   additionalPoints?: number;

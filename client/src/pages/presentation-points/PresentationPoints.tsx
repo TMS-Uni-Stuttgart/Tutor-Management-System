@@ -1,7 +1,7 @@
 import { Box } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { IPresentationPointsDTO } from 'shared/model/Points';
+import { IPresentationPointsDTO } from 'shared/model/Gradings';
 import Placeholder from '../../components/Placeholder';
 import { useSheetSelector } from '../../components/sheet-selector/SheetSelector';
 import { getStudent, setPresentationPointsOfStudent } from '../../hooks/fetching/Student';

@@ -1,4 +1,4 @@
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
@@ -10,16 +10,16 @@ import {
 } from '../../../test/mocks/documents.mock';
 import { TeamModel } from '../../database/models/team.model';
 import { ITeam } from '../../shared/model/Team';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { SheetDTO } from '../sheet/sheet.dto';
+import { SheetService } from '../sheet/sheet.service';
+import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
+import { assertGrading } from '../student/student.service.spec';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
 import { TeamDTO } from './team.dto';
 import { TeamID, TeamService } from './team.service';
-import { SheetService } from '../sheet/sheet.service';
-import { SheetDTO } from '../sheet/sheet.dto';
-import { GradingDTO } from '../student/student.dto';
-import { assertGrading } from '../student/student.service.spec';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
 
 interface AssertTeamParams {
   expected: MockedModel<TeamModel>;

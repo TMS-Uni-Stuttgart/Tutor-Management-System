@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React from 'react';
-import { convertExercisePointInfoToString } from 'shared/model/Points';
+import { convertExercisePointInfoToString } from 'shared/model/Gradings';
 import { HasExercises } from '../../model/Exercise';
 import { Grading } from '../../model/Grading';
 
