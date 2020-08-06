@@ -532,7 +532,6 @@ describe('StudentService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
-      belongsToTeam: false,
       exerciseGradings: [
         [
           sheet.exercises[0].id,
@@ -597,7 +596,6 @@ describe('StudentService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
-      belongsToTeam: false,
       exerciseGradings: [
         [
           sheet.exercises[0].id,
@@ -663,7 +661,6 @@ describe('StudentService', () => {
     const scheinexam = await scheinexamService.create(scheinexamDTO);
     const gradingDTO: GradingDTO = {
       examId: scheinexam.id,
-      belongsToTeam: false,
       exerciseGradings: [
         [
           scheinexam.exercises[0].id,

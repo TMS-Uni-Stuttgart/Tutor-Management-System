@@ -12,7 +12,7 @@
     "eslint:check": "eslint \"src/**/*.ts?(x)\" \"test/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
     "prettier:format": "prettier --write --loglevel warn \"src/**/*.ts?(x)\"",
-    "ts:check": "tsc --project . --noEmit --incremental false",
+    "ts:check": "tsc --project tsconfig.check.json",
     "ts:check:watch": "tsc --project . --noEmit --incremental false -w",
     "start": "env-cmd cross-env NODE_ENV=development nest start --debug --watch",
     "start:timezone": "cross-env TZ='Europe/Berlin' yarn start",
