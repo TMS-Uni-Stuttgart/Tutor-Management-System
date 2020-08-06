@@ -24,7 +24,7 @@ export class MarkdownController {
       sheetId,
     });
 
-    return gradings.markdownData.map(({ markdown, teamName }) => ({ markdown, teamName }));
+    return gradings.markdownData;
   }
 
   @Get('/grading/:sheetId/student/:studentId')

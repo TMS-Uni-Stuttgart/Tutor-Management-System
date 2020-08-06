@@ -118,7 +118,11 @@ export class MarkdownService {
 
     const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
     const markdownData = markdownForTeam.reduce<ITeamMarkdownData[]>((list, data) => {
-      list.push({ markdown: data.markdown, teamName: data.teamName });
+      list.push({
+        markdown: data.markdown,
+        teamName: data.teamName,
+        belongsToTeam: data.belongsToTeam,
+      });
 
       return list;
     }, []);
@@ -193,16 +197,19 @@ export class MarkdownService {
           .map((s) => s.lastname)
           .sort()
           .join('');
+        const nameOfEntity = grading.belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`;
+
         markdownData.push({
           teamName,
-          markdown: this.generateFromGrading({ sheet, grading, nameOfEntity: `Team ${teamName}` }),
+          markdown: this.generateFromGrading({ sheet, grading, nameOfEntity }),
+          belongsToTeam: grading.belongsToTeam,
         });
       });
 
-      return markdownData;
+      return markdownData.sort((a) => (a.belongsToTeam ? -1 : 1));
     } catch (err) {
       if (ignoreInvalidTeams) {
-        return [{ markdown: '', teamName: '', invalid: true }];
+        return [{ markdown: '', teamName: '', invalid: true, belongsToTeam: false }];
       } else {
         throw err;
       }
