@@ -38,10 +38,24 @@ interface RouteParams {
   tutorialId?: string;
 }
 
-enum PDFGeneratingState {
+enum LoadingState {
   NONE,
   SINGLE,
   MULTIPLE,
+  PREVIEW,
+}
+
+function getGenerationModalText(state: LoadingState): string {
+  switch (state) {
+    case LoadingState.SINGLE:
+      return 'Erstelle PDF...';
+    case LoadingState.MULTIPLE:
+      return 'Erstelle PDFs...';
+    case LoadingState.PREVIEW:
+      return 'Erstelle Vorschau...';
+    default:
+      return '';
+  }
 }
 
 function PointsOverview(): JSX.Element {
@@ -59,14 +73,10 @@ function PointsOverview(): JSX.Element {
   });
 
   const { enqueueSnackbar, setError } = useCustomSnackbar();
-
-  const [teams, setTeams] = useState<Team[]>([]);
-
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
-  const [isGeneratingPDFs, setGeneratingPDFs] = useState<PDFGeneratingState>(
-    PDFGeneratingState.NONE
-  );
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.NONE);
 
   useEffect(() => {
     if (!tutorialId) {
@@ -90,9 +100,12 @@ function PointsOverview(): JSX.Element {
     }
 
     try {
+      setLoadingState(LoadingState.PREVIEW);
       await showSinglePdfPreview({ tutorialId, sheet: currentSheet, team });
     } catch {
       enqueueSnackbar('Preview konnte nicht geladen werden.', { variant: 'error' });
+    } finally {
+      setLoadingState(LoadingState.NONE);
     }
   }
 
@@ -102,13 +115,13 @@ function PointsOverview(): JSX.Element {
     }
 
     try {
-      setGeneratingPDFs(PDFGeneratingState.SINGLE);
+      setLoadingState(LoadingState.SINGLE);
 
       await generateSinglePdf({ tutorialId, sheet: currentSheet, team });
     } catch {
       enqueueSnackbar('PDF konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
-      setGeneratingPDFs(PDFGeneratingState.NONE);
+      setLoadingState(LoadingState.NONE);
     }
   }
 
@@ -118,13 +131,13 @@ function PointsOverview(): JSX.Element {
     }
 
     try {
-      setGeneratingPDFs(PDFGeneratingState.MULTIPLE);
+      setLoadingState(LoadingState.MULTIPLE);
 
       await generateAllPdfs({ tutorialId, sheet: currentSheet });
     } catch {
       enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
     } finally {
-      setGeneratingPDFs(PDFGeneratingState.NONE);
+      setLoadingState(LoadingState.NONE);
     }
   }
 
@@ -134,15 +147,13 @@ function PointsOverview(): JSX.Element {
         <SheetSelector className={classes.sheetSelect} />
 
         <SubmitButton
-          isSubmitting={isGeneratingPDFs !== PDFGeneratingState.NONE}
+          isSubmitting={loadingState !== LoadingState.NONE}
           variant='outlined'
           color='default'
           className={classes.createPdfsButton}
           onClick={handleGeneratingAllPDFs}
           disabled={!currentSheet}
-          modalText={
-            isGeneratingPDFs === PDFGeneratingState.SINGLE ? 'Erstelle PDF...' : 'Erstelle PDFs...'
-          }
+          modalText={getGenerationModalText(loadingState)}
         >
           PDFs erstellen
         </SubmitButton>
