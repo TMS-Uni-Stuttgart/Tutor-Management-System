@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
-  IsBoolean,
   IsEmail,
   IsEnum,
   IsMongoId,
@@ -102,9 +101,6 @@ export class GradingDTO implements IGradingDTO {
   @IsArray()
   @IsMapEntry(ExerciseGradingDTO, { each: true })
   exerciseGradings!: [string, ExerciseGradingDTO][];
-
-  @IsBoolean()
-  belongsToTeam!: boolean;
 
   @IsOptional()
   @IsString()

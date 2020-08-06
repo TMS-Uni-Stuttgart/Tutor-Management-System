@@ -25,7 +25,6 @@ export interface IExerciseGradingDTO {
 
 export interface IGradingDTO {
   exerciseGradings: [string, IExerciseGradingDTO][];
-  belongsToTeam: boolean;
   sheetId?: string;
   examId?: string;
   gradingId?: string;

@@ -120,9 +120,6 @@ export class GradingModel {
   @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
   exerciseGradings!: Map<string, ExerciseGradingDocument>;
 
-  @prop({ required: true })
-  belongsToTeam!: boolean;
-
   @prop()
   comment?: string;
 
@@ -154,6 +151,10 @@ export class GradingModel {
     }
 
     throw new Error('Neither the sheetId nor the examId field is set.');
+  }
+
+  get belongsToTeam(): boolean {
+    return this.students.length >= 2;
   }
 
   constructor() {
@@ -234,15 +235,7 @@ export class GradingModel {
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
   updateFromDTO(this: GradingDocument, dto: GradingDTO): void {
-    const {
-      exerciseGradings,
-      additionalPoints,
-      comment,
-      gradingId,
-      sheetId,
-      examId,
-      belongsToTeam,
-    } = dto;
+    const { exerciseGradings, additionalPoints, comment, gradingId, sheetId, examId } = dto;
 
     if (!!gradingId) {
       this.id = gradingId;
@@ -256,7 +249,6 @@ export class GradingModel {
     this.examId = examId;
     this.comment = comment;
     this.additionalPoints = additionalPoints;
-    this.belongsToTeam = belongsToTeam;
     this.exerciseGradings = new Map();
 
     for (const [key, exerciseGradingDTO] of exerciseGradings) {
