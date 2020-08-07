@@ -36,6 +36,10 @@ export class SheetModel {
     );
   }
 
+  get sheetNoAsString(): string {
+    return this.sheetNo.toString(10).padStart(2, '0');
+  }
+
   toDTO(this: SheetDocument): ISheet {
     return {
       id: this.id,

@@ -90,13 +90,15 @@ export class MarkdownService {
     const sheet = await this.sheetService.findById(sheetId);
 
     const gradingsMD: TeamMarkdownData[] = [];
-    const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
 
     teams.forEach((team) => {
       gradingsMD.push(...this.generateFromTeam({ team, sheet, ignoreInvalidTeams: true }));
     });
 
-    return { markdownData: gradingsMD.filter((grad) => !grad.invalid), sheetNo };
+    return {
+      markdownData: gradingsMD.filter((grad) => !grad.invalid),
+      sheetNo: sheet.sheetNoAsString,
+    };
   }
 
   /**
@@ -115,8 +117,6 @@ export class MarkdownService {
     const sheet = await this.sheetService.findById(sheetId);
 
     const markdownForTeam = this.generateFromTeam({ team, sheet, ignoreInvalidTeams: false });
-
-    const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
     const markdownData = markdownForTeam.reduce<ITeamMarkdownData[]>((list, data) => {
       list.push({
         markdown: data.markdown,
@@ -129,7 +129,7 @@ export class MarkdownService {
 
     return {
       markdownData: markdownData,
-      sheetNo,
+      sheetNo: sheet.sheetNoAsString,
     };
   }
 

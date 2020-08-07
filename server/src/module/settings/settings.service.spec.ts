@@ -48,9 +48,14 @@ describe('SettingsService', () => {
   });
 
   it.each<ClientSettingsDTO>([
-    { defaultTeamSize: 5 },
-    { canTutorExcuseStudents: true },
-    { defaultTeamSize: 3, canTutorExcuseStudents: true },
+    { defaultTeamSize: 5, canTutorExcuseStudents: false, gradingFilename: 'filename' },
+    { defaultTeamSize: 2, canTutorExcuseStudents: true, gradingFilename: 'filename' },
+    { defaultTeamSize: 3, canTutorExcuseStudents: true, gradingFilename: 'filename' },
+    {
+      defaultTeamSize: 2,
+      canTutorExcuseStudents: false,
+      gradingFilename: 'Grading_Ex{{sheetNo}}_{{teamName}}',
+    },
   ])('change setting with DTO "%s"', async (newSetting: ClientSettingsDTO) => {
     await service.setClientSettings(newSetting);
 

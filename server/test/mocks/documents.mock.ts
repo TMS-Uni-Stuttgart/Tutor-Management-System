@@ -230,6 +230,7 @@ export const SHEET_DOCUMENTS: MockedSheetModel[] = [
   {
     _id: '5e5528e1e9010217b62efbb5',
     sheetNo: 1,
+    sheetNoAsString: '01',
     bonusSheet: false,
     totalPoints: 30, // Put the expected sum of all exercises here.
     exercises: [

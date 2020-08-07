@@ -2,8 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import JSZip from 'jszip';
 import { DateTime } from 'luxon';
 import pug from 'pug';
-import { MarkdownService } from '../markdown/markdown.service';
+import { SheetDocument } from '../../database/models/sheet.model';
+import {
+  GenerateAllTeamsGradingParams,
+  GenerateTeamGradingParams,
+  MarkdownService,
+} from '../markdown/markdown.service';
 import { SettingsService } from '../settings/settings.service';
+import { SheetService } from '../sheet/sheet.service';
 import { Template } from '../template/template.types';
 import { AttendancePDFGenerator } from './subservices/PDFGenerator.attendance';
 import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials';
@@ -17,13 +23,14 @@ interface ZipData {
 }
 
 interface FileNameParams {
-  sheetNo: string;
+  sheet: SheetDocument;
   teamName: string;
+  extension: 'pdf' | 'zip';
 }
 
 interface FilenameAttributes {
   sheetNo: string;
-  teamName:string;
+  teamName: string;
 }
 
 @Injectable()
@@ -37,6 +44,7 @@ export class PdfService {
     private readonly scheinexamResultPDF: ScheinexamResultPDFGenerator,
     private readonly markdownPDF: MarkdownPDFGenerator,
     private readonly markdownService: MarkdownService,
+    private readonly sheetService: SheetService,
     private readonly settingsService: SettingsService
   ) {
     this.loadFilenameTemplate();
@@ -126,12 +134,10 @@ export class PdfService {
    * @throws `BadRequestException` - If the given team does not have any students or the students do not hold a grading for the given sheet.
    */
   async generateGradingPDF(
+    params: GenerateTeamGradingParams
   ): Promise<Buffer | NodeJS.ReadableStream> {
-    sheetId,
-    teamId,
-    const team = await this.teamService.findById(teamId);
-    const sheet = await this.sheetService.findById(sheetId);
-    const teamData = this.markdownService.generateTeamGrading({ team, sheet });
+    const sheet = await this.sheetService.findById(params.sheetId);
+    const teamData = await this.markdownService.getTeamGrading(params);
     const dataCount = teamData.markdownData.length;
 
     if (dataCount <= 1) {
@@ -163,14 +169,12 @@ export class PdfService {
    * @throws `NotFoundException` - If either no tutorial with the given ID or no sheet with the given ID could be found.
    */
   async generateTutorialGradingZIP(
+    params: GenerateAllTeamsGradingParams
   ): Promise<NodeJS.ReadableStream> {
-    tutorialId,
-    sheetId,
-    const sheet = await this.sheetService.findById(sheetId);
-    const { markdownData: markdownForGradings } = await this.markdownService.getAllTeamsGradings({
-      tutorialId,
-      sheet,
-    });
+    const sheet = await this.sheetService.findById(params.sheetId);
+    const { markdownData: markdownForGradings } = await this.markdownService.getAllTeamsGradings(
+      params
+    );
     const files: ZipData[] = [];
 
     for (const gradingMD of markdownForGradings) {
@@ -220,6 +224,5 @@ export class PdfService {
       this.gradingFilename?.({ sheetNo: sheet.sheetNoAsString, teamName }) ?? 'NO_FILE_NAME';
 
     return `${filename}.${extension}`;
-  }
   }
 }
