@@ -52,7 +52,11 @@ class MailingSettingsModel implements IMailingSettings {
 @modelOptions({ schemaOptions: { collection: CollectionName.SETTINGS } })
 export class SettingsModel {
   private static get internalDefaults(): IClientSettings {
-    return { defaultTeamSize: 2, canTutorExcuseStudents: false };
+    return {
+      defaultTeamSize: 2,
+      canTutorExcuseStudents: false,
+      gradingFilename: 'Ex{{sheetNo}}_{{teamName}}',
+    };
   }
 
   @prop({ required: true })
@@ -61,14 +65,22 @@ export class SettingsModel {
   @prop({ required: true })
   canTutorExcuseStudents: boolean;
 
+  @prop({ required: true })
+  gradingFilename: string;
+
   @prop({ type: MailingSettingsModel })
   mailingConfig?: MailingSettingsModel;
 
   constructor(fields?: Partial<IClientSettings>) {
-    this.defaultTeamSize =
-      fields?.defaultTeamSize ?? SettingsModel.internalDefaults.defaultTeamSize;
-    this.canTutorExcuseStudents =
-      fields?.canTutorExcuseStudents ?? SettingsModel.internalDefaults.canTutorExcuseStudents;
+    const {
+      defaultTeamSize,
+      canTutorExcuseStudents,
+      gradingFilename: gradingFileName,
+    } = SettingsModel.internalDefaults;
+
+    this.defaultTeamSize = fields?.defaultTeamSize ?? defaultTeamSize;
+    this.canTutorExcuseStudents = fields?.canTutorExcuseStudents ?? canTutorExcuseStudents;
+    this.gradingFilename = fields?.gradingFilename ?? gradingFileName;
 
     this.mailingConfig = fields?.mailingConfig
       ? new MailingSettingsModel(fields.mailingConfig)
@@ -82,6 +94,7 @@ export class SettingsModel {
       defaultTeamSize: this.defaultTeamSize ?? defaultSettings.defaultTeamSize,
       canTutorExcuseStudents: this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
       mailingConfig: this.mailingConfig?.toDTO(),
+      gradingFilename: this.gradingFilename,
     };
   }
 
@@ -93,11 +106,12 @@ export class SettingsModel {
    * @param dto DTO with the new settings information.
    */
   assignDTO(dto: ClientSettingsDTO): void {
-    for (const [key, value] of Object.entries(dto)) {
-      if (typeof value !== 'function' && key in this) {
-        (this as Record<string, unknown>)[key] = value ?? undefined;
-      }
-    }
+    this.defaultTeamSize = dto.defaultTeamSize;
+    this.canTutorExcuseStudents = dto.canTutorExcuseStudents;
+    this.mailingConfig = new MailingSettingsModel(dto.mailingConfig);
+
+    // Remove possible file extensions.
+    this.gradingFilename = dto.gradingFilename.replace(/\.[^/.]+$/, '');
   }
 }
 

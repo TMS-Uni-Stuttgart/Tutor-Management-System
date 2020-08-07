@@ -17,7 +17,6 @@ import { TeamModule } from './module/team/team.module';
 import { TutorialModule } from './module/tutorial/tutorial.module';
 import { UserModule } from './module/user/user.module';
 
-// TODO: Clean up imported modules -- Which ones are actually needed by the ROOT (!) app?
 @Module({
   imports: [
     DatabaseModule.forRootAsync(),

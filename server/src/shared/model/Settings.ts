@@ -14,7 +14,9 @@ export interface IMailingSettings {
 export interface IClientSettings {
   defaultTeamSize: number;
   canTutorExcuseStudents: boolean;
+  /** Filename for gradings __without__ extension. */
+  gradingFilename: string;
   mailingConfig?: IMailingSettings;
 }
 
-export type IChangeSettingsDTO = { [K in keyof IClientSettings]?: IClientSettings[K] };
+export type IChangeSettingsDTO = { [K in keyof IClientSettings]: IClientSettings[K] };

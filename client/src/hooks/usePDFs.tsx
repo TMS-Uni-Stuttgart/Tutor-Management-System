@@ -71,6 +71,7 @@ async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPdfsOptions) {
     getTutorial(tutorialId),
   ]);
 
+  // TODO: Make filename a setting.
   saveBlob(blob, `Bewertungen_Ex${sheet.sheetNo.toString().padStart(2, '0')}_${tutorial.slot}.zip`);
 }
 
