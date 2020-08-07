@@ -13,17 +13,19 @@ import { ScheincriteriaIdentifier } from '../../src/shared/model/ScheinCriteria'
 import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';
 
-export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
-export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
+type MockedTutorialModel = MockedModel<TutorialModel> & { tutor: MockedModel<TutorialModel> };
+
+type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
+type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
   subexercises?: MockedSubExerciseModel[];
 };
-export type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
+type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
   exercises: MockedExerciseModel[];
 };
-export type MockedScheinexamModel = Omit<MockedModel<ScheinexamModel>, 'exercises'> & {
+type MockedScheinexamModel = Omit<MockedModel<ScheinexamModel>, 'exercises'> & {
   exercises: MockedExerciseModel[];
 };
-export type MockedScheincriteriaModel = Omit<MockedModel<ScheincriteriaModel>, 'criteria'> & {
+type MockedScheincriteriaModel = Omit<MockedModel<ScheincriteriaModel>, 'criteria'> & {
   criteria: { identifier: string; [key: string]: any };
 };
 
@@ -90,7 +92,7 @@ export const USER_DOCUMENTS: MockedModel<UserModel>[] = [
   },
 ];
 
-export const TUTORIAL_DOCUMENTS: MockedModel<TutorialModel>[] = [
+export const TUTORIAL_DOCUMENTS: MockedTutorialModel[] = [
   {
     _id: '5e50141098205a0d95857492',
     tutor: undefined,

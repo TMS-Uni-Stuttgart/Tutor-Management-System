@@ -68,7 +68,7 @@ export class SettingsModel {
   @prop({ required: true })
   gradingFilename: string;
 
-  @prop({ type: MailingSettingsModel })
+  @prop({ type: MailingSettingsModel, required: false })
   mailingConfig?: MailingSettingsModel;
 
   constructor(fields?: Partial<IClientSettings>) {
@@ -101,14 +101,17 @@ export class SettingsModel {
   /**
    * Changes this settings document to use the newly provided settings.
    *
-   * If a setting is not part of the provided `SettingsDTO` the old value previously saved in this document gets used.
+   * This will override __all__ settings with the ones from the given DTO.
    *
    * @param dto DTO with the new settings information.
    */
   assignDTO(dto: ClientSettingsDTO): void {
     this.defaultTeamSize = dto.defaultTeamSize;
     this.canTutorExcuseStudents = dto.canTutorExcuseStudents;
-    this.mailingConfig = new MailingSettingsModel(dto.mailingConfig);
+
+    this.mailingConfig = dto.mailingConfig
+      ? new MailingSettingsModel(dto.mailingConfig)
+      : undefined;
 
     // Remove possible file extensions.
     this.gradingFilename = dto.gradingFilename.replace(/\.[^/.]+$/, '');

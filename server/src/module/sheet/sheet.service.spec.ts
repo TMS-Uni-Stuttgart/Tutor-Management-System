@@ -34,13 +34,14 @@ interface AssertSheetDTOParams {
  * @param params Must contain an actual and an expected Sheet.
  */
 function assertSheet({ expected, actual }: AssertSheetParams) {
-  const { _id, exercises, totalPoints, ...restExpected } = expected;
+  const { _id, exercises, totalPoints, sheetNoAsString, ...restExpected } = expected;
   const { exercises: actualExercises, id, ...restActual } = actual;
 
   expect(id).toEqual(_id);
   expect(restActual).toEqual(restExpected);
 
   expect(totalPoints).toEqual(exercises.reduce((sum, ex) => sum + ex.maxPoints, 0));
+  expect(sheetNoAsString).toEqual(restActual.sheetNo.toString(10).padStart(2, '0'));
 
   expect(actualExercises.length).toEqual(exercises.length);
 
