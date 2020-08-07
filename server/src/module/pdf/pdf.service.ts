@@ -51,24 +51,6 @@ export class PdfService {
   }
 
   /**
-   * Loads and compiles the template string for the gradings filename.
-   *
-   * Afterwards the `this.filenameTemplate` property is set to the compiled template.
-   */
-  private async loadFilenameTemplate(): Promise<void> {
-    const { gradingFilename: gradingFileName } = await this.settingsService.getClientSettings();
-    let parsedGradingFilename: string;
-
-    if (gradingFileName.startsWith('|')) {
-      parsedGradingFilename = gradingFileName;
-    } else {
-      parsedGradingFilename = `|${gradingFileName}`;
-    }
-
-    this.gradingFilename = pug.compile(parsedGradingFilename);
-  }
-
-  /**
    * Generates a list for signing the attendances of the tutorial at the given date.
    *
    * @param tutorialId ID of the tutorial to generate the PDF for.
@@ -191,6 +173,13 @@ export class PdfService {
     return this.generateZIP(files);
   }
 
+  /**
+   * Generates a ZIP file containing the given data.
+   *
+   * @param data Data to put into the ZIP file.
+   *
+   * @returns NodeJS.ReadableStream of the created ZIP file.
+   */
   private generateZIP(data: ZipData[]): NodeJS.ReadableStream {
     const zip = new JSZip();
 
@@ -207,7 +196,7 @@ export class PdfService {
    * This function behaves like a sync function except the `this.filenameTemplate` property is not set yet. If it is set no internal async calls are made.
    *
    * @param sheet Sheet
-   * @param team Team
+   * @param teamName Name of the team.
    * @param extension Extension of the filename. Either 'pdf' or 'zip'. (__without__ leading '.').
    */
   private async getGradingFilename({
@@ -224,5 +213,23 @@ export class PdfService {
       this.gradingFilename?.({ sheetNo: sheet.sheetNoAsString, teamName }) ?? 'NO_FILE_NAME';
 
     return `${filename}.${extension}`;
+  }
+
+  /**
+   * Loads and compiles the template string for the gradings filename.
+   *
+   * Afterwards the `this.filenameTemplate` property is set to the compiled template.
+   */
+  private async loadFilenameTemplate(): Promise<void> {
+    const { gradingFilename: gradingFileName } = await this.settingsService.getClientSettings();
+    let parsedGradingFilename: string;
+
+    if (gradingFileName.startsWith('|')) {
+      parsedGradingFilename = gradingFileName;
+    } else {
+      parsedGradingFilename = `|${gradingFileName}`;
+    }
+
+    this.gradingFilename = pug.compile(parsedGradingFilename);
   }
 }
