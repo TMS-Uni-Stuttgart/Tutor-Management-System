@@ -4,16 +4,15 @@ import { plainToClass } from 'class-transformer';
 import { DateTime, Interval, ToISOTimeOptions } from 'luxon';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
-import { MockedModel } from '../../../test/helpers/testdocument';
 import {
   createDatesForTutorialAsStrings,
+  MockedTutorialModel,
   TUTORIAL_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
 import {
   getAllUserDocsWithRole,
   getUserDocWithRole,
 } from '../../../test/mocks/documents.mock.helpers';
-import { TutorialModel } from '../../database/models/tutorial.model';
 import { Role } from '../../shared/model/Role';
 import { ITutorial, ITutorialGenerationDTO, UserInEntity } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
@@ -21,12 +20,12 @@ import { ExcludedTutorialDate, TutorialDTO, TutorialGenerationDTO } from './tuto
 import { TutorialService } from './tutorial.service';
 
 interface AssertTutorialParams {
-  expected: MockedModel<TutorialModel>;
+  expected: MockedTutorialModel;
   actual: ITutorial;
 }
 
 interface AssertTutorialListParams {
-  expected: MockedModel<TutorialModel>[];
+  expected: MockedTutorialModel[];
   actual: ITutorial[];
 }
 

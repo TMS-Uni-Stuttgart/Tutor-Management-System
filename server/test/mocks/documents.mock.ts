@@ -13,19 +13,21 @@ import { ScheincriteriaIdentifier } from '../../src/shared/model/ScheinCriteria'
 import { StudentStatus } from '../../src/shared/model/Student';
 import { MockedModel } from '../helpers/testdocument';
 
-type MockedTutorialModel = MockedModel<TutorialModel> & { tutor: MockedModel<TutorialModel> };
+export type MockedTutorialModel = Omit<MockedModel<TutorialModel>, 'tutor'> & {
+  tutor?: MockedModel<UserModel>;
+};
 
-type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
-type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
+export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
+export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
   subexercises?: MockedSubExerciseModel[];
 };
-type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
+export type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
   exercises: MockedExerciseModel[];
 };
-type MockedScheinexamModel = Omit<MockedModel<ScheinexamModel>, 'exercises'> & {
+export type MockedScheinexamModel = Omit<MockedModel<ScheinexamModel>, 'exercises'> & {
   exercises: MockedExerciseModel[];
 };
-type MockedScheincriteriaModel = Omit<MockedModel<ScheincriteriaModel>, 'criteria'> & {
+export type MockedScheincriteriaModel = Omit<MockedModel<ScheincriteriaModel>, 'criteria'> & {
   criteria: { identifier: string; [key: string]: any };
 };
 
