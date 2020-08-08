@@ -55,7 +55,7 @@ export class SettingsModel {
     return {
       defaultTeamSize: 2,
       canTutorExcuseStudents: false,
-      gradingFilename: 'Ex{{sheetNo}}_{{teamName}}',
+      gradingFilename: 'Ex#{sheetNo}_#{teamName}',
     };
   }
 
