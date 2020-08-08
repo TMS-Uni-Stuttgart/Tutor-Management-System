@@ -10,17 +10,12 @@ import { InjectModel } from 'nestjs-typegoose';
 import { StudentDocument } from '../../database/models/student.model';
 import { populateTeamDocument, TeamDocument, TeamModel } from '../../database/models/team.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
-import { ITeam } from '../../shared/model/Team';
+import { ITeam, ITeamId } from '../../shared/model/Team';
 import { SheetService } from '../sheet/sheet.service';
 import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { TeamDTO } from './team.dto';
-
-export interface TeamID {
-  tutorialId: string;
-  teamId: string;
-}
 
 @Injectable()
 export class TeamService {
@@ -55,7 +50,7 @@ export class TeamService {
    *
    * @throws `NotFoundException` - If no team inside the given tutorial with the given ID could be found.
    */
-  async findById({ tutorialId, teamId }: TeamID): Promise<TeamDocument> {
+  async findById({ tutorialId, teamId }: ITeamId): Promise<TeamDocument> {
     const team = await this.teamModel.findOne({ _id: teamId, tutorial: tutorialId as any }).exec();
 
     if (!team) {
@@ -112,7 +107,7 @@ export class TeamService {
    *
    * @throws `NotFoundException` - If not team with the given ID could be found in the tutorial or if any of the provided students in the DTO could not be found.
    */
-  async updateTeamInTutorial(teamId: TeamID, { students }: TeamDTO): Promise<ITeam> {
+  async updateTeamInTutorial(teamId: ITeamId, { students }: TeamDTO): Promise<ITeam> {
     const team = await this.findById(teamId);
     const newStudentsOfTeam = await Promise.all(
       students.map((id) => this.studentService.findById(id))
@@ -137,7 +132,7 @@ export class TeamService {
    *
    * @throws `NotFoundException` - If no team with the given ID could be found in the given tutorial.
    */
-  async deleteTeamFromTutorial(teamId: TeamID): Promise<TeamDocument> {
+  async deleteTeamFromTutorial(teamId: ITeamId): Promise<TeamDocument> {
     const team = await this.findById(teamId);
 
     await this.removeAllStudentsFromTeam(team);
@@ -159,7 +154,7 @@ export class TeamService {
    *
    * @throws `NotFoundException` - If either no team with the given `teamId` or no sheet with the given `dto.sheetId` or no grading with the given `dto.gradingId` (if provided) could be found.
    */
-  async setGrading(teamId: TeamID, dto: GradingDTO): Promise<void> {
+  async setGrading(teamId: ITeamId, dto: GradingDTO): Promise<void> {
     const team = await this.findById(teamId);
     const docWithExercises = await this.studentService.getEntityWithExercisesFromDTO(dto);
     const grading = await this.studentService.getGradingFromDTO(dto);

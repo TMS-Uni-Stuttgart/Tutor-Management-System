@@ -145,7 +145,7 @@ function TeamCard({
                 disabled: pdfDisabled,
               },
               {
-                primary: 'PDF herunterladen',
+                primary: 'PDF(s) herunterladen',
                 secondary: pdfDisabled ? 'Keine Bewertung vorhanden.' : undefined,
                 Icon: PdfIcon,
                 onClick: () => onGeneratePdfClicked(team),

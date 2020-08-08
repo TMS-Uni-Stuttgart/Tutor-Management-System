@@ -2,16 +2,17 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { SubExerciseDocument } from '../../database/models/exercise.model';
 import { ExerciseGradingDocument, GradingDocument } from '../../database/models/grading.model';
 import { SheetDocument } from '../../database/models/sheet.model';
-import { TeamDocument } from '../../database/models/team.model';
+import { TeamDocument, TeamModel } from '../../database/models/team.model';
 import { convertExercisePointInfoToString, ExercisePointInfo } from '../../shared/model/Gradings';
 import { ITeamMarkdownData } from '../../shared/model/Markdown';
+import { ITeamId } from '../../shared/model/Team';
 import { getNameOfEntity } from '../../shared/util/helpers';
 import { SheetService } from '../sheet/sheet.service';
 import { StudentService } from '../student/student.service';
-import { TeamID, TeamService } from '../team/team.service';
+import { TeamService } from '../team/team.service';
 
 export interface GenerateTeamGradingParams {
-  teamId: TeamID;
+  teamId: ITeamId;
   sheetId: string;
 }
 
@@ -137,10 +138,7 @@ export class MarkdownService {
     return {
       markdownData: markdownData,
       sheetNo: sheet.sheetNoAsString,
-      teamName: team.students
-        .map((s) => s.lastname)
-        .sort()
-        .join(''),
+      teamName: team.getTeamName(),
     };
   }
 
@@ -204,10 +202,7 @@ export class MarkdownService {
       }
 
       gradings.forEach((grading) => {
-        const teamName = grading.students
-          .map((s) => s.lastname)
-          .sort()
-          .join('');
+        const teamName = TeamModel.generateTeamname(grading.students);
         const nameOfEntity = grading.belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`;
 
         markdownData.push({

@@ -9,7 +9,7 @@ import {
   TUTORIAL_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
 import { TeamModel } from '../../database/models/team.model';
-import { ITeam } from '../../shared/model/Team';
+import { ITeam, ITeamId } from '../../shared/model/Team';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
@@ -19,7 +19,7 @@ import { assertGrading } from '../student/student.service.spec';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
 import { TeamDTO } from './team.dto';
-import { TeamID, TeamService } from './team.service';
+import { TeamService } from './team.service';
 
 interface AssertTeamParams {
   expected: MockedModel<TeamModel>;
@@ -280,7 +280,7 @@ describe('TeamService', () => {
     };
 
     const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
-    const teamId: TeamID = { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id };
+    const teamId: ITeamId = { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id };
     const deletedTeam = await service.deleteTeamFromTutorial(teamId);
 
     expect(deletedTeam.id).toEqual(team.id);

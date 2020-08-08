@@ -3,6 +3,7 @@ import JSZip from 'jszip';
 import { DateTime } from 'luxon';
 import pug from 'pug';
 import { SheetDocument } from '../../database/models/sheet.model';
+import { ITeamId } from '../../shared/model/Team';
 import {
   GenerateAllTeamsGradingParams,
   GenerateTeamGradingParams,
@@ -11,6 +12,7 @@ import {
 } from '../markdown/markdown.service';
 import { SettingsService } from '../settings/settings.service';
 import { SheetService } from '../sheet/sheet.service';
+import { TeamService } from '../team/team.service';
 import { Template } from '../template/template.types';
 import { AttendancePDFGenerator } from './subservices/PDFGenerator.attendance';
 import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials';
@@ -26,7 +28,7 @@ interface ZipData {
 interface FileNameParams {
   sheet: SheetDocument;
   teamName: string;
-  extension: 'pdf' | 'zip';
+  extension?: 'pdf' | 'zip';
 }
 
 interface FilenameAttributes {
@@ -37,6 +39,11 @@ interface FilenameAttributes {
 interface ConvertZipParams {
   sheet: SheetDocument;
   teamData: SingleTeamGradings;
+}
+
+interface GenerateFilenameParams {
+  sheetId: string;
+  teamId: ITeamId;
 }
 
 @Injectable()
@@ -51,6 +58,7 @@ export class PdfService implements OnModuleInit {
     private readonly markdownPDF: MarkdownPDFGenerator,
     private readonly markdownService: MarkdownService,
     private readonly sheetService: SheetService,
+    private readonly teamService: TeamService,
     private readonly settingsService: SettingsService
   ) {}
 
@@ -196,6 +204,20 @@ export class PdfService implements OnModuleInit {
   }
 
   /**
+   * Generates a grading filename without an extension.
+   *
+   * @param dto Params to generate the filename from.
+   *
+   * @returns Generated filename.
+   */
+  async generateGradingFilename(dto: GenerateFilenameParams): Promise<string> {
+    const { sheetId, teamId } = dto;
+    const sheet = await this.sheetService.findById(sheetId);
+    const team = await this.teamService.findById(teamId);
+    return this.getGradingFilename({ sheet, teamName: team.getTeamName() });
+  }
+
+  /**
    * Generates a ZIP file containing the given data.
    *
    * @param data Data to put into the ZIP file.
@@ -234,7 +256,7 @@ export class PdfService implements OnModuleInit {
     const filename =
       this.gradingFilename?.({ sheetNo: sheet.sheetNoAsString, teamName }) ?? 'NO_FILE_NAME';
 
-    return `${filename}.${extension}`;
+    return !!extension ? `${filename}.${extension}` : filename;
   }
 
   /**

@@ -92,7 +92,7 @@ export async function getTeamCorrectionCommentMarkdown(
   return Promise.reject(`Wrong response code (${response.status})`);
 }
 
-export async function getTeamCorrectionCommentPDF(
+export async function getTeamGradingFile(
   tutorialId: string,
   sheetId: string,
   teamId: string
@@ -118,6 +118,20 @@ export async function getTeamCorrectionCommentPDF(
   }
 
   return Promise.reject(`Wrong response code (${response.status})`);
+}
+
+export async function getTeamGradingFilename(
+  tutorialId: string,
+  sheetId: string,
+  teamId: string
+): Promise<string> {
+  const response = await axios.get<string>(
+    `/pdf/grading/filename/tutorial/${tutorialId}/sheet/${sheetId}/team/${teamId}`
+  );
+
+  return response.status === 200
+    ? response.data
+    : Promise.reject(`Wrong response code (${response.status})`);
 }
 
 export async function getStudentCorrectionCommentMarkdown(

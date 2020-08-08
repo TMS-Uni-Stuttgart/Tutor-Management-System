@@ -31,6 +31,13 @@ type AssignableFields = Omit<NoFunctions<TeamModel>, 'students'>;
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })
 export class TeamModel {
+  static generateTeamname(students: StudentDocument[]): string {
+    return students
+      .map((s) => s.lastname)
+      .sort()
+      .join('');
+  }
+
   constructor(fields: AssignableFields) {
     Object.assign(this, fields);
 
@@ -49,6 +56,13 @@ export class TeamModel {
     localField: '_id',
   })
   students!: StudentDocument[];
+
+  /**
+   * @returns Teamname as all lastnames get combined to one string (sorted alphabetically).
+   */
+  getTeamName(): string {
+    return TeamModel.generateTeamname(this.students);
+  }
 
   /**
    * Returns the gradings of all students for the given sheet.

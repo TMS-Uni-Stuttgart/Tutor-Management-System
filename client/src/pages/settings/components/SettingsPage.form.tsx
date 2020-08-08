@@ -99,11 +99,11 @@ function SettingsPageForm(): JSX.Element {
 
         <GridDivider />
 
-        <Typography className={classes.sectionLabel}>Anwesenheiten</Typography>
+        <Typography className={classes.sectionLabel}>Dateinamen</Typography>
         <FormikTextField
           label='Bewertungsdateiname'
           name='gradingFilename'
-          helperText='Dateiname (ohne Dateiendung) für die Bewertungsdatei. Unterstützt Pug-Templates.'
+          helperText='Dateiname (ohne Dateiendung) für die Bewertungsdatei. Unterstützt Platzhalter: #{sheetNo} & #{teamName}'
           className={classes.input}
           required
         />

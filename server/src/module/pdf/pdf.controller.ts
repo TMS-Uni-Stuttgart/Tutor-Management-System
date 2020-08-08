@@ -101,4 +101,16 @@ export class PdfController {
       pdfData.pipe(res);
     }
   }
+
+  @Get('/grading/filename/tutorial/:tutorialId/sheet/:sheetId/team/:teamId')
+  @UseGuards(TutorialGuard)
+  @AllowCorrectors()
+  @IDField('tutorialId')
+  async getCorrectionFilenameForTeam(
+    @Param('tutorialId') tutorialId: string,
+    @Param('sheetId') sheetId: string,
+    @Param('teamId') teamId: string
+  ): Promise<string> {
+    return this.pdfService.generateGradingFilename({ sheetId, teamId: { teamId, tutorialId } });
+  }
 }

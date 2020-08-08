@@ -7,7 +7,8 @@ import { DialogHelpers, useDialog } from './DialogService';
 import {
   getCorrectionCommentPDFs,
   getTeamCorrectionCommentMarkdown,
-  getTeamCorrectionCommentPDF,
+  getTeamGradingFile,
+  getTeamGradingFilename,
 } from './fetching/Files';
 import { getTutorial } from './fetching/Tutorial';
 
@@ -57,12 +58,11 @@ async function showSinglePdfPreview({
 }
 
 async function generateSinglePdf({ tutorialId, sheet, team }: CorrectionPdfOptions) {
-  const blob = await getTeamCorrectionCommentPDF(tutorialId, sheet.id, team.id);
-  const teamName = team.students.map((s) => s.lastname).join('');
-  const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
+  const blob = await getTeamGradingFile(tutorialId, sheet.id, team.id);
+  const fileName = await getTeamGradingFilename(tutorialId, sheet.id, team.id);
   const fileEnding = blob.type === 'application/pdf' ? 'pdf' : 'zip';
 
-  saveBlob(blob, `Ex${sheetNo}_${teamName}.${fileEnding}`);
+  saveBlob(blob, `${fileName}.${fileEnding}`);
 }
 
 async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPdfsOptions) {

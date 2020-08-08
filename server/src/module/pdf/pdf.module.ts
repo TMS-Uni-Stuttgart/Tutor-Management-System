@@ -4,6 +4,7 @@ import { ScheincriteriaModule } from '../scheincriteria/scheincriteria.module';
 import { ScheinexamModule } from '../scheinexam/scheinexam.module';
 import { SheetModule } from '../sheet/sheet.module';
 import { StudentModule } from '../student/student.module';
+import { TeamModule } from '../team/team.module';
 import { TemplateModule } from '../template/template.module';
 import { TutorialModule } from '../tutorial/tutorial.module';
 import { UserModule } from '../user/user.module';
@@ -25,6 +26,7 @@ import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheine
     MarkdownModule,
     TemplateModule,
     SheetModule,
+    TeamModule,
   ],
   providers: [
     PdfService,
