@@ -25,8 +25,12 @@ export interface TeamMarkdownData extends ITeamMarkdownData {
 }
 
 interface TeamGradings {
-  markdownData: TeamMarkdownData[];
   sheetNo: string;
+  markdownData: TeamMarkdownData[];
+}
+
+export interface SingleTeamGradings extends TeamGradings {
+  teamName: string;
 }
 
 interface SheetPointInfo {
@@ -112,7 +116,10 @@ export class MarkdownService {
    * @throws `NotFoundException` - If either no team with the given ID or no sheet with the given ID could be found.
    * @throws `BadRequestException` - If the given team does not have any students or the students do not hold a grading for the given sheet.
    */
-  async getTeamGrading({ teamId, sheetId }: GenerateTeamGradingParams): Promise<TeamGradings> {
+  async getTeamGrading({
+    teamId,
+    sheetId,
+  }: GenerateTeamGradingParams): Promise<SingleTeamGradings> {
     const team = await this.teamService.findById(teamId);
     const sheet = await this.sheetService.findById(sheetId);
 
@@ -130,6 +137,10 @@ export class MarkdownService {
     return {
       markdownData: markdownData,
       sheetNo: sheet.sheetNoAsString,
+      teamName: team.students
+        .map((s) => s.lastname)
+        .sort()
+        .join(''),
     };
   }
 

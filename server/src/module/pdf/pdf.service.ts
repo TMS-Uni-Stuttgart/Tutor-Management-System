@@ -7,6 +7,7 @@ import {
   GenerateAllTeamsGradingParams,
   GenerateTeamGradingParams,
   MarkdownService,
+  SingleTeamGradings,
 } from '../markdown/markdown.service';
 import { SettingsService } from '../settings/settings.service';
 import { SheetService } from '../sheet/sheet.service';
@@ -31,6 +32,11 @@ interface FileNameParams {
 interface FilenameAttributes {
   sheetNo: string;
   teamName: string;
+}
+
+interface ConvertZipParams {
+  sheet: SheetDocument;
+  teamData: SingleTeamGradings;
 }
 
 @Injectable()
@@ -125,22 +131,36 @@ export class PdfService implements OnModuleInit {
     const dataCount = teamData.markdownData.length;
 
     if (dataCount <= 1) {
-      return this.markdownPDF.generatePDF({
+      return await this.markdownPDF.generatePDF({
         markdown: teamData.markdownData[0]?.markdown ?? '',
       });
     } else {
-      const data: ZipData[] = [];
-
-      for (const { markdown, teamName } of teamData.markdownData) {
-        const pdf = await this.markdownPDF.generatePDF({ markdown });
-        data.push({
-          filename: await this.getGradingFilename({ sheet, teamName, extension: 'pdf' }),
-          payload: pdf,
-        });
-      }
-
-      return this.generateZIP(data);
+      return this.convertToZip({ sheet, teamData });
     }
+  }
+
+  /**
+   * Generates a ZIP file containing the PDFs generated from the given teamData.
+   *
+   * @param params Params to generate the ZIP file from.
+   *
+   * @returns Zip file content and metadata.
+   */
+  private async convertToZip({
+    sheet,
+    teamData,
+  }: ConvertZipParams): Promise<NodeJS.ReadableStream> {
+    const data: ZipData[] = [];
+
+    for (const { markdown, teamName } of teamData.markdownData) {
+      const pdf = await this.markdownPDF.generatePDF({ markdown });
+      data.push({
+        filename: await this.getGradingFilename({ sheet, teamName, extension: 'pdf' }),
+        payload: pdf,
+      });
+    }
+
+    return this.generateZIP(data);
   }
 
   /**
@@ -180,7 +200,7 @@ export class PdfService implements OnModuleInit {
    *
    * @param data Data to put into the ZIP file.
    *
-   * @returns NodeJS.ReadableStream of the created ZIP file.
+   * @returns NodeJS.ReadableStream of the generated ZIP file.
    */
   private generateZIP(data: ZipData[]): NodeJS.ReadableStream {
     const zip = new JSZip();
