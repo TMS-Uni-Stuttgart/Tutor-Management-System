@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import JSZip from 'jszip';
 import { DateTime } from 'luxon';
 import pug from 'pug';
@@ -34,7 +34,7 @@ interface FilenameAttributes {
 }
 
 @Injectable()
-export class PdfService {
+export class PdfService implements OnModuleInit {
   private gradingFilename: Template<FilenameAttributes> | undefined;
 
   constructor(
@@ -46,8 +46,10 @@ export class PdfService {
     private readonly markdownService: MarkdownService,
     private readonly sheetService: SheetService,
     private readonly settingsService: SettingsService
-  ) {
-    this.loadFilenameTemplate();
+  ) {}
+
+  async onModuleInit(): Promise<void> {
+    await this.loadFilenameTemplate();
   }
 
   /**
