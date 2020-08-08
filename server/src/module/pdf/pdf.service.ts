@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import JSZip from 'jszip';
 import { DateTime } from 'luxon';
 import pug from 'pug';
@@ -163,7 +163,7 @@ export class PdfService implements OnModuleInit {
     for (const { markdown, teamName } of teamData.markdownData) {
       const pdf = await this.markdownPDF.generatePDF({ markdown });
       data.push({
-        filename: await this.getGradingFilename({ sheet, teamName, extension: 'pdf' }),
+        filename: this.getGradingFilename({ sheet, teamName, extension: 'pdf' }),
         payload: pdf,
       });
     }
@@ -191,7 +191,7 @@ export class PdfService implements OnModuleInit {
 
     for (const gradingMD of markdownForGradings) {
       files.push({
-        filename: await this.getGradingFilename({
+        filename: this.getGradingFilename({
           sheet,
           teamName: gradingMD.teamName,
           extension: 'pdf',
@@ -243,16 +243,7 @@ export class PdfService implements OnModuleInit {
    * @param teamName Name of the team.
    * @param extension Extension of the filename. Either 'pdf' or 'zip'. (__without__ leading '.').
    */
-  private async getGradingFilename({
-    sheet,
-    teamName,
-    extension,
-  }: FileNameParams): Promise<string> {
-    if (!this.gradingFilename) {
-      Logger.debug('Loading filename template from getFilenameInZip...', 'PdfService');
-      await this.loadFilenameTemplate();
-    }
-
+  private getGradingFilename({ sheet, teamName, extension }: FileNameParams): string {
     const filename =
       this.gradingFilename?.({ sheetNo: sheet.sheetNoAsString, teamName }) ?? 'NO_FILE_NAME';
 
