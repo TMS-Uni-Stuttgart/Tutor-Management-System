@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import JSZip from 'jszip';
 import { DateTime } from 'luxon';
 import pug from 'pug';
@@ -66,7 +66,7 @@ interface GenerateTutorialFilenameParams {
 }
 
 @Injectable()
-export class PdfService implements OnModuleInit {
+export class PdfService {
   private gradingFilename: Template<FilenameAttributes> | undefined;
   private tutorialGradingFilename: Template<TutorialFilenameAttriutes> | undefined;
 
@@ -82,10 +82,6 @@ export class PdfService implements OnModuleInit {
     private readonly settingsService: SettingsService,
     private readonly tutorialService: TutorialService
   ) {}
-
-  async onModuleInit(): Promise<void> {
-    await this.loadFilenameTemplates();
-  }
 
   /**
    * Generates a list for signing the attendances of the tutorial at the given date.
@@ -184,7 +180,7 @@ export class PdfService implements OnModuleInit {
     for (const { markdown, teamName } of teamData.markdownData) {
       const pdf = await this.markdownPDF.generatePDF({ markdown });
       data.push({
-        filename: this.getGradingFilename({ sheet, teamName, extension: 'pdf' }),
+        filename: await this.getGradingFilename({ sheet, teamName, extension: 'pdf' }),
         payload: pdf,
       });
     }
@@ -212,7 +208,7 @@ export class PdfService implements OnModuleInit {
 
     for (const gradingMD of markdownForGradings) {
       files.push({
-        filename: this.getGradingFilename({
+        filename: await this.getGradingFilename({
           sheet,
           teamName: gradingMD.teamName,
           extension: 'pdf',
@@ -281,18 +277,26 @@ export class PdfService implements OnModuleInit {
    * @param teamName Name of the team.
    * @param extension Extension of the filename. Either 'pdf' or 'zip'. (__without__ leading '.').
    */
-  private getGradingFilename({ sheet, teamName, extension }: FileNameParams): string {
+  private async getGradingFilename({
+    sheet,
+    teamName,
+    extension,
+  }: FileNameParams): Promise<string> {
+    await this.loadFilenameTemplates();
+
     const filename =
       this.gradingFilename?.({ sheetNo: sheet.sheetNoAsString, teamName }) ?? 'NO_FILE_NAME';
 
     return !!extension ? `${filename}.${extension}` : filename;
   }
 
-  private getTutorialGradingFilename({
+  private async getTutorialGradingFilename({
     sheet,
     tutorialSlot,
     extension,
-  }: TutorialGradingFilenameParams): string {
+  }: TutorialGradingFilenameParams): Promise<string> {
+    await this.loadFilenameTemplates();
+
     const filename =
       this.tutorialGradingFilename?.({ sheetNo: sheet.sheetNoAsString, tutorialSlot }) ??
       'NO_FILE_NAME';
