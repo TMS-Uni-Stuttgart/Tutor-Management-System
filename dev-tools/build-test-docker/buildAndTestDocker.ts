@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
-import {
-  spawn,
-  spawnSync,
-  ChildProcessWithoutNullStreams,
-  SpawnOptionsWithoutStdio,
-} from 'child_process';
-import chalk from 'chalk';
-import os from 'os';
 import axios from 'axios';
+import chalk from 'chalk';
+import {
+  ChildProcessWithoutNullStreams,
+  spawn,
+  SpawnOptionsWithoutStdio,
+  spawnSync,
+} from 'child_process';
+import os from 'os';
 import { login } from '../util/login';
 
 function addConsoleToProcess(childProcess: ChildProcessWithoutNullStreams) {
@@ -104,7 +104,7 @@ async function run(): Promise<void> {
     console.log(chalk.blue('Starting image in container...'));
 
     const spawnOptions: SpawnOptionsWithoutStdio = { cwd: './build-test-docker' };
-    const containerProcess = spawn('docker-compose', ['up', '-d'], spawnOptions);
+    const containerProcess = spawn('docker-compose', ['up'], spawnOptions);
     addConsoleToProcess(containerProcess);
 
     containerProcess.on('exit', (code) => {
