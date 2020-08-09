@@ -28,6 +28,9 @@ export class StudentDTO implements IStudentDTO {
   lastname!: string;
 
   @IsNotEmpty()
+  iliasName!: string;
+
+  @IsNotEmpty()
   @IsEnum(StudentStatus)
   status!: StudentStatus;
 

@@ -18,6 +18,7 @@ import { TutorialDocument } from './tutorial.model';
 interface ConstructorFields {
   firstname: string;
   lastname: string;
+  iliasName: string;
   tutorial: TutorialDocument;
   team?: TeamDocument;
   matriculationNo?: string;
@@ -38,7 +39,15 @@ export async function populateStudentDocument(doc?: StudentDocument): Promise<vo
 
 @plugin(fieldEncryption, {
   secret: StaticSettings.getService().getDatabaseSecret(),
-  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
+  fields: [
+    'firstname',
+    'lastname',
+    'iliasName',
+    'courseOfStudies',
+    'email',
+    'matriculationNo',
+    'status',
+  ],
 })
 @plugin(mongooseAutoPopulate)
 @plugin<typeof VirtualPopulation, VirtualPopulationOptions<StudentModel>>(VirtualPopulation, {
@@ -59,6 +68,9 @@ export class StudentModel {
 
   @prop({ required: true })
   lastname!: string;
+
+  @prop({ required: true })
+  iliasName!: string;
 
   @prop({ required: true, ref: 'TutorialModel', autopopulate: true })
   tutorial!: TutorialDocument;
@@ -199,6 +211,7 @@ export class StudentModel {
       id,
       firstname,
       lastname,
+      iliasName,
       matriculationNo,
       cakeCount,
       tutorial,
@@ -226,6 +239,7 @@ export class StudentModel {
       id,
       firstname,
       lastname,
+      iliasName,
       matriculationNo,
       tutorial: { id: tutorial.id, slot: tutorial.slot },
       team: team && {

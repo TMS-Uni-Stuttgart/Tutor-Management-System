@@ -13,6 +13,7 @@ export enum StudentStatus {
 }
 
 export interface IStudent extends NamedElement {
+  iliasName: string;
   attendances: [string, IAttendance][];
   courseOfStudies?: string;
   email?: string;
@@ -26,10 +27,11 @@ export interface IStudent extends NamedElement {
 }
 
 export interface IStudentDTO {
-  courseOfStudies?: string;
-  email?: string;
   firstname: string;
   lastname: string;
+  iliasName: string;
+  courseOfStudies?: string;
+  email?: string;
   matriculationNo?: string;
   status: StudentStatus;
   team?: string;

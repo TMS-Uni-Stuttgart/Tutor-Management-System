@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const validationSchema = Yup.object().shape({
   lastname: Yup.string().required('Benötigt'),
   firstname: Yup.string().required('Benötigt'),
+  iliasName: Yup.string().required('Benötigt'),
   email: Yup.string().email('Keine gültige E-Mailadresse'),
   matriculationNo: Yup.string().test({
     test: function (this, matriculationNo: string | undefined) {
@@ -53,6 +54,7 @@ export type StudentFormSubmitCallback = FormikSubmitCallback<StudentFormState>;
 interface StudentFormState {
   lastname: string;
   firstname: string;
+  iliasName: string;
   matriculationNo: string;
   email: string;
   courseOfStudies: string;
@@ -91,26 +93,15 @@ export function getInitialStudentFormState({
   student,
   defaultTeamSize,
 }: InitialStateParams): StudentFormState {
-  if (student) {
-    return {
-      lastname: student.lastname,
-      firstname: student.firstname,
-      matriculationNo: student.matriculationNo !== undefined ? student.matriculationNo : '',
-      email: student.email || '',
-      courseOfStudies: student.courseOfStudies || '',
-      team: student.team ? student.team.id : '',
-      status: student.status,
-    };
-  }
-
   return {
-    lastname: '',
-    firstname: '',
-    matriculationNo: '',
-    email: '',
-    courseOfStudies: '',
-    status: StudentStatus.ACTIVE,
-    team: teams ? getNextTeamWithSlot(teams, defaultTeamSize) : '',
+    lastname: student?.lastname ?? '',
+    firstname: student?.firstname ?? '',
+    iliasName: student?.iliasName ?? '',
+    matriculationNo: student?.matriculationNo ?? '',
+    email: student?.email || '',
+    courseOfStudies: student?.courseOfStudies || '',
+    team: student?.team?.id ?? (teams ? getNextTeamWithSlot(teams, defaultTeamSize) : ''),
+    status: student?.status ?? StudentStatus.ACTIVE,
   };
 }
 
@@ -254,6 +245,8 @@ function StudentForm({
                 },
               }}
             />
+
+            <FormikTextField name='iliasName' label='Ilias-Name' required />
 
             <FormikTextField name='email' label='E-Mailadresse' />
 
