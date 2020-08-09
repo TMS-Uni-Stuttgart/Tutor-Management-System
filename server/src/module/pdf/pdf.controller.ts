@@ -102,6 +102,17 @@ export class PdfController {
     }
   }
 
+  @Get('/grading/filename/tutorial/:tutorialId/sheet/:sheetId')
+  @UseGuards(TutorialGuard)
+  @AllowCorrectors()
+  @IDField('tutorialId')
+  async getCorrectionZIPFilename(
+    @Param('tutorialId') tutorialId: string,
+    @Param('sheetId') sheetId: string
+  ): Promise<string> {
+    return this.pdfService.generateTutorialGradingFilename({ sheetId, tutorialId });
+  }
+
   @Get('/grading/filename/tutorial/:tutorialId/sheet/:sheetId/team/:teamId')
   @UseGuards(TutorialGuard)
   @AllowCorrectors()

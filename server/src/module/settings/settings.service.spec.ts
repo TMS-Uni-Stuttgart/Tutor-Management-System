@@ -22,6 +22,7 @@ const DEFAULT_SETTINGS: ClientSettingsDTO = {
   defaultTeamSize: 2,
   canTutorExcuseStudents: false,
   gradingFilename: 'default_filename',
+  tutorialGradingFilename: 'default_tutorial_grading_filename',
 };
 
 const SOME_MAILING_SETTINGS: ClientSettingsDTO['mailingConfig'] = {
@@ -68,7 +69,11 @@ describe('SettingsService', () => {
     { ...DEFAULT_SETTINGS, defaultTeamSize: 3, canTutorExcuseStudents: true },
     {
       ...DEFAULT_SETTINGS,
-      gradingFilename: 'Grading_Ex{{sheetNo}}_{{teamName}}',
+      gradingFilename: 'Grading_Ex#{sheetNo}_#{teamName}',
+    },
+    {
+      ...DEFAULT_SETTINGS,
+      tutorialGradingFilename: 'Tutorial_#{tutorialSlot}_Sheet#{sheetNo}',
     },
     {
       ...DEFAULT_SETTINGS,

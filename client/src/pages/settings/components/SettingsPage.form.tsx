@@ -100,13 +100,22 @@ function SettingsPageForm(): JSX.Element {
         <GridDivider />
 
         <Typography className={classes.sectionLabel}>Dateinamen</Typography>
-        <FormikTextField
-          label='Bewertungsdateiname'
-          name='gradingFilename'
-          helperText='Dateiname (ohne Dateiendung) für die Bewertungsdatei. Unterstützt Platzhalter: #{sheetNo} & #{teamName}'
-          className={classes.input}
-          required
-        />
+        <Box display='grid' gridTemplateColumns='1fr'>
+          <FormikTextField
+            label='Bewertungsdateiname (Team)'
+            name='gradingFilename'
+            helperText='Dateiname (ohne Dateiendung) für die Bewertungsdatei. Unterstützt Platzhalter: #{sheetNo} & #{teamName}'
+            className={classes.input}
+            required
+          />
+          <FormikTextField
+            label='Bewertungsdateiname (Tutorial)'
+            name='tutorialGradingFilename'
+            helperText='Dateiname (ohne Dateiendung) für die Bewertungsdatei für alle Bewertungen eines Tutoriums. Unterstützt Platzhalter: #{sheetNo} & #{tutorialSlot}'
+            className={classes.input}
+            required
+          />
+        </Box>
 
         <GridDivider />
 

@@ -14,8 +14,10 @@ export interface IMailingSettings {
 export interface IClientSettings {
   defaultTeamSize: number;
   canTutorExcuseStudents: boolean;
-  /** Filename for gradings __without__ extension. */
+  /** Filename for gradings for teams / students __without__ extension. */
   gradingFilename: string;
+  /** Filename for file for gradings of all team of a tutorial __without__ extension. */
+  tutorialGradingFilename: string;
   mailingConfig?: IMailingSettings;
 }
 

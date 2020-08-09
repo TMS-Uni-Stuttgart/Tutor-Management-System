@@ -14,6 +14,9 @@ export class ClientSettingsDTO implements IChangeSettingsDTO {
   @IsString()
   gradingFilename!: string;
 
+  @IsString()
+  tutorialGradingFilename!: string;
+
   @IsOptional()
   @Type(() => MailingConfiguration)
   @ValidateNested()

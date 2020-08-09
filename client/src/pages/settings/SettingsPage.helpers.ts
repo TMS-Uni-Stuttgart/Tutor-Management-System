@@ -52,6 +52,7 @@ export interface FormState {
   defaultTeamSize: string;
   canTutorExcuseStudents: boolean;
   gradingFilename: string;
+  tutorialGradingFilename: string;
   mailingConfig: {
     enabled: boolean;
     from: string;
@@ -63,11 +64,18 @@ export interface FormState {
 }
 
 export function getInitialValues(settings: IClientSettings): FormState {
-  const { mailingConfig, canTutorExcuseStudents, gradingFilename, defaultTeamSize } = settings;
+  const {
+    mailingConfig,
+    canTutorExcuseStudents,
+    gradingFilename,
+    tutorialGradingFilename,
+    defaultTeamSize,
+  } = settings;
   return {
     canTutorExcuseStudents: canTutorExcuseStudents,
     defaultTeamSize: `${defaultTeamSize}`,
     gradingFilename,
+    tutorialGradingFilename,
     mailingConfig: {
       enabled: !!mailingConfig,
       from: mailingConfig?.from ?? '',
@@ -84,6 +92,7 @@ export function convertFormStateToDTO(values: FormState): IClientSettings {
     canTutorExcuseStudents: values.canTutorExcuseStudents,
     defaultTeamSize: Number.parseInt(values.defaultTeamSize),
     gradingFilename: values.gradingFilename,
+    tutorialGradingFilename: values.tutorialGradingFilename,
   };
 
   if (values.mailingConfig.enabled) {

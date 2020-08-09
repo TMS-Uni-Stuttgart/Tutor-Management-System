@@ -27,6 +27,7 @@ import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheine
     TemplateModule,
     SheetModule,
     TeamModule,
+    TutorialModule,
   ],
   providers: [
     PdfService,

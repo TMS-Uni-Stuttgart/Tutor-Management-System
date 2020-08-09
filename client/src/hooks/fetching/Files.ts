@@ -162,6 +162,21 @@ export async function getCorrectionCommentPDFs(tutorialId: string, sheetId: stri
   return Promise.reject(`Wrong response code (${response.status})`);
 }
 
+export async function getCorrectionCommentPDFsFilename(
+  tutorialId: string,
+  sheetId: string
+): Promise<string> {
+  const response = await axios.get<string>(
+    `/pdf/grading/filename/tutorial/${tutorialId}/sheet/${sheetId}`
+  );
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status})`);
+}
+
 export async function getTutorialXLSX(tutorialId: string): Promise<Blob> {
   const response = await axios.get(`/excel/tutorial/${tutorialId}`, {
     responseType: 'arraybuffer',

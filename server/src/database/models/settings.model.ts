@@ -56,6 +56,7 @@ export class SettingsModel {
       defaultTeamSize: 2,
       canTutorExcuseStudents: false,
       gradingFilename: 'Ex#{sheetNo}_#{teamName}',
+      tutorialGradingFilename: 'Tutorial_#{tutorialSlot}_Ex#{sheetNo}',
     };
   }
 
@@ -68,6 +69,9 @@ export class SettingsModel {
   @prop({ required: true })
   gradingFilename: string;
 
+  @prop({ required: true })
+  tutorialGradingFilename: string;
+
   @prop({ type: MailingSettingsModel, required: false })
   mailingConfig?: MailingSettingsModel;
 
@@ -75,12 +79,14 @@ export class SettingsModel {
     const {
       defaultTeamSize,
       canTutorExcuseStudents,
-      gradingFilename: gradingFileName,
+      gradingFilename,
+      tutorialGradingFilename,
     } = SettingsModel.internalDefaults;
 
     this.defaultTeamSize = fields?.defaultTeamSize ?? defaultTeamSize;
     this.canTutorExcuseStudents = fields?.canTutorExcuseStudents ?? canTutorExcuseStudents;
-    this.gradingFilename = fields?.gradingFilename ?? gradingFileName;
+    this.gradingFilename = fields?.gradingFilename ?? gradingFilename;
+    this.tutorialGradingFilename = fields?.tutorialGradingFilename ?? tutorialGradingFilename;
 
     this.mailingConfig = fields?.mailingConfig
       ? new MailingSettingsModel(fields.mailingConfig)
@@ -95,6 +101,7 @@ export class SettingsModel {
       canTutorExcuseStudents: this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
       mailingConfig: this.mailingConfig?.toDTO(),
       gradingFilename: this.gradingFilename,
+      tutorialGradingFilename: this.tutorialGradingFilename,
     };
   }
 
@@ -113,8 +120,12 @@ export class SettingsModel {
       ? new MailingSettingsModel(dto.mailingConfig)
       : undefined;
 
-    // Remove possible file extensions.
-    this.gradingFilename = dto.gradingFilename.replace(/\.[^/.]+$/, '');
+    this.gradingFilename = this.removeFileExtension(dto.gradingFilename);
+    this.tutorialGradingFilename = this.removeFileExtension(dto.tutorialGradingFilename);
+  }
+
+  private removeFileExtension(filename: string): string {
+    return filename.replace(/\.[^/.]+$/, '');
   }
 }
 

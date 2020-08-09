@@ -6,11 +6,11 @@ import { saveBlob } from '../util/helperFunctions';
 import { DialogHelpers, useDialog } from './DialogService';
 import {
   getCorrectionCommentPDFs,
+  getCorrectionCommentPDFsFilename,
   getTeamCorrectionCommentMarkdown,
   getTeamGradingFile,
   getTeamGradingFilename,
 } from './fetching/Files';
-import { getTutorial } from './fetching/Tutorial';
 
 interface DialogOption {
   dialog: DialogHelpers;
@@ -66,13 +66,12 @@ async function generateSinglePdf({ tutorialId, sheet, team }: CorrectionPdfOptio
 }
 
 async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPdfsOptions) {
-  const [blob, tutorial] = await Promise.all([
+  const [blob, filename] = await Promise.all([
     getCorrectionCommentPDFs(tutorialId, sheet.id),
-    getTutorial(tutorialId),
+    getCorrectionCommentPDFsFilename(tutorialId, sheet.id),
   ]);
 
-  // TODO: Make filename a setting.
-  saveBlob(blob, `Bewertungen_Ex${sheet.sheetNo.toString().padStart(2, '0')}_${tutorial.slot}.zip`);
+  saveBlob(blob, `${filename}.zip`);
 }
 
 export function usePDFs(): UsePdfs {

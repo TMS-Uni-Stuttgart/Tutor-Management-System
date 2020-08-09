@@ -14,6 +14,7 @@ import { SettingsService } from '../settings/settings.service';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { Template } from '../template/template.types';
+import { TutorialService } from '../tutorial/tutorial.service';
 import { AttendancePDFGenerator } from './subservices/PDFGenerator.attendance';
 import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials';
 import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
@@ -25,15 +26,28 @@ interface ZipData {
   payload: Buffer;
 }
 
+type Extension = 'pdf' | 'zip';
+
 interface FileNameParams {
   sheet: SheetDocument;
   teamName: string;
-  extension?: 'pdf' | 'zip';
+  extension?: Extension;
+}
+
+interface TutorialGradingFilenameParams {
+  sheet: SheetDocument;
+  tutorialSlot: string;
+  extension?: Extension;
 }
 
 interface FilenameAttributes {
   sheetNo: string;
   teamName: string;
+}
+
+interface TutorialFilenameAttriutes {
+  sheetNo: string;
+  tutorialSlot: string;
 }
 
 interface ConvertZipParams {
@@ -46,9 +60,15 @@ interface GenerateFilenameParams {
   teamId: ITeamId;
 }
 
+interface GenerateTutorialFilenameParams {
+  sheetId: string;
+  tutorialId: string;
+}
+
 @Injectable()
 export class PdfService implements OnModuleInit {
   private gradingFilename: Template<FilenameAttributes> | undefined;
+  private tutorialGradingFilename: Template<TutorialFilenameAttriutes> | undefined;
 
   constructor(
     private readonly attendancePDF: AttendancePDFGenerator,
@@ -59,11 +79,12 @@ export class PdfService implements OnModuleInit {
     private readonly markdownService: MarkdownService,
     private readonly sheetService: SheetService,
     private readonly teamService: TeamService,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly tutorialService: TutorialService
   ) {}
 
   async onModuleInit(): Promise<void> {
-    await this.loadFilenameTemplate();
+    await this.loadFilenameTemplates();
   }
 
   /**
@@ -218,6 +239,23 @@ export class PdfService implements OnModuleInit {
   }
 
   /**
+   * Generates a filename for a grading zip file containing the gradings of all teams within a tutorial without an extension.
+   *
+   * @param dto Params to generate the filename from.
+   *
+   * @returns Generated filename.
+   */
+  async generateTutorialGradingFilename(dto: GenerateTutorialFilenameParams): Promise<string> {
+    const { sheetId, tutorialId } = dto;
+    const sheet = await this.sheetService.findById(sheetId);
+    const tutorial = await this.tutorialService.findById(tutorialId);
+    return this.getTutorialGradingFilename({
+      sheet: sheet,
+      tutorialSlot: tutorial.slot,
+    });
+  }
+
+  /**
    * Generates a ZIP file containing the given data.
    *
    * @param data Data to put into the ZIP file.
@@ -250,21 +288,48 @@ export class PdfService implements OnModuleInit {
     return !!extension ? `${filename}.${extension}` : filename;
   }
 
+  private getTutorialGradingFilename({
+    sheet,
+    tutorialSlot,
+    extension,
+  }: TutorialGradingFilenameParams): string {
+    const filename =
+      this.tutorialGradingFilename?.({ sheetNo: sheet.sheetNoAsString, tutorialSlot }) ??
+      'NO_FILE_NAME';
+
+    return !!extension ? `${filename}.${extension}` : filename;
+  }
+
   /**
    * Loads and compiles the template string for the gradings filename.
    *
    * Afterwards the `this.filenameTemplate` property is set to the compiled template.
    */
-  private async loadFilenameTemplate(): Promise<void> {
-    const { gradingFilename: gradingFileName } = await this.settingsService.getClientSettings();
-    let parsedGradingFilename: string;
+  private async loadFilenameTemplates(): Promise<void> {
+    const {
+      gradingFilename,
+      tutorialGradingFilename,
+    } = await this.settingsService.getClientSettings();
 
-    if (gradingFileName.startsWith('|')) {
-      parsedGradingFilename = gradingFileName;
+    this.gradingFilename = this.parseAndCompileFilenameTemplate(gradingFilename);
+    this.tutorialGradingFilename = this.parseAndCompileFilenameTemplate(tutorialGradingFilename);
+  }
+
+  /**
+   * Adds a leading '|' if necessary and returns the compile pug template.
+   *
+   * @param template Pug-template to adjust
+   *
+   * @returns Compiled pug-template.
+   */
+  private parseAndCompileFilenameTemplate<T>(template: string): Template<T> {
+    let parsedTemplate: string;
+    if (template.startsWith('|')) {
+      parsedTemplate = template;
     } else {
-      parsedGradingFilename = `|${gradingFileName}`;
+      parsedTemplate = `|${template}`;
     }
 
-    this.gradingFilename = pug.compile(parsedGradingFilename);
+    return pug.compile(parsedTemplate);
   }
 }
