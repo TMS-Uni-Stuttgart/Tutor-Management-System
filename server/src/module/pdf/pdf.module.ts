@@ -8,10 +8,12 @@ import { TeamModule } from '../team/team.module';
 import { TemplateModule } from '../template/template.module';
 import { TutorialModule } from '../tutorial/tutorial.module';
 import { UserModule } from '../user/user.module';
+import { FileService } from './file.service';
 import { PdfController } from './pdf.controller';
 import { PdfService } from './pdf.service';
 import { AttendancePDFGenerator } from './subservices/PDFGenerator.attendance';
 import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials';
+import { GradingPDFGenerator } from './subservices/PDFGenerator.grading';
 import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
 import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheinexam';
@@ -31,11 +33,13 @@ import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheine
   ],
   providers: [
     PdfService,
+    FileService,
     AttendancePDFGenerator,
     CredentialsPDFGenerator,
     ScheinexamResultPDFGenerator,
     ScheinResultsPDFGenerator,
     MarkdownPDFGenerator,
+    GradingPDFGenerator,
   ],
   controllers: [PdfController],
 })
