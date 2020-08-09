@@ -128,6 +128,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
 
     student.firstname = dto.firstname;
     student.lastname = dto.lastname;
+    student.iliasName = dto.iliasName;
     student.status = dto.status;
     student.courseOfStudies = dto.courseOfStudies;
     student.email = dto.email;
