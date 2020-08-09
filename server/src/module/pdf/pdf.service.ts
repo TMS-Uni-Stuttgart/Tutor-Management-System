@@ -1,86 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import JSZip from 'jszip';
 import { DateTime } from 'luxon';
-import pug from 'pug';
-import { SheetDocument } from '../../database/models/sheet.model';
-import { ITeamId } from '../../shared/model/Team';
 import {
   GenerateAllTeamsGradingParams,
   GenerateTeamGradingParams,
-  MarkdownService,
-  SingleTeamGradings,
 } from '../markdown/markdown.service';
-import { SettingsService } from '../settings/settings.service';
-import { SheetService } from '../sheet/sheet.service';
-import { TeamService } from '../team/team.service';
-import { Template } from '../template/template.types';
-import { TutorialService } from '../tutorial/tutorial.service';
+import {
+  FileService,
+  GenerateFilenameParams,
+  GenerateTutorialFilenameParams,
+} from './file.service';
 import { AttendancePDFGenerator } from './subservices/PDFGenerator.attendance';
 import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials';
-import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
+import { GradingPDFGenerator } from './subservices/PDFGenerator.grading';
 import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheinexam';
 
-interface ZipData {
-  filename: string;
-  payload: Buffer;
-}
-
-type Extension = 'pdf' | 'zip';
-
-interface FileNameParams {
-  sheet: SheetDocument;
-  teamName: string;
-  extension?: Extension;
-}
-
-interface TutorialGradingFilenameParams {
-  sheet: SheetDocument;
-  tutorialSlot: string;
-  extension?: Extension;
-}
-
-interface FilenameAttributes {
-  sheetNo: string;
-  teamName: string;
-}
-
-interface TutorialFilenameAttriutes {
-  sheetNo: string;
-  tutorialSlot: string;
-}
-
-interface ConvertZipParams {
-  sheet: SheetDocument;
-  teamData: SingleTeamGradings;
-}
-
-interface GenerateFilenameParams {
-  sheetId: string;
-  teamId: ITeamId;
-}
-
-interface GenerateTutorialFilenameParams {
-  sheetId: string;
-  tutorialId: string;
-}
-
 @Injectable()
 export class PdfService {
-  private gradingFilename: Template<FilenameAttributes> | undefined;
-  private tutorialGradingFilename: Template<TutorialFilenameAttriutes> | undefined;
-
   constructor(
     private readonly attendancePDF: AttendancePDFGenerator,
     private readonly credentialsPDF: CredentialsPDFGenerator,
     private readonly scheinResultsPDF: ScheinResultsPDFGenerator,
     private readonly scheinexamResultPDF: ScheinexamResultPDFGenerator,
-    private readonly markdownPDF: MarkdownPDFGenerator,
-    private readonly markdownService: MarkdownService,
-    private readonly sheetService: SheetService,
-    private readonly teamService: TeamService,
-    private readonly settingsService: SettingsService,
-    private readonly tutorialService: TutorialService
+    private readonly gradingsPDF: GradingPDFGenerator,
+    private readonly fileService: FileService
   ) {}
 
   /**
@@ -143,7 +86,7 @@ export class PdfService {
    *
    * @param params Options passed to the markdown generation function.
    *
-   * @returns Buffer containing the generated PDF.
+   * @returns Buffer or NodeJS.ReadableStream containing the generated PDF.
    *
    * @throws `NotFoundException` - If either no team with the given ID or no sheet with the given ID could be found.
    * @throws `BadRequestException` - If the given team does not have any students or the students do not hold a grading for the given sheet.
@@ -151,41 +94,7 @@ export class PdfService {
   async generateGradingPDF(
     params: GenerateTeamGradingParams
   ): Promise<Buffer | NodeJS.ReadableStream> {
-    const sheet = await this.sheetService.findById(params.sheetId);
-    const teamData = await this.markdownService.getTeamGrading(params);
-    const dataCount = teamData.markdownData.length;
-
-    if (dataCount <= 1) {
-      return await this.markdownPDF.generatePDF({
-        markdown: teamData.markdownData[0]?.markdown ?? '',
-      });
-    } else {
-      return this.convertToZip({ sheet, teamData });
-    }
-  }
-
-  /**
-   * Generates a ZIP file containing the PDFs generated from the given teamData.
-   *
-   * @param params Params to generate the ZIP file from.
-   *
-   * @returns Zip file content and metadata.
-   */
-  private async convertToZip({
-    sheet,
-    teamData,
-  }: ConvertZipParams): Promise<NodeJS.ReadableStream> {
-    const data: ZipData[] = [];
-
-    for (const { markdown, teamName } of teamData.markdownData) {
-      const pdf = await this.markdownPDF.generatePDF({ markdown });
-      data.push({
-        filename: await this.getGradingFilename({ sheet, teamName, extension: 'pdf' }),
-        payload: pdf,
-      });
-    }
-
-    return this.generateZIP(data);
+    return this.gradingsPDF.generateTeamGradingFiles(params);
   }
 
   /**
@@ -200,24 +109,7 @@ export class PdfService {
   async generateTutorialGradingZIP(
     params: GenerateAllTeamsGradingParams
   ): Promise<NodeJS.ReadableStream> {
-    const sheet = await this.sheetService.findById(params.sheetId);
-    const { markdownData: markdownForGradings } = await this.markdownService.getAllTeamsGradings(
-      params
-    );
-    const files: ZipData[] = [];
-
-    for (const gradingMD of markdownForGradings) {
-      files.push({
-        filename: await this.getGradingFilename({
-          sheet,
-          teamName: gradingMD.teamName,
-          extension: 'pdf',
-        }),
-        payload: await this.markdownPDF.generatePDF({ markdown: gradingMD.markdown }),
-      });
-    }
-
-    return this.generateZIP(files);
+    return this.gradingsPDF.generateTutorialGradingZIP(params);
   }
 
   /**
@@ -227,11 +119,8 @@ export class PdfService {
    *
    * @returns Generated filename.
    */
-  async generateGradingFilename(dto: GenerateFilenameParams): Promise<string> {
-    const { sheetId, teamId } = dto;
-    const sheet = await this.sheetService.findById(sheetId);
-    const team = await this.teamService.findById(teamId);
-    return this.getGradingFilename({ sheet, teamName: team.getTeamName() });
+  async generateGradingFilename(params: GenerateFilenameParams): Promise<string> {
+    return this.fileService.generateGradingFilename(params);
   }
 
   /**
@@ -241,99 +130,7 @@ export class PdfService {
    *
    * @returns Generated filename.
    */
-  async generateTutorialGradingFilename(dto: GenerateTutorialFilenameParams): Promise<string> {
-    const { sheetId, tutorialId } = dto;
-    const sheet = await this.sheetService.findById(sheetId);
-    const tutorial = await this.tutorialService.findById(tutorialId);
-    return this.getTutorialGradingFilename({
-      sheet: sheet,
-      tutorialSlot: tutorial.slot,
-    });
-  }
-
-  /**
-   * Generates a ZIP file containing the given data.
-   *
-   * @param data Data to put into the ZIP file.
-   *
-   * @returns NodeJS.ReadableStream of the generated ZIP file.
-   */
-  private generateZIP(data: ZipData[]): NodeJS.ReadableStream {
-    const zip = new JSZip();
-
-    data.forEach(({ filename, payload }) => {
-      zip.file(filename, payload, { binary: true });
-    });
-
-    return zip.generateNodeStream({ type: 'nodebuffer' });
-  }
-
-  /**
-   * Creates a filename from the given sheet number and teamname.
-   *
-   * This function behaves like a sync function except the `this.filenameTemplate` property is not set yet. If it is set no internal async calls are made.
-   *
-   * @param sheet Sheet
-   * @param teamName Name of the team.
-   * @param extension Extension of the filename. Either 'pdf' or 'zip'. (__without__ leading '.').
-   */
-  private async getGradingFilename({
-    sheet,
-    teamName,
-    extension,
-  }: FileNameParams): Promise<string> {
-    await this.loadFilenameTemplates();
-
-    const filename =
-      this.gradingFilename?.({ sheetNo: sheet.sheetNoAsString, teamName }) ?? 'NO_FILE_NAME';
-
-    return !!extension ? `${filename}.${extension}` : filename;
-  }
-
-  private async getTutorialGradingFilename({
-    sheet,
-    tutorialSlot,
-    extension,
-  }: TutorialGradingFilenameParams): Promise<string> {
-    await this.loadFilenameTemplates();
-
-    const filename =
-      this.tutorialGradingFilename?.({ sheetNo: sheet.sheetNoAsString, tutorialSlot }) ??
-      'NO_FILE_NAME';
-
-    return !!extension ? `${filename}.${extension}` : filename;
-  }
-
-  /**
-   * Loads and compiles the template string for the gradings filename.
-   *
-   * Afterwards the `this.filenameTemplate` property is set to the compiled template.
-   */
-  private async loadFilenameTemplates(): Promise<void> {
-    const {
-      gradingFilename,
-      tutorialGradingFilename,
-    } = await this.settingsService.getClientSettings();
-
-    this.gradingFilename = this.parseAndCompileFilenameTemplate(gradingFilename);
-    this.tutorialGradingFilename = this.parseAndCompileFilenameTemplate(tutorialGradingFilename);
-  }
-
-  /**
-   * Adds a leading '|' if necessary and returns the compile pug template.
-   *
-   * @param template Pug-template to adjust
-   *
-   * @returns Compiled pug-template.
-   */
-  private parseAndCompileFilenameTemplate<T>(template: string): Template<T> {
-    let parsedTemplate: string;
-    if (template.startsWith('|')) {
-      parsedTemplate = template;
-    } else {
-      parsedTemplate = `|${template}`;
-    }
-
-    return pug.compile(parsedTemplate);
+  async generateTutorialGradingFilename(params: GenerateTutorialFilenameParams): Promise<string> {
+    return this.fileService.generateTutorialGradingFilename(params);
   }
 }
