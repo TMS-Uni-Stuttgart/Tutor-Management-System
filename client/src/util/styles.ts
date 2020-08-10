@@ -1,6 +1,6 @@
 import { createMuiTheme, PaletteType, Theme } from '@material-ui/core';
 import ORANGE from '@material-ui/core/colors/orange';
-import { PaletteOptions, SimplePaletteColorOptions } from '@material-ui/core/styles/createPalette';
+import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { CSSProperties } from '@material-ui/styles';
 
 interface ChartStyle {
@@ -19,6 +19,12 @@ interface ChartStyle {
 }
 
 declare module '@material-ui/core/styles/createPalette' {
+  interface TypeBackground {
+    default: string;
+    paper: string;
+    appBar: string;
+  }
+
   interface Palette {
     green: Omit<SimplePaletteColorOptions, 'contrastText'>;
     orange: Omit<SimplePaletteColorOptions, 'contrastText'>;
@@ -83,16 +89,16 @@ function generateChartStyle(theme: Theme): ChartStyle {
 }
 
 export function createTheme(type: PaletteType): Theme {
-  const primary: SimplePaletteColorOptions = {
-    light: '#00beff',
-    main: type === 'light' ? '#004191' : '#00a5fe',
-    dark: '#004191',
-  };
   const palette: PaletteOptions = {
     type,
-    primary,
+    primary: {
+      main: type === 'light' ? '#004191' : '#00a5fe',
+    },
     secondary: {
       main: '#00beff',
+    },
+    background: {
+      appBar: '#004191',
     },
     red:
       type === 'light'

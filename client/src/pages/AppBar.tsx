@@ -34,8 +34,8 @@ import { saveBlob } from '../util/helperFunctions';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
-      backgroundColor: theme.palette.primary.dark,
-      color: theme.palette.getContrastText(theme.palette.primary.dark),
+      backgroundColor: theme.palette.background.appBar,
+      color: theme.palette.getContrastText(theme.palette.background.appBar),
       zIndex: theme.zIndex.drawer + 1,
     },
     grow: {

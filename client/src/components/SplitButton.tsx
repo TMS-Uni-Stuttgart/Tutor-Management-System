@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     button: {
       '&:hover': {
-        background: fade(theme.palette.primary.main, 0.8),
+        background: fade(theme.palette.primary.main, theme.palette.action.hoverOpacity),
       },
       '&:not(:last-child)': {
         borderRightColor: theme.palette.getContrastText(theme.palette.primary.main),
