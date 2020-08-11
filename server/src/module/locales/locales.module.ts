@@ -4,6 +4,6 @@ import { LocalesController } from './locales.controller';
 
 @Module({
   providers: [LocalesService],
-  controllers: [LocalesController]
+  controllers: [LocalesController],
 })
 export class LocalesModule {}

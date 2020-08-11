@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { AxiosInstance } from 'axios';
-import { IExerciseGradingDTO, IGradingDTO } from '../../server/src/shared/model/Points';
+import { IExerciseGradingDTO, IGradingDTO } from '../../server/src/shared/model/Gradings';
 import { IExerciseDTO, ISheet, ISheetDTO } from '../../server/src/shared/model/Sheet';
 import { IStudent, IStudentDTO, StudentStatus } from '../../server/src/shared/model/Student';
 import { ITutorial, ITutorialDTO } from '../../server/src/shared/model/Tutorial';
@@ -79,9 +79,11 @@ async function createSheets(): Promise<ISheet[]> {
 }
 
 async function createStudent(i: number, tutorial: ITutorial, sheets: ISheet[]): Promise<IStudent> {
+  const noLabel = i.toString().padStart(3, '0');
   const studentDTO: IStudentDTO = {
     firstname: 'Test',
-    lastname: `Student #${i.toString().padStart(3, '0')}`,
+    lastname: `Student #${noLabel}`,
+    iliasName: `ilias${noLabel}`,
     status: StudentStatus.ACTIVE,
     tutorial: tutorial.id,
     matriculationNo: i.toString().padStart(7, '0'),
