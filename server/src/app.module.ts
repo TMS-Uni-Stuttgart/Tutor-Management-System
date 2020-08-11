@@ -16,6 +16,7 @@ import { StudentModule } from './module/student/student.module';
 import { TeamModule } from './module/team/team.module';
 import { TutorialModule } from './module/tutorial/tutorial.module';
 import { UserModule } from './module/user/user.module';
+import { LocalesModule } from './module/locales/locales.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { UserModule } from './module/user/user.module';
     MailModule,
     ExcelModule,
     SettingsModule,
+    LocalesModule,
   ],
   controllers: [],
   providers: [],

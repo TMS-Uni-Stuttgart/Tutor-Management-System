@@ -6,6 +6,7 @@ export enum ScheincriteriaIdentifier {
   SCHEINEXAM = 'scheinexam',
   SHEET_INDIVIDUAL = 'sheetIndividual',
   SHEET_TOTAL = 'sheetTotal',
+  SHORT_TESTS = 'shortTests',
 }
 
 export interface IScheinCriteria {

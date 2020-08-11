@@ -8,6 +8,7 @@ import { PresentationCriteria } from './container/criterias/PresentationCriteria
 import { ScheinexamCriteria } from './container/criterias/ScheinexamCriteria';
 import { SheetIndividualCriteria } from './container/criterias/SheetIndividualCriteria';
 import { SheetTotalCriteria } from './container/criterias/SheetTotalCriteria';
+import { ShortTestCriteria } from './container/criterias/ShortTestCriteria';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheincriteriaClass } from './container/scheincriteria.form';
@@ -30,6 +31,7 @@ export class ScheincriteriaModule implements OnModuleInit {
       SheetIndividualCriteria,
       SheetTotalCriteria,
       ScheinexamCriteria,
+      ShortTestCriteria,
     ];
 
     criterias.forEach((criteria) => this.registerCriteria(criteria));
