@@ -60,7 +60,7 @@ export interface ScheinCriteriaAdditionalStatus {
 
 export enum PassedState {
   PASSED = 'PASSED',
-  NOTPASSED = 'NOTPASSED',
+  NOT_PASSED = 'NOTPASSED',
   IGNORE = 'IGNORE',
 }
 
@@ -70,6 +70,7 @@ export enum ScheinCriteriaUnit {
   EXAM = 'EXAM',
   PRESENTATION = 'PRESENTATION',
   DATE = 'DATE',
+  SHORT_TEST = 'SHORT_TEST',
 }
 
 export interface CriteriaAchievedInformation {

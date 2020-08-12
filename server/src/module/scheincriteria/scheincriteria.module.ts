@@ -1,6 +1,7 @@
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { ScheinexamModule } from '../scheinexam/scheinexam.module';
 import { SheetModule } from '../sheet/sheet.module';
+import { ShortTestModule } from '../short-test/short-test.module';
 import { StudentModule } from '../student/student.module';
 import { TutorialModule } from '../tutorial/tutorial.module';
 import { AttendanceCriteria } from './container/criterias/AttendanceCriteria';
@@ -18,7 +19,7 @@ import { ScheincriteriaService } from './scheincriteria.service';
 export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
 
 @Module({
-  imports: [StudentModule, SheetModule, ScheinexamModule, TutorialModule],
+  imports: [StudentModule, SheetModule, ScheinexamModule, TutorialModule, ShortTestModule],
   providers: [ScheincriteriaService],
   controllers: [ScheincriteriaController],
   exports: [ScheincriteriaService],

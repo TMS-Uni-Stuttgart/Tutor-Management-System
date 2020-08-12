@@ -3,6 +3,7 @@ import { plainToClass } from 'class-transformer';
 import { IsString, validateSync } from 'class-validator';
 import { ScheinexamDocument } from '../../../database/models/scheinexam.model';
 import { SheetDocument } from '../../../database/models/sheet.model';
+import { ShortTestDocument } from '../../../database/models/shortTest.model';
 import { StudentDocument } from '../../../database/models/student.model';
 import { CriteriaInformation, ScheinCriteriaStatus } from '../../../shared/model/ScheinCriteria';
 import { ScheinCriteriaDTO } from '../scheincriteria.dto';
@@ -12,12 +13,14 @@ export interface CriteriaPayload {
   student: StudentDocument;
   sheets: SheetDocument[];
   exams: ScheinexamDocument[];
+  shortTests: ShortTestDocument[];
 }
 
 export interface InformationPayload {
   students: StudentDocument[];
   sheets: SheetDocument[];
   exams: ScheinexamDocument[];
+  shortTests: ShortTestDocument[];
 }
 
 export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;

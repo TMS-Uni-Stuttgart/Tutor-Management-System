@@ -12,7 +12,7 @@ interface PassedInformation {
   total: ExercisePointsInfo;
 }
 
-export class HasExercisesModel implements HasExerciseDocuments {
+export abstract class HasExercisesModel implements HasExerciseDocuments {
   @prop({ required: true, type: ExerciseModel })
   exercises!: ExerciseDocument[];
 

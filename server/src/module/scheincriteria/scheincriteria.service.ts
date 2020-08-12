@@ -5,38 +5,47 @@ import {
   ScheincriteriaDocument,
   ScheincriteriaModel,
 } from '../../database/models/scheincriteria.model';
+import { ScheinexamDocument } from '../../database/models/scheinexam.model';
+import { SheetDocument } from '../../database/models/sheet.model';
+import { ShortTestDocument } from '../../database/models/shortTest.model';
+import { StudentDocument } from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { FormDataResponse } from '../../shared/model/FormTypes';
 import {
+  CriteriaInformation,
   IScheinCriteria,
   ScheinCriteriaSummary as ScheincriteriaSummary,
   ScheincriteriaSummaryByStudents,
-  CriteriaInformation,
   SingleScheincriteriaSummaryByStudents,
 } from '../../shared/model/ScheinCriteria';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
+import { StudentService } from '../student/student.service';
+import { TutorialService } from '../tutorial/tutorial.service';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
-import { StudentService } from '../student/student.service';
-import { SheetService } from '../sheet/sheet.service';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
-import { StudentDocument } from '../../database/models/student.model';
-import { ScheinexamDocument } from '../../database/models/scheinexam.model';
-import { SheetDocument } from '../../database/models/sheet.model';
-import { TutorialService } from '../tutorial/tutorial.service';
 
-interface SingleCalculationParams {
-  student: StudentDocument;
+interface CalculationParams {
   criterias: ScheincriteriaDocument[];
   exams: ScheinexamDocument[];
   sheets: SheetDocument[];
+  shortTests: ShortTestDocument[];
 }
 
-interface MultipleCalculationParams {
+interface SingleStudentCalculationParams extends CalculationParams {
+  student: StudentDocument;
+}
+
+interface MultipleStudentsCalculationParams extends CalculationParams {
   students: StudentDocument[];
-  criterias: ScheincriteriaDocument[];
-  exams: ScheinexamDocument[];
-  sheets: SheetDocument[];
+}
+
+interface GetRequiredDocsParams {
+  criteriaId?: string;
+  studentId?: string;
+  tutorialId?: string;
 }
 
 @Injectable()
@@ -47,6 +56,7 @@ export class ScheincriteriaService
     private readonly sheetService: SheetService,
     private readonly scheinexamService: ScheinexamService,
     private readonly tutorialService: TutorialService,
+    private readonly shortTestService: ShortTestService,
     @InjectModel(ScheincriteriaModel)
     private readonly scheincriteriaModel: ReturnModelType<typeof ScheincriteriaModel>
   ) {}
@@ -141,29 +151,23 @@ export class ScheincriteriaService
   /**
    * Collects and returns the information about the criteria with the given ID. The result will be returned.
    *
-   * @param id ID of the criteria to get the information for.
+   * @param criteriaId ID of the criteria to get the information for.
    *
    * @returns Information about the given criteria.
    *
    * @throws `NotFoundException` - If no criteria with the given ID could be found.
    */
-  async getInfoAboutCriteria(id: string): Promise<CriteriaInformation> {
-    const [criteriaDoc, students, sheets, exams] = await Promise.all([
-      this.findById(id),
-      this.studentService.findAll(),
-      this.sheetService.findAll(),
-      this.scheinexamService.findAll(),
-    ]);
+  async getInfoAboutCriteria(criteriaId: string): Promise<CriteriaInformation> {
+    const { criterias, ...params } = await this.getRequiredDocuments({ criteriaId });
 
+    const criteriaDoc = criterias[0];
     const criteria: Scheincriteria = Scheincriteria.fromDTO(criteriaDoc.toDTO());
 
     const [criteriaInfo, summaries] = await Promise.all([
-      criteria.getInformation({ exams, sheets, students }),
+      criteria.getInformation(params),
       this.calculateResultOfMultipleStudents({
-        criterias: [criteriaDoc],
-        students,
-        sheets,
-        exams,
+        criterias,
+        ...params,
       }),
     ]);
 
@@ -189,14 +193,9 @@ export class ScheincriteriaService
    * @throws `NotFoundException` - If no student with the given ID could be found.
    */
   async getResultOfStudent(studentId: string): Promise<ScheincriteriaSummary> {
-    const [criterias, student, sheets, exams] = await Promise.all([
-      this.findAll(),
-      this.studentService.findById(studentId),
-      this.sheetService.findAll(),
-      this.scheinexamService.findAll(),
-    ]);
+    const { students, ...params } = await this.getRequiredDocuments({ studentId });
 
-    return this.calculateResultOfSingleStudent({ criterias, student, sheets, exams });
+    return this.calculateResultOfSingleStudent({ ...params, student: students[0] });
   }
 
   /**
@@ -205,14 +204,7 @@ export class ScheincriteriaService
    * @returns Results of all criterias for all students.
    */
   async getResultsOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
-    const [criterias, students, sheets, exams] = await Promise.all([
-      this.findAll(),
-      this.studentService.findAll(),
-      this.sheetService.findAll(),
-      this.scheinexamService.findAll(),
-    ]);
-
-    return this.calculateResultOfMultipleStudents({ students, criterias, sheets, exams });
+    return this.calculateResultOfMultipleStudents(await this.getRequiredDocuments());
   }
 
   /**
@@ -225,14 +217,14 @@ export class ScheincriteriaService
    * @throws `NotFoundException` - If no tutorial with the given ID could be found.
    */
   async getResultsOfTutorial(tutorialId: string): Promise<ScheincriteriaSummaryByStudents> {
-    const [criterias, students, sheets, exams] = await Promise.all([
-      this.findAll(),
-      this.tutorialService.getAllStudentsOfTutorial(tutorialId),
-      this.sheetService.findAll(),
-      this.scheinexamService.findAll(),
-    ]);
+    return this.calculateResultOfMultipleStudents(await this.getRequiredDocuments({ tutorialId }));
+  }
 
-    return this.calculateResultOfMultipleStudents({ students, criterias, sheets, exams });
+  /**
+   * @returns The form data parsed from the loaded scheincriteria blueprints.
+   */
+  async getFormData(): Promise<FormDataResponse> {
+    return ScheincriteriaContainer.getContainer().getFormData();
   }
 
   /**
@@ -242,17 +234,15 @@ export class ScheincriteriaService
    *
    * @returns Calculation result of all given criterias for the given student.
    */
-  private calculateResultOfSingleStudent({
-    criterias,
-    student,
-    exams,
-    sheets,
-  }: SingleCalculationParams): ScheincriteriaSummary {
+  private calculateResultOfSingleStudent(
+    params: SingleStudentCalculationParams
+  ): ScheincriteriaSummary {
+    const { criterias, ...infos } = params;
     const summaries: ScheincriteriaSummary['scheinCriteriaSummary'] = {};
     let passed = true;
 
     for (const { id, name, criteria } of criterias) {
-      const result = criteria.checkCriteriaStatus({ student, exams, sheets });
+      const result = criteria.checkCriteriaStatus(infos);
       summaries[id] = { id, name, ...result };
 
       passed = passed && result.passed;
@@ -271,16 +261,14 @@ export class ScheincriteriaService
    *
    * @returns Criteria results for all given students of all given criterias.
    */
-  private calculateResultOfMultipleStudents({
-    criterias,
-    students,
-    exams,
-    sheets,
-  }: MultipleCalculationParams): ScheincriteriaSummaryByStudents {
+  private calculateResultOfMultipleStudents(
+    params: MultipleStudentsCalculationParams
+  ): ScheincriteriaSummaryByStudents {
+    const { students, ...infos } = params;
     const summaries: ScheincriteriaSummaryByStudents = {};
 
     students.forEach((student) => {
-      const result = this.calculateResultOfSingleStudent({ criterias, student, sheets, exams });
+      const result = this.calculateResultOfSingleStudent({ ...infos, student });
 
       summaries[student.id] = result;
     });
@@ -289,9 +277,59 @@ export class ScheincriteriaService
   }
 
   /**
-   * @returns The form data parsed from the loaded scheincriteria blueprints.
+   * Fetches all the required documents from the database.
+   *
+   * Some scenarios depend on the given `params`:
+   * - `criteriaId` - If provided the `criterias` array will only contain the criteria with the ID. Otherwise the array will contain all criterias saved in the DB.
+   * - `tutorialId` - If provided the `students` array will only contain those students from the tutorial with the given ID. Otherwise the description of `studentId` will apply. __Please note__: In case both `tutorialId` and `studentId` are provided `tutorialId` is taken and `studentId` is ignored.
+   * - `studentId` - If provided the `students` array will only contain the student with the ID. Otherwise the array will contain all students saved in the DB (except `tutorialId` is provided).
+   *
+   * @param params Parameters which determine what gets actually fetched in certain scenarios (see above).
+   *
+   * @returns Object containing the documents according to the given `params`.
+   * @throws `NotFoundException` - If any of the `params` is set and the corresponding document can not be found.
+   *
+   * @see ScheincriteriaService#getStudentDocuments
    */
-  async getFormData(): Promise<FormDataResponse> {
-    return ScheincriteriaContainer.getContainer().getFormData();
+  private async getRequiredDocuments(
+    params: GetRequiredDocsParams = {}
+  ): Promise<MultipleStudentsCalculationParams> {
+    const { criteriaId, studentId, tutorialId } = params;
+    const [criterias, students, sheets, exams, shortTests] = await Promise.all([
+      criteriaId ? [await this.findById(criteriaId)] : this.findAll(),
+      this.getStudentDocuments({ studentId, tutorialId }),
+      this.sheetService.findAll(),
+      this.scheinexamService.findAll(),
+      this.shortTestService.findAll(),
+    ]);
+
+    return { criterias, students, sheets, exams, shortTests };
+  }
+
+  /**
+   * Fetches StudentDocuments from the DB according to the `params` object:
+   *
+   * - `tutorialId` - If provided the `students` array will only contain those students from the tutorial with the given ID. Otherwise the description of `studentId` will apply. __Please note__: In case both `tutorialId` and `studentId` are provided `tutorialId` is taken and `studentId` is ignored.
+   * - `studentId` - If provided the `students` array will only contain the student with the ID. Otherwise the array will contain all students saved in the DB (except `tutorialId` is provided).
+   *
+   * @param params Params determining what documents are fetched (see above).
+   *
+   * @returns StudentDocuments according to the given params.
+   * @throws `NotFoundException` - If any of the `params` is set and the corresponding document can not be found.
+   */
+  private async getStudentDocuments(
+    params: Pick<GetRequiredDocsParams, 'studentId' | 'tutorialId'>
+  ): Promise<StudentDocument[]> {
+    const { studentId, tutorialId } = params;
+
+    if (tutorialId) {
+      return this.tutorialService.getAllStudentsOfTutorial(tutorialId);
+    }
+
+    if (studentId) {
+      return [await this.studentService.findById(studentId)];
+    }
+
+    return this.studentService.findAll();
   }
 }
