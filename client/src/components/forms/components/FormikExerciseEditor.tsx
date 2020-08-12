@@ -8,7 +8,7 @@ import {
   TimelinePlusOutline as PlusSubIcon,
 } from 'mdi-material-ui';
 import React from 'react';
-import { IExercise, ISubexercise } from 'shared/model/Sheet';
+import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
 

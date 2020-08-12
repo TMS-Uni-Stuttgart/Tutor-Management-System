@@ -1,12 +1,11 @@
 import { HasId } from './Common';
-import { IExercise, IExerciseDTO } from './Sheet';
+import { IExercise, IHasExercisesDTO } from './HasExercises';
 
 export interface IRatedEntity extends HasId {
   exercises: IExercise[];
   percentageNeeded: number;
 }
 
-export interface IRatedEntityDTO {
-  exercises: IExerciseDTO[];
+export interface IRatedEntityDTO extends IHasExercisesDTO {
   percentageNeeded: number;
 }

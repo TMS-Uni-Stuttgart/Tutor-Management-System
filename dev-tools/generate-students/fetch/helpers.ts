@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
-import { IGradingDTO } from 'shared/model/Points';
+import { IGradingDTO } from 'shared/model/Gradings';
 import { ISheet, ISheetDTO } from 'shared/model/Sheet';
 
 export async function createSheet(sheetInfo: ISheetDTO, axios: AxiosInstance): Promise<ISheet> {

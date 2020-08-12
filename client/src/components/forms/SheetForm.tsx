@@ -1,5 +1,7 @@
 import React from 'react';
-import { ISheet, IExerciseDTO } from 'shared/model/Sheet';
+import { IExerciseDTO } from 'shared/model/HasExercises';
+import { ISheet } from 'shared/model/Sheet';
+import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
 import FormikExerciseEditor, {
@@ -8,7 +10,6 @@ import FormikExerciseEditor, {
 } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import * as Yup from 'yup';
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 

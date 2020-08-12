@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { ExerciseModel, ExerciseDocument } from '../../database/models/exercise.model';
+import { ExerciseDocument, ExerciseModel } from '../../database/models/exercise.model';
 import { SheetDocument, SheetModel } from '../../database/models/sheet.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { ISheet } from '../../shared/model/Sheet';
@@ -61,14 +61,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
    * @returns Created sheet.
    */
   async create(dto: SheetDTO): Promise<ISheet> {
-    const { sheetNo, bonusSheet, exercises } = dto;
-
-    const sheet = new SheetModel({
-      sheetNo,
-      bonusSheet,
-      exercises: exercises.map((exerciseDTO) => ExerciseModel.fromDTO(exerciseDTO)),
-    });
-
+    const sheet = SheetModel.fromDTO(dto);
     const created = await this.sheetModel.create(sheet);
 
     return created.toDTO();

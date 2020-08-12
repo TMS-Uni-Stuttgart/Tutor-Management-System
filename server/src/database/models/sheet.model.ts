@@ -1,23 +1,22 @@
 import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
+import { SheetDTO } from '../../module/sheet/sheet.dto';
 import { ISheet } from '../../shared/model/Sheet';
-import { ExerciseDocument, ExerciseModel } from './exercise.model';
-
-interface ConstructorFields {
-  sheetNo: number;
-  bonusSheet: boolean;
-  exercises: ExerciseModel[];
-}
+import { HasExercisesModel } from './ratedEntity.model';
 
 @plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.SHEET } })
-export class SheetModel {
-  constructor(fields: ConstructorFields) {
-    const { exercises, ...rest } = fields;
-    Object.assign(this, rest);
+export class SheetModel extends HasExercisesModel {
+  static fromDTO(dto: SheetDTO): SheetModel {
+    const model = new SheetModel();
 
-    this.exercises = exercises.map((ex) => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+    super.assignDTO(model, dto);
+
+    model.sheetNo = dto.sheetNo;
+    model.bonusSheet = dto.bonusSheet;
+
+    return model;
   }
 
   @prop({ required: true })
@@ -25,16 +24,6 @@ export class SheetModel {
 
   @prop({ required: true })
   bonusSheet!: boolean;
-
-  @prop({ required: true, type: ExerciseModel })
-  exercises!: ExerciseDocument[];
-
-  get totalPoints(): number {
-    return this.exercises.reduce(
-      (sum: number, current: ExerciseDocument) => sum + current.maxPoints,
-      0
-    );
-  }
 
   get sheetNoAsString(): string {
     return this.sheetNo.toString(10).padStart(2, '0');

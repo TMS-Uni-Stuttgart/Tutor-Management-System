@@ -1,5 +1,5 @@
 import { ExerciseDTO, SubExerciseDTO } from '../../src/module/sheet/sheet.dto';
-import { IExercise, ISubexercise } from '../../src/shared/model/Sheet';
+import { IExercise, ISubexercise } from '../../src/shared/model/HasExercises';
 import { MockedExerciseModel, MockedSubExerciseModel } from '../mocks/documents.mock';
 
 interface AssertSubExerciseParams {

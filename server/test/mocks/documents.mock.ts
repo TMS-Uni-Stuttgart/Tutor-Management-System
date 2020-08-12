@@ -8,6 +8,7 @@ import { StudentModel } from '../../src/database/models/student.model';
 import { TeamModel } from '../../src/database/models/team.model';
 import { TutorialModel } from '../../src/database/models/tutorial.model';
 import { UserModel } from '../../src/database/models/user.model';
+import { ExercisePointsInfo } from '../../src/shared/model/Gradings';
 import { Role } from '../../src/shared/model/Role';
 import { ScheincriteriaIdentifier } from '../../src/shared/model/ScheinCriteria';
 import { StudentStatus } from '../../src/shared/model/Student';
@@ -240,35 +241,36 @@ export const SHEET_DOCUMENTS: MockedSheetModel[] = [
     sheetNo: 1,
     sheetNoAsString: '01',
     bonusSheet: false,
-    totalPoints: 30, // Put the expected sum of all exercises here.
+    // Put the expected sum of all exercises here.
+    totalPoints: new ExercisePointsInfo({ must: 30, bonus: 0 }),
     exercises: [
       {
         _id: '5e552a0496f8e7414a001cd6',
         exName: 'Exercise 1',
         bonus: false,
         maxPoints: 10,
-        pointInfo: { must: 10, bonus: 0 },
+        pointInfo: new ExercisePointsInfo({ must: 10, bonus: 0 }),
       },
       {
         _id: '5e552a07d55e796b8e3c51a9',
         exName: 'Exercise 2',
         bonus: false,
         maxPoints: 20, // Put the expected sum of the subexercises here.
-        pointInfo: { must: 20, bonus: 0 },
+        pointInfo: new ExercisePointsInfo({ must: 20, bonus: 0 }),
         subexercises: [
           {
             _id: '5e552a0a6ae88eda225ff562',
             exName: '(a)',
             bonus: false,
             maxPoints: 8,
-            pointInfo: { must: 8, bonus: 0 },
+            pointInfo: new ExercisePointsInfo({ must: 8, bonus: 0 }),
           },
           {
             _id: '5e552a0fd4d6f5c245617212',
             exName: '(b)',
             bonus: false,
             maxPoints: 12,
-            pointInfo: { must: 12, bonus: 0 },
+            pointInfo: new ExercisePointsInfo({ must: 12, bonus: 0 }),
           },
         ],
       },
@@ -282,35 +284,35 @@ export const SCHEINEXAM_DOCUMENTS: MockedScheinexamModel[] = [
     scheinExamNo: 1,
     date: DateTime.fromISO('2020-01-15'),
     percentageNeeded: 0.4,
-    totalPoints: { must: 30, bonus: 0 },
+    totalPoints: new ExercisePointsInfo({ must: 30, bonus: 0 }),
     exercises: [
       {
         _id: '5e552a0496f8e7414a001cd6',
         exName: 'Exercise 1',
         bonus: false,
         maxPoints: 10,
-        pointInfo: { must: 10, bonus: 0 },
+        pointInfo: new ExercisePointsInfo({ must: 10, bonus: 0 }),
       },
       {
         _id: '5e552a07d55e796b8e3c51a9',
         exName: 'Exercise 2',
         bonus: false,
         maxPoints: 20, // Put the expected sum of the subexercises here.
-        pointInfo: { must: 20, bonus: 0 },
+        pointInfo: new ExercisePointsInfo({ must: 20, bonus: 0 }),
         subexercises: [
           {
             _id: '5e552a0a6ae88eda225ff562',
             exName: '(a)',
             bonus: false,
             maxPoints: 8,
-            pointInfo: { must: 8, bonus: 0 },
+            pointInfo: new ExercisePointsInfo({ must: 8, bonus: 0 }),
           },
           {
             _id: '5e552a0fd4d6f5c245617212',
             exName: '(b)',
             bonus: false,
             maxPoints: 12,
-            pointInfo: { must: 12, bonus: 0 },
+            pointInfo: new ExercisePointsInfo({ must: 12, bonus: 0 }),
           },
         ],
       },

@@ -54,7 +54,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
 
     for (const sheet of sheets) {
       const achieved = student.getGrading(sheet)?.points ?? 0;
-      const total = sheet.totalPoints;
+      const total = sheet.totalPoints.total;
       pointsAchieved += achieved;
 
       if (!sheet.bonusSheet) {

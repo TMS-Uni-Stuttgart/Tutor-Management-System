@@ -3,7 +3,7 @@ import { SubExerciseDocument } from '../../database/models/exercise.model';
 import { ExerciseGradingDocument, GradingDocument } from '../../database/models/grading.model';
 import { SheetDocument } from '../../database/models/sheet.model';
 import { TeamDocument, TeamModel } from '../../database/models/team.model';
-import { convertExercisePointInfoToString, ExercisePointInfo } from '../../shared/model/Gradings';
+import { convertExercisePointInfoToString, ExercisePointsInfo } from '../../shared/model/Gradings';
 import { ITeamMarkdownData } from '../../shared/model/Markdown';
 import { ITeamId } from '../../shared/model/Team';
 import { getNameOfEntity } from '../../shared/util/helpers';
@@ -59,7 +59,7 @@ interface GenerateSubExTableParams {
 interface SubExData {
   name: string;
   achieved: number;
-  total: ExercisePointInfo;
+  total: ExercisePointsInfo;
 }
 
 @Injectable()

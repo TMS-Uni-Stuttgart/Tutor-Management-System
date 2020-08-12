@@ -1,6 +1,7 @@
 import { DocumentType, prop } from '@typegoose/typegoose';
-import { RatedEntityDTO } from '../../module/scheinexam/scheinexam.dto';
-import { ExercisePointInfo } from '../../shared/model/Gradings';
+import { HasExercisesDTO, RatedEntityDTO } from '../../module/scheinexam/scheinexam.dto';
+import { ExercisePointsInfo } from '../../shared/model/Gradings';
+import { IHasExercises } from '../../shared/model/HasExercises';
 import { IRatedEntity } from '../../shared/model/RatedEntity';
 import { ExerciseDocument, ExerciseModel, HasExerciseDocuments } from './exercise.model';
 import { StudentDocument } from './student.model';
@@ -8,18 +9,15 @@ import { StudentDocument } from './student.model';
 interface PassedInformation {
   passed: boolean;
   achieved: number;
-  total: ExercisePointInfo;
+  total: ExercisePointsInfo;
 }
 
-export class RatedEntityModel implements HasExerciseDocuments {
+export class HasExercisesModel implements HasExerciseDocuments {
   @prop({ required: true, type: ExerciseModel })
   exercises!: ExerciseDocument[];
 
-  @prop({ required: true })
-  percentageNeeded!: number;
-
-  get totalPoints(): ExercisePointInfo {
-    return this.exercises.reduce(
+  get totalPoints(): ExercisePointsInfo {
+    const info = this.exercises.reduce(
       (sum, current: ExerciseDocument) => {
         const ptInfoEx = current.pointInfo;
 
@@ -30,17 +28,31 @@ export class RatedEntityModel implements HasExerciseDocuments {
       },
       { must: 0, bonus: 0 }
     );
+    return new ExercisePointsInfo(info);
   }
+
+  protected static assignDTO(model: HasExercisesModel, dto: HasExercisesDTO): HasExercisesModel {
+    model.exercises = dto.exercises.map((ex) => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+    return model;
+  }
+
+  toDTO(this: HasExercisesDocument): IHasExercises {
+    return { id: this.id, exercises: this.exercises.map((ex) => ex.toDTO()) };
+  }
+}
+
+export class RatedEntityModel extends HasExercisesModel {
+  @prop({ required: true })
+  percentageNeeded!: number;
 
   static fromDTO(dto: RatedEntityDTO): RatedEntityModel {
     return this.assignDTO(new RatedEntityModel(), dto);
   }
 
   protected static assignDTO(model: RatedEntityModel, dto: RatedEntityDTO): RatedEntityModel {
-    const { exercises, percentageNeeded } = dto;
+    super.assignDTO(model, dto);
 
-    model.exercises = exercises.map((ex) => ExerciseModel.fromDTO(ex) as ExerciseDocument);
-    model.percentageNeeded = percentageNeeded;
+    model.percentageNeeded = dto.percentageNeeded;
 
     return model;
   }
@@ -74,12 +86,13 @@ export class RatedEntityModel implements HasExerciseDocuments {
   }
 
   toDTO(this: RatedEntityDocument): IRatedEntity {
+    const hasExercisesDTO = super.toDTO.bind(this)();
     return {
-      id: this.id,
+      ...hasExercisesDTO,
       percentageNeeded: this.percentageNeeded,
-      exercises: this.exercises.map((ex) => ex.toDTO()),
     };
   }
 }
 
+export type HasExercisesDocument = DocumentType<HasExercisesModel>;
 export type RatedEntityDocument = DocumentType<RatedEntityModel>;

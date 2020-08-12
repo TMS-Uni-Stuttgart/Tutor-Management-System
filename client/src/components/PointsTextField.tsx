@@ -2,7 +2,7 @@ import { Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import React from 'react';
-import { convertExercisePointInfoToString, ExercisePointInfo } from 'shared/model/Gradings';
+import { convertExercisePointInfoToString, ExercisePointsInfo } from 'shared/model/Gradings';
 import FormikTextField from './forms/components/FormikTextField';
 
 const useStyles = makeStyles(() =>
@@ -17,7 +17,7 @@ const useStyles = makeStyles(() =>
 
 interface PointsTextFieldProps extends Omit<TextFieldProps, 'variant' | 'type'> {
   name: string;
-  maxPoints: ExercisePointInfo;
+  maxPoints: ExercisePointsInfo;
 }
 
 function PointsTextField({
@@ -36,7 +36,6 @@ function PointsTextField({
       name={name}
       type='number'
       inputProps={{
-        // tabIndex: tabIndexForRow,
         min: 0,
         step: 0.1,
         max: maxPoints,

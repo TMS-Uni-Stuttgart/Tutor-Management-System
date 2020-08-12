@@ -10,7 +10,8 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { ISheetDTO, ISubexerciseDTO } from '../../shared/model/Sheet';
+import { ISubexerciseDTO } from '../../shared/model/HasExercises';
+import { ISheetDTO } from '../../shared/model/Sheet';
 
 export class SubExerciseDTO implements ISubexerciseDTO {
   @IsOptional()

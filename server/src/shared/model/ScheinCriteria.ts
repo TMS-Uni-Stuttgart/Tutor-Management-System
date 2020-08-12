@@ -1,4 +1,4 @@
-import { HasExercises } from './Sheet';
+import { IHasExercises } from './HasExercises';
 
 export enum ScheincriteriaIdentifier {
   ATTENDANCE = 'attendance',
@@ -92,7 +92,7 @@ export interface CriteriaAveragesInformation {
   };
 }
 
-export interface CriteriaSheetOrExamInformation extends HasExercises {
+export interface CriteriaSheetOrExamInformation extends IHasExercises {
   no: number;
 }
 

@@ -1,4 +1,4 @@
-import { HasExercises, IExercise } from './Sheet';
+import { IExercise, IHasExercises } from './HasExercises';
 
 export interface IExerciseGrading {
   points: number;
@@ -37,9 +37,26 @@ export interface IPresentationPointsDTO {
   points: number;
 }
 
-export type ExercisePointInfo = { must: number; bonus: number };
+export interface IExercisePointsInfo {
+  must: number;
+  bonus: number;
+}
 
-export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo): string {
+export class ExercisePointsInfo implements IExercisePointsInfo {
+  readonly must: number;
+  readonly bonus: number;
+
+  get total(): number {
+    return this.must + this.bonus;
+  }
+
+  constructor({ must, bonus }: Partial<IExercisePointsInfo>) {
+    this.must = must ?? 0;
+    this.bonus = bonus ?? 0;
+  }
+}
+
+export function convertExercisePointInfoToString(exPointInfo: IExercisePointsInfo): string {
   if (exPointInfo.must > 0 && exPointInfo.bonus > 0) {
     return `${exPointInfo.must} + ${exPointInfo.bonus}`;
   } else if (exPointInfo.bonus === 0) {
@@ -49,28 +66,30 @@ export function convertExercisePointInfoToString(exPointInfo: ExercisePointInfo)
   }
 }
 
-export function getPointsOfExercise(exercise: IExercise): ExercisePointInfo {
-  const points: ExercisePointInfo = { must: 0, bonus: 0 };
+export function getPointsOfExercise(exercise: IExercise): ExercisePointsInfo {
+  const points: IExercisePointsInfo = { must: 0, bonus: 0 };
 
   if (exercise.subexercises.length === 0) {
     if (exercise.bonus) {
-      return { must: 0, bonus: exercise.maxPoints };
+      return new ExercisePointsInfo({ must: 0, bonus: exercise.maxPoints });
     } else {
-      return { must: exercise.maxPoints, bonus: 0 };
+      return new ExercisePointsInfo({ must: exercise.maxPoints });
     }
   }
 
-  return exercise.subexercises.reduce((pts, subEx) => {
+  const info: IExercisePointsInfo = exercise.subexercises.reduce((pts, subEx) => {
     if (subEx.bonus) {
       return { ...pts, bonus: pts.bonus + subEx.maxPoints };
     } else {
       return { ...pts, must: pts.must + subEx.maxPoints };
     }
   }, points);
+
+  return new ExercisePointsInfo(info);
 }
 
-export function getPointsOfAllExercises({ exercises }: HasExercises): ExercisePointInfo {
-  return exercises.reduce(
+export function getPointsOfAllExercises({ exercises }: IHasExercises): ExercisePointsInfo {
+  const info: IExercisePointsInfo = exercises.reduce(
     (pts, ex) => {
       const { must, bonus } = getPointsOfExercise(ex);
 
@@ -78,4 +97,5 @@ export function getPointsOfAllExercises({ exercises }: HasExercises): ExercisePo
     },
     { must: 0, bonus: 0 }
   );
+  return new ExercisePointsInfo(info);
 }
