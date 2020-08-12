@@ -6,6 +6,7 @@ import { ScheincriteriaModel } from './scheincriteria.model';
 import { ScheinexamModel } from './scheinexam.model';
 import { SettingsModel } from './settings.model';
 import { SheetModel } from './sheet.model';
+import { ShortTestModel } from './shortTest.model';
 import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
 import { SubstituteModel, TutorialModel } from './tutorial.model';
@@ -27,6 +28,7 @@ export class ModelsModule {
       GradingModel,
       SubstituteModel,
       SettingsModel,
+      ShortTestModel,
     ]);
 
     return {
