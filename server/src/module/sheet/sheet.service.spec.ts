@@ -40,7 +40,7 @@ function assertSheet({ expected, actual }: AssertSheetParams) {
   expect(id).toEqual(_id);
   expect(restActual).toEqual(restExpected);
 
-  expect(totalPoints).toEqual(exercises.reduce((sum, ex) => sum + ex.maxPoints, 0));
+  expect(totalPoints.total).toEqual(exercises.reduce((sum, ex) => sum + ex.maxPoints, 0));
   expect(sheetNoAsString).toEqual(restActual.sheetNo.toString(10).padStart(2, '0'));
 
   expect(actualExercises.length).toEqual(exercises.length);
