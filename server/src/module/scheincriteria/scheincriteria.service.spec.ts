@@ -6,23 +6,24 @@ import {
   MockedScheincriteriaModel,
   SCHEINCRITERIA_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
-import { ScheincriteriaIdentifier, IScheinCriteria } from '../../shared/model/ScheinCriteria';
+import { IScheinCriteria, ScheincriteriaIdentifier } from '../../shared/model/ScheinCriteria';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
+import { StudentService } from '../student/student.service';
+import { TeamService } from '../team/team.service';
+import { TutorialService } from '../tutorial/tutorial.service';
+import { UserService } from '../user/user.service';
 import { AttendanceCriteria } from './container/criterias/AttendanceCriteria';
 import { PresentationCriteria } from './container/criterias/PresentationCriteria';
 import { ScheinexamCriteria } from './container/criterias/ScheinexamCriteria';
 import { SheetIndividualCriteria } from './container/criterias/SheetIndividualCriteria';
 import { SheetTotalCriteria } from './container/criterias/SheetTotalCriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
+import { ScheincriteriaClass } from './container/scheincriteria.form';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaConstructor } from './scheincriteria.module';
 import { ScheincriteriaService } from './scheincriteria.service';
-import { StudentService } from '../student/student.service';
-import { SheetService } from '../sheet/sheet.service';
-import { TutorialService } from '../tutorial/tutorial.service';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
-import { TeamService } from '../team/team.service';
-import { UserService } from '../user/user.service';
-import { ScheincriteriaClass } from './container/scheincriteria.form';
 
 interface AssertScheincriteriaParams {
   expected: MockedScheincriteriaModel;
@@ -128,6 +129,7 @@ describe('ScheincriteriaService', () => {
         TutorialService,
         TeamService,
         UserService,
+        ShortTestService,
       ],
     }).compile();
   });
