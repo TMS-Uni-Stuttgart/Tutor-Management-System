@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-import { ScheinexamDocument, ScheinexamModel } from '../../database/models/scheinexam.model';
-import { ICRUDService } from '../../helpers/CRUDService';
+import { CRUDService } from '../../helpers/CRUDService';
 import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ScheinexamDTO } from './scheinexam.dto';
+import { ScheinexamDocument, ScheinexamModel } from '../../database/models/scheinexam.model';
+import { InjectModel } from 'nestjs-typegoose';
+import { ReturnModelType } from '@typegoose/typegoose';
 
 @Injectable()
 export class ScheinexamService
-  implements ICRUDService<IScheinExam, ScheinexamDTO, ScheinexamDocument> {
+  implements CRUDService<IScheinExam, ScheinexamDTO, ScheinexamDocument> {
   constructor(
     @InjectModel(ScheinexamModel)
     private readonly scheinexamModel: ReturnModelType<typeof ScheinexamModel>

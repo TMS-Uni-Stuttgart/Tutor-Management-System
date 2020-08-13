@@ -9,7 +9,7 @@ import { ScheinexamDocument } from '../../database/models/scheinexam.model';
 import { SheetDocument } from '../../database/models/sheet.model';
 import { ShortTestDocument } from '../../database/models/shortTest.model';
 import { StudentDocument } from '../../database/models/student.model';
-import { ICRUDService } from '../../helpers/CRUDService';
+import { CRUDService } from '../../helpers/CRUDService';
 import { FormDataResponse } from '../../shared/model/FormTypes';
 import {
   CriteriaInformation,
@@ -50,7 +50,7 @@ interface GetRequiredDocsParams {
 
 @Injectable()
 export class ScheincriteriaService
-  implements ICRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaDocument> {
+  implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaDocument> {
   constructor(
     private readonly studentService: StudentService,
     private readonly sheetService: SheetService,

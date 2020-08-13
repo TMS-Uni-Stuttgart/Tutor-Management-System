@@ -16,7 +16,7 @@ import {
   StudentModel,
 } from '../../database/models/student.model';
 import { TeamDocument } from '../../database/models/team.model';
-import { ICRUDService } from '../../helpers/CRUDService';
+import { CRUDService } from '../../helpers/CRUDService';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IStudent } from '../../shared/model/Student';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
@@ -32,7 +32,7 @@ import {
 } from './student.dto';
 
 @Injectable()
-export class StudentService implements ICRUDService<IStudent, StudentDTO, StudentDocument> {
+export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
   constructor(
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => TeamService))
