@@ -11,15 +11,15 @@ export class ShortTestModel extends RatedEntityModel {
   @prop({ required: true })
   shortTestNo!: string;
 
+  static fromDTO(dto: ShortTestDTO): ShortTestModel {
+    return ShortTestModel.assignShortTestDTO(new ShortTestModel(), dto);
+  }
+
   private static assignShortTestDTO(model: ShortTestModel, dto: ShortTestDTO): ShortTestModel {
     RatedEntityModel.assignDTO(model, dto);
     model.shortTestNo = dto.shortTestNo;
 
     return model;
-  }
-
-  fromDTO(dto: ShortTestDTO): ShortTestModel {
-    return ShortTestModel.assignShortTestDTO(new ShortTestModel(), dto);
   }
 
   /**

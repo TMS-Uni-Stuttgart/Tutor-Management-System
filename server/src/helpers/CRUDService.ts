@@ -28,15 +28,15 @@ export abstract class CRUDModel<DTO, RET, CREATE_DTO = DTO> {
 type CRUDDocument<DTO, RET> = DocumentType<CRUDModel<DTO, RET>>;
 export type CRUDModelType<DTO, RET, MOD extends CRUDModel<DTO, RET>> = ModelType<MOD> & MOD;
 
-// TODO: Rename to CrudService & rename interface.
+// TODO: Rename to CrudService
 export abstract class CRUD<DTO, RET, MOD extends CRUDModel<DTO, RET>>
-  implements CRUDService<RET, DTO, DocumentType<MOD>> {
+  implements ICRUDService<DTO, RET, CRUDDocument<DTO, RET>> {
   constructor(private readonly model: CRUDModelType<DTO, RET, MOD>) {}
 
   /**
    * @returns All document for the model saved in the database.
    */
-  async findAll(): Promise<DocumentType<MOD>[]> {
+  async findAll(): Promise<CRUDDocument<DTO, RET>[]> {
     const docs = await this.model.find().exec();
 
     return docs;
@@ -126,7 +126,7 @@ export abstract class CRUD<DTO, RET, MOD extends CRUDModel<DTO, RET>>
  * class StudentService implements ServiceInterface<Student, StudentDTO, StudentDocument>
  * ```
  */
-export interface CRUDService<RET, DTO, DOC> {
+export interface ICRUDService<DTO, RET, DOC> {
   findAll(): Promise<DOC[]>;
 
   findById(id: string): Promise<DOC>;
