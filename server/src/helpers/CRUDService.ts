@@ -26,12 +26,11 @@ export abstract class CRUDModel<DTO, RET, CREATE_DTO = DTO> {
 }
 
 type CRUDDocument<DTO, RET> = DocumentType<CRUDModel<DTO, RET>>;
-export type CRUDModelType<DTO, RET, MOD extends CRUDModel<DTO, RET>> = ModelType<MOD> & MOD;
+type CRUDModelType<DTO, RET> = ModelType<CRUDModel<DTO, RET>> & CRUDModel<DTO, RET>;
 
 // TODO: Rename to CrudService
-export abstract class CRUD<DTO, RET, MOD extends CRUDModel<DTO, RET>>
-  implements ICRUDService<DTO, RET, CRUDDocument<DTO, RET>> {
-  constructor(private readonly model: CRUDModelType<DTO, RET, MOD>) {}
+export abstract class CRUD<DTO, RET> implements ICRUDService<DTO, RET, CRUDDocument<DTO, RET>> {
+  constructor(private readonly model: CRUDModelType<DTO, RET>) {}
 
   /**
    * @returns All document for the model saved in the database.
@@ -51,8 +50,8 @@ export abstract class CRUD<DTO, RET, MOD extends CRUDModel<DTO, RET>>
    *
    * @throws `NotFoundException` - If no document with the given ID could be found.
    */
-  async findById(id: string): Promise<DocumentType<MOD>> {
-    const doc: DocumentType<MOD> | null = await this.model.findById(id).exec();
+  async findById(id: string): Promise<CRUDDocument<DTO, RET>> {
+    const doc: CRUDDocument<DTO, RET> | null = await this.model.findById(id).exec();
 
     if (!doc) {
       throw new NotFoundException(
@@ -72,7 +71,7 @@ export abstract class CRUD<DTO, RET, MOD extends CRUDModel<DTO, RET>>
    */
   async create(dto: DTO): Promise<RET> {
     const doc = this.model.fromDTO(dto);
-    const created = await this.model.create(doc as any);
+    const created = (await this.model.create(doc)) as CRUDDocument<DTO, RET>;
 
     return created.toDTO();
   }
@@ -93,7 +92,7 @@ export abstract class CRUD<DTO, RET, MOD extends CRUDModel<DTO, RET>>
     const doc = await this.findById(id);
     doc.updateFromDTO(dto);
 
-    const updated = (await doc.save()) as DocumentType<MOD>;
+    const updated = await doc.save();
 
     return updated.toDTO();
   }
@@ -107,10 +106,10 @@ export abstract class CRUD<DTO, RET, MOD extends CRUDModel<DTO, RET>>
    *
    * @throws `NotFoundException` - If no document of the model with the given ID could be found.
    */
-  async delete(id: string): Promise<DocumentType<MOD>> {
+  async delete(id: string): Promise<CRUDDocument<DTO, RET>> {
     const doc = await this.findById(id);
 
-    return doc.remove() as Promise<DocumentType<MOD>>;
+    return doc.remove();
   }
 }
 

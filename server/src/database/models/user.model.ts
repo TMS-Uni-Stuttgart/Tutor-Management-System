@@ -85,17 +85,6 @@ export class UserModel extends CRUDModel<UserDTO, IUser, CreateUserDTO> {
   })
   tutorialsToCorrect!: TutorialDocument[];
 
-  /**
-   * Creates a new UserModel object from the information.
-   *
-   * Please note that TutorialDocuments __will not be set__! They will be empty arrays afterwards.
-   *
-   * @param dto DTO to create user from.
-   *
-   * @returns Created user.
-   *
-   * @see UserModel#assignDTO
-   */
   fromDTO(dto: CreateUserDTO): UserModel {
     const model = new UserModel();
 
@@ -108,19 +97,8 @@ export class UserModel extends CRUDModel<UserDTO, IUser, CreateUserDTO> {
     return model;
   }
 
-  /**
-   * Updates the documut with the information.
-   *
-   * Please note that TutorialDocuments __will not be changed__!
-   *
-   * @param dto DTO to create user from.
-   *
-   * @returns Created user.
-   *
-   * @see UserModel#assignDTO
-   */
   updateFromDTO(this: UserDocument, dto: UserDTO): void {
-    this.assignDTO(this, dto);
+    const {} = dto;
   }
 
   toDTO(this: UserDocument): IUser {
@@ -157,16 +135,8 @@ export class UserModel extends CRUDModel<UserDTO, IUser, CreateUserDTO> {
     };
   }
 
-  /**
-   * Changes all attributes (__except TutorialDocuments__) of the UserModel to match the given DTO.
-   *
-   * TutorialDocument related attributes stay unchanged due to them being autopopulated during each read.
-   *
-   * @param model Model to assign fields to.
-   * @param dto DTO with the new information.
-   */
   private assignDTO(model: UserModel, dto: UserDTO): void {
-    const { email, firstname, lastname, roles, username } = dto;
+    const { email, firstname, lastname, roles, tutorials, tutorialsToCorrect, username } = dto;
     model.firstname = firstname;
     model.lastname = lastname;
     model.email = email;
