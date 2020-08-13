@@ -7,26 +7,27 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
 import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { populateUserDocument, UserDocument, UserModel } from '../../database/models/user.model';
-import { CRUDService } from '../../helpers/CRUDService';
+import { CRUD, CRUDModelType } from '../../helpers/CRUDService';
 import { NamedElement } from '../../shared/model/Common';
 import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
 @Injectable()
-export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
+export class UserService extends CRUD<UserDTO, IUser, UserModel> implements OnModuleInit {
   constructor(
     @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,
-    @InjectModel(UserModel) private readonly userModel: ReturnModelType<typeof UserModel>
-  ) {}
+    @InjectModel(UserModel) private readonly userModel: CRUDModelType<UserDTO, IUser, UserModel>
+  ) {
+    super(userModel);
+  }
 
   /**
    * Creates a new administrator on application start if there are no users present in the DB.
@@ -59,30 +60,11 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    * @returns All users saved in the database.
    */
   async findAll(): Promise<UserDocument[]> {
-    const users = (await this.userModel.find().exec()) as UserDocument[];
+    const users = (await super.findAll()) as UserDocument[];
 
     await Promise.all(users.map((doc) => populateUserDocument(doc)));
 
     return users;
-  }
-
-  /**
-   * Searches for a user with the given ID and returns it's document if possible.
-   *
-   * @param id ID to search for.
-   *
-   * @returns UserDocument with the given ID.
-   *
-   * @throws `NotFoundException` - If there is no user with the given ID.
-   */
-  async findById(id: string): Promise<UserDocument> {
-    const user = (await this.userModel.findById(id).exec()) as UserDocument | null;
-
-    if (!user) {
-      throw new NotFoundException(`User with the ID '${id}' could not be found.`);
-    }
-
-    return user;
   }
 
   /**
@@ -110,6 +92,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    * @returns Created user.
    */
   async create(user: CreateUserDTO): Promise<IUser> {
+    // TODO: Still needed with CRUD parent?
     const createdUser = await this.createUser(user);
     return createdUser.toDTO();
   }
