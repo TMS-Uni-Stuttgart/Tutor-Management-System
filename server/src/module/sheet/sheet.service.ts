@@ -3,12 +3,12 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { ExerciseDocument, ExerciseModel } from '../../database/models/exercise.model';
 import { SheetDocument, SheetModel } from '../../database/models/sheet.model';
-import { CRUDService } from '../../helpers/CRUDService';
+import { ICRUDService } from '../../helpers/CRUDService';
 import { ISheet } from '../../shared/model/Sheet';
 import { SheetDTO } from './sheet.dto';
 
 @Injectable()
-export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument> {
+export class SheetService implements ICRUDService<ISheet, SheetDTO, SheetDocument> {
   constructor(
     @InjectModel(SheetModel)
     private readonly sheetModel: ReturnModelType<typeof SheetModel>

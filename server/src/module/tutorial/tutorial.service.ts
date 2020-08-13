@@ -15,7 +15,7 @@ import {
   TutorialModel,
 } from '../../database/models/tutorial.model';
 import { UserDocument } from '../../database/models/user.model';
-import { CRUDService } from '../../helpers/CRUDService';
+import { ICRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { ITutorial } from '../../shared/model/Tutorial';
 import { UserService } from '../user/user.service';
@@ -27,7 +27,7 @@ import {
 } from './tutorial.dto';
 
 @Injectable()
-export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {
+export class TutorialService implements ICRUDService<ITutorial, TutorialDTO, TutorialDocument> {
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,

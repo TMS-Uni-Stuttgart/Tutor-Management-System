@@ -14,14 +14,14 @@ import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/share
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { populateUserDocument, UserDocument, UserModel } from '../../database/models/user.model';
-import { CRUDService } from '../../helpers/CRUDService';
+import { ICRUDService } from '../../helpers/CRUDService';
 import { NamedElement } from '../../shared/model/Common';
 import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
 @Injectable()
-export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
+export class UserService implements OnModuleInit, ICRUDService<IUser, UserDTO, UserDocument> {
   constructor(
     @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,
