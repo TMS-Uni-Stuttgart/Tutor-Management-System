@@ -4,8 +4,10 @@ import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { Role } from 'src/shared/model/Role';
 import { CollectionName } from '../../helpers/CollectionName';
+import { CRUDModel } from '../../helpers/CRUDService';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { StaticSettings } from '../../module/settings/settings.static';
+import { CreateUserDTO, UserDTO } from '../../module/user/user.dto';
 import { IUser } from '../../shared/model/User';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { TutorialDocument } from './tutorial.model';
@@ -47,14 +49,7 @@ type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToC
   populateDocument: populateUserDocument as any,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.USER, toObject: { virtuals: true } } })
-export class UserModel {
-  constructor(fields: AssignableFields) {
-    Object.assign(this, fields);
-
-    this.tutorials = [];
-    this.tutorialsToCorrect = [];
-  }
-
+export class UserModel extends CRUDModel<UserDTO, IUser, CreateUserDTO> {
   @prop({ required: true })
   firstname!: string;
 
@@ -91,8 +86,43 @@ export class UserModel {
   tutorialsToCorrect!: TutorialDocument[];
 
   /**
-   * @returns The DTO representation of the document.
+   * Creates a new UserModel object from the information.
+   *
+   * Please note that TutorialDocuments __will not be set__! They will be empty arrays afterwards.
+   *
+   * @param dto DTO to create user from.
+   *
+   * @returns Created user.
+   *
+   * @see UserModel#assignDTO
    */
+  fromDTO(dto: CreateUserDTO): UserModel {
+    const model = new UserModel();
+
+    model.assignDTO(model, dto);
+    model.temporaryPassword = dto.password;
+    model.password = dto.password;
+    model.tutorials = [];
+    model.tutorialsToCorrect = [];
+
+    return model;
+  }
+
+  /**
+   * Updates the documut with the information.
+   *
+   * Please note that TutorialDocuments __will not be changed__!
+   *
+   * @param dto DTO to create user from.
+   *
+   * @returns Created user.
+   *
+   * @see UserModel#assignDTO
+   */
+  updateFromDTO(this: UserDocument, dto: UserDTO): void {
+    this.assignDTO(this, dto);
+  }
+
   toDTO(this: UserDocument): IUser {
     this.decryptFieldsSync();
 
@@ -125,6 +155,23 @@ export class UserModel {
         slot: tutorial.slot,
       })),
     };
+  }
+
+  /**
+   * Changes all attributes (__except TutorialDocuments__) of the UserModel to match the given DTO.
+   *
+   * TutorialDocument related attributes stay unchanged due to them being autopopulated during each read.
+   *
+   * @param model Model to assign fields to.
+   * @param dto DTO with the new information.
+   */
+  private assignDTO(model: UserModel, dto: UserDTO): void {
+    const { email, firstname, lastname, roles, username } = dto;
+    model.firstname = firstname;
+    model.lastname = lastname;
+    model.email = email;
+    model.roles = roles;
+    model.username = username;
   }
 }
 
