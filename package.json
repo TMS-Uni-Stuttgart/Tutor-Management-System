@@ -25,7 +25,7 @@
     "upgrade-pkg:server": "cd ./server && npm-upgrade"
   },
   "devDependencies": {
-    "@prettier/plugin-pug": "^1.5.0",
+    "@prettier/plugin-pug": "^1.5.1",
     "@types/lodash": "^4.14.159",
     "@types/luxon": "^1.24.1",
     "@types/markdown-it": "^10.0.2",
