@@ -7,19 +7,19 @@ import SheetForm, {
   convertFormExercisesToDTOs,
   getInitialSheetFormState,
   SheetFormSubmitCallback,
-} from '../../components/forms/SheetForm';
-import LoadingSpinner from '../../components/loading/LoadingSpinner';
-import TableWithForm from '../../components/TableWithForm';
-import { useDialog } from '../../hooks/DialogService';
+} from '../../../components/forms/SheetForm';
+import LoadingSpinner from '../../../components/loading/LoadingSpinner';
+import TableWithForm from '../../../components/TableWithForm';
+import { useDialog } from '../../../hooks/DialogService';
 import {
   createSheet,
   deleteSheet as deleteSheetRequest,
   editSheet as editSheetRequest,
   getAllSheets,
-} from '../../hooks/fetching/Sheet';
-import { Sheet } from '../../model/Sheet';
-import { useLogger } from '../../util/Logger';
-import { getDuplicateExerciseName } from '../points-sheet/util/helper';
+} from '../../../hooks/fetching/Sheet';
+import { Sheet } from '../../../model/Sheet';
+import { useLogger } from '../../../util/Logger';
+import { getDuplicateExerciseName } from '../../points-sheet/util/helper';
 import SheetRow from './components/SheetRow';
 
 const useStyles = makeStyles((theme: Theme) =>

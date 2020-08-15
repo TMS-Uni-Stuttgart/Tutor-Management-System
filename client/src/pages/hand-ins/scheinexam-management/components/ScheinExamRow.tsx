@@ -1,9 +1,9 @@
 import { TableCell, Typography } from '@material-ui/core';
 import { PdfBox as PDFGenerationIcon } from 'mdi-material-ui';
 import React from 'react';
-import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
-import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { Scheinexam } from '../../../model/Scheinexam';
+import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
+import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
+import { Scheinexam } from '../../../../model/Scheinexam';
 
 interface Props extends PaperTableRowProps {
   exam: Scheinexam;

@@ -8,23 +8,23 @@ import ScheinExamForm, {
   getInitialExamFormState,
   ScheinExamFormState,
   ScheinExamFormSubmitCallback,
-} from '../../components/forms/ScheinExamForm';
-import { convertFormExercisesToDTOs } from '../../components/forms/SheetForm';
-import LoadingModal from '../../components/loading/LoadingModal';
-import LoadingSpinner from '../../components/loading/LoadingSpinner';
-import TableWithForm from '../../components/TableWithForm';
-import { useDialog } from '../../hooks/DialogService';
-import { getScheinexamResultPDF } from '../../hooks/fetching/Files';
+} from '../../../components/forms/ScheinExamForm';
+import { convertFormExercisesToDTOs } from '../../../components/forms/SheetForm';
+import LoadingModal from '../../../components/loading/LoadingModal';
+import LoadingSpinner from '../../../components/loading/LoadingSpinner';
+import TableWithForm from '../../../components/TableWithForm';
+import { useDialog } from '../../../hooks/DialogService';
+import { getScheinexamResultPDF } from '../../../hooks/fetching/Files';
 import {
   createScheinExam,
   deleteScheinExam,
   editScheinExam,
   getAllScheinExams,
-} from '../../hooks/fetching/ScheinExam';
-import { Scheinexam } from '../../model/Scheinexam';
-import { saveBlob } from '../../util/helperFunctions';
-import { useLogger } from '../../util/Logger';
-import { getDuplicateExerciseName } from '../points-sheet/util/helper';
+} from '../../../hooks/fetching/ScheinExam';
+import { Scheinexam } from '../../../model/Scheinexam';
+import { saveBlob } from '../../../util/helperFunctions';
+import { useLogger } from '../../../util/Logger';
+import { getDuplicateExerciseName } from '../../points-sheet/util/helper';
 import ScheinExamRow from './components/ScheinExamRow';
 
 const useStyles = makeStyles((theme: Theme) =>

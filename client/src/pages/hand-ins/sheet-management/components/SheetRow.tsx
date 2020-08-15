@@ -1,8 +1,8 @@
 import { TableCell, Typography } from '@material-ui/core';
 import React from 'react';
-import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
-import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
-import { Sheet } from '../../../model/Sheet';
+import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
+import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
+import { Sheet } from '../../../../model/Sheet';
 
 interface Props extends PaperTableRowProps {
   sheet: Sheet;
