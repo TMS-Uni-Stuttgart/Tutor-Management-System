@@ -5,10 +5,12 @@ import {
   FileClockOutline as ShortTestIcon,
   FileDocumentEditOutline as ExerciseSheetIcon,
 } from 'mdi-material-ui';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { useHistory, useParams } from 'react-router';
 import TabPanel from '../../components/TabPanel';
-import ScheinExamManagement from '../scheinexam-management/ScheinExamManagement';
-import SheetManagement from '../sheetmanagement/SheetManagement';
+import { ROUTES } from '../../routes/Routing.routes';
+import ScheinExamManagement from './scheinexam-management/ScheinExamManagement';
+import SheetManagement from './sheet-management/SheetManagement';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -19,14 +21,36 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-function HandInsPage(): JSX.Element {
-  const classes = useStyles();
-  const [selectedTab, setSelectedTab] = useState(0);
+interface Params {
+  location?: string;
+}
 
-  const handleChange = useCallback((_, newValue: number) => {
-    setSelectedTab(newValue);
-  }, []);
+function HandInsPage(): JSX.Element {
+  const { location } = useParams<Params>();
+  const history = useHistory();
+  const classes = useStyles();
+
   const panelProps: BoxProps = useMemo(() => ({ padding: 0, paddingTop: 2, height: '100%' }), []);
+  const selectedTab: number = useMemo(() => {
+    if (!location) {
+      return 0;
+    }
+
+    const idx = Number.parseInt(location);
+
+    if (Number.isNaN(idx) || idx < 0 || idx >= 3) {
+      return 0;
+    }
+
+    return idx;
+  }, [location]);
+
+  const handleChange = useCallback(
+    (_, newValue: number) => {
+      history.push(ROUTES.MANAGE_HAND_INS.create({ location: newValue.toString(10) }));
+    },
+    [history]
+  );
 
   return (
     <Box display='flex' flexDirection='column'>

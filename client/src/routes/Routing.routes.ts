@@ -189,7 +189,7 @@ const MANAGEMENT_ROUTES = {
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
   MANAGE_HAND_INS: new DrawerRoute({
-    path: parts('admin', 'handins'),
+    path: parts('admin', 'handins', param('location', true)),
     title: 'Abgaben',
     component: HandInsPage,
     icon: SheetIcon,
