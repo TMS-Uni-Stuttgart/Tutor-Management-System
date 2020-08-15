@@ -155,6 +155,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           <>
             <Button
               color='inherit'
+              variant='text'
               endIcon={<DownloadIcon />}
               onClick={(e) => setBackupAnchor(e.currentTarget)}
             >
@@ -204,7 +205,12 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
               </Typography>
             </div>
 
-            <Button color='inherit' onClick={handleLogBtnClicked} className={classes.logoutButton}>
+            <Button
+              color='inherit'
+              variant='text'
+              onClick={handleLogBtnClicked}
+              className={classes.logoutButton}
+            >
               Abmelden
             </Button>
           </>

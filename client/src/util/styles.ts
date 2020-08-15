@@ -127,6 +127,11 @@ export function createTheme(type: PaletteType): Theme {
       }),
       chart: generateChartStyle,
     },
+    props: {
+      MuiButton: {
+        variant: 'outlined',
+      },
+    },
     overrides: {
       MuiOutlinedInput: {
         root: {
