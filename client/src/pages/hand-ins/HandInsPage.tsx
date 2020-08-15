@@ -11,6 +11,7 @@ import TabPanel from '../../components/TabPanel';
 import { ROUTES } from '../../routes/Routing.routes';
 import ScheinExamManagement from './scheinexam-management/ScheinExamManagement';
 import SheetManagement from './sheet-management/SheetManagement';
+import ShortTestManagement from './short-test-management/ShortTestManagement';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -67,7 +68,7 @@ function HandInsPage(): JSX.Element {
           <SheetManagement />
         </TabPanel>
         <TabPanel value={selectedTab} index={1} {...panelProps}>
-          KURZTEST WORK_IN_PROGRESS
+          <ShortTestManagement />
         </TabPanel>
         <TabPanel value={selectedTab} index={2} {...panelProps}>
           <ScheinExamManagement />
