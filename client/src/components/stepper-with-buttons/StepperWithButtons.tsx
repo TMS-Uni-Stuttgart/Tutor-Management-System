@@ -32,50 +32,53 @@ function StepperWithButtons({
     setSteps([...stepsFromProps]);
   }, [stepsFromProps]);
 
-  async function nextStep(skipCallback?: boolean) {
-    if (isWaitingOnNextCallback) {
-      return;
-    }
+  const nextStep = useCallback(
+    async (skipCallback?: boolean) => {
+      if (isWaitingOnNextCallback) {
+        return;
+      }
 
-    if (skipCallback) {
-      return setActiveStep(activeStep + 1);
-    }
+      if (skipCallback) {
+        return setActiveStep(activeStep + 1);
+      }
 
-    const { callback } = state;
+      const { callback } = state;
 
-    if (!callback) {
-      return setActiveStep(activeStep + 1);
-    }
+      if (!callback) {
+        return setActiveStep(activeStep + 1);
+      }
 
-    setWaitingOnNextCallback(true);
-    const { goToNext, error, runAfterFinished } = await callback();
+      setWaitingOnNextCallback(true);
+      const { goToNext, error, runAfterFinished } = await callback();
 
-    setSteps(
-      steps.map((step, index) => {
-        if (index !== activeStep) {
-          return step;
-        }
+      setSteps(
+        steps.map((step, index) => {
+          if (index !== activeStep) {
+            return step;
+          }
 
-        return {
-          ...step,
-          error,
-        };
-      })
-    );
-    setWaitingOnNextCallback(false);
+          return {
+            ...step,
+            error,
+          };
+        })
+      );
+      setWaitingOnNextCallback(false);
 
-    if (goToNext && activeStep < steps.length - 1) {
-      setActiveStep(activeStep + 1);
-    }
+      if (goToNext && activeStep < steps.length - 1) {
+        setActiveStep(activeStep + 1);
+      }
 
-    if (!error && runAfterFinished) {
-      runAfterFinished();
-    }
-  }
+      if (!error && runAfterFinished) {
+        runAfterFinished();
+      }
+    },
+    [activeStep, isWaitingOnNextCallback, setWaitingOnNextCallback, state, steps]
+  );
 
-  async function prevStep() {
+  const prevStep = useCallback(async () => {
     setActiveStep(activeStep - 1);
-  }
+  }, [activeStep]);
 
   const setNextCallback = useCallback((cb: NextStepCallback) => {
     setState({ callback: cb });
