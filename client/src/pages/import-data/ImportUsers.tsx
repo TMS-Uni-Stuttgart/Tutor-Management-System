@@ -1,5 +1,6 @@
 import React from 'react';
-import ImportCSVContext, { MapColumnsData } from '../../components/import-csv/ImportCSV.context';
+import ImportCSVContext from '../../components/import-csv/ImportCSV.context';
+import { MapColumnsData } from '../../components/import-csv/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
 import AdjustImportedUserDataForm from './adjust-data-form/AdjustImportedUserDataForm';

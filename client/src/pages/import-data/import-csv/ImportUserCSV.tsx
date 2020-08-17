@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
-import ImportCSV from '../../../components/import-csv/ImportCSV';
-import { useImportCSVHelpers } from '../../../components/import-csv/ImportCSV.context';
+import ImportCSV from '../../../components/import-csv/components/ImportCSV';
+import { useImportCSVHelpers } from '../../../components/import-csv/hooks/useImportCSVHelpers';
 import {
   NextStepCallback,
   useStepper,

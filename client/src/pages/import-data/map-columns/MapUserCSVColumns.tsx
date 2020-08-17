@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useMapColumnsHelpers } from '../../../components/import-csv/ImportCSV.context';
-import MapCSVColumns from '../../../components/import-csv/MapCSVColumns';
+import MapCSVColumns from '../../../components/import-csv/components/MapCSVColumns';
+import { useMapColumnsHelpers } from '../../../components/import-csv/hooks/useMapColumnsHelpers';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
 
 function MapUserCSVColumns(): JSX.Element {

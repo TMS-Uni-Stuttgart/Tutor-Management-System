@@ -9,10 +9,10 @@ import {
 } from '@material-ui/core';
 import { Upload as UploadIcon } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
-import { useDialog } from '../../hooks/DialogService';
-import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
-import LoadingModal from '../loading/LoadingModal';
-import { useImportCSVHelpers } from './ImportCSV.context';
+import { useDialog } from '../../../hooks/DialogService';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import LoadingModal from '../../loading/LoadingModal';
+import { useImportCSVHelpers } from '../hooks/useImportCSVHelpers';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
