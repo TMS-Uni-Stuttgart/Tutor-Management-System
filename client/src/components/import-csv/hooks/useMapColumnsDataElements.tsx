@@ -40,12 +40,18 @@ export function useMapColumnsDataElements(
         validationShape[key] = Yup.string().required('Benötigt.');
       }
 
+      const helperText =
+        value.headersToAutoMap.length > 0
+          ? `Spalten für Auto-Zuordnung: ${value.headersToAutoMap.join(', ')}`
+          : 'Kein Auto-Zuordnung möglich.';
+
       boxesByGroup[value.group].push(
         <FormikSelect
           key={key}
           name={key}
           label={value.label}
           required={value.required}
+          helperText={helperText}
           nameOfNoneItem={!value.required ? 'Keine Spalte auswählen' : undefined}
           items={headers}
           itemToValue={(i) => i}

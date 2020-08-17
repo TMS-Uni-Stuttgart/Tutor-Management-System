@@ -1,4 +1,5 @@
 import { Formik } from 'formik';
+import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { getParsedCSV } from '../../hooks/fetching/CSV';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
@@ -77,9 +78,30 @@ function ImportCSVContext<T extends MapColumnsData<any, any>>({
   const [csvFormData, setCSVFormData] = useState<CSVFormData>({ csvInput: '', separator: '' });
   const { boxes, validationSchema } = useMapColumnsDataElements(mapColumnsData, data.headers);
 
-  const setData = useCallback((data: ParsedCSVData) => {
-    setInternalData(convertParsedToInternalCSV(data));
-  }, []);
+  const setData = useCallback(
+    (data: ParsedCSVData) => {
+      const newMappedColumns: MappedColumns<Column<T>> = generateInitialMapping(mapColumnsData);
+      const parsedHeaders: Map<string, string> = new Map();
+
+      for (const header of data.headers) {
+        parsedHeaders.set(header, _.deburr(header).toLowerCase());
+      }
+
+      for (const [key, value] of Object.entries(mapColumnsData.information)) {
+        const headersToAutoMap = value.headersToAutoMap.map((h) => _.deburr(h).toLowerCase());
+
+        parsedHeaders.forEach((parsedHeader, header) => {
+          if (headersToAutoMap.includes(parsedHeader)) {
+            (newMappedColumns as any)[key] = header;
+          }
+        });
+      }
+
+      setMappedColumns(newMappedColumns);
+      setInternalData(convertParsedToInternalCSV(data));
+    },
+    [mapColumnsData]
+  );
 
   const handleCSVFormSubmit = useCallback<HandleSubmit>(async () => {
     const { csvInput, separator } = csvFormData;
@@ -141,6 +163,7 @@ function ImportCSVContext<T extends MapColumnsData<any, any>>({
   return (
     <Formik
       initialValues={mappedColumns}
+      enableReinitialize
       validationSchema={validationSchema}
       onSubmit={handleMappedColumnsFormSubmit}
     >
