@@ -11,6 +11,7 @@ import { Formik } from 'formik';
 import React from 'react';
 import { Role } from 'shared/model/Role';
 import { getNameOfEntity } from 'shared/util/helpers';
+import { Tutorial } from '../../../../../model/Tutorial';
 import { FormikSubmitCallback } from '../../../../../types';
 import { UserFormState, UserFormStateValue } from '../../AdjustImportedUserDataForm';
 import EditUserDialogContent from './EditUserDialogContent';
@@ -27,6 +28,7 @@ interface Props extends DialogProps {
   userFormValue: UserFormStateValue;
   onCancelClicked: ButtonProps['onClick'];
   onFormSubmit: FormikSubmitCallback<EditFormState>;
+  tutorials: Tutorial[];
 }
 
 function calculateInitialValues(value: UserFormStateValue): EditFormState {
@@ -40,6 +42,7 @@ function EditUserDialog({
   parentValues,
   userFormValue,
   onCancelClicked,
+  tutorials,
   ...props
 }: Props): JSX.Element {
   const { firstname, lastname } = userFormValue;
@@ -52,7 +55,7 @@ function EditUserDialog({
             <DialogTitle>{getNameOfEntity({ firstname, lastname })} bearbeiten</DialogTitle>
 
             <DialogContent style={{ minWidth: 400 }}>
-              <EditUserDialogContent parentFormValue={parentValues} />
+              <EditUserDialogContent tutorials={tutorials} parentFormValue={parentValues} />
             </DialogContent>
 
             <DialogActions>

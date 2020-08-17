@@ -10,12 +10,16 @@ import {
   generateTemporaryPassword,
   generateUsernameFromName,
 } from '../../../components/forms/UserForm';
+import { useMapColumnsHelpers } from '../../../components/import-csv/hooks/useMapColumnsHelpers';
+import Placeholder from '../../../components/Placeholder';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
+import { getAllTutorials } from '../../../hooks/fetching/Tutorial';
 import { createManyUsers } from '../../../hooks/fetching/User';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { useFetchState } from '../../../hooks/useFetchState';
+import { Tutorial } from '../../../model/Tutorial';
 import { ROUTES } from '../../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../../types';
-import { useImportDataContext } from '../ImportUsers.context';
 import UserDataBox from './components/UserDataBox';
 import { convertCSVDataToFormData } from './components/UserDataBox.helpers';
 
@@ -35,6 +39,10 @@ export interface UserFormState {
   [id: string]: UserFormStateValue;
 }
 
+interface Props {
+  tutorials: Tutorial[];
+}
+
 function convertValuesToDTOS(values: UserFormState): ICreateUserDTO[] {
   return Object.values(values).map(({ rowNr, username, password, ...user }) => ({
     ...user,
@@ -44,7 +52,7 @@ function convertValuesToDTOS(values: UserFormState): ICreateUserDTO[] {
   }));
 }
 
-function AdjustImportedUserDataFormContent(): JSX.Element {
+function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
   const { setNextCallback, removeNextCallback } = useStepper();
   const { values, isValid, validateForm, submitForm } = useFormikContext<UserFormState>();
   const { enqueueSnackbar } = useSnackbar();
@@ -81,7 +89,7 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
 
   return (
     <Box display='flex' flex={1}>
-      <UserDataBox />
+      <UserDataBox tutorials={tutorials} />
 
       <FormikDebugDisplay showErrors />
     </Box>
@@ -89,13 +97,17 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
 }
 
 function AdjustImportedUserDataForm(): JSX.Element {
-  const { data, mappedColumns, tutorials } = useImportDataContext();
+  const { data, mappedColumns } = useMapColumnsHelpers();
   const { enqueueSnackbar } = useCustomSnackbar();
+  const { isLoading, value: tutorials } = useFetchState({
+    fetchFunction: getAllTutorials,
+    immediate: true,
+    params: [],
+  });
 
-  const initialValues: UserFormState = useMemo(
-    () => convertCSVDataToFormData({ data, values: mappedColumns, tutorials }),
-    [data, mappedColumns, tutorials]
-  );
+  const initialValues: UserFormState = useMemo(() => {
+    return convertCSVDataToFormData({ data, values: mappedColumns, tutorials: tutorials ?? [] });
+  }, [data, mappedColumns, tutorials]);
 
   const handleSubmit: FormikSubmitCallback<UserFormState> = async (values) => {
     try {
@@ -105,16 +117,24 @@ function AdjustImportedUserDataForm(): JSX.Element {
       enqueueSnackbar(`${response.length} Nutzer/innen wurden erstellt.`, {
         variant: 'success',
       });
-      // TODO: Parse error message and show SnackbarWithList -- create a new type like "RequestError".
     } catch (err) {
+      // TODO: Parse error message and show SnackbarWithList -- create a new type like "RequestError".
       enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });
     }
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-      <AdjustImportedUserDataFormContent />
-    </Formik>
+    <Placeholder
+      showPlaceholder={!tutorials}
+      placeholderText='Tutorien konnten nicht geladen werden'
+      loading={isLoading}
+    >
+      {tutorials && (
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <AdjustImportedUserDataFormContent tutorials={tutorials} />
+        </Formik>
+      )}
+    </Placeholder>
   );
 }
 

@@ -13,8 +13,8 @@ import React, { useState } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
 import PaperTableRow from '../../../../components/PaperTableRow';
 import { useDialog } from '../../../../hooks/DialogService';
+import { Tutorial } from '../../../../model/Tutorial';
 import { FormikSubmitCallback } from '../../../../types';
-import { useImportDataContext } from '../../ImportUsers.context';
 import { UserFormState, UserFormStateValue } from '../AdjustImportedUserDataForm';
 import EditUserDialog, { EditFormState } from './edit-user-dialog/EditUserDialog';
 
@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) =>
 
 interface UserDataRowProps {
   name: string;
+  tutorials: Tutorial[];
 }
 
 interface TutorialOfUser {
@@ -48,13 +49,12 @@ function getTutorialsOfUser(value: UserFormStateValue): TutorialOfUser[] {
   return tutorialsOfUser;
 }
 
-function UserDataRow({ name }: UserDataRowProps): JSX.Element {
+function UserDataRow({ name, tutorials }: UserDataRowProps): JSX.Element {
   const classes = useStyles();
 
   const [showDialog, setShowDialog] = useState(false);
   const { values: parentValues } = useFormikContext<UserFormState>();
   const [, meta, helpers] = useField<UserFormStateValue>(name);
-  const { tutorials } = useImportDataContext();
   const { showConfirmationDialog } = useDialog();
 
   const { firstname, lastname, username, roles } = meta.value;
@@ -148,6 +148,7 @@ function UserDataRow({ name }: UserDataRowProps): JSX.Element {
           onFormSubmit={handleFormSubmit}
           userFormValue={meta.value}
           parentValues={parentValues}
+          tutorials={tutorials}
         />
       )}
     </>

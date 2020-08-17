@@ -51,7 +51,7 @@ interface MapColumnsInformation<G extends string> {
   /** Label to show to the user. */
   label: string;
   /** Used internally to try and auto-match the CSV columns without user interaction. */
-  mapName: string[];
+  headersToAutoMap: string[];
   /** Used to visually group related labels. */
   group: G;
   /** Marks the corresponding field as required */

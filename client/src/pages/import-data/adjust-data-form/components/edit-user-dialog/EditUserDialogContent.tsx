@@ -5,17 +5,16 @@ import { Role } from 'shared/model/Role';
 import { IsItemDisabledFunction } from '../../../../../components/CustomSelect';
 import FormikSelect from '../../../../../components/forms/components/FormikSelect';
 import { Tutorial } from '../../../../../model/Tutorial';
-import { useImportDataContext } from '../../../ImportUsers.context';
 import { UserFormState } from '../../AdjustImportedUserDataForm';
 import { EditFormState } from './EditUserDialog';
 
 interface EditUserDialogProps {
   parentFormValue: UserFormState;
+  tutorials: Tutorial[];
 }
 
-function EditUserDialogContent({ parentFormValue }: EditUserDialogProps): JSX.Element {
+function EditUserDialogContent({ parentFormValue, tutorials }: EditUserDialogProps): JSX.Element {
   const { values, setFieldValue } = useFormikContext<EditFormState>();
-  const { tutorials } = useImportDataContext();
 
   const tutorialsOfOthers: string[] = useMemo(
     () =>
