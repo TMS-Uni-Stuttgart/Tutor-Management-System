@@ -178,7 +178,6 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
       const exercise: ExerciseFormExercise = value[idx];
 
       exercise.subexercises.push(getNewExercise());
-
       arrayHelpers.replace(idx, exercise);
     };
   }
@@ -265,7 +264,7 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
             Neue Aufgabe hinzufügen
           </Button>
 
-          {touched && error && (
+          {touched && error && typeof error === 'string' && (
             <Typography color='error' align='right'>
               {error}
             </Typography>

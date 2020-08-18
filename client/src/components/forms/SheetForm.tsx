@@ -19,7 +19,7 @@ export const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
     bonus: Yup.boolean().required('Benötigt'),
     maxPoints: Yup.string()
       .matches(/^\d+(\.\d+)?$/, 'Punkte dürfen nur Zahlen sein')
-      .defined(),
+      .required('Benötigt.'),
     subexercises: Yup.array().of(exerciseValidationSchema).defined(),
   })
 );
