@@ -2,6 +2,10 @@ import { IStudentDTO } from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
+  getScheinCriteriaSummariesOfAllStudentsOfTutorial,
+  getScheinCriteriaSummaryOfAllStudents,
+} from '../../../hooks/fetching/Scheincriteria';
+import {
   createStudent,
   deleteStudent,
   editStudent,
@@ -9,7 +13,6 @@ import {
 } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import { AsyncDispatch } from '../../../util/AsyncReducer';
 import { StudentStore } from './StudentStore';
 import {
   StudentCreateAction,
@@ -19,12 +22,6 @@ import {
   StudentStoreActionType,
   StudentUpdateAction,
 } from './StudentStore.actions';
-import {
-  getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-  getScheinCriteriaSummaryOfAllStudents,
-} from '../../../hooks/fetching/Scheincriteria';
-
-export type StudentStateDispatcher = AsyncDispatch<StudentStoreAction>;
 
 async function createTeamIfNeccessary(
   tutorialId: string,

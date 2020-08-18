@@ -7,8 +7,6 @@ import { RequireChildrenProp } from '../typings/RequireChildrenProp';
 import { getUser, removeUser, saveUser } from '../util/userStorage';
 import axios from './fetching/Axios';
 
-export type LoggedInFunction = (isLoggedIn: boolean) => void;
-
 interface LoginState {
   login: (username: string, password: string) => Promise<LoggedInUser | undefined>;
   logout: () => Promise<void>;

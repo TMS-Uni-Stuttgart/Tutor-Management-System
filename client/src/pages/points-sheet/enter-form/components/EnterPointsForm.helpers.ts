@@ -3,7 +3,7 @@ import { ExerciseGrading } from '../../../../model/Grading';
 import { FormikSubmitCallback } from '../../../../types';
 import { HasGradings } from '../../../../typings/types';
 
-export interface PointsFormSubExerciseState {
+interface PointsFormSubExerciseState {
   [subExerciseId: string]: string;
 }
 
@@ -32,7 +32,7 @@ interface GeneratePointsSubexerciseParams {
   gradingOfExercise: ExerciseGrading | undefined;
 }
 
-export function generatePointStateWithSubexercises({
+function generatePointStateWithSubexercises({
   exercise,
   gradingOfExercise,
 }: GeneratePointsSubexerciseParams): PointsFormSubExerciseState {
