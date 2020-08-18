@@ -189,12 +189,20 @@ const MANAGEMENT_ROUTES = {
     icon: AttendancesIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
+  IMPORT_SHORT_TEST_RESULTS: new PrivateRoute({
+    path: parts('admin', 'handins', 'shorttest', 'import'),
+    title: 'Importiere Kurztestergebnisse',
+    component: ImportShortTests,
+    icon: SheetIcon,
+    roles: [Role.ADMIN, Role.EMPLOYEE],
+  }),
   MANAGE_HAND_INS: new DrawerRoute({
     path: parts('admin', 'handins', param('location', true)),
     title: 'Abgaben',
     component: HandInsPage,
     icon: SheetIcon,
     roles: [Role.ADMIN, Role.EMPLOYEE],
+    isExact: true,
   }),
   MANAGE_USERS: new DrawerRoute({
     path: parts('admin', 'usermanagement'),

@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useMemo } from 'react';
 import * as Yup from 'yup';
 import { Scheinexam } from '../../model/Scheinexam';
 import { FormikSubmitCallback } from '../../types';
@@ -65,7 +65,10 @@ export function getInitialExamFormState(
 }
 
 function ScheinExamForm({ onSubmit, className, exam, exams, ...other }: Props): JSX.Element {
-  const initialFormState: ScheinExamFormState = getInitialExamFormState(exam, exams);
+  const initialFormState: ScheinExamFormState = useMemo(
+    () => getInitialExamFormState(exam, exams),
+    [exam, exams]
+  );
 
   return (
     <FormikBaseForm

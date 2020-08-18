@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsArray, IsNumber, Max, Min, ValidateNested } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IHasExercisesDTO } from '../../shared/model/HasExercises';
 import { IRatedEntityDTO } from '../../shared/model/RatedEntity';
@@ -23,7 +31,7 @@ export class RatedEntityDTO extends HasExercisesDTO implements IRatedEntityDTO {
 }
 
 export class ShortTestDTO extends RatedEntityDTO implements IShortTestDTO {
-  @IsNumber()
+  @IsString()
   shortTestNo!: string;
 }
 

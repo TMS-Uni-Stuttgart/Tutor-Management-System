@@ -72,7 +72,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     values,
     { resetForm, setSubmitting, setFieldError }
   ) => {
-    const isNotInUse =
+    const isNoAlreadyInUse =
       exams.find((t) => t.scheinExamNo.toString() === values.scheinExamNo) !== undefined;
     const duplicateName = getDuplicateExerciseName(values.exercises);
 
@@ -81,7 +81,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       return;
     }
 
-    if (isNotInUse) {
+    if (isNoAlreadyInUse) {
       setFieldError('scheinExamNo', 'Diese Nummer ist bereits vergeben.');
       return;
     }
