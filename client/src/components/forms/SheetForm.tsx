@@ -13,7 +13,7 @@ import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './Fo
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 
-const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
+export const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
   Yup.object().shape<ExerciseFormExercise>({
     exName: Yup.string().required('Benötigt'),
     bonus: Yup.boolean().required('Benötigt'),

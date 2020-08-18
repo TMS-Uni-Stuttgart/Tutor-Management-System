@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import React from 'react';
+import * as Yup from 'yup';
 import { Scheinexam } from '../../model/Scheinexam';
 import { FormikSubmitCallback } from '../../types';
 import FormikDatePicker from './components/FormikDatePicker';
@@ -9,6 +10,7 @@ import FormikExerciseEditor, {
 } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import { exerciseValidationSchema } from './SheetForm';
 
 export interface ScheinExamFormState {
   date: string;
@@ -18,6 +20,15 @@ export interface ScheinExamFormState {
 }
 
 export type ScheinExamFormSubmitCallback = FormikSubmitCallback<ScheinExamFormState>;
+
+const validationSchema = Yup.object().shape<ScheinExamFormState>({
+  scheinExamNo: Yup.string().required('Benötigt'),
+  percentageNeeded: Yup.number().required('Benötigt'),
+  date: Yup.string().required('Benötigt'),
+  exercises: Yup.array<ExerciseFormExercise>()
+    .of(exerciseValidationSchema)
+    .required('Mind. 1 Aufgabe benötigt.'),
+});
 
 interface Props extends Omit<FormikBaseFormProps<ScheinExamFormState>, CommonlyUsedFormProps> {
   exam?: Scheinexam;
@@ -60,7 +71,7 @@ function ScheinExamForm({ onSubmit, className, exam, exams, ...other }: Props): 
     <FormikBaseForm
       {...other}
       initialValues={initialFormState}
-      // validationSchema={validationSchema}
+      validationSchema={validationSchema}
       onSubmit={onSubmit}
       enableDebug
     >

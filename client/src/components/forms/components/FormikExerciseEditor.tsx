@@ -1,4 +1,4 @@
-import { Button, IconButton } from '@material-ui/core';
+import { Button, IconButton, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { FieldArray, FieldArrayRenderProps, useField } from 'formik';
@@ -152,7 +152,7 @@ function ExerciseDataFields({
 
 function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
   const classes = useStyles();
-  const [{ value }] = useField<ExerciseFormExercise[]>(name);
+  const [, { value, error, touched }] = useField<ExerciseFormExercise[]>(name);
 
   const exercises: ExerciseFormExercise[] = value || [];
 
@@ -264,6 +264,12 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
             <PlusIcon className={classes.iconInButton} />
             Neue Aufgabe hinzufügen
           </Button>
+
+          {touched && error && (
+            <Typography color='error' align='right'>
+              {error}
+            </Typography>
+          )}
         </div>
       )}
     />
