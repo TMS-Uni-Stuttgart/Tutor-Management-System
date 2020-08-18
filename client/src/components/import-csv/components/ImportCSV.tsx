@@ -96,22 +96,6 @@ function ImportCSV(): JSX.Element {
         />
       </Box>
 
-      <TextField
-        variant='outlined'
-        label='CSV Daten einfügen'
-        inputProps={{ rowsMin: 8 }}
-        value={csvFormData.csvInput}
-        onChange={(e) => setCSVInput(e.target.value)}
-        fullWidth
-        multiline
-      />
-
-      <Box display='flex' alignItems='center' marginY={2}>
-        <Divider className={classes.divider} />
-        <Typography>ODER</Typography>
-        <Divider className={classes.divider} />
-      </Box>
-
       <Box display='flex'>
         <input
           accept='.csv'
@@ -132,6 +116,22 @@ function ImportCSV(): JSX.Element {
           </Button>
         </label>
       </Box>
+
+      <Box display='flex' alignItems='center' marginY={2}>
+        <Divider className={classes.divider} />
+        <Typography>ODER</Typography>
+        <Divider className={classes.divider} />
+      </Box>
+
+      <TextField
+        variant='outlined'
+        label='CSV Daten einfügen'
+        inputProps={{ rowsMin: 8 }}
+        value={csvFormData.csvInput}
+        onChange={(e) => setCSVInput(e.target.value)}
+        fullWidth
+        multiline
+      />
 
       <LoadingModal modalText='Importiere CSV...' open={isLoadingInContext || isLoadingCSV} />
     </Box>
