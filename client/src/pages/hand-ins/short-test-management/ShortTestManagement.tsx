@@ -3,22 +3,42 @@ import { FileImportOutline as ImportIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { IShortTestDTO } from 'shared/model/ShortTest';
 import { convertFormExercisesToDTOs } from '../../../components/forms/SheetForm';
 import ShortTestForm, {
   getInitialShortTestFormState,
+  ShortTestFormState,
   ShortTestFormSubmitCallback,
 } from '../../../components/forms/ShortTestForm';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
-import { createShortTest, getAllShortTests } from '../../../hooks/fetching/ShortTests';
+import { useDialog } from '../../../hooks/DialogService';
+import {
+  createShortTest,
+  deleteShortTest as deleteShortTestRequest,
+  editShortTest as editShortTestRequest,
+  getAllShortTests,
+} from '../../../hooks/fetching/ShortTests';
 import { useFetchState } from '../../../hooks/useFetchState';
+import { ShortTest } from '../../../model/ShortTest';
 import { ROUTES } from '../../../routes/Routing.routes';
 import { useLogger } from '../../../util/Logger';
 import { getDuplicateExerciseName } from '../../points-sheet/util/helper';
+import ShortTestRow from './components/ShortTestRow';
+
+function convertFormStateToDTO(values: ShortTestFormState): IShortTestDTO {
+  return {
+    shortTestNo: values.shortTestNo,
+    percentageNeeded: values.percentageNeeded,
+    exercises: convertFormExercisesToDTOs(values.exercises),
+  };
+}
 
 function ShortTestManagement(): JSX.Element {
   const logger = useLogger('ShortTestManagement');
+  const dialog = useDialog();
   const { enqueueSnackbar } = useSnackbar();
+
   const { isLoading, value } = useFetchState({
     fetchFunction: getAllShortTests,
     immediate: true,
@@ -50,11 +70,7 @@ function ShortTestManagement(): JSX.Element {
       }
 
       try {
-        const shortTest = await createShortTest({
-          shortTestNo: values.shortTestNo,
-          percentageNeeded: values.percentageNeeded,
-          exercises: convertFormExercisesToDTOs(values.exercises),
-        });
+        const shortTest = await createShortTest(convertFormStateToDTO(values));
         const newShortTests = [...(shortTests ?? []), shortTest];
 
         setShortTests(newShortTests);
@@ -72,6 +88,86 @@ function ShortTestManagement(): JSX.Element {
     [enqueueSnackbar, shortTests, logger]
   );
 
+  const editShortTest: (shortTest: ShortTest) => ShortTestFormSubmitCallback = useCallback(
+    (shortTest) => {
+      return async (values, { setSubmitting }) => {
+        try {
+          const updatedShortTest = await editShortTestRequest(
+            shortTest.id,
+            convertFormStateToDTO(values)
+          );
+
+          setShortTests(
+            (shortTests ?? []).map((s) => (s.id === shortTest.id ? updatedShortTest : s))
+          );
+          enqueueSnackbar(`${updatedShortTest.toDisplayString()} erfolgreich gespeichert.`, {
+            variant: 'success',
+          });
+          dialog.hide();
+        } catch (error) {
+          logger.error(error);
+          enqueueSnackbar('Speichern des Kurztests fehlgeschlagen.', { variant: 'error' });
+          setSubmitting(false);
+        }
+      };
+    },
+    [dialog, logger, enqueueSnackbar, shortTests]
+  );
+
+  const deleteShortTest = useCallback(
+    async (shortTest: ShortTest) => {
+      const isOkay = await dialog.showConfirmationDialog({
+        title: 'Kurztest löschen?',
+        content: `Soll der ${shortTest.toDisplayString()} wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden.`,
+        cancelProps: {
+          label: 'Nicht löschen',
+        },
+        acceptProps: {
+          label: 'Löschen',
+          deleteButton: true,
+        },
+      });
+
+      if (isOkay) {
+        try {
+          await deleteShortTestRequest(shortTest.id);
+
+          setShortTests((shortTests ?? []).filter((s) => s.id !== shortTest.id));
+          enqueueSnackbar(`${shortTest.toDisplayString()} wurde erfolgreich gelöscht.`, {
+            variant: 'success',
+          });
+        } catch (error) {
+          logger.error(error);
+          enqueueSnackbar(`${shortTest.toDisplayString()} konnte nicht gelöscht werden.`, {
+            variant: 'error',
+          });
+        } finally {
+          dialog.hide();
+        }
+      }
+    },
+    [shortTests, logger, dialog, enqueueSnackbar]
+  );
+
+  const handleEditShortTest = useCallback(
+    (shortTest: ShortTest) => {
+      dialog.show({
+        title: 'Kurztest bearbeiten',
+        content: (
+          <ShortTestForm
+            shortTest={shortTest}
+            onSubmit={editShortTest(shortTest)}
+            onCancelClicked={dialog.hide}
+          />
+        ),
+        DialogProps: {
+          maxWidth: 'lg',
+        },
+      });
+    },
+    [dialog, editShortTest]
+  );
+
   return (
     <Box height='inherit'>
       {isLoading ? (
@@ -82,7 +178,14 @@ function ShortTestManagement(): JSX.Element {
             title='Neuen Kurztest erstellen'
             form={<ShortTestForm allShortTests={shortTests} onSubmit={handleSubmit} />}
             items={shortTests ?? []}
-            createRowFromItem={(shortTest) => <div key={shortTest.id}>Work in Progress</div>}
+            createRowFromItem={(shortTest) => (
+              <ShortTestRow
+                key={shortTest.id}
+                shortTest={shortTest}
+                onEditClicked={handleEditShortTest}
+                onDeleteClicked={deleteShortTest}
+              />
+            )}
             placeholder='Keine Kurztests vorhanden.'
             topBarContent={
               <>

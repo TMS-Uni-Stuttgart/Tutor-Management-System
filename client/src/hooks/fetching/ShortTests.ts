@@ -23,3 +23,21 @@ export async function createShortTest(dto: IShortTestDTO): Promise<ShortTest> {
 
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
+
+export async function editShortTest(shortTestId: string, dto: IShortTestDTO): Promise<ShortTest> {
+  const response = await axios.patch<IShortTest>(`short-test/${shortTestId}`, dto);
+
+  if (response.status === 200) {
+    return plainToClass(ShortTest, response.data);
+  }
+
+  return Promise.reject(`Wrong status code (${response.status}).`);
+}
+
+export async function deleteShortTest(shortTestId: string): Promise<void> {
+  const response = await axios.delete(`short-test/${shortTestId}`);
+
+  if (response.status !== 204) {
+    return Promise.reject(`Wrong status code (${response.status}).`);
+  }
+}

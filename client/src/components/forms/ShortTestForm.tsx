@@ -7,12 +7,12 @@ import FormikExerciseEditor, {
   mapExerciseToFormExercise,
 } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
-import FormikBaseForm from './FormikBaseForm';
+import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 import { exerciseValidationSchema } from './SheetForm';
 
 export type ShortTestFormSubmitCallback = FormikSubmitCallback<ShortTestFormState>;
 
-interface ShortTestFormState {
+export interface ShortTestFormState {
   shortTestNo: string;
   percentageNeeded: number;
   exercises: ExerciseFormExercise[];
@@ -26,7 +26,7 @@ const validationSchema = Yup.object().shape<ShortTestFormState>({
     .required('Mind. 1 Aufgabe benötigt.'),
 });
 
-interface Props {
+interface Props extends Omit<FormikBaseFormProps<ShortTestFormState>, CommonlyUsedFormProps> {
   onSubmit: ShortTestFormSubmitCallback;
   shortTest?: ShortTest;
   allShortTests?: ShortTest[];
@@ -45,7 +45,7 @@ export function getInitialShortTestFormState(
   };
 }
 
-function ShortTestForm({ onSubmit, shortTest, allShortTests }: Props): JSX.Element {
+function ShortTestForm({ onSubmit, shortTest, allShortTests, ...other }: Props): JSX.Element {
   const initalFormState = useMemo(() => getInitialShortTestFormState(shortTest, allShortTests), [
     shortTest,
     allShortTests,
@@ -53,6 +53,7 @@ function ShortTestForm({ onSubmit, shortTest, allShortTests }: Props): JSX.Eleme
 
   return (
     <FormikBaseForm
+      {...other}
       initialValues={initalFormState}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
