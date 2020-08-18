@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
-import ImportCSV from '../../../components/import-csv/components/ImportCSV';
-import { useImportCSVHelpers } from '../../../components/import-csv/hooks/useImportCSVHelpers';
-import {
-  NextStepCallback,
-  useStepper,
-} from '../../../components/stepper-with-buttons/context/StepperContext';
 import { useKeyboardShortcut } from '../../../hooks/useKeyboardShortcut';
+import { NextStepCallback, useStepper } from '../../stepper-with-buttons/context/StepperContext';
+import { useImportCSVHelpers } from '../hooks/useImportCSVHelpers';
+import ImportCSV from './ImportCSV';
 
-function ImportUserCSV(): JSX.Element {
+function ImportCSVWithStepper(): JSX.Element {
   const { setNextCallback, removeNextCallback, setNextDisabled, nextStep } = useStepper();
   const { handleCSVFormSubmit, canSubmitCSV } = useImportCSVHelpers();
 
@@ -37,4 +34,4 @@ function ImportUserCSV(): JSX.Element {
   return <ImportCSV />;
 }
 
-export default ImportUserCSV;
+export default ImportCSVWithStepper;
