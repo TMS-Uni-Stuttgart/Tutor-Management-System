@@ -1,6 +1,7 @@
 import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import bodyParser from 'body-parser';
 import ConnectMongo from 'connect-mongo';
 import session from 'express-session';
 import { getConnectionToken } from 'nestjs-typegoose';
@@ -86,6 +87,9 @@ export async function bootstrap(): Promise<void> {
 
   // This filter enables serving an SPA from the given static folder.
   app.useGlobalFilters(new NotFoundExceptionFilter(settings));
+
+  // Increase the limit of the build-in body-parser (from 100kb) so requests to parse "large" CSV-bodies don't fail (ie parsing the result CSV from a short test).
+  app.use(bodyParser.json({ limit: '10mb' }));
 
   initSecurityMiddleware(app);
   initSwagger(app, settings.getAPIPrefix());
