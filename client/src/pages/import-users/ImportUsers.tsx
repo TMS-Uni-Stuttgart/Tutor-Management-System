@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import ImportCSVWithStepper from '../../components/import-csv/components/ImportCSVWithStepper';
+import MapCSVColumnsWithStepper from '../../components/import-csv/components/MapCSVColumnsWithStepper';
 import ImportCSVContext from '../../components/import-csv/ImportCSV.context';
 import { MapColumnsData } from '../../components/import-csv/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
 import AdjustImportedUserDataForm from './adjust-data-form/AdjustImportedUserDataForm';
-import MapUserCSVColumns from './map-columns/MapUserCSVColumns';
 
 export type UserColumns =
   | 'firstname'
@@ -72,7 +72,7 @@ function ImportUsers(): JSX.Element {
       <StepperWithButtons
         steps={[
           { label: 'CSV importieren', component: ImportCSVWithStepper },
-          { label: 'Spalten zuordnen', component: MapUserCSVColumns },
+          { label: 'Spalten zuordnen', component: MapCSVColumnsWithStepper },
           { label: 'Nutzer importieren', component: AdjustImportedUserDataForm },
         ]}
         alternativeLabel={false}

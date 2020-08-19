@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import MapCSVColumns from '../../../components/import-csv/components/MapCSVColumns';
-import { useMapColumnsHelpers } from '../../../components/import-csv/hooks/useMapColumnsHelpers';
-import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
+import { useStepper } from '../../stepper-with-buttons/context/StepperContext';
+import { useMapColumnsHelpers } from '../hooks/useMapColumnsHelpers';
+import MapCSVColumns from './MapCSVColumns';
 
-function MapUserCSVColumns(): JSX.Element {
+function MapCSVColumnsWithStepper(): JSX.Element {
   const { handleMappedColumnsSubmit, isValidFormState } = useMapColumnsHelpers();
   const { setNextDisabled, setNextCallback } = useStepper();
 
@@ -22,4 +22,4 @@ function MapUserCSVColumns(): JSX.Element {
   return <MapCSVColumns />;
 }
 
-export default MapUserCSVColumns;
+export default MapCSVColumnsWithStepper;

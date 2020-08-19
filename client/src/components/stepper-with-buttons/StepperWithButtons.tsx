@@ -22,7 +22,7 @@ function StepperWithButtons({
   steps: stepsFromProps,
   ...props
 }: StepperWithButtonsProps): JSX.Element {
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setInternalActiveStep] = useState(0);
   const [state, setState] = useState<State>({ callback: undefined });
   const [isWaitingOnNextCallback, setWaitingOnNextCallback] = useState(false);
   const [steps, setSteps] = useState<StepData[]>([]);
@@ -31,6 +31,18 @@ function StepperWithButtons({
   useEffect(() => {
     setSteps([...stepsFromProps]);
   }, [stepsFromProps]);
+
+  const setActiveStep = useCallback(
+    (nextStep: number) => {
+      if (nextStep >= steps.length || nextStep < 0) {
+        return;
+      }
+
+      setInternalActiveStep(nextStep);
+      setNextDisabled(false);
+    },
+    [steps.length]
+  );
 
   const nextStep = useCallback(
     async (skipCallback?: boolean) => {
@@ -65,7 +77,7 @@ function StepperWithButtons({
       );
       setWaitingOnNextCallback(false);
 
-      if (goToNext && activeStep < steps.length - 1) {
+      if (goToNext) {
         setActiveStep(activeStep + 1);
       }
 
@@ -73,12 +85,12 @@ function StepperWithButtons({
         runAfterFinished();
       }
     },
-    [activeStep, isWaitingOnNextCallback, setWaitingOnNextCallback, state, steps]
+    [activeStep, isWaitingOnNextCallback, setWaitingOnNextCallback, state, steps, setActiveStep]
   );
 
   const prevStep = useCallback(async () => {
     setActiveStep(activeStep - 1);
-  }, [activeStep]);
+  }, [activeStep, setActiveStep]);
 
   const setNextCallback = useCallback((cb: NextStepCallback) => {
     setState({ callback: cb });

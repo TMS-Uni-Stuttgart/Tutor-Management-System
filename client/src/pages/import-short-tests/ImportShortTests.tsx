@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import ImportCSVWithStepper from '../../components/import-csv/components/ImportCSVWithStepper';
+import MapCSVColumnsWithStepper from '../../components/import-csv/components/MapCSVColumnsWithStepper';
 import ImportCSVContext from '../../components/import-csv/ImportCSV.context';
 import { MapColumnsData } from '../../components/import-csv/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
-import MapShortTestCSVColumns from './map-columns/MapShortTestCSVColumns';
 
 export type ShortTestColumns = 'iliasName' | 'testResultStudent' | 'testMaximumPoints';
 type ColumnGroups = 'general';
@@ -44,8 +44,9 @@ function ImportShortTests(): JSX.Element {
     <ImportCSVContext mapColumnsData={mapColumnData}>
       <StepperWithButtons
         steps={[
+          { label: 'Informationen', component: () => <div>Hi</div> },
           { label: 'CSV importieren', component: ImportCSVWithStepper },
-          { label: 'Spalten zuordnen', component: MapShortTestCSVColumns },
+          { label: 'Spalten zuordnen', component: MapCSVColumnsWithStepper },
           // { label: 'Nutzer importieren', component: AdjustImportedUserDataForm },
         ]}
         alternativeLabel={false}
