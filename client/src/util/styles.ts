@@ -133,6 +133,9 @@ export function createTheme(type: PaletteType): Theme {
       },
     },
     overrides: {
+      MuiChip: {
+        root: { borderRadius: 8 },
+      },
       MuiOutlinedInput: {
         root: {
           '&$disabled': {
