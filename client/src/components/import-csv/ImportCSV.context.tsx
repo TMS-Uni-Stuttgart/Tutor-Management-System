@@ -121,8 +121,6 @@ function ImportCSVContext<T extends MapColumnsData<any, any>>({
 
       if (response.errors.length === 0) {
         setData({ headers: response.meta.fields, rows: response.data });
-
-        enqueueSnackbar('CSV erfolgreich importiert.', { variant: 'success' });
       } else {
         enqueueSnackbarWithList({
           title: 'CSV konnte nicht importiert werden.',

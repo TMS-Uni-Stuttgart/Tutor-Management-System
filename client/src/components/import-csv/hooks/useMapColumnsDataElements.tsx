@@ -72,7 +72,14 @@ export function useMapColumnsDataElements(
       const boxesOfGroup = boxesByGroup[key] ?? [];
 
       generatedBoxes.push(
-        <OutlinedBox key={key} display='flex' flexDirection='column' marginTop={2}>
+        <OutlinedBox
+          key={key}
+          display='flex'
+          flexDirection='column'
+          marginTop={2}
+          paddingX={1.5}
+          paddingY={1}
+        >
           <Typography variant='h6'>{value.name}</Typography>
           <Box display='flex' flexWrap='wrap' marginTop={1}>
             {boxesOfGroup}

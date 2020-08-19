@@ -30,6 +30,8 @@ interface Props extends Omit<FormikBaseFormProps<ShortTestFormState>, CommonlyUs
   onSubmit: ShortTestFormSubmitCallback;
   shortTest?: ShortTest;
   allShortTests?: ShortTest[];
+  initialValues?: ShortTestFormState;
+  children?: React.ReactNode;
 }
 
 export function getInitialShortTestFormState(
@@ -45,11 +47,19 @@ export function getInitialShortTestFormState(
   };
 }
 
-function ShortTestForm({ onSubmit, shortTest, allShortTests, ...other }: Props): JSX.Element {
-  const initalFormState = useMemo(() => getInitialShortTestFormState(shortTest, allShortTests), [
-    shortTest,
-    allShortTests,
-  ]);
+function ShortTestForm({
+  onSubmit,
+  shortTest,
+  allShortTests,
+  initialValues,
+  children,
+  ...other
+}: Props): JSX.Element {
+  const initalFormState = useMemo(
+    () =>
+      !!initialValues ? initialValues : getInitialShortTestFormState(shortTest, allShortTests),
+    [shortTest, allShortTests, initialValues]
+  );
 
   return (
     <FormikBaseForm
@@ -75,6 +85,8 @@ function ShortTestForm({ onSubmit, shortTest, allShortTests, ...other }: Props):
       />
 
       <FormikExerciseEditor name='exercises' disableAutofocus={!!shortTest} />
+
+      {children}
     </FormikBaseForm>
   );
 }

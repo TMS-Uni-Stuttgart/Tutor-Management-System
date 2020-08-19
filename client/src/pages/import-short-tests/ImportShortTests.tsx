@@ -5,7 +5,9 @@ import ImportCSVContext from '../../components/import-csv/ImportCSV.context';
 import { MapColumnsData } from '../../components/import-csv/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
+import AdjustGeneratedShortTest from './components/AdjustGeneratedShortTest';
 import ImportShortTestInformation from './components/ImportShortTestInformation';
+import MapStudentsToIliasNames from './components/MapStudentsToIliasNames';
 
 export type ShortTestColumns = 'iliasName' | 'testResultStudent' | 'testMaximumPoints';
 type ColumnGroups = 'general';
@@ -48,6 +50,8 @@ function ImportShortTests(): JSX.Element {
           { label: 'Export-Anleitung', component: ImportShortTestInformation },
           { label: 'CSV importieren', component: ImportCSVWithStepper },
           { label: 'Spalten zuordnen', component: MapCSVColumnsWithStepper },
+          { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
+          { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
         ]}
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'

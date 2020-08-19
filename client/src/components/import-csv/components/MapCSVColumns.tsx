@@ -7,7 +7,7 @@ function MapCSVColumns(): JSX.Element {
   const { mapColumnBoxes } = useMapColumnsHelpers();
 
   return (
-    <Box display='flex' flexDirection='column'>
+    <Box display='flex' flexDirection='column' flex={1}>
       <Typography variant='h4'>Spalten zuordnen</Typography>
 
       {mapColumnBoxes}

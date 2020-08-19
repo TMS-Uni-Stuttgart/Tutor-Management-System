@@ -3,8 +3,8 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik, FormikConfig, FormikHelpers } from 'formik';
 import React from 'react';
-import FormikDebugDisplay from './components/FormikDebugDisplay';
 import SubmitButton from '../loading/SubmitButton';
+import FormikDebugDisplay from './components/FormikDebugDisplay';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,6 +39,7 @@ type FormProps = Omit<React.ReactHTML['form'], 'onSubmit' | 'className'>;
 export interface FormikBaseFormProps<VALUES> extends FormikConfig<VALUES> {
   onCancelClicked?: (formikBag: FormikHelpers<VALUES>) => void;
   enableDebug?: boolean;
+  hideSaveButton?: boolean;
   enableErrorsInDebug?: boolean;
   className?: string;
   formProps?: FormProps;
@@ -49,6 +50,7 @@ export interface FormikBaseFormProps<VALUES> extends FormikConfig<VALUES> {
 function FormikBaseForm<VALUES>({
   onCancelClicked,
   enableDebug,
+  hideSaveButton,
   enableErrorsInDebug,
   className,
   children,
@@ -86,14 +88,16 @@ function FormikBaseForm<VALUES>({
               </Button>
             )}
 
-            <SubmitButton
-              color='primary'
-              variant='outlined'
-              isSubmitting={formik.isSubmitting}
-              disabled={!!disableSubmitButtonIfClean && !formik.dirty}
-            >
-              Speichern
-            </SubmitButton>
+            {!hideSaveButton && (
+              <SubmitButton
+                color='primary'
+                variant='outlined'
+                isSubmitting={formik.isSubmitting}
+                disabled={!!disableSubmitButtonIfClean && !formik.dirty}
+              >
+                Speichern
+              </SubmitButton>
+            )}
           </div>
 
           {enableDebug && <FormikDebugDisplay showErrors={enableErrorsInDebug} />}
