@@ -123,7 +123,7 @@ function StepperWithButtons({
       <Box className={props.className} display='flex' flexDirection='column'>
         <StepperHeader {...props} />
 
-        <StepperContent flex={1} display='flex' />
+        <StepperContent flex={1} display='flex' paddingLeft={2} paddingRight={2} />
       </Box>
     </StepperContext.Provider>
   );
