@@ -81,6 +81,12 @@ export function getInitialStudentFormState({
   student,
   defaultTeamSize,
 }: InitialStateParams): StudentFormState {
+  const team: string = student
+    ? student.team?.id ?? ''
+    : teams
+    ? getNextTeamWithSlot(teams, defaultTeamSize)
+    : '';
+
   return {
     lastname: student?.lastname ?? '',
     firstname: student?.firstname ?? '',
@@ -88,7 +94,7 @@ export function getInitialStudentFormState({
     matriculationNo: student?.matriculationNo ?? '',
     email: student?.email || '',
     courseOfStudies: student?.courseOfStudies || '',
-    team: student?.team?.id ?? (teams ? getNextTeamWithSlot(teams, defaultTeamSize) : ''),
+    team,
     status: student?.status ?? StudentStatus.ACTIVE,
   };
 }
