@@ -5,8 +5,8 @@ import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import clsx from 'clsx';
 import {
   Account as PersonIcon,
+  AlertOctagon as WarningIcon,
   FileCheck as NoScheinRequiredIcon,
-  MessageAlert as WarningIcon,
   Sleep as InactiveIcon,
 } from 'mdi-material-ui';
 import React from 'react';
@@ -34,7 +34,7 @@ function getStudentIcon(student: Student): React.FunctionComponent<SvgIconProps>
       return NoScheinRequiredIcon;
   }
 
-  if (!student.matriculationNo) {
+  if (!student.matriculationNo || !student.iliasName) {
     return WarningIcon;
   }
 
@@ -50,8 +50,16 @@ function getStudentTooltip(student: Student): string | undefined {
       return 'Student/in hat bereits einen Schein.';
   }
 
+  if (!student.matriculationNo && !student.iliasName) {
+    return 'Student/in hat weder Matrikelnummer noch Iliasnamen.';
+  }
+
   if (!student.matriculationNo) {
-    return 'Student/in hat keine hinterlegte Matrikelnummer.';
+    return 'Student/in hat keine Matrikelnummer.';
+  }
+
+  if (!student.iliasName) {
+    return 'Student/in hat keinen Iliasnamen.';
   }
 
   return undefined;
@@ -66,7 +74,8 @@ function StudentAvatar({ student }: StudentAvatarProps): JSX.Element {
     <Avatar
       className={clsx({
         [classes.warningAvatar]:
-          student.status === StudentStatus.ACTIVE && !student.matriculationNo,
+          student.status === StudentStatus.ACTIVE &&
+          (!student.matriculationNo || !student.iliasName),
       })}
     >
       <Icon />
