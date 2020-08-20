@@ -12,7 +12,7 @@ import {
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
 import PointsTextField from '../../../../components/PointsTextField';
-import { useDialog } from '../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 import { Scheinexam } from '../../../../model/Scheinexam';
 import { Student } from '../../../../model/Student';

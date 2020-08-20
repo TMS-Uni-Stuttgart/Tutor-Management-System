@@ -8,7 +8,7 @@ import ScheinCriteriaForm, {
 import { FormDataResponse } from '../../components/generatedForm/types/FieldData';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
-import { useDialog } from '../../hooks/DialogService';
+import { useDialog } from '../../hooks/dialog-service/DialogService';
 import {
   createScheinCriteria,
   deleteScheinCriteria,

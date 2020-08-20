@@ -4,7 +4,7 @@ import { useField } from 'formik';
 import { Plus as AddIcon, SortAscending as SortIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
-import { useDialog } from '../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import AddSlotForm, { AddSlotFormData } from './AddSlotForm';
 import FormikWeekdaySlot, { WeekdayTimeSlot } from './FormikWeekdaySlot';
 

@@ -13,7 +13,7 @@ import { convertFormExercisesToDTOs } from '../../../components/forms/SheetForm'
 import LoadingModal from '../../../components/loading/LoadingModal';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
-import { useDialog } from '../../../hooks/DialogService';
+import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import { getScheinexamResultPDF } from '../../../hooks/fetching/Files';
 import {
   createScheinExam,

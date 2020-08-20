@@ -10,7 +10,7 @@ import SheetForm, {
 } from '../../../components/forms/SheetForm';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
-import { useDialog } from '../../../hooks/DialogService';
+import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import {
   createSheet,
   deleteSheet as deleteSheetRequest,

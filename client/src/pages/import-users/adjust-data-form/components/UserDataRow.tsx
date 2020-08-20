@@ -12,7 +12,7 @@ import { SquareEditOutline as EditIcon, Undo as ResetIcon } from 'mdi-material-u
 import React, { useState } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
 import PaperTableRow from '../../../../components/PaperTableRow';
-import { useDialog } from '../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { Tutorial } from '../../../../model/Tutorial';
 import { FormikSubmitCallback } from '../../../../types';
 import { UserFormState, UserFormStateValue } from '../AdjustImportedUserDataForm';

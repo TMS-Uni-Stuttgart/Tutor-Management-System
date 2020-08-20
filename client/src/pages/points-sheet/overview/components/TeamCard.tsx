@@ -23,7 +23,7 @@ import { getNameOfEntity } from 'shared/util/helpers';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import SplitButton from '../../../../components/SplitButton';
-import { useDialog } from '../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
 import { ROUTES } from '../../../../routes/Routing.routes';

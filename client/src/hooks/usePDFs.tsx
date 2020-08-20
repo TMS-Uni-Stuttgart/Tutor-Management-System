@@ -3,7 +3,7 @@ import MultiGradingPreview from '../components/markdown/MultiGradingPreview';
 import { Sheet } from '../model/Sheet';
 import { Team } from '../model/Team';
 import { saveBlob } from '../util/helperFunctions';
-import { DialogHelpers, useDialog } from './DialogService';
+import { DialogHelpers, useDialog } from './dialog-service/DialogService';
 import {
   getCorrectionCommentPDFs,
   getCorrectionCommentPDFsFilename,

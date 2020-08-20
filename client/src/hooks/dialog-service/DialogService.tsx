@@ -9,9 +9,12 @@ import Button, { ButtonProps } from '@material-ui/core/Button';
 import { DialogProps } from '@material-ui/core/Dialog';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import React, { useContext, useState } from 'react';
-import { RequireChildrenProp } from '../typings/RequireChildrenProp';
-import { Logger } from '../util/Logger';
+import React, { useContext, useRef, useState } from 'react';
+import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
+import { Logger } from '../../util/Logger';
+import SelectionDialogContent, {
+  SelectionDialogChildrenProps,
+} from './components/SelectionDialogContent';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -30,7 +33,9 @@ interface ActionParams {
 
 interface DialogOptions {
   title: string;
-  content: React.ReactNode;
+  content:
+    | React.ReactNode
+    | React.FunctionComponent<{ actionRef: React.RefObject<HTMLElement | undefined> }>;
   actions: ActionParams[];
   onClose?: () => void;
   DialogProps?: Omit<DialogProps, 'open' | 'children'>;
@@ -50,10 +55,17 @@ interface ConfirmationDialogOptions {
   DialogProps?: Omit<DialogProps, 'open' | 'onClose' | 'children'>;
 }
 
+interface SelectionDialogOptions<T> {
+  title: string;
+  content: React.FunctionComponent<SelectionDialogChildrenProps<T>>;
+  DialogProps?: Omit<DialogProps, 'open' | 'onClose' | 'children'>;
+}
+
 export interface DialogHelpers {
+  hide: () => void;
   show: (dialogOptions: Partial<DialogOptions>) => void;
   showConfirmationDialog: (diaologOptions: ConfirmationDialogOptions) => Promise<boolean>;
-  hide: () => void;
+  showSelectionDialog: <T>(dialogOptions: SelectionDialogOptions<T>) => Promise<T>;
 }
 
 type CreateDialogFunction = (dialog: DialogOptions | undefined) => void;
@@ -74,6 +86,7 @@ let closeDialogGlobal: (() => void) | undefined;
 function DialogService({ children }: RequireChildrenProp): JSX.Element {
   const classes = useStyles();
   const [dialog, setDialog] = useState<DialogOptions | undefined>(undefined);
+  const dialogActions = useRef<HTMLElement>();
 
   function handleSetDialog(dialog: DialogOptions | undefined) {
     setDialog(dialog);
@@ -101,12 +114,14 @@ function DialogService({ children }: RequireChildrenProp): JSX.Element {
           <DialogContent>
             {typeof dialog.content === 'string' ? (
               <DialogContentText>{dialog.content}</DialogContentText>
+            ) : typeof dialog.content === 'function' ? (
+              dialog.content({ actionRef: dialogActions })
             ) : (
               dialog.content
             )}
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions ref={dialogActions}>
             {dialog.actions.map((action) => (
               <Button
                 key={action.label}
@@ -155,6 +170,7 @@ function useDialog(): DialogHelpers {
   const createDialogFunction = useContext(DialogContext);
 
   return {
+    hide: () => createDialogFunction(undefined),
     show: (dialogOptions: Partial<DialogOptions>) => {
       const dialog: DialogOptions = { ...defaultDialog, ...dialogOptions };
 
@@ -186,7 +202,33 @@ function useDialog(): DialogHelpers {
         createDialogFunction(dialog);
       });
     },
-    hide: () => createDialogFunction(undefined),
+    showSelectionDialog: (dialogOptions: SelectionDialogOptions<any>) => {
+      return new Promise<any>((resolve) => {
+        const { title, content, DialogProps } = dialogOptions;
+
+        const closeDialog = (selected: any) => {
+          createDialogFunction(undefined);
+          resolve(selected);
+        };
+
+        const dialog: DialogOptions = {
+          title,
+          content: ({ actionRef }) => (
+            <SelectionDialogContent
+              actionRef={actionRef}
+              onAccept={(sel) => closeDialog(sel)}
+              onCancel={() => closeDialog(undefined)}
+            >
+              {content}
+            </SelectionDialogContent>
+          ),
+          actions: [],
+          DialogProps: { ...DialogProps, onClose: () => closeDialog(undefined) },
+        };
+
+        createDialogFunction(dialog);
+      });
+    },
   };
 }
 

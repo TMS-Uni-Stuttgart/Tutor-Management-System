@@ -12,7 +12,7 @@ import ShortTestForm, {
 } from '../../../components/forms/ShortTestForm';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
-import { useDialog } from '../../../hooks/DialogService';
+import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import {
   createShortTest,
   deleteShortTest as deleteShortTestRequest,

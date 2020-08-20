@@ -7,7 +7,7 @@ import {
   StudentFormSubmitCallback,
 } from '../../../components/forms/StudentForm';
 import { TutorialChangeFormSubmitCallback } from '../../../components/forms/TutorialChangeForm';
-import { DialogHelpers } from '../../../hooks/DialogService';
+import { DialogHelpers } from '../../../hooks/dialog-service/DialogService';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { Student } from '../../../model/Student';
 import { Logger } from '../../../util/Logger';

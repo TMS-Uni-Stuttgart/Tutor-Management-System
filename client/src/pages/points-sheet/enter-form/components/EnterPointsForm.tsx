@@ -7,7 +7,7 @@ import { Prompt } from 'react-router';
 import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Gradings';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
-import { useDialog } from '../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 import { Exercise } from '../../../../model/Exercise';
 import { Sheet } from '../../../../model/Sheet';

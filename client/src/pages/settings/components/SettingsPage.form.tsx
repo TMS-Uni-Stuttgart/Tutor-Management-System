@@ -7,7 +7,7 @@ import FormikDebugDisplay from '../../../components/forms/components/FormikDebug
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import GridDivider from '../../../components/GridDivider';
 import SubmitButton from '../../../components/loading/SubmitButton';
-import { useDialog } from '../../../hooks/DialogService';
+import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import { FormState } from '../SettingsPage.helpers';
 import EMailSettings from './EMailSettings';
 

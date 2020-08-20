@@ -7,7 +7,7 @@ import React, { PropsWithChildren, useContext, useEffect, useState } from 'react
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouterProps } from 'react-router';
 import { BrowserRouterProps } from 'react-router-dom';
-import DialogService, { getDialogOutsideContext } from '../hooks/DialogService';
+import DialogService, { getDialogOutsideContext } from '../hooks/dialog-service/DialogService';
 import { LoginContextProvider } from '../hooks/LoginService';
 import { SettingsProvider } from '../hooks/useSettings';
 import { RequireChildrenProp } from '../typings/RequireChildrenProp';

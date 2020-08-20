@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { Upload as UploadIcon } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
-import { useDialog } from '../../../hooks/DialogService';
+import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import LoadingModal from '../../loading/LoadingModal';
 import { useImportCSVHelpers } from '../hooks/useImportCSVHelpers';
