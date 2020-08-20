@@ -42,6 +42,11 @@ function MappingDialog({
         Beachte, dass diese Zuordnung nur für diesen Kurztest-Import gültig ist.
       </Typography>
 
+      <Typography>
+        Es werden nur die Studierenden in der Liste angezeigt, die zu keinem Iliasnamen zugeordnet
+        werden konnten.
+      </Typography>
+
       <FilterableSelect
         label='Studierende'
         emptyPlaceholder='Keine Studierenden vorhanden.'
