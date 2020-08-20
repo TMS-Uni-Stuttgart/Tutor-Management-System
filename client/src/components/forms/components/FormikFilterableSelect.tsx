@@ -50,6 +50,7 @@ interface Props<T> extends React.ComponentProps<'div'> {
   itemToValue: ItemToString<T>;
   isItemSelected: (item: T) => boolean;
   filterPlaceholder: string;
+  singleSelect?: boolean;
 }
 
 function FormikFilterableSelect<T>({
@@ -62,6 +63,7 @@ function FormikFilterableSelect<T>({
   isItemSelected,
   filterPlaceholder,
   className,
+  singleSelect,
   ...other
 }: Props<T>): JSX.Element {
   const classes = useStyles();
@@ -71,6 +73,12 @@ function FormikFilterableSelect<T>({
   if (!Array.isArray(meta.value)) {
     throw new Error(
       `FormikFilterableSelect -- The values object of the Formik form should be an array at property '${name}'. This is not the case. The current type is ${typeof meta.value}`
+    );
+  }
+
+  if (singleSelect && meta.value.length > 1) {
+    throw new Error(
+      `FormikFilterableSelect -- The values object of the Formik form should have length 1 (or 0) if 'singleSelect' is true (current length: ${meta.value.length}).`
     );
   }
 
@@ -114,7 +122,11 @@ function FormikFilterableSelect<T>({
                     onClick={() => {
                       const idx = meta.value.indexOf(itemValue);
                       if (idx === -1) {
-                        arrayHelpers.insert(meta.value.length - 1, itemValue);
+                        if (singleSelect) {
+                          arrayHelpers.replace(0, itemValue);
+                        } else {
+                          arrayHelpers.insert(meta.value.length - 1, itemValue);
+                        }
                       } else {
                         arrayHelpers.remove(idx);
                       }
