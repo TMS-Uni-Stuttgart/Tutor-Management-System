@@ -19,6 +19,7 @@ import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
@@ -189,6 +190,7 @@ describe('StudentService', () => {
         UserService,
         SheetService,
         ScheinexamService,
+        ShortTestService,
       ],
     }).compile();
   });

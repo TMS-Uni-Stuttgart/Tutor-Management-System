@@ -13,6 +13,7 @@ import { ITeam, ITeamId } from '../../shared/model/Team';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
 import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
 import { assertGrading } from '../student/student.service.spec';
@@ -113,6 +114,7 @@ describe('TeamService', () => {
         UserService,
         SheetService,
         ScheinexamService,
+        ShortTestService,
       ],
     }).compile();
   });
