@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import { AxiosInstance } from 'axios';
 import { IExerciseGradingDTO, IGradingDTO } from '../../server/src/shared/model/Gradings';
-import { IExerciseDTO, ISheet, ISheetDTO } from '../../server/src/shared/model/Sheet';
+import { IExerciseDTO } from '../../server/src/shared/model/HasExercises';
+import { ISheet, ISheetDTO } from '../../server/src/shared/model/Sheet';
 import { IStudent, IStudentDTO, StudentStatus } from '../../server/src/shared/model/Student';
 import { ITutorial, ITutorialDTO } from '../../server/src/shared/model/Tutorial';
 import { login } from '../util/login';
