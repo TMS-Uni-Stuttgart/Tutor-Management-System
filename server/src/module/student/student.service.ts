@@ -202,6 +202,21 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   }
 
   /**
+   * Sets the gradings for multiple students by calling `setGrading` for each entry of the given map.
+   *
+   * @param dtos Map containing the grading DTOs keyed by student ids.
+   */
+  async setGradingOfMultipleStudents(dtos: Map<string, GradingDTO>): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    dtos.forEach((dto, studentId) => {
+      promises.push(this.setGrading(studentId, dto));
+    });
+
+    await Promise.all(promises);
+  }
+
+  /**
    * Searches or creates the GradingDocument according to the given DTO.
    *
    * If the DTO does contain a `gradingId` field, the corresponding GradingDocument is fetched from the database, updated with the DTO and returned. Please note: The GradingDocument does __NOT__ get saved by this function.

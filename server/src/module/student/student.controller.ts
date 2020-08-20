@@ -16,6 +16,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { Request as ExpressRequest } from 'express';
 import { DateTime } from 'luxon';
 import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
@@ -25,6 +27,7 @@ import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
 import { AttendanceState, IAttendance } from '../../shared/model/Attendance';
+import { IGradingDTO } from '../../shared/model/Gradings';
 import { Role } from '../../shared/model/Role';
 import { IStudent } from '../../shared/model/Student';
 import { SettingsService } from '../settings/settings.service';
@@ -93,6 +96,27 @@ export class StudentController {
   @UseGuards(StudentGuard)
   async deleteStudent(@Param('id') id: string): Promise<void> {
     await this.studentService.delete(id);
+  }
+
+  @Put('grading')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(StudentGuard)
+  @AllowCorrectors()
+  @UsePipes(ValidationPipe)
+  async updatePointsOfMultipleStudents(@Body() dtos: [string, IGradingDTO][]): Promise<void> {
+    const dtoMap = new Map<string, IGradingDTO>();
+
+    for (const [id, dtoData] of dtos) {
+      const dto = plainToClass(GradingDTO, dtoData);
+      const results = validateSync(dto);
+
+      if (results.length === 0) {
+        dtoMap.set(id, dto);
+      }
+      // TODO: Cover cases in which the dto is not valid!
+    }
+
+    await this.studentService.setGradingOfMultipleStudents(dtoMap);
   }
 
   @Put('/:id/attendance')

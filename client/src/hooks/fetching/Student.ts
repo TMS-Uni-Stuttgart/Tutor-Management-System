@@ -68,6 +68,14 @@ export async function setAttendanceOfStudent(
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
+export async function setPointsOfMultipleStudents(points: Map<string, IGradingDTO>): Promise<void> {
+  const response = await axios.put('student/grading', [...points]);
+
+  if (response.status !== 204) {
+    return Promise.reject(`Wrong status code (${response.status}).`);
+  }
+}
+
 export async function setPointsOfStudent(studentId: string, points: IGradingDTO): Promise<void> {
   const response = await axios.put(`student/${studentId}/grading`, points);
 
