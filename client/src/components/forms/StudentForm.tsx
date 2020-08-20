@@ -178,6 +178,16 @@ function StudentForm({
         <FormikTextField name='lastname' label='Nachname' required />
 
         <FormikSelect
+          name='status'
+          label='Status'
+          emptyPlaceholder='Keine Status vorhanden.'
+          items={availableStatuses}
+          itemToString={statusToString}
+          itemToValue={(s) => s}
+          required
+        />
+
+        <FormikSelect
           name='team'
           label='Team'
           emptyPlaceholder='Keine Teams vorhanden.'
@@ -186,17 +196,6 @@ function StudentForm({
           itemToString={parseTeamItemToString}
           itemToValue={teamItemToValue}
           disabled={disableTeamDropdown}
-          required
-        />
-
-        <FormikSelect
-          name='status'
-          label='Status'
-          emptyPlaceholder='Keine Status vorhanden.'
-          items={availableStatuses}
-          itemToString={statusToString}
-          itemToValue={(s) => s}
-          required
         />
 
         <FormikWarningTextField

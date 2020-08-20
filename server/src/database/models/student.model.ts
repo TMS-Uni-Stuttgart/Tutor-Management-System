@@ -18,7 +18,7 @@ import { TutorialDocument } from './tutorial.model';
 interface ConstructorFields {
   firstname: string;
   lastname: string;
-  iliasName: string;
+  iliasName?: string;
   tutorial: TutorialDocument;
   team?: TeamDocument;
   matriculationNo?: string;
@@ -69,8 +69,8 @@ export class StudentModel {
   @prop({ required: true })
   lastname!: string;
 
-  @prop({ required: true })
-  iliasName!: string;
+  @prop()
+  iliasName?: string;
 
   @prop({ required: true, ref: 'TutorialModel', autopopulate: true })
   tutorial!: TutorialDocument;
