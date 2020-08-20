@@ -11,6 +11,7 @@ interface SelectionDialogContentProps<T> {
   children: React.FunctionComponent<SelectionDialogChildrenProps<T>>;
   onAccept: (selected: T | undefined) => void;
   onCancel: () => void;
+  disableSelectIfNoneSelected?: boolean;
 }
 
 function SelectionDialogContent<T>({
@@ -18,6 +19,7 @@ function SelectionDialogContent<T>({
   children,
   onAccept,
   onCancel,
+  disableSelectIfNoneSelected,
 }: SelectionDialogContentProps<T>): JSX.Element {
   const [selected, setSelected] = useState<T>();
   const [mountNode, setMountNode] = useState(actionRef.current);
@@ -32,7 +34,11 @@ function SelectionDialogContent<T>({
 
       <Portal container={mountNode}>
         <Button onClick={onCancel}>Abbrechen</Button>
-        <Button color='primary' onClick={() => onAccept(selected)}>
+        <Button
+          color='primary'
+          onClick={() => onAccept(selected)}
+          disabled={disableSelectIfNoneSelected && !selected}
+        >
           Auswählen
         </Button>
       </Portal>

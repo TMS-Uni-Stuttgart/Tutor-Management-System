@@ -7,7 +7,8 @@ import StepperWithButtons from '../../components/stepper-with-buttons/StepperWit
 import { ROUTES } from '../../routes/Routing.routes';
 import AdjustGeneratedShortTest from './components/AdjustGeneratedShortTest';
 import ImportShortTestInformation from './components/ImportShortTestInformation';
-import MapStudentsToIliasNames from './components/MapStudentsToIliasNames';
+import IliasMappingProvider from './components/map-students-ilias-names/IliasMapping.context';
+import MapStudentsToIliasNames from './components/map-students-ilias-names/MapStudentsToIliasNames';
 
 export type ShortTestColumns = 'iliasName' | 'testResultStudent' | 'testMaximumPoints';
 type ColumnGroups = 'general';
@@ -45,19 +46,21 @@ function ImportShortTests(): JSX.Element {
 
   return (
     <ImportCSVContext mapColumnsData={mapColumnData}>
-      <StepperWithButtons
-        steps={[
-          { label: 'Export-Anleitung', component: ImportShortTestInformation },
-          { label: 'CSV importieren', component: ImportCSVWithStepper },
-          { label: 'Spalten zuordnen', component: MapCSVColumnsWithStepper },
-          { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
-          { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
-        ]}
-        backButtonLabel='Zurück'
-        nextButtonLabel='Weiter'
-        nextButtonDoneLabel='Fertigstellen'
-        backButtonRoute={ROUTES.MANAGE_HAND_INS.create({ location: '1' })}
-      />
+      <IliasMappingProvider>
+        <StepperWithButtons
+          steps={[
+            { label: 'Export-Anleitung', component: ImportShortTestInformation },
+            { label: 'CSV importieren', component: ImportCSVWithStepper },
+            { label: 'Spalten zuordnen', component: MapCSVColumnsWithStepper },
+            { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
+            { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
+          ]}
+          backButtonLabel='Zurück'
+          nextButtonLabel='Weiter'
+          nextButtonDoneLabel='Fertigstellen'
+          backButtonRoute={ROUTES.MANAGE_HAND_INS.create({ location: '1' })}
+        />
+      </IliasMappingProvider>
     </ImportCSVContext>
   );
 }

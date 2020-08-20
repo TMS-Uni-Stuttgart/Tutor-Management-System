@@ -59,6 +59,7 @@ interface SelectionDialogOptions<T> {
   title: string;
   content: React.FunctionComponent<SelectionDialogChildrenProps<T>>;
   DialogProps?: Omit<DialogProps, 'open' | 'onClose' | 'children'>;
+  disableSelectIfNoneSelected?: boolean;
 }
 
 export interface DialogHelpers {
@@ -204,7 +205,7 @@ function useDialog(): DialogHelpers {
     },
     showSelectionDialog: (dialogOptions: SelectionDialogOptions<any>) => {
       return new Promise<any>((resolve) => {
-        const { title, content, DialogProps } = dialogOptions;
+        const { title, content, DialogProps, disableSelectIfNoneSelected } = dialogOptions;
 
         const closeDialog = (selected: any) => {
           createDialogFunction(undefined);
@@ -218,6 +219,7 @@ function useDialog(): DialogHelpers {
               actionRef={actionRef}
               onAccept={(sel) => closeDialog(sel)}
               onCancel={() => closeDialog(undefined)}
+              disableSelectIfNoneSelected={disableSelectIfNoneSelected}
             >
               {content}
             </SelectionDialogContent>
