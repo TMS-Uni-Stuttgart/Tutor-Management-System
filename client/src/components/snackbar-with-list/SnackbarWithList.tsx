@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardActions,
   Collapse,
@@ -46,6 +47,14 @@ const useStyles = makeStyles((theme: Theme) =>
     collapse: {
       padding: theme.spacing(2),
     },
+    list: {
+      listStyle: 'disc',
+      '& > li': {
+        paddingLeft: 'unset',
+        marginLeft: theme.spacing(2),
+        display: 'list-item',
+      },
+    },
   })
 );
 
@@ -83,7 +92,7 @@ function Component(
           {title}
         </Typography>
 
-        <div>
+        <Box display='flex'>
           <IconButton
             aria-label='Show more'
             className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
@@ -95,13 +104,13 @@ function Component(
           <IconButton className={classes.expand} onClick={handleDismiss}>
             <CloseIcon />
           </IconButton>
-        </div>
+        </Box>
       </CardActions>
 
       <Collapse in={isExpanded} timeout='auto' unmountOnExit>
         <Paper className={classes.collapse}>
           <Typography>{textBeforeList}</Typography>
-          <List dense>
+          <List dense className={classes.list}>
             {items.map((item, idx) => (
               <ListItem key={idx}>
                 <ListItemText primary={item} />

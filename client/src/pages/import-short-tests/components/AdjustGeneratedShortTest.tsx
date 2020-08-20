@@ -159,7 +159,6 @@ function AdjustGeneratedShortTest(): JSX.Element {
         const gradings: Map<string, IGradingDTO> = new Map();
 
         for (const row of data.rows) {
-          // TODO: Wrap in async function.
           const result = getShortTestGradingForStudent({
             iliasName: row.data[iliasNameColumn],
             testResultOfStudent: row.data[testResultStudentColumn],

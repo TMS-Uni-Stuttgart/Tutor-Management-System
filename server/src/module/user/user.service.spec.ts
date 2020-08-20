@@ -490,7 +490,9 @@ describe('UserService', () => {
 
     const userCountBefore = (await service.findAll()).length;
     await expect(service.createMany(usersToCreate)).rejects.toThrow(
-      `["[Potter, Harry]: A user with tutorials needs to have the 'TUTOR' role"]`
+      new BadRequestException([
+        "[Potter, Harry]: A user with tutorials needs to have the 'TUTOR' role",
+      ])
     );
 
     // No user should have effectively been created.
@@ -524,7 +526,9 @@ describe('UserService', () => {
 
     const userCountBefore = (await service.findAll()).length;
     await expect(service.createMany(usersToCreate)).rejects.toThrow(
-      `["[Granger, Hermine]: A user with tutorials to correct needs to have the 'CORRECTOR' role"]`
+      new BadRequestException([
+        "[Granger, Hermine]: A user with tutorials to correct needs to have the 'CORRECTOR' role",
+      ])
     );
 
     // No user should have effectively been created.

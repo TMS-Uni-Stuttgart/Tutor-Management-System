@@ -17,7 +17,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { validateSync, ValidationError } from 'class-validator';
 import { Request as ExpressRequest } from 'express';
 import { DateTime } from 'luxon';
 import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
@@ -105,15 +105,21 @@ export class StudentController {
   @UsePipes(ValidationPipe)
   async updatePointsOfMultipleStudents(@Body() dtos: [string, IGradingDTO][]): Promise<void> {
     const dtoMap = new Map<string, IGradingDTO>();
+    const notValidDTO: { id: string; errors: ValidationError[] }[] = [];
 
     for (const [id, dtoData] of dtos) {
       const dto = plainToClass(GradingDTO, dtoData);
-      const results = validateSync(dto);
+      const errors = validateSync(dto);
 
-      if (results.length === 0) {
+      if (errors.length === 0) {
         dtoMap.set(id, dto);
+      } else {
+        notValidDTO.push({ id, errors });
       }
-      // TODO: Cover cases in which the dto is not valid!
+    }
+
+    if (notValidDTO.length > 0) {
+      throw new BadRequestException(notValidDTO, 'Some DTOs are not valid.');
     }
 
     await this.studentService.setGradingOfMultipleStudents(dtoMap);

@@ -67,12 +67,16 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
         return { goToNext: false, error: true };
       }
 
-      await submitForm();
+      const isSuccess: any = await submitForm();
 
-      return {
-        goToNext: true,
-        runAfterFinished: () => history.push(ROUTES.MANAGE_USERS.create({})),
-      };
+      if (!!isSuccess) {
+        return {
+          goToNext: true,
+          runAfterFinished: () => history.push(ROUTES.MANAGE_USERS.create({})),
+        };
+      } else {
+        return { goToNext: false, error: true };
+      }
     });
 
     return () => removeNextCallback();
@@ -98,7 +102,7 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
 
 function AdjustImportedUserDataForm(): JSX.Element {
   const { data, mappedColumns } = useMapColumnsHelpers();
-  const { enqueueSnackbar } = useCustomSnackbar();
+  const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
   const { isLoading, value: tutorials } = useFetchState({
     fetchFunction: getAllTutorials,
     immediate: true,
@@ -110,16 +114,27 @@ function AdjustImportedUserDataForm(): JSX.Element {
   }, [data, mappedColumns, tutorials]);
 
   const handleSubmit: FormikSubmitCallback<UserFormState> = async (values) => {
+    const dtos: ICreateUserDTO[] = convertValuesToDTOS(values);
+
     try {
-      const dtos: ICreateUserDTO[] = convertValuesToDTOS(values);
       const response: IUser[] = await createManyUsers(dtos);
 
       enqueueSnackbar(`${response.length} Nutzer/innen wurden erstellt.`, {
         variant: 'success',
       });
-    } catch (err) {
-      // TODO: Parse error message and show SnackbarWithList -- create a new type like "RequestError".
-      enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });
+      return true;
+    } catch (errors) {
+      if (Array.isArray(errors)) {
+        enqueueSnackbarWithList({
+          title: 'Nutzer/innen konnten nicht erstellt werden.',
+          textBeforeList:
+            'Da bei einigen Nutzer/innen ein Fehler aufgetreten ist, wurde kein/e Nutzer/in erstellt. Folgende Nutzer/innen konnte nicht erstellt werden:',
+          items: errors,
+        });
+      } else {
+        enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });
+      }
+      return false;
     }
   };
 
