@@ -48,7 +48,6 @@ function TeamForm({ students, onSubmit, team, ...other }: Props): JSX.Element {
             items={students}
             itemToString={(student) => `${student.lastname}, ${student.firstname}`}
             itemToValue={(student) => student.id}
-            isItemSelected={(student) => values['students'].indexOf(student.id) > -1}
             style={{ gridColumn: '1 / span 2' }}
           />
         </>

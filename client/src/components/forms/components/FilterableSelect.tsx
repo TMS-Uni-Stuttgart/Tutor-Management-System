@@ -37,7 +37,6 @@ export interface FilterableSelectProps<T> extends Omit<BoxProps, 'onChange'> {
   items: T[];
   itemToString: ItemToString<T>;
   itemToValue: ItemToString<T>;
-  isItemSelected: (item: T) => boolean;
   filterPlaceholder: string;
   onChange?: (newValue: string[], oldValue: string[]) => void;
   value?: string[];
@@ -50,7 +49,6 @@ function FilterableSelect<T>({
   items,
   itemToString,
   itemToValue,
-  isItemSelected,
   filterPlaceholder,
   singleSelect,
   value: valueFromProps,
@@ -78,6 +76,14 @@ function FilterableSelect<T>({
       return itemString.indexOf(filter) > -1;
     },
     [filter, itemToString]
+  );
+
+  const isItemSelected = useCallback(
+    (item: T) => {
+      const valueOfItem = itemToValue(item);
+      return value.indexOf(valueOfItem) > -1;
+    },
+    [itemToValue, value]
   );
 
   const handleItemClicked = useCallback(
