@@ -26,7 +26,7 @@ import { useLogger } from '../../../util/Logger';
 import { getDuplicateExerciseName } from '../../points-sheet/util/helper';
 import ShortTestRow from './components/ShortTestRow';
 
-function convertFormStateToDTO(values: ShortTestFormState): IShortTestDTO {
+export function convertFormStateToDTO(values: ShortTestFormState): IShortTestDTO {
   return {
     shortTestNo: Number.parseInt(values.shortTestNo),
     percentageNeeded: values.percentageNeeded,

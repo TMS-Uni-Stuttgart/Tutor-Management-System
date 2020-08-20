@@ -55,7 +55,9 @@ function IliasMappingProvider({ children }: RequireChildrenProp): JSX.Element {
 
     if (!isLoading && students) {
       setWorking(true);
-      const iliasNamesInData = data.rows.map(({ data }) => data[mappedColumns.iliasName]);
+      const iliasNamesInData = data.rows
+        .map(({ data }) => data[mappedColumns.iliasName])
+        .filter(Boolean);
 
       iliasNamesInData.forEach((iliasName) => {
         if (iliasName) {
@@ -77,6 +79,7 @@ function IliasMappingProvider({ children }: RequireChildrenProp): JSX.Element {
         }
       });
 
+      setIliasNameMapping(iliasNameMapping);
       setStudentsMappedFromCSV(studentsAlreadyMapped);
       setWithoutStudent(iliasNamesWithoutStudent);
       setStudentsWithoutResult(studentsWithoutResult);
