@@ -21,6 +21,7 @@ import { IAttendance } from '../../shared/model/Attendance';
 import { IStudent } from '../../shared/model/Student';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import {
@@ -39,6 +40,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     private readonly teamService: TeamService,
     private readonly sheetService: SheetService,
     private readonly scheinexamService: ScheinexamService,
+    private readonly shortTestService: ShortTestService,
     @InjectModel(StudentModel)
     private readonly studentModel: ReturnModelType<typeof StudentModel>,
     @InjectModel(GradingModel)
@@ -264,20 +266,20 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   /**
    * Returns either a ScheinexamDocument or an ScheinexamDocument associated to the given DTO.
    *
-   * If both fields, `sheetId` and `examId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
+   * If all fields, `sheetId`, `examId` and `shortTestId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
    *
    * @param dto DTO to return the associated document with exercises for.
    *
    * @returns Associated document with exercises.
    *
-   * @throws `BadRequestException` - If either both fields (`sheetId` and `examId`) or none of those fields are set.
+   * @throws `BadRequestException` - If either all fields (`sheetId`, `examId` and `shortTestId`) or none of those fields are set.
    */
   async getEntityWithExercisesFromDTO(dto: GradingDTO): Promise<HasExerciseDocuments> {
-    const { sheetId, examId } = dto;
+    const { sheetId, examId, shortTestId } = dto;
 
-    if (!!sheetId && !!examId) {
+    if (!!sheetId && !!examId && !!shortTestId) {
       throw new BadRequestException(
-        'You have to set exactly one of the two fields sheetId and examId - not both'
+        'You have to set exactly one of the three fields sheetId, examId and shortTestId - not all three.'
       );
     }
 
@@ -289,7 +291,13 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
       return this.scheinexamService.findById(examId);
     }
 
-    throw new BadRequestException('You have to either set the sheetId or the examId field.');
+    if (!!shortTestId) {
+      return this.shortTestService.findById(shortTestId);
+    }
+
+    throw new BadRequestException(
+      'You have to either set the sheetId nor the examId nor the shortTestId field.'
+    );
   }
 
   private async getTeamFromDTO(

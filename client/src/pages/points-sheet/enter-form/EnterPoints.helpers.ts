@@ -6,6 +6,7 @@ interface ConvertToGradingDTOParams {
   values: PointsFormState;
   sheetId?: string;
   examId?: string;
+  shortTestId?: string;
   prevGrading?: Grading;
 }
 
@@ -46,7 +47,7 @@ function convertFormExerciseStateToPointMapEntry({
 function convertFormStateToExerciseGradingDTOMap(
   values: PointsFormState
 ): Map<string, IExerciseGradingDTO> {
-  const gradings = new Map();
+  const gradings = new Map<string, IExerciseGradingDTO>();
 
   Object.entries(values.exercises).forEach(([exerciseId, state]) => {
     gradings.set(exerciseId, convertFormExerciseStateToPointMapEntry(state));
@@ -71,6 +72,7 @@ export function convertFormStateToGradingDTO({
   values,
   sheetId,
   examId,
+  shortTestId,
   prevGrading,
 }: ConvertToGradingDTOParams): IGradingDTO {
   const exerciseGradings: Map<
@@ -82,6 +84,7 @@ export function convertFormStateToGradingDTO({
   return {
     sheetId,
     examId,
+    shortTestId,
     exerciseGradings: [...exerciseGradings],
     gradingId: prevGrading?.id,
     comment: values.comment,

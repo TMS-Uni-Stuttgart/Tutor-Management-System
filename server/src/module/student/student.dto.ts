@@ -116,6 +116,10 @@ export class GradingDTO implements IGradingDTO {
 
   @IsOptional()
   @IsString()
+  shortTestId?: string;
+
+  @IsOptional()
+  @IsString()
   gradingId?: string;
 
   @IsOptional()

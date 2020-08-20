@@ -27,6 +27,7 @@ export interface IGradingDTO {
   exerciseGradings: [string, IExerciseGradingDTO][];
   sheetId?: string;
   examId?: string;
+  shortTestId?: string;
   gradingId?: string;
   comment?: string;
   additionalPoints?: number;
