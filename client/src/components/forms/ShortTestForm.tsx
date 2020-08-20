@@ -41,7 +41,7 @@ export function getInitialShortTestFormState(
   const nextShortTestNo = (allShortTests?.length ?? 0) + 1;
 
   return {
-    shortTestNo: shortTest?.shortTestNo ?? `${nextShortTestNo}`,
+    shortTestNo: shortTest?.shortTestNo.toString(10) ?? `${nextShortTestNo}`,
     percentageNeeded: shortTest?.percentageNeeded ?? 0.5,
     exercises: (shortTest?.exercises ?? []).map(mapExerciseToFormExercise),
   };

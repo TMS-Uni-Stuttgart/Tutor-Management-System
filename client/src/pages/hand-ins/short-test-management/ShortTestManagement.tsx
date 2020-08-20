@@ -28,7 +28,7 @@ import ShortTestRow from './components/ShortTestRow';
 
 function convertFormStateToDTO(values: ShortTestFormState): IShortTestDTO {
   return {
-    shortTestNo: values.shortTestNo,
+    shortTestNo: Number.parseInt(values.shortTestNo),
     percentageNeeded: values.percentageNeeded,
     exercises: convertFormExercisesToDTOs(values.exercises),
   };
@@ -53,7 +53,7 @@ function ShortTestManagement(): JSX.Element {
   const handleSubmit: ShortTestFormSubmitCallback = useCallback(
     async (values, { resetForm, setSubmitting, setFieldError }) => {
       const isNoAlreadyInUse =
-        shortTests?.find((t) => t.shortTestNo === values.shortTestNo) !== undefined;
+        shortTests?.find((t) => t.shortTestNo.toString(10) === values.shortTestNo) !== undefined;
       const duplicateName = getDuplicateExerciseName(values.exercises);
 
       if (duplicateName) {

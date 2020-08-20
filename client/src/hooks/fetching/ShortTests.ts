@@ -8,7 +8,7 @@ export async function getAllShortTests(): Promise<ShortTest[]> {
 
   if (response.status === 200) {
     const data = plainToClass(ShortTest, response.data);
-    return data.sort((a, b) => a.shortTestNo.localeCompare(b.shortTestNo));
+    return data.sort((a, b) => a.shortTestNo - b.shortTestNo);
   }
 
   return Promise.reject(`Wrong status code (${response.status}).`);

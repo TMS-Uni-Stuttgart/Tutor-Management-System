@@ -9,7 +9,7 @@ import { RatedEntityModel } from './ratedEntity.model';
 @modelOptions({ schemaOptions: { collection: CollectionName.SHORT_TESTS } })
 export class ShortTestModel extends RatedEntityModel {
   @prop({ required: true })
-  shortTestNo!: string;
+  shortTestNo!: number;
 
   static fromDTO(dto: ShortTestDTO): ShortTestModel {
     return ShortTestModel.assignShortTestDTO(new ShortTestModel(), dto);
