@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { Button, Paper, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import { Formik } from 'formik';
-import { Paper, Typography, Button } from '@material-ui/core';
-import FormikTextField from './components/FormikTextField';
-import SubmitButton from '../loading/SubmitButton';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
-import clsx from 'clsx';
 import { passwordValidationSchema } from '../../util/validationSchemas';
+import SubmitButton from '../loading/SubmitButton';
+import FormikTextField from './components/FormikTextField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'center',
       padding: theme.spacing(1),
+      margin: theme.spacing(1, 0),
       width: 'inherit',
     },
     submitButton: {
