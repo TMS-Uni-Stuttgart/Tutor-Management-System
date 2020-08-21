@@ -161,18 +161,18 @@ export class StudentModel {
   }
 
   /**
-   * Returns the grading for the given sheet if one is saved. If not `undefined` is returned.
+   * Returns the grading for the given entity if one is saved. If not `undefined` is returned.
    *
-   * @param sheet Sheet to get grading for.
+   * @param entity Entity to get grading for.
    *
-   * @returns Grading for the given sheet or `undefined`
+   * @returns Grading for the given entity or `undefined`
    */
-  getGrading(sheet: HasExerciseDocuments): GradingDocument | undefined {
-    if (!sheet.id || !this.gradings) {
+  getGrading(entity: HasExerciseDocuments): GradingDocument | undefined {
+    if (!entity.id || !this.gradings) {
       return undefined;
     }
 
-    return this.gradings?.get(sheet.id);
+    return this.gradings?.get(entity.id);
   }
 
   /**

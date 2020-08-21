@@ -27,15 +27,15 @@ export class MarkdownController {
     return gradings.markdownData;
   }
 
-  @Get('/grading/:sheetId/student/:studentId')
+  @Get('/grading/:entityId/student/:studentId')
   @UseGuards(StudentGuard)
   @AllowCorrectors()
   @IDField('studentId')
   async getMarkdownForStudentGrading(
-    @Param('sheetId') sheetId: string,
+    @Param('entityId') entityId: string,
     @Param('studentId') studentId: string
   ): Promise<string> {
-    const markdown = await this.markdownService.getStudentGrading(studentId, sheetId);
+    const markdown = await this.markdownService.getStudentGrading(studentId, entityId);
 
     return markdown;
   }

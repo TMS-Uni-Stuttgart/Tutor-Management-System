@@ -1,13 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { SubExerciseDocument } from '../../database/models/exercise.model';
 import { ExerciseGradingDocument, GradingDocument } from '../../database/models/grading.model';
+import { HasExercisesDocument } from '../../database/models/ratedEntity.model';
 import { SheetDocument } from '../../database/models/sheet.model';
 import { TeamDocument, TeamModel } from '../../database/models/team.model';
 import { convertExercisePointInfoToString, ExercisePointsInfo } from '../../shared/model/Gradings';
 import { ITeamMarkdownData } from '../../shared/model/Markdown';
 import { ITeamId } from '../../shared/model/Team';
 import { getNameOfEntity } from '../../shared/util/helpers';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
 import { StudentService } from '../student/student.service';
 import { TeamService } from '../team/team.service';
 
@@ -40,7 +43,7 @@ interface SheetPointInfo {
 }
 
 interface GeneratingParams {
-  sheet: SheetDocument;
+  entity: HasExercisesDocument;
   grading: GradingDocument;
   nameOfEntity: string;
 }
@@ -67,7 +70,9 @@ export class MarkdownService {
   constructor(
     private readonly teamService: TeamService,
     private readonly studentService: StudentService,
-    private readonly sheetService: SheetService
+    private readonly sheetService: SheetService,
+    private readonly scheinexamService: ScheinexamService,
+    private readonly shortTestService: ShortTestService
   ) {}
 
   /**
@@ -155,17 +160,17 @@ export class MarkdownService {
    */
   async getStudentGrading(studentId: string, sheetId: string): Promise<string> {
     const student = await this.studentService.findById(studentId);
-    const sheet = await this.sheetService.findById(sheetId);
-    const grading = student.getGrading(sheet);
+    const entity = await this.getExercisesEntityWithId(sheetId);
+    const grading = student.getGrading(entity);
 
     if (!grading) {
       throw new BadRequestException(
-        `There is no grading available of the given sheet for the given student.`
+        `There is no grading available of the given entity and the given student.`
       );
     }
 
     return this.generateFromGrading({
-      sheet,
+      entity,
       grading,
       nameOfEntity: getNameOfEntity(student),
     });
@@ -207,7 +212,7 @@ export class MarkdownService {
 
         markdownData.push({
           teamName,
-          markdown: this.generateFromGrading({ sheet, grading, nameOfEntity }),
+          markdown: this.generateFromGrading({ entity: sheet, grading, nameOfEntity }),
           belongsToTeam: grading.belongsToTeam,
         });
       });
@@ -222,11 +227,11 @@ export class MarkdownService {
     }
   }
 
-  private generateFromGrading({ sheet, grading, nameOfEntity }: GeneratingParams): string {
+  private generateFromGrading({ entity, grading, nameOfEntity }: GeneratingParams): string {
     const pointInfo: SheetPointInfo = { achieved: 0, total: { must: 0, bonus: 0 } };
     let exerciseMarkdown: string = '';
 
-    sheet.exercises.forEach((exercise) => {
+    entity.exercises.forEach((exercise) => {
       const gradingForExercise = grading.getExerciseGrading(exercise);
 
       if (!gradingForExercise) {
@@ -298,5 +303,40 @@ export class MarkdownService {
 
       return data;
     }, []);
+  }
+
+  /**
+   * Tries to find a sheet, scheinexam or short test with the given ID.
+   *
+   * If one could be found that one is returned. If not an error is thrown.
+   *
+   * @param id ID of the entity.
+   *
+   * @returns Entity with the given ID.
+   *
+   * @throws `BadRequestException` - If there is no sheet, scheinexam or short test with the given ID.
+   */
+  private async getExercisesEntityWithId(id: string): Promise<HasExercisesDocument> {
+    const [sheet, scheinexam, shortTest] = await Promise.allSettled([
+      this.sheetService.findById(id),
+      this.scheinexamService.findById(id),
+      this.shortTestService.findById(id),
+    ]);
+
+    if (sheet.status === 'fulfilled') {
+      return sheet.value;
+    }
+
+    if (scheinexam.status === 'fulfilled') {
+      return scheinexam.value;
+    }
+
+    if (shortTest.status === 'fulfilled') {
+      return shortTest.value;
+    }
+
+    throw new BadRequestException(
+      `Could not find a sheet, scheinexam or short test with the given ID ('${id}')`
+    );
   }
 }
