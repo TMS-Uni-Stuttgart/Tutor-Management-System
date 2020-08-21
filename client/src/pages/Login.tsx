@@ -1,4 +1,4 @@
-import { Paper, Theme, Typography } from '@material-ui/core';
+import { List, ListItem, ListItemText, Paper, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Information as InfoIcon } from 'mdi-material-ui';
 import { withSnackbar, WithSnackbarProps } from 'notistack';
@@ -8,6 +8,7 @@ import ChangePasswordForm, {
   ChangePasswordFormState,
 } from '../components/forms/ChangePasswordForm';
 import LoginForm, { LoginFormState } from '../components/forms/LoginForm';
+import OutlinedBox from '../components/OutlinedBox';
 import { useLogin } from '../hooks/LoginService';
 import { PATH_REDIRECT_AFTER_LOGIN } from '../routes/Routing.routes';
 import { FormikSubmitCallback } from '../types';
@@ -46,6 +47,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     infoIcon: {
       marginRight: theme.spacing(1),
+    },
+    list: {
+      listStyle: 'disc',
+      '& > li': {
+        paddingLeft: 'unset',
+        marginLeft: theme.spacing(2),
+        display: 'list-item',
+      },
     },
   })
 );
@@ -105,14 +114,28 @@ function Login({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
 
         {showPasswordChangeForm ? (
           <>
-            <Paper className={classes.changePwInfoPaper} elevation={0}>
+            <OutlinedBox
+              borderColor='secondary.light'
+              display='flex'
+              padding={1.5}
+              marginX={1}
+              marginBottom={2}
+            >
               <InfoIcon className={classes.infoIcon} color='secondary' />
 
-              <Typography noWrap={false}>
+              <Typography noWrap={false} component='div'>
                 Aus Sicherheitsgründen muss das initial vergebene Passwort geändert werden, bevor
-                fortgefahren werden kann.
+                fortgefahren werden kann. Das neue Passwort muss:
+                <List dense className={classes.list}>
+                  <ListItem>
+                    <ListItemText primary='Mind. 8 Zeichen lang sein.' />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText primary='Mind. 1 Groß- und einen Kleinbuchstaben enthalten.' />
+                  </ListItem>
+                </List>
               </Typography>
-            </Paper>
+            </OutlinedBox>
 
             <ChangePasswordForm
               onSubmit={onTemporaryPasswordChangeSubmit}

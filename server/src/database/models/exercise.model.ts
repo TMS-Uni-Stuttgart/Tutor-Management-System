@@ -1,8 +1,8 @@
 import { DocumentType, mongoose, prop } from '@typegoose/typegoose';
 import { generateObjectId } from '../../helpers/generateObjectId';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
-import { ExercisePointInfo } from '../../shared/model/Points';
-import { IExercise, ISubexercise } from '../../shared/model/Sheet';
+import { ExercisePointsInfo, IExercisePointsInfo } from '../../shared/model/Gradings';
+import { IExercise, ISubexercise } from '../../shared/model/HasExercises';
 
 export interface HasExerciseDocuments {
   id?: string;
@@ -44,11 +44,11 @@ export class SubExerciseModel {
   @prop({ required: true })
   maxPoints!: number;
 
-  get pointInfo(): ExercisePointInfo {
-    return {
+  get pointInfo(): ExercisePointsInfo {
+    return new ExercisePointsInfo({
       must: this.bonus ? 0 : this.maxPoints,
       bonus: this.bonus ? this.maxPoints : 0,
-    };
+    });
   }
 
   static fromDTO(dto: SubExerciseDTO): SubExerciseModel {
@@ -94,15 +94,15 @@ export class ExerciseModel {
     this._maxPoints = points;
   }
 
-  get pointInfo(): ExercisePointInfo {
+  get pointInfo(): ExercisePointsInfo {
     if (this.subexercises.length === 0) {
-      return {
+      return new ExercisePointsInfo({
         must: this.bonus ? 0 : this.maxPoints,
         bonus: this.bonus ? this.maxPoints : 0,
-      };
+      });
     }
 
-    return this.subexercises.reduce(
+    const info: IExercisePointsInfo = this.subexercises.reduce(
       (prev, current) => {
         if (current.bonus) {
           return { ...prev, bonus: current.maxPoints + prev.bonus };
@@ -112,6 +112,7 @@ export class ExerciseModel {
       },
       { must: 0, bonus: 0 }
     );
+    return new ExercisePointsInfo(info);
   }
 
   @prop({ default: [], type: SubExerciseModel })

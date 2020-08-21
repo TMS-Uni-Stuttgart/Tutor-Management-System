@@ -14,8 +14,24 @@ interface AssertSettingsParams {
 
 function assertSettings({ expected, actual }: AssertSettingsParams) {
   const { _id, ...expectedWithoutId } = sanitizeObject(expected);
-  expect(actual).toEqual(expectedWithoutId);
+  const sanitizedActual = sanitizeObject(actual);
+  expect(sanitizedActual).toEqual(expectedWithoutId);
 }
+
+const DEFAULT_SETTINGS: ClientSettingsDTO = {
+  defaultTeamSize: 2,
+  canTutorExcuseStudents: false,
+  gradingFilename: 'default_filename',
+  tutorialGradingFilename: 'default_tutorial_grading_filename',
+};
+
+const SOME_MAILING_SETTINGS: ClientSettingsDTO['mailingConfig'] = {
+  auth: { user: 'username', pass: 'password' },
+  from: 'sender@from.mail',
+  host: 'some-host-address',
+  port: 1234,
+  subject: 'subject of mail',
+};
 
 describe('SettingsService', () => {
   let testModule: TestingModule;
@@ -48,13 +64,39 @@ describe('SettingsService', () => {
   });
 
   it.each<ClientSettingsDTO>([
-    { defaultTeamSize: 5 },
-    { canTutorExcuseStudents: true },
-    { defaultTeamSize: 3, canTutorExcuseStudents: true },
+    { ...DEFAULT_SETTINGS, defaultTeamSize: 5 },
+    { ...DEFAULT_SETTINGS, canTutorExcuseStudents: true },
+    { ...DEFAULT_SETTINGS, defaultTeamSize: 3, canTutorExcuseStudents: true },
+    {
+      ...DEFAULT_SETTINGS,
+      gradingFilename: 'Grading_Ex#{sheetNo}_#{teamName}',
+    },
+    {
+      ...DEFAULT_SETTINGS,
+      tutorialGradingFilename: 'Tutorial_#{tutorialSlot}_Sheet#{sheetNo}',
+    },
+    {
+      ...DEFAULT_SETTINGS,
+      mailingConfig: SOME_MAILING_SETTINGS,
+    },
   ])('change setting with DTO "%s"', async (newSetting: ClientSettingsDTO) => {
     await service.setClientSettings(newSetting);
 
     const settings = await service.getClientSettings();
     assertSettings({ actual: settings, expected: { ...SETTINGS_DOCUMENTS[0], ...newSetting } });
+  });
+
+  it('remove mailing settings', async () => {
+    const oldDto: ClientSettingsDTO = { ...DEFAULT_SETTINGS, mailingConfig: SOME_MAILING_SETTINGS };
+    await service.setClientSettings(oldDto);
+
+    const oldSettings = await service.getClientSettings();
+    expect(oldSettings.mailingConfig).toBeDefined();
+
+    const newDto: ClientSettingsDTO = { ...DEFAULT_SETTINGS };
+    await service.setClientSettings(newDto);
+
+    const newSettings = await service.getClientSettings();
+    expect(newSettings.mailingConfig).not.toBeDefined();
   });
 });

@@ -3,12 +3,12 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
-  IsMongoId,
 } from 'class-validator';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
@@ -17,7 +17,7 @@ import {
   IExerciseGradingDTO,
   IGradingDTO,
   IPresentationPointsDTO,
-} from '../../shared/model/Points';
+} from '../../shared/model/Gradings';
 import { ICakeCountDTO, IStudentDTO, StudentStatus } from '../../shared/model/Student';
 
 export class StudentDTO implements IStudentDTO {
@@ -26,6 +26,10 @@ export class StudentDTO implements IStudentDTO {
 
   @IsNotEmpty()
   lastname!: string;
+
+  @IsOptional()
+  @IsString()
+  iliasName?: string;
 
   @IsNotEmpty()
   @IsEnum(StudentStatus)
@@ -98,6 +102,10 @@ export class ExerciseGradingDTO implements IExerciseGradingDTO {
 }
 
 export class GradingDTO implements IGradingDTO {
+  @IsArray()
+  @IsMapEntry(ExerciseGradingDTO, { each: true })
+  exerciseGradings!: [string, ExerciseGradingDTO][];
+
   @IsOptional()
   @IsString()
   sheetId?: string;
@@ -108,11 +116,11 @@ export class GradingDTO implements IGradingDTO {
 
   @IsOptional()
   @IsString()
-  gradingId?: string;
+  shortTestId?: string;
 
-  @IsArray()
-  @IsMapEntry(ExerciseGradingDTO, { each: true })
-  exerciseGradings!: [string, ExerciseGradingDTO][];
+  @IsOptional()
+  @IsString()
+  gradingId?: string;
 
   @IsOptional()
   @IsString()

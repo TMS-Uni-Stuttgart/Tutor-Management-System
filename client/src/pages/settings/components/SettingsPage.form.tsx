@@ -7,7 +7,7 @@ import FormikDebugDisplay from '../../../components/forms/components/FormikDebug
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import GridDivider from '../../../components/GridDivider';
 import SubmitButton from '../../../components/loading/SubmitButton';
-import { useDialog } from '../../../hooks/DialogService';
+import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import { FormState } from '../SettingsPage.helpers';
 import EMailSettings from './EMailSettings';
 
@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) =>
     form: { display: 'flex', flexDirection: 'column' },
     unsavedChangesLabel: { marginLeft: theme.spacing(1) },
     input: { margin: theme.spacing(1, 0) },
+    sectionLabel: { fontSize: '1.1rem' },
   })
 );
 
@@ -78,7 +79,7 @@ function SettingsPageForm(): JSX.Element {
         maxHeight='100%'
         style={{ overflowY: 'auto' }}
       >
-        <Typography style={{ fontSize: '1.1rem' }}>Standardteamgröße</Typography>
+        <Typography className={classes.sectionLabel}>Standardteamgröße</Typography>
         <FormikTextField
           label='Standardteamgröße'
           name='defaultTeamSize'
@@ -90,7 +91,7 @@ function SettingsPageForm(): JSX.Element {
 
         <GridDivider />
 
-        <Typography style={{ fontSize: '1.1rem' }}>Anwesenheiten</Typography>
+        <Typography className={classes.sectionLabel}>Anwesenheiten</Typography>
         <FormikCheckbox
           label='Tutoren/innen dürfen Studierende entschuldigen'
           name='canTutorExcuseStudents'
@@ -98,7 +99,27 @@ function SettingsPageForm(): JSX.Element {
 
         <GridDivider />
 
-        <Typography style={{ fontSize: '1.1rem' }}>E-Maileinstellungen</Typography>
+        <Typography className={classes.sectionLabel}>Dateinamen</Typography>
+        <Box display='grid' gridTemplateColumns='1fr'>
+          <FormikTextField
+            label='Bewertungsdateiname (Team)'
+            name='gradingFilename'
+            helperText='Dateiname (ohne Dateiendung) für die Bewertungsdatei. Unterstützt Platzhalter: #{sheetNo} & #{teamName}'
+            className={classes.input}
+            required
+          />
+          <FormikTextField
+            label='Bewertungsdateiname (Tutorial)'
+            name='tutorialGradingFilename'
+            helperText='Dateiname (ohne Dateiendung) für die Bewertungsdatei für alle Bewertungen eines Tutoriums. Unterstützt Platzhalter: #{sheetNo} & #{tutorialSlot}'
+            className={classes.input}
+            required
+          />
+        </Box>
+
+        <GridDivider />
+
+        <Typography className={classes.sectionLabel}>E-Maileinstellungen</Typography>
         <EMailSettings />
       </Box>
 

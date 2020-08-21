@@ -1,4 +1,4 @@
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
@@ -9,17 +9,18 @@ import {
   TUTORIAL_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
 import { TeamModel } from '../../database/models/team.model';
-import { ITeam } from '../../shared/model/Team';
+import { ITeam, ITeamId } from '../../shared/model/Team';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { SheetDTO } from '../sheet/sheet.dto';
+import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
+import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
+import { assertGrading } from '../student/student.service.spec';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
 import { TeamDTO } from './team.dto';
-import { TeamID, TeamService } from './team.service';
-import { SheetService } from '../sheet/sheet.service';
-import { SheetDTO } from '../sheet/sheet.dto';
-import { GradingDTO } from '../student/student.dto';
-import { assertGrading } from '../student/student.service.spec';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { TeamService } from './team.service';
 
 interface AssertTeamParams {
   expected: MockedModel<TeamModel>;
@@ -113,6 +114,7 @@ describe('TeamService', () => {
         UserService,
         SheetService,
         ScheinexamService,
+        ShortTestService,
       ],
     }).compile();
   });
@@ -280,7 +282,7 @@ describe('TeamService', () => {
     };
 
     const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
-    const teamId: TeamID = { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id };
+    const teamId: ITeamId = { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id };
     const deletedTeam = await service.deleteTeamFromTutorial(teamId);
 
     expect(deletedTeam.id).toEqual(team.id);

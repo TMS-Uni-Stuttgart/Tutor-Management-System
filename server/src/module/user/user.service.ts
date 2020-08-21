@@ -137,7 +137,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
     if (errors.length > 0) {
       await Promise.all(created.map((u) => u.remove()));
-      throw new BadRequestException(JSON.stringify(errors));
+      throw new BadRequestException(errors);
     }
 
     return created.map((u) => u.toDTO());

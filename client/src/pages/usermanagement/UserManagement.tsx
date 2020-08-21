@@ -15,7 +15,7 @@ import UserForm, { UserFormState, UserFormSubmitCallback } from '../../component
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SubmitButton from '../../components/loading/SubmitButton';
 import TableWithForm from '../../components/TableWithForm';
-import { useDialog } from '../../hooks/DialogService';
+import { useDialog } from '../../hooks/dialog-service/DialogService';
 import { getCredentialsPDF } from '../../hooks/fetching/Files';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 import {

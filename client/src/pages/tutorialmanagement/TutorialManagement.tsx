@@ -17,7 +17,7 @@ import TutorialForm, {
 } from '../../components/forms/TutorialForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
-import { useDialog } from '../../hooks/DialogService';
+import { useDialog } from '../../hooks/dialog-service/DialogService';
 import {
   createTutorial,
   deleteTutorial,

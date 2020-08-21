@@ -12,18 +12,17 @@ import TabPanel from '../../components/TabPanel';
 import { getScheinCriteriaSummaryOfStudent } from '../../hooks/fetching/Scheincriteria';
 import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
+import { getAllShortTests } from '../../hooks/fetching/ShortTests';
 import { getStudent, setAttendanceOfStudent } from '../../hooks/fetching/Student';
 import { getTutorial } from '../../hooks/fetching/Tutorial';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
-import { Scheinexam } from '../../model/Scheinexam';
-import { Sheet } from '../../model/Sheet';
+import { useFetchState } from '../../hooks/useFetchState';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
 import AttendanceInformation from './components/AttendanceInformation';
 import CriteriaCharts from './components/CriteriaCharts';
-import EvaluationInformation from './components/EvaluationInformation';
-import ScheinExamInformation from './components/ScheinExamInformation';
+import GradingInformation from './components/GradingInformation';
 import ScheinStatusBox from './components/ScheinStatusBox';
 import StudentDetails from './components/StudentDetails';
 
@@ -39,9 +38,6 @@ const useStyles = makeStyles((theme) =>
     criteriaCharts: {
       marginBottom: theme.spacing(1),
     },
-    evaluationInfo: {
-      marginBottom: theme.spacing(1),
-    },
   })
 );
 
@@ -54,15 +50,28 @@ function StudentInfo(): JSX.Element {
   const classes = useStyles();
 
   const { studentId, tutorialId } = useParams<RouteParams>();
-
   const { enqueueSnackbar, setError } = useCustomSnackbar();
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const [student, setStudent] = useState<Student>();
-  const [sheets, setSheets] = useState<Sheet[]>([]);
-  const [exams, setExams] = useState<Scheinexam[]>([]);
   const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
   const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
-  const [selectedTab, setSelectedTab] = useState(0);
+
+  const { value: sheets = [] } = useFetchState({
+    fetchFunction: getAllSheets,
+    immediate: true,
+    params: [],
+  });
+  const { value: exams = [] } = useFetchState({
+    fetchFunction: getAllScheinExams,
+    immediate: true,
+    params: [],
+  });
+  const { value: shortTests = [] } = useFetchState({
+    fetchFunction: getAllShortTests,
+    immediate: true,
+    params: [],
+  });
 
   useEffect(() => {
     getStudent(studentId)
@@ -92,20 +101,6 @@ function StudentInfo(): JSX.Element {
         enqueueSnackbar('Tutorial konnte nicht abgerufen werden.', { variant: 'error' });
       });
   }, [student, enqueueSnackbar]);
-
-  useEffect(() => {
-    getAllSheets()
-      .then((response) => setSheets(response))
-      .catch(() => {
-        enqueueSnackbar('Übungsblätter konnten nicht abgerufen werden.', { variant: 'error' });
-      });
-
-    getAllScheinExams()
-      .then((response) => setExams(response))
-      .catch(() => {
-        enqueueSnackbar('Scheinklausuren konnten nicht abgerufen werden.', { variant: 'error' });
-      });
-  }, [enqueueSnackbar]);
 
   const handleTabChange = (_: React.ChangeEvent<unknown>, newValue: number) => {
     setSelectedTab(newValue);
@@ -196,14 +191,19 @@ function StudentInfo(): JSX.Element {
               <Tabs value={selectedTab} onChange={handleTabChange}>
                 <Tab label='Übungsblätter' />
                 <Tab label='Anwesenheiten' />
+                <Tab label='Kurztests' />
                 <Tab label='Scheinklausuren' />
               </Tabs>
 
               <TabPanel value={selectedTab} index={0}>
-                <EvaluationInformation
+                <GradingInformation
                   student={student}
-                  sheets={sheets}
-                  className={classes.evaluationInfo}
+                  entities={sheets}
+                  selectLabel='Übungsblatt'
+                  selectEmptyPlaceholder='Keine Übungsblätter vorhanden'
+                  selectNameOfNoneItem='Kein Übungsblatt'
+                  noneSelectedPlaceholder='Kein Übungsblatt ausgewählt'
+                  marginBottom={1}
                 />
               </TabPanel>
 
@@ -219,10 +219,28 @@ function StudentInfo(): JSX.Element {
               </TabPanel>
 
               <TabPanel value={selectedTab} index={2}>
-                <ScheinExamInformation
+                <GradingInformation
                   student={student}
-                  exams={exams}
-                  className={classes.evaluationInfo}
+                  entities={shortTests}
+                  disableCommentDisplay
+                  selectLabel='Kurztest'
+                  selectEmptyPlaceholder='Keine Kurztests vorhanden'
+                  selectNameOfNoneItem='Kein Kurztest'
+                  noneSelectedPlaceholder='Kein Kurztest ausgewählt'
+                  marginBottom={1}
+                />
+              </TabPanel>
+
+              <TabPanel value={selectedTab} index={3}>
+                <GradingInformation
+                  student={student}
+                  entities={exams}
+                  disableCommentDisplay
+                  selectLabel='Scheinklausur'
+                  selectEmptyPlaceholder='Keine Scheinklausuren vorhanden'
+                  selectNameOfNoneItem='Keine Scheinklausur'
+                  noneSelectedPlaceholder='Keine Scheinklausur ausgewählt'
+                  marginBottom={1}
                 />
               </TabPanel>
             </Paper>

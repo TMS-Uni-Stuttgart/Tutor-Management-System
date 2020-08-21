@@ -15,7 +15,12 @@ interface ContextType {
   isMailingActive: () => boolean;
 }
 
-const DEFAULT_SETTINGS: IClientSettings = { defaultTeamSize: 1, canTutorExcuseStudents: false };
+const DEFAULT_SETTINGS: IClientSettings = {
+  defaultTeamSize: 1,
+  canTutorExcuseStudents: false,
+  gradingFilename: '',
+  tutorialGradingFilename: '',
+};
 
 const SettingsContext = React.createContext<ContextType>({
   settings: DEFAULT_SETTINGS,

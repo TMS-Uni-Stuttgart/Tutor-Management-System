@@ -1,5 +1,7 @@
 import React from 'react';
-import { ISheet, IExerciseDTO } from 'shared/model/Sheet';
+import { IExerciseDTO } from 'shared/model/HasExercises';
+import { ISheet } from 'shared/model/Sheet';
+import * as Yup from 'yup';
 import { FormikSubmitCallback } from '../../types';
 import FormikCheckbox from './components/FormikCheckbox';
 import FormikExerciseEditor, {
@@ -8,17 +10,16 @@ import FormikExerciseEditor, {
 } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
-import * as Yup from 'yup';
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 
-const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
+export const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
   Yup.object().shape<ExerciseFormExercise>({
     exName: Yup.string().required('Benötigt'),
     bonus: Yup.boolean().required('Benötigt'),
     maxPoints: Yup.string()
       .matches(/^\d+(\.\d+)?$/, 'Punkte dürfen nur Zahlen sein')
-      .defined(),
+      .required('Benötigt.'),
     subexercises: Yup.array().of(exerciseValidationSchema).defined(),
   })
 );

@@ -1,4 +1,4 @@
-import { HasExercises } from './Sheet';
+import { IHasExercises } from './HasExercises';
 
 export enum ScheincriteriaIdentifier {
   ATTENDANCE = 'attendance',
@@ -6,6 +6,7 @@ export enum ScheincriteriaIdentifier {
   SCHEINEXAM = 'scheinexam',
   SHEET_INDIVIDUAL = 'sheetIndividual',
   SHEET_TOTAL = 'sheetTotal',
+  SHORT_TESTS = 'shortTests',
 }
 
 export interface IScheinCriteria {
@@ -59,7 +60,7 @@ export interface ScheinCriteriaAdditionalStatus {
 
 export enum PassedState {
   PASSED = 'PASSED',
-  NOTPASSED = 'NOTPASSED',
+  NOT_PASSED = 'NOTPASSED',
   IGNORE = 'IGNORE',
 }
 
@@ -69,6 +70,7 @@ export enum ScheinCriteriaUnit {
   EXAM = 'EXAM',
   PRESENTATION = 'PRESENTATION',
   DATE = 'DATE',
+  SHORT_TEST = 'SHORT_TEST',
 }
 
 export interface CriteriaAchievedInformation {
@@ -91,7 +93,7 @@ export interface CriteriaAveragesInformation {
   };
 }
 
-export interface CriteriaSheetOrExamInformation extends HasExercises {
+export interface CriteriaSheetOrExamInformation extends IHasExercises {
   no: number;
 }
 

@@ -7,6 +7,7 @@ export const validationSchema = Yup.object().shape({
     .integer('Muss eine ganze Zahl sein.')
     .min(1, 'Muss mindestens 1 sein.')
     .required('Benötigt'),
+  gradingFilename: Yup.string().required('Benötigt'),
   mailingConfig: Yup.lazy((value: { enabled?: boolean } | undefined | null) => {
     if (value?.enabled) {
       return Yup.object().shape({
@@ -50,6 +51,8 @@ export const validationSchema = Yup.object().shape({
 export interface FormState {
   defaultTeamSize: string;
   canTutorExcuseStudents: boolean;
+  gradingFilename: string;
+  tutorialGradingFilename: string;
   mailingConfig: {
     enabled: boolean;
     from: string;
@@ -61,10 +64,18 @@ export interface FormState {
 }
 
 export function getInitialValues(settings: IClientSettings): FormState {
-  const { mailingConfig, canTutorExcuseStudents, defaultTeamSize } = settings;
+  const {
+    mailingConfig,
+    canTutorExcuseStudents,
+    gradingFilename,
+    tutorialGradingFilename,
+    defaultTeamSize,
+  } = settings;
   return {
     canTutorExcuseStudents: canTutorExcuseStudents,
     defaultTeamSize: `${defaultTeamSize}`,
+    gradingFilename,
+    tutorialGradingFilename,
     mailingConfig: {
       enabled: !!mailingConfig,
       from: mailingConfig?.from ?? '',
@@ -80,6 +91,8 @@ export function convertFormStateToDTO(values: FormState): IClientSettings {
   const dto: IClientSettings = {
     canTutorExcuseStudents: values.canTutorExcuseStudents,
     defaultTeamSize: Number.parseInt(values.defaultTeamSize),
+    gradingFilename: values.gradingFilename,
+    tutorialGradingFilename: values.tutorialGradingFilename,
   };
 
   if (values.mailingConfig.enabled) {

@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
@@ -16,19 +17,28 @@ import {
   FileFind as PdfPreviewIcon,
   PdfBox as PdfIcon,
 } from 'mdi-material-ui';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getNameOfEntity } from 'shared/util/helpers';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
+import PointsTable from '../../../../components/points-table/PointsTable';
 import SplitButton from '../../../../components/SplitButton';
-import { useDialog } from '../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
 import { ROUTES } from '../../../../routes/Routing.routes';
 
 const useStyles = makeStyles(() =>
   createStyles({
+    card: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    content: {
+      flex: 1,
+    },
     actions: {
+      marginTop: 'auto',
       justifyContent: 'flex-end',
     },
   })
@@ -56,12 +66,25 @@ function TeamCard({
   const classes = useStyles();
   const dialog = useDialog();
 
+  const teamGrading = useMemo(() => team.getGrading(sheet), [team, sheet]);
+
   const studentsInTeam: string =
     team.students.length > 0
       ? team.students
           .map((student) => getNameOfEntity(student, { firstNameFirst: true }))
           .join(', ')
       : 'Keine Studierende in diesem Team.';
+
+  const { placeholderText, pdfDisabled } = useMemo(() => {
+    const gradingCount = team.getAllGradings(sheet).length;
+    const placeholderText =
+      gradingCount === 0
+        ? 'Keine Bewertung für das Team vorhanden.'
+        : 'Studierende haben unterschiedliche Bewertungen.';
+    const pdfDisabled = gradingCount === 0;
+
+    return { placeholderText, pdfDisabled };
+  }, [team, sheet]);
 
   const handleEnterStudents = () => {
     dialog.show({
@@ -108,7 +131,7 @@ function TeamCard({
   };
 
   return (
-    <Card variant='outlined'>
+    <Card variant='outlined' className={classes.card}>
       <CardHeader
         avatar={<TeamIcon />}
         action={
@@ -116,13 +139,17 @@ function TeamCard({
             additionalItems={[
               {
                 primary: 'PDF Vorschau',
+                secondary: pdfDisabled ? 'Keine Bewertung vorhanden.' : undefined,
                 Icon: PdfPreviewIcon,
                 onClick: () => onPdfPreviewClicked(team),
+                disabled: pdfDisabled,
               },
               {
-                primary: 'PDF herunterladen',
+                primary: 'PDF(s) herunterladen',
+                secondary: pdfDisabled ? 'Keine Bewertung vorhanden.' : undefined,
                 Icon: PdfIcon,
                 onClick: () => onGeneratePdfClicked(team),
+                disabled: pdfDisabled,
               },
             ]}
           />
@@ -131,11 +158,12 @@ function TeamCard({
         subheader={studentsInTeam}
       />
 
-      <CardContent>
-        {/* <PointsTable grading={new PointMap(team.points)} sheet={sheet} /> */}
-        {/* TODO: Re-add the display of the grading of the 'team' */}
-        <div>WORK IN PROGESS</div>
-        <div>Teambewertung wieder anzeigen!</div>
+      <CardContent className={classes.content}>
+        {teamGrading ? (
+          <PointsTable grading={teamGrading} sheet={sheet} />
+        ) : (
+          <Typography align='center'>{placeholderText}</Typography>
+        )}
       </CardContent>
 
       <CardActions className={classes.actions}>

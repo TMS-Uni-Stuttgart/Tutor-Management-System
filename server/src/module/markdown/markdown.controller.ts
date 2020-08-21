@@ -1,9 +1,10 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { IDField } from '../../guards/decorators/idField.decorator';
-import { TutorialGuard } from '../../guards/tutorial.guard';
-import { MarkdownService } from './markdown.service';
-import { StudentGuard } from '../../guards/student.guard';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { IDField } from '../../guards/decorators/idField.decorator';
+import { StudentGuard } from '../../guards/student.guard';
+import { TutorialGuard } from '../../guards/tutorial.guard';
+import { ITeamMarkdownData } from '../../shared/model/Markdown';
+import { MarkdownService } from './markdown.service';
 
 @Controller('markdown')
 export class MarkdownController {
@@ -17,24 +18,24 @@ export class MarkdownController {
     @Param('sheetId') sheetId: string,
     @Param('tutorialId') tutorialId: string,
     @Param('teamId') teamId: string
-  ): Promise<string> {
-    const markdown = await this.markdownService.getTeamGrading({
+  ): Promise<ITeamMarkdownData[]> {
+    const gradings = await this.markdownService.getTeamGrading({
       teamId: { tutorialId, teamId },
       sheetId,
     });
 
-    return markdown;
+    return gradings.markdownData;
   }
 
-  @Get('/grading/:sheetId/student/:studentId')
+  @Get('/grading/:entityId/student/:studentId')
   @UseGuards(StudentGuard)
   @AllowCorrectors()
   @IDField('studentId')
   async getMarkdownForStudentGrading(
-    @Param('sheetId') sheetId: string,
+    @Param('entityId') entityId: string,
     @Param('studentId') studentId: string
   ): Promise<string> {
-    const markdown = await this.markdownService.getStudentGrading(studentId, sheetId);
+    const markdown = await this.markdownService.getStudentGrading(studentId, entityId);
 
     return markdown;
   }

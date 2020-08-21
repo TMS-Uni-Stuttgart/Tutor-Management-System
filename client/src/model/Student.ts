@@ -20,6 +20,7 @@ export class Student implements Modify<IStudent, Modified> {
   readonly id!: string;
   readonly firstname!: string;
   readonly lastname!: string;
+  readonly iliasName!: string;
 
   @Type(() => Grading)
   @Transform((value) => new Map(value))

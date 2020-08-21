@@ -72,7 +72,7 @@ function ScheinCriteriaForm({ onSubmit, formData, criteria, ...other }: Props): 
             emptyPlaceholder='Keine Kriterien vorhanden.'
             label='Art des Kriteriums'
             items={Object.keys(formData)}
-            itemToString={(key) => t(key)}
+            itemToString={(key) => t(`TYPE_${key}`)}
             itemToValue={(key) => key}
             disabled={!!criteria}
             onChange={(e) => {

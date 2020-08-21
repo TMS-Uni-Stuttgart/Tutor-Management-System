@@ -8,7 +8,7 @@ import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamFor
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import TeamTableRow from '../../components/TeamTableRow';
-import { useDialog } from '../../hooks/DialogService';
+import { useDialog } from '../../hooks/dialog-service/DialogService';
 import { getStudent } from '../../hooks/fetching/Student';
 import { createTeam, deleteTeam, editTeam, getTeamsOfTutorial } from '../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';

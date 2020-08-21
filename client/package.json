@@ -6,6 +6,7 @@
   "proxy": "http://localhost:8080",
   "scripts": {
     "start": "craco start",
+    "start:prod": "cross-env NODE_ENV=test_prod craco start",
     "build": "cross-env NODE_ENV=production craco build",
     "test": "craco test",
     "eject": "react-scripts eject",

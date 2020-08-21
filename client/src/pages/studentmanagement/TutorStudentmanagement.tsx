@@ -1,10 +1,7 @@
 import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import _ from 'lodash';
 import React from 'react';
 import { useParams } from 'react-router';
-import { getNameOfEntity } from 'shared/util/helpers';
-import { Student } from '../../model/Student';
 import Studentoverview from './student-overview/Studentoverview';
 import StudentoverviewStoreProvider from './student-store/StudentStore';
 
@@ -27,22 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Params {
   tutorialId: string;
-}
-
-function unifyFilterableText(text: string): string {
-  return _.deburr(text).toLowerCase();
-}
-
-export function getFilteredStudents(students: Student[], filterText: string): Student[] {
-  if (!filterText) {
-    return students;
-  }
-
-  return students.filter((s) => {
-    const name = getNameOfEntity(s, { firstNameFirst: true });
-
-    return unifyFilterableText(name).includes(unifyFilterableText(filterText));
-  });
 }
 
 function TutorStudentmanagement(): JSX.Element {

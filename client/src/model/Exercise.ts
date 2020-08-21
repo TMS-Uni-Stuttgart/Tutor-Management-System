@@ -1,7 +1,11 @@
 import { Type } from 'class-transformer';
 import { HasId } from 'shared/model/Common';
-import { convertExercisePointInfoToString, ExercisePointInfo } from 'shared/model/Points';
-import { IExercise, ISubexercise } from 'shared/model/Sheet';
+import {
+  convertExercisePointInfoToString,
+  ExercisePointsInfo,
+  IExercisePointsInfo,
+} from 'shared/model/Gradings';
+import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 
 export class Subexercise implements ISubexercise {
   id!: string;
@@ -9,11 +13,11 @@ export class Subexercise implements ISubexercise {
   maxPoints!: number;
   bonus!: boolean;
 
-  get pointInfo(): ExercisePointInfo {
-    return {
+  get pointInfo(): ExercisePointsInfo {
+    return new ExercisePointsInfo({
       must: this.bonus ? 0 : this.maxPoints,
       bonus: this.bonus ? this.maxPoints : 0,
-    };
+    });
   }
 }
 
@@ -32,15 +36,15 @@ export class Exercise extends Subexercise implements IExercise {
     return this.subexercises.reduce((sum, current) => sum + current.maxPoints, 0);
   }
 
-  get pointInfo(): ExercisePointInfo {
+  get pointInfo(): ExercisePointsInfo {
     if (this.subexercises.length === 0) {
-      return {
+      return new ExercisePointsInfo({
         must: this.bonus ? 0 : this.maxPoints,
         bonus: this.bonus ? this.maxPoints : 0,
-      };
+      });
     }
 
-    return this.subexercises.reduce(
+    const info = this.subexercises.reduce(
       (prev, current) => {
         const currentInfo = current.pointInfo;
 
@@ -51,6 +55,7 @@ export class Exercise extends Subexercise implements IExercise {
       },
       { must: 0, bonus: 0 }
     );
+    return new ExercisePointsInfo(info);
   }
 }
 
@@ -70,8 +75,8 @@ export abstract class HasExercises implements HasId {
   /**
    * Information about the total points of this entity split into `must` and `bonus` points.
    */
-  get pointInfo(): ExercisePointInfo {
-    return this.exercises.reduce<ExercisePointInfo>(
+  get pointInfo(): ExercisePointsInfo {
+    const info = this.exercises.reduce<IExercisePointsInfo>(
       (prev, current) => {
         const { must, bonus } = current.pointInfo;
 
@@ -82,6 +87,8 @@ export abstract class HasExercises implements HasId {
       },
       { must: 0, bonus: 0 }
     );
+
+    return new ExercisePointsInfo(info);
   }
 
   /**
@@ -90,4 +97,9 @@ export abstract class HasExercises implements HasId {
   getPointInfoAsString(): string {
     return convertExercisePointInfoToString(this.pointInfo);
   }
+
+  /**
+   * @returns A readable name of this object.
+   */
+  abstract toDisplayString(): string;
 }

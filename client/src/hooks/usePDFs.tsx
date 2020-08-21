@@ -1,15 +1,16 @@
 import React from 'react';
-import Markdown from '../components/Markdown';
+import MultiGradingPreview from '../components/markdown/MultiGradingPreview';
 import { Sheet } from '../model/Sheet';
 import { Team } from '../model/Team';
 import { saveBlob } from '../util/helperFunctions';
-import { DialogHelpers, useDialog } from './DialogService';
+import { DialogHelpers, useDialog } from './dialog-service/DialogService';
 import {
   getCorrectionCommentPDFs,
+  getCorrectionCommentPDFsFilename,
   getTeamCorrectionCommentMarkdown,
-  getTeamCorrectionCommentPDF,
+  getTeamGradingFile,
+  getTeamGradingFilename,
 } from './fetching/Files';
-import { getTutorial } from './fetching/Tutorial';
 
 interface DialogOption {
   dialog: DialogHelpers;
@@ -51,26 +52,26 @@ async function showSinglePdfPreview({
       maxWidth: 'lg',
     },
     title: 'Markdown-Vorschau',
-    content: <Markdown markdown={markdownSource} />,
+    content: <MultiGradingPreview data={markdownSource} />,
     onClose: () => dialog.hide(),
   });
 }
 
 async function generateSinglePdf({ tutorialId, sheet, team }: CorrectionPdfOptions) {
-  const blob = await getTeamCorrectionCommentPDF(tutorialId, sheet.id, team.id);
-  const teamName = team.students.map((s) => s.lastname).join('');
-  const sheetNo = sheet.sheetNo.toString().padStart(2, '0');
+  const blob = await getTeamGradingFile(tutorialId, sheet.id, team.id);
+  const fileName = await getTeamGradingFilename(tutorialId, sheet.id, team.id);
+  const fileEnding = blob.type === 'application/pdf' ? 'pdf' : 'zip';
 
-  saveBlob(blob, `Ex${sheetNo}_${teamName}.pdf`);
+  saveBlob(blob, `${fileName}.${fileEnding}`);
 }
 
 async function generateAllPdfs({ tutorialId, sheet }: GenerateAllPdfsOptions) {
-  const [blob, tutorial] = await Promise.all([
+  const [blob, filename] = await Promise.all([
     getCorrectionCommentPDFs(tutorialId, sheet.id),
-    getTutorial(tutorialId),
+    getCorrectionCommentPDFsFilename(tutorialId, sheet.id),
   ]);
 
-  saveBlob(blob, `Bewertungen_Ex${sheet.sheetNo.toString().padStart(2, '0')}_${tutorial.slot}.zip`);
+  saveBlob(blob, `${filename}.zip`);
 }
 
 export function usePDFs(): UsePdfs {

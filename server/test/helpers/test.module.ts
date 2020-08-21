@@ -9,6 +9,7 @@ import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.mo
 import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
 import { SettingsModel } from '../../src/database/models/settings.model';
 import { SheetModel } from '../../src/database/models/sheet.model';
+import { ShortTestModel } from '../../src/database/models/shortTest.model';
 import { StudentModel } from '../../src/database/models/student.model';
 import { TeamModel } from '../../src/database/models/team.model';
 import { TutorialModel } from '../../src/database/models/tutorial.model';
@@ -39,6 +40,7 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
   { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
   { model: GradingModel, initialDocuments: [] },
   { model: SettingsModel, initialDocuments: [...SETTINGS_DOCUMENTS] },
+  { model: ShortTestModel, initialDocuments: [] },
 ];
 
 @Module({})

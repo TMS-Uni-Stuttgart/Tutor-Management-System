@@ -5,6 +5,7 @@ import { ModelsModule } from './database/models/models.module';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 import { ExcelModule } from './module/excel/excel.module';
 import { InformationModule } from './module/information/information.module';
+import { LocalesModule } from './module/locales/locales.module';
 import { MailModule } from './module/mail/mail.module';
 import { MarkdownModule } from './module/markdown/markdown.module';
 import { PdfModule } from './module/pdf/pdf.module';
@@ -16,8 +17,8 @@ import { StudentModule } from './module/student/student.module';
 import { TeamModule } from './module/team/team.module';
 import { TutorialModule } from './module/tutorial/tutorial.module';
 import { UserModule } from './module/user/user.module';
+import { ShortTestModule } from './module/short-test/short-test.module';
 
-// TODO: Clean up imported modules -- Which ones are actually needed by the ROOT (!) app?
 @Module({
   imports: [
     DatabaseModule.forRootAsync(),
@@ -36,6 +37,8 @@ import { UserModule } from './module/user/user.module';
     MailModule,
     ExcelModule,
     SettingsModule,
+    LocalesModule,
+    ShortTestModule,
   ],
   controllers: [],
   providers: [],

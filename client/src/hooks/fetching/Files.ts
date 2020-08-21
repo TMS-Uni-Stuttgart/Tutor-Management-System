@@ -1,3 +1,4 @@
+import { ITeamMarkdownData } from 'shared/model/Markdown';
 import axios from './Axios';
 
 export async function getAttendancePDF(tutorialId: string, date: string): Promise<Blob> {
@@ -79,8 +80,8 @@ export async function getTeamCorrectionCommentMarkdown(
   tutorialId: string,
   sheetId: string,
   teamId: string
-): Promise<string> {
-  const response = await axios.get(
+): Promise<ITeamMarkdownData[]> {
+  const response = await axios.get<ITeamMarkdownData[]>(
     `/markdown/grading/${sheetId}/tutorial/${tutorialId}/team/${teamId}`
   );
 
@@ -91,7 +92,7 @@ export async function getTeamCorrectionCommentMarkdown(
   return Promise.reject(`Wrong response code (${response.status})`);
 }
 
-export async function getTeamCorrectionCommentPDF(
+export async function getTeamGradingFile(
   tutorialId: string,
   sheetId: string,
   teamId: string
@@ -101,16 +102,36 @@ export async function getTeamCorrectionCommentPDF(
     {
       responseType: 'arraybuffer',
       headers: {
-        Accept: 'application/pdf',
+        Accept: 'application/pdf, application/zip',
       },
     }
   );
 
   if (response.status === 200) {
-    return new Blob([response.data], { type: 'application/pdf' });
+    const contentType = response.headers['content-type'];
+
+    if (!contentType) {
+      return Promise.reject('No "content-type" header was present in response.');
+    }
+
+    return new Blob([response.data], { type: contentType });
   }
 
   return Promise.reject(`Wrong response code (${response.status})`);
+}
+
+export async function getTeamGradingFilename(
+  tutorialId: string,
+  sheetId: string,
+  teamId: string
+): Promise<string> {
+  const response = await axios.get<string>(
+    `/pdf/grading/filename/tutorial/${tutorialId}/sheet/${sheetId}/team/${teamId}`
+  );
+
+  return response.status === 200
+    ? response.data
+    : Promise.reject(`Wrong response code (${response.status})`);
 }
 
 export async function getStudentCorrectionCommentMarkdown(
@@ -136,6 +157,21 @@ export async function getCorrectionCommentPDFs(tutorialId: string, sheetId: stri
 
   if (response.status === 200) {
     return new Blob([response.data], { type: 'application/zip' });
+  }
+
+  return Promise.reject(`Wrong response code (${response.status})`);
+}
+
+export async function getCorrectionCommentPDFsFilename(
+  tutorialId: string,
+  sheetId: string
+): Promise<string> {
+  const response = await axios.get<string>(
+    `/pdf/grading/filename/tutorial/${tutorialId}/sheet/${sheetId}`
+  );
+
+  if (response.status === 200) {
+    return response.data;
   }
 
   return Promise.reject(`Wrong response code (${response.status})`);

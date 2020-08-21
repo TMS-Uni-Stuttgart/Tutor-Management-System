@@ -5,7 +5,7 @@ import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { StaticSettings } from '../../module/settings/settings.static';
 import { IAttendance } from '../../shared/model/Attendance';
-import { IGrading } from '../../shared/model/Points';
+import { IGrading } from '../../shared/model/Gradings';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
 import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
@@ -18,6 +18,7 @@ import { TutorialDocument } from './tutorial.model';
 interface ConstructorFields {
   firstname: string;
   lastname: string;
+  iliasName?: string;
   tutorial: TutorialDocument;
   team?: TeamDocument;
   matriculationNo?: string;
@@ -38,7 +39,15 @@ export async function populateStudentDocument(doc?: StudentDocument): Promise<vo
 
 @plugin(fieldEncryption, {
   secret: StaticSettings.getService().getDatabaseSecret(),
-  fields: ['firstname', 'lastname', 'courseOfStudies', 'email', 'matriculationNo', 'status'],
+  fields: [
+    'firstname',
+    'lastname',
+    'iliasName',
+    'courseOfStudies',
+    'email',
+    'matriculationNo',
+    'status',
+  ],
 })
 @plugin(mongooseAutoPopulate)
 @plugin<typeof VirtualPopulation, VirtualPopulationOptions<StudentModel>>(VirtualPopulation, {
@@ -59,6 +68,9 @@ export class StudentModel {
 
   @prop({ required: true })
   lastname!: string;
+
+  @prop()
+  iliasName?: string;
 
   @prop({ required: true, ref: 'TutorialModel', autopopulate: true })
   tutorial!: TutorialDocument;
@@ -149,18 +161,18 @@ export class StudentModel {
   }
 
   /**
-   * Returns the grading for the given sheet if one is saved. If not `undefined` is returned.
+   * Returns the grading for the given entity if one is saved. If not `undefined` is returned.
    *
-   * @param sheet Sheet to get grading for.
+   * @param entity Entity to get grading for.
    *
-   * @returns Grading for the given sheet or `undefined`
+   * @returns Grading for the given entity or `undefined`
    */
-  getGrading(sheet: HasExerciseDocuments): GradingDocument | undefined {
-    if (!sheet.id || !this.gradings) {
+  getGrading(entity: HasExerciseDocuments): GradingDocument | undefined {
+    if (!entity.id || !this.gradings) {
       return undefined;
     }
 
-    return this.gradings?.get(sheet.id);
+    return this.gradings?.get(entity.id);
   }
 
   /**
@@ -199,6 +211,7 @@ export class StudentModel {
       id,
       firstname,
       lastname,
+      iliasName,
       matriculationNo,
       cakeCount,
       tutorial,
@@ -226,6 +239,7 @@ export class StudentModel {
       id,
       firstname,
       lastname,
+      iliasName,
       matriculationNo,
       tutorial: { id: tutorial.id, slot: tutorial.slot },
       team: team && {

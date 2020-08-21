@@ -34,8 +34,8 @@ import { saveBlob } from '../util/helperFunctions';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
-      backgroundColor: theme.palette.primary.dark,
-      color: theme.palette.getContrastText(theme.palette.primary.dark),
+      backgroundColor: theme.palette.background.appBar,
+      color: theme.palette.getContrastText(theme.palette.background.appBar),
       zIndex: theme.zIndex.drawer + 1,
     },
     grow: {
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'right',
     },
     popoverRoot: {
-      margin: theme.spacing(2),
+      margin: theme.spacing(1),
     },
   })
 );
@@ -155,6 +155,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           <>
             <Button
               color='inherit'
+              variant='text'
               endIcon={<DownloadIcon />}
               onClick={(e) => setBackupAnchor(e.currentTarget)}
             >
@@ -204,7 +205,12 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
               </Typography>
             </div>
 
-            <Button color='inherit' onClick={handleLogBtnClicked} className={classes.logoutButton}>
+            <Button
+              color='inherit'
+              variant='text'
+              onClick={handleLogBtnClicked}
+              className={classes.logoutButton}
+            >
               Abmelden
             </Button>
           </>

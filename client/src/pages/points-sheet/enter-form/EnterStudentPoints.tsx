@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import { IGradingDTO } from 'shared/model/Points';
+import { IGradingDTO } from 'shared/model/Gradings';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';

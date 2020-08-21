@@ -6,6 +6,7 @@ export enum CollectionName {
   GRADING = 'grading',
   SHEET = 'sheets',
   SCHEINEXAM = 'scheinexams',
+  SHORT_TESTS = 'shorttests',
   SCHEINCRITERIA = 'scheincriterias',
   SETTINGS = 'settings',
 }

@@ -67,13 +67,13 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     sheets: SheetDocument[],
     student: StudentDocument,
     infos: StatusCheckResponse['infos']
-  ) {
+  ): number {
     let sheetsPassed = 0;
     for (const sheet of sheets) {
       const achieved = student.getGrading(sheet)?.points ?? 0;
-      const total = sheet.totalPoints;
+      const total = sheet.totalPoints.must;
 
-      let state = PassedState.NOTPASSED;
+      let state = PassedState.NOT_PASSED;
 
       if (this.percentagePerSheet) {
         if (achieved / total >= this.valuePerSheetNeeded) {

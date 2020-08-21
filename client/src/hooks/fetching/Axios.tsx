@@ -1,9 +1,9 @@
-import React from 'react';
 import Axios from 'axios';
-import { getDialogOutsideContext } from '../DialogService';
-import { useLogin } from '../LoginService';
+import React from 'react';
 import LoginForm, { LoginFormState } from '../../components/forms/LoginForm';
 import { FormikSubmitCallback } from '../../types';
+import { getDialogOutsideContext } from '../dialog-service/DialogService';
+import { useLogin } from '../LoginService';
 
 const axios = Axios.create({
   baseURL: getApiUrl(),

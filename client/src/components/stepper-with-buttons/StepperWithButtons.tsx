@@ -22,7 +22,7 @@ function StepperWithButtons({
   steps: stepsFromProps,
   ...props
 }: StepperWithButtonsProps): JSX.Element {
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setInternalActiveStep] = useState(0);
   const [state, setState] = useState<State>({ callback: undefined });
   const [isWaitingOnNextCallback, setWaitingOnNextCallback] = useState(false);
   const [steps, setSteps] = useState<StepData[]>([]);
@@ -32,50 +32,65 @@ function StepperWithButtons({
     setSteps([...stepsFromProps]);
   }, [stepsFromProps]);
 
-  async function nextStep(skipCallback?: boolean) {
-    if (isWaitingOnNextCallback) {
-      return;
-    }
+  const setActiveStep = useCallback(
+    (nextStep: number) => {
+      if (nextStep >= steps.length || nextStep < 0) {
+        return;
+      }
 
-    if (skipCallback) {
-      return setActiveStep(activeStep + 1);
-    }
+      setInternalActiveStep(nextStep);
+      setNextDisabled(false);
+    },
+    [steps.length]
+  );
 
-    const { callback } = state;
+  const nextStep = useCallback(
+    async (skipCallback?: boolean) => {
+      if (isWaitingOnNextCallback) {
+        return;
+      }
 
-    if (!callback) {
-      return setActiveStep(activeStep + 1);
-    }
+      if (skipCallback) {
+        return setActiveStep(activeStep + 1);
+      }
 
-    setWaitingOnNextCallback(true);
-    const { goToNext, error, runAfterFinished } = await callback();
+      const { callback } = state;
 
-    setSteps(
-      steps.map((step, index) => {
-        if (index !== activeStep) {
-          return step;
-        }
+      if (!callback) {
+        return setActiveStep(activeStep + 1);
+      }
 
-        return {
-          ...step,
-          error,
-        };
-      })
-    );
-    setWaitingOnNextCallback(false);
+      setWaitingOnNextCallback(true);
+      const { goToNext, error, runAfterFinished } = await callback();
 
-    if (goToNext && activeStep < steps.length - 1) {
-      setActiveStep(activeStep + 1);
-    }
+      setSteps(
+        steps.map((step, index) => {
+          if (index !== activeStep) {
+            return step;
+          }
 
-    if (!error && runAfterFinished) {
-      runAfterFinished();
-    }
-  }
+          return {
+            ...step,
+            error,
+          };
+        })
+      );
+      setWaitingOnNextCallback(false);
 
-  async function prevStep() {
+      if (goToNext) {
+        setActiveStep(activeStep + 1);
+      }
+
+      if (!error && runAfterFinished) {
+        runAfterFinished();
+      }
+    },
+    [activeStep, isWaitingOnNextCallback, setWaitingOnNextCallback, state, steps, setActiveStep]
+  );
+
+  const prevStep = useCallback(async () => {
     setActiveStep(activeStep - 1);
-  }
+  }, [activeStep, setActiveStep]);
 
   const setNextCallback = useCallback((cb: NextStepCallback) => {
     setState({ callback: cb });
@@ -108,7 +123,7 @@ function StepperWithButtons({
       <Box className={props.className} display='flex' flexDirection='column'>
         <StepperHeader {...props} />
 
-        <StepperContent flex={1} display='flex' />
+        <StepperContent flex={1} display='flex' paddingLeft={2} paddingRight={2} />
       </Box>
     </StepperContext.Provider>
   );

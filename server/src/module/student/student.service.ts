@@ -15,11 +15,13 @@ import {
   StudentDocument,
   StudentModel,
 } from '../../database/models/student.model';
+import { TeamDocument } from '../../database/models/team.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IStudent } from '../../shared/model/Student';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import {
@@ -29,7 +31,6 @@ import {
   PresentationPointsDTO,
   StudentDTO,
 } from './student.dto';
-import { TeamDocument } from '../../database/models/team.model';
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
@@ -39,6 +40,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     private readonly teamService: TeamService,
     private readonly sheetService: SheetService,
     private readonly scheinexamService: ScheinexamService,
+    private readonly shortTestService: ShortTestService,
     @InjectModel(StudentModel)
     private readonly studentModel: ReturnModelType<typeof StudentModel>,
     @InjectModel(GradingModel)
@@ -128,6 +130,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
 
     student.firstname = dto.firstname;
     student.lastname = dto.lastname;
+    student.iliasName = dto.iliasName;
     student.status = dto.status;
     student.courseOfStudies = dto.courseOfStudies;
     student.email = dto.email;
@@ -188,14 +191,30 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     const student = await this.findById(id);
     const entityWithExercises = await this.getEntityWithExercisesFromDTO(dto);
     const grading = await this.getGradingFromDTO(dto);
-
     const prevGrading = student.getGrading(entityWithExercises);
 
-    prevGrading?.removeStudent(student);
-    grading.addStudent(student);
+    if (prevGrading && prevGrading.id !== grading.id) {
+      prevGrading.removeStudent(student);
+      await prevGrading.save();
+    }
 
-    await prevGrading?.save();
+    grading.addStudent(student);
     await grading.save();
+  }
+
+  /**
+   * Sets the gradings for multiple students by calling `setGrading` for each entry of the given map.
+   *
+   * @param dtos Map containing the grading DTOs keyed by student ids.
+   */
+  async setGradingOfMultipleStudents(dtos: Map<string, GradingDTO>): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    dtos.forEach((dto, studentId) => {
+      promises.push(this.setGrading(studentId, dto));
+    });
+
+    await Promise.all(promises);
   }
 
   /**
@@ -263,20 +282,20 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   /**
    * Returns either a ScheinexamDocument or an ScheinexamDocument associated to the given DTO.
    *
-   * If both fields, `sheetId` and `examId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
+   * If all fields, `sheetId`, `examId` and `shortTestId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
    *
    * @param dto DTO to return the associated document with exercises for.
    *
    * @returns Associated document with exercises.
    *
-   * @throws `BadRequestException` - If either both fields (`sheetId` and `examId`) or none of those fields are set.
+   * @throws `BadRequestException` - If either all fields (`sheetId`, `examId` and `shortTestId`) or none of those fields are set.
    */
   async getEntityWithExercisesFromDTO(dto: GradingDTO): Promise<HasExerciseDocuments> {
-    const { sheetId, examId } = dto;
+    const { sheetId, examId, shortTestId } = dto;
 
-    if (!!sheetId && !!examId) {
+    if (!!sheetId && !!examId && !!shortTestId) {
       throw new BadRequestException(
-        'You have to set exactly one of the two fields sheetId and examId - not both'
+        'You have to set exactly one of the three fields sheetId, examId and shortTestId - not all three.'
       );
     }
 
@@ -288,7 +307,13 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
       return this.scheinexamService.findById(examId);
     }
 
-    throw new BadRequestException('You have to either set the sheetId or the examId field.');
+    if (!!shortTestId) {
+      return this.shortTestService.findById(shortTestId);
+    }
+
+    throw new BadRequestException(
+      'You have to either set the sheetId nor the examId nor the shortTestId field.'
+    );
   }
 
   private async getTeamFromDTO(

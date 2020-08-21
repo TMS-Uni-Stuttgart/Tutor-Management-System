@@ -13,12 +13,13 @@ import {
 import { ExerciseGradingModel, GradingModel } from '../../database/models/grading.model';
 import { StudentModel } from '../../database/models/student.model';
 import { AttendanceState } from '../../shared/model/Attendance';
-import { IGrading } from '../../shared/model/Points';
+import { IGrading } from '../../shared/model/Gradings';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
 import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
@@ -189,6 +190,7 @@ describe('StudentService', () => {
         UserService,
         SheetService,
         ScheinexamService,
+        ShortTestService,
       ],
     }).compile();
   });
@@ -222,6 +224,7 @@ describe('StudentService', () => {
     const dto: StudentDTO = new StudentDTO({
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: expectedTutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -240,6 +243,7 @@ describe('StudentService', () => {
     const dto: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: team.tutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -259,6 +263,7 @@ describe('StudentService', () => {
     const dto: StudentDTO = new StudentDTO({
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: nonExistingTutorialId,
       courseOfStudies: 'Computer science B. Sc.',
@@ -288,6 +293,7 @@ describe('StudentService', () => {
     const updateDTO: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: expectedTutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -298,6 +304,7 @@ describe('StudentService', () => {
     const createDTO: StudentDTO = {
       firstname: 'Harry',
       lastname: 'Potter',
+      iliasName: 'HarryPotter',
       status: StudentStatus.INACTIVE,
       tutorial: expectedTutorial._id,
       courseOfStudies: 'Data science',
@@ -319,6 +326,7 @@ describe('StudentService', () => {
     const updateDTO: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: expectedTutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -347,6 +355,7 @@ describe('StudentService', () => {
     const updateDTO: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: updatedTeam.tutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -371,6 +380,7 @@ describe('StudentService', () => {
     const updateDTO: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: prevTeam.tutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -394,6 +404,7 @@ describe('StudentService', () => {
     const updateDTO: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: TUTORIAL_DOCUMENTS[0]._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -412,6 +423,7 @@ describe('StudentService', () => {
     const updateDTO: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: nonExisting,
       courseOfStudies: 'Computer science B. Sc.',
@@ -434,6 +446,7 @@ describe('StudentService', () => {
     const dto: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: expectedTutorial._id,
       courseOfStudies: 'Computer science B. Sc.',
@@ -695,6 +708,7 @@ describe('StudentService', () => {
     const dto: StudentDTO = {
       firstname: 'Ginny',
       lastname: 'Weasley',
+      iliasName: 'GinnyWeasley',
       status: StudentStatus.ACTIVE,
       tutorial: expectedTutorial._id,
       courseOfStudies: 'Computer science B. Sc.',

@@ -7,7 +7,7 @@ import {
   StudentFormSubmitCallback,
 } from '../../../components/forms/StudentForm';
 import { TutorialChangeFormSubmitCallback } from '../../../components/forms/TutorialChangeForm';
-import { DialogHelpers } from '../../../hooks/DialogService';
+import { DialogHelpers } from '../../../hooks/dialog-service/DialogService';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { Student } from '../../../model/Student';
 import { Logger } from '../../../util/Logger';
@@ -69,7 +69,7 @@ export function handleCreateStudent({
   defaultTeamSize,
 }: HandlerParams & { defaultTeamSize: number }): StudentFormSubmitCallback {
   return async (
-    { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
+    { firstname, lastname, iliasName, matriculationNo, email, courseOfStudies, team, status },
     { setSubmitting, resetForm }
   ) => {
     if (!tutorialId) {
@@ -83,6 +83,7 @@ export function handleCreateStudent({
         data: {
           firstname,
           lastname,
+          iliasName,
           status,
           tutorial: tutorialId,
           matriculationNo: matriculationNo || undefined,
@@ -112,7 +113,7 @@ export function handleEditStudent({
   enqueueSnackbar,
 }: HandlerParams & { student: Student; dialog: DialogHelpers }): StudentFormSubmitCallback {
   return async (
-    { firstname, lastname, matriculationNo, email, courseOfStudies, team, status },
+    { firstname, lastname, iliasName, matriculationNo, email, courseOfStudies, team, status },
     { setSubmitting }
   ) => {
     try {
@@ -124,6 +125,7 @@ export function handleEditStudent({
           dto: {
             firstname,
             lastname,
+            iliasName,
             status,
             tutorial: tutorialId || student.tutorial.id,
             matriculationNo: matriculationNo || undefined,

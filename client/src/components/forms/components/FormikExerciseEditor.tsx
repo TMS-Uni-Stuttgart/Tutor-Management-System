@@ -1,4 +1,4 @@
-import { Button, IconButton } from '@material-ui/core';
+import { Button, IconButton, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { FieldArray, FieldArrayRenderProps, useField } from 'formik';
@@ -8,7 +8,7 @@ import {
   TimelinePlusOutline as PlusSubIcon,
 } from 'mdi-material-ui';
 import React from 'react';
-import { IExercise, ISubexercise } from 'shared/model/Sheet';
+import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
 
@@ -152,7 +152,7 @@ function ExerciseDataFields({
 
 function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
   const classes = useStyles();
-  const [{ value }] = useField<ExerciseFormExercise[]>(name);
+  const [, { value, error, touched }] = useField<ExerciseFormExercise[]>(name);
 
   const exercises: ExerciseFormExercise[] = value || [];
 
@@ -178,7 +178,6 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
       const exercise: ExerciseFormExercise = value[idx];
 
       exercise.subexercises.push(getNewExercise());
-
       arrayHelpers.replace(idx, exercise);
     };
   }
@@ -264,6 +263,12 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
             <PlusIcon className={classes.iconInButton} />
             Neue Aufgabe hinzufügen
           </Button>
+
+          {touched && error && typeof error === 'string' && (
+            <Typography color='error' align='right'>
+              {error}
+            </Typography>
+          )}
         </div>
       )}
     />

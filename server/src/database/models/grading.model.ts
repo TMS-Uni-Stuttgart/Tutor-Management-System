@@ -1,10 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 import { DocumentType, getModelForClass, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { fieldEncryption } from 'mongoose-field-encryption';
 import { CollectionName } from '../../helpers/CollectionName';
 import { StaticSettings } from '../../module/settings/settings.static';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
-import { IExerciseGrading, IGrading } from '../../shared/model/Points';
+import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 import { StudentDocument, StudentModel } from './student.model';
 
@@ -114,10 +115,19 @@ export class ExerciseGradingModel {
   secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['comment', 'additionalPoints', 'exerciseGradings'],
 })
+@plugin(mongooseAutoPopulate)
 export class GradingModel {
-  constructor() {
-    this.exerciseGradings = new Map();
-  }
+  @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
+  exerciseGradings!: Map<string, ExerciseGradingDocument>;
+
+  @prop()
+  comment?: string;
+
+  @prop()
+  additionalPoints?: number;
+
+  @prop({ ref: StudentModel, autopopulate: true, default: [] })
+  students!: StudentDocument[];
 
   @prop()
   sheetId?: string;
@@ -125,12 +135,11 @@ export class GradingModel {
   @prop()
   examId?: string;
 
+  @prop()
+  shortTestId?: string;
+
   get entityId(): string {
-    if (this.sheetId && this.examId) {
-      throw new Error(
-        'Both fields (sheetId and examId) are set. This is not a valid property set.'
-      );
-    }
+    this.assertOnlyOneIdIsSet();
 
     if (this.sheetId) {
       return this.sheetId;
@@ -140,20 +149,20 @@ export class GradingModel {
       return this.examId;
     }
 
-    throw new Error('Neither the sheetId nor the examId field is set.');
+    if (this.shortTestId) {
+      return this.shortTestId;
+    }
+
+    throw new Error('Neither the sheetId nor the examId nor the shortTestId field is set.');
   }
 
-  @prop()
-  comment?: string;
+  get belongsToTeam(): boolean {
+    return this.students.length >= 2;
+  }
 
-  @prop()
-  additionalPoints?: number;
-
-  @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
-  exerciseGradings!: Map<string, ExerciseGradingDocument>;
-
-  @prop({ ref: StudentModel, autopopulate: true, default: [] })
-  students!: StudentDocument[];
+  constructor() {
+    this.exerciseGradings = new Map();
+  }
 
   /**
    * Adds a student to this grading to "use" it.
@@ -229,18 +238,29 @@ export class GradingModel {
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
   updateFromDTO(this: GradingDocument, dto: GradingDTO): void {
-    const { exerciseGradings, additionalPoints, comment, gradingId, sheetId, examId } = dto;
+    const {
+      exerciseGradings,
+      additionalPoints,
+      comment,
+      gradingId,
+      sheetId,
+      examId,
+      shortTestId,
+    } = dto;
 
     if (!!gradingId) {
       this.id = gradingId;
     }
 
-    if (!sheetId && !examId) {
-      throw new Error('Either the sheetId or the examId has to be provided through the DTO.');
+    if (!sheetId && !examId && !shortTestId) {
+      throw new Error(
+        'Either the sheetId or the examId or the shortTestId has to be provided through the DTO.'
+      );
     }
 
     this.sheetId = sheetId;
     this.examId = examId;
+    this.shortTestId = shortTestId;
     this.comment = comment;
     this.additionalPoints = additionalPoints;
     this.exerciseGradings = new Map();
@@ -251,7 +271,7 @@ export class GradingModel {
   }
 
   toDTO(this: GradingDocument): IGrading {
-    const { id, comment, additionalPoints, points } = this;
+    const { id, comment, additionalPoints, points, belongsToTeam } = this;
     const exerciseGradings: Map<string, IExerciseGrading> = new Map();
 
     for (const [key, exGrading] of this.exerciseGradings) {
@@ -261,6 +281,7 @@ export class GradingModel {
     return {
       id,
       points,
+      belongsToTeam,
       exerciseGradings: [...exerciseGradings],
       comment,
       additionalPoints,
@@ -269,6 +290,16 @@ export class GradingModel {
 
   getExerciseGrading(exercise: ExerciseDocument): ExerciseGradingDocument | undefined {
     return this.exerciseGradings.get(exercise.id);
+  }
+
+  private assertOnlyOneIdIsSet() {
+    const ids = [this.sheetId, this.examId, this.shortTestId].filter(Boolean);
+
+    if (ids.length >= 2) {
+      throw new Error(
+        'Multiple of the fields "sheetId", "examId" and "shortTestId" are set. This is not a valid model state.'
+      );
+    }
   }
 }
 

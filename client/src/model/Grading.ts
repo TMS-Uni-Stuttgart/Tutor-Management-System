@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IExerciseGrading, IGrading } from 'shared/model/Points';
+import { IExerciseGrading, IGrading } from 'shared/model/Gradings';
 import { Modify } from '../typings/Modify';
 import { Exercise, Subexercise } from './Exercise';
 
@@ -57,6 +57,7 @@ export class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModifie
 export class Grading implements Modify<IGrading, Modified> {
   readonly id!: string;
   readonly points!: number;
+  readonly belongsToTeam!: boolean;
   readonly comment?: string;
   readonly additionalPoints?: number;
 

@@ -1,16 +1,11 @@
-import { HasId } from './Common';
-import { IExercise, IExerciseDTO } from './Sheet';
+import { IRatedEntity, IRatedEntityDTO } from './RatedEntity';
 
-export interface IScheinExam extends HasId {
+export interface IScheinExam extends IRatedEntity {
   date: string;
-  exercises: IExercise[];
-  percentageNeeded: number;
   scheinExamNo: number;
 }
 
-export interface IScheinexamDTO {
+export interface IScheinexamDTO extends IRatedEntityDTO {
   date: string;
-  exercises: IExerciseDTO[];
-  percentageNeeded: number;
   scheinExamNo: number;
 }

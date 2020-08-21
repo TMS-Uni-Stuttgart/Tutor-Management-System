@@ -27,7 +27,7 @@
       "args": ["start"],
       "port": 9229,
       "restart": true,
-      "protocol": "legacy",
+      "protocol": "inspector",
       "console": "integratedTerminal",
       "sourceMaps": true
     },

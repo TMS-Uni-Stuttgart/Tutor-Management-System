@@ -4,7 +4,7 @@ import { useField } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
 import OutlinedBox from '../../../../components/OutlinedBox';
-import { useDialog } from '../../../../hooks/DialogService';
+import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import ExcludedDateBox from './ExcludedDateBox';
 import ExcludedDateDialog from './ExcludedDateDialog';
 

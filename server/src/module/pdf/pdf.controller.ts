@@ -88,12 +88,40 @@ export class PdfController {
     @Param('teamId') teamId: string,
     @Res() res: Response
   ): Promise<void> {
-    const buffer = await this.pdfService.generateGradingPDF({
+    const pdfData: Buffer | NodeJS.ReadableStream = await this.pdfService.generateGradingPDF({
       teamId: { tutorialId, teamId },
       sheetId,
     });
 
-    res.contentType('pdf');
-    res.send(buffer);
+    if (pdfData instanceof Buffer) {
+      res.contentType('pdf');
+      res.send(pdfData);
+    } else {
+      res.contentType('zip');
+      pdfData.pipe(res);
+    }
+  }
+
+  @Get('/grading/filename/tutorial/:tutorialId/sheet/:sheetId')
+  @UseGuards(TutorialGuard)
+  @AllowCorrectors()
+  @IDField('tutorialId')
+  async getCorrectionZIPFilename(
+    @Param('tutorialId') tutorialId: string,
+    @Param('sheetId') sheetId: string
+  ): Promise<string> {
+    return this.pdfService.generateTutorialGradingFilename({ sheetId, tutorialId });
+  }
+
+  @Get('/grading/filename/tutorial/:tutorialId/sheet/:sheetId/team/:teamId')
+  @UseGuards(TutorialGuard)
+  @AllowCorrectors()
+  @IDField('tutorialId')
+  async getCorrectionFilenameForTeam(
+    @Param('tutorialId') tutorialId: string,
+    @Param('sheetId') sheetId: string,
+    @Param('teamId') teamId: string
+  ): Promise<string> {
+    return this.pdfService.generateGradingFilename({ sheetId, teamId: { teamId, tutorialId } });
   }
 }

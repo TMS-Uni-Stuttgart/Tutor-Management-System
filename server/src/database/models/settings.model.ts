@@ -20,7 +20,7 @@ class MailingAuthModel implements IMailingAuthConfiguration {
 
 @plugin(fieldEncryption, {
   secret: StaticSettings.getService().getDatabaseSecret(),
-  fields: ['host', 'port', 'from', 'auth'],
+  fields: ['host', 'port', 'from', 'subject', 'auth'],
 })
 @modelOptions({ schemaOptions: { _id: false } })
 class MailingSettingsModel implements IMailingSettings {
@@ -52,7 +52,12 @@ class MailingSettingsModel implements IMailingSettings {
 @modelOptions({ schemaOptions: { collection: CollectionName.SETTINGS } })
 export class SettingsModel {
   private static get internalDefaults(): IClientSettings {
-    return { defaultTeamSize: 2, canTutorExcuseStudents: false };
+    return {
+      defaultTeamSize: 2,
+      canTutorExcuseStudents: false,
+      gradingFilename: 'Ex#{sheetNo}_#{teamName}',
+      tutorialGradingFilename: 'Tutorial_#{tutorialSlot}_Ex#{sheetNo}',
+    };
   }
 
   @prop({ required: true })
@@ -61,14 +66,27 @@ export class SettingsModel {
   @prop({ required: true })
   canTutorExcuseStudents: boolean;
 
-  @prop({ type: MailingSettingsModel })
+  @prop({ required: true })
+  gradingFilename: string;
+
+  @prop({ required: true })
+  tutorialGradingFilename: string;
+
+  @prop({ type: MailingSettingsModel, required: false })
   mailingConfig?: MailingSettingsModel;
 
   constructor(fields?: Partial<IClientSettings>) {
-    this.defaultTeamSize =
-      fields?.defaultTeamSize ?? SettingsModel.internalDefaults.defaultTeamSize;
-    this.canTutorExcuseStudents =
-      fields?.canTutorExcuseStudents ?? SettingsModel.internalDefaults.canTutorExcuseStudents;
+    const {
+      defaultTeamSize,
+      canTutorExcuseStudents,
+      gradingFilename,
+      tutorialGradingFilename,
+    } = SettingsModel.internalDefaults;
+
+    this.defaultTeamSize = fields?.defaultTeamSize ?? defaultTeamSize;
+    this.canTutorExcuseStudents = fields?.canTutorExcuseStudents ?? canTutorExcuseStudents;
+    this.gradingFilename = fields?.gradingFilename ?? gradingFilename;
+    this.tutorialGradingFilename = fields?.tutorialGradingFilename ?? tutorialGradingFilename;
 
     this.mailingConfig = fields?.mailingConfig
       ? new MailingSettingsModel(fields.mailingConfig)
@@ -82,22 +100,32 @@ export class SettingsModel {
       defaultTeamSize: this.defaultTeamSize ?? defaultSettings.defaultTeamSize,
       canTutorExcuseStudents: this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
       mailingConfig: this.mailingConfig?.toDTO(),
+      gradingFilename: this.gradingFilename,
+      tutorialGradingFilename: this.tutorialGradingFilename,
     };
   }
 
   /**
    * Changes this settings document to use the newly provided settings.
    *
-   * If a setting is not part of the provided `SettingsDTO` the old value previously saved in this document gets used.
+   * This will override __all__ settings with the ones from the given DTO.
    *
    * @param dto DTO with the new settings information.
    */
   assignDTO(dto: ClientSettingsDTO): void {
-    for (const [key, value] of Object.entries(dto)) {
-      if (typeof value !== 'function' && key in this) {
-        (this as Record<string, unknown>)[key] = value ?? undefined;
-      }
-    }
+    this.defaultTeamSize = dto.defaultTeamSize;
+    this.canTutorExcuseStudents = dto.canTutorExcuseStudents;
+
+    this.mailingConfig = dto.mailingConfig
+      ? new MailingSettingsModel(dto.mailingConfig)
+      : undefined;
+
+    this.gradingFilename = this.removeFileExtension(dto.gradingFilename);
+    this.tutorialGradingFilename = this.removeFileExtension(dto.tutorialGradingFilename);
+  }
+
+  private removeFileExtension(filename: string): string {
+    return filename.replace(/\.[^/.]+$/, '');
   }
 }
 

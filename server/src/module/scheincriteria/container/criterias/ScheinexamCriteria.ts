@@ -137,7 +137,7 @@ export class ScheinexamCriteria extends Scheincriteria {
 
     for (const exam of exams) {
       const { passed, achieved, total } = exam.hasPassed(student);
-      const state: PassedState = passed ? PassedState.PASSED : PassedState.NOTPASSED;
+      const state: PassedState = passed ? PassedState.PASSED : PassedState.NOT_PASSED;
 
       if (passed) {
         examsPassed += 1;

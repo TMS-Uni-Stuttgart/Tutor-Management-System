@@ -10,7 +10,7 @@ import TutorialChangeForm from '../../../components/forms/TutorialChangeForm';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import TableWithForm from '../../../components/TableWithForm';
 import TableWithPadding from '../../../components/TableWithPadding';
-import { useDialog } from '../../../hooks/DialogService';
+import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import { useSettings } from '../../../hooks/useSettings';
 import { Student } from '../../../model/Student';
 import { Tutorial } from '../../../model/Tutorial';

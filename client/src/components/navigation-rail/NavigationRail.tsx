@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) =>
     },
     version: {
       margin: theme.spacing(0.5, 0),
+      marginTop: 'auto',
       textAlign: 'center',
       width: '100%',
     },
@@ -116,13 +117,17 @@ function NavigationRail({
           />
         ))}
 
-        <Divider />
+        {tutorialRoutes.length > 0 && (
+          <>
+            <Divider />
 
-        <ListSubheader className={clsx(!open && classes.displayNone)}>Tutorium</ListSubheader>
+            <ListSubheader className={clsx(!open && classes.displayNone)}>Tutorium</ListSubheader>
 
-        {tutorialRoutes.map((route) => (
-          <TutorialRailItem key={route.template} route={route} userData={userData} />
-        ))}
+            {tutorialRoutes.map((route) => (
+              <TutorialRailItem key={route.template} route={route} userData={userData} />
+            ))}
+          </>
+        )}
 
         {managementRoutes.length > 0 && (
           <>

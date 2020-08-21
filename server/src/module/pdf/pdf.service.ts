@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import JSZip from 'jszip';
+import {
+  GenerateAllTeamsGradingParams,
+  GenerateTeamGradingParams,
+} from '../markdown/markdown.service';
+import {
+  FileService,
+  GenerateFilenameParams,
+  GenerateTutorialFilenameParams,
+} from './file.service';
 import { AttendancePDFGenerator } from './subservices/PDFGenerator.attendance';
 import { CredentialsPDFGenerator } from './subservices/PDFGenerator.credentials';
-import { MarkdownPDFGenerator } from './subservices/PDFGenerator.markdown';
+import { GradingPDFGenerator } from './subservices/PDFGenerator.grading';
 import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheinexam';
-import {
-  MarkdownService,
-  GenerateTeamGradingParams,
-  GenerateAllTeamsGradingParams,
-} from '../markdown/markdown.service';
 
 @Injectable()
 export class PdfService {
@@ -19,8 +22,8 @@ export class PdfService {
     private readonly credentialsPDF: CredentialsPDFGenerator,
     private readonly scheinResultsPDF: ScheinResultsPDFGenerator,
     private readonly scheinexamResultPDF: ScheinexamResultPDFGenerator,
-    private readonly markdownPDF: MarkdownPDFGenerator,
-    private readonly markdownService: MarkdownService
+    private readonly gradingsPDF: GradingPDFGenerator,
+    private readonly fileService: FileService
   ) {}
 
   /**
@@ -83,15 +86,15 @@ export class PdfService {
    *
    * @param params Options passed to the markdown generation function.
    *
-   * @returns Buffer containing the generated PDF.
+   * @returns Buffer or NodeJS.ReadableStream containing the generated PDF.
    *
    * @throws `NotFoundException` - If either no team with the given ID or no sheet with the given ID could be found.
    * @throws `BadRequestException` - If the given team does not have any students or the students do not hold a grading for the given sheet.
    */
-  async generateGradingPDF(params: GenerateTeamGradingParams): Promise<Buffer> {
-    const markdown = await this.markdownService.getTeamGrading(params);
-
-    return this.markdownPDF.generatePDF({ markdown });
+  async generateGradingPDF(
+    params: GenerateTeamGradingParams
+  ): Promise<Buffer | NodeJS.ReadableStream> {
+    return this.gradingsPDF.generateTeamGradingFiles(params);
   }
 
   /**
@@ -106,22 +109,28 @@ export class PdfService {
   async generateTutorialGradingZIP(
     params: GenerateAllTeamsGradingParams
   ): Promise<NodeJS.ReadableStream> {
-    const { markdownForGradings, sheetNo } = await this.markdownService.getAllTeamsGradings(params);
-    const files: { filename: string; payload: Buffer }[] = [];
+    return this.gradingsPDF.generateTutorialGradingZIP(params);
+  }
 
-    for (const gradingMD of markdownForGradings) {
-      files.push({
-        filename: `Ex${sheetNo}_${gradingMD.teamName}.pdf`, // TODO: Make template.
-        payload: await this.markdownPDF.generatePDF({ markdown: gradingMD.markdown }),
-      });
-    }
+  /**
+   * Generates a grading filename without an extension.
+   *
+   * @param dto Params to generate the filename from.
+   *
+   * @returns Generated filename.
+   */
+  async generateGradingFilename(params: GenerateFilenameParams): Promise<string> {
+    return this.fileService.generateGradingFilename(params);
+  }
 
-    const zip = new JSZip();
-
-    files.forEach(({ filename, payload }) => {
-      zip.file(filename, payload, { binary: true });
-    });
-
-    return zip.generateNodeStream({ type: 'nodebuffer' });
+  /**
+   * Generates a filename for a grading zip file containing the gradings of all teams within a tutorial without an extension.
+   *
+   * @param dto Params to generate the filename from.
+   *
+   * @returns Generated filename.
+   */
+  async generateTutorialGradingFilename(params: GenerateTutorialFilenameParams): Promise<string> {
+    return this.fileService.generateTutorialGradingFilename(params);
   }
 }

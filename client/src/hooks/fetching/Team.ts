@@ -1,5 +1,5 @@
 import { plainToClass } from 'class-transformer';
-import { IGradingDTO } from 'shared/model/Points';
+import { IGradingDTO } from 'shared/model/Gradings';
 import { ITeam, ITeamDTO } from 'shared/model/Team';
 import { Team } from '../../model/Team';
 import axios from './Axios';
