@@ -190,7 +190,7 @@ const MANAGEMENT_ROUTES = {
     roles: [Role.ADMIN, Role.EMPLOYEE],
   }),
   IMPORT_SHORT_TEST_RESULTS: new PrivateRoute({
-    path: parts('admin', 'handins', 'shorttest', 'import'),
+    path: parts('admin', 'handins', 'shorttest', 'import', param('shortTestId', true)),
     title: 'Importiere Kurztestergebnisse',
     component: ImportShortTests,
     icon: SheetIcon,

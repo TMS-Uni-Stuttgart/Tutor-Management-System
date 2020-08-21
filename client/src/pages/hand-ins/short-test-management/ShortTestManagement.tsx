@@ -194,7 +194,7 @@ function ShortTestManagement(): JSX.Element {
                   to={ROUTES.IMPORT_SHORT_TEST_RESULTS.create({})}
                   startIcon={<ImportIcon />}
                 >
-                  Importiere Ergebnisse
+                  Importiere neue Ergebnisse
                 </Button>
               </>
             }

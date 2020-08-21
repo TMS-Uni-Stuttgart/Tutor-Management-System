@@ -9,7 +9,11 @@ import { useMapColumnsHelpers } from '../../../components/import-csv/hooks/useMa
 import LoadingModal from '../../../components/loading/LoadingModal';
 import Placeholder from '../../../components/Placeholder';
 import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
-import { createShortTest, getAllShortTests } from '../../../hooks/fetching/ShortTests';
+import {
+  createShortTest,
+  editShortTest,
+  getAllShortTests,
+} from '../../../hooks/fetching/ShortTests';
 import { setPointsOfMultipleStudents } from '../../../hooks/fetching/Student';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { useFetchState } from '../../../hooks/useFetchState';
@@ -118,7 +122,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
 
   const { enqueueSnackbar } = useCustomSnackbar();
   const { data, mappedColumns } = useMapColumnsHelpers<ShortTestColumns>();
-  const { iliasNameMapping } = useIliasMappingContext();
+  const { iliasNameMapping, shortTest } = useIliasMappingContext();
   const { isLoading, value: shortTests } = useFetchState({
     fetchFunction: getAllShortTests,
     immediate: true,
@@ -127,7 +131,11 @@ function AdjustGeneratedShortTest(): JSX.Element {
 
   const [isImporting, setImporting] = useState(false);
 
-  const initialValues: ShortTestFormState = useMemo(() => {
+  const initialValues: ShortTestFormState | undefined = useMemo(() => {
+    if (shortTest) {
+      return undefined;
+    }
+
     const nextShortTestNo: number | undefined =
       shortTests && shortTests.length > 0
         ? shortTests[shortTests.length - 1].shortTestNo + 1
@@ -145,13 +153,16 @@ function AdjustGeneratedShortTest(): JSX.Element {
         },
       ],
     };
-  }, [shortTests, data.rows, mappedColumns.testMaximumPoints]);
+  }, [shortTests, data.rows, mappedColumns.testMaximumPoints, shortTest]);
 
   const handleSubmit: FormikSubmitCallback<ShortTestFormState> = useCallback(
     async (values) => {
       try {
         setImporting(true);
-        const shortTest = await createShortTest(convertFormStateToDTO(values));
+        const generatedShortTest = !!shortTest
+          ? await editShortTest(shortTest.id, convertFormStateToDTO(values))
+          : await createShortTest(convertFormStateToDTO(values));
+
         const {
           iliasName: iliasNameColumn,
           testResultStudent: testResultStudentColumn,
@@ -162,7 +173,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
           const result = getShortTestGradingForStudent({
             iliasName: row.data[iliasNameColumn],
             testResultOfStudent: row.data[testResultStudentColumn],
-            shortTest,
+            shortTest: generatedShortTest,
             iliasNameMapping,
             logger,
           });
@@ -183,7 +194,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
 
       return true;
     },
-    [data.rows, mappedColumns, iliasNameMapping, logger, enqueueSnackbar]
+    [data.rows, mappedColumns, iliasNameMapping, logger, enqueueSnackbar, shortTest]
   );
 
   return (
@@ -198,6 +209,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
         <ShortTestForm
           onSubmit={handleSubmit}
           initialValues={initialValues}
+          shortTest={shortTest}
           className={classes.form}
           hideSaveButton
         >

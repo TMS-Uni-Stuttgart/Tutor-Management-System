@@ -14,6 +14,16 @@ export async function getAllShortTests(): Promise<ShortTest[]> {
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
+export async function getShortTest(id: string): Promise<ShortTest> {
+  const response = await axios.get<IShortTest>(`short-test/${id}`);
+
+  if (response.status === 200) {
+    return plainToClass(ShortTest, response.data);
+  }
+
+  return Promise.reject(`Wrong status code (${response.status}).`);
+}
+
 export async function createShortTest(dto: IShortTestDTO): Promise<ShortTest> {
   const response = await axios.post<IShortTest>('short-test', dto);
 

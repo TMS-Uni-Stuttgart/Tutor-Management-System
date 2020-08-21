@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useParams } from 'react-router';
 import ImportCSVWithStepper from '../../components/import-csv/components/ImportCSVWithStepper';
 import MapCSVColumnsWithStepper from '../../components/import-csv/components/MapCSVColumnsWithStepper';
 import ImportCSVContext from '../../components/import-csv/ImportCSV.context';
@@ -12,6 +13,10 @@ import MapStudentsToIliasNames from './components/map-students-ilias-names/MapSt
 
 export type ShortTestColumns = 'iliasName' | 'testResultStudent' | 'testMaximumPoints';
 type ColumnGroups = 'general';
+
+interface Params {
+  shortTestId?: string;
+}
 
 function getMapColumnData(): MapColumnsData<ShortTestColumns, ColumnGroups> {
   return {
@@ -42,11 +47,12 @@ function getMapColumnData(): MapColumnsData<ShortTestColumns, ColumnGroups> {
 }
 
 function ImportShortTests(): JSX.Element {
+  const { shortTestId } = useParams<Params>();
   const mapColumnData = useMemo(getMapColumnData, []);
 
   return (
     <ImportCSVContext mapColumnsData={mapColumnData}>
-      <IliasMappingProvider>
+      <IliasMappingProvider shortTestId={shortTestId}>
         <StepperWithButtons
           steps={[
             { label: 'Export-Anleitung', component: ImportShortTestInformation },
