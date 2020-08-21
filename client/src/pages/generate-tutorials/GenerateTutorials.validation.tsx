@@ -5,14 +5,26 @@ import { FormExcludedDate } from './components/excluded-dates/FormikExcludedDate
 import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import { FormState } from './GenerateTutorials';
 
-function isDateTime(this: TestContext, value: string): boolean {
+function isDateTime(this: TestContext, value: unknown): boolean | ValidationError {
+  if (typeof value !== 'string') {
+    return this.createError({
+      message: 'Muss eine Zeichenkette sein.',
+    });
+  }
+
   const date = DateTime.fromISO(value);
 
   return date.isValid;
 }
 
 function isAfterStartDay(field: string): TestFunction {
-  return function (this, value: string) {
+  return function (this, value: unknown) {
+    if (typeof value !== 'string') {
+      return this.createError({
+        message: 'Muss eine Zeichenkette sein.',
+      });
+    }
+
     const startDate: DateTime = DateTime.fromISO(this.resolve(Yup.ref(field)));
     const endDate: DateTime = DateTime.fromISO(value);
 
@@ -80,6 +92,10 @@ function areWeekdaysValid(this: Yup.TestContext, value: unknown, path: string) {
 
 const weekdaysSchema = Yup.object<FormState['weekdays']>()
   .test('weekdays', 'Keine gültige Slotkonfiguration.', function (this, obj) {
+    if (!obj) {
+      return this.createError({ message: 'Muss definiert sein.' });
+    }
+
     const entries = Object.entries(obj);
     const inner: ValidationError[] = [];
 
@@ -108,6 +124,10 @@ const weekdaysSchema = Yup.object<FormState['weekdays']>()
 
 const prefixesSchema = Yup.object<FormState['prefixes']>()
   .test('prefixes', 'Keine gültigen Präfixe', function (this, obj) {
+    if (!obj) {
+      return this.createError({ message: 'Muss definiert sein.' });
+    }
+
     if (typeof obj !== 'object') {
       return this.createError({ message: 'Ist nicht vom Typ "object"' });
     }

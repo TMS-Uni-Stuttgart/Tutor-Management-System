@@ -19,7 +19,14 @@ const validationSchema = Yup.object().shape({
   iliasName: Yup.string(),
   email: Yup.string().email('Keine gültige E-Mailadresse'),
   matriculationNo: Yup.string().test({
-    test: function (this, matriculationNo: string | undefined) {
+    test: function (this, matriculationNo: unknown) {
+      if (typeof matriculationNo !== 'string') {
+        return this.createError({
+          path: 'matriculationNo',
+          message: 'Muss eine Zeichenkette sein.',
+        });
+      }
+
       if (matriculationNo === undefined || matriculationNo === '') {
         return true;
       }
