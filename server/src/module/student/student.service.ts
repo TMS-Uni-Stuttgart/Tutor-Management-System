@@ -191,13 +191,14 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     const student = await this.findById(id);
     const entityWithExercises = await this.getEntityWithExercisesFromDTO(dto);
     const grading = await this.getGradingFromDTO(dto);
-
     const prevGrading = student.getGrading(entityWithExercises);
 
-    prevGrading?.removeStudent(student);
-    grading.addStudent(student);
+    if (prevGrading && prevGrading.id !== grading.id) {
+      prevGrading.removeStudent(student);
+      await prevGrading.save();
+    }
 
-    await prevGrading?.save();
+    grading.addStudent(student);
     await grading.save();
   }
 
