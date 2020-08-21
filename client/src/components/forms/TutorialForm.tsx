@@ -69,7 +69,13 @@ const validationSchema = Yup.object().shape({
   endDate: Yup.string()
     .required('Benötigt')
     .test({
-      test: function (this, date: string) {
+      test: function (this, date: unknown) {
+        if (typeof date !== 'string') {
+          return this.createError({
+            message: 'Muss eine Zeichenkette sein.',
+          });
+        }
+
         const startDate: DateTime = DateTime.fromISO(this.resolve(Yup.ref('startDate')));
         const endDate: DateTime = DateTime.fromISO(date);
 
@@ -82,7 +88,13 @@ const validationSchema = Yup.object().shape({
     .nullable()
     .required('Benötigt')
     .test({
-      test: function (this, time: string) {
+      test: function (this, time: unknown) {
+        if (typeof time !== 'string') {
+          return this.createError({
+            message: 'Muss eine Zeichenkette sein.',
+          });
+        }
+
         const startTime: DateTime = DateTime.fromISO(this.resolve(Yup.ref('startTime')));
         const endTime: DateTime = DateTime.fromISO(time);
 
