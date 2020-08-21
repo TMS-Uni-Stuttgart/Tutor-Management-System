@@ -11,6 +11,7 @@ import { Upload as UploadIcon } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
 import { useDialog } from '../../../hooks/dialog-service/DialogService';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import DragAndDrop from '../../drag-and-drop/DragAndDrop';
 import LoadingModal from '../../loading/LoadingModal';
 import { useImportCSVHelpers } from '../hooks/useImportCSVHelpers';
 
@@ -44,42 +45,53 @@ function ImportCSV(): JSX.Element {
     [csvFormData, setCSVFormData]
   );
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // We need the target after async code to reset the text field.
-    e.persist();
-    const file = e.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    if (file.type !== 'application/vnd.ms-excel') {
-      enqueueSnackbar('Ausgewählte Datei ist keine CSV-Datei.', { variant: 'error' });
-      return;
-    }
-
-    setLoadingCSV(true);
-    if (!!csvFormData.csvInput) {
-      const overrideExisting = await showConfirmationDialog({
-        title: 'Überschreiben?',
-        content:
-          'Es sind noch Daten im Textfeld vorhanden. Sollen diese wirklich überschrieben werden?',
-        acceptProps: { label: 'Überschreiben', deleteButton: true },
-        cancelProps: { label: 'Nicht überschreiben' },
-      });
-
-      if (!overrideExisting) {
-        setLoadingCSV(false);
+  const loadFileContent = useCallback(
+    async (file: File) => {
+      if (file.type !== 'application/vnd.ms-excel') {
+        enqueueSnackbar('Ausgewählte Datei ist keine CSV-Datei.', { variant: 'error' });
         return;
       }
-    }
-    const content: string = await file.text();
 
-    // Reset the file so the user could select the same file twice.
-    e.target.value = '';
-    setCSVInput(content);
-    setLoadingCSV(false);
-  };
+      setLoadingCSV(true);
+      if (!!csvFormData.csvInput) {
+        const overrideExisting = await showConfirmationDialog({
+          title: 'Überschreiben?',
+          content:
+            'Es sind noch Daten im Textfeld vorhanden. Sollen diese wirklich überschrieben werden?',
+          acceptProps: { label: 'Überschreiben', deleteButton: true },
+          cancelProps: { label: 'Nicht überschreiben' },
+        });
+
+        if (!overrideExisting) {
+          setLoadingCSV(false);
+          return;
+        }
+      }
+      const content: string = await file.text();
+
+      // Reset the file so the user could select the same file twice.
+      setCSVInput(content);
+      setLoadingCSV(false);
+    },
+    [csvFormData.csvInput, setCSVInput, enqueueSnackbar, showConfirmationDialog]
+  );
+
+  const handleFileUpload = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      // We need the target after async code to reset the text field.
+      e.persist();
+      const file = e.target.files?.[0];
+
+      if (!file) {
+        return;
+      }
+
+      await loadFileContent(file);
+
+      e.target.value = '';
+    },
+    [loadFileContent]
+  );
 
   return (
     <Box display='flex' flexDirection='column' width='100%'>
@@ -96,26 +108,31 @@ function ImportCSV(): JSX.Element {
         />
       </Box>
 
-      <Box display='flex'>
-        <input
-          accept='.csv'
-          style={{ display: 'none' }}
-          id='icon-button-file'
-          type='file'
-          onChange={handleFileUpload}
-        />
-        <label htmlFor='icon-button-file' className={classes.uploadLabel}>
-          <Button
-            variant='outlined'
-            disableElevation
-            className={classes.uploadButton}
-            component='span'
-            startIcon={<UploadIcon />}
-          >
-            CSV-Datei hochladen
-          </Button>
-        </label>
-      </Box>
+      <DragAndDrop
+        supportedFileTypes={['application/vnd.ms-excel']}
+        handleFileDrop={loadFileContent}
+      >
+        <Box display='flex'>
+          <input
+            accept='.csv'
+            style={{ display: 'none' }}
+            id='icon-button-file'
+            type='file'
+            onChange={handleFileUpload}
+          />
+          <label htmlFor='icon-button-file' className={classes.uploadLabel}>
+            <Button
+              variant='outlined'
+              disableElevation
+              className={classes.uploadButton}
+              component='span'
+              startIcon={<UploadIcon />}
+            >
+              CSV-Datei hochladen
+            </Button>
+          </label>
+        </Box>
+      </DragAndDrop>
 
       <Box display='flex' alignItems='center' marginY={2}>
         <Divider className={classes.divider} />
