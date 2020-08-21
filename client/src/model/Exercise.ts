@@ -97,4 +97,9 @@ export abstract class HasExercises implements HasId {
   getPointInfoAsString(): string {
     return convertExercisePointInfoToString(this.pointInfo);
   }
+
+  /**
+   * @returns A readable name of this object.
+   */
+  abstract toDisplayString(): string;
 }
