@@ -2,7 +2,7 @@ import Axios, { AxiosInstance } from 'axios';
 import { ILoggedInUser } from '../../server/src/shared/model/User';
 
 function createBaseURL(): string {
-  return 'http://localhost:8080/api';
+  return 'https://dudrie.de/api';
 }
 
 const cookies: string[] = [];
@@ -15,6 +15,8 @@ export async function login(username: string, password: string): Promise<AxiosIn
       // This header prevents the spring backend to add a header which will make a popup appear if the credentials are wrong.
       'X-Requested-With': 'XMLHttpRequest',
     },
+    validateStatus: () => true,
+    timeout: 30 * 60 * 1000, // 30 min
   });
   const response = await axios.post<ILoggedInUser>(
     '/auth/login',
