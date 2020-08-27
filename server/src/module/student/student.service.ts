@@ -10,11 +10,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { AttendanceModel } from '../../database/models/attendance.model';
 import { HasExerciseDocuments } from '../../database/models/exercise.model';
 import { GradingDocument, GradingModel } from '../../database/models/grading.model';
-import {
-  populateStudentDocument,
-  StudentDocument,
-  StudentModel,
-} from '../../database/models/student.model';
+import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { TeamDocument } from '../../database/models/team.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { IAttendance } from '../../shared/model/Attendance';
@@ -51,9 +47,10 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    * @returns All students saved in the database.
    */
   async findAll(): Promise<StudentDocument[]> {
-    const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
-
-    await Promise.all(allStudents.map((student) => populateStudentDocument(student)));
+    const allStudents = (await this.studentModel
+      .find()
+      .populate('_gradings')
+      .exec()) as StudentDocument[];
 
     return allStudents;
   }
