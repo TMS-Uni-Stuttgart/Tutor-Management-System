@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import { Divider } from '@material-ui/core';
+import React, { useEffect } from 'react';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
+import Placeholder from '../../components/Placeholder';
 import { getScheinCriteriaSummariesOfAllStudentsOfTutorial } from '../../hooks/fetching/Scheincriteria';
 import {
   getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
   getTutorial,
 } from '../../hooks/fetching/Tutorial';
 import { useLogin } from '../../hooks/LoginService';
+import { useFetchState } from '../../hooks/useFetchState';
+import { LoggedInUser } from '../../model/LoggedInUser';
 import { Tutorial } from '../../model/Tutorial';
-import { StudentByTutorialSlotSummaryMap } from '../../typings/types';
 import AdminStatsCard from './components/AdminStatsCard';
 import AllTutorialStatistics from './components/AllTutorialStatistics';
 import TutorialStatistics from './components/TutorialStatistics';
-import { LoggedInUser } from '../../model/LoggedInUser';
 
 export interface TutorialSummaryInfo {
   tutorial: Tutorial;
@@ -24,62 +26,83 @@ function isAdmin(userData: LoggedInUser | undefined): boolean {
   return !!userData && userData.roles.includes(Role.ADMIN);
 }
 
+async function getTutorialSummariesForUser(
+  userData: LoggedInUser | undefined
+): Promise<TutorialSummaryInfo[]> {
+  if (!userData) {
+    return [];
+  }
+
+  const summaries: TutorialSummaryInfo[] = [];
+  const sortedTutorials = userData.tutorials.sort((a, b) => a.slot.localeCompare(b.slot));
+
+  for (const loggedInTutorial of sortedTutorials) {
+    const tutorial = await getTutorial(loggedInTutorial.id);
+    const studentInfos = await getScheinCriteriaSummariesOfAllStudentsOfTutorial(
+      loggedInTutorial.id
+    );
+
+    summaries.push({ tutorial, studentInfos });
+  }
+
+  return summaries;
+}
+
 function Dashboard(): JSX.Element {
   const { userData } = useLogin();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [tutorialsWithScheinCriteriaSummaries, setTutorialsWithScheinCriteriaSummaries] = useState<
-    TutorialSummaryInfo[]
-  >([]);
+  const {
+    value: tutorialsWithScheinCriteriaSummaries,
+    isLoading: isLoadingTutorialSummaries,
+  } = useFetchState({
+    fetchFunction: getTutorialSummariesForUser,
+    immediate: true,
+    params: [userData],
+  });
 
-  const [summaries, setSummaries] = useState<StudentByTutorialSlotSummaryMap>({});
+  const {
+    execute: fetchSummaries,
+    isLoading: isLoadingAdminGraph,
+    value: summaries,
+  } = useFetchState({ fetchFunction: getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots });
 
   useEffect(() => {
-    setIsLoading(true);
+    if (!userData) {
+      return;
+    }
 
-    (async function () {
-      if (!userData) {
-        return;
-      }
-
-      if (isAdmin(userData)) {
-        const response = await getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots();
-
-        setSummaries(response);
-      }
-
-      const sortedTutorials = userData.tutorials.sort((a, b) => a.slot.localeCompare(b.slot));
-
-      for (const loggedInTutorial of sortedTutorials) {
-        const tutorial = await getTutorial(loggedInTutorial.id);
-        const studentInfos = await getScheinCriteriaSummariesOfAllStudentsOfTutorial(
-          loggedInTutorial.id
-        );
-
-        setTutorialsWithScheinCriteriaSummaries((prevState) => [
-          ...prevState,
-          { tutorial, studentInfos },
-        ]);
-      }
-
-      setIsLoading(false);
-    })();
-  }, [userData]);
+    if (isAdmin(userData) && !isLoadingTutorialSummaries) {
+      fetchSummaries();
+    }
+  }, [userData, fetchSummaries, isLoadingTutorialSummaries]);
 
   return (
     <div>
-      {isLoading ? (
+      {isLoadingTutorialSummaries ? (
         <LoadingSpinner />
       ) : (
         <>
-          {isAdmin(userData) && Object.entries(summaries).length > 0 && (
-            <div>
-              <AdminStatsCard studentsByTutorialSummary={summaries} />
-            </div>
+          {isAdmin(userData) && (
+            <>
+              <Placeholder
+                placeholderText={'Keine Daten für Tutorienübersicht verfügbar.'}
+                showPlaceholder={!!summaries && Object.entries(summaries).length === 0}
+                loading={isLoadingAdminGraph}
+                SpinnerProps={{ shrinkBox: true, text: 'Lade Tutorienübersicht' }}
+              >
+                {!!summaries && Object.entries(summaries).length > 0 && (
+                  <div>
+                    <AdminStatsCard studentsByTutorialSummary={summaries} />
+                  </div>
+                )}
+              </Placeholder>
+
+              <Divider style={{ margin: '16px 0px' }} />
+            </>
           )}
 
           <AllTutorialStatistics
-            items={tutorialsWithScheinCriteriaSummaries}
+            items={tutorialsWithScheinCriteriaSummaries ?? []}
             createRowFromItem={(item) => <TutorialStatistics value={item} />}
             placeholder='Keine Tutorien vorhanden'
           />
