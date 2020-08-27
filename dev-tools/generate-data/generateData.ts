@@ -26,8 +26,9 @@ const TUTORS_TOTAL = 25;
 const SHEETS_TOTAL = 10;
 const SHORT_TESTS_TOTAL = 9;
 
-const REQUESTS_AT_ONCE = 20;
-const WAIT_TIME_AFTER = 30000;
+const REQUESTS_AT_ONCE = 2;
+const WAIT_TIME_AFTER_SMALL_REQUESTS = 500;
+const WAIT_TIME_AFTER_LARGE_REQUESTS = 1000;
 
 let axios: AxiosInstance;
 
@@ -50,7 +51,7 @@ async function createTutorials(): Promise<ITutorial[]> {
   for (let i = 0; i < TUTORIALS_TOTAL; i++) {
     try {
       tutorials.push(await createTutorial(i));
-      await wait(1000);
+      await wait(WAIT_TIME_AFTER_SMALL_REQUESTS);
     } catch (err) {
       console.error(err);
     }
@@ -133,7 +134,7 @@ async function createUsers(tutorials: ITutorial[]): Promise<void> {
     try {
       console.log(`Creating user #${userNr}...`);
       users.push(await createUser(dto, axios));
-      await wait(1000);
+      await wait(WAIT_TIME_AFTER_SMALL_REQUESTS);
       console.log(`User #${userNr} created.`);
     } catch (err) {
       console.log(err);
@@ -183,7 +184,7 @@ async function createSheets(): Promise<ISheet[]> {
     const sheet = await createSheet(sheetDTO, axios);
     sheets.push(sheet);
 
-    await wait(500);
+    await wait(WAIT_TIME_AFTER_SMALL_REQUESTS);
     console.log(`Created sheet #${sheet.sheetNo}`);
   }
 
@@ -214,7 +215,7 @@ async function createShortTests(): Promise<IShortTest[]> {
       console.log(`Creating short test #${shortTestNo}...`);
       shortTests.push(await createShortTest(dto, axios));
 
-      await wait(500);
+      await wait(WAIT_TIME_AFTER_SMALL_REQUESTS);
       console.log(`Short test #${shortTestNo} created.`);
     } catch (err) {
       console.log(err);
@@ -240,7 +241,7 @@ async function createStudents({
         console.log('Waiting for previous requests to finish...');
         await Promise.all(promises);
 
-        await wait(WAIT_TIME_AFTER);
+        await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
       } catch (err) {
         console.log('[ERROR] Could not get response from some requests.');
       } finally {
@@ -378,16 +379,16 @@ async function run() {
     axios = await login('admin', 'adminPass1');
 
     const tutorials = await createTutorials();
-    await wait(WAIT_TIME_AFTER);
+    await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
 
     await createUsers(tutorials);
-    await wait(WAIT_TIME_AFTER);
+    await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
 
     const sheets = await createSheets();
-    await wait(WAIT_TIME_AFTER);
+    await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
 
     const shortTests = await createShortTests();
-    await wait(WAIT_TIME_AFTER);
+    await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
 
     await createStudents({ tutorials, sheets, shortTests });
   } catch (err) {
