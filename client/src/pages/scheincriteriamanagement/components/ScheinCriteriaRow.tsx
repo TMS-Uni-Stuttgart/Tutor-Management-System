@@ -40,7 +40,7 @@ function ScheinCriteriaRow({
   return (
     <PaperTableRow
       label={criteria.name}
-      subText={`Typ: ${t(criteria.identifier)}`}
+      subText={`Typ: ${t(`TYPE_${criteria.identifier}`)}`}
       buttonCellContent={
         <EntityListItemMenu
           onEditClicked={() => onEditCriteriaClicked(criteria)}
