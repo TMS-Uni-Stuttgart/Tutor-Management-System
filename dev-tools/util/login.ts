@@ -2,7 +2,7 @@ import Axios, { AxiosInstance } from 'axios';
 import { ILoggedInUser } from '../../server/src/shared/model/User';
 
 function createBaseURL(): string {
-  return 'https://dudrie.de/api';
+  return 'http://localhost:8080/api';
 }
 
 const cookies: string[] = [];

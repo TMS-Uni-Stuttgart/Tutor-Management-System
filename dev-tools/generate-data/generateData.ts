@@ -26,9 +26,9 @@ const TUTORS_TOTAL = 25;
 const SHEETS_TOTAL = 10;
 const SHORT_TESTS_TOTAL = 9;
 
-const REQUESTS_AT_ONCE = 2;
-const WAIT_TIME_AFTER_SMALL_REQUESTS = 500;
-const WAIT_TIME_AFTER_LARGE_REQUESTS = 1000;
+const REQUESTS_AT_ONCE = 25;
+const WAIT_TIME_AFTER_SMALL_REQUESTS = 0;
+const WAIT_TIME_AFTER_LARGE_REQUESTS = 2000;
 
 let axios: AxiosInstance;
 
@@ -376,7 +376,7 @@ async function createStudent({
 
 async function run() {
   try {
-    axios = await login('admin', 'adminPass1');
+    axios = await login('admin', 'admin');
 
     const tutorials = await createTutorials();
     await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
