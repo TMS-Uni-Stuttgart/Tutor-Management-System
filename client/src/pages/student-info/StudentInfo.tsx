@@ -98,7 +98,7 @@ function StudentInfo(): JSX.Element {
         setTutorialOfStudent(response);
       })
       .catch(() => {
-        enqueueSnackbar('Tutorial konnte nicht abgerufen werden.', { variant: 'error' });
+        enqueueSnackbar('Tutorium konnte nicht abgerufen werden.', { variant: 'error' });
       });
   }, [student, enqueueSnackbar]);
 

@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
@@ -30,6 +31,8 @@ import {
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
+  private readonly logger = new Logger(StudentService.name);
+
   constructor(
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => TeamService))
@@ -47,11 +50,15 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    * @returns All students saved in the database.
    */
   async findAll(): Promise<StudentDocument[]> {
+    const timeA = Date.now();
     const allStudents = (await this.studentModel
       .find()
       .populate('_gradings')
       .exec()) as StudentDocument[];
 
+    const timeB = Date.now();
+
+    this.logger.log(`Time to fetch all students: ${timeB - timeA}ms`);
     return allStudents;
   }
 
