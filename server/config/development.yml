@@ -5,8 +5,7 @@ sessionTimeout: 120
 # prefix: derpy
 
 database:
-  databaseURL: 'mongodb://localhost:27017/tms-big'
-  # databaseURL: 'mongodb://localhost:27017/tms-nestjs'
+  databaseURL: 'mongodb://localhost:27017/tms-nestjs'
   maxRetries: 2
   config:
     # This is needed bc of the docker-compose file

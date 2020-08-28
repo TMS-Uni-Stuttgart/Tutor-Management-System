@@ -207,8 +207,7 @@ export class MarkdownService {
       }
 
       gradings.forEach((grading) => {
-        const students = team.students.filter((s) => grading.students.findIndex(s.id) !== -1);
-        const teamName = TeamModel.generateTeamname(students);
+        const teamName = TeamModel.generateTeamname(grading.students);
         const nameOfEntity = grading.belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`;
 
         markdownData.push({
