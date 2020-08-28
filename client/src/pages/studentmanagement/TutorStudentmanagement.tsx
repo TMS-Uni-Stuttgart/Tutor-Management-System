@@ -8,6 +8,7 @@ import StudentoverviewStoreProvider from './student-store/StudentStore';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      // TODO: REMOVE ME. Handled by StudentList itself!
       display: 'flex',
       flexDirection: 'column',
       maxHeight: '100%',
