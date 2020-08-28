@@ -38,7 +38,7 @@
     "excel4node": "^1.7.2",
     "express-session": "^1.17.1",
     "jszip": "^3.5.0",
-    "luxon": "^1.24.1",
+    "luxon": "^1.25.0",
     "mongoose": "^5.10.0",
     "mongoose-autopopulate": "^0.12.2",
     "mongoose-field-encryption": "^3.0.6",
