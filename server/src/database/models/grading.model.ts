@@ -172,7 +172,7 @@ export class GradingModel {
    * @param student Student to add to this grading.
    */
   addStudent(this: GradingDocument, student: StudentDocument): void {
-    const idx = this.students.findIndex((s) => s.id === student.id);
+    const idx = this.students.findIndex((doc) => doc.id === student.id);
 
     if (idx === -1) {
       this.students.push(student);
@@ -188,7 +188,7 @@ export class GradingModel {
    * @param student Student to remove.
    */
   removeStudent(this: GradingDocument, student: StudentDocument): void {
-    const idx = this.students.findIndex((s) => s.id === student.id);
+    const idx = this.students.findIndex((studentId) => studentId === student.id);
 
     if (idx !== -1) {
       this.students.splice(idx, 1);

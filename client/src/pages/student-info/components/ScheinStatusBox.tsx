@@ -1,7 +1,7 @@
-import React from 'react';
-import { makeStyles, createStyles, useTheme } from '@material-ui/core/styles';
-import { Box, Typography, CircularProgress, BoxProps } from '@material-ui/core';
+import { Box, BoxProps, CircularProgress, Typography } from '@material-ui/core';
+import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import React from 'react';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
 const useStyles = makeStyles((theme) =>

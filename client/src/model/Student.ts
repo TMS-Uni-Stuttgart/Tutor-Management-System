@@ -42,8 +42,18 @@ export class Student implements Modify<IStudent, Modified> {
 
   cakeCount!: number;
 
+  /**
+   * @return Name of the student in the format 'lastname, firstname'.
+   */
   get name(): string {
     return getNameOfEntity(this);
+  }
+
+  /**
+   * @returns Name of the student in the format 'firstname lastname'.
+   */
+  get nameFirstnameFirst(): string {
+    return getNameOfEntity(this, { firstNameFirst: true });
   }
 
   /**

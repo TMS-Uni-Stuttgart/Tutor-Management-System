@@ -71,10 +71,10 @@ function Dashboard(): JSX.Element {
       return;
     }
 
-    if (isAdmin(userData) && !isLoadingTutorialSummaries) {
+    if (isAdmin(userData) && !isLoadingTutorialSummaries && !summaries && !isLoadingAdminGraph) {
       fetchSummaries();
     }
-  }, [userData, fetchSummaries, isLoadingTutorialSummaries]);
+  }, [userData, fetchSummaries, isLoadingTutorialSummaries, summaries, isLoadingAdminGraph]);
 
   return (
     <div>

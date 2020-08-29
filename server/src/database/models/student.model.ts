@@ -59,7 +59,6 @@ export class StudentModel {
     Object.assign(this, fields);
 
     this.attendances = new Map();
-    this.gradings = new Map();
     this.presentationPoints = new Map();
   }
 
@@ -153,11 +152,15 @@ export class StudentModel {
    * @param grading Grading so save.
    */
   setGrading(this: StudentDocument, sheet: HasExerciseDocuments, grading: GradingDocument): void {
-    if (!sheet.id || !this.gradings) {
+    if (!sheet.id) {
       throw new Error('Given sheet needs to have an id field.');
     }
 
-    this.gradings.set(sheet.id, grading);
+    if (!this.gradings) {
+      this.loadGradingMap();
+    }
+
+    this.gradings?.set(sheet.id, grading);
   }
 
   /**
@@ -168,8 +171,12 @@ export class StudentModel {
    * @returns Grading for the given entity or `undefined`
    */
   getGrading(entity: HasExerciseDocuments): GradingDocument | undefined {
-    if (!entity.id || !this.gradings) {
+    if (!entity.id) {
       return undefined;
+    }
+
+    if (!this.gradings) {
+      this.loadGradingMap();
     }
 
     return this.gradings?.get(entity.id);
@@ -227,6 +234,10 @@ export class StudentModel {
 
     for (const [key, doc] of this.attendances) {
       attendances.set(key, doc.toDTO());
+    }
+
+    if (!this.gradings) {
+      this.loadGradingMap();
     }
 
     if (this.gradings) {

@@ -2,15 +2,20 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { TutorialInEntity } from 'shared/model/Common';
 import * as Yup from 'yup';
-import { Tutorial } from '../../model/Tutorial';
-import { FormikSubmitCallback } from '../../types';
-import FormikSelect from './components/FormikSelect';
-import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import FormikSelect from '../../../../components/forms/components/FormikSelect';
+import FormikBaseForm, {
+  CommonlyUsedFormProps,
+  FormikBaseFormProps,
+} from '../../../../components/forms/FormikBaseForm';
+import LoadingSpinner from '../../../../components/loading/LoadingSpinner';
+import { getAllTutorials } from '../../../../hooks/fetching/Tutorial';
+import { useFetchState } from '../../../../hooks/useFetchState';
+import { FormikSubmitCallback } from '../../../../types';
 
 const useStyles = makeStyles(
   createStyles({
-    tutorDropdown: {
-      gridColumn: '1 / span 2',
+    spanAllColumns: {
+      gridColumn: '1 / -1',
     },
   })
 );
@@ -26,7 +31,6 @@ const validationSchema = Yup.object().shape({
 export type TutorialChangeFormSubmitCallback = FormikSubmitCallback<TutorialChangeFormState>;
 
 interface Props extends Omit<FormikBaseFormProps<TutorialChangeFormState>, CommonlyUsedFormProps> {
-  allTutorials: Tutorial[];
   tutorial: TutorialInEntity;
   onSubmit: TutorialChangeFormSubmitCallback;
   onCancel: () => void;
@@ -34,13 +38,18 @@ interface Props extends Omit<FormikBaseFormProps<TutorialChangeFormState>, Commo
 
 function TutorialChangeForm({
   tutorial,
-  allTutorials,
   onSubmit,
   className,
   onCancel,
   ...other
 }: Props): JSX.Element {
   const classes = useStyles();
+
+  const { value: allTutorials, isLoading } = useFetchState({
+    fetchFunction: getAllTutorials,
+    immediate: true,
+    params: [],
+  });
 
   const initialFormValues: TutorialChangeFormState = {
     tutorial: tutorial.id,
@@ -54,18 +63,22 @@ function TutorialChangeForm({
       onSubmit={onSubmit}
       onCancelClicked={onCancel}
     >
-      {() => (
-        <FormikSelect
-          name='tutorial'
-          label='Tutorium'
-          emptyPlaceholder='Keine Tutorien vorhanden.'
-          items={allTutorials}
-          itemToString={(t) => t.toDisplayString()}
-          itemToValue={(t) => t.id}
-          fullWidth
-          className={classes.tutorDropdown}
-        />
-      )}
+      {() =>
+        isLoading ? (
+          <LoadingSpinner text='Lade Tutorien' className={classes.spanAllColumns} />
+        ) : (
+          <FormikSelect
+            name='tutorial'
+            label='Tutorium'
+            emptyPlaceholder='Keine Tutorien vorhanden.'
+            items={allTutorials ?? []}
+            itemToString={(t) => t.toDisplayString()}
+            itemToValue={(t) => t.id}
+            fullWidth
+            className={classes.spanAllColumns}
+          />
+        )
+      }
     </FormikBaseForm>
   );
 }
