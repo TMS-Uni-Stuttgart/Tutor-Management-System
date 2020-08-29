@@ -19,9 +19,6 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(1.5),
       height: '56px',
     },
-    topBar: {
-      justifySelf: 'flex-end',
-    },
   })
 );
 
@@ -107,7 +104,7 @@ function AdminStudentManagement(): JSX.Element {
       onStudentChangeTutorial={handleChangeTutorial}
       studentSubtextType='tutorial'
       additionalTopBarItem={
-        <div className={classes.topBar}>
+        <>
           <SplitButton
             variant='contained'
             color='primary'
@@ -140,7 +137,7 @@ function AdminStudentManagement(): JSX.Element {
           >
             CSV Datei
           </SubmitButton>
-        </div>
+        </>
       }
     />
   );

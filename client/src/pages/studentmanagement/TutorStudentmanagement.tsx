@@ -1,40 +1,65 @@
-import { Theme } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router';
-import Studentoverview from './student-overview/Studentoverview';
-import StudentoverviewStoreProvider from './student-store/StudentStore';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      // TODO: REMOVE ME. Handled by StudentList itself!
-      display: 'flex',
-      flexDirection: 'column',
-      maxHeight: '100%',
-      position: 'relative',
-    },
-    dialogDeleteButton: {
-      color: theme.palette.error.main,
-    },
-    searchField: {
-      width: '75%',
-    },
-  })
-);
+import StudentForm, {
+  convertFormStateToDTO,
+  StudentFormSubmitCallback,
+} from '../../components/forms/StudentForm';
+import LoadingSpinner from '../../components/loading/LoadingSpinner';
+import OpenableFormWithFab, { EditorOpenState } from '../../components/OpenableFormWithFab';
+import StudentList from './student-overview-new/StudentList';
+import { useStudentsForStudentList } from './student-overview-new/StudentList.helpers';
 
 interface Params {
   tutorialId: string;
 }
 
 function TutorStudentmanagement(): JSX.Element {
-  const { tutorialId } = useParams<{ tutorialId: string }>();
-  const classes = useStyles();
+  const { tutorialId } = useParams<Params>();
+  const [editorState, setEditorState] = useState<EditorOpenState>({
+    isAnimating: false,
+    isEditorOpen: false,
+  });
 
-  return (
-    <StudentoverviewStoreProvider tutorialId={tutorialId}>
-      <div className={classes.root}>{<Studentoverview />}</div>
-    </StudentoverviewStoreProvider>
+  const {
+    students,
+    teams,
+    summaries,
+    isLoading,
+    createStudent,
+    editStudent,
+    deleteStudent,
+  } = useStudentsForStudentList({ tutorialId });
+
+  const handleCreateSubmit: StudentFormSubmitCallback = useCallback(
+    async (values, helpers) => {
+      const dto = convertFormStateToDTO(values, tutorialId);
+      await createStudent(dto);
+
+      helpers.resetForm();
+    },
+    [tutorialId, createStudent]
+  );
+
+  return isLoading ? (
+    <LoadingSpinner text='Lade Studierende' />
+  ) : (
+    <StudentList
+      students={students}
+      summaries={summaries}
+      teams={teams}
+      onStudentEdit={editStudent}
+      onStudentDelete={deleteStudent}
+      studentSubtextType='team'
+      hideDefaultTopBarContent={editorState.isAnimating || editorState.isEditorOpen}
+      additionalTopBarItem={
+        <OpenableFormWithFab
+          title='Neue/n Studierende/n anlegen'
+          onOpenChange={(state) => setEditorState(state)}
+        >
+          <StudentForm teams={teams} otherStudents={students} onSubmit={handleCreateSubmit} />
+        </OpenableFormWithFab>
+      }
+    />
   );
 }
 

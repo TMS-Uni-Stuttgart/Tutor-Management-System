@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useSnackbar } from 'notistack';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { IStudentDTO, StudentStatus } from 'shared/model/Student';
 import { getNameOfEntity, sortByName } from 'shared/util/helpers';
@@ -60,8 +60,16 @@ async function createTeamIfNeccessary(
 export function useStudentsForStudentList({
   tutorialId,
 }: UseStudentsForStudentListParams): UseStudentsForStudentList {
-  const { value: fetchedStudents = [], isLoading: isLoadingStudents } = useFetchState({
-    fetchFunction: tutorialId ? getStudentsOfTutorial : getAllStudents,
+  const [students, setStudents] = useState<Student[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { isLoading: isLoadingStudents } = useFetchState({
+    fetchFunction: async (tutorialId?: string) => {
+      const students = await (tutorialId ? getStudentsOfTutorial(tutorialId) : getAllStudents());
+
+      setStudents(students);
+      return students;
+    },
     immediate: true,
     params: [tutorialId ?? ''],
   });
@@ -72,39 +80,27 @@ export function useStudentsForStudentList({
     immediate: true,
     params: [tutorialId ?? ''],
   });
-  const { value: teams, isLoading: isLoadingTeams, execute: fetchTeams } = useFetchState({
+  const { value: teams, execute: fetchTeams } = useFetchState({
     fetchFunction: tutorialId ? getTeamsOfTutorial : async () => undefined,
     immediate: true,
     params: [tutorialId ?? ''],
   });
 
-  const [students, setStudents] = useState<Student[]>([]);
-  const { enqueueSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    if (isLoadingStudents) {
-      return;
-    }
-
-    if (fetchedStudents.length !== students.length) {
-      setStudents(fetchedStudents ?? []);
-    }
-  }, [fetchedStudents, students, isLoadingStudents]);
-
   const createStudent = useCallback(
     async (dto: IStudentDTO) => {
       try {
         const student = await fetchCreateStudent(dto);
+        await fetchTeams(tutorialId ?? '');
 
+        setStudents([...students, student].sort(sortByName));
         enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich erstellt.`, {
           variant: 'success',
         });
-        setStudents([...students, student].sort(sortByName));
       } catch {
         enqueueSnackbar('Studierende/r konnte nicht erstellt werden', { variant: 'error' });
       }
     },
-    [students, enqueueSnackbar]
+    [students, enqueueSnackbar, fetchTeams, tutorialId]
   );
 
   const editStudent = useCallback(
@@ -185,7 +181,7 @@ export function useStudentsForStudentList({
     students,
     teams,
     summaries,
-    isLoading: isLoadingStudents || isLoadingSummaries || isLoadingTeams,
+    isLoading: isLoadingStudents || isLoadingSummaries,
     createStudent,
     editStudent,
     deleteStudent,

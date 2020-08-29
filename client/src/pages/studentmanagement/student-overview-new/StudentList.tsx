@@ -26,6 +26,7 @@ interface Props {
   ) => Promise<void>;
   onStudentDelete: (student: Student) => Promise<void>;
   onStudentChangeTutorial?: (student: Student) => void;
+  hideDefaultTopBarContent?: boolean;
   additionalTopBarItem?: React.ReactNode;
   teams?: Team[];
   tutorialId?: string;
@@ -41,6 +42,7 @@ function StudentList({
   onStudentEdit,
   onStudentDelete,
   onStudentChangeTutorial,
+  hideDefaultTopBarContent,
   tutorialId,
   additionalTopBarItem,
 }: Props): JSX.Element {
@@ -129,9 +131,10 @@ function StudentList({
         sortOption={sortOption}
         onSortOptionChanged={setSortOption}
         additionalTopBarItem={additionalTopBarItem}
+        hideDefaultTopBarContent={hideDefaultTopBarContent}
       />
 
-      <div ref={root} style={{ flex: 1, marginBottom: -8, paddingRight: 16, marginRight: -16 }}>
+      <div ref={root} style={{ flex: 1, marginBottom: -8 }}>
         <FixedSizeList
           height={height}
           width={width}

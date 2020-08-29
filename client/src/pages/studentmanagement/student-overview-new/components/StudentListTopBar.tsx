@@ -23,6 +23,7 @@ interface TopBarProps extends BoxProps {
   sortOption: StudentSortOption;
   onSortOptionChanged: (newOption: StudentSortOption) => void;
   additionalTopBarItem?: React.ReactNode;
+  hideDefaultTopBarContent?: boolean;
 }
 
 function StudentListTopBar({
@@ -31,6 +32,7 @@ function StudentListTopBar({
   sortOption,
   onSortOptionChanged,
   additionalTopBarItem,
+  hideDefaultTopBarContent,
   ...props
 }: TopBarProps): JSX.Element {
   const classes = useStyles();
@@ -59,28 +61,31 @@ function StudentListTopBar({
   );
 
   return (
-    <Box display='flex' {...props}>
-      <TextField
-        variant='outlined'
-        label='Suche'
-        value={filterText}
-        onChange={(e) => onFilterTextChanged(e.target.value)}
-        className={classes.searchField}
-        InputProps={{
-          startAdornment: <SearchIcon color='disabled' />,
-        }}
-      />
-
-      <CustomSelect
-        label='Sortieren nach...'
-        emptyPlaceholder='Keine Sortieroptionen vorhanden.'
-        className={classes.sortSelect}
-        value={sortOption}
-        items={Object.values(StudentSortOption)}
-        itemToString={(option) => option}
-        itemToValue={(option) => option}
-        onChange={handleSortOptionChanged}
-      />
+    <Box display='flex' position='relative' {...props}>
+      {!hideDefaultTopBarContent && (
+        <>
+          <TextField
+            variant='outlined'
+            label='Suche'
+            value={filterText}
+            onChange={(e) => onFilterTextChanged(e.target.value)}
+            className={classes.searchField}
+            InputProps={{
+              startAdornment: <SearchIcon color='disabled' />,
+            }}
+          />
+          <CustomSelect
+            label='Sortieren nach...'
+            emptyPlaceholder='Keine Sortieroptionen vorhanden.'
+            className={classes.sortSelect}
+            value={sortOption}
+            items={Object.values(StudentSortOption)}
+            itemToString={(option) => option}
+            itemToValue={(option) => option}
+            onChange={handleSortOptionChanged}
+          />
+        </>
+      )}
 
       {additionalTopBarItem}
     </Box>
