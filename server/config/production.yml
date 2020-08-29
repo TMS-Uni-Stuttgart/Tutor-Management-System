@@ -8,7 +8,6 @@ database:
   databaseURL: 'mongodb://mongo:27017/tms'
   maxRetries: 2
   config:
-    # This is needed bc of the docker-compose file
     authSource: 'admin'
     authMechanism: 'SCRAM-SHA-1'
 
