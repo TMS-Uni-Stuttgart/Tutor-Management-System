@@ -119,15 +119,19 @@ function ImportCSVContext<T extends MapColumnsData<any, any>>({
         options: { header: true, delimiter: separator },
       });
 
-      if (response.errors.length === 0) {
-        setData({ headers: response.meta.fields, rows: response.data });
-      } else {
+      if (response.errors.length !== 0) {
         enqueueSnackbarWithList({
           title: 'CSV konnte nicht importiert werden.',
           textBeforeList: 'Folgende Fehler sind aufgetreten:',
           items: response.errors.map((err) => `${err.message} (Zeile: ${err.row})`),
         });
         isSuccess = false;
+      } else if (!response.meta.fields) {
+        enqueueSnackbar('Spaltenüberschriften konnten nicht identifiziert werden.', {
+          variant: 'error',
+        });
+      } else {
+        setData({ headers: response.meta.fields, rows: response.data });
       }
     } catch {
       enqueueSnackbar('CSV konnte nicht importiert werden.', { variant: 'error' });

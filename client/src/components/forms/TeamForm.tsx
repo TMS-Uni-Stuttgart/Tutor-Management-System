@@ -38,20 +38,16 @@ function getInitialFormState(team?: Team): TeamFormState {
 function TeamForm({ students, onSubmit, team, ...other }: Props): JSX.Element {
   return (
     <FormikBaseForm {...other} initialValues={getInitialFormState(team)} onSubmit={onSubmit}>
-      {({ values }) => (
-        <>
-          <FormikFilterableSelect
-            name='students'
-            label='Studierende'
-            emptyPlaceholder='Keine Studierenden vorhanden.'
-            filterPlaceholder='Suche nach Namen'
-            items={students}
-            itemToString={(student) => `${student.lastname}, ${student.firstname}`}
-            itemToValue={(student) => student.id}
-            style={{ gridColumn: '1 / span 2' }}
-          />
-        </>
-      )}
+      <FormikFilterableSelect
+        name='students'
+        label='Studierende'
+        emptyPlaceholder='Keine Studierenden vorhanden.'
+        filterPlaceholder='Suche nach Namen'
+        items={students}
+        itemToString={(student) => `${student.lastname}, ${student.firstname}`}
+        itemToValue={(student) => student.id}
+        style={{ gridColumn: '1 / span 2' }}
+      />
     </FormikBaseForm>
   );
 }
