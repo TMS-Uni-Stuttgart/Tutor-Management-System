@@ -125,7 +125,7 @@ function Studentoverview({
       title: 'In folgendes Tutorium wechseln',
       content: (
         <TutorialChangeForm
-          allTutorials={tutorials}
+          // allTutorials={tutorials}
           tutorial={student.tutorial}
           onSubmit={handleChangeTutorial({
             student,

@@ -1,15 +1,25 @@
 import _ from 'lodash';
+import { useSnackbar } from 'notistack';
+import { useCallback, useEffect, useState } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
-import { StudentStatus } from 'shared/model/Student';
+import { IStudentDTO, StudentStatus } from 'shared/model/Student';
 import { getNameOfEntity, sortByName } from 'shared/util/helpers';
+import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
   getScheinCriteriaSummariesOfAllStudentsOfTutorial,
   getScheinCriteriaSummaryOfAllStudents,
 } from '../../../hooks/fetching/Scheincriteria';
-import { getAllStudents } from '../../../hooks/fetching/Student';
+import {
+  createStudent as fetchCreateStudent,
+  deleteStudent as fetchDeleteStudent,
+  editStudent as fetchEditStudent,
+  getAllStudents,
+} from '../../../hooks/fetching/Student';
+import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useFetchState } from '../../../hooks/useFetchState';
 import { Student } from '../../../model/Student';
+import { Team } from '../../../model/Team';
 
 export enum StudentSortOption {
   ALPHABETICAL = 'Alphabetisch',
@@ -19,7 +29,12 @@ export enum StudentSortOption {
 interface UseStudentsForStudentList {
   students: Student[];
   summaries: ScheincriteriaSummaryByStudents;
+  teams: Team[] | undefined;
   isLoading: boolean;
+  createStudent: (dto: IStudentDTO) => Promise<void>;
+  editStudent: (student: Student, dto: IStudentDTO) => Promise<void>;
+  deleteStudent: (student: Student) => Promise<void>;
+  changeTutorialOfStudent: (student: Student, newTutorialId: string) => Promise<void>;
 }
 
 interface UseStudentsForStudentListParams {
@@ -30,10 +45,22 @@ function unifyFilterableText(text: string): string {
   return _.deburr(text).toLowerCase();
 }
 
+async function createTeamIfNeccessary(
+  tutorialId: string,
+  team: string | undefined
+): Promise<string | undefined> {
+  if (team === CREATE_NEW_TEAM_VALUE) {
+    const createdTeam = await createTeam(tutorialId, { students: [] });
+    return createdTeam.id;
+  } else {
+    return team;
+  }
+}
+
 export function useStudentsForStudentList({
   tutorialId,
 }: UseStudentsForStudentListParams): UseStudentsForStudentList {
-  const { value: students = [], isLoading: isLoadingStudents } = useFetchState({
+  const { value: fetchedStudents = [], isLoading: isLoadingStudents } = useFetchState({
     fetchFunction: tutorialId ? getStudentsOfTutorial : getAllStudents,
     immediate: true,
     params: [tutorialId ?? ''],
@@ -45,8 +72,125 @@ export function useStudentsForStudentList({
     immediate: true,
     params: [tutorialId ?? ''],
   });
+  const { value: teams, isLoading: isLoadingTeams, execute: fetchTeams } = useFetchState({
+    fetchFunction: tutorialId ? getTeamsOfTutorial : async () => undefined,
+    immediate: true,
+    params: [tutorialId ?? ''],
+  });
 
-  return { students, summaries, isLoading: isLoadingStudents || isLoadingSummaries };
+  const [students, setStudents] = useState<Student[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (isLoadingStudents) {
+      return;
+    }
+
+    if (fetchedStudents.length !== students.length) {
+      setStudents(fetchedStudents ?? []);
+    }
+  }, [fetchedStudents, students, isLoadingStudents]);
+
+  const createStudent = useCallback(
+    async (dto: IStudentDTO) => {
+      try {
+        const student = await fetchCreateStudent(dto);
+
+        enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich erstellt.`, {
+          variant: 'success',
+        });
+        setStudents([...students, student].sort(sortByName));
+      } catch {
+        enqueueSnackbar('Studierende/r konnte nicht erstellt werden', { variant: 'error' });
+      }
+    },
+    [students, enqueueSnackbar]
+  );
+
+  const editStudent = useCallback(
+    async (student: Student, dto: IStudentDTO) => {
+      try {
+        const studentId = student.id;
+        const { team, tutorial, ...restOfDto } = dto;
+        const teamId = await createTeamIfNeccessary(tutorial, team);
+
+        const studentDTO: IStudentDTO = {
+          ...restOfDto,
+          tutorial,
+          team: teamId,
+        };
+
+        const response = await fetchEditStudent(studentId, studentDTO);
+        await fetchTeams(tutorialId ?? '');
+
+        setStudents(
+          students
+            .map((stud) => {
+              if (stud.id === studentId) {
+                return response;
+              }
+
+              return stud;
+            })
+            .sort(sortByName)
+        );
+        enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gespeichert.`, {
+          variant: 'success',
+        });
+      } catch {
+        enqueueSnackbar(`${student.nameFirstnameFirst} konnte nicht gespeichert werden.`, {
+          variant: 'error',
+        });
+      }
+    },
+    [students, tutorialId, fetchTeams, enqueueSnackbar]
+  );
+
+  const deleteStudent = useCallback(
+    async (student: Student) => {
+      try {
+        await fetchDeleteStudent(student.id);
+
+        setStudents(students.filter((s) => s.id !== student.id));
+        enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gelöscht.`, {
+          variant: 'success',
+        });
+      } catch {
+        enqueueSnackbar(`${student.nameFirstnameFirst} konnte nicht gelöscht werden.`, {
+          variant: 'error',
+        });
+      }
+    },
+    [students, enqueueSnackbar]
+  );
+
+  const changeTutorialOfStudent = useCallback(
+    async (student: Student, newTutorialId: string) => {
+      if (student.tutorial.id === newTutorialId) {
+        return;
+      }
+
+      const dto: IStudentDTO = {
+        ...student,
+        tutorial: newTutorialId,
+        team: undefined, // After the change the student must NOT have a team.
+      };
+
+      await editStudent(student, dto);
+    },
+    [editStudent]
+  );
+
+  return {
+    students,
+    teams,
+    summaries,
+    isLoading: isLoadingStudents || isLoadingSummaries || isLoadingTeams,
+    createStudent,
+    editStudent,
+    deleteStudent,
+    changeTutorialOfStudent,
+  };
 }
 
 export function getFilteredStudents(

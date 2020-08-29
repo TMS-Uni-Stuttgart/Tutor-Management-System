@@ -1,6 +1,6 @@
 import { FormikHelpers } from 'formik';
 import React, { useMemo, useRef } from 'react';
-import { StudentStatus } from 'shared/model/Student';
+import { IStudentDTO, StudentStatus } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import * as Yup from 'yup';
 import { useSettings } from '../../hooks/useSettings';
@@ -46,7 +46,7 @@ const validationSchema = Yup.object().shape({
 
 export type StudentFormSubmitCallback = FormikSubmitCallback<StudentFormState>;
 
-interface StudentFormState {
+export interface StudentFormState {
   lastname: string;
   firstname: string;
   iliasName: string;
@@ -72,6 +72,31 @@ interface InitialStateParams {
 
 export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
 type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
+
+export function convertFormStateToDTO(values: StudentFormState, tutorialId: string): IStudentDTO {
+  const {
+    firstname,
+    lastname,
+    iliasName,
+    matriculationNo,
+    email,
+    courseOfStudies,
+    team,
+    status,
+  } = values;
+
+  return {
+    firstname,
+    lastname,
+    iliasName,
+    status,
+    tutorial: tutorialId,
+    matriculationNo: matriculationNo || undefined,
+    email: email || undefined,
+    courseOfStudies: courseOfStudies || undefined,
+    team: team || undefined,
+  };
+}
 
 function getNextTeamWithSlot(teams: Team[], defaultTeamSize: number): string {
   for (const team of teams) {
@@ -157,7 +182,10 @@ function StudentForm({
   }, [teamsFromProps, student, defaultTeamSize]);
 
   const disableTeamDropdown = !teamsFromProps;
-  const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...(teamsFromProps || [])];
+  const teams: ItemType[] = [
+    { type: CREATE_NEW_TEAM_VALUE },
+    ...(teamsFromProps ??[]),
+  ];
 
   async function handleSubmit(
     values: StudentFormState,
