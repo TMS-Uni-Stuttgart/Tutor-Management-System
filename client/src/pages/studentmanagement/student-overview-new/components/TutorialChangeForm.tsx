@@ -2,12 +2,15 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { TutorialInEntity } from 'shared/model/Common';
 import * as Yup from 'yup';
-import { getAllTutorials } from '../../hooks/fetching/Tutorial';
-import { useFetchState } from '../../hooks/useFetchState';
-import { FormikSubmitCallback } from '../../types';
-import LoadingSpinner from '../loading/LoadingSpinner';
-import FormikSelect from './components/FormikSelect';
-import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
+import FormikSelect from '../../../../components/forms/components/FormikSelect';
+import FormikBaseForm, {
+  CommonlyUsedFormProps,
+  FormikBaseFormProps,
+} from '../../../../components/forms/FormikBaseForm';
+import LoadingSpinner from '../../../../components/loading/LoadingSpinner';
+import { getAllTutorials } from '../../../../hooks/fetching/Tutorial';
+import { useFetchState } from '../../../../hooks/useFetchState';
+import { FormikSubmitCallback } from '../../../../types';
 
 const useStyles = makeStyles(
   createStyles({

@@ -2,7 +2,6 @@ import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
-import TutorialChangeForm from '../../components/forms/TutorialChangeForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SubmitButton from '../../components/loading/SubmitButton';
 import SplitButton from '../../components/SplitButton';
@@ -10,6 +9,7 @@ import { useDialog } from '../../hooks/dialog-service/DialogService';
 import { getClearScheinStatusPDF, getScheinStatusPDF } from '../../hooks/fetching/Files';
 import { Student } from '../../model/Student';
 import { saveBlob } from '../../util/helperFunctions';
+import TutorialChangeForm from './student-overview-new/components/TutorialChangeForm';
 import StudentList from './student-overview-new/StudentList';
 import { useStudentsForStudentList } from './student-overview-new/StudentList.helpers';
 
