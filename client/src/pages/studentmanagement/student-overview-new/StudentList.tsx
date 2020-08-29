@@ -42,6 +42,7 @@ function StudentList({
   onStudentDelete,
   onStudentChangeTutorial,
   tutorialId,
+  additionalTopBarItem,
 }: Props): JSX.Element {
   const dialog = useDialog();
 
@@ -127,6 +128,7 @@ function StudentList({
         onFilterTextChanged={setFilterText}
         sortOption={sortOption}
         onSortOptionChanged={setSortOption}
+        additionalTopBarItem={additionalTopBarItem}
       />
 
       <div ref={root} style={{ flex: 1, marginBottom: -8, paddingRight: 16, marginRight: -16 }}>
