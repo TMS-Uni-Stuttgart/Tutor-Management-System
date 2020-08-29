@@ -37,7 +37,13 @@ export interface ItemDisabledInformation {
   reason?: string;
 }
 
-export type ItemToString<T> = (item: T) => string;
+export interface ItemDisplayInformation {
+  primary: string;
+  secondary?: string;
+}
+
+export type ItemToValue<T> = (item: T) => string;
+export type ItemToString<T> = (item: T) => string | ItemDisplayInformation;
 export type ItemToBoolean<T> = (item: T) => boolean;
 export type IsItemDisabledFunction<T> = (item: T) => ItemDisabledInformation;
 
@@ -50,7 +56,7 @@ export interface CustomSelectProps<T>
   helperText?: React.ReactNode;
   items: T[];
   itemToString: ItemToString<T>;
-  itemToValue: ItemToString<T>;
+  itemToValue: ItemToValue<T>;
   isItemDisabled?: IsItemDisabledFunction<T>;
   isItemSelected?: ItemToBoolean<T>;
   FormControlProps?: Omit<FormControlProps, 'variant' | 'className'>;
@@ -85,7 +91,14 @@ function renderValue<T>(
         return null;
       }
 
-      return <Chip key={selValue} label={itemToString(item)} className={chipClassName} />;
+      const label = itemToString(item);
+      return (
+        <Chip
+          key={selValue}
+          label={typeof label === 'string' ? label : label.primary}
+          className={chipClassName}
+        />
+      );
     });
 
     return <>{chipsToRender}</>;
@@ -183,18 +196,29 @@ function CustomSelect<T>({
             );
           }
 
-          const itemString: string = itemToString(item);
+          const itemString = itemToString(item);
           const itemValue: string = itemToValue(item);
           const { isDisabled, reason }: ItemDisabledInformation = isItemDisabled?.(item) ?? {
             isDisabled: false,
           };
+
+          const text: ItemDisplayInformation =
+            typeof itemString === 'string'
+              ? {
+                  primary: itemString,
+                  secondary: isDisabled ? reason : undefined,
+                }
+              : {
+                  primary: itemString.primary,
+                  secondary: isDisabled ? reason ?? itemString.secondary : itemString.secondary,
+                };
 
           return (
             <MenuItem key={itemValue} value={itemValue} disabled={isDisabled}>
               {multiple ? (
                 <>
                   {isItemSelected && <Checkbox checked={isItemSelected(item)} />}
-                  <ListItemText primary={itemString} secondary={isDisabled ? reason : undefined} />
+                  <ListItemText {...text} />
                 </>
               ) : (
                 itemString
