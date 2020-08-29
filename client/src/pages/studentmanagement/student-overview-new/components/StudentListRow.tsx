@@ -1,5 +1,6 @@
 import { Box, Button, Paper, PaperProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import {
   AccountSwitch as ChangeTutorialIcon,
   InformationOutline as InfoIcon,
@@ -65,6 +66,7 @@ function StudentListRow({
   onEdit,
   onDelete,
   onChangeTutorial,
+  className,
   ...props
 }: StudentListRowProps): JSX.Element {
   const classes = useStyles();
@@ -92,7 +94,7 @@ function StudentListRow({
   }, [onChangeTutorial, student]);
 
   return (
-    <Paper {...props} className={classes.studentBar}>
+    <Paper {...props} className={clsx(className, classes.studentBar)}>
       <StudentAvatar student={student} />
 
       <Box marginLeft={2} minWidth={250} display='flex' flexDirection='column'>

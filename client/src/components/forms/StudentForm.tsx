@@ -182,10 +182,7 @@ function StudentForm({
   }, [teamsFromProps, student, defaultTeamSize]);
 
   const disableTeamDropdown = !teamsFromProps;
-  const teams: ItemType[] = [
-    { type: CREATE_NEW_TEAM_VALUE },
-    ...(teamsFromProps ??[]),
-  ];
+  const teams: ItemType[] = [{ type: CREATE_NEW_TEAM_VALUE }, ...(teamsFromProps ?? [])];
 
   async function handleSubmit(
     values: StudentFormState,

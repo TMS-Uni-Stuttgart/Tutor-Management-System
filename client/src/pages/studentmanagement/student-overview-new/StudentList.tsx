@@ -1,4 +1,6 @@
 import { Box } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import { FormikHelpers } from 'formik';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FixedSizeList } from 'react-window';
@@ -14,6 +16,14 @@ import { Team } from '../../../model/Team';
 import StudentListRow, { SubtextType } from './components/StudentListRow';
 import StudentListTopBar from './components/StudentListTopBar';
 import { getFilteredStudents, StudentSortOption } from './StudentList.helpers';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    lastRow: {
+      marginBottom: theme.spacing(1),
+    },
+  })
+);
 
 interface Props {
   students: Student[];
@@ -46,6 +56,7 @@ function StudentList({
   tutorialId,
   additionalTopBarItem,
 }: Props): JSX.Element {
+  const classes = useStyles();
   const dialog = useDialog();
 
   const root = useRef<HTMLTableElement>(null);
@@ -134,7 +145,7 @@ function StudentList({
         hideDefaultTopBarContent={hideDefaultTopBarContent}
       />
 
-      <div ref={root} style={{ flex: 1, marginBottom: -8 }}>
+      <div ref={root} style={{ flex: 1, marginBottom: -8, marginRight: -16 }}>
         <FixedSizeList
           height={height}
           width={width}
@@ -156,10 +167,12 @@ function StudentList({
                 onEdit={handleStudentEdit}
                 onDelete={handleStudentDelete}
                 onChangeTutorial={onStudentChangeTutorial}
+                className={clsx(index === filteredStudents.length - 1 && classes.lastRow)}
                 style={{
                   ...style,
                   top: posTop + GUTTER_SIZE,
                   height: elHeight - GUTTER_SIZE,
+                  width: 'calc(100% - 16px)',
                 }}
               />
             );
