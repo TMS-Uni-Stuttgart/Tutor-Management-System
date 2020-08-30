@@ -6,10 +6,6 @@ import { IStudentDTO, StudentStatus } from 'shared/model/Student';
 import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
-  getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-  getScheinCriteriaSummaryOfAllStudents,
-} from '../../../hooks/fetching/Scheincriteria';
-import {
   createStudent as fetchCreateStudent,
   deleteStudent as fetchDeleteStudent,
   editStudent as fetchEditStudent,
@@ -73,13 +69,13 @@ export function useStudentsForStudentList({
     immediate: true,
     params: [tutorialId ?? ''],
   });
-  const { value: summaries = {}, isLoading: isLoadingSummaries } = useFetchState({
-    fetchFunction: tutorialId
-      ? getScheinCriteriaSummariesOfAllStudentsOfTutorial
-      : getScheinCriteriaSummaryOfAllStudents,
-    immediate: true,
-    params: [tutorialId ?? ''],
-  });
+  // const { value: summaries = {}, isLoading: isLoadingSummaries } = useFetchState({
+  //   fetchFunction: tutorialId
+  //     ? getScheinCriteriaSummariesOfAllStudentsOfTutorial
+  //     : getScheinCriteriaSummaryOfAllStudents,
+  //   immediate: true,
+  //   params: [tutorialId ?? ''],
+  // });
   const { value: teams, execute: fetchTeams } = useFetchState({
     fetchFunction: tutorialId ? getTeamsOfTutorial : async () => undefined,
     immediate: true,
@@ -180,8 +176,9 @@ export function useStudentsForStudentList({
   return {
     students,
     teams,
-    summaries,
-    isLoading: isLoadingStudents || isLoadingSummaries,
+    summaries: {},
+    isLoading: isLoadingStudents,
+    // isLoading: isLoadingStudents || isLoadingSummaries,
     createStudent,
     editStudent,
     deleteStudent,
