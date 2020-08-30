@@ -1,5 +1,5 @@
-import { Divider } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import { Box, Button, Divider } from '@material-ui/core';
+import React from 'react';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
@@ -66,16 +66,6 @@ function Dashboard(): JSX.Element {
     value: summaries,
   } = useFetchState({ fetchFunction: getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots });
 
-  useEffect(() => {
-    if (!userData) {
-      return;
-    }
-
-    if (isAdmin(userData) && !isLoadingTutorialSummaries && !summaries && !isLoadingAdminGraph) {
-      fetchSummaries();
-    }
-  }, [userData, fetchSummaries, isLoadingTutorialSummaries, summaries, isLoadingAdminGraph]);
-
   return (
     <div>
       {isLoadingTutorialSummaries ? (
@@ -84,18 +74,26 @@ function Dashboard(): JSX.Element {
         <>
           {isAdmin(userData) && (
             <>
-              <Placeholder
-                placeholderText={'Keine Daten für Tutorienübersicht verfügbar.'}
-                showPlaceholder={!!summaries && Object.entries(summaries).length === 0}
-                loading={isLoadingAdminGraph}
-                SpinnerProps={{ shrinkBox: true, text: 'Lade Tutorienübersicht' }}
-              >
-                {!!summaries && Object.entries(summaries).length > 0 && (
-                  <div>
-                    <AdminStatsCard studentsByTutorialSummary={summaries} />
-                  </div>
-                )}
-              </Placeholder>
+              {!summaries && !isLoadingAdminGraph ? (
+                <Box display='flex' justifyContent='center'>
+                  <Button disabled={isLoadingAdminGraph} onClick={() => fetchSummaries()}>
+                    Tutorienübersicht laden
+                  </Button>
+                </Box>
+              ) : (
+                <Placeholder
+                  placeholderText={'Keine Daten für Tutorienübersicht verfügbar.'}
+                  showPlaceholder={!!summaries && Object.entries(summaries).length === 0}
+                  loading={isLoadingAdminGraph}
+                  SpinnerProps={{ shrinkBox: true, text: 'Lade Tutorienübersicht' }}
+                >
+                  {!!summaries && Object.entries(summaries).length > 0 && (
+                    <div>
+                      <AdminStatsCard studentsByTutorialSummary={summaries} />
+                    </div>
+                  )}
+                </Placeholder>
+              )}
 
               <Divider style={{ margin: '16px 0px' }} />
             </>

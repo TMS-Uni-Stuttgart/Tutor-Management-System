@@ -63,7 +63,6 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
 
   return (
     <Paper className={classes.statsPaper}>
-      {/* <AspectRatio ratio='48-9'> */}
       <Chart
         className={classes.chart}
         chartType='ColumnChart'
@@ -84,7 +83,6 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
           },
         }}
       />
-      {/* </AspectRatio> */}
     </Paper>
   );
 }
