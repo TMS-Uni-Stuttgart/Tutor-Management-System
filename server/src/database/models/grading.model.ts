@@ -126,7 +126,7 @@ export class GradingModel {
   @prop()
   additionalPoints?: number;
 
-  @prop({ ref: StudentModel, autopopulate: true, default: [] })
+  @prop({ ref: StudentModel, autopopulate: true, default: [], index: true })
   students!: StudentDocument[];
 
   @prop()
