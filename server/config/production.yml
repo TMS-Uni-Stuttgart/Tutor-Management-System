@@ -2,10 +2,10 @@
 sessionTimeout: 120
 
 # (Optional) If the app is hosted on a prefixed path (ie https://example.com/foo) set this property to the prefix (ie "foo"). If the app is hosted on the root path this property can be omitted.
-# prefix: derpy
+# prefix: subpath
 
 database:
-  databaseURL: 'mongodb://localhost:27017/tms-nestjs'
+  databaseURL: 'mongodb://mongo:27017/tms'
   maxRetries: 2
   config:
     authSource: 'admin'

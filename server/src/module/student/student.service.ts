@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
@@ -10,11 +11,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { AttendanceModel } from '../../database/models/attendance.model';
 import { HasExerciseDocuments } from '../../database/models/exercise.model';
 import { GradingDocument, GradingModel } from '../../database/models/grading.model';
-import {
-  populateStudentDocument,
-  StudentDocument,
-  StudentModel,
-} from '../../database/models/student.model';
+import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { TeamDocument } from '../../database/models/team.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { IAttendance } from '../../shared/model/Attendance';
@@ -34,6 +31,8 @@ import {
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
+  private readonly logger = new Logger(StudentService.name);
+
   constructor(
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => TeamService))
@@ -51,10 +50,15 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    * @returns All students saved in the database.
    */
   async findAll(): Promise<StudentDocument[]> {
-    const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
+    const timeA = Date.now();
+    const allStudents = (await this.studentModel
+      .find()
+      .populate('_gradings')
+      .exec()) as StudentDocument[];
 
-    await Promise.all(allStudents.map((student) => populateStudentDocument(student)));
+    const timeB = Date.now();
 
+    this.logger.log(`Time to fetch all students: ${timeB - timeA}ms`);
     return allStudents;
   }
 

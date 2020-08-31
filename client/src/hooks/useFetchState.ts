@@ -35,7 +35,7 @@ export function useFetchState<T, P extends BaseArrayType>({
   params,
 }: UseFetchStateParams<T, P>): UseFetchState<T, P> {
   const [value, setValue] = useState<T>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(immediate ?? false);
   const [error, setError] = useState<string>();
   const [prevParams, setPrevParams] = useState<P>();
 

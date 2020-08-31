@@ -64,7 +64,7 @@ export class UserModel {
   @prop({ required: true, type: String })
   roles!: Role[];
 
-  @prop({ required: true })
+  @prop({ required: true, index: true })
   username!: string;
 
   @prop({ required: true })

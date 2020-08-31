@@ -5,7 +5,7 @@ import {
   Printer as PrintIcon,
   TableArrowDown as ImportIcon,
 } from 'mdi-material-ui';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FailedMail, MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
@@ -28,8 +28,8 @@ import {
   setTemporaryPassword,
 } from '../../hooks/fetching/User';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
+import { useFetchState } from '../../hooks/useFetchState';
 import { useSettings } from '../../hooks/useSettings';
-import { Tutorial } from '../../model/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
 import { saveBlob } from '../../util/helperFunctions';
 import UserTableRow from './components/UserTableRow';
@@ -98,33 +98,30 @@ function UserManagement(): JSX.Element {
   const { isMailingActive } = useSettings();
   const { enqueueSnackbar, closeSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { value: users = [], isLoading: isLoadingUsers, execute: fetchUsers } = useFetchState({
+    fetchFunction: getUsers,
+    immediate: true,
+    params: [],
+  });
+  const {
+    value: tutorials = [],
+    isLoading: isLoadingTutorials,
+    execute: fetchTutorials,
+  } = useFetchState({ fetchFunction: getAllTutorials, immediate: true, params: [] });
+
+  const [isLoadingInitially, setLoadingInitially] = useState(true);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
 
   useEffect(() => {
-    setIsLoading(true);
+    if (isLoadingInitially && !isLoadingTutorials && !isLoadingUsers) {
+      setLoadingInitially(false);
+    }
+  }, [isLoadingInitially, isLoadingTutorials, isLoadingUsers]);
 
-    Promise.all([
-      getUsers().catch(() => {
-        enqueueSnackbar('Nutzer konnten nicht abgerufen werden.', { variant: 'error' });
-      }),
-      getAllTutorials().catch(() => {
-        enqueueSnackbar('Tutorien konnten nicht abgerufen werden.', { variant: 'error' });
-      }),
-    ]).then(([userResponse, tutorialResponse]) => {
-      if (userResponse) {
-        setUsers(userResponse);
-      }
-
-      if (tutorialResponse) {
-        setTutorials(tutorialResponse);
-      }
-
-      setIsLoading(false);
-    });
-  }, [enqueueSnackbar]);
+  const updateData = useCallback(async () => {
+    fetchTutorials();
+    return fetchUsers();
+  }, [fetchUsers, fetchTutorials]);
 
   const handleCreateUser: UserFormSubmitCallback = async (
     formState,
@@ -137,9 +134,12 @@ function UserManagement(): JSX.Element {
       };
 
       const response = await createUser(userToCreate);
+      await updateData();
 
-      setUsers([...users, response]);
-      enqueueSnackbar(`Nutzer wurde erfolgreich angelegt.`, { variant: 'success' });
+      enqueueSnackbar(
+        `${getNameOfEntity(response, { firstNameFirst: true })} wurde erfolgreich angelegt.`,
+        { variant: 'success' }
+      );
       resetForm();
     } catch (reason) {
       if (reason instanceof UsernameAlreadyTakenError) {
@@ -164,21 +164,17 @@ function UserManagement(): JSX.Element {
       );
 
       const updatedUser = await editUser(user.id, userInformation);
-      setUsers(
-        users.map((u) => {
-          if (u.id !== updatedUser.id) {
-            return u;
-          }
-
-          return updatedUser;
-        })
-      );
 
       if (!!password) {
         await setTemporaryPassword(user.id, { password });
       }
 
-      enqueueSnackbar(`Nutzer wurde erfolgreich gespeichert.`, { variant: 'success' });
+      await updateData();
+
+      enqueueSnackbar(
+        `${getNameOfEntity(updatedUser, { firstNameFirst: true })} wurde erfolgreich gespeichert.`,
+        { variant: 'success' }
+      );
       dialog.hide();
     } catch (e) {
       if (e instanceof UsernameAlreadyTakenError) {
@@ -192,8 +188,8 @@ function UserManagement(): JSX.Element {
 
   function handleDeleteUserSubmit(user: IUser) {
     deleteUser(user.id)
-      .then(() => {
-        setUsers(users.filter((u) => u.id !== user.id));
+      .then(async () => {
+        await updateData();
       })
       .finally(() => {
         dialog.hide();
@@ -230,6 +226,7 @@ function UserManagement(): JSX.Element {
           user={user}
           availableRoles={availableRoles}
           tutorials={tutorials}
+          loadingTutorials={isLoadingTutorials}
           onSubmit={handleEditUserSubmit(user)}
           onCancelClicked={() => dialog.hide()}
         />
@@ -327,8 +324,8 @@ function UserManagement(): JSX.Element {
 
   return (
     <div className={classes.root}>
-      {isLoading ? (
-        <LoadingSpinner />
+      {isLoadingInitially ? (
+        <LoadingSpinner text='Lade Nutzerinnen und Nutzer' />
       ) : (
         <TableWithForm
           title='Neuen Nutzer erstellen'
@@ -338,6 +335,7 @@ function UserManagement(): JSX.Element {
               availableRoles={availableRoles}
               tutorials={tutorials}
               onSubmit={handleCreateUser}
+              loadingTutorials={isLoadingTutorials}
             />
           }
           topBarContent={

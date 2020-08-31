@@ -1,8 +1,8 @@
 import { Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import React from 'react';
-import LoadingSpinner from './loading/LoadingSpinner';
 import clsx from 'clsx';
+import React from 'react';
+import LoadingSpinner, { LoadingSpinnerProps } from './loading/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,6 +22,7 @@ interface Props {
   children: React.ReactNode;
   loading?: boolean;
   reduceMarginTop?: boolean;
+  SpinnerProps?: LoadingSpinnerProps;
 }
 
 function Placeholder({
@@ -30,11 +31,12 @@ function Placeholder({
   showPlaceholder,
   loading,
   reduceMarginTop,
+  SpinnerProps,
 }: Props): JSX.Element {
   const classes = useStyles();
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner {...SpinnerProps} />;
   }
 
   if (showPlaceholder) {

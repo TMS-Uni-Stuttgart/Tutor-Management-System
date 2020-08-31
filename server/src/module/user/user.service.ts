@@ -466,17 +466,15 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    * @throws `NotFoundException` - If there is no user with that username.
    */
   private async getUserWithUsername(username: string): Promise<UserDocument> {
-    // The username field could be encrypted so we create a dummy document which will have the username encrypted (if the 'original' ones have it encrypted aswell).
-    // const docWithEncryptedUsername: UserDocument = new this.userModel({
-    //   username,
-    // }) as UserDocument;
-
-    // docWithEncryptedUsername.encryptFieldsSync();
-
     const userDoc = await this.userModel
-      .findOne({
-        username,
-      })
+      .findOne(
+        {
+          username,
+        },
+        undefined,
+        // Make sure that the query is case insensitive.
+        { collation: { locale: 'en', strength: 2 } }
+      )
       .exec();
 
     if (!userDoc) {

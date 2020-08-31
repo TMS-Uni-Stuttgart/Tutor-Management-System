@@ -35,10 +35,6 @@ export class Team implements Modify<ITeam, Modified> {
       return undefined;
     }
 
-    if (gradings.length === 1) {
-      return gradings[0];
-    }
-
     return gradings.filter((grading) => grading.belongsToTeam)[0];
   }
 

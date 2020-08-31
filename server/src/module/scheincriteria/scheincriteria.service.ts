@@ -249,6 +249,7 @@ export class ScheincriteriaService
     }
 
     return {
+      student: params.student.toDTO(),
       passed,
       scheinCriteriaSummary: summaries,
     };

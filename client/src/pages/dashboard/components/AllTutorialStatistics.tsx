@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: theme.spacing(1.5),
     },
     placeholder: {
-      marginTop: 64,
+      marginTop: theme.spacing(8),
       textAlign: 'center',
     },
   })

@@ -574,7 +574,7 @@ describe('StudentService', () => {
     assertGrading({ expected: gradingDTO, actual: actualGrading });
   });
 
-  it('set a grding of a sheet with one points prop of 0 of a student', async () => {
+  it('set a grading of a sheet with one points prop of 0 of a student', async () => {
     const sheetService = testModule.get<SheetService>(SheetService);
     const student = STUDENT_DOCUMENTS[0];
     const sheetDTO: SheetDTO = {

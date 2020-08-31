@@ -49,6 +49,7 @@ export class DatabaseModule {
           const connection = await mongoose.createConnection(databaseConfig.databaseURL, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            poolSize: 10,
             ...databaseConfig.config,
           });
 

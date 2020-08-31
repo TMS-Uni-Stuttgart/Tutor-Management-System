@@ -7,11 +7,16 @@ type ChangeEventType = React.ChangeEvent<{
   value: unknown;
 }>;
 
-interface Props<T> extends CustomSelectProps<T> {
+export interface FormikSelectProps<T> extends CustomSelectProps<T> {
   name: string;
 }
 
-function FormikSelect<T>({ onChange, name, helperText, ...other }: Props<T>): JSX.Element {
+function FormikSelect<T>({
+  onChange,
+  name,
+  helperText,
+  ...other
+}: FormikSelectProps<T>): JSX.Element {
   function handleChange(formikOnChange: FormikHandlers['handleChange']) {
     return (e: ChangeEventType, child: React.ReactNode) => {
       if (onChange) {

@@ -8,7 +8,7 @@ import {
 import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime, Interval } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
-import { StudentDocument } from '../../database/models/student.model';
+import { populateStudentDocument, StudentDocument } from '../../database/models/student.model';
 import {
   populateTutorialDocument,
   TutorialDocument,
@@ -220,6 +220,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
   async getAllStudentsOfTutorial(id: string): Promise<StudentDocument[]> {
     const tutorial = await this.findById(id);
 
+    await Promise.all(tutorial.students.map((s) => populateStudentDocument(s)));
     return tutorial.students;
   }
 

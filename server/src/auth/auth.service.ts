@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import bcrypt from 'bcryptjs';
 import { UserService } from '../module/user/user.service';
 import { UserCredentials, UserCredentialsWithPassword } from './auth.model';
 

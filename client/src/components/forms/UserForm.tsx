@@ -12,6 +12,7 @@ import FormikPasswordField from './components/FormikPasswordField';
 import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import { FormikTextFieldWithButtons } from './components/FormikTextFieldWithButtons';
+import FormikTutorialSelect from './components/FormikTutorialSelect';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
 
 export type UserFormSubmitCallback = FormikSubmitCallback<UserFormState>;
@@ -32,6 +33,7 @@ interface Props extends Omit<FormikBaseFormProps<UserFormState>, CommonlyUsedFor
   availableRoles: Role[];
   tutorials: Tutorial[];
   onSubmit: UserFormSubmitCallback;
+  loadingTutorials: boolean;
 }
 
 interface HasName {
@@ -114,6 +116,7 @@ function UserForm({
   onSubmit,
   user,
   tutorials,
+  loadingTutorials,
   className,
   ...other
 }: Props): JSX.Element {
@@ -221,29 +224,21 @@ function UserForm({
             ]}
           />
 
-          <FormikSelect
+          <FormikTutorialSelect
             name='tutorials'
             label='Tutorien'
             helperText='Tutorien, die gehalten werden.'
-            emptyPlaceholder='Keine Tutorien vorhanden.'
             items={tutorials}
-            itemToString={(tutorial) => `Slot ${tutorial.slot}`}
-            itemToValue={(tutorial) => tutorial.id}
-            multiple
-            isItemSelected={(tutorial) => values['tutorials'].indexOf(tutorial.id) > -1}
+            showLoadingIndicator={loadingTutorials}
             disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
           />
 
-          <FormikSelect
+          <FormikTutorialSelect
             name='tutorialsToCorrect'
             label='Korrigierte Tutorien'
             helperText='Tutorien, die korrigiert werden.'
-            emptyPlaceholder='Keine Tutorien vorhanden.'
             items={tutorials}
-            itemToString={(tutorial) => `Slot ${tutorial.slot}`}
-            itemToValue={(tutorial) => tutorial.id}
-            multiple
-            isItemSelected={(tutorial) => values['tutorialsToCorrect'].indexOf(tutorial.id) > -1}
+            showLoadingIndicator={loadingTutorials}
             disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
           />
         </>

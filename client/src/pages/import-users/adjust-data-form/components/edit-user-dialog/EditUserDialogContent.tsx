@@ -4,6 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Role } from 'shared/model/Role';
 import { IsItemDisabledFunction } from '../../../../../components/CustomSelect';
 import FormikSelect from '../../../../../components/forms/components/FormikSelect';
+import FormikTutorialSelect from '../../../../../components/forms/components/FormikTutorialSelect';
 import { Tutorial } from '../../../../../model/Tutorial';
 import { UserFormState } from '../../AdjustImportedUserDataForm';
 import { EditFormState } from './EditUserDialog';
@@ -87,19 +88,14 @@ function EditUserDialogContent({ parentFormValue, tutorials }: EditUserDialogPro
         isItemSelected={(role) => values['roles'].indexOf(role) > -1}
       />
 
-      <FormikSelect
+      <FormikTutorialSelect
         name='tutorials'
         label='Tutorien'
         helperText='Tutorien, die gehalten werden.'
-        emptyPlaceholder='Keine Tutorien vorhanden.'
         fullWidth
         items={tutorials}
         showLoadingIndicator={tutorials.length === 0}
-        itemToString={(tutorial) => tutorial.toDisplayStringWithTime()}
-        itemToValue={(tutorial) => tutorial.id}
         isItemDisabled={isTutorialItemDisabled}
-        multiple
-        isItemSelected={(tutorial) => values['tutorials'].indexOf(tutorial.id) > -1}
         disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
       />
 

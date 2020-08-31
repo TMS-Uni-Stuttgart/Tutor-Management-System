@@ -12,6 +12,8 @@
   "VALUE_percentageOfAllPointsNeeded": "Prozentsatz aller Punkte benötigt",
   "VALUE_percentagePerSheet": "Prozentsatz pro Blatt benötigt",
   "VALUE_passAllExamsIndividually": "Scheinklausuren einzeln bestehen",
+  "VALUE_valuePerTestNeeded": "Wert pro Kurztest benötigt",
+  "VALUE_isPercentagePerTest": "Prozentsatz pro Kurztest benötigt",
   "FIELD_LABEL_passAllExamsIndividually": "Scheinklausuren einzeln bestehen",
   "FIELD_LABEL_percentage": "Ist Prozentsatz",
   "FIELD_LABEL_presentationsNeeded": "Anzahl Präsentationen",
