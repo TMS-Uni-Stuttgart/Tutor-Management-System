@@ -8,11 +8,13 @@ import {
 } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import { ListItem } from '../../../../components/list-item-menu/ListItemMenu';
 import StudentAvatar from '../../../../components/student-icon/StudentAvatar';
 import { Student } from '../../../../model/Student';
 import { ROUTES } from '../../../../routes/Routing.routes';
+import ScheinStatusBox from '../../../student-info/components/ScheinStatusBox';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -40,7 +42,7 @@ interface GetSubtextParams {
 
 interface StudentListRowProps extends PaperProps {
   student: Student;
-  // scheinStatus: ScheinCriteriaSummary;
+  scheinStatus: ScheinCriteriaSummary;
   subTextType: SubtextType;
   onEdit: (student: Student) => void;
   onDelete: (student: Student) => void;
@@ -62,7 +64,7 @@ function getSubtext({ student, subTextType }: GetSubtextParams): string {
 
 function StudentListRow({
   student,
-  // scheinStatus,
+  scheinStatus,
   subTextType,
   tutorialId,
   onEdit,
@@ -107,7 +109,7 @@ function StudentListRow({
         </Typography>
       </Box>
 
-      {/* <ScheinStatusBox scheinStatus={scheinStatus} marginLeft={2} marginRight='auto' /> */}
+      <ScheinStatusBox scheinStatus={scheinStatus} marginLeft={2} marginRight='auto' />
 
       <Button
         variant='outlined'

@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { FormikHelpers } from 'formik';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FixedSizeList } from 'react-window';
+import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { IStudentDTO } from 'shared/model/Student';
 import StudentForm, {
   convertFormStateToDTO,
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) =>
 interface Props {
   students: Student[];
   studentSubtextType: SubtextType;
-  // summaries: ScheincriteriaSummaryByStudents;
+  summaries: ScheincriteriaSummaryByStudents;
   onStudentEdit: (
     student: Student,
     newData: IStudentDTO,
@@ -46,7 +47,7 @@ const GUTTER_SIZE = 16;
 function StudentList({
   students,
   studentSubtextType,
-  // summaries,
+  summaries,
   teams,
   onStudentEdit,
   onStudentDelete,
@@ -155,13 +156,13 @@ function StudentList({
             const student = filteredStudents[index];
             const posTop = Number.parseInt(`${style.top ?? 0}`);
             const elHeight = Number.parseInt(`${style.height ?? 0}`);
-            // const scheinStatus = summaries[student.id];
+            const scheinStatus = summaries[student.id];
 
             return (
               <StudentListRow
                 student={student}
                 subTextType={studentSubtextType}
-                // scheinStatus={scheinStatus}
+                scheinStatus={scheinStatus}
                 tutorialId={tutorialId}
                 onEdit={handleStudentEdit}
                 onDelete={handleStudentDelete}

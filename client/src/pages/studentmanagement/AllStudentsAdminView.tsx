@@ -97,7 +97,7 @@ function AdminStudentManagement(): JSX.Element {
   ) : (
     <StudentList
       students={students}
-      // summaries={summaries}
+      summaries={summaries}
       teams={teams}
       onStudentEdit={editStudent}
       onStudentDelete={deleteStudent}

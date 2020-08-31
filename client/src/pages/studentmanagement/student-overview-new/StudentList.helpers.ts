@@ -1,3 +1,4 @@
+import { plainToClass } from 'class-transformer';
 import _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
@@ -6,13 +7,15 @@ import { IStudentDTO, StudentStatus } from 'shared/model/Student';
 import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
+  getScheinCriteriaSummariesOfAllStudentsOfTutorial,
+  getScheinCriteriaSummaryOfAllStudents,
+} from '../../../hooks/fetching/Scheincriteria';
+import {
   createStudent as fetchCreateStudent,
   deleteStudent as fetchDeleteStudent,
   editStudent as fetchEditStudent,
-  getAllStudents,
 } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
-import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useFetchState } from '../../../hooks/useFetchState';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
@@ -59,23 +62,21 @@ export function useStudentsForStudentList({
   const [students, setStudents] = useState<Student[]>([]);
   const { enqueueSnackbar } = useSnackbar();
 
-  const { isLoading: isLoadingStudents } = useFetchState({
-    fetchFunction: async (tutorialId?: string) => {
-      const students = await (tutorialId ? getStudentsOfTutorial(tutorialId) : getAllStudents());
+  const { value: summaries = {}, isLoading: isLoadingSummaries } = useFetchState({
+    fetchFunction: async (tutorialId: string) => {
+      const fetchedSummaries = await (tutorialId
+        ? getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
+        : getScheinCriteriaSummaryOfAllStudents());
 
-      setStudents(students);
-      return students;
+      setStudents(
+        Object.values(fetchedSummaries).map(({ student }) => plainToClass(Student, student))
+      );
+
+      return fetchedSummaries;
     },
     immediate: true,
     params: [tutorialId ?? ''],
   });
-  // const { value: summaries = {}, isLoading: isLoadingSummaries } = useFetchState({
-  //   fetchFunction: tutorialId
-  //     ? getScheinCriteriaSummariesOfAllStudentsOfTutorial
-  //     : getScheinCriteriaSummaryOfAllStudents,
-  //   immediate: true,
-  //   params: [tutorialId ?? ''],
-  // });
   const { value: teams, execute: fetchTeams } = useFetchState({
     fetchFunction: tutorialId ? getTeamsOfTutorial : async () => undefined,
     immediate: true,
@@ -176,9 +177,8 @@ export function useStudentsForStudentList({
   return {
     students,
     teams,
-    summaries: {},
-    isLoading: isLoadingStudents,
-    // isLoading: isLoadingStudents || isLoadingSummaries,
+    summaries,
+    isLoading: isLoadingSummaries,
     createStudent,
     editStudent,
     deleteStudent,
