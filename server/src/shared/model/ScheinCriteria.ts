@@ -1,4 +1,5 @@
 import { IHasExercises } from './HasExercises';
+import { IStudent } from './Student';
 
 export enum ScheincriteriaIdentifier {
   ATTENDANCE = 'attendance',
@@ -29,6 +30,7 @@ export type ScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCrite
 export type SingleScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCriteriaStatus };
 
 export interface ScheinCriteriaSummary {
+  student: IStudent;
   passed: boolean;
   scheinCriteriaSummary: { [criteriaId: string]: ScheinCriteriaStatus };
 }
