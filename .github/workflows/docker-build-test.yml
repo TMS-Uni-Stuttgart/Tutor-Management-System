@@ -2,11 +2,11 @@ name: Docker image test
 on:
   push:
     branches:
-      - master
-      - v2
+      - main
+      - stable
   pull_request:
     branches:
-      - v2
+      - main
 
 jobs:
   test-docker-image:

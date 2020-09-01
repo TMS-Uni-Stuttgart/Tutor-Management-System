@@ -2,8 +2,8 @@ name: Unit Tests
 on:
   push:
     branches:
-      - master
-      - v2
+      - main
+      - stable
   pull_request:
 
 jobs:
