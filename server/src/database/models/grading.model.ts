@@ -7,7 +7,7 @@ import { StaticSettings } from '../../module/settings/settings.static';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
-import { StudentDocument, StudentModel } from './student.model';
+import { StudentDocument } from './student.model';
 
 export class ExerciseGradingModel {
   constructor({ points }: { points: number }) {
@@ -126,8 +126,8 @@ export class GradingModel {
   @prop()
   additionalPoints?: number;
 
-  @prop({ ref: StudentModel, autopopulate: true, default: [], index: true })
-  students!: StudentDocument[];
+  @prop({ default: [], index: true })
+  students!: string[];
 
   @prop()
   sheetId?: string;
@@ -172,10 +172,10 @@ export class GradingModel {
    * @param student Student to add to this grading.
    */
   addStudent(this: GradingDocument, student: StudentDocument): void {
-    const idx = this.students.findIndex((doc) => doc.id === student.id);
+    const idx = this.students.findIndex((docId) => docId === student.id);
 
     if (idx === -1) {
-      this.students.push(student);
+      this.students.push(student.id);
       this.markModified('students');
     }
   }
