@@ -105,6 +105,7 @@
   },
   "config": {
     "mongodbMemoryServer": {
+      "version": "latest",
       "downloadDir": "../node_modules/.cache/mongodb-memory-server/mongodb-binaries"
     }
   }
