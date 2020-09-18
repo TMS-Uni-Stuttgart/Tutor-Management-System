@@ -13,6 +13,7 @@ import {
 import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
 import { MenuDown as ArrowDropDownIcon } from 'mdi-material-ui';
 import React from 'react';
+import { useLogger } from '../util/Logger';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -35,14 +36,27 @@ interface ButtonOption {
 
 interface Props extends ButtonGroupProps {
   options: ButtonOption[];
+  initiallySelected?: number;
   variant?: ButtonProps['variant'];
   color?: ButtonProps['color'];
 }
 
-function SplitButton({ options, variant, color, ...props }: Props): JSX.Element {
+function SplitButton({ options, initiallySelected, variant, color, ...props }: Props): JSX.Element {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const logger = useLogger('SplitButton');
+  const [selectedIndex, setSelectedIndex] = React.useState(() => {
+    if (initiallySelected === undefined) {
+      return 0;
+    }
+
+    if (initiallySelected < 0 || initiallySelected >= options.length) {
+      logger.warn(`Initially selected value is invalid. Value: ${initiallySelected}`);
+      return 0;
+    }
+
+    return initiallySelected;
+  });
   const classes = useStyles();
 
   const { ButtonProps: buttonProps } = options[selectedIndex];
@@ -77,7 +91,9 @@ function SplitButton({ options, variant, color, ...props }: Props): JSX.Element 
         {...props}
         classes={{ grouped: classes.button }}
       >
-        <Button {...buttonProps}>{options[selectedIndex].label}</Button>
+        <Button disabled={options[selectedIndex].disabled} {...buttonProps}>
+          {options[selectedIndex].label}
+        </Button>
         <Button
           size='small'
           aria-controls={open ? 'split-button-menu' : undefined}

@@ -169,10 +169,12 @@ function TeamCard({
       <CardActions className={classes.actions}>
         <SplitButton
           variant='outlined'
+          initiallySelected={!!teamGrading ? 0 : 1}
           color='default'
           options={[
             {
               label: 'Punkte eintragen',
+              disabled: !teamGrading,
               ButtonProps: {
                 component: Link,
                 to: ROUTES.ENTER_POINTS_TEAM.create({
