@@ -1,8 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { DocumentType, getModelForClass, isDocument, plugin, prop } from '@typegoose/typegoose';
-import mongooseAutoPopulate from 'mongoose-autopopulate';
-import { fieldEncryption } from 'mongoose-field-encryption';
-import { StaticSettings } from '../../module/settings/settings.static';
+import { DocumentType, getModelForClass, isDocument, prop } from '@typegoose/typegoose';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
@@ -109,14 +106,8 @@ export class ExerciseGradingModel {
   }
 }
 
-// @modelOptions({ schemaOptions: { collection: CollectionName.GRADING } })
-@plugin(fieldEncryption, {
-  secret: StaticSettings.getService().getDatabaseSecret(),
-  fields: ['comment', 'additionalPoints', 'exerciseGradings'],
-})
-@plugin(mongooseAutoPopulate)
 export class GradingModel {
-  @prop({ type: ExerciseGradingModel, autopopulate: true, default: new Map() })
+  @prop({ type: ExerciseGradingModel, default: new Map() })
   exerciseGradings!: Map<string, ExerciseGradingDocument>;
 
   @prop()
@@ -125,7 +116,6 @@ export class GradingModel {
   @prop()
   additionalPoints?: number;
 
-  // @prop({ ref: 'StudentModel', autopopulate: true, default: [] })
   @prop({ type: String, default: [] })
   private students!: string[];
 

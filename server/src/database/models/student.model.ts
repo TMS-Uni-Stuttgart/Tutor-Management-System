@@ -37,6 +37,9 @@ interface ConstructorFields {
     'email',
     'matriculationNo',
     'status',
+    'gradings',
+    'attendances',
+    'presentationPoints',
   ],
 })
 @plugin(mongooseAutoPopulate)
@@ -79,11 +82,11 @@ export class StudentModel {
   @prop({ default: 0 })
   cakeCount!: number;
 
-  @prop({ type: AttendanceModel, autopopulate: true, default: new Map() })
+  @prop({ type: AttendanceModel, default: new Map() })
   attendances!: Map<string, AttendanceDocument>;
 
-  @prop({ type: GradingModel, autopopulate: { autopopulate: false }, default: [] })
-  private ownGradings!: GradingDocument[];
+  @prop({ type: GradingModel, default: [] })
+  private gradings!: GradingDocument[];
 
   @prop({ type: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
@@ -128,16 +131,15 @@ export class StudentModel {
       return;
     }
 
-    const idx = this.ownGradings.findIndex((grad) => grad.entityId === handIn.id);
+    const idx = this.gradings.findIndex((grad) => grad.entityId === handIn.id);
 
     if (idx === -1) {
-      this.ownGradings.push(grading);
+      this.gradings.push(grading);
     } else {
-      this.ownGradings[idx] = grading;
+      this.gradings[idx] = grading;
     }
 
-    // FIXME: If one renames the 'ownGrading' property update this one aswell!
-    this.markModified('ownGradings');
+    this.markModified('gradings');
   }
 
   /**
@@ -152,7 +154,7 @@ export class StudentModel {
       return undefined;
     }
 
-    return this.ownGradings.find((grad) => grad.entityId === handIn.id);
+    return this.gradings.find((grad) => grad.entityId === handIn.id);
   }
 
   /**
@@ -209,7 +211,7 @@ export class StudentModel {
       attendances.set(key, doc.toDTO());
     }
 
-    for (const doc of this.ownGradings) {
+    for (const doc of this.gradings) {
       gradings.set(doc.entityId, doc.toDTO());
     }
 
