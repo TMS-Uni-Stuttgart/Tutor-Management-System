@@ -15,6 +15,12 @@ import {
 } from '../../../test/mocks/documents.mock.helpers';
 import { Role } from '../../shared/model/Role';
 import { ITutorial, ITutorialGenerationDTO, UserInEntity } from '../../shared/model/Tutorial';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
+import { GradingService } from '../student/grading.service';
+import { StudentService } from '../student/student.service';
+import { TeamService } from '../team/team.service';
 import { UserService } from '../user/user.service';
 import { ExcludedTutorialDate, TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
@@ -219,12 +225,21 @@ describe('TutorialService', () => {
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [TutorialService, UserService],
+      providers: [
+        TutorialService,
+        UserService,
+        StudentService,
+        TeamService,
+        SheetService,
+        ScheinexamService,
+        ShortTestService,
+        GradingService,
+      ],
     }).compile();
   });
 
   afterAll(async () => {
-    await testModule.close();
+    await testModule?.close();
   });
 
   beforeEach(async () => {

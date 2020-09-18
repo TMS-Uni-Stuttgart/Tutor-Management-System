@@ -19,7 +19,7 @@ export type MockedTutorialModel = Omit<MockedModel<TutorialModel>, 'tutor'> & {
 };
 
 export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
-export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
+export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises' | 'id'> & {
   subexercises?: MockedSubExerciseModel[];
 };
 export type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {

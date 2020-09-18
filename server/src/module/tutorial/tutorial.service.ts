@@ -30,6 +30,7 @@ import {
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject(forwardRef(() => StudentService))
     private readonly studentService: StudentService,
@@ -220,6 +221,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
    * @throws `NotFoundException` - If no tutorial with the given ID could be found.
    */
   async getAllStudentsOfTutorial(id: string): Promise<StudentDocument[]> {
+    // Check if the tutorial exists.
+    await this.findById(id);
+
     return this.studentService.findByCondition({ tutorial: id as any });
   }
 

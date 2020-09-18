@@ -25,6 +25,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   private readonly logger = new Logger(StudentService.name);
 
   constructor(
+    @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => TeamService))
     private readonly teamService: TeamService,
