@@ -184,7 +184,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
     await Promise.all(
       tutorialsToAdd.map((tutorial) => {
-        tutorial.tutor = user.id;
+        tutorial.tutor = user;
         return tutorial.save();
       })
     );

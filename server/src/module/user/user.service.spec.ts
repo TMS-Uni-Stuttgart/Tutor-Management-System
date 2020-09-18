@@ -162,7 +162,6 @@ function assertLoggedInUser({ expected, actual }: AssertLoggedInUserParams) {
   expect(actual.tutorialsToCorrect.map((t) => t.id)).toEqual(tutorialsToCorrect.map((t) => t.id));
 
   // TODO: Test substituteTutorials!
-  // expect(actual.substituteTutorials).toEqual
 }
 
 describe('UserService', () => {
