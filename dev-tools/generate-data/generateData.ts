@@ -27,7 +27,7 @@ const SHEETS_TOTAL = 10;
 const SHORT_TESTS_TOTAL = 9;
 
 const REQUESTS_AT_ONCE = 25;
-const WAIT_TIME_AFTER_SMALL_REQUESTS = 0;
+const WAIT_TIME_AFTER_SMALL_REQUESTS = 50;
 const WAIT_TIME_AFTER_LARGE_REQUESTS = 2000;
 
 let axios: AxiosInstance;
@@ -357,18 +357,20 @@ async function createStudent({
 
   try {
     console.log(`Generating evaluation information for student ${student.lastname}...`);
-    await Promise.all(
-      gradings.map((gradingDTO) => setPointsOfStudent(student.id, gradingDTO, axios))
-    );
+
+    for (const gradingDTO of gradings) {
+      await setPointsOfStudent(student.id, gradingDTO, axios);
+    }
   } catch (err) {
     console.error(err);
   }
 
   try {
     console.log(`Generating attendance information for student ${student.lastname}...`);
-    await Promise.all(
-      attendances.map((attendanceDTO) => setAttendanceOfStudent(student.id, attendanceDTO, axios))
-    );
+
+    for (const attendanceDTO of attendances) {
+      await setAttendanceOfStudent(student.id, attendanceDTO, axios);
+    }
   } catch (err) {
     console.error(err);
   }
