@@ -233,26 +233,25 @@ export class MarkdownService {
     let exerciseMarkdown: string = '';
 
     entity.exercises.forEach((exercise) => {
+      const { pointInfo: total, subexercises } = exercise;
       const gradingForExercise = grading.getExerciseGrading(exercise);
 
-      if (!gradingForExercise) {
-        return;
-      }
+      pointInfo.total.must += total.must;
+      pointInfo.total.bonus += total.bonus;
 
-      const { pointInfo: total, subexercises } = exercise;
-      const achieved = gradingForExercise.points;
+      const achieved = gradingForExercise?.points ?? 0;
       const exMaxPoints = convertExercisePointInfoToString(total);
-      const subExTable = this.generateSubExerciseTable({ subexercises, gradingForExercise });
+      const subExTable = gradingForExercise
+        ? this.generateSubExerciseTable({ subexercises, gradingForExercise })
+        : undefined;
 
       pointInfo.achieved += achieved;
-      pointInfo.total.must = total.must;
-      pointInfo.total.bonus = total.bonus;
 
       exerciseMarkdown += `## Aufgabe ${exercise.exName} [${achieved} / ${exMaxPoints}]\n\n`;
       if (!!subExTable) {
         exerciseMarkdown += `${subExTable}\n\n`;
       }
-      exerciseMarkdown += `${gradingForExercise.comment ?? ''}\n\n`;
+      exerciseMarkdown += `${gradingForExercise?.comment ?? ''}\n\n`;
     });
 
     const totalPointInfo = convertExercisePointInfoToString(pointInfo.total);
