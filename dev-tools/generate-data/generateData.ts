@@ -306,6 +306,7 @@ async function createStudent({
 
     gradings.push({
       sheetId: sheet.id,
+      createNewGrading: true,
       additionalPoints: 0,
       comment: '',
       exerciseGradings: [...exerciseGradings],
@@ -325,6 +326,7 @@ async function createStudent({
 
     gradings.push({
       shortTestId: shortTest.id,
+      createNewGrading: true,
       additionalPoints: 0,
       comment: '',
       exerciseGradings: [...exerciseGradings],

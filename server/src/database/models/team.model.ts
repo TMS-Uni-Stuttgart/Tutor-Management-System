@@ -3,32 +3,14 @@ import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { ITeam } from '../../shared/model/Team';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { GradingDocument } from './grading.model';
 import { SheetDocument } from './sheet.model';
-import { populateStudentDocument, StudentDocument } from './student.model';
+import { StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
-
-/**
- * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.
- *
- * @param doc TeamDocument to populate.
- */
-export async function populateTeamDocument(doc?: TeamDocument): Promise<void> {
-  if (!doc) {
-    return;
-  }
-
-  await doc.populate('students').execPopulate();
-  await Promise.all(doc.students.map((student) => populateStudentDocument(student)));
-}
 
 type AssignableFields = Omit<NoFunctions<TeamModel>, 'students'>;
 
 @plugin(mongooseAutoPopulate)
-@plugin<typeof VirtualPopulation, VirtualPopulationOptions<TeamModel>>(VirtualPopulation, {
-  populateDocument: populateTeamDocument,
-})
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })
 export class TeamModel {
   static generateTeamname(students: StudentDocument[]): string {
@@ -54,6 +36,7 @@ export class TeamModel {
     ref: 'StudentModel',
     foreignField: 'team',
     localField: '_id',
+    autopopulate: true,
   })
   students!: StudentDocument[];
 

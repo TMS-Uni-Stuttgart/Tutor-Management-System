@@ -23,6 +23,7 @@ import { ShortTestService } from '../short-test/short-test.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
+import { GradingService } from './grading.service';
 import {
   AttendanceDTO,
   CakeCountDTO,
@@ -191,6 +192,7 @@ describe('StudentService', () => {
         SheetService,
         ScheinexamService,
         ShortTestService,
+        GradingService,
       ],
     }).compile();
   });
@@ -545,6 +547,7 @@ describe('StudentService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
+      createNewGrading: true,
       exerciseGradings: [
         [
           sheet.exercises[0].id,
@@ -609,6 +612,7 @@ describe('StudentService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
+      createNewGrading: true,
       exerciseGradings: [
         [
           sheet.exercises[0].id,
@@ -674,6 +678,7 @@ describe('StudentService', () => {
     const scheinexam = await scheinexamService.create(scheinexamDTO);
     const gradingDTO: GradingDTO = {
       examId: scheinexam.id,
+      createNewGrading: true,
       exerciseGradings: [
         [
           scheinexam.exercises[0].id,

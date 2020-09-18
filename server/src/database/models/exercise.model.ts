@@ -4,7 +4,7 @@ import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { ExercisePointsInfo, IExercisePointsInfo } from '../../shared/model/Gradings';
 import { IExercise, ISubexercise } from '../../shared/model/HasExercises';
 
-export interface HasExerciseDocuments {
+export interface HandInDocument {
   id?: string;
   exercises: ExerciseDocument[];
 }

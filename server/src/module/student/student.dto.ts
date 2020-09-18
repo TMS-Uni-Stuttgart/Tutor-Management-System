@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsMongoId,
@@ -106,6 +107,9 @@ export class GradingDTO implements IGradingDTO {
   @IsMapEntry(ExerciseGradingDTO, { each: true })
   exerciseGradings!: [string, ExerciseGradingDTO][];
 
+  @IsBoolean()
+  createNewGrading!: boolean;
+
   @IsOptional()
   @IsString()
   sheetId?: string;
@@ -117,10 +121,6 @@ export class GradingDTO implements IGradingDTO {
   @IsOptional()
   @IsString()
   shortTestId?: string;
-
-  @IsOptional()
-  @IsString()
-  gradingId?: string;
 
   @IsOptional()
   @IsString()

@@ -14,6 +14,7 @@ import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
+import { GradingService } from '../student/grading.service';
 import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
 import { assertGrading } from '../student/student.service.spec';
@@ -115,6 +116,7 @@ describe('TeamService', () => {
         SheetService,
         ScheinexamService,
         ShortTestService,
+        GradingService,
       ],
     }).compile();
   });
@@ -339,6 +341,7 @@ describe('TeamService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
+      createNewGrading: true,
       exerciseGradings: [
         [
           sheet.exercises[0].id,

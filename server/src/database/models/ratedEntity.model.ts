@@ -3,7 +3,7 @@ import { HasExercisesDTO, RatedEntityDTO } from '../../module/scheinexam/scheine
 import { ExercisePointsInfo } from '../../shared/model/Gradings';
 import { IHasExercises } from '../../shared/model/HasExercises';
 import { IRatedEntity } from '../../shared/model/RatedEntity';
-import { ExerciseDocument, ExerciseModel, HasExerciseDocuments } from './exercise.model';
+import { ExerciseDocument, ExerciseModel, HandInDocument } from './exercise.model';
 import { StudentDocument } from './student.model';
 
 interface PassedInformation {
@@ -12,7 +12,7 @@ interface PassedInformation {
   total: ExercisePointsInfo;
 }
 
-export abstract class HasExercisesModel implements HasExerciseDocuments {
+export abstract class HasExercisesModel implements HandInDocument {
   @prop({ required: true, type: ExerciseModel })
   exercises!: ExerciseDocument[];
 

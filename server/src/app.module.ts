@@ -13,11 +13,11 @@ import { ScheincriteriaModule } from './module/scheincriteria/scheincriteria.mod
 import { ScheinexamModule } from './module/scheinexam/scheinexam.module';
 import { SettingsModule } from './module/settings/settings.module';
 import { SheetModule } from './module/sheet/sheet.module';
+import { ShortTestModule } from './module/short-test/short-test.module';
 import { StudentModule } from './module/student/student.module';
 import { TeamModule } from './module/team/team.module';
 import { TutorialModule } from './module/tutorial/tutorial.module';
 import { UserModule } from './module/user/user.module';
-import { ShortTestModule } from './module/short-test/short-test.module';
 
 @Module({
   imports: [

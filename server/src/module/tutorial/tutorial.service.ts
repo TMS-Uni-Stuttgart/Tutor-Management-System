@@ -8,7 +8,7 @@ import {
 import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime, Interval } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
-import { populateStudentDocument, StudentDocument } from '../../database/models/student.model';
+import { StudentDocument } from '../../database/models/student.model';
 import {
   populateTutorialDocument,
   TutorialDocument,
@@ -18,6 +18,7 @@ import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { ITutorial } from '../../shared/model/Tutorial';
+import { StudentService } from '../student/student.service';
 import { UserService } from '../user/user.service';
 import {
   ExcludedTutorialDate,
@@ -29,8 +30,9 @@ import {
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {
   constructor(
-    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
+    @Inject(forwardRef(() => StudentService))
+    private readonly studentService: StudentService,
     @InjectModel(TutorialModel)
     private readonly tutorialModel: ReturnModelType<typeof TutorialModel>
   ) {}
@@ -218,10 +220,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
    * @throws `NotFoundException` - If no tutorial with the given ID could be found.
    */
   async getAllStudentsOfTutorial(id: string): Promise<StudentDocument[]> {
-    const tutorial = await this.findById(id);
-
-    await Promise.all(tutorial.students.map((s) => populateStudentDocument(s)));
-    return tutorial.students;
+    return this.studentService.findByCondition({ tutorial: id as any });
   }
 
   /**

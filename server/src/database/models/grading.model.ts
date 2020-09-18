@@ -1,8 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
-import { DocumentType, getModelForClass, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, getModelForClass, isDocument, plugin, prop } from '@typegoose/typegoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { fieldEncryption } from 'mongoose-field-encryption';
-import { CollectionName } from '../../helpers/CollectionName';
 import { StaticSettings } from '../../module/settings/settings.static';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
@@ -110,7 +109,7 @@ export class ExerciseGradingModel {
   }
 }
 
-@modelOptions({ schemaOptions: { collection: CollectionName.GRADING } })
+// @modelOptions({ schemaOptions: { collection: CollectionName.GRADING } })
 @plugin(fieldEncryption, {
   secret: StaticSettings.getService().getDatabaseSecret(),
   fields: ['comment', 'additionalPoints', 'exerciseGradings'],
@@ -126,8 +125,9 @@ export class GradingModel {
   @prop()
   additionalPoints?: number;
 
-  @prop({ default: [], index: true })
-  students!: string[];
+  // @prop({ ref: 'StudentModel', autopopulate: true, default: [] })
+  @prop({ type: String, default: [] })
+  private students!: string[];
 
   @prop()
   sheetId?: string;
@@ -172,7 +172,10 @@ export class GradingModel {
    * @param student Student to add to this grading.
    */
   addStudent(this: GradingDocument, student: StudentDocument): void {
-    const idx = this.students.findIndex((docId) => docId === student.id);
+    const idx = this.students.findIndex((doc) => {
+      const id = isDocument(doc) ? doc.id : doc.toString();
+      return id === student.id;
+    });
 
     if (idx === -1) {
       this.students.push(student.id);
@@ -194,6 +197,26 @@ export class GradingModel {
       this.students.splice(idx, 1);
       this.markModified('students');
     }
+  }
+
+  /**
+   * Checks if this grading belongs to the given student.
+   *
+   * @param student Student to check.
+   *
+   * @returns True if this grading belongs to the given student, false otherwise.
+   */
+  belongsToStudent(this: GradingDocument, student: StudentDocument): boolean {
+    const idx = this.students.findIndex((studentId) => studentId === student.id);
+
+    return idx !== -1;
+  }
+
+  /**
+   * @returns A copy of the list containing all students of this grading.
+   */
+  getStudents(this: GradingDocument): string[] {
+    return [...this.students];
   }
 
   /**
@@ -238,19 +261,7 @@ export class GradingModel {
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
   updateFromDTO(this: GradingDocument, dto: GradingDTO): void {
-    const {
-      exerciseGradings,
-      additionalPoints,
-      comment,
-      gradingId,
-      sheetId,
-      examId,
-      shortTestId,
-    } = dto;
-
-    if (!!gradingId) {
-      this.id = gradingId;
-    }
+    const { exerciseGradings, additionalPoints, comment, sheetId, examId, shortTestId } = dto;
 
     if (!sheetId && !examId && !shortTestId) {
       throw new Error(
