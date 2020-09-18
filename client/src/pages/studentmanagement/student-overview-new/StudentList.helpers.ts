@@ -86,6 +86,8 @@ export function useStudentsForStudentList({
   const createStudent = useCallback(
     async (dto: IStudentDTO) => {
       try {
+        const teamId = await createTeamIfNeccessary(dto.tutorial, dto.team);
+        dto.team = teamId !== '' ? teamId : undefined;
         const student = await fetchCreateStudent(dto);
         await fetchTeams(tutorialId ?? '');
 
