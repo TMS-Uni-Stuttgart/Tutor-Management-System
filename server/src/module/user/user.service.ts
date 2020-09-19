@@ -13,7 +13,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
-import { populateUserDocument, UserDocument, UserModel } from '../../database/models/user.model';
+import { UserDocument, UserModel } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { NamedElement } from '../../shared/model/Common';
 import { Role } from '../../shared/model/Role';
@@ -60,8 +60,6 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    */
   async findAll(): Promise<UserDocument[]> {
     const users = (await this.userModel.find().exec()) as UserDocument[];
-
-    await Promise.all(users.map((doc) => populateUserDocument(doc)));
 
     return users;
   }

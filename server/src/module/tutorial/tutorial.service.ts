@@ -9,11 +9,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime, Interval } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
 import { StudentDocument } from '../../database/models/student.model';
-import {
-  populateTutorialDocument,
-  TutorialDocument,
-  TutorialModel,
-} from '../../database/models/tutorial.model';
+import { TutorialDocument, TutorialModel } from '../../database/models/tutorial.model';
 import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
@@ -43,8 +39,6 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
    */
   async findAll(): Promise<TutorialDocument[]> {
     const tutorials: TutorialDocument[] = await this.tutorialModel.find().exec();
-
-    await Promise.all(tutorials.map((doc) => populateTutorialDocument(doc)));
 
     return tutorials;
   }

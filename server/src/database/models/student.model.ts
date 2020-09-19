@@ -61,10 +61,10 @@ export class StudentModel {
   @prop()
   iliasName?: string;
 
-  @prop({ required: true, ref: 'TutorialModel', autopopulate: true })
+  @prop({ required: true, ref: 'TutorialModel', autopopulate: { maxDepth: 1 } })
   tutorial!: TutorialDocument;
 
-  @prop({ ref: TeamModel, autopopulate: true })
+  @prop({ ref: TeamModel, autopopulate: { maxDepth: 1 } })
   team?: TeamDocument;
 
   @prop()

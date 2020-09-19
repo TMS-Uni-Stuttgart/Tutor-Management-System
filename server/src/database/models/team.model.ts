@@ -29,14 +29,14 @@ export class TeamModel {
   @prop({ required: true })
   teamNo!: number;
 
-  @prop({ required: true, autopopulate: true, ref: TutorialModel })
+  @prop({ required: true, autopopulate: { maxDepth: 1 }, ref: TutorialModel })
   tutorial!: TutorialDocument;
 
   @prop({
     ref: 'StudentModel',
     foreignField: 'team',
     localField: '_id',
-    autopopulate: true,
+    autopopulate: { maxDepth: 1 },
   })
   students!: StudentDocument[];
 

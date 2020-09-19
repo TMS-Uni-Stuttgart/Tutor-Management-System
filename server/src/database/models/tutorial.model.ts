@@ -4,43 +4,14 @@ import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
-import { ITutorial, UserInEntity } from '../../shared/model/Tutorial';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
+import { ITutorial } from '../../shared/model/Tutorial';
 import { StudentDocument } from './student.model';
 import { TeamDocument } from './team.model';
-import { UserDocument, UserModel } from './user.model';
-
-/**
- * Populates the fields in the given TutorialDocument. If no document is provided this functions does nothing.
- *
- * @param doc TutorialDocument to populate.
- */
-export async function populateTutorialDocument(doc?: TutorialDocument): Promise<void> {
-  if (!doc || !doc.populate) {
-    return;
-  }
-
-  await doc.populate('students').populate('teams').execPopulate();
-
-  doc.loadSubstituteMap();
-}
+import { UserDocument } from './user.model';
 
 type AssignableFields = Omit<NoFunctions<TutorialModel>, 'students' | 'teams'>;
 
-export class SubstituteModel {
-  @prop({ required: true })
-  date!: string;
-
-  @prop({ ref: UserModel, autopopulate: true, required: true })
-  user!: UserDocument;
-}
-
-type SubstituteDocument = DocumentType<SubstituteModel>;
-
 @plugin(mongooseAutoPopulate)
-@plugin<typeof VirtualPopulation, VirtualPopulationOptions<TutorialModel>>(VirtualPopulation, {
-  populateDocument: populateTutorialDocument,
-})
 @modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })
 export class TutorialModel {
   constructor(fields: AssignableFields) {
@@ -55,7 +26,7 @@ export class TutorialModel {
   @prop({ required: true })
   slot!: string;
 
-  @prop({ ref: 'UserModel', autopopulate: true })
+  @prop({ ref: 'UserModel', autopopulate: { maxDepth: 1 } })
   tutor?: UserDocument;
 
   @prop({ required: true, type: Schema.Types.String })
@@ -105,6 +76,7 @@ export class TutorialModel {
     ref: 'StudentModel',
     foreignField: 'tutorial',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   students!: StudentDocument[];
 
@@ -112,10 +84,11 @@ export class TutorialModel {
     ref: 'TeamModel',
     foreignField: 'tutorial',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   teams!: TeamDocument[];
 
-  @prop({ ref: 'UserModel', autopopulate: true, default: [] })
+  @prop({ ref: 'UserModel', autopopulate: { maxDepth: 1 }, default: [] })
   correctors!: UserDocument[];
 
   @prop({ type: SubstituteModel, autopopulate: true, default: [] })
