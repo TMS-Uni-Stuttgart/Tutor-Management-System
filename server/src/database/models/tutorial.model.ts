@@ -88,38 +88,11 @@ export class TutorialModel {
   })
   teams!: TeamDocument[];
 
-  @prop({ ref: 'UserModel', autopopulate: { maxDepth: 1 }, default: [] })
+  @prop({ ref: 'UserModel', autopopulate: true, default: [] })
   correctors!: UserDocument[];
 
-  @prop({ type: SubstituteModel, autopopulate: true, default: [] })
-  private _substitutes!: SubstituteDocument[];
-
-  private substitutes?: Map<string, UserDocument>;
-
-  loadSubstituteMap(): void {
-    this.substitutes = new Map();
-
-    for (const doc of this._substitutes) {
-      this.substitutes.set(doc.date, doc.user);
-    }
-  }
-
-  saveSubstituteMap(this: TutorialDocument): void {
-    if (!this.substitutes) {
-      return;
-    }
-
-    this._substitutes = [];
-
-    for (const [date, user] of this.substitutes) {
-      this._substitutes.push({
-        date,
-        user,
-      } as any);
-    }
-
-    this.markModified('_substitutes');
-  }
+  @prop({ type: String, default: new Map() })
+  private substitutes: Map<string, string>;
 
   /**
    * Sets the substitute of the given date to the given user.
@@ -130,9 +103,7 @@ export class TutorialModel {
    * @param substitute Substitute
    */
   setSubstitute(this: TutorialDocument, date: DateTime, substitute: UserDocument): void {
-    this.substitutes?.set(this.getDateKey(date), substitute);
-
-    this.saveSubstituteMap();
+    this.substitutes.set(this.getDateKey(date), substitute.id);
   }
 
   /**
@@ -145,9 +116,8 @@ export class TutorialModel {
   removeSubstitute(this: TutorialDocument, date: DateTime): void {
     const key = this.getDateKey(date);
 
-    if (this.substitutes?.has(key)) {
-      this.substitutes?.delete(key);
-      this.saveSubstituteMap();
+    if (this.substitutes.has(key)) {
+      this.substitutes.delete(key);
     }
   }
 
@@ -157,18 +127,17 @@ export class TutorialModel {
    * If there is a substitute saved for the given date that substitue is returned. If there is none, `undefined` is returned.
    *
    * @param date Date to get the substitute.
-   * @returns The corresponding user, if there is a substitute at the given date, else `undefined`.
+   * @returns The corresponding user's ID, if there is a substitute at the given date, else `undefined`.
    */
-  getSubstitute(date: DateTime): UserDocument | undefined {
-    return this.substitutes?.get(this.getDateKey(date));
+  getSubstitute(date: DateTime): string | undefined {
+    return this.substitutes.get(this.getDateKey(date));
   }
 
-  getAllSubstitutes(): Map<string, UserDocument> {
-    if (!this.substitutes) {
-      this.loadSubstituteMap();
-    }
-
-    return this.substitutes ?? new Map();
+  /**
+   * @returns A map containing the dates as keys and the corresponding substitute for that day.
+   */
+  getAllSubstitutes(): Map<string, string> {
+    return this.substitutes;
   }
 
   /**
@@ -178,11 +147,6 @@ export class TutorialModel {
    */
   toDTO(this: TutorialDocument): ITutorial {
     const { id, slot, tutor, dates, startTime, endTime, students, correctors, teams } = this;
-    const substitutes: Map<string, UserInEntity> = new Map();
-
-    for (const [date, doc] of this.substitutes?.entries() ?? []) {
-      substitutes.set(date, { id: doc.id, firstname: doc.firstname, lastname: doc.lastname });
-    }
 
     const dateOptions: ToISOTimeOptions = {
       suppressMilliseconds: true,
@@ -203,7 +167,7 @@ export class TutorialModel {
         firstname: corrector.firstname,
         lastname: corrector.lastname,
       })),
-      substitutes: [...substitutes],
+      substitutes: [...this.substitutes],
       teams: teams.map((team) => team.id),
     };
   }

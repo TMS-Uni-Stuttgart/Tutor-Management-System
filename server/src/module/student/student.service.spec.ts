@@ -79,7 +79,7 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
 
   expect(actualId).toEqual(_id.toString());
 
-  expect(actualTutorial.id).toEqual(tutorial._id);
+  expect(actualTutorial.id).toEqual(tutorial.id);
   expect(actualTutorial.slot).toEqual(tutorial.slot);
 
   expect(actualTeam?.id).toEqual(team?._id);

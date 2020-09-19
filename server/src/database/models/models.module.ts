@@ -9,7 +9,7 @@ import { SheetModel } from './sheet.model';
 import { ShortTestModel } from './shortTest.model';
 import { StudentModel } from './student.model';
 import { TeamModel } from './team.model';
-import { SubstituteModel, TutorialModel } from './tutorial.model';
+import { TutorialModel } from './tutorial.model';
 import { UserModel } from './user.model';
 
 @Global()
@@ -26,7 +26,6 @@ export class ModelsModule {
       ScheinexamModel,
       ScheincriteriaModel,
       GradingModel,
-      SubstituteModel,
       SettingsModel,
       ShortTestModel,
     ]);

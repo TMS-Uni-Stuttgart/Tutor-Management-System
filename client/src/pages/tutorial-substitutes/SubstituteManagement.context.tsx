@@ -23,6 +23,7 @@ export interface SubstituteManagementContextType {
   removeSelectedSubstitute: (date: DateTime) => void;
   resetSelectedSubstitute: (date: DateTime) => void;
   dirty: boolean;
+  resetDirty: () => void;
 }
 
 const ERR_NOT_INITIALIZED: UseFetchState<never, []> = {
@@ -41,6 +42,7 @@ const Context = React.createContext<SubstituteManagementContextType>({
   setSelectedSubstitute: throwContextNotInitialized('SubstituteManagementContext'),
   removeSelectedSubstitute: throwContextNotInitialized('SubstituteManagementContext'),
   resetSelectedSubstitute: throwContextNotInitialized('SubstituteManagementContext'),
+  resetDirty: throwContextNotInitialized('SubstituteManagementContext'),
   dirty: false,
 });
 
@@ -69,16 +71,28 @@ function SubstituteManagementContextProvider({
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    if (tutorial.value) {
-      updateSubstituteMap(new Map<string, NamedElement>(tutorial.value.substitutes));
+    if (tutorial.value && tutors.value) {
+      const substMap = new Map<string, NamedElement>();
+
+      for (const [date, substId] of tutorial.value.substitutes) {
+        const tutor = tutors.value.find((t) => t.id === substId);
+        if (tutor) {
+          substMap.set(date, tutor);
+        }
+      }
+
+      updateSubstituteMap(new Map<string, NamedElement>(substMap));
     } else {
       updateSubstituteMap(new Map());
     }
-  }, [tutorial.value]);
+  }, [tutorial.value, tutors.value]);
 
   useEffect(() => {
     if (tutorial.value) {
-      setDirty(!_.isEqual(selectedSubstitutes, tutorial.value.substitutes));
+      const parsedMap = new Map<string, string>();
+      selectedSubstitutes.forEach((el, date) => parsedMap.set(date, el.id));
+
+      setDirty(!_.isEqual(parsedMap, tutorial.value.substitutes));
     } else {
       setDirty(false);
     }
@@ -108,18 +122,19 @@ function SubstituteManagementContextProvider({
   );
   const resetSelectedSubstitute = useCallback(
     (date: DateTime) => {
-      if (!tutorial.value) {
+      if (!tutorial.value || !tutors.value) {
         return;
       }
 
-      const substitute = tutorial.value.getSubstitute(date);
+      const substituteId = tutorial.value.getSubstitute(date);
+      const substitute = tutors.value.find((t) => t.id === substituteId);
       if (!!substitute) {
         setSelectedSubstitute(substitute, date);
       } else {
         removeSelectedSubstitute(date);
       }
     },
-    [tutorial.value, setSelectedSubstitute, removeSelectedSubstitute]
+    [tutorial.value, tutors.value, setSelectedSubstitute, removeSelectedSubstitute]
   );
   const isSubstituteChanged = useCallback(
     (date: DateTime) => {
@@ -128,12 +143,13 @@ function SubstituteManagementContextProvider({
       }
 
       const selectedSubstId = getSelectedSubstitute(date)?.id;
-      const currentSubstId = tutorial.value.getSubstitute(date)?.id;
+      const currentSubstId = tutorial.value.getSubstitute(date);
 
       return selectedSubstId !== currentSubstId;
     },
     [tutorial.value, getSelectedSubstitute]
   );
+  const resetDirty = useCallback(() => setDirty(false), []);
 
   return (
     <Context.Provider
@@ -148,6 +164,7 @@ function SubstituteManagementContextProvider({
         removeSelectedSubstitute,
         resetSelectedSubstitute,
         dirty,
+        resetDirty,
       }}
     >
       {children}

@@ -63,6 +63,7 @@ export class UserModel {
     ref: 'TutorialModel',
     foreignField: 'tutor',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   tutorials!: TutorialDocument[];
 
@@ -70,6 +71,7 @@ export class UserModel {
     ref: 'TutorialModel',
     foreignField: 'correctors',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   tutorialsToCorrect!: TutorialDocument[];
 
