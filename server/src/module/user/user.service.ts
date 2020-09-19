@@ -187,7 +187,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
       })
     );
 
-    // Remove user from all tutorial to correct he's not the corrector of anymore.
+    // Remove user from all tutorials to correct he's not the corrector of anymore.
     await Promise.all(
       tutorialsToCorrect
         .filter((tutorial) => !dto.tutorialsToCorrect.includes(tutorial.id))
@@ -196,6 +196,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
             ...tutorial.correctors.filter((corrector) => corrector.id !== user.id),
           ];
 
+          tutorial.markModified('correctors');
           return tutorial.save();
         })
     );
@@ -319,8 +320,8 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     const substituteTutorials: Map<string, ILoggedInUserSubstituteTutorial> = new Map();
 
     allTutorials.forEach((tutorial) => {
-      tutorial.getAllSubstitutes().forEach((substitute, dateKey) => {
-        if (substitute.id !== userId) {
+      tutorial.getAllSubstitutes().forEach((substituteId, dateKey) => {
+        if (substituteId !== userId) {
           return;
         }
 

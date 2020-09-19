@@ -88,7 +88,8 @@ export class TutorialModel {
   })
   teams!: TeamDocument[];
 
-  @prop({ ref: 'UserModel', autopopulate: true, default: [] })
+  // Needs to be maxDepth >= 2 so all tutorial fields get populated aswell. Otherwise adding / removing a corrector does not work.
+  @prop({ ref: 'UserModel', autopopulate: { maxDepth: 2 }, default: [] })
   correctors!: UserDocument[];
 
   @prop({ type: String, default: new Map() })
