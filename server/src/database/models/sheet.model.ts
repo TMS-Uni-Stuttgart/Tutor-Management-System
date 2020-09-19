@@ -1,11 +1,9 @@
-import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
-import mongooseAutoPopulate from 'mongoose-autopopulate';
+import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
 import { SheetDTO } from '../../module/sheet/sheet.dto';
 import { ISheet } from '../../shared/model/Sheet';
 import { HasExercisesModel } from './ratedEntity.model';
 
-@plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.SHEET } })
 export class SheetModel extends HasExercisesModel {
   static fromDTO(dto: SheetDTO): SheetModel {

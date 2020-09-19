@@ -1,11 +1,9 @@
-import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
-import mongooseAutoPopulate from 'mongoose-autopopulate';
+import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ShortTestDTO } from '../../module/scheinexam/scheinexam.dto';
 import { IShortTest } from '../../shared/model/ShortTest';
 import { RatedEntityModel } from './ratedEntity.model';
 
-@plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.SHORT_TESTS } })
 export class ShortTestModel extends RatedEntityModel {
   @prop({ required: true })
