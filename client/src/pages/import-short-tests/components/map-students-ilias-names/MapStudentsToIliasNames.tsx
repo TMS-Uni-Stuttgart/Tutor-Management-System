@@ -47,7 +47,7 @@ function MapStudentsToIliasNames(): JSX.Element {
         title: `Studierenden zuordnen ("${iliasName}")`,
         content: (props: SelectionDialogChildrenProps<Student>) => (
           <MappingDialog
-            students={students ?? []}
+            students={studentsWithoutResult ?? []}
             iliasName={iliasName}
             initiallySelected={iliasNameMapping.get(iliasName)}
             {...props}
@@ -61,7 +61,7 @@ function MapStudentsToIliasNames(): JSX.Element {
         addMapping(iliasName, result);
       }
     },
-    [showSelectionDialog, students, addMapping, iliasNameMapping]
+    [showSelectionDialog, studentsWithoutResult, addMapping, iliasNameMapping]
   );
 
   const handleRemoveStudentMapping = useCallback(

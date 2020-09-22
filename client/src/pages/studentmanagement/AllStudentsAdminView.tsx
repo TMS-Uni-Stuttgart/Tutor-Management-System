@@ -9,9 +9,9 @@ import { useDialog } from '../../hooks/dialog-service/DialogService';
 import { getClearScheinStatusPDF, getScheinStatusPDF } from '../../hooks/fetching/Files';
 import { Student } from '../../model/Student';
 import { saveBlob } from '../../util/helperFunctions';
-import TutorialChangeForm from './student-overview-new/components/TutorialChangeForm';
-import StudentList from './student-overview-new/StudentList';
-import { useStudentsForStudentList } from './student-overview-new/StudentList.helpers';
+import TutorialChangeForm from './student-list/components/TutorialChangeForm';
+import StudentList from './student-list/StudentList';
+import { useStudentsForStudentList } from './student-list/StudentList.helpers';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

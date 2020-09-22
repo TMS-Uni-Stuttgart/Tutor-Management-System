@@ -2,7 +2,7 @@ import { Box } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { FormikHelpers } from 'formik';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { IStudentDTO } from 'shared/model/Student';
@@ -11,6 +11,7 @@ import StudentForm, {
   StudentFormState,
 } from '../../../components/forms/StudentForm';
 import { useDialog } from '../../../hooks/dialog-service/DialogService';
+import { useResizeObserver } from '../../../hooks/useResizeObserver';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
 import StudentListRow, { SubtextType } from './components/StudentListRow';
@@ -59,8 +60,7 @@ function StudentList({
   const classes = useStyles();
   const dialog = useDialog();
 
-  const root = useRef<HTMLTableElement>(null);
-  const [{ height, width }, setDimensions] = useState({ height: 0, width: 0 });
+  const [root, { height, width }] = useResizeObserver<HTMLDivElement>();
 
   const [filterText, setFilterText] = useState('');
   const [sortOption, setSortOption] = useState<StudentSortOption>(StudentSortOption.ALPHABETICAL);
@@ -69,28 +69,6 @@ function StudentList({
     filterText,
     sortOption,
   ]);
-
-  useEffect(() => {
-    const rootElement = root.current;
-
-    if (!rootElement) {
-      return;
-    }
-
-    function handleResize() {
-      if (!rootElement) {
-        return;
-      }
-
-      const { height, width } = rootElement.getBoundingClientRect();
-      setDimensions({ height, width });
-    }
-
-    const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(rootElement);
-
-    return () => resizeObserver.disconnect();
-  }, []);
 
   const handleStudentEdit = useCallback(
     (student: Student) => {
