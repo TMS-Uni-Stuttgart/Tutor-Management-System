@@ -139,6 +139,7 @@ export class StudentModel {
       this.gradings[idx] = grading;
     }
 
+    grading.addStudent(this);
     this.markModified('gradings');
   }
 

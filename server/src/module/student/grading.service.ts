@@ -73,9 +73,7 @@ export class GradingService {
 
     if (oldGrading) {
       oldGrading.removeStudent(student);
-      const otherStudents = await this.studentService.findByCondition({
-        _id: { $in: oldGrading.getStudents() },
-      });
+      const otherStudents = await this.getStudentsOfGrading(oldGrading);
 
       if (createNewGrading) {
         for (const otherStudent of otherStudents) {
@@ -95,7 +93,6 @@ export class GradingService {
       }
     }
 
-    grading.addStudent(student);
     student.setGrading(handIn, grading);
     await student.save();
   }
@@ -135,5 +132,18 @@ export class GradingService {
     throw new BadRequestException(
       'You have to either set the sheetId nor the examId nor the shortTestId field.'
     );
+  }
+
+  /**
+   * Fetches all students of the given grading from the DB.
+   *
+   * @param grading Grading to get students of.
+   *
+   * @returns StudentDocuments of all students attached to the given grading.
+   */
+  private async getStudentsOfGrading(grading: GradingDocument): Promise<StudentDocument[]> {
+    return await this.studentService.findByCondition({
+      _id: { $in: grading.getStudents() },
+    });
   }
 }
