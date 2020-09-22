@@ -41,7 +41,7 @@ function UserTableRow({
   return (
     <PaperTableRow
       label={`${user.lastname}, ${user.firstname}`}
-      subText={getRolesAsString(user.roles)}
+      subText={`Nutzername: ${user.username}, Rollen: ${getRolesAsString(user.roles)}`}
       icon={PersonIcon}
       buttonCellContent={
         <EntityListItemMenu
