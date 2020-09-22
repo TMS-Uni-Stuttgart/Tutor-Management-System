@@ -2,7 +2,6 @@ import {
   Box,
   BoxProps,
   Checkbox,
-  List,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -12,7 +11,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { deburr } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FixedSizeList } from 'react-window';
-import { useResizeObserver } from '../../../hooks/useResizeObserver';
+import { Dimensions, useResizeObserver } from '../../../hooks/useResizeObserver';
 import { useLogger } from '../../../util/Logger';
 import OutlinedBox from '../../OutlinedBox';
 
@@ -43,6 +42,7 @@ export interface FilterableSelectProps<T> extends Omit<BoxProps, 'onChange'> {
   onChange?: (newValue: string[], oldValue: string[]) => void;
   value?: string[];
   singleSelect?: boolean;
+  listStartDimensions?: Dimensions;
 }
 
 function FilterableSelect<T>({
@@ -55,11 +55,12 @@ function FilterableSelect<T>({
   singleSelect,
   value: valueFromProps,
   onChange,
+  listStartDimensions,
   ...other
 }: FilterableSelectProps<T>): JSX.Element {
   const classes = useStyles();
   const logger = useLogger('FilterableSelect');
-  const [list, dimensions] = useResizeObserver<HTMLUListElement>();
+  const [list, dimensions] = useResizeObserver<HTMLDivElement>(listStartDimensions);
 
   const [filter, setFilterText] = useState('');
   const [value, setValue] = useState<string[]>(valueFromProps ?? []);
@@ -156,41 +157,39 @@ function FilterableSelect<T>({
         }}
       />
 
-      <div className={classes.list}>
-        <List ref={list}>
-          {filteredItems.length === 0 ? (
-            <ListItem>
-              <ListItemText primary={emptyPlaceholder} />
-            </ListItem>
-          ) : (
-            <FixedSizeList
-              height={dimensions.height}
-              width={dimensions.width}
-              itemCount={filteredItems.length}
-              itemSize={50}
-            >
-              {({ index, style }) => {
-                const item = filteredItems[index];
-                const itemValue = itemToValue(item);
-                const itemString = itemToString(item);
+      <div ref={list} className={classes.list}>
+        <FixedSizeList
+          height={dimensions.height}
+          width={dimensions.width}
+          itemCount={filteredItems.length}
+          itemSize={50}
+        >
+          {({ index, style }) => {
+            const item = filteredItems[index];
+            const itemValue = itemToValue(item);
+            const itemString = itemToString(item);
 
-                return (
-                  <ListItem
-                    key={itemValue}
-                    button
-                    onClick={() => handleItemClicked(itemValue)}
-                    style={{ ...style }}
-                  >
-                    <ListItemIcon>
-                      <Checkbox edge='start' checked={isItemSelected(item)} disableRipple />
-                    </ListItemIcon>
-                    <ListItemText primary={itemString} />
-                  </ListItem>
-                );
-              }}
-            </FixedSizeList>
-          )}
-        </List>
+            return (
+              <ListItem
+                key={itemValue}
+                button
+                onClick={() => handleItemClicked(itemValue)}
+                style={{ ...style }}
+              >
+                <ListItemIcon>
+                  <Checkbox edge='start' checked={isItemSelected(item)} disableRipple />
+                </ListItemIcon>
+                <ListItemText primary={itemString} />
+              </ListItem>
+            );
+          }}
+        </FixedSizeList>
+
+        {filteredItems.length === 0 && (
+          <ListItem>
+            <ListItemText primary={emptyPlaceholder} />
+          </ListItem>
+        )}
       </div>
     </OutlinedBox>
   );

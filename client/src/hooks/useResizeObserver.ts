@@ -1,13 +1,15 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
 
-interface Dimensions {
+export interface Dimensions {
   height: number;
   width: number;
 }
 
-export function useResizeObserver<T extends HTMLElement>(): [RefObject<T>, Dimensions] {
+export function useResizeObserver<T extends HTMLElement>(
+  startDimensions?: Dimensions
+): [RefObject<T>, Dimensions] {
   const root = useRef<T>(null);
-  const [dimensions, setDimensions] = useState({ height: 0, width: 0 });
+  const [dimensions, setDimensions] = useState(() => startDimensions ?? { height: 0, width: 0 });
 
   useEffect(() => {
     const rootElement = root.current;
