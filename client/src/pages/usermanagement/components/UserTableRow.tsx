@@ -10,6 +10,11 @@ import { Tutorial } from '../../../model/Tutorial';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    labelCell: {
+      // Style cell of name to not take up more space than neccessary
+      width: '1%',
+      whiteSpace: 'nowrap',
+    },
     tutorialChip: {
       margin: theme.spacing(0.5),
     },
@@ -41,7 +46,7 @@ function UserTableRow({
   return (
     <PaperTableRow
       label={`${user.lastname}, ${user.firstname}`}
-      subText={getRolesAsString(user.roles)}
+      subText={`Nutzername: ${user.username}, Rollen: ${getRolesAsString(user.roles)}`}
       icon={PersonIcon}
       buttonCellContent={
         <EntityListItemMenu
@@ -62,6 +67,7 @@ function UserTableRow({
           ]}
         />
       }
+      LabelCellProps={{ className: classes.labelCell }}
       {...rest}
     >
       <TableCell>

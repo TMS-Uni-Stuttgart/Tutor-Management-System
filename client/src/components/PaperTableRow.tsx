@@ -1,10 +1,17 @@
-import { TableRow, TableCell, Avatar, Typography, Tooltip } from '@material-ui/core';
+import {
+  Avatar,
+  TableCell,
+  TableCellProps,
+  TableRow,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+import { AvatarProps } from '@material-ui/core/Avatar';
 import Paper, { PaperProps } from '@material-ui/core/Paper';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { TypographyProps } from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import React from 'react';
-import { TypographyProps } from '@material-ui/core/Typography';
-import { AvatarProps } from '@material-ui/core/Avatar';
 import { SvgIconComponent } from '../typings/SvgIconComponent';
 
 interface StyleProps {
@@ -19,8 +26,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) =>
         // background: theme.palette.grey[200],
       },
       '& td': {
-        // This prevents table-cells from getting too small if other cells take up more space.
-        // whiteSpace: 'nowrap',
         // Make sure the "table row" has a proper border radius
         // This is needed here bc one cannot add borderRadius to tr elements.
         '&:first-child': {
@@ -47,9 +52,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) =>
     avatarCell: {
       paddingLeft: theme.spacing(2),
     },
-    labelCell: {
-      width: 'max-content',
-    },
     buttonCell: {
       whiteSpace: 'nowrap',
     },
@@ -59,6 +61,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) =>
 interface Props {
   label: string;
   subText?: string;
+  LabelCellProps?: TableCellProps;
   LabelProps?: TypographyProps;
   SubTextProps?: TypographyProps;
   buttonCellContent?: React.ReactNode;
@@ -79,6 +82,7 @@ function PaperTableRow({
   icon: Icon,
   className,
   children,
+  LabelCellProps,
   LabelProps,
   SubTextProps,
   buttonCellContent: ButtonCellContent,
@@ -110,11 +114,8 @@ function PaperTableRow({
         </TableCell>
       )}
 
-      <TableCell>
-        <Typography
-          {...LabelProps}
-          className={clsx(LabelProps && LabelProps.className, classes.labelCell)}
-        >
+      <TableCell {...LabelCellProps}>
+        <Typography {...LabelProps} className={clsx(LabelProps && LabelProps.className)}>
           {label}
         </Typography>
 

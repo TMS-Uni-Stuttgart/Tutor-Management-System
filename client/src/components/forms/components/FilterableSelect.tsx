@@ -2,7 +2,6 @@ import {
   Box,
   BoxProps,
   Checkbox,
-  List,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -11,6 +10,8 @@ import {
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { deburr } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
+import { FixedSizeList } from 'react-window';
+import { Dimensions, useResizeObserver } from '../../../hooks/useResizeObserver';
 import { useLogger } from '../../../util/Logger';
 import OutlinedBox from '../../OutlinedBox';
 
@@ -41,6 +42,7 @@ export interface FilterableSelectProps<T> extends Omit<BoxProps, 'onChange'> {
   onChange?: (newValue: string[], oldValue: string[]) => void;
   value?: string[];
   singleSelect?: boolean;
+  listStartDimensions?: Dimensions;
 }
 
 function FilterableSelect<T>({
@@ -53,17 +55,16 @@ function FilterableSelect<T>({
   singleSelect,
   value: valueFromProps,
   onChange,
+  listStartDimensions,
   ...other
 }: FilterableSelectProps<T>): JSX.Element {
   const classes = useStyles();
   const logger = useLogger('FilterableSelect');
+  const [list, dimensions] = useResizeObserver<HTMLDivElement>(listStartDimensions);
 
-  const [filter, setFilter] = useState('');
+  const [filter, setFilterText] = useState('');
   const [value, setValue] = useState<string[]>(valueFromProps ?? []);
-
-  useEffect(() => {
-    setValue(valueFromProps ?? []);
-  }, [valueFromProps]);
+  const [filteredItems, setFilteredItems] = useState<T[]>([]);
 
   const isItemMatchingFilter = useCallback(
     (item: T) => {
@@ -76,6 +77,16 @@ function FilterableSelect<T>({
       return itemString.indexOf(filter) > -1;
     },
     [filter, itemToString]
+  );
+
+  const handleFilterChanged = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const filterText = deburr(e.target.value.trim().toLowerCase());
+
+      setFilterText(filterText);
+      setFilteredItems(items.filter(isItemMatchingFilter));
+    },
+    [items, isItemMatchingFilter]
   );
 
   const isItemSelected = useCallback(
@@ -110,6 +121,14 @@ function FilterableSelect<T>({
     [singleSelect, value, onChange]
   );
 
+  useEffect(() => {
+    setValue(valueFromProps ?? []);
+  }, [valueFromProps]);
+
+  useEffect(() => {
+    setFilteredItems(items.filter(isItemMatchingFilter));
+  }, [items, isItemMatchingFilter]);
+
   if (singleSelect && value.length > 1) {
     logger.error(
       `The values of the FilterableSelect should have length 1 (or 0) if 'singleSelect' is true (current length: ${value.length}).`
@@ -132,34 +151,45 @@ function FilterableSelect<T>({
         variant='standard'
         placeholder={filterPlaceholder}
         className={classes.textField}
-        onChange={(e) => setFilter(deburr(e.target.value.trim().toLowerCase()))}
+        onChange={handleFilterChanged}
         InputProps={{
           className: classes.inputField,
         }}
       />
 
-      <div className={classes.list}>
-        <List>
-          {items.filter(isItemMatchingFilter).map((item) => {
+      <div ref={list} className={classes.list}>
+        <FixedSizeList
+          height={dimensions.height}
+          width={dimensions.width}
+          itemCount={filteredItems.length}
+          itemSize={50}
+        >
+          {({ index, style }) => {
+            const item = filteredItems[index];
             const itemValue = itemToValue(item);
             const itemString = itemToString(item);
 
             return (
-              <ListItem key={itemValue} button onClick={() => handleItemClicked(itemValue)}>
+              <ListItem
+                key={itemValue}
+                button
+                onClick={() => handleItemClicked(itemValue)}
+                style={{ ...style }}
+              >
                 <ListItemIcon>
                   <Checkbox edge='start' checked={isItemSelected(item)} disableRipple />
                 </ListItemIcon>
                 <ListItemText primary={itemString} />
               </ListItem>
             );
-          })}
+          }}
+        </FixedSizeList>
 
-          {items.length === 0 && (
-            <ListItem>
-              <ListItemText primary={emptyPlaceholder} />
-            </ListItem>
-          )}
-        </List>
+        {filteredItems.length === 0 && (
+          <ListItem>
+            <ListItemText primary={emptyPlaceholder} />
+          </ListItem>
+        )}
       </div>
     </OutlinedBox>
   );

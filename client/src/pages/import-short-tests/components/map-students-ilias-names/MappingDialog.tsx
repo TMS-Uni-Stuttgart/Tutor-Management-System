@@ -62,6 +62,7 @@ function MappingDialog({
         }}
         singleSelect
         className={classes.select}
+        listStartDimensions={{ height: 310, width: 1200 }}
       />
     </Box>
   );

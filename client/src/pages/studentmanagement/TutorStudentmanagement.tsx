@@ -6,8 +6,8 @@ import StudentForm, {
 } from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import OpenableFormWithFab, { EditorOpenState } from '../../components/OpenableFormWithFab';
-import StudentList from './student-overview-new/StudentList';
-import { useStudentsForStudentList } from './student-overview-new/StudentList.helpers';
+import StudentList from './student-list/StudentList';
+import { useStudentsForStudentList } from './student-list/StudentList.helpers';
 
 interface Params {
   tutorialId: string;
