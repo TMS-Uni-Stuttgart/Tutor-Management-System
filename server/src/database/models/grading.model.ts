@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { isDocument } from '@typegoose/typegoose';
 import { plainToClass, Transform, Type } from 'class-transformer';
 import { ClassType } from 'class-transformer/ClassTransformer';
+import { Types } from 'mongoose';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
@@ -43,8 +44,8 @@ export class ExerciseGrading {
   comment?: string;
   additionalPoints?: number;
 
-  @Type(() => Number)
-  subExercisePoints?: Map<string, number>;
+  @Transform((value) => SerializableMap.fromJSON(value))
+  subExercisePoints?: SerializableMap<string, number>;
 
   private _points: number;
 
@@ -114,7 +115,9 @@ export class ExerciseGrading {
     this.comment = comment;
     this.additionalPoints = additionalPoints;
     this.points = points ?? 0;
-    this.subExercisePoints = !!subExercisePoints ? new Map(subExercisePoints) : undefined;
+    this.subExercisePoints = !!subExercisePoints
+      ? new SerializableMap(subExercisePoints)
+      : undefined;
   }
 
   toDTO(): IExerciseGrading {
@@ -130,6 +133,8 @@ export class ExerciseGrading {
 }
 
 export class Grading {
+  id: string;
+
   @Transform((value) => SerializableMap.fromJSON(value, ExerciseGrading))
   exerciseGradings: SerializableMap<string, ExerciseGrading>;
 
@@ -166,6 +171,7 @@ export class Grading {
   }
 
   constructor() {
+    this.id = Types.ObjectId().toHexString();
     this.students = [];
     this.exerciseGradings = new SerializableMap();
   }
@@ -279,7 +285,7 @@ export class Grading {
   }
 
   toDTO(): IGrading {
-    const { comment, additionalPoints, points, belongsToTeam } = this;
+    const { id, comment, additionalPoints, points, belongsToTeam } = this;
     const exerciseGradings: Map<string, IExerciseGrading> = new Map();
 
     for (const [key, exGrading] of this.exerciseGradings) {
@@ -287,7 +293,7 @@ export class Grading {
     }
 
     return {
-      id: 'REMOVE ME', // FIXME: Remove me!!!
+      id,
       points,
       belongsToTeam,
       exerciseGradings: [...exerciseGradings],
