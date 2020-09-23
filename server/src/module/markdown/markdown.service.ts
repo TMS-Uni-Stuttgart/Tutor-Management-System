@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { SubExerciseDocument } from '../../database/models/exercise.model';
-import { ExerciseGradingDocument, GradingDocument } from '../../database/models/grading.model';
+import { ExerciseGrading, Grading } from '../../database/models/grading.model';
 import { HasExercisesDocument } from '../../database/models/ratedEntity.model';
 import { SheetDocument } from '../../database/models/sheet.model';
 import { TeamDocument, TeamModel } from '../../database/models/team.model';
@@ -44,7 +44,7 @@ interface SheetPointInfo {
 
 interface GeneratingParams {
   entity: HasExercisesDocument;
-  grading: GradingDocument;
+  grading: Grading;
   nameOfEntity: string;
 }
 
@@ -56,7 +56,7 @@ interface GenerateFromTeamParams {
 
 interface GenerateSubExTableParams {
   subexercises: SubExerciseDocument[];
-  gradingForExercise: ExerciseGradingDocument;
+  gradingForExercise: ExerciseGrading;
 }
 
 interface SubExData {

@@ -1,4 +1,5 @@
-import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, post, prop, Severity } from '@typegoose/typegoose';
+import { plainToClass } from 'class-transformer';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
@@ -9,7 +10,7 @@ import { IGrading } from '../../shared/model/Gradings';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { HandInDocument } from './exercise.model';
-import { GradingDocument, GradingModel } from './grading.model';
+import { Grading } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
@@ -27,6 +28,14 @@ interface ConstructorFields {
   cakeCount: number;
 }
 
+@post<StudentModel>('find', (docs, next) => {
+  docs.forEach((s) => s.transformGradings());
+  next();
+})
+@post<StudentModel>('findOne', (doc, next) => {
+  doc.transformGradings();
+  next();
+})
 @plugin(fieldEncryption, {
   secret: StaticSettings.getService().getDatabaseSecret(),
   fields: [
@@ -43,7 +52,10 @@ interface ConstructorFields {
   ],
 })
 @plugin(mongooseAutoPopulate)
-@modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
+@modelOptions({
+  schemaOptions: { collection: CollectionName.STUDENT },
+  options: { allowMixed: Severity.ALLOW },
+})
 export class StudentModel {
   constructor(fields: ConstructorFields) {
     Object.assign(this, fields);
@@ -85,11 +97,15 @@ export class StudentModel {
   @prop({ type: AttendanceModel, default: new Map() })
   attendances!: Map<string, AttendanceDocument>;
 
-  @prop({ type: GradingModel, default: [] })
-  private gradings!: GradingDocument[];
+  @prop({ type: Object, default: [] })
+  private gradings!: Grading[];
 
   @prop({ type: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
+
+  transformGradings(): void {
+    this.gradings = plainToClass(Grading, this.gradings);
+  }
 
   /**
    * Saves the given attendance in the student.
@@ -126,7 +142,7 @@ export class StudentModel {
    * @param sheet Sheet to save grading for.
    * @param grading Grading so save.
    */
-  setGrading(this: StudentDocument, handIn: HandInDocument, grading: GradingDocument): void {
+  setGrading(this: StudentDocument, handIn: HandInDocument, grading: Grading): void {
     if (!handIn.id) {
       return;
     }
@@ -150,7 +166,7 @@ export class StudentModel {
    *
    * @returns Grading for the given hand-in or `undefined`
    */
-  getGrading(handIn: HandInDocument): GradingDocument | undefined {
+  getGrading(handIn: HandInDocument): Grading | undefined {
     if (!handIn.id) {
       return undefined;
     }

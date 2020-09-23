@@ -1,6 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { HandInDocument } from '../../database/models/exercise.model';
-import { GradingDocument, GradingModel } from '../../database/models/grading.model';
+import { Grading } from '../../database/models/grading.model';
 import { StudentDocument } from '../../database/models/student.model';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
@@ -28,11 +28,11 @@ export class GradingService {
    */
   async setGradingOfStudent(student: StudentDocument, dto: GradingDTO): Promise<void> {
     const handIn: HandInDocument = await this.getHandInFromDTO(dto);
-    const oldGrading: GradingDocument | undefined = student.getGrading(handIn);
-    let newGrading: GradingDocument;
+    const oldGrading: Grading | undefined = student.getGrading(handIn);
+    let newGrading: Grading;
 
     if (!oldGrading || dto.createNewGrading) {
-      newGrading = GradingModel.fromDTO(dto);
+      newGrading = Grading.fromDTO(dto);
     } else {
       oldGrading.updateFromDTO(dto);
       newGrading = oldGrading;
@@ -49,7 +49,7 @@ export class GradingService {
    */
   async setGradingOfMultipleStudents(students: StudentDocument[], dto: GradingDTO): Promise<void> {
     const handIn: HandInDocument = await this.getHandInFromDTO(dto);
-    const gradingFromDTO = GradingModel.fromDTO(dto);
+    const gradingFromDTO = Grading.fromDTO(dto);
 
     for (const student of students) {
       gradingFromDTO.addStudent(student);
@@ -66,7 +66,7 @@ export class GradingService {
   private async assignGradingToStudent(
     handIn: HandInDocument,
     student: StudentDocument,
-    grading: GradingDocument,
+    grading: Grading,
     createNewGrading: boolean
   ): Promise<void> {
     const oldGrading = student.getGrading(handIn);
@@ -130,7 +130,7 @@ export class GradingService {
     }
 
     throw new BadRequestException(
-      'You have to either set the sheetId nor the examId nor the shortTestId field.'
+      'You have to either set the sheetId or the examId or the shortTestId field.'
     );
   }
 
@@ -141,7 +141,7 @@ export class GradingService {
    *
    * @returns StudentDocuments of all students attached to the given grading.
    */
-  private async getStudentsOfGrading(grading: GradingDocument): Promise<StudentDocument[]> {
+  private async getStudentsOfGrading(grading: Grading): Promise<StudentDocument[]> {
     return await this.studentService.findByCondition({
       _id: { $in: grading.getStudents() },
     });

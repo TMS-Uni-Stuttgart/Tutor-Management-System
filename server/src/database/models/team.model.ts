@@ -3,7 +3,7 @@ import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { ITeam } from '../../shared/model/Team';
-import { GradingDocument } from './grading.model';
+import { Grading } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
@@ -55,17 +55,21 @@ export class TeamModel {
    * @param sheet Sheet to get the gradings for.
    * @returns List containing all gradings related to the given sheet of the students.
    */
-  getGradings(sheet: SheetDocument): GradingDocument[] {
-    const gradings = new Map<string, GradingDocument>();
+  getGradings(sheet: SheetDocument): Grading[] {
+    const gradings: Grading[] = [];
 
     this.students.forEach((student) => {
       const gradingOfStudent = student.getGrading(sheet);
-      if (gradingOfStudent) {
-        gradings.set(gradingOfStudent.id, gradingOfStudent);
+
+      if (
+        gradingOfStudent &&
+        gradings.findIndex((g) => g.getStudents().includes(student.id)) !== -1
+      ) {
+        gradings.push(gradingOfStudent);
       }
     });
 
-    return [...gradings.values()];
+    return gradings;
   }
 
   toDTO(this: TeamDocument): ITeam {
