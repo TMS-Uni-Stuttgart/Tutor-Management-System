@@ -4,7 +4,7 @@
 ![Code Quality](https://github.com/Dudrie/Tutor-Management-System/workflows/Code%20Quality/badge.svg)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=Dudrie/Tutor-Management-System)](https://dependabot.com)
 
-The Tutor Management System (short _TMS_) aims to be a tool used at universitites (in Germany). It can be used to track the requirements which a student has to fulfill to be allowed to write the exam. It can (among other things) track the points gained by the students in their homeworks, how often a student attended the tutorial and how often a student presented a solution.
+The Tutor Management System (short _TMS_) aims to be a tool used at universitites (in Germany). It can be used to track the requirements which a student has to fulfill to be allowed to attend the exam. It can (among other things) track the points gained by the students in their homeworks, how often a student attended the tutorial and how often a student presented a solution.
 
 ## Getting Started
 
@@ -23,15 +23,16 @@ Here are the most important libraries listed which are used in any part of the p
 - [TypeScript](https://typescriptlang.org) - Programming language.
 - [React](https://reactjs.org/) - Frontend framework.
 - [Material-UI](https://material-ui.com) - Frontend component library.
+- [NestJS](https://nestjs.com/) - Backend framework used.
 - [Formik](https://jaredpalmer.com/formik/) - Used to clean up the React mess in forms.
 - [axios](https://github.com/axios/axios) - Used to make the REST calls against the backend.
-- [NestJS](https://nestjs.com/) - Backend framework used.
 - [mongoose](https://mongoosejs.com/) - Used to connect to the MongoDB.
 - [typegoose](https://github.com/typegoose/typegoose) - Makes working with mongoose documents & typescript easier.
 
 The following tools are used in the maintaining & deploying processes.
 
 - [ESLint](https://eslint.org/) - Used to ensure code quality.
+- [Prettier](https://prettier.io/) - Used to ensure a unified code style.
 - [GitHub Actions](https://github.com/features/actions) - Used for CI.
 - [Node](https://nodejs.org/) - Runs the production server aswell as the development servers.
 - [ts-node](https://github.com/TypeStrong/ts-node) - Used to run `.ts` scripts directly on NodeJS without compiling them.
