@@ -32,8 +32,8 @@ interface ConstructorFields {
   docs.forEach((s) => s.transformGradings());
   next();
 })
-@post<StudentModel>('findOne', (doc, next) => {
-  doc.transformGradings();
+@post<StudentModel>('findOne', (doc: DocumentType<StudentModel> | null, next) => {
+  doc?.transformGradings();
   next();
 })
 @plugin(fieldEncryption, {
