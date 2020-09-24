@@ -63,7 +63,7 @@ export class TeamModel {
 
       if (
         gradingOfStudent &&
-        gradings.findIndex((g) => g.getStudents().includes(student.id)) !== -1
+        gradings.findIndex((g) => g.getStudents().includes(student.id)) === -1
       ) {
         gradings.push(gradingOfStudent);
       }
