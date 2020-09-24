@@ -158,6 +158,12 @@ function FilterableSelect<T>({
       />
 
       <div ref={list} className={classes.list}>
+        {filteredItems.length === 0 && (
+          <ListItem>
+            <ListItemText primary={emptyPlaceholder} />
+          </ListItem>
+        )}
+
         <FixedSizeList
           height={dimensions.height}
           width={dimensions.width}
@@ -184,12 +190,6 @@ function FilterableSelect<T>({
             );
           }}
         </FixedSizeList>
-
-        {filteredItems.length === 0 && (
-          <ListItem>
-            <ListItemText primary={emptyPlaceholder} />
-          </ListItem>
-        )}
       </div>
     </OutlinedBox>
   );

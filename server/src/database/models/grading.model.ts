@@ -1,23 +1,53 @@
 import { BadRequestException } from '@nestjs/common';
-import { DocumentType, getModelForClass, isDocument, prop } from '@typegoose/typegoose';
+import { isDocument } from '@typegoose/typegoose';
+import { plainToClass, Transform, Type } from 'class-transformer';
+import { ClassType } from 'class-transformer/ClassTransformer';
+import { Types } from 'mongoose';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 import { StudentDocument } from './student.model';
 
-export class ExerciseGradingModel {
-  constructor({ points }: { points: number }) {
-    this.points = points;
+export class SerializableMap<K extends string, V> extends Map<K, V> {
+  toJSON(): string {
+    return JSON.stringify([...this]);
   }
 
-  @prop()
-  comment?: string;
+  static fromJSON<K extends string, V>(json: unknown, type?: ClassType<V>): SerializableMap<K, V> {
+    const data: unknown = typeof json === 'string' ? JSON.parse(json) : json;
 
-  @prop()
+    if (!Array.isArray(data)) {
+      return new SerializableMap();
+    }
+
+    const map = new SerializableMap<K, V>(data);
+
+    if (!type) {
+      return map;
+    }
+
+    const parsedMap = new SerializableMap<K, V>();
+
+    for (const [key, value] of map.entries()) {
+      parsedMap.set(key, plainToClass(type, value));
+    }
+
+    return parsedMap;
+  }
+}
+
+export class ExerciseGrading {
+  constructor(options?: { points: number }) {
+    this._points = options?.points ?? 0;
+  }
+
+  comment?: string;
   additionalPoints?: number;
 
-  @prop({ default: 0 })
-  private _points!: number;
+  @Transform((value) => SerializableMap.fromJSON(value))
+  subExercisePoints?: SerializableMap<string, number>;
+
+  private _points: number;
 
   get points(): number {
     const addPoints = this.additionalPoints ?? 0;
@@ -39,9 +69,6 @@ export class ExerciseGradingModel {
     this._points = newPoints;
   }
 
-  @prop({ type: Number })
-  subExercisePoints?: Map<string, number>;
-
   getGradingForSubexercise(subExercise: SubExerciseDocument): number | undefined {
     if (!this.subExercisePoints) {
       return undefined;
@@ -61,14 +88,11 @@ export class ExerciseGradingModel {
    *
    * @throws `BadRequestException` - If neither the `points` nor the `subExercisePoints` property is set.
    */
-  static fromDTO(dto: ExerciseGradingDTO): ExerciseGradingDocument {
-    const model = getModelForClass(ExerciseGradingModel);
-    const grading = new ExerciseGradingModel({ points: 0 });
-    const doc = new model(grading);
+  static fromDTO(dto: ExerciseGradingDTO): ExerciseGrading {
+    const grading = new ExerciseGrading({ points: 0 });
+    grading.updateFromDTO(dto);
 
-    doc.updateFromDTO(dto);
-
-    return doc;
+    return grading;
   }
 
   /**
@@ -79,7 +103,7 @@ export class ExerciseGradingModel {
    *
    * @throws `BadRequestException` - If neither the `points` nor the `subExercisePoints` property is set.
    */
-  private updateFromDTO(this: ExerciseGradingDocument, dto: ExerciseGradingDTO) {
+  private updateFromDTO(dto: ExerciseGradingDTO) {
     const { additionalPoints, comment, points, subExercisePoints } = dto;
 
     if (points === undefined && subExercisePoints === undefined) {
@@ -91,10 +115,12 @@ export class ExerciseGradingModel {
     this.comment = comment;
     this.additionalPoints = additionalPoints;
     this.points = points ?? 0;
-    this.subExercisePoints = !!subExercisePoints ? new Map(subExercisePoints) : undefined;
+    this.subExercisePoints = !!subExercisePoints
+      ? new SerializableMap(subExercisePoints)
+      : undefined;
   }
 
-  toDTO(this: ExerciseGradingDocument): IExerciseGrading {
+  toDTO(): IExerciseGrading {
     const { comment, additionalPoints, points, subExercisePoints } = this;
 
     return {
@@ -106,26 +132,20 @@ export class ExerciseGradingModel {
   }
 }
 
-export class GradingModel {
-  @prop({ type: ExerciseGradingModel, default: new Map() })
-  exerciseGradings!: Map<string, ExerciseGradingDocument>;
+export class Grading {
+  id: string;
 
-  @prop()
+  @Transform((value) => SerializableMap.fromJSON(value, ExerciseGrading))
+  exerciseGradings: SerializableMap<string, ExerciseGrading>;
+
   comment?: string;
-
-  @prop()
   additionalPoints?: number;
 
-  @prop({ type: String, default: [] })
-  private students!: string[];
+  @Type(() => String)
+  private students: string[];
 
-  @prop()
   sheetId?: string;
-
-  @prop()
   examId?: string;
-
-  @prop()
   shortTestId?: string;
 
   get entityId(): string {
@@ -151,17 +171,17 @@ export class GradingModel {
   }
 
   constructor() {
-    this.exerciseGradings = new Map();
+    this.id = Types.ObjectId().toHexString();
+    this.students = [];
+    this.exerciseGradings = new SerializableMap();
   }
 
   /**
    * Adds a student to this grading to "use" it.
    *
-   * If the student got added, the 'students' path is marked as modified. If the student is already using it, nothing happens.
-   *
    * @param student Student to add to this grading.
    */
-  addStudent(this: GradingDocument, student: StudentDocument): void {
+  addStudent(student: StudentDocument): void {
     const idx = this.students.findIndex((doc) => {
       const id = isDocument(doc) ? doc.id : doc.toString();
       return id === student.id;
@@ -169,23 +189,19 @@ export class GradingModel {
 
     if (idx === -1) {
       this.students.push(student.id);
-      this.markModified('students');
     }
   }
 
   /**
    * Removes the student from 'using' this grading.
    *
-   * If the student got removed, the 'students' path is marked as modified. If the student has NOT used this grading, nothing happens.
-   *
    * @param student Student to remove.
    */
-  removeStudent(this: GradingDocument, student: StudentDocument): void {
+  removeStudent(student: StudentDocument): void {
     const idx = this.students.findIndex((studentId) => studentId === student.id);
 
     if (idx !== -1) {
       this.students.splice(idx, 1);
-      this.markModified('students');
     }
   }
 
@@ -196,7 +212,7 @@ export class GradingModel {
    *
    * @returns True if this grading belongs to the given student, false otherwise.
    */
-  belongsToStudent(this: GradingDocument, student: StudentDocument): boolean {
+  belongsToStudent(student: StudentDocument): boolean {
     const idx = this.students.findIndex((studentId) => studentId === student.id);
 
     return idx !== -1;
@@ -205,7 +221,7 @@ export class GradingModel {
   /**
    * @returns A copy of the list containing all students of this grading.
    */
-  getStudents(this: GradingDocument): string[] {
+  getStudents(): string[] {
     return [...this.students];
   }
 
@@ -233,14 +249,11 @@ export class GradingModel {
    *
    * @throws `BadRequestException` - If any of the ExerciseGradingDTO could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
-  static fromDTO(dto: GradingDTO): GradingDocument {
-    const model = getModelForClass(GradingModel);
-    const grading = new GradingModel();
-    const doc = new model(grading);
+  static fromDTO(dto: GradingDTO): Grading {
+    const grading = new Grading();
+    grading.updateFromDTO(dto);
 
-    doc.updateFromDTO(dto);
-
-    return doc;
+    return grading;
   }
 
   /**
@@ -250,7 +263,7 @@ export class GradingModel {
    *
    * @throws `BadRequestException` - If any of the inner ExerciseGradingDTOs could not be converted {@link ExerciseGradingModel#fromDTO}.
    */
-  updateFromDTO(this: GradingDocument, dto: GradingDTO): void {
+  updateFromDTO(dto: GradingDTO): void {
     const { exerciseGradings, additionalPoints, comment, sheetId, examId, shortTestId } = dto;
 
     if (!sheetId && !examId && !shortTestId) {
@@ -264,14 +277,14 @@ export class GradingModel {
     this.shortTestId = shortTestId;
     this.comment = comment;
     this.additionalPoints = additionalPoints;
-    this.exerciseGradings = new Map();
+    this.exerciseGradings = new SerializableMap();
 
     for (const [key, exerciseGradingDTO] of exerciseGradings) {
-      this.exerciseGradings.set(key, ExerciseGradingModel.fromDTO(exerciseGradingDTO));
+      this.exerciseGradings.set(key, ExerciseGrading.fromDTO(exerciseGradingDTO));
     }
   }
 
-  toDTO(this: GradingDocument): IGrading {
+  toDTO(): IGrading {
     const { id, comment, additionalPoints, points, belongsToTeam } = this;
     const exerciseGradings: Map<string, IExerciseGrading> = new Map();
 
@@ -289,7 +302,7 @@ export class GradingModel {
     };
   }
 
-  getExerciseGrading(exercise: ExerciseDocument): ExerciseGradingDocument | undefined {
+  getExerciseGrading(exercise: ExerciseDocument): ExerciseGrading | undefined {
     return this.exerciseGradings.get(exercise.id);
   }
 
@@ -303,6 +316,3 @@ export class GradingModel {
     }
   }
 }
-
-export type ExerciseGradingDocument = DocumentType<ExerciseGradingModel>;
-export type GradingDocument = DocumentType<GradingModel>;

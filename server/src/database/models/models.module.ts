@@ -1,7 +1,6 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { AttendanceModel } from './attendance.model';
-import { GradingModel } from './grading.model';
 import { ScheincriteriaModel } from './scheincriteria.model';
 import { ScheinexamModel } from './scheinexam.model';
 import { SettingsModel } from './settings.model';
@@ -25,7 +24,6 @@ export class ModelsModule {
       SheetModel,
       ScheinexamModel,
       ScheincriteriaModel,
-      GradingModel,
       SettingsModel,
       ShortTestModel,
     ]);
