@@ -136,13 +136,7 @@ function FilterableSelect<T>({
   }
 
   return (
-    <OutlinedBox
-      minHeight={400}
-      display='flex'
-      flexDirection='column'
-      position='relative'
-      {...other}
-    >
+    <OutlinedBox display='flex' flexDirection='column' position='relative' {...other}>
       <Box bgcolor='paper' position='absolute' zIndex={4} top={-10} left={8} paddingX={0.5}>
         {label}
       </Box>

@@ -46,7 +46,8 @@ function TeamForm({ students, onSubmit, team, ...other }: Props): JSX.Element {
         items={students}
         itemToString={(student) => `${student.lastname}, ${student.firstname}`}
         itemToValue={(student) => student.id}
-        style={{ gridColumn: '1 / span 2' }}
+        minHeight={400}
+        gridColumn='1 / span 2'
       />
     </FormikBaseForm>
   );
