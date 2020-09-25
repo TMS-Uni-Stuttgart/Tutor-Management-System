@@ -137,7 +137,7 @@ function FilterableSelect<T>({
 
   return (
     <OutlinedBox
-      maxHeight={400}
+      minHeight={400}
       display='flex'
       flexDirection='column'
       position='relative'

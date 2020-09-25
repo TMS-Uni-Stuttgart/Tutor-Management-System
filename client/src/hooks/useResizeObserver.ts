@@ -18,17 +18,21 @@ export function useResizeObserver<T extends HTMLElement>(
       return;
     }
 
-    function handleResize() {
-      if (!rootElement) {
+    function handleResize(elements: ResizeObserverEntry[]) {
+      // Use the given elements here to get the most up-to-date variant (the root ref is kind of lagging behind).
+      // We only observe one element so we can just pick the first one.
+      const element = elements[0];
+
+      if (!element) {
         return;
       }
 
-      const { height, width } = rootElement.getBoundingClientRect();
+      const { height, width } = element.contentRect;
       setDimensions({ height, width });
     }
 
     const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(rootElement);
+    resizeObserver.observe(rootElement, { box: 'border-box' });
 
     return () => resizeObserver.disconnect();
   }, []);
