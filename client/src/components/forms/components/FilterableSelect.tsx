@@ -131,7 +131,7 @@ function FilterableSelect<T>({
 
   if (singleSelect && value.length > 1) {
     logger.error(
-      `The values of the FilterableSelect should have length 1 (or 0) if 'singleSelect' is true (current length: ${value.length}).`
+      `The values of the FilterableSelect should have length 1 or 0 if 'singleSelect' is true (current length: ${value.length}).`
     );
   }
 
@@ -152,38 +152,38 @@ function FilterableSelect<T>({
       />
 
       <div ref={list} className={classes.list}>
-        {filteredItems.length === 0 && (
-          <ListItem>
+        {filteredItems.length === 0 ? (
+          <ListItem style={{ height: dimensions.height }}>
             <ListItemText primary={emptyPlaceholder} />
           </ListItem>
+        ) : (
+          <FixedSizeList
+            height={dimensions.height}
+            width={dimensions.width}
+            itemCount={filteredItems.length}
+            itemSize={50}
+          >
+            {({ index, style }) => {
+              const item = filteredItems[index];
+              const itemValue = itemToValue(item);
+              const itemString = itemToString(item);
+
+              return (
+                <ListItem
+                  key={itemValue}
+                  button
+                  onClick={() => handleItemClicked(itemValue)}
+                  style={{ ...style }}
+                >
+                  <ListItemIcon>
+                    <Checkbox edge='start' checked={isItemSelected(item)} disableRipple />
+                  </ListItemIcon>
+                  <ListItemText primary={itemString} />
+                </ListItem>
+              );
+            }}
+          </FixedSizeList>
         )}
-
-        <FixedSizeList
-          height={dimensions.height}
-          width={dimensions.width}
-          itemCount={filteredItems.length}
-          itemSize={50}
-        >
-          {({ index, style }) => {
-            const item = filteredItems[index];
-            const itemValue = itemToValue(item);
-            const itemString = itemToString(item);
-
-            return (
-              <ListItem
-                key={itemValue}
-                button
-                onClick={() => handleItemClicked(itemValue)}
-                style={{ ...style }}
-              >
-                <ListItemIcon>
-                  <Checkbox edge='start' checked={isItemSelected(item)} disableRipple />
-                </ListItemIcon>
-                <ListItemText primary={itemString} />
-              </ListItem>
-            );
-          }}
-        </FixedSizeList>
       </div>
     </OutlinedBox>
   );
