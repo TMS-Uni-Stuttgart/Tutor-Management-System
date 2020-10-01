@@ -1,0 +1,12 @@
+name: Auto Merge Dependabot PRs
+on:
+  pull_request:
+
+jobs:
+  auto-merge-dependabot:
+    name: Automerge Dependabot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Merge Dependabot PR
+        uses: ridedott/merge-me-action@master
