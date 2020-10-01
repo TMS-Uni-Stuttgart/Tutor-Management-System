@@ -33,6 +33,4 @@ jobs:
         with:
           push: true
           no-cache: true
-          tags: |
-            ghcr.io/dudrie/tutor-management-system:${{ github.event.release.tag_name }}
-            ghcr.io/dudrie/tutor-management-system:latest
+          tags: ghcr.io/dudrie/tutor-management-system:${{ github.event.release.tag_name }}
