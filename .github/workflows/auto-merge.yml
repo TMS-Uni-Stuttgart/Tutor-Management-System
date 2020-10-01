@@ -9,5 +9,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ahmadnassri/action-dependabot-auto-merge@v2
         with:
-          target: minor
+          # Use a special token which has push permissions.
           github-token: ${{ secrets.GH_AUTO_MERGE_TOKEN }}
+          # Do not automatically approve the PR because it looks like an actual human has reviewed it. 
+          # This does not interfere with the auto merging.
+          approve: false
+          target: minor
