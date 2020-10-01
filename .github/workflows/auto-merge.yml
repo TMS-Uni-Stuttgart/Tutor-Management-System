@@ -10,3 +10,5 @@ jobs:
     steps:
       - name: Merge Dependabot PR
         uses: ridedott/merge-me-action@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
