@@ -19,6 +19,8 @@ jobs:
       # Setting up Buildx because it's needed by build-push-action
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: --debug
       
       # Login to repository
       - name: Login to DockerHub
