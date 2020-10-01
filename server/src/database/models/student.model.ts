@@ -1,4 +1,5 @@
-import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, plugin, post, prop, Severity } from '@typegoose/typegoose';
+import { plainToClass } from 'class-transformer';
 import { DateTime } from 'luxon';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
@@ -7,10 +8,9 @@ import { StaticSettings } from '../../module/settings/settings.static';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IGrading } from '../../shared/model/Gradings';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
-import { HasExerciseDocuments } from './exercise.model';
-import { GradingDocument } from './grading.model';
+import { HandInDocument } from './exercise.model';
+import { Grading } from './grading.model';
 import { SheetDocument } from './sheet.model';
 import { TeamDocument, TeamModel } from './team.model';
 import { TutorialDocument } from './tutorial.model';
@@ -28,15 +28,14 @@ interface ConstructorFields {
   cakeCount: number;
 }
 
-export async function populateStudentDocument(doc?: StudentDocument): Promise<void> {
-  if (!doc || !doc.populate) {
-    return;
-  }
-
-  await doc.populate('_gradings').execPopulate();
-  doc.loadGradingMap();
-}
-
+@post<StudentModel>('find', (docs, next) => {
+  docs.forEach((s) => s.transformGradings());
+  next();
+})
+@post<StudentModel>('findOne', (doc: DocumentType<StudentModel> | null, next) => {
+  doc?.transformGradings();
+  next();
+})
 @plugin(fieldEncryption, {
   secret: StaticSettings.getService().getDatabaseSecret(),
   fields: [
@@ -47,13 +46,16 @@ export async function populateStudentDocument(doc?: StudentDocument): Promise<vo
     'email',
     'matriculationNo',
     'status',
+    'gradings',
+    'attendances',
+    'presentationPoints',
   ],
 })
 @plugin(mongooseAutoPopulate)
-@plugin<typeof VirtualPopulation, VirtualPopulationOptions<StudentModel>>(VirtualPopulation, {
-  populateDocument: populateStudentDocument as any,
+@modelOptions({
+  schemaOptions: { collection: CollectionName.STUDENT },
+  options: { allowMixed: Severity.ALLOW },
 })
-@modelOptions({ schemaOptions: { collection: CollectionName.STUDENT } })
 export class StudentModel {
   constructor(fields: ConstructorFields) {
     Object.assign(this, fields);
@@ -71,10 +73,10 @@ export class StudentModel {
   @prop()
   iliasName?: string;
 
-  @prop({ required: true, ref: 'TutorialModel', autopopulate: true })
+  @prop({ required: true, ref: 'TutorialModel', autopopulate: { maxDepth: 1 } })
   tutorial!: TutorialDocument;
 
-  @prop({ ref: TeamModel, autopopulate: true })
+  @prop({ ref: TeamModel, autopopulate: { maxDepth: 1 } })
   team?: TeamDocument;
 
   @prop()
@@ -92,28 +94,17 @@ export class StudentModel {
   @prop({ default: 0 })
   cakeCount!: number;
 
-  @prop({ type: AttendanceModel, autopopulate: true, default: new Map() })
+  @prop({ type: AttendanceModel, default: new Map() })
   attendances!: Map<string, AttendanceDocument>;
 
-  @prop({ ref: 'GradingModel', foreignField: 'students', localField: '_id' })
-  private _gradings!: GradingDocument[];
-
-  private gradings?: Map<string, GradingDocument>;
+  @prop({ type: Object, default: [] })
+  private gradings!: Grading[];
 
   @prop({ type: Number, default: new Map() })
   presentationPoints!: Map<string, number>;
 
-  /**
-   * Loads all documents saved as references in the database to be in an actual Map.
-   *
-   * This will clear the previously set map.
-   */
-  loadGradingMap(): void {
-    this.gradings = new Map();
-
-    for (const doc of this._gradings) {
-      this.gradings.set(doc.entityId, doc);
-    }
+  transformGradings(): void {
+    this.gradings = plainToClass(Grading, this.gradings);
   }
 
   /**
@@ -142,44 +133,45 @@ export class StudentModel {
   }
 
   /**
-   * Saves the given grading for the given sheet.
+   * Saves the given grading for the given hand-in.
    *
-   * If there is already a saved grading for the given sheet the old one will get overridden.
+   * If there is already a saved grading for the given hand-in the old one will get replaced.
    *
    * This function marks the corresponding path as modified.
    *
    * @param sheet Sheet to save grading for.
    * @param grading Grading so save.
    */
-  setGrading(this: StudentDocument, sheet: HasExerciseDocuments, grading: GradingDocument): void {
-    if (!sheet.id) {
-      throw new Error('Given sheet needs to have an id field.');
+  setGrading(this: StudentDocument, handIn: HandInDocument, grading: Grading): void {
+    if (!handIn.id) {
+      return;
     }
 
-    if (!this.gradings) {
-      this.loadGradingMap();
+    const idx = this.gradings.findIndex((grad) => grad.entityId === handIn.id);
+
+    if (idx === -1) {
+      this.gradings.push(grading);
+    } else {
+      this.gradings[idx] = grading;
     }
 
-    this.gradings?.set(sheet.id, grading);
+    grading.addStudent(this);
+    this.markModified('gradings');
   }
 
   /**
-   * Returns the grading for the given entity if one is saved. If not `undefined` is returned.
+   * Returns the grading for the given hand-in if one is saved, if not `undefined` is returned.
    *
-   * @param entity Entity to get grading for.
+   * @param handIn hand-in to get grading for.
    *
-   * @returns Grading for the given entity or `undefined`
+   * @returns Grading for the given hand-in or `undefined`
    */
-  getGrading(entity: HasExerciseDocuments): GradingDocument | undefined {
-    if (!entity.id) {
+  getGrading(handIn: HandInDocument): Grading | undefined {
+    if (!handIn.id) {
       return undefined;
     }
 
-    if (!this.gradings) {
-      this.loadGradingMap();
-    }
-
-    return this.gradings?.get(entity.id);
+    return this.gradings.find((grad) => grad.entityId === handIn.id);
   }
 
   /**
@@ -236,14 +228,8 @@ export class StudentModel {
       attendances.set(key, doc.toDTO());
     }
 
-    if (!this.gradings) {
-      this.loadGradingMap();
-    }
-
-    if (this.gradings) {
-      for (const [key, doc] of this.gradings) {
-        gradings.set(key, doc.toDTO());
-      }
+    for (const doc of this.gradings) {
+      gradings.set(doc.entityId, doc.toDTO());
     }
 
     return {

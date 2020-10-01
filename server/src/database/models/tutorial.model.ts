@@ -4,43 +4,14 @@ import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
-import { ITutorial, UserInEntity } from '../../shared/model/Tutorial';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
+import { ITutorial } from '../../shared/model/Tutorial';
 import { StudentDocument } from './student.model';
 import { TeamDocument } from './team.model';
-import { UserDocument, UserModel } from './user.model';
-
-/**
- * Populates the fields in the given TutorialDocument. If no document is provided this functions does nothing.
- *
- * @param doc TutorialDocument to populate.
- */
-export async function populateTutorialDocument(doc?: TutorialDocument): Promise<void> {
-  if (!doc || !doc.populate) {
-    return;
-  }
-
-  await doc.populate('students').populate('teams').execPopulate();
-
-  doc.loadSubstituteMap();
-}
+import { UserDocument } from './user.model';
 
 type AssignableFields = Omit<NoFunctions<TutorialModel>, 'students' | 'teams'>;
 
-export class SubstituteModel {
-  @prop({ required: true })
-  date!: string;
-
-  @prop({ ref: UserModel, autopopulate: true, required: true })
-  user!: UserDocument;
-}
-
-type SubstituteDocument = DocumentType<SubstituteModel>;
-
 @plugin(mongooseAutoPopulate)
-@plugin<typeof VirtualPopulation, VirtualPopulationOptions<TutorialModel>>(VirtualPopulation, {
-  populateDocument: populateTutorialDocument,
-})
 @modelOptions({ schemaOptions: { collection: CollectionName.TUTORIAL } })
 export class TutorialModel {
   constructor(fields: AssignableFields) {
@@ -55,7 +26,7 @@ export class TutorialModel {
   @prop({ required: true })
   slot!: string;
 
-  @prop({ ref: 'UserModel', autopopulate: true })
+  @prop({ ref: 'UserModel', autopopulate: { maxDepth: 1 } })
   tutor?: UserDocument;
 
   @prop({ required: true, type: Schema.Types.String })
@@ -105,6 +76,7 @@ export class TutorialModel {
     ref: 'StudentModel',
     foreignField: 'tutorial',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   students!: StudentDocument[];
 
@@ -112,41 +84,16 @@ export class TutorialModel {
     ref: 'TeamModel',
     foreignField: 'tutorial',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   teams!: TeamDocument[];
 
-  @prop({ ref: 'UserModel', autopopulate: true, default: [] })
+  // Needs to be maxDepth >= 2 so all tutorial fields get populated aswell. Otherwise adding / removing a corrector does not work.
+  @prop({ ref: 'UserModel', autopopulate: { maxDepth: 2 }, default: [] })
   correctors!: UserDocument[];
 
-  @prop({ type: SubstituteModel, autopopulate: true, default: [] })
-  private _substitutes!: SubstituteDocument[];
-
-  private substitutes?: Map<string, UserDocument>;
-
-  loadSubstituteMap(): void {
-    this.substitutes = new Map();
-
-    for (const doc of this._substitutes) {
-      this.substitutes.set(doc.date, doc.user);
-    }
-  }
-
-  saveSubstituteMap(this: TutorialDocument): void {
-    if (!this.substitutes) {
-      return;
-    }
-
-    this._substitutes = [];
-
-    for (const [date, user] of this.substitutes) {
-      this._substitutes.push({
-        date,
-        user,
-      } as any);
-    }
-
-    this.markModified('_substitutes');
-  }
+  @prop({ type: String, default: new Map() })
+  private substitutes: Map<string, string>;
 
   /**
    * Sets the substitute of the given date to the given user.
@@ -157,9 +104,7 @@ export class TutorialModel {
    * @param substitute Substitute
    */
   setSubstitute(this: TutorialDocument, date: DateTime, substitute: UserDocument): void {
-    this.substitutes?.set(this.getDateKey(date), substitute);
-
-    this.saveSubstituteMap();
+    this.substitutes.set(this.getDateKey(date), substitute.id);
   }
 
   /**
@@ -172,9 +117,8 @@ export class TutorialModel {
   removeSubstitute(this: TutorialDocument, date: DateTime): void {
     const key = this.getDateKey(date);
 
-    if (this.substitutes?.has(key)) {
-      this.substitutes?.delete(key);
-      this.saveSubstituteMap();
+    if (this.substitutes.has(key)) {
+      this.substitutes.delete(key);
     }
   }
 
@@ -184,18 +128,17 @@ export class TutorialModel {
    * If there is a substitute saved for the given date that substitue is returned. If there is none, `undefined` is returned.
    *
    * @param date Date to get the substitute.
-   * @returns The corresponding user, if there is a substitute at the given date, else `undefined`.
+   * @returns The corresponding user's ID, if there is a substitute at the given date, else `undefined`.
    */
-  getSubstitute(date: DateTime): UserDocument | undefined {
-    return this.substitutes?.get(this.getDateKey(date));
+  getSubstitute(date: DateTime): string | undefined {
+    return this.substitutes.get(this.getDateKey(date));
   }
 
-  getAllSubstitutes(): Map<string, UserDocument> {
-    if (!this.substitutes) {
-      this.loadSubstituteMap();
-    }
-
-    return this.substitutes ?? new Map();
+  /**
+   * @returns A map containing the dates as keys and the corresponding substitute for that day.
+   */
+  getAllSubstitutes(): Map<string, string> {
+    return this.substitutes;
   }
 
   /**
@@ -205,11 +148,6 @@ export class TutorialModel {
    */
   toDTO(this: TutorialDocument): ITutorial {
     const { id, slot, tutor, dates, startTime, endTime, students, correctors, teams } = this;
-    const substitutes: Map<string, UserInEntity> = new Map();
-
-    for (const [date, doc] of this.substitutes?.entries() ?? []) {
-      substitutes.set(date, { id: doc.id, firstname: doc.firstname, lastname: doc.lastname });
-    }
 
     const dateOptions: ToISOTimeOptions = {
       suppressMilliseconds: true,
@@ -230,7 +168,7 @@ export class TutorialModel {
         firstname: corrector.firstname,
         lastname: corrector.lastname,
       })),
-      substitutes: [...substitutes],
+      substitutes: [...this.substitutes],
       teams: teams.map((team) => team.id),
     };
   }

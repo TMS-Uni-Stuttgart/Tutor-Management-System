@@ -217,8 +217,8 @@ function TutorialManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element
               disableManageTutorialButton={!user.isAdmin()}
               correctors={tutorial.correctors.map((corr) => getNameOfEntity(corr))}
               substitutes={[...tutorial.substitutes]
-                .map(([date, substitute]) => {
-                  const tutor = tutors.find((t) => t.id === substitute.id);
+                .map(([date, substituteId]) => {
+                  const tutor = tutors.find((t) => t.id === substituteId);
 
                   return {
                     date: DateTime.fromISO(date),

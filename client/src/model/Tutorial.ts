@@ -8,7 +8,7 @@ interface Modified {
   dates: DateTime[];
   startTime: DateTime;
   endTime: DateTime;
-  substitutes: Map<string, UserInEntity>;
+  substitutes: Map<string, string>;
 }
 
 export class Tutorial implements Modify<ITutorial, Modified> {
@@ -31,7 +31,7 @@ export class Tutorial implements Modify<ITutorial, Modified> {
   readonly endTime!: DateTime;
 
   @Transform((value) => new Map(value))
-  readonly substitutes!: Map<string, UserInEntity>;
+  readonly substitutes!: Map<string, string>;
 
   static getDisplayString(hasSlot: { slot: string }): string {
     return `Tutorium ${hasSlot.slot.padStart(2, '0')}`;
@@ -42,9 +42,9 @@ export class Tutorial implements Modify<ITutorial, Modified> {
    *
    * @param date Date to get the substitute ID for.
    *
-   * @returns Information of the substitute for the given date or `undefined`.
+   * @returns ID of the substitute for the given date or `undefined`.
    */
-  getSubstitute(date: DateTime): UserInEntity | undefined {
+  getSubstitute(date: DateTime): string | undefined {
     return this.substitutes.get(parseDateToMapKey(date));
   }
 

@@ -25,10 +25,10 @@ export interface IExerciseGradingDTO {
 
 export interface IGradingDTO {
   exerciseGradings: [string, IExerciseGradingDTO][];
+  createNewGrading: boolean;
   sheetId?: string;
   examId?: string;
   shortTestId?: string;
-  gradingId?: string;
   comment?: string;
   additionalPoints?: number;
 }
@@ -59,7 +59,7 @@ export class ExercisePointsInfo implements IExercisePointsInfo {
 
 export function convertExercisePointInfoToString(exPointInfo: IExercisePointsInfo): string {
   if (exPointInfo.must > 0 && exPointInfo.bonus > 0) {
-    return `${exPointInfo.must} + ${exPointInfo.bonus}`;
+    return `${exPointInfo.must} + ${exPointInfo.bonus} Bonus`;
   } else if (exPointInfo.bonus === 0) {
     return `${exPointInfo.must}`;
   } else {

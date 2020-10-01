@@ -1,12 +1,10 @@
-import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { DocumentType, modelOptions, prop } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
-import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { ScheinexamDTO } from '../../module/scheinexam/scheinexam.dto';
 import { IScheinExam } from '../../shared/model/Scheinexam';
 import { RatedEntityModel } from './ratedEntity.model';
 
-@plugin(mongooseAutoPopulate)
 @modelOptions({ schemaOptions: { collection: CollectionName.SCHEINEXAM } })
 export class ScheinexamModel extends RatedEntityModel {
   @prop({ required: true })

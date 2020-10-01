@@ -24,7 +24,7 @@ export interface ITutorial extends HasId {
   students: string[];
   teams: string[];
   correctors: UserInEntity[];
-  substitutes: [string, UserInEntity][];
+  substitutes: [string, string][];
 }
 
 export interface ISubstituteDTO {

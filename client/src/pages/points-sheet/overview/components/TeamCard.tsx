@@ -66,7 +66,14 @@ function TeamCard({
   const classes = useStyles();
   const dialog = useDialog();
 
-  const teamGrading = useMemo(() => team.getGrading(sheet), [team, sheet]);
+  const { teamGrading, onlyIndividualEntriesAllowed } = useMemo(() => {
+    const teamGradings = team.getAllGradings(sheet);
+    const teamGrading = team.getGrading(sheet);
+
+    const onlyIndividualEntriesAllowed: boolean = !teamGrading && teamGradings.length !== 0;
+
+    return { teamGrading, onlyIndividualEntriesAllowed };
+  }, [team, sheet]);
 
   const studentsInTeam: string =
     team.students.length > 0
@@ -169,10 +176,12 @@ function TeamCard({
       <CardActions className={classes.actions}>
         <SplitButton
           variant='outlined'
+          initiallySelected={onlyIndividualEntriesAllowed ? 1 : 0}
           color='default'
           options={[
             {
               label: 'Punkte eintragen',
+              disabled: onlyIndividualEntriesAllowed,
               ButtonProps: {
                 component: Link,
                 to: ROUTES.ENTER_POINTS_TEAM.create({

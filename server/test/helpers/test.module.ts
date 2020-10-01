@@ -1,10 +1,9 @@
-import { DynamicModule, Inject, Module, OnApplicationShutdown } from '@nestjs/common';
+import { DynamicModule, Inject, Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Connection, Model } from 'mongoose';
 import { getConnectionToken, getModelToken, TypegooseModule } from 'nestjs-typegoose';
 import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
-import { GradingModel } from '../../src/database/models/grading.model';
 import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
 import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
 import { SettingsModel } from '../../src/database/models/settings.model';
@@ -38,7 +37,6 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
   { model: SheetModel, initialDocuments: [...SHEET_DOCUMENTS] },
   { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
   { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
-  { model: GradingModel, initialDocuments: [] },
   { model: SettingsModel, initialDocuments: [...SETTINGS_DOCUMENTS] },
   { model: ShortTestModel, initialDocuments: [] },
 ];
@@ -54,32 +52,38 @@ export class TestModule implements OnApplicationShutdown {
    * @return Promise which resolves to the generated DynamicModule.
    */
   static async forRootAsync(): Promise<DynamicModule> {
-    const models = MODEL_OPTIONS.map((opt) => opt.model);
-    const mongodb = new MongoMemoryServer({
-      instance: {
-        dbName: 'tms',
-      },
-    });
-    const connectionUri = await mongodb.getConnectionString();
-    const featureModule = TypegooseModule.forFeature(models);
-
-    return {
-      module: TestModule,
-      imports: [
-        TypegooseModule.forRoot(connectionUri, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        }),
-        featureModule,
-      ],
-      providers: [
-        {
-          provide: MongoMemoryServer,
-          useValue: mongodb,
+    try {
+      const models = MODEL_OPTIONS.map((opt) => opt.model);
+      const mongodb = new MongoMemoryServer({
+        instance: {
+          dbName: 'tms',
         },
-      ],
-      exports: [featureModule],
-    };
+        autoStart: true,
+      });
+      const connectionUri = await mongodb.getConnectionString();
+      const featureModule = TypegooseModule.forFeature(models);
+
+      return {
+        module: TestModule,
+        imports: [
+          TypegooseModule.forRoot(connectionUri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+          }),
+          featureModule,
+        ],
+        providers: [
+          {
+            provide: MongoMemoryServer,
+            useValue: mongodb,
+          },
+        ],
+        exports: [featureModule],
+      };
+    } catch (err) {
+      Logger.error('Error during test initialization', err);
+      throw err;
+    }
   }
 
   constructor(

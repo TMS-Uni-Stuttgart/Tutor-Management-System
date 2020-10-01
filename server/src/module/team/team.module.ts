@@ -1,12 +1,11 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { TeamService } from './team.service';
-import { TutorialModule } from '../tutorial/tutorial.module';
+import { forwardRef, Module } from '@nestjs/common';
 import { StudentModule } from '../student/student.module';
+import { TutorialModule } from '../tutorial/tutorial.module';
 import { TeamController } from './team.controller';
-import { SheetModule } from '../sheet/sheet.module';
+import { TeamService } from './team.service';
 
 @Module({
-  imports: [SheetModule, TutorialModule, forwardRef(() => StudentModule)],
+  imports: [forwardRef(() => StudentModule), forwardRef(() => TutorialModule)],
   providers: [TeamService],
   controllers: [TeamController],
   exports: [TeamService],

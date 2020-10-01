@@ -58,8 +58,8 @@ export class TutorialGuard extends UseMetadata {
     }
 
     if (allowSubstitutes) {
-      for (const [, doc] of tutorial.getAllSubstitutes()) {
-        if (userId === doc.id) {
+      for (const [, substId] of tutorial.getAllSubstitutes()) {
+        if (userId === substId) {
           return true;
         }
       }

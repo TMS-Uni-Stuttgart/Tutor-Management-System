@@ -86,7 +86,7 @@ export function convertFormStateToGradingDTO({
     examId,
     shortTestId,
     exerciseGradings: [...exerciseGradings],
-    gradingId: prevGrading?.id,
+    createNewGrading: !prevGrading,
     comment: values.comment,
     additionalPoints,
   };

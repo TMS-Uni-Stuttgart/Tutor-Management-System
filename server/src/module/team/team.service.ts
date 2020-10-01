@@ -8,10 +8,10 @@ import {
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { StudentDocument } from '../../database/models/student.model';
-import { populateTeamDocument, TeamDocument, TeamModel } from '../../database/models/team.model';
+import { TeamDocument, TeamModel } from '../../database/models/team.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { ITeam, ITeamId } from '../../shared/model/Team';
-import { SheetService } from '../sheet/sheet.service';
+import { GradingService } from '../student/grading.service';
 import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
@@ -25,7 +25,8 @@ export class TeamService {
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => StudentService))
     private readonly studentService: StudentService,
-    private readonly sheetService: SheetService
+    @Inject(forwardRef(() => GradingService))
+    private readonly gradingService: GradingService
   ) {}
 
   /**
@@ -35,8 +36,6 @@ export class TeamService {
    */
   async findAllTeamsInTutorial(tutorialId: string): Promise<TeamDocument[]> {
     const teams = await this.teamModel.find({ tutorial: tutorialId as any }).exec();
-
-    await Promise.all(teams.map((team) => populateTeamDocument(team)));
 
     return teams;
   }
@@ -156,20 +155,8 @@ export class TeamService {
    */
   async setGrading(teamId: ITeamId, dto: GradingDTO): Promise<void> {
     const team = await this.findById(teamId);
-    const docWithExercises = await this.studentService.getEntityWithExercisesFromDTO(dto);
-    const grading = await this.studentService.getGradingFromDTO(dto);
 
-    for (const student of team.students) {
-      const gradingOfStudent = student.getGrading(docWithExercises);
-
-      if (!gradingOfStudent) {
-        grading.addStudent(student);
-      }
-    }
-
-    if (grading.students.length !== 0) {
-      await grading.save();
-    }
+    await this.gradingService.setGradingOfMultipleStudents(team.students, dto);
   }
 
   /**

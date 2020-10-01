@@ -9,6 +9,12 @@ import { UserModel } from '../../database/models/user.model';
 import { NamedElement } from '../../shared/model/Common';
 import { Role } from '../../shared/model/Role';
 import { ILoggedInUser, IUser } from '../../shared/model/User';
+import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { SheetService } from '../sheet/sheet.service';
+import { ShortTestService } from '../short-test/short-test.service';
+import { GradingService } from '../student/grading.service';
+import { StudentService } from '../student/student.service';
+import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
@@ -162,7 +168,6 @@ function assertLoggedInUser({ expected, actual }: AssertLoggedInUserParams) {
   expect(actual.tutorialsToCorrect.map((t) => t.id)).toEqual(tutorialsToCorrect.map((t) => t.id));
 
   // TODO: Test substituteTutorials!
-  // expect(actual.substituteTutorials).toEqual
 }
 
 describe('UserService', () => {
@@ -172,7 +177,16 @@ describe('UserService', () => {
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [TestModule.forRootAsync()],
-      providers: [UserService, TutorialService],
+      providers: [
+        TutorialService,
+        UserService,
+        StudentService,
+        TeamService,
+        SheetService,
+        ScheinexamService,
+        ShortTestService,
+        GradingService,
+      ],
     }).compile();
   });
 

@@ -8,16 +8,13 @@ import {
 import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime, Interval } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
-import { populateStudentDocument, StudentDocument } from '../../database/models/student.model';
-import {
-  populateTutorialDocument,
-  TutorialDocument,
-  TutorialModel,
-} from '../../database/models/tutorial.model';
+import { StudentDocument } from '../../database/models/student.model';
+import { TutorialDocument, TutorialModel } from '../../database/models/tutorial.model';
 import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { Role } from '../../shared/model/Role';
 import { ITutorial } from '../../shared/model/Tutorial';
+import { StudentService } from '../student/student.service';
 import { UserService } from '../user/user.service';
 import {
   ExcludedTutorialDate,
@@ -31,6 +28,8 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
+    @Inject(forwardRef(() => StudentService))
+    private readonly studentService: StudentService,
     @InjectModel(TutorialModel)
     private readonly tutorialModel: ReturnModelType<typeof TutorialModel>
   ) {}
@@ -40,8 +39,6 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
    */
   async findAll(): Promise<TutorialDocument[]> {
     const tutorials: TutorialDocument[] = await this.tutorialModel.find().exec();
-
-    await Promise.all(tutorials.map((doc) => populateTutorialDocument(doc)));
 
     return tutorials;
   }
@@ -218,10 +215,10 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
    * @throws `NotFoundException` - If no tutorial with the given ID could be found.
    */
   async getAllStudentsOfTutorial(id: string): Promise<StudentDocument[]> {
-    const tutorial = await this.findById(id);
+    // Check if the tutorial exists.
+    await this.findById(id);
 
-    await Promise.all(tutorial.students.map((s) => populateStudentDocument(s)));
-    return tutorial.students;
+    return this.studentService.findByCondition({ tutorial: id as any });
   }
 
   /**

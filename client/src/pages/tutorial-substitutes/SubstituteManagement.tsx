@@ -31,7 +31,7 @@ interface Params {
 function SubstituteManagementContent(): JSX.Element {
   const classes = useStyles();
 
-  const { getSelectedSubstitute, dirty, tutorial } = useSubstituteManagementContext();
+  const { getSelectedSubstitute, dirty, tutorial, resetDirty } = useSubstituteManagementContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const [isSubmitting, setSubmitting] = useState(false);
@@ -71,6 +71,7 @@ function SubstituteManagementContent(): JSX.Element {
         await setSubstituteTutor(tutorialId, substituteDTOs);
         await tutorial.execute(tutorial.value.id);
 
+        resetDirty();
         enqueueSnackbar('Vertretungen wurden erfolgreich gespeichert.', { variant: 'success' });
       } catch {
         enqueueSnackbar('Einige Vertretungen konnten nicht gespeichert werden.', {
@@ -80,7 +81,7 @@ function SubstituteManagementContent(): JSX.Element {
         setSubmitting(false);
       }
     },
-    [getSelectedSubstitute, tutorial, enqueueSnackbar]
+    [getSelectedSubstitute, tutorial, enqueueSnackbar, resetDirty]
   );
 
   return (

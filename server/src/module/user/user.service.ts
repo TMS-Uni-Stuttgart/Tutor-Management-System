@@ -13,7 +13,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
-import { populateUserDocument, UserDocument, UserModel } from '../../database/models/user.model';
+import { UserDocument, UserModel } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { NamedElement } from '../../shared/model/Common';
 import { Role } from '../../shared/model/Role';
@@ -60,8 +60,6 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    */
   async findAll(): Promise<UserDocument[]> {
     const users = (await this.userModel.find().exec()) as UserDocument[];
-
-    await Promise.all(users.map((doc) => populateUserDocument(doc)));
 
     return users;
   }
@@ -184,12 +182,12 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
     await Promise.all(
       tutorialsToAdd.map((tutorial) => {
-        tutorial.tutor = user.id;
+        tutorial.tutor = user;
         return tutorial.save();
       })
     );
 
-    // Remove user from all tutorial to correct he's not the corrector of anymore.
+    // Remove user from all tutorials to correct he's not the corrector of anymore.
     await Promise.all(
       tutorialsToCorrect
         .filter((tutorial) => !dto.tutorialsToCorrect.includes(tutorial.id))
@@ -198,6 +196,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
             ...tutorial.correctors.filter((corrector) => corrector.id !== user.id),
           ];
 
+          tutorial.markModified('correctors');
           return tutorial.save();
         })
     );
@@ -321,8 +320,8 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     const substituteTutorials: Map<string, ILoggedInUserSubstituteTutorial> = new Map();
 
     allTutorials.forEach((tutorial) => {
-      tutorial.getAllSubstitutes().forEach((substitute, dateKey) => {
-        if (substitute.id !== userId) {
+      tutorial.getAllSubstitutes().forEach((substituteId, dateKey) => {
+        if (substituteId !== userId) {
           return;
         }
 

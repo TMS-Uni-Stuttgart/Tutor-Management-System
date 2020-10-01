@@ -20,7 +20,7 @@ export interface IScheinCriteria {
 }
 
 export interface IScheinCriteriaDTO {
-  data: any;
+  data: { [key: string]: unknown };
   name: string;
   identifier: string;
 }

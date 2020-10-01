@@ -1,26 +1,17 @@
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { FilterQuery } from 'mongoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { AttendanceModel } from '../../database/models/attendance.model';
-import { HasExerciseDocuments } from '../../database/models/exercise.model';
-import { GradingDocument, GradingModel } from '../../database/models/grading.model';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { TeamDocument } from '../../database/models/team.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IStudent } from '../../shared/model/Student';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
-import { ShortTestService } from '../short-test/short-test.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
+import { GradingService } from './grading.service';
 import {
   AttendanceDTO,
   CakeCountDTO,
@@ -34,16 +25,15 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   private readonly logger = new Logger(StudentService.name);
 
   constructor(
+    @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => TeamService))
     private readonly teamService: TeamService,
     private readonly sheetService: SheetService,
-    private readonly scheinexamService: ScheinexamService,
-    private readonly shortTestService: ShortTestService,
+    @Inject(forwardRef(() => GradingService))
+    private readonly gradingService: GradingService,
     @InjectModel(StudentModel)
-    private readonly studentModel: ReturnModelType<typeof StudentModel>,
-    @InjectModel(GradingModel)
-    private readonly gradingModel: ReturnModelType<typeof GradingModel>
+    private readonly studentModel: ReturnModelType<typeof StudentModel>
   ) {}
 
   /**
@@ -51,15 +41,23 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    */
   async findAll(): Promise<StudentDocument[]> {
     const timeA = Date.now();
-    const allStudents = (await this.studentModel
-      .find()
-      .populate('_gradings')
-      .exec()) as StudentDocument[];
+    const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
 
     const timeB = Date.now();
 
     this.logger.log(`Time to fetch all students: ${timeB - timeA}ms`);
     return allStudents;
+  }
+
+  /**
+   * @param conditions mongoosea uery to filter the documents.
+   *
+   * @returns All StudentDocuments which meet the given query.
+   */
+  async findByCondition(conditions: FilterQuery<StudentModel>): Promise<StudentDocument[]> {
+    const students = (await this.studentModel.find(conditions).exec()) as StudentDocument[];
+
+    return students;
   }
 
   /**
@@ -181,29 +179,16 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
   }
 
   /**
-   * Saves the given grading information as GradingDocument into the student with the given ID.
+   * Sets the grading corresponding to the `dto` of the student with the given ID.
    *
-   * If there already was a grading saved for the given `sheetId` the old one will be overridden.
+   * @param id ID of the student to set the grading.
+   * @param dto DTO with the information of the grading.
    *
-   * @param id ID of the student to save.
-   * @param dto Information about the grading which should be saved.
-   *
-   * @throws `NotFoundException` - If either no student with the given ID or no sheet with the `sheetId` from the DTO could be found.
-   * @throws `BadRequestException` - If the DTO could not be converted into a GradingDocument. See {@link GradingDocument#fromDTO} for more information.
+   * @throws `NotFoundException` - If no student with the given id could be found.
    */
   async setGrading(id: string, dto: GradingDTO): Promise<void> {
     const student = await this.findById(id);
-    const entityWithExercises = await this.getEntityWithExercisesFromDTO(dto);
-    const grading = await this.getGradingFromDTO(dto);
-    const prevGrading = student.getGrading(entityWithExercises);
-
-    if (prevGrading && prevGrading.id !== grading.id) {
-      prevGrading.removeStudent(student);
-      await prevGrading.save();
-    }
-
-    grading.addStudent(student);
-    await grading.save();
+    await this.gradingService.setGradingOfStudent(student, dto);
   }
 
   /**
@@ -212,44 +197,9 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
    * @param dtos Map containing the grading DTOs keyed by student ids.
    */
   async setGradingOfMultipleStudents(dtos: Map<string, GradingDTO>): Promise<void> {
-    const promises: Promise<void>[] = [];
-
-    dtos.forEach((dto, studentId) => {
-      promises.push(this.setGrading(studentId, dto));
-    });
-
-    await Promise.all(promises);
-  }
-
-  /**
-   * Searches or creates the GradingDocument according to the given DTO.
-   *
-   * If the DTO does contain a `gradingId` field, the corresponding GradingDocument is fetched from the database, updated with the DTO and returned. Please note: The GradingDocument does __NOT__ get saved by this function.
-   *
-   * If the DTO does __NOT__ contain such a field, a new GradingDocument is generated from the DTO and returned. This documuent is also __NOT__ getting saved by this function.
-   *
-   * @param dto DTO to get the related GradingDocument of.
-   *
-   * @returns GradingDocument related to the given DTO.
-   *
-   * @throws `NotFoundException` - If the DTO contains a `gradingId` but no GradingDocument with such an ID could be found.
-   */
-  async getGradingFromDTO(dto: GradingDTO): Promise<GradingDocument> {
-    let grading: GradingDocument | null;
-
-    if (!!dto.gradingId) {
-      grading = await this.gradingModel.findById(dto.gradingId);
-
-      if (!grading) {
-        throw new NotFoundException(`No grading with ID '${dto.gradingId}' could be found.`);
-      }
-
-      grading.updateFromDTO(dto);
-    } else {
-      grading = GradingModel.fromDTO(dto);
+    for (const [studentId, dto] of dtos) {
+      await this.setGrading(studentId, dto);
     }
-
-    return grading;
   }
 
   /**
@@ -281,43 +231,6 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
 
     student.cakeCount = dto.cakeCount;
     await student.save();
-  }
-
-  /**
-   * Returns either a ScheinexamDocument or an ScheinexamDocument associated to the given DTO.
-   *
-   * If all fields, `sheetId`, `examId` and `shortTestId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
-   *
-   * @param dto DTO to return the associated document with exercises for.
-   *
-   * @returns Associated document with exercises.
-   *
-   * @throws `BadRequestException` - If either all fields (`sheetId`, `examId` and `shortTestId`) or none of those fields are set.
-   */
-  async getEntityWithExercisesFromDTO(dto: GradingDTO): Promise<HasExerciseDocuments> {
-    const { sheetId, examId, shortTestId } = dto;
-
-    if (!!sheetId && !!examId && !!shortTestId) {
-      throw new BadRequestException(
-        'You have to set exactly one of the three fields sheetId, examId and shortTestId - not all three.'
-      );
-    }
-
-    if (!!sheetId) {
-      return this.sheetService.findById(sheetId);
-    }
-
-    if (!!examId) {
-      return this.scheinexamService.findById(examId);
-    }
-
-    if (!!shortTestId) {
-      return this.shortTestService.findById(shortTestId);
-    }
-
-    throw new BadRequestException(
-      'You have to either set the sheetId nor the examId nor the shortTestId field.'
-    );
   }
 
   private async getTeamFromDTO(

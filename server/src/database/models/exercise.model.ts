@@ -4,7 +4,7 @@ import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { ExercisePointsInfo, IExercisePointsInfo } from '../../shared/model/Gradings';
 import { IExercise, ISubexercise } from '../../shared/model/HasExercises';
 
-export interface HasExerciseDocuments {
+export interface HandInDocument {
   id?: string;
   exercises: ExerciseDocument[];
 }
@@ -71,6 +71,15 @@ export class ExerciseModel {
     this.bonus = fields.bonus;
     this._maxPoints = fields.maxPoints;
     this.subexercises = (fields.subexercises as SubExerciseDocument[]) ?? [];
+
+    this._id = mongoose.Types.ObjectId(fields.id ?? generateObjectId());
+  }
+
+  @prop()
+  _id: mongoose.Types.ObjectId;
+
+  get id(): string {
+    return this._id.toHexString();
   }
 
   @prop({ required: true })
@@ -119,10 +128,11 @@ export class ExerciseModel {
   subexercises!: SubExerciseDocument[];
 
   static fromDTO(dto: ExerciseDTO): ExerciseModel {
-    const { exName, bonus, maxPoints, subexercises } = dto;
+    const { exName, bonus, maxPoints, subexercises, id } = dto;
     const subExModels = subexercises?.map((sub) => SubExerciseModel.fromDTO(sub));
 
     return new ExerciseModel({
+      id,
       exName,
       bonus,
       maxPoints,

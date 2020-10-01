@@ -2,6 +2,10 @@ import { AxiosInstance } from 'axios';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { ISheet, ISheetDTO } from 'shared/model/Sheet';
+import {
+  IScheinCriteria,
+  IScheinCriteriaDTO,
+} from '../../../server/src/shared/model/ScheinCriteria';
 import { IShortTest, IShortTestDTO } from '../../../server/src/shared/model/ShortTest';
 import { ICreateUserDTO, IUser } from '../../../server/src/shared/model/User';
 
@@ -50,6 +54,19 @@ export async function setAttendanceOfStudent(
   }
 
   return Promise.reject(`Wrong status code (${response.status}).`);
+}
+
+export async function createScheinCriteria(
+  dto: IScheinCriteriaDTO,
+  axios: AxiosInstance
+): Promise<IScheinCriteria> {
+  const response = await axios.post<IScheinCriteria>('scheincriteria', dto);
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
 export async function setPointsOfStudent(

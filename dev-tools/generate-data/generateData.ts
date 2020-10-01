@@ -3,8 +3,12 @@ import { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
 import { AttendanceState, IAttendanceDTO } from '../../server/src/shared/model/Attendance';
 import { IExerciseGradingDTO, IGradingDTO } from '../../server/src/shared/model/Gradings';
-import { IExerciseDTO } from '../../server/src/shared/model/HasExercises';
+import { IExerciseDTO, ISubexercise } from '../../server/src/shared/model/HasExercises';
 import { Role } from '../../server/src/shared/model/Role';
+import {
+  IScheinCriteriaDTO,
+  ScheincriteriaIdentifier,
+} from '../../server/src/shared/model/ScheinCriteria';
 import { ISheet, ISheetDTO } from '../../server/src/shared/model/Sheet';
 import { IShortTest, IShortTestDTO } from '../../server/src/shared/model/ShortTest';
 import { IStudent, IStudentDTO, StudentStatus } from '../../server/src/shared/model/Student';
@@ -12,6 +16,7 @@ import { ITutorial, ITutorialDTO } from '../../server/src/shared/model/Tutorial'
 import { ICreateUserDTO, IUser } from '../../server/src/shared/model/User';
 import { login } from '../util/login';
 import {
+  createScheinCriteria,
   createSheet,
   createShortTest,
   createUser,
@@ -27,7 +32,7 @@ const SHEETS_TOTAL = 10;
 const SHORT_TESTS_TOTAL = 9;
 
 const REQUESTS_AT_ONCE = 25;
-const WAIT_TIME_AFTER_SMALL_REQUESTS = 0;
+const WAIT_TIME_AFTER_SMALL_REQUESTS = 50;
 const WAIT_TIME_AFTER_LARGE_REQUESTS = 2000;
 
 let axios: AxiosInstance;
@@ -228,6 +233,48 @@ async function createShortTests(): Promise<IShortTest[]> {
   return shortTests;
 }
 
+async function createCriterias(): Promise<void> {
+  const attendanceCriteria: IScheinCriteriaDTO = {
+    name: 'Anwesenheiten',
+    identifier: ScheincriteriaIdentifier.ATTENDANCE,
+    data: {
+      percentage: true,
+      valueNeeded: 0.8,
+    },
+  };
+
+  const sheetCriteria: IScheinCriteriaDTO = {
+    name: 'Blätter',
+    identifier: ScheincriteriaIdentifier.SHEET_INDIVIDUAL,
+    data: {
+      percentage: true,
+      valueNeeded: 0.8,
+      percentagePerSheet: true,
+      valuePerSheetNeeded: 0.5,
+    },
+  };
+
+  const shortTestCriteria: IScheinCriteriaDTO = {
+    name: 'Kurztests',
+    identifier: ScheincriteriaIdentifier.SHORT_TESTS,
+    data: {
+      percentage: true,
+      valueNeeded: 0.8,
+      isPercentagePerTest: true,
+      valuePerTestNeeded: 0.5,
+    },
+  };
+
+  console.log('Creating attendance schein criteria...');
+  await createScheinCriteria(attendanceCriteria, axios);
+
+  console.log('Creating sheet schein criteria...');
+  await createScheinCriteria(sheetCriteria, axios);
+
+  console.log('Creating short test schein criteria...');
+  await createScheinCriteria(shortTestCriteria, axios);
+}
+
 async function createStudents({
   tutorials,
   sheets,
@@ -259,6 +306,13 @@ async function createStudents({
   console.log('All students created.');
 }
 
+function getRandomAchievedNumber(exercise: ISubexercise): number {
+  const minPoints = roundNumber(exercise.maxPoints / 4, 0);
+  const difference = exercise.maxPoints - minPoints;
+
+  return roundNumber(Math.random() * difference + minPoints);
+}
+
 async function createStudent({
   no,
   tutorial,
@@ -287,7 +341,7 @@ async function createStudent({
         const subExercisePoints: Map<string, number> = new Map();
 
         exercise.subexercises.forEach((subEx) => {
-          subExercisePoints.set(subEx.id, roundNumber(Math.random() * subEx.maxPoints));
+          subExercisePoints.set(subEx.id, getRandomAchievedNumber(subEx));
         });
 
         exerciseGradings.set(exercise.id, {
@@ -299,13 +353,14 @@ async function createStudent({
         exerciseGradings.set(exercise.id, {
           comment: '',
           additionalPoints: 0,
-          points: roundNumber(Math.random() * exercise.maxPoints),
+          points: getRandomAchievedNumber(exercise),
         });
       }
     });
 
     gradings.push({
       sheetId: sheet.id,
+      createNewGrading: true,
       additionalPoints: 0,
       comment: '',
       exerciseGradings: [...exerciseGradings],
@@ -319,12 +374,13 @@ async function createStudent({
       exerciseGradings.set(exercise.id, {
         comment: '',
         additionalPoints: 0,
-        points: roundNumber(Math.random() * exercise.maxPoints),
+        points: getRandomAchievedNumber(exercise),
       });
     });
 
     gradings.push({
       shortTestId: shortTest.id,
+      createNewGrading: true,
       additionalPoints: 0,
       comment: '',
       exerciseGradings: [...exerciseGradings],
@@ -348,25 +404,27 @@ async function createStudent({
 
     attendances.push({
       date,
-      note: Math.random() > 0.8 ? 'Some note' : undefined,
+      note: Math.random() > 0.75 ? 'Some note' : undefined,
       state,
     });
   });
 
   try {
     console.log(`Generating evaluation information for student ${student.lastname}...`);
-    await Promise.all(
-      gradings.map((gradingDTO) => setPointsOfStudent(student.id, gradingDTO, axios))
-    );
+
+    for (const gradingDTO of gradings) {
+      await setPointsOfStudent(student.id, gradingDTO, axios);
+    }
   } catch (err) {
     console.error(err);
   }
 
   try {
     console.log(`Generating attendance information for student ${student.lastname}...`);
-    await Promise.all(
-      attendances.map((attendanceDTO) => setAttendanceOfStudent(student.id, attendanceDTO, axios))
-    );
+
+    for (const attendanceDTO of attendances) {
+      await setAttendanceOfStudent(student.id, attendanceDTO, axios);
+    }
   } catch (err) {
     console.error(err);
   }
@@ -388,6 +446,9 @@ async function run() {
     await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
 
     const shortTests = await createShortTests();
+    await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
+
+    await createCriterias();
     await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
 
     await createStudents({ tutorials, sheets, shortTests });

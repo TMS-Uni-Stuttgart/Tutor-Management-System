@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import xl, { Workbook, Worksheet } from 'excel4node';
 import { parse } from 'papaparse';
 import { SheetDocument } from '../../database/models/sheet.model';
-import { populateStudentDocument, StudentDocument } from '../../database/models/student.model';
+import { StudentDocument } from '../../database/models/student.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { AttendanceState } from '../../shared/model/Attendance';
 import { ParseCsvResult } from '../../shared/model/CSV';
@@ -188,7 +188,6 @@ export class ExcelService {
 
       let row = 2;
       for (const student of students) {
-        await populateStudentDocument(student);
         const grading = student.getGrading(sheet)?.getExerciseGrading(ex);
 
         data['firstname'].push({

@@ -3,32 +3,14 @@ import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { ITeam } from '../../shared/model/Team';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
-import { GradingDocument } from './grading.model';
+import { Grading } from './grading.model';
 import { SheetDocument } from './sheet.model';
-import { populateStudentDocument, StudentDocument } from './student.model';
+import { StudentDocument } from './student.model';
 import { TutorialDocument, TutorialModel } from './tutorial.model';
-
-/**
- * Populates the fields in the given TeamDocument. If no document is provided this functions does nothing.
- *
- * @param doc TeamDocument to populate.
- */
-export async function populateTeamDocument(doc?: TeamDocument): Promise<void> {
-  if (!doc) {
-    return;
-  }
-
-  await doc.populate('students').execPopulate();
-  await Promise.all(doc.students.map((student) => populateStudentDocument(student)));
-}
 
 type AssignableFields = Omit<NoFunctions<TeamModel>, 'students'>;
 
 @plugin(mongooseAutoPopulate)
-@plugin<typeof VirtualPopulation, VirtualPopulationOptions<TeamModel>>(VirtualPopulation, {
-  populateDocument: populateTeamDocument,
-})
 @modelOptions({ schemaOptions: { collection: CollectionName.TEAM } })
 export class TeamModel {
   static generateTeamname(students: StudentDocument[]): string {
@@ -47,13 +29,14 @@ export class TeamModel {
   @prop({ required: true })
   teamNo!: number;
 
-  @prop({ required: true, autopopulate: true, ref: TutorialModel })
+  @prop({ required: true, autopopulate: { maxDepth: 1 }, ref: TutorialModel })
   tutorial!: TutorialDocument;
 
   @prop({
     ref: 'StudentModel',
     foreignField: 'team',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   students!: StudentDocument[];
 
@@ -72,17 +55,21 @@ export class TeamModel {
    * @param sheet Sheet to get the gradings for.
    * @returns List containing all gradings related to the given sheet of the students.
    */
-  getGradings(sheet: SheetDocument): GradingDocument[] {
-    const gradings = new Map<string, GradingDocument>();
+  getGradings(sheet: SheetDocument): Grading[] {
+    const gradings: Grading[] = [];
 
     this.students.forEach((student) => {
       const gradingOfStudent = student.getGrading(sheet);
-      if (gradingOfStudent) {
-        gradings.set(gradingOfStudent.id, gradingOfStudent);
+
+      if (
+        gradingOfStudent &&
+        gradings.findIndex((g) => g.getStudents().includes(student.id)) === -1
+      ) {
+        gradings.push(gradingOfStudent);
       }
     });
 
-    return [...gradings.values()];
+    return gradings;
   }
 
   toDTO(this: TeamDocument): ITeam {

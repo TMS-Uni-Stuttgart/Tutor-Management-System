@@ -10,6 +10,7 @@ import { IScheinCriteria, ScheincriteriaIdentifier } from '../../shared/model/Sc
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
+import { GradingService } from '../student/grading.service';
 import { StudentService } from '../student/student.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
@@ -130,6 +131,7 @@ describe('ScheincriteriaService', () => {
         TeamService,
         UserService,
         ShortTestService,
+        GradingService,
       ],
     }).compile();
   });

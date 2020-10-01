@@ -7,21 +7,7 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { StaticSettings } from '../../module/settings/settings.static';
 import { IUser } from '../../shared/model/User';
-import VirtualPopulation, { VirtualPopulationOptions } from '../plugins/VirtualPopulation';
 import { TutorialDocument } from './tutorial.model';
-
-/**
- * Populates the fields in the given UserDocument. If no document is provided this functions does nothing.
- *
- * @param doc UserDocument to populate.
- */
-export async function populateUserDocument(doc?: UserDocument): Promise<void> {
-  if (!doc || !doc.populate) {
-    return;
-  }
-
-  await doc.populate('tutorials').populate('tutorialsToCorrect').execPopulate();
-}
 
 type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToCorrect'>;
 
@@ -42,9 +28,6 @@ type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToC
 
   this.password = hashedPassword;
   next();
-})
-@plugin<typeof VirtualPopulation, VirtualPopulationOptions<UserModel>>(VirtualPopulation, {
-  populateDocument: populateUserDocument as any,
 })
 @modelOptions({ schemaOptions: { collection: CollectionName.USER, toObject: { virtuals: true } } })
 export class UserModel {
@@ -80,6 +63,7 @@ export class UserModel {
     ref: 'TutorialModel',
     foreignField: 'tutor',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   tutorials!: TutorialDocument[];
 
@@ -87,6 +71,7 @@ export class UserModel {
     ref: 'TutorialModel',
     foreignField: 'correctors',
     localField: '_id',
+    autopopulate: { maxDepth: 1 },
   })
   tutorialsToCorrect!: TutorialDocument[];
 

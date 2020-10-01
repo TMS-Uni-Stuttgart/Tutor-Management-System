@@ -109,7 +109,7 @@ function getShortTestGradingForStudent({
   const grading: IGradingDTO = {
     shortTestId: shortTest.id,
     exerciseGradings: [...exerciseGradings],
-    gradingId: prevGrading?.id,
+    createNewGrading: !prevGrading,
     // comment: '', // TODO: Write a comment -- maybe one can include the exact result in here?
   };
 

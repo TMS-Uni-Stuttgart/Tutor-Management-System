@@ -10,7 +10,7 @@ import {
   TEAM_DOCUMENTS,
   TUTORIAL_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
-import { ExerciseGradingModel, GradingModel } from '../../database/models/grading.model';
+import { ExerciseGrading, Grading } from '../../database/models/grading.model';
 import { StudentModel } from '../../database/models/student.model';
 import { AttendanceState } from '../../shared/model/Attendance';
 import { IGrading } from '../../shared/model/Gradings';
@@ -23,6 +23,7 @@ import { ShortTestService } from '../short-test/short-test.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { UserService } from '../user/user.service';
+import { GradingService } from './grading.service';
 import {
   AttendanceDTO,
   CakeCountDTO,
@@ -78,7 +79,7 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
 
   expect(actualId).toEqual(_id.toString());
 
-  expect(actualTutorial.id).toEqual(tutorial._id);
+  expect(actualTutorial.id).toEqual(tutorial.id);
   expect(actualTutorial.slot).toEqual(tutorial.slot);
 
   expect(actualTeam?.id).toEqual(team?._id);
@@ -157,7 +158,7 @@ export function assertGrading({ expected, actual }: AssertGradingParams): void {
     return;
   }
 
-  const expectedDoc = GradingModel.fromDTO(expected);
+  const expectedDoc = Grading.fromDTO(expected);
   const expectedSum = expectedDoc.points;
 
   expect(actual.points).toBe(expectedSum);
@@ -167,7 +168,7 @@ export function assertGrading({ expected, actual }: AssertGradingParams): void {
   for (let i = 0; i < expected.exerciseGradings.length; i++) {
     const [expectedKey, expectedEx] = expected.exerciseGradings[i];
     const [actualKey, actualEx] = actual.exerciseGradings[i];
-    const expectedDoc = ExerciseGradingModel.fromDTO(expectedEx);
+    const expectedDoc = ExerciseGrading.fromDTO(expectedEx);
 
     expect(actualKey).toEqual(expectedKey);
     expect(actualEx.points).toEqual(expectedDoc.points);
@@ -191,6 +192,7 @@ describe('StudentService', () => {
         SheetService,
         ScheinexamService,
         ShortTestService,
+        GradingService,
       ],
     }).compile();
   });
@@ -545,6 +547,7 @@ describe('StudentService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
+      createNewGrading: true,
       exerciseGradings: [
         [
           sheet.exercises[0].id,
@@ -609,6 +612,7 @@ describe('StudentService', () => {
     const sheet = await sheetService.create(sheetDTO);
     const gradingDTO: GradingDTO = {
       sheetId: sheet.id,
+      createNewGrading: true,
       exerciseGradings: [
         [
           sheet.exercises[0].id,
@@ -674,6 +678,7 @@ describe('StudentService', () => {
     const scheinexam = await scheinexamService.create(scheinexamDTO);
     const gradingDTO: GradingDTO = {
       examId: scheinexam.id,
+      createNewGrading: true,
       exerciseGradings: [
         [
           scheinexam.exercises[0].id,

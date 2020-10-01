@@ -9,7 +9,7 @@ import Button, { ButtonProps } from '@material-ui/core/Button';
 import { DialogProps } from '@material-ui/core/Dialog';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
 import { Logger } from '../../util/Logger';
 import SelectionDialogContent, {
@@ -89,17 +89,17 @@ function DialogService({ children }: RequireChildrenProp): JSX.Element {
   const [dialog, setDialog] = useState<DialogOptions | undefined>(undefined);
   const dialogActions = useRef<HTMLElement>();
 
-  function handleSetDialog(dialog: DialogOptions | undefined) {
+  const handleSetDialog = useCallback((dialog: DialogOptions | undefined) => {
     setDialog(dialog);
-  }
+  }, []);
 
-  function handleCloseDialog() {
+  const handleCloseDialog = useCallback(() => {
     if (dialog && dialog.onClose) {
       dialog.onClose();
     }
 
     setDialog(undefined);
-  }
+  }, [dialog]);
 
   showDialogGlobal = handleSetDialog;
   closeDialogGlobal = handleCloseDialog;
@@ -170,14 +170,20 @@ function hideDialogOutsideContext() {
 function useDialog(): DialogHelpers {
   const createDialogFunction = useContext(DialogContext);
 
-  return {
-    hide: () => createDialogFunction(undefined),
-    show: (dialogOptions: Partial<DialogOptions>) => {
-      const dialog: DialogOptions = { ...defaultDialog, ...dialogOptions };
+  const hide: DialogHelpers['hide'] = useCallback(() => createDialogFunction(undefined), [
+    createDialogFunction,
+  ]);
 
+  const show: DialogHelpers['show'] = useCallback(
+    (dialogOptions: Partial<DialogOptions>) => {
+      const dialog: DialogOptions = { ...defaultDialog, ...dialogOptions };
       createDialogFunction(dialog);
     },
-    showConfirmationDialog: (dialogOptions: ConfirmationDialogOptions) => {
+    [createDialogFunction]
+  );
+
+  const showConfirmationDialog: DialogHelpers['showConfirmationDialog'] = useCallback(
+    (dialogOptions: ConfirmationDialogOptions) => {
       return new Promise<boolean>((resolve) => {
         const { title, content, cancelProps, acceptProps, DialogProps } = dialogOptions;
 
@@ -203,7 +209,11 @@ function useDialog(): DialogHelpers {
         createDialogFunction(dialog);
       });
     },
-    showSelectionDialog: (dialogOptions: SelectionDialogOptions<any>) => {
+    [createDialogFunction]
+  );
+
+  const showSelectionDialog: DialogHelpers['showSelectionDialog'] = useCallback(
+    (dialogOptions: SelectionDialogOptions<any>) => {
       return new Promise<any>((resolve) => {
         const { title, content, DialogProps, disableSelectIfNoneSelected } = dialogOptions;
 
@@ -231,6 +241,14 @@ function useDialog(): DialogHelpers {
         createDialogFunction(dialog);
       });
     },
+    [createDialogFunction]
+  );
+
+  return {
+    hide,
+    show,
+    showConfirmationDialog,
+    showSelectionDialog,
   };
 }
 

@@ -1,9 +1,11 @@
 import { DateTime } from 'luxon';
 import { ExerciseModel, SubExerciseModel } from '../../src/database/models/exercise.model';
+import { HasExercisesModel } from '../../src/database/models/ratedEntity.model';
 import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
 import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
 import { SettingsModel } from '../../src/database/models/settings.model';
 import { SheetModel } from '../../src/database/models/sheet.model';
+import { ShortTestModel } from '../../src/database/models/shortTest.model';
 import { StudentModel } from '../../src/database/models/student.model';
 import { TeamModel } from '../../src/database/models/team.model';
 import { TutorialModel } from '../../src/database/models/tutorial.model';
@@ -19,15 +21,15 @@ export type MockedTutorialModel = Omit<MockedModel<TutorialModel>, 'tutor'> & {
 };
 
 export type MockedSubExerciseModel = MockedModel<Omit<SubExerciseModel, 'id' | '_id'>>;
-export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises'> & {
+export type MockedExerciseModel = Omit<MockedModel<ExerciseModel>, 'subexercises' | 'id'> & {
   subexercises?: MockedSubExerciseModel[];
 };
-export type MockedSheetModel = Omit<MockedModel<SheetModel>, 'exercises'> & {
+export type MockedHandIn<T extends HasExercisesModel> = Omit<MockedModel<T>, 'exercises'> & {
   exercises: MockedExerciseModel[];
 };
-export type MockedScheinexamModel = Omit<MockedModel<ScheinexamModel>, 'exercises'> & {
-  exercises: MockedExerciseModel[];
-};
+export type MockedSheetModel = MockedHandIn<SheetModel>;
+export type MockedScheinexamModel = MockedHandIn<ScheinexamModel>;
+export type MockedShortTestModel = MockedHandIn<ShortTestModel>;
 export type MockedScheincriteriaModel = Omit<MockedModel<ScheincriteriaModel>, 'criteria'> & {
   criteria: { identifier: string; [key: string]: any };
 };
@@ -315,6 +317,24 @@ export const SCHEINEXAM_DOCUMENTS: MockedScheinexamModel[] = [
             pointInfo: new ExercisePointsInfo({ must: 12, bonus: 0 }),
           },
         ],
+      },
+    ],
+  },
+];
+
+export const SHORT_TEST_DOCUMENTS: MockedShortTestModel[] = [
+  {
+    _id: '5f69eda425df2bfb808dd955',
+    shortTestNo: 1,
+    percentageNeeded: 0.5,
+    totalPoints: new ExercisePointsInfo({ must: 20, bonus: 0 }),
+    exercises: [
+      {
+        _id: '5f69edaea8f17da69ee5d8a5',
+        bonus: false,
+        exName: 'Complete test',
+        maxPoints: 20,
+        pointInfo: new ExercisePointsInfo({ must: 20 }),
       },
     ],
   },
