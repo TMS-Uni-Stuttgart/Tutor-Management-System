@@ -20,7 +20,9 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
         with:
-          buildkitd-flags: --debug
+          # Using this driver fixes the timeout issue with buildx that made it impossible to push more than one image to the GHCR.
+          driver-opts: image=moby/buildkit:master
+          install: true
       
       # Login to repository
       - name: Login to DockerHub
@@ -35,4 +37,6 @@ jobs:
         with:
           push: true
           no-cache: true
-          tags: ghcr.io/dudrie/tutor-management-system:${{ github.event.release.tag_name }}, ghcr.io/dudrie/tutor-management-system:latest
+          tags: |
+            ghcr.io/dudrie/tutor-management-system:${{ github.event.release.tag_name }}
+            ghcr.io/dudrie/tutor-management-system:latest
