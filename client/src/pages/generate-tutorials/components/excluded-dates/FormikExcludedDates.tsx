@@ -107,6 +107,7 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
         flex={1}
         display='grid'
         gridTemplateColumns='1fr'
+        gridTemplateRows='max-content'
         gridRowGap={8}
         gridColumnGap={8}
         maxHeight='max-content'

@@ -153,7 +153,7 @@ function NavigationRail({
 
           <Link
             color='inherit'
-            href={`https://github.com/Dudrie/Tutor-Management-System/releases/tag/v${version}`}
+            href={`https://github.com/Dudrie/Tutor-Management-System/releases/tag/${version}`}
             target='_blank'
             rel='noopener noreferrer'
           >
