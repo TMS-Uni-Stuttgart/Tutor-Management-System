@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { IStudentDTO, StudentStatus } from 'shared/model/Student';
-import { getNameOfEntity, sortByName } from 'shared/util/helpers';
+import { sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
   getScheinCriteriaSummariesOfAllStudentsOfTutorial,
@@ -199,9 +199,7 @@ export function getFilteredStudents(
         return true;
       }
 
-      const name = getNameOfEntity(s);
-
-      return unifyFilterableText(name).includes(unifyFilterableText(filterText));
+      return unifyFilterableText(s.name).includes(unifyFilterableText(filterText));
     })
     .sort((a, b) => {
       switch (sortOption) {

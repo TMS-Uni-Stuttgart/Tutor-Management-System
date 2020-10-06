@@ -2,9 +2,9 @@ import { TableCell, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { AccountMultiple as GroupIcon } from 'mdi-material-ui';
 import React from 'react';
+import { Team } from '../model/Team';
 import EntityListItemMenu from './list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from './PaperTableRow';
-import { Team } from '../model/Team';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,7 +49,7 @@ function TeamTableRow({
             <Typography>
               {team.students.length > 0
                 ? `Mitglieder: ${team.students
-                    .map((student) => `${student.firstname} ${student.lastname}`)
+                    .map((student) => student.nameFirstnameFirst)
                     .join(', ')}`
                 : 'Keine Mitglieder.'}
             </Typography>

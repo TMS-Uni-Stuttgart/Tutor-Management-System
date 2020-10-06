@@ -1,7 +1,6 @@
 import { FormikHelpers } from 'formik';
 import React, { useMemo, useRef } from 'react';
 import { IStudentDTO, StudentStatus } from 'shared/model/Student';
-import { getNameOfEntity } from 'shared/util/helpers';
 import * as Yup from 'yup';
 import { useSettings } from '../../hooks/useSettings';
 import { Student } from '../../model/Student';
@@ -250,9 +249,7 @@ function StudentForm({
 
               for (const s of otherStudents) {
                 if (s.matriculationNo && value === s.matriculationNo) {
-                  return `Matrikelnummer wird bereits von ${getNameOfEntity(s, {
-                    firstNameFirst: true,
-                  })} verwendet.`;
+                  return `Matrikelnummer wird bereits von ${s.nameFirstnameFirst} verwendet.`;
                 }
               }
 

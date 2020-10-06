@@ -1,5 +1,5 @@
 import React from 'react';
-import { Student } from '../../model/Student';
+import { StudentInTeam } from '../../model/Student';
 import { Team } from '../../model/Team';
 import { FormikSubmitCallback } from '../../types';
 import FormikFilterableSelect from './components/FormikFilterableSelect';
@@ -16,7 +16,7 @@ interface TeamFormState {
 interface Props extends Omit<FormikBaseFormProps<TeamFormState>, CommonlyUsedFormProps> {
   team?: Team;
   onSubmit: TeamFormSubmitCallback;
-  students: Student[];
+  students: StudentInTeam[];
 }
 
 function getInitialFormState(team?: Team): TeamFormState {
@@ -44,7 +44,7 @@ function TeamForm({ students, onSubmit, team, ...other }: Props): JSX.Element {
         emptyPlaceholder='Keine Studierenden vorhanden.'
         filterPlaceholder='Suche nach Namen'
         items={students}
-        itemToString={(student) => `${student.lastname}, ${student.firstname}`}
+        itemToString={(student) => student.name}
         itemToValue={(student) => student.id}
         minHeight={400}
         gridColumn='1 / span 2'

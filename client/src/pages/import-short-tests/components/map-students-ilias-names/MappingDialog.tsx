@@ -1,7 +1,6 @@
 import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
-import { getNameOfEntity } from 'shared/util/helpers';
 import FilterableSelect from '../../../../components/forms/components/FilterableSelect';
 import { SelectionDialogChildrenProps } from '../../../../hooks/dialog-service/components/SelectionDialogContent';
 import { Student } from '../../../../model/Student';
@@ -52,7 +51,7 @@ function MappingDialog({
         emptyPlaceholder='Keine Studierenden vorhanden.'
         filterPlaceholder='Suche nach Namen'
         items={students}
-        itemToString={(student) => getNameOfEntity(student)}
+        itemToString={(student) => student.name}
         itemToValue={(student) => student.id}
         value={selected ? [selected.id] : []}
         onChange={(newValue) => {

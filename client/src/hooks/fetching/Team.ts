@@ -5,9 +5,7 @@ import { Team } from '../../model/Team';
 import axios from './Axios';
 
 function sortStudentsOfTeam(team: Team) {
-  team.students.sort((a, b) =>
-    `${a.lastname}, ${a.firstname}`.localeCompare(`${b.lastname}, ${b.firstname}`)
-  );
+  team.students.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getTeamsOfTutorial(tutorialId: string): Promise<Team[]> {
