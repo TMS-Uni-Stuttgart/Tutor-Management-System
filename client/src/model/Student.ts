@@ -1,7 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { IAttendance } from 'shared/model/Attendance';
-import { HasId, TutorialInEntity } from 'shared/model/Common';
+import { HasId, ITutorialInEntity } from 'shared/model/Common';
 import { IStudent, StudentStatus, TeamInStudent } from 'shared/model/Student';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { Modify } from '../typings/Modify';
@@ -38,7 +38,7 @@ export class Student implements Modify<IStudent, Modified> {
   readonly matriculationNo?: string;
   readonly status!: StudentStatus;
   readonly team?: TeamInStudent;
-  readonly tutorial!: TutorialInEntity;
+  readonly tutorial!: ITutorialInEntity;
 
   cakeCount!: number;
 

@@ -238,7 +238,7 @@ export class StudentModel {
       lastname,
       iliasName,
       matriculationNo,
-      tutorial: { id: tutorial.id, slot: tutorial.slot },
+      tutorial: tutorial.toInEntity(),
       team: team && {
         id: team.id,
         teamNo: team.teamNo,

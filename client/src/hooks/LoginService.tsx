@@ -99,10 +99,6 @@ async function handleResponse(response: AxiosResponse<ILoggedInUser>): Promise<L
     return Promise.reject(response.statusText);
   }
 
-  data.tutorials.sort((a, b) => a.slot.localeCompare(b.slot));
-  data.tutorialsToCorrect.sort((a, b) => a.slot.localeCompare(b.slot));
-  data.substituteTutorials.sort((a, b) => a.slot.localeCompare(b.slot));
-
   return plainToClass(LoggedInUser, data);
 }
 
