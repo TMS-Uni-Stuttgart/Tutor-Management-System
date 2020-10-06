@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import React, { useContext, useState } from 'react';
 import { ILoggedInUser } from 'shared/model/User';
-import { LoggedInUser, TutorialInEntity } from '../model/LoggedInUser';
+import { LoggedInUser } from '../model/LoggedInUser';
 import { RequireChildrenProp } from '../typings/RequireChildrenProp';
 import { getUser, removeUser, saveUser } from '../util/userStorage';
 import axios from './fetching/Axios';
@@ -99,26 +99,7 @@ async function handleResponse(response: AxiosResponse<ILoggedInUser>): Promise<L
     return Promise.reject(response.statusText);
   }
 
-  const user = plainToClass(LoggedInUser, data);
-  user.tutorials.sort(sortTutorials);
-  user.tutorialsToCorrect.sort(sortTutorials);
-  user.substituteTutorials.sort(sortTutorials);
-
-  return user;
-}
-
-function sortTutorials(a: TutorialInEntity, b: TutorialInEntity): number {
-  if (a.weekday !== b.weekday) {
-    return a.weekday - b.weekday;
-  }
-
-  if (!a.time.equals(b.time)) {
-    a.time > b.time;
-
-    return a.time.start > b.time.start ? 1 : -1;
-  }
-
-  return a.slot.localeCompare(b.slot);
+  return plainToClass(LoggedInUser, data);
 }
 
 export function LoginContextProvider({ children }: RequireChildrenProp): JSX.Element {

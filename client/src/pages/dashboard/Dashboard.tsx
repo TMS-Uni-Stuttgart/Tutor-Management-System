@@ -34,9 +34,8 @@ async function getTutorialSummariesForUser(
   }
 
   const summaries: TutorialSummaryInfo[] = [];
-  const sortedTutorials = userData.tutorials.sort((a, b) => a.slot.localeCompare(b.slot));
 
-  for (const loggedInTutorial of sortedTutorials) {
+  for (const loggedInTutorial of userData.tutorials) {
     const tutorial = await getTutorial(loggedInTutorial.id);
     const studentInfos = await getScheinCriteriaSummariesOfAllStudentsOfTutorial(
       loggedInTutorial.id
