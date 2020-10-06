@@ -12,7 +12,7 @@ import { useDialog } from '../../hooks/dialog-service/DialogService';
 import { getStudent } from '../../hooks/fetching/Student';
 import { createTeam, deleteTeam, editTeam, getTeamsOfTutorial } from '../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
-import { Student } from '../../model/Student';
+import { StudentInTeam } from '../../model/Student';
 import { Team } from '../../model/Team';
 import { useLogger } from '../../util/Logger';
 
@@ -40,9 +40,9 @@ interface Params {
 type Props = WithSnackbarProps & RouteComponentProps<Params>;
 
 function updateStudentsArray(
-  studentsToUpdate: Student[],
-  students: Student[],
-  setStudents: React.Dispatch<React.SetStateAction<Student[]>>
+  studentsToUpdate: StudentInTeam[],
+  students: StudentInTeam[],
+  setStudents: React.Dispatch<React.SetStateAction<StudentInTeam[]>>
 ) {
   const updatedStudents = [...students];
 
@@ -64,7 +64,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   const logger = useLogger('Teamoverview');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<StudentInTeam[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
 
   useEffect(() => {

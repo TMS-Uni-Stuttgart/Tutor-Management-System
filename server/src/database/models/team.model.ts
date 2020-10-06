@@ -77,7 +77,7 @@ export class TeamModel {
 
     return {
       id,
-      students: students.map((s) => s.toDTO()),
+      students: students.map((s) => s.toStudentInTeam()),
       teamNo,
       tutorial: tutorial.id,
     };

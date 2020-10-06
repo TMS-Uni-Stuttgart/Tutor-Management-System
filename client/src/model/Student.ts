@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import { IAttendance } from 'shared/model/Attendance';
 import { HasId, ITutorialInEntity } from 'shared/model/Common';
 import { IStudent, StudentStatus, TeamInStudent } from 'shared/model/Student';
+import { IStudentInTeam } from 'shared/model/Team';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { Modify } from '../typings/Modify';
 import { HasGradings } from '../typings/types';
@@ -16,7 +17,7 @@ interface Modified extends HasGradings {
   gradings: Map<string, Grading>;
 }
 
-export class Student implements Modify<IStudent, Modified> {
+export class StudentInTeam implements Modify<IStudentInTeam, Modified> {
   readonly id!: string;
   readonly firstname!: string;
   readonly lastname!: string;
@@ -38,7 +39,6 @@ export class Student implements Modify<IStudent, Modified> {
   readonly matriculationNo?: string;
   readonly status!: StudentStatus;
   readonly team?: TeamInStudent;
-  readonly tutorial!: ITutorialInEntity;
 
   cakeCount!: number;
 
@@ -120,4 +120,8 @@ export class Student implements Modify<IStudent, Modified> {
 
     return `Team ${this.team.teamNo.toString().padStart(2, '0')}`;
   }
+}
+
+export class Student extends StudentInTeam implements Modify<IStudent, Modified> {
+  readonly tutorial!: ITutorialInEntity;
 }

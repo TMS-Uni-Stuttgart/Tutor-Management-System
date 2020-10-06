@@ -4,10 +4,10 @@ import { ITeam } from 'shared/model/Team';
 import { Modify } from '../typings/Modify';
 import { HasGradings } from '../typings/types';
 import { Grading } from './Grading';
-import { Student } from './Student';
+import { StudentInTeam } from './Student';
 
 interface Modified extends HasGradings {
-  students: Student[];
+  students: StudentInTeam[];
 }
 
 export class Team implements Modify<ITeam, Modified> {
@@ -15,8 +15,8 @@ export class Team implements Modify<ITeam, Modified> {
   readonly teamNo!: number;
   readonly tutorial!: string;
 
-  @Type(() => Student)
-  readonly students!: Student[];
+  @Type(() => StudentInTeam)
+  readonly students!: StudentInTeam[];
 
   /**
    * Returns the grading assigned to this team for the given entity.

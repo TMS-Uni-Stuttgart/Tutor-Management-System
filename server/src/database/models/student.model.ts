@@ -8,6 +8,7 @@ import { StaticSettings } from '../../module/settings/settings.static';
 import { IAttendance } from '../../shared/model/Attendance';
 import { IGrading } from '../../shared/model/Gradings';
 import { IStudent, StudentStatus } from '../../shared/model/Student';
+import { IStudentInTeam } from '../../shared/model/Team';
 import { AttendanceDocument, AttendanceModel } from './attendance.model';
 import { HandInDocument } from './exercise.model';
 import { Grading } from './grading.model';
@@ -204,6 +205,16 @@ export class StudentModel {
    * @returns The DTO representation of this document.
    */
   toDTO(this: StudentDocument): IStudent {
+    return {
+      ...this.toStudentInTeam(),
+      tutorial: this.tutorial.toInEntity(),
+    };
+  }
+
+  /**
+   * @returns The representation of this document being used in a team.
+   */
+  toStudentInTeam(this: StudentDocument): IStudentInTeam {
     this.decryptFieldsSync();
 
     const {
@@ -213,7 +224,6 @@ export class StudentModel {
       iliasName,
       matriculationNo,
       cakeCount,
-      tutorial,
       email,
       courseOfStudies,
       status,
@@ -238,7 +248,6 @@ export class StudentModel {
       lastname,
       iliasName,
       matriculationNo,
-      tutorial: tutorial.toInEntity(),
       team: team && {
         id: team.id,
         teamNo: team.teamNo,
