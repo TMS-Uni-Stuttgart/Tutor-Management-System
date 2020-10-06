@@ -1,21 +1,21 @@
-import { NamedElement, TutorialInEntity } from './Common';
+import { ITutorialInEntity, NamedElement } from './Common';
 import { Role } from './Role';
 
-export interface ILoggedInUserSubstituteTutorial extends TutorialInEntity {
+export interface ILoggedInUserSubstituteTutorial extends ITutorialInEntity {
   dates: string[];
 }
 
 export interface ILoggedInUser extends NamedElement {
-  tutorials: TutorialInEntity[];
-  tutorialsToCorrect: TutorialInEntity[];
+  tutorials: ITutorialInEntity[];
+  tutorialsToCorrect: ITutorialInEntity[];
   roles: IUser['roles'];
   hasTemporaryPassword: boolean;
   substituteTutorials: ILoggedInUserSubstituteTutorial[];
 }
 
 export interface IUser extends NamedElement {
-  readonly tutorials: TutorialInEntity[];
-  readonly tutorialsToCorrect: TutorialInEntity[];
+  readonly tutorials: ITutorialInEntity[];
+  readonly tutorialsToCorrect: ITutorialInEntity[];
   readonly roles: Role[];
   readonly username: string;
   readonly email: string;

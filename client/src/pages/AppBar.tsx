@@ -22,11 +22,11 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import { useRouteMatch } from 'react-router';
-import { TutorialInEntity } from 'shared/model/Common';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
 import { useLogin } from '../hooks/LoginService';
+import { TutorialInEntity } from '../model/LoggedInUser';
 import { Tutorial } from '../model/Tutorial';
 import { ROUTES } from '../routes/Routing.routes';
 import { saveBlob } from '../util/helperFunctions';

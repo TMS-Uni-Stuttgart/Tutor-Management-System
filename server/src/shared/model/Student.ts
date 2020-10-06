@@ -1,5 +1,5 @@
 import { IAttendance } from './Attendance';
-import { HasId, NamedElement, TutorialInEntity } from './Common';
+import { HasId, ITutorialInEntity, NamedElement } from './Common';
 import { IGrading } from './Gradings';
 
 export interface TeamInStudent extends HasId {
@@ -22,7 +22,7 @@ export interface IStudent extends NamedElement {
   presentationPoints: [string, number][];
   status: StudentStatus;
   team?: TeamInStudent;
-  tutorial: TutorialInEntity;
+  tutorial: ITutorialInEntity;
   cakeCount: number;
 }
 

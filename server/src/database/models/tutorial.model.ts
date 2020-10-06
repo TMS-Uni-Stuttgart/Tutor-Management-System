@@ -1,9 +1,10 @@
 import { DocumentType, modelOptions, plugin, prop } from '@typegoose/typegoose';
-import { DateTime, ToISOTimeOptions } from 'luxon';
+import { DateTime, Interval, ToISOTimeOptions } from 'luxon';
 import { Schema } from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
+import { ITutorialInEntity } from '../../shared/model/Common';
 import { ITutorial } from '../../shared/model/Tutorial';
 import { StudentDocument } from './student.model';
 import { TeamDocument } from './team.model';
@@ -37,6 +38,10 @@ export class TutorialModel {
   }
 
   set dates(dates: DateTime[]) {
+    if (dates.length === 0) {
+      throw new Error('ERR_TUTORIAL_DATES_EMPTY');
+    }
+
     this._dates = dates
       .map((date) => date.toISODate())
       .filter((val): val is string => val !== null);
@@ -170,6 +175,15 @@ export class TutorialModel {
       })),
       substitutes: [...this.substitutes],
       teams: teams.map((team) => team.id),
+    };
+  }
+
+  toInEntity(this: TutorialDocument): ITutorialInEntity {
+    return {
+      id: this.id,
+      slot: this.slot,
+      weekday: this.dates[0].weekday,
+      time: Interval.fromDateTimes(this.startTime, this.endTime).toISO(),
     };
   }
 

@@ -7,6 +7,10 @@ export interface NamedElement extends HasId {
   readonly lastname: string;
 }
 
-export interface TutorialInEntity extends HasId {
+export interface ITutorialInEntity extends HasId {
   readonly slot: string;
+  readonly weekday: number;
+
+  /** Start and endtime in the form of a luxon interval. */
+  readonly time: string;
 }

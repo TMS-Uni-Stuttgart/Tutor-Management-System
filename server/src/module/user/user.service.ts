@@ -327,8 +327,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
         const date = DateTime.fromISO(dateKey).toISODate();
         const substInfo: ILoggedInUserSubstituteTutorial = substituteTutorials.get(tutorial.id) ?? {
-          id: tutorial.id,
-          slot: tutorial.slot,
+          ...tutorial.toInEntity(),
           dates: [],
         };
 

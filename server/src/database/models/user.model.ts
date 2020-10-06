@@ -101,14 +101,8 @@ export class UserModel {
       roles: [...roles],
       email,
       temporaryPassword,
-      tutorials: tutorials.map((tutorial) => ({
-        id: tutorial.id,
-        slot: tutorial.slot,
-      })),
-      tutorialsToCorrect: tutorialsToCorrect.map((tutorial) => ({
-        id: tutorial.id,
-        slot: tutorial.slot,
-      })),
+      tutorials: tutorials.map((tutorial) => tutorial.toInEntity()),
+      tutorialsToCorrect: tutorialsToCorrect.map((tutorial) => tutorial.toInEntity()),
     };
   }
 }

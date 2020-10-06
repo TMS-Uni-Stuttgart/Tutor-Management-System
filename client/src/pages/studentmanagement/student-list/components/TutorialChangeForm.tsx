@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { TutorialInEntity } from 'shared/model/Common';
+import { ITutorialInEntity } from 'shared/model/Common';
 import * as Yup from 'yup';
 import FormikSelect from '../../../../components/forms/components/FormikSelect';
 import FormikBaseForm, {
@@ -31,7 +31,7 @@ const validationSchema = Yup.object().shape({
 export type TutorialChangeFormSubmitCallback = FormikSubmitCallback<TutorialChangeFormState>;
 
 interface Props extends Omit<FormikBaseFormProps<TutorialChangeFormState>, CommonlyUsedFormProps> {
-  tutorial: TutorialInEntity;
+  tutorial: ITutorialInEntity;
   onSubmit: TutorialChangeFormSubmitCallback;
   onCancel: () => void;
 }
