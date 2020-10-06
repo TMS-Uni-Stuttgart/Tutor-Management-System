@@ -209,6 +209,7 @@ function StudentForm({
         initialValues={initialFormState}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
+        enableReinitialize
         enableDebug
       >
         <FormikTextField name='firstname' label='Vorname' inputRef={firstnameInputRef} required />
