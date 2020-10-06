@@ -135,7 +135,7 @@ function MapStudentsToIliasNames(): JSX.Element {
                             <Chip
                               label={
                                 mappedStudent
-                                  ? getNameOfEntity(mappedStudent)
+                                  ? mappedStudent.name
                                   : 'Kein/e Studierende/r zugeordnet'
                               }
                               className={mappedStudent ? classes.chipOkay : classes.chipError}

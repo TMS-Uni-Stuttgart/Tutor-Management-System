@@ -47,7 +47,7 @@ function StudentAttendanceRow({
 
   return (
     <PaperTableRow
-      label={`${student.lastname}, ${student.firstname}`}
+      label={student.name}
       subText={
         student.team ? `Team: #${student.team.teamNo.toString().padStart(2, '0')}` : 'Kein Team'
       }

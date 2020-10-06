@@ -6,8 +6,10 @@ export interface ITeamId {
   teamId: string;
 }
 
+export type IStudentInTeam = Omit<IStudent, 'tutorial'>;
+
 export interface ITeam extends HasId {
-  students: IStudent[];
+  students: IStudentInTeam[];
   teamNo: number;
   tutorial: string;
 }

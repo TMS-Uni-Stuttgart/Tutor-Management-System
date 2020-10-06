@@ -19,7 +19,6 @@ import {
 } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { getNameOfEntity } from 'shared/util/helpers';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import SplitButton from '../../../../components/SplitButton';
@@ -52,10 +51,6 @@ interface Props {
   onGeneratePdfClicked: (team: Team) => void;
 }
 
-function teamToString(team: Team): string {
-  return `Team #${team.getTeamNoAsString()}`;
-}
-
 function TeamCard({
   tutorialId,
   team,
@@ -77,9 +72,7 @@ function TeamCard({
 
   const studentsInTeam: string =
     team.students.length > 0
-      ? team.students
-          .map((student) => getNameOfEntity(student, { firstNameFirst: true }))
-          .join(', ')
+      ? team.students.map((student) => student.nameFirstnameFirst).join(', ')
       : 'Keine Studierende in diesem Team.';
 
   const { placeholderText, pdfDisabled } = useMemo(() => {
@@ -118,10 +111,7 @@ function TeamCard({
                   <StudentIcon />
                 </ListItemIcon>
 
-                <ListItemText
-                  primary={getNameOfEntity(student)}
-                  secondary='Zum Auswählen klicken'
-                />
+                <ListItemText primary={student.name} secondary='Zum Auswählen klicken' />
               </ListItem>
               {idx !== team.students.length - 1 && <Divider />}
             </React.Fragment>
@@ -161,7 +151,7 @@ function TeamCard({
             ]}
           />
         }
-        title={teamToString(team)}
+        title={`Team #${team.getTeamNoAsString()}`}
         subheader={studentsInTeam}
       />
 

@@ -3,7 +3,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Account as StudentIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getNameOfEntity } from 'shared/util/helpers';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { Scheinexam } from '../../../../model/Scheinexam';
 import { Student } from '../../../../model/Student';
@@ -29,7 +28,7 @@ function StudentCard({ student, exam, pathTo }: Props): JSX.Element {
     <Card variant='outlined'>
       <CardHeader
         avatar={<StudentIcon />}
-        title={getNameOfEntity(student)}
+        title={student.name}
         subheader={student.getTeamString()}
       />
 

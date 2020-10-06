@@ -2,11 +2,10 @@ import { Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
-import { getNameOfEntity } from 'shared/util/helpers';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
-import { Student } from '../../../model/Student';
+import { Student, StudentInTeam } from '../../../model/Student';
 import { Team } from '../../../model/Team';
 import { ROUTES } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
@@ -93,17 +92,20 @@ function EnterStudentPoints(): JSX.Element {
       setStudent(updatedStudent);
 
       resetForm({ values: { ...values } });
-      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} erfolgreich eingetragen.`, {
+      enqueueSnackbar(`Punkte für ${student.nameFirstnameFirst} erfolgreich eingetragen.`, {
         variant: 'success',
       });
     } catch {
-      enqueueSnackbar(`Punkte für ${getNameOfEntity(student)} konnten nicht eingetragen werden.`, {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        `Punkte für ${student.nameFirstnameFirst} konnten nicht eingetragen werden.`,
+        {
+          variant: 'error',
+        }
+      );
     }
   };
 
-  const allStudents: Student[] = team ? team.students : student ? [student] : [];
+  const allStudents: StudentInTeam[] = team ? team.students : student ? [student] : [];
 
   return (
     <EnterPoints
@@ -115,7 +117,7 @@ function EnterStudentPoints(): JSX.Element {
       entitySelectProps={{
         label: 'Student',
         emptyPlaceholder: 'Keine Studierenden verfügbar.',
-        itemToString: (s) => getNameOfEntity(s),
+        itemToString: (s) => s.name,
         onChange: handleStudentChange,
       }}
     />
