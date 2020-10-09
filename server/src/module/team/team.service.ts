@@ -22,6 +22,7 @@ export class TeamService {
   constructor(
     @InjectModel(TeamModel)
     private readonly teamModel: ReturnModelType<typeof TeamModel>,
+    @Inject(forwardRef(() => TutorialService))
     private readonly tutorialService: TutorialService,
     @Inject(forwardRef(() => StudentService))
     private readonly studentService: StudentService,
