@@ -42,6 +42,7 @@ export class ScheincriteriaController {
 
   @Post()
   @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   @UsePipes(ValidationPipe)
   async createCriteria(@Body() dto: ScheinCriteriaDTO): Promise<IScheinCriteria> {
     const scheincriteria = await this.scheincriteriaService.create(dto);
@@ -51,6 +52,7 @@ export class ScheincriteriaController {
 
   @Patch('/:id')
   @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   @UsePipes(ValidationPipe)
   async updateCriteria(
     @Param('id') id: string,
@@ -64,6 +66,7 @@ export class ScheincriteriaController {
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async deleteCriteria(@Param('id') id: string): Promise<void> {
     await this.scheincriteriaService.delete(id);
   }

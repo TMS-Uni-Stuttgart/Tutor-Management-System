@@ -13,7 +13,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
+import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
+import { Role } from '../../shared/model/Role';
 import { ISheet } from '../../shared/model/Sheet';
 import { SheetDTO } from './sheet.dto';
 import { SheetService } from './sheet.service';
@@ -32,6 +34,7 @@ export class SheetController {
 
   @Post()
   @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   @UsePipes(ValidationPipe)
   async createSheet(@Body() dto: SheetDTO): Promise<ISheet> {
     const sheet = await this.sheetService.create(dto);
@@ -49,6 +52,7 @@ export class SheetController {
 
   @Patch('/:id')
   @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   @UsePipes(ValidationPipe)
   async updateSheet(@Param('id') id: string, @Body() dto: SheetDTO): Promise<ISheet> {
     const sheet = await this.sheetService.update(id, dto);
@@ -59,6 +63,7 @@ export class SheetController {
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(HasRoleGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   async deleteSheet(@Param('id') id: string): Promise<void> {
     await this.sheetService.delete(id);
   }
