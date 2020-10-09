@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
 import { IDField } from '../../guards/decorators/idField.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
@@ -13,6 +14,7 @@ export class PdfController {
   @Get('/attendance/:tutorialId/:date')
   @IDField('tutorialId')
   @UseGuards(TutorialGuard)
+  @AllowSubstitutes()
   async getAttendancePDF(
     @Param('tutorialId') id: string,
     @Param('date') date: string,

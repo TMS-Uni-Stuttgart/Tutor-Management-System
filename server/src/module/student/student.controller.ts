@@ -127,6 +127,7 @@ export class StudentController {
 
   @Put('/:id/attendance')
   @UseGuards(StudentGuard)
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
   @AllowSubstitutes()
   @UsePipes(ValidationPipe)
   async updateAttendance(

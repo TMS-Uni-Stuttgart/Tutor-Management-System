@@ -1,25 +1,25 @@
 import {
-  Controller,
-  Get,
-  Param,
-  Post,
-  UsePipes,
-  ValidationPipe,
   Body,
-  Patch,
+  Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  UseGuards,
+  Param,
+  Patch,
+  Post,
   Put,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { ITeam } from '../../shared/model/Team';
-import { TeamService } from './team.service';
-import { TeamDTO } from './team.dto';
-import { TeamGuard } from '../../guards/team.guard';
-import { GradingDTO } from '../student/student.dto';
-import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
+import { TeamGuard } from '../../guards/team.guard';
+import { ITeam } from '../../shared/model/Team';
+import { GradingDTO } from '../student/student.dto';
+import { TeamDTO } from './team.dto';
+import { TeamService } from './team.service';
 
 @Controller('tutorial/:id/team')
 export class TeamController {
@@ -86,6 +86,7 @@ export class TeamController {
 
   @Put('/:teamId/grading')
   @UseGuards(TeamGuard)
+  @AllowCorrectors()
   @HttpCode(HttpStatus.NO_CONTENT)
   async setGradingForTeam(
     @Param('id') tutorialId: string,
