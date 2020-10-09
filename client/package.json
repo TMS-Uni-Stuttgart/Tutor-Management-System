@@ -63,7 +63,7 @@
     "@types/react-router": "^5.1.8",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-window": "^1.8.2",
-    "@types/yup": "^0.29.7",
+    "@types/yup": "^0.29.8",
     "babel-loader": "^8.1.0",
     "babel-plugin-named-asset-import": "^0.3.6",
     "craco-alias": "^2.1.1",
