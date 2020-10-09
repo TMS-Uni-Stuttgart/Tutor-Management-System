@@ -46,6 +46,7 @@ function TutorStudentmanagement(): JSX.Element {
     <StudentList
       students={students}
       summaries={summaries}
+      tutorialId={tutorialId}
       teams={teams}
       onStudentEdit={editStudent}
       onStudentDelete={deleteStudent}
