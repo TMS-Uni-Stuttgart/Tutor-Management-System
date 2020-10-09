@@ -74,7 +74,7 @@
     "@types/puppeteer": "3.0.2",
     "@types/supertest": "^2.0.10",
     "env-cmd": "^10.1.0",
-    "jest": "^26.4.2",
+    "jest": "^26.5.2",
     "mongodb-memory-server": "^6.9.0",
     "prettier": "^2.1.2",
     "supertest": "^5.0.0",
