@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import fs from 'fs';
 import puppeteer from 'puppeteer';
 
 /**
@@ -23,7 +24,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
    * @returns Buffer containing the generated PDF.
    */
   protected async generatePDFFromBodyContent(body: string): Promise<Buffer> {
-    const html = this.putBodyInHTML(body);
+    const html = await this.putBodyInHTML(body);
     let browser: puppeteer.Browser | undefined;
 
     this.logger.debug('Starting browser...');
@@ -78,15 +79,46 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
    *
    * @returns Complete HTML "file" which contains the given `body` as body.
    */
-  private putBodyInHTML(body: string): string {
-    return `<html><head><style>${this.getGithubMarkdownCSS()}</style><style>${this.getCustomCSS()}</style></head><body class="markdown-body">${body}</body></html>`;
+  private async putBodyInHTML(body: string): Promise<string> {
+    const githubCSS = await this.getGithubMarkdownCSS();
+    const highlightCSS = await this.getHighlightCSS();
+
+    return `
+    <html>
+    <head>
+    <style>${githubCSS}</style>
+    <style>${highlightCSS}</style>
+    <style>${this.getCustomCSS()}</style>
+    </head>
+    <body class="markdown-body">${body}</body>
+    </html>
+    `;
   }
 
   /**
    * @returns The GitHub markdown CSS.
    */
-  private getGithubMarkdownCSS(): string {
-    return GITHUB_MARKDOWN_CSS;
+  private async getGithubMarkdownCSS(): Promise<string> {
+    return this.loadCSSFile('github-markdown-css/github-markdown.css');
+  }
+
+  /**
+   * @returns The HighlightJS CSS.
+   */
+  private async getHighlightCSS(): Promise<string> {
+    return this.loadCSSFile('highlight.js/styles/googlecode.css');
+  }
+
+  private async loadCSSFile(moduleName: string): Promise<string> {
+    try {
+      const pathToFile = require.resolve(moduleName);
+      const css = fs.readFileSync(pathToFile);
+
+      return css.toString();
+    } catch (err) {
+      this.logger.error(`Could not load CSS file '${moduleName}'`);
+      return '';
+    }
   }
 
   /**
