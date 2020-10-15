@@ -13,8 +13,8 @@ export class MarkdownPDFGenerator extends PDFGenerator<GeneratorOptions> {
   }
 
   public generatePDF(options: GeneratorOptions): Promise<Buffer> {
-    const body = this.markdownService.generateHTMLFromMarkdown(options.markdown);
+    const { html } = this.markdownService.generateHTMLFromMarkdown(options.markdown);
 
-    return this.generatePDFFromBodyContent(body);
+    return this.generatePDFFromBodyContent(html);
   }
 }

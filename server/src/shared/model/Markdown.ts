@@ -4,6 +4,14 @@ export interface ITeamMarkdownData {
   readonly belongsToTeam: boolean;
 }
 
+export interface IStudentMarkdownData {
+  readonly markdown: string;
+}
+
 export interface IMarkdownToHTMLPayload {
-  markdown: string;
+  readonly markdown: string;
+}
+
+export interface IMarkdownHTML {
+  readonly html: string;
 }

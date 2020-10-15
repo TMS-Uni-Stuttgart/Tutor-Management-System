@@ -15,7 +15,11 @@ import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorat
 import { IDField } from '../../guards/decorators/idField.decorator';
 import { StudentGuard } from '../../guards/student.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
-import { ITeamMarkdownData } from '../../shared/model/Markdown';
+import {
+  IMarkdownHTML,
+  IStudentMarkdownData,
+  ITeamMarkdownData,
+} from '../../shared/model/Markdown';
 import { MarkdownService } from './markdown.service';
 import { MarkdownHTMLDTO } from './markdown.types';
 
@@ -27,7 +31,7 @@ export class MarkdownController {
   @UseGuards(AuthenticatedGuard)
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.OK)
-  getHTMLFromMarkdown(@Body() body: MarkdownHTMLDTO): string {
+  getHTMLFromMarkdown(@Body() body: MarkdownHTMLDTO): IMarkdownHTML {
     return this.markdownService.generateHTMLFromMarkdown(body.markdown);
   }
 
@@ -55,9 +59,7 @@ export class MarkdownController {
   async getMarkdownForStudentGrading(
     @Param('entityId') entityId: string,
     @Param('studentId') studentId: string
-  ): Promise<string> {
-    const markdown = await this.markdownService.getStudentGrading(studentId, entityId);
-
-    return markdown;
+  ): Promise<IStudentMarkdownData> {
+    return await this.markdownService.getStudentGrading(studentId, entityId);
   }
 }

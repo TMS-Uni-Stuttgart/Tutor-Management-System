@@ -4,7 +4,11 @@ import MarkdownIt from 'markdown-it';
 import { HasExercisesDocument } from '../../database/models/ratedEntity.model';
 import { TeamModel } from '../../database/models/team.model';
 import { convertExercisePointInfoToString } from '../../shared/model/Gradings';
-import { ITeamMarkdownData } from '../../shared/model/Markdown';
+import {
+  IMarkdownHTML,
+  IStudentMarkdownData,
+  ITeamMarkdownData,
+} from '../../shared/model/Markdown';
 import { getNameOfEntity } from '../../shared/util/helpers';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
@@ -41,7 +45,7 @@ export class MarkdownService {
    *
    * @returns Generated HTML.
    */
-  generateHTMLFromMarkdown(markdown: string): string {
+  generateHTMLFromMarkdown(markdown: string): IMarkdownHTML {
     const parser = new MarkdownIt({
       highlight: (code, lang) => {
         if (lang && hljs.getLanguage(lang)) {
@@ -55,7 +59,7 @@ export class MarkdownService {
       },
     });
 
-    return parser.render(markdown);
+    return { html: parser.render(markdown) };
   }
 
   /**
@@ -141,7 +145,7 @@ export class MarkdownService {
    * @throws `NotFoundException` - If either no student with the given ID or no sheet with the given ID could be found.
    * @throws `BadRequestException` - If the student does not hold a grading for the given sheet.
    */
-  async getStudentGrading(studentId: string, sheetId: string): Promise<string> {
+  async getStudentGrading(studentId: string, sheetId: string): Promise<IStudentMarkdownData> {
     const student = await this.studentService.findById(studentId);
     const entity = await this.getExercisesEntityWithId(sheetId);
     const grading = student.getGrading(entity);
@@ -152,11 +156,13 @@ export class MarkdownService {
       );
     }
 
-    return this.generateFromGrading({
+    const markdown = this.generateFromGrading({
       entity,
       grading,
       nameOfEntity: getNameOfEntity(student),
     });
+
+    return { markdown };
   }
 
   /**
