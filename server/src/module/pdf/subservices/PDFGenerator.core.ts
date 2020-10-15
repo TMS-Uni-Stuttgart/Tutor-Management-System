@@ -52,6 +52,8 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
           bottom: '1cm',
           left: '1cm',
         },
+        // Fixes CSS 'background' not being respected in printed PDFs.
+        printBackground: true,
       });
 
       this.logger.debug('PDF created.');
