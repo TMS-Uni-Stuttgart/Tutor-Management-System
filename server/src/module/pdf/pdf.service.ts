@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import {
   GenerateAllTeamsGradingParams,
   GenerateTeamGradingParams,
-} from '../markdown/markdown.service';
+} from '../markdown/markdown.types';
 import {
   FileService,
   GenerateFilenameParams,
