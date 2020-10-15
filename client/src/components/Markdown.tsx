@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import 'github-markdown-css/github-markdown.css';
 import 'highlight.js/styles/googlecode.css';
 import HTMLParser from 'html-react-parser';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { getHTMLFromMarkdown } from '../hooks/fetching/Markdown';
 import { useFetchState } from '../hooks/useFetchState';
 import { useLogger } from '../util/Logger';
@@ -32,25 +32,46 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props extends React.ComponentProps<'div'> {
-  markdown: string;
+  markdown?: string;
+  html?: string;
 }
 
 function convertHTMLToJSX(html: string): React.ReactNode {
   return HTMLParser(html.replace(/>\r?\n|\r/g, '>'));
 }
 
-function Markdown({ markdown, className, ...props }: Props): JSX.Element {
+function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props): JSX.Element {
   const classes = useStyles();
   const logger = useLogger('Markdown');
 
+  const fetchFunction = useMemo(
+    () => async (markdownString?: string) => {
+      if (!!htmlFromProps) {
+        return htmlFromProps;
+      }
+
+      if (!markdownString) {
+        return '';
+      }
+
+      logger.log('Loading Markdown...');
+      const markdown = await getHTMLFromMarkdown(markdownString);
+      logger.log('Markdown loaded.');
+
+      return markdown;
+    },
+    [htmlFromProps, logger]
+  );
+
   const { value: html, execute, isLoading } = useFetchState({
-    fetchFunction: getHTMLFromMarkdown,
+    fetchFunction,
     immediate: false,
   });
 
   useEffect(() => {
-    logger.log('Loading Markdown...');
-    execute(markdown);
+    if (markdown) {
+      execute(markdown);
+    }
   }, [markdown, execute, logger]);
 
   const reactEl: React.ReactNode = convertHTMLToJSX(html ?? '');

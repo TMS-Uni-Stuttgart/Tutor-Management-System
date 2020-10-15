@@ -32,7 +32,8 @@ export class MarkdownController {
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.OK)
   getHTMLFromMarkdown(@Body() body: MarkdownHTMLDTO): IMarkdownHTML {
-    return this.markdownService.generateHTMLFromMarkdown(body.markdown);
+    const html = this.markdownService.generateHTMLFromMarkdown(body.markdown);
+    return { html };
   }
 
   @Get('/grading/:sheetId/tutorial/:tutorialId/team/:teamId')

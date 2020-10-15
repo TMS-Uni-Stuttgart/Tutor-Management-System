@@ -55,9 +55,9 @@ function TabsWrapper({ tabs, TabsProps }: TabsWrapperProps): JSX.Element {
 function MultiGradingPreviewWithTabs({ data, TabsProps }: Props): JSX.Element {
   const tabs: TabData[] = useMemo(
     () =>
-      data.map(({ teamName, markdown, belongsToTeam }) => ({
+      data.map(({ teamName, html, belongsToTeam }) => ({
         label: belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`,
-        content: <Markdown markdown={markdown} />,
+        content: <Markdown html={html} />,
       })),
     [data]
   );
@@ -70,7 +70,7 @@ function MultiGradingPreview(props: Props): JSX.Element {
   let content: React.ReactNode;
 
   if (data.length <= 1) {
-    content = <Markdown markdown={data[0]?.markdown ?? ''} />;
+    content = <Markdown html={data[0]?.html ?? ''} />;
   } else {
     content = <MultiGradingPreviewWithTabs {...props} />;
   }
