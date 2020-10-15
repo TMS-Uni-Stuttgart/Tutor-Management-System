@@ -1,11 +1,11 @@
 import { Logger } from '@nestjs/common';
 import puppeteer from 'puppeteer';
-import GITHUB_MARKDOWN_CSS from './css/githubMarkdown';
 
 /**
  * @param T Type of the options passed to `generatePDF`.
  */
 export abstract class PDFGenerator<T = Record<string, unknown>> {
+  private readonly logger = new Logger(PDFGenerator.name);
   /**
    * Generates a PDF from the given options.
    *
@@ -26,8 +26,8 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     const html = this.putBodyInHTML(body);
     let browser: puppeteer.Browser | undefined;
 
-    Logger.debug('Starting browser...');
-    Logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);
+    this.logger.debug('Starting browser...');
+    this.logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);
 
     try {
       browser = await puppeteer.launch({
@@ -35,13 +35,13 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
         executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
       });
 
-      Logger.debug('Browser started.');
+      this.logger.debug('Browser started.');
 
       const page = await browser.newPage();
-      Logger.debug('Page created.');
+      this.logger.debug('Page created.');
 
       await page.setContent(html, { waitUntil: 'domcontentloaded' });
-      Logger.debug('Page content loaded');
+      this.logger.debug('Page content loaded');
 
       const buffer = await page.pdf({
         format: 'A4',
@@ -53,11 +53,11 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
         },
       });
 
-      Logger.debug('PDF created.');
+      this.logger.debug('PDF created.');
 
       await browser.close();
 
-      Logger.debug('Browser closed');
+      this.logger.debug('Browser closed');
 
       return buffer;
     } catch (err) {
