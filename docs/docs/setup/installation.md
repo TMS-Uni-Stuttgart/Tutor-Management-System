@@ -22,7 +22,7 @@ sudo -E docker-compose up
 
 ### Step-by-Step
 
-This Step-by-Step guide uses docker-compose to set up the containers. You can find a sample [`docker-compose.yml` file here](../assets/docker-compose.yml).
+This Step-by-Step guide uses docker-compose to set up the containers. You can find a sample [docker-compose.yml file here](../assets/docker-compose.yml).
 
 However, if you want to use `docker` commands instead you can find a list of those [below](#commands) aswell.
 
@@ -44,15 +44,15 @@ If you are on a machine that requires manually starting the docker engine do so 
 
 1. **Adjust** the `docker-compose.yml` file:
 
-   1. **Replace** `<version>` on the with the version you want to use. You can also use `latest` as a tag but this makes updating the version harder in future.
+   1. **Replace** `<version>` in the `tms-server` service with the version you want to use. You can also use `latest` as a tag but this makes updating the version harder in future.
 
       :::tip
       You can find a list of the available versions [here][docker-image-versions].
       :::
 
-   1. **Replace** `<path-to-CONFIG>` with the _relative_ path to the `config/` folder (from the `docker-compose.yml`). Leave the destination side _untouched_!
+   1. **Replace** `<path-to-CONFIG>` with the _relative_ path to the `config/` folder (relative to the `docker-compose.yml`). Leave the destination side _untouched_!
 
-   1. **Replace** `<path-to-DB-FOLDER>` with the _relative_ path (from the `docker-compose.yml`) to the folder you want to store your database data in.
+   1. **Replace** `<path-to-DB-FOLDER>` with the _relative_ path (relative to the `docker-compose.yml`) to the folder you want to store your database data in.
 
       :::caution
       Make sure the path you enter is **writeable**! If it is not (or you omit volume from the mongo container) the database data will **NOT** be persistent on the host and therefore can be lost!
@@ -68,13 +68,7 @@ If you are on a machine that requires manually starting the docker engine do so 
       It is highly recommended that you properly setup TSL/HTTPS for the TMS in either way.
       :::
 
-   1. (optional) **Replace** the `latest` version tag on the `dudrie/tutor-management-system` image with the version you want to us e _if you want to use a different version than the latest one_.
-
-      :::tip
-      Changing the version tag to something other than `latest` makes future updates easier.
-      :::
-
-1. **Start** all services This will create all containers of the services on the first start.
+1. **Start** all services. This will create all containers of the services on the first start.
 
    1. **Open** a terminal and navigate to the folder containing the `docker-compose.yml`.
 
@@ -93,21 +87,22 @@ If you are on a machine that requires manually starting the docker engine do so 
    1. **Run** the following command to create and start all the containers:
 
       ```shell
-      sudo docker-compose up
+      sudo -E docker-compose up
       ```
+
+      :::note
+      Remember to put in the `-E` parameter so your environment variables get passed down to the process running docker-compose.
+      :::
 
    1. **Check** that the presented logs do **NOT** contain any errors and that all services start successfully.
 
    1. (optional) **Stop** all containers by quitting the process (`Ctrl + C`).
 
    1. (optional) **Restart** all containers with the following command (please note the additional `-d`). This time the terminal will not hook into the container logs.
+
       ```shell
-      sudo docker-compose up -d
+      sudo -E docker-compose up -d
       ```
-
-### docker-compose
-
-Here is the `docker-compose.yml` file used in the Step-by-Step guide: [`docker-compose.yml` file](../assets/docker-compose.yml)
 
 ### Use `docker`
 
