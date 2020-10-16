@@ -155,8 +155,8 @@ If your server does not already use a proxy you should consider adding one. For 
 
 However if you cannot (or do not want to) use a proxy on your server you can add the TLS support for the NestJS in a forked version of the repository following the [NestJS HTTPS guide][nestjs-https-guide].
 
-[config-doc]: configuration/
-[nginx-doc]: nginx/
+[config-doc]: ./configuration/
+[nginx-doc]: ./nginx/
 [docker-image-versions]: https://github.com/users/Dudrie/packages/container/tutor-management-system/versions
 [latest-release]: https://github.com/Dudrie/Tutor-Management-System/releases/latest
 [mongo-docker]: https://hub.docker.com/_/mongo

@@ -32,7 +32,7 @@ To update an existing version of the TMS on your docker just follow the steps be
    Please refer to the "Configuration" section of the corresponding [release](https://github.com/Dudrie/Tutor-Management-System/releases) to check if the configuration files have been updated and if any changes are required. If so apply all necessary changes before moving forward.
    :::
 
-1. **Export** the environment variables as descriped in the [Step-by-Step Guide](installation/#step-by-step). Those are needed again because the TMS container will get recreated.
+1. **Export** the environment variables as descriped in the [Step-by-Step Guide](./installation/#step-by-step). Those are needed again because the TMS container will get recreated.
 
 1. **Start** the container with the new image by running the following command. This will automatically recreate the container.
 

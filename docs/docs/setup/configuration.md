@@ -299,7 +299,7 @@ table
 </TabItem>
 </Tabs>
 
-[installation-doc]: installation/
+[installation-doc]: ./installation/
 [settings-doc]: ../handbook/settings
 [releases]: https://github.com/Dudrie/Tutor-Management-System/releases
 [mongoose-createconnection]: https://mongoosejs.com/docs/connections.html

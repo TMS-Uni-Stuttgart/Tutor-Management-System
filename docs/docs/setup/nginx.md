@@ -148,7 +148,7 @@ If you want to use different docker-compose files for nginx and the TMS follow t
 
 <!-- LINKS -->
 
-[installation-doc]: installation/
-[installation-doc-step-by-step]: installation/#step-by-step
+[installation-doc]: ./installation/
+[installation-doc-step-by-step]: ./installation/#step-by-step
 [lets-encrypt]: https://letsencrypt.org/
 [nginx]: https://www.nginx.com/

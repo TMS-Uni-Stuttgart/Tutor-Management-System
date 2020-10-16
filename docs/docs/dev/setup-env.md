@@ -115,4 +115,4 @@ This will run two commands in succession: First `yarn version` which lets one up
 
 This will run two commands in succession: First `yarn version` which lets one update the version of the TMS. Afterwards the `build-docker-image.ts` script gets executed with the `--pre` and `--skip-bundle` parameters provided (see above). Additional parameters can be provided aswell.
 
-[fork-doc]: fork
+[fork-doc]: ./fork
