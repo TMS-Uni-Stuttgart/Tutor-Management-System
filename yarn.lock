@@ -9927,10 +9927,10 @@ mongoose-autopopulate@^0.12.2:
   resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.12.2.tgz#5209c7f9934b2642d2eac1afc84d289316138a84"
   integrity sha512-ZpjylV6ty0iqNjSWPgQWDMaBExnXrvCNhci9EnX49O0fOIVES1Qc7r1d+nxYBKvQutYW5UWs+fauahOTTlpjww==
 
-mongoose-field-encryption@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/mongoose-field-encryption/-/mongoose-field-encryption-3.0.6.tgz#72cffe0d6a3587efc512032082f67f7534ca8ead"
-  integrity sha512-XO6lST8c+nkh/UHT3it9gLFcJ1esW/KhJC4f5dMARLrv26qSxNWKvk3EkcVfZCYiAIkG3Q4F0860ZmAMirw7Pg==
+mongoose-field-encryption@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/mongoose-field-encryption/-/mongoose-field-encryption-4.0.0.tgz#3f8c9e968dd055bcadb2233343f3afb561927e60"
+  integrity sha512-yj2mGmh3hvU+gxgk3mTHiqiW5Q2a4ljF3mAOfxs7mupi5sOhIk3WwHy7NP/csuZeMVNzanHAL+VdNZtfQOnjWA==
 
 mongoose-legacy-pluralize@1.0.2:
   version "1.0.2"
