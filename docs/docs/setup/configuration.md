@@ -11,7 +11,7 @@ Within the `tms/config/` directory containing the configuration files the follow
 - `production.yml`: YAML file containing the general configuration for the server.
 - `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
 
-Those files are provided through a docker volume. See the [installation guide][installation-doc] for more information.
+Those files are provided through a docker volume. See the [installation guide](installation) for more information.
 
 Every [release][releases] contains either a link to the current sample configuration or a sample configuration itself. If it contains the later the server configuration might need an update according to the _Configuration_ section of the release.
 
@@ -26,7 +26,7 @@ The configuration object is of type `ApplicationConfiguration`.
 | `sessionTimeout`  | _Default: 120_                           | `Number` - The time of inactivity in **minutes** after which the session of the user times out and he/she must log in again.                                                                                                                                           |
 | `prefix`          | _(optional, no default)_                 | `String` - Prefix of the root path the application is hosted on. If the application is hosted on the root path this setting must be omitted. Otherwise it has to be set to the prefix (ie. for the path `https://example.org/foo` this setting has to be set to `foo`) |
 | `database`        | **Required**                             | `DatabaseConfiguration` - Configuration of the database. See below for more information.                                                                                                                                                                               |
-| `defaultSettings` | (optional, defaults see "Settings" page) | Settings to initialize parts of the server with. Those settings can also be configured through the client later on. See [Settings][settings-doc] for more information.                                                                                                 |
+| `defaultSettings` | (optional, defaults see "Settings" page) | Settings to initialize parts of the server with. Those settings can also be configured through the client later on. See [Settings](../handbook/settings) for more information.                                                                                                 |
 
 ### `DatabaseConfiguration`
 
@@ -299,8 +299,6 @@ table
 </TabItem>
 </Tabs>
 
-[installation-doc]: ./installation/
-[settings-doc]: ../handbook/settings
 [releases]: https://github.com/Dudrie/Tutor-Management-System/releases
 [mongoose-createconnection]: https://mongoosejs.com/docs/connections.html
 [ethereal]: https://ethereal.email/
