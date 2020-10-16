@@ -39,7 +39,7 @@
     "express-session": "^1.17.1",
     "jszip": "^3.5.0",
     "luxon": "^1.25.0",
-    "mongoose": "^5.10.8",
+    "mongoose": "^5.10.9",
     "mongoose-autopopulate": "^0.12.2",
     "mongoose-field-encryption": "^3.0.6",
     "nestjs-typegoose": "^7.1.38",
