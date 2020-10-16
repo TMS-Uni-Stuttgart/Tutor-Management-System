@@ -6,7 +6,7 @@ sidebar_label: Installation
 
 ## Requirements
 
-- [Docker](https://docs.docker.com/install/): The provided image from the [release section](https://github.com/Dudrie/Tutor-Management-System/releases) is a docker image for Linux containers therefore you need Docker to be able to run it.
+- [Docker](https://docs.docker.com/install/): The provided container image is a docker image for Linux containers therefore you need Docker to be able to run it.
 - [Docker-Compose](https://docs.docker.com/compose/install/): While technically not required it helps you to get up the container(s) more easily.
 
 ## Installation
