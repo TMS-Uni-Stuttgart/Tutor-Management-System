@@ -22,9 +22,9 @@ sudo -E docker-compose up
 
 ### Step-by-Step
 
-This Step-by-Step guide uses docker-compose to set up the containers. You can find a sample [docker-compose.yml file here](../assets/docker-compose.yml).
+This Step-by-Step guide uses docker-compose to set up the containers. You can find a sample [docker-compose.yml file here](../assets/docker-compose.yml). All steps marked with _(optional)_ can safely be skipped.
 
-However, if you want to use `docker` commands instead you can find a list of those [below](#commands) aswell.
+If you want to use `docker` commands instead of docker-compose you can find a list of those [below](#commands) aswell.
 
 :::caution
 If you are on a machine that requires manually starting the docker engine do so now.
@@ -46,7 +46,7 @@ If you are on a machine that requires manually starting the docker engine do so 
 
    1. **Replace** `<version>` in the `tms-server` service with the version you want to use. You can also use `latest` as a tag but this makes updating the version harder in future.
 
-      :::tip
+      :::note Available versions
       You can find a list of the available versions [here][docker-image-versions].
       :::
 
@@ -55,18 +55,22 @@ If you are on a machine that requires manually starting the docker engine do so 
    1. **Replace** `<path-to-DB-FOLDER>` with the _relative_ path (relative to the `docker-compose.yml`) to the folder you want to store your database data in.
 
       :::caution
-      Make sure the path you enter is **writeable**! If it is not (or you omit volume from the mongo container) the database data will **NOT** be persistent on the host and therefore can be lost!
+      Make sure the path you enter is **writeable**! If it is not (or you omit volume from the mongo container) the database data will **NOT** be persistent on the host and therefore can be lost if the container gets recreated!
       :::
 
    1. **Add** the nginx service as described in the [Setup with nginx section][nginx-doc] of this documentation. Nginx (or a similar proxy) is the recommand way to setup HTTPS for the Tutor-Management-System.
 
-      :::tip
-      If you already have a running nginx or want to use a different proxy you can skip this step.
+      :::note
+      Please note that the tms-server container does **not** need to expose the port to the public. The nginx container and the tms-server container just need to be in the same docker network (see below).
       :::
 
-      :::caution
-      It is highly recommended that you properly setup TSL/HTTPS for the TMS in either way.
+      :::important Use existing nginx
+      If you already have a running nginx or want to use a different proxy you can skip this step. However, it is highly recommended that you properly setup TSL/HTTPS for the TMS in either way.
       :::
+
+1. _(optional)_ **Adjust** the `production.yml` configuration file. You can find more information about the individual entries on the [Configuration page](./configuration#applicationconfiguration).
+
+1. _(optional)_ **Adjust** the pug templates. You can find more information about the templates and their placeholders on the [Configuration page](./configuration#pug-templates).
 
 1. **Start** all services. This will create all containers of the services on the first start.
 
@@ -96,9 +100,9 @@ If you are on a machine that requires manually starting the docker engine do so 
 
    1. **Check** that the presented logs do **NOT** contain any errors and that all services start successfully.
 
-   1. (optional) **Stop** all containers by quitting the process (`Ctrl + C`).
+   1. _(optional)_ **Stop** all containers by quitting the process (`Ctrl + C`).
 
-   1. (optional) **Restart** all containers with the following command (please note the additional `-d`). This time the terminal will not hook into the container logs.
+   1. _(optional)_ **Restart** all containers with the following command (please note the additional `-d`). This time the terminal will not hook into the container logs.
 
       ```shell
       sudo -E docker-compose up -d
@@ -112,7 +116,7 @@ If you are on a machine that requires manually starting the docker engine do so 
   docker network create tms_db
   ```
 
-- (optional) **Create** a network for the nginx and the TMS containers (if not already done in the Setup with nginx part):
+- _(optional)_ **Create** a network for the nginx and the TMS containers (if not already done in the Setup with nginx part):
 
   ```shell
   docker network create proxy_network

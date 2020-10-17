@@ -28,7 +28,7 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
    They contain a tested default configuration that works on most systems out-of-the-box.
 
    :::caution
-   Make sure you do **NOT** put the `nginx/` folder in the `config/` folder used for the TMS itself.
+   Make sure you do **NOT** put the `nginx/` folder inside the `config/` folder used for the TMS itself.
    :::
 
 1. **Verify** that you have the following folder and files present:
@@ -52,7 +52,7 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
    If you do not have an certificates you can use ones from the CA [Let's Encrypt][lets-encrypt].
    :::
 
-1. **Open** the `tms.conf` file and make the following adjustments:
+1. **Open** the `tms.conf` file inside the `sites/sites-available/` folder and make the following adjustment:
 
    1. **Replace** _all_ `<URL>` occurences with the url (without protocol!) of your server
       \_For example: Your TMS instance has the URL `https://my-tms-instance.de` you only put `my-tms-instance.de` there.
@@ -78,10 +78,27 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
       ssl_certificate_key /etc/nginx/certs/privkey.pem;
       ```
 
+   :::important
+   If you want to use your certificate for other configured sites aswell just move the entries `ssl_certificate` and `ssl_certificate_key` into the `ssl.conf` file found in the `sites/` folder. Remember to `include` the `ssl.conf` file in additional site configurations.
+   :::
+
    1. **Verify** that the URL in the location `/` after `proxy_pass` matches the name of the TMS container followed by the port the server listens on (by default the name is `tms-server` and the port is `8080`).
-      :::note
-      Please note that the tms-server container does _not_ need to expose the port to the public. The nginx container and the tms-server container just need to be in the same docker network (see below).
-      :::
+
+1. **Create** a symbolic link inside the `sites-enabled/` folder which points to the `tms.conf` file by executing the following command inside the `sites-enabled/` folder:
+
+   ```shell
+   ln -s ../sites-available/tms.conf .
+   ```
+
+1. _(optional)_ You can add more sites to your nginx configuration by:
+
+   1. **Create** a new `conf`-file inside the `sites-available/` folder containing the necessary configuration.
+
+   1. **Create** a symbolic link inside the `sites-enabled/` folder which points to your created `conf`-file
+
+      ```shell
+      ln -s ../sites-available/[NAME-OF-FILE] .
+      ```
 
 1. **Add** the nginx service to your docker-compose file used during the installation. You can find the service in [this sample docker-compose file](../assets/docker-compose-nginx.yml).
 
