@@ -7,10 +7,10 @@ import { DialogHelpers, useDialog } from './dialog-service/DialogService';
 import {
   getCorrectionCommentPDFs,
   getCorrectionCommentPDFsFilename,
-  getTeamCorrectionCommentMarkdown,
   getTeamGradingFile,
   getTeamGradingFilename,
 } from './fetching/Files';
+import { getTeamCorrectionCommentMarkdown } from './fetching/Markdown';
 
 interface DialogOption {
   dialog: DialogHelpers;

@@ -1,14 +1,40 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import { AuthenticatedGuard } from '../../guards/authenticated.guard';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { IDField } from '../../guards/decorators/idField.decorator';
 import { StudentGuard } from '../../guards/student.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
-import { ITeamMarkdownData } from '../../shared/model/Markdown';
+import {
+  IMarkdownHTML,
+  IStudentMarkdownData,
+  ITeamMarkdownData,
+} from '../../shared/model/Markdown';
 import { MarkdownService } from './markdown.service';
+import { MarkdownHTMLDTO } from './markdown.types';
 
 @Controller('markdown')
 export class MarkdownController {
   constructor(private readonly markdownService: MarkdownService) {}
+
+  @Post('/html')
+  @UseGuards(AuthenticatedGuard)
+  @UsePipes(ValidationPipe)
+  @HttpCode(HttpStatus.OK)
+  getHTMLFromMarkdown(@Body() body: MarkdownHTMLDTO): IMarkdownHTML {
+    const html = this.markdownService.generateHTMLFromMarkdown(body.markdown);
+    return { html };
+  }
 
   @Get('/grading/:sheetId/tutorial/:tutorialId/team/:teamId')
   @UseGuards(TutorialGuard)
@@ -34,9 +60,7 @@ export class MarkdownController {
   async getMarkdownForStudentGrading(
     @Param('entityId') entityId: string,
     @Param('studentId') studentId: string
-  ): Promise<string> {
-    const markdown = await this.markdownService.getStudentGrading(studentId, entityId);
-
-    return markdown;
+  ): Promise<IStudentMarkdownData> {
+    return await this.markdownService.getStudentGrading(studentId, entityId);
   }
 }

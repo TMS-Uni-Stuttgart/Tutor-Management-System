@@ -1,69 +1,28 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { SubExerciseDocument } from '../../database/models/exercise.model';
-import { ExerciseGrading, Grading } from '../../database/models/grading.model';
+import hljs from 'highlight.js';
+import MarkdownIt from 'markdown-it';
 import { HasExercisesDocument } from '../../database/models/ratedEntity.model';
-import { SheetDocument } from '../../database/models/sheet.model';
-import { TeamDocument, TeamModel } from '../../database/models/team.model';
-import { convertExercisePointInfoToString, ExercisePointsInfo } from '../../shared/model/Gradings';
-import { ITeamMarkdownData } from '../../shared/model/Markdown';
-import { ITeamId } from '../../shared/model/Team';
+import { TeamModel } from '../../database/models/team.model';
+import { convertExercisePointInfoToString } from '../../shared/model/Gradings';
+import { IStudentMarkdownData, ITeamMarkdownData } from '../../shared/model/Markdown';
 import { getNameOfEntity } from '../../shared/util/helpers';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
 import { StudentService } from '../student/student.service';
 import { TeamService } from '../team/team.service';
-
-export interface GenerateTeamGradingParams {
-  teamId: ITeamId;
-  sheetId: string;
-}
-
-export interface GenerateAllTeamsGradingParams {
-  tutorialId: string;
-  sheetId: string;
-}
-
-export interface TeamMarkdownData extends ITeamMarkdownData {
-  invalid?: boolean;
-}
-
-interface TeamGradings {
-  sheetNo: string;
-  markdownData: TeamMarkdownData[];
-}
-
-export interface SingleTeamGradings extends TeamGradings {
-  teamName: string;
-}
-
-interface SheetPointInfo {
-  achieved: number;
-  total: { must: number; bonus: number };
-}
-
-interface GeneratingParams {
-  entity: HasExercisesDocument;
-  grading: Grading;
-  nameOfEntity: string;
-}
-
-interface GenerateFromTeamParams {
-  team: TeamDocument;
-  sheet: SheetDocument;
-  ignoreInvalidTeams: boolean;
-}
-
-interface GenerateSubExTableParams {
-  subexercises: SubExerciseDocument[];
-  gradingForExercise: ExerciseGrading;
-}
-
-interface SubExData {
-  name: string;
-  achieved: number;
-  total: ExercisePointsInfo;
-}
+import {
+  GenerateAllTeamsGradingParams,
+  GenerateFromTeamParams,
+  GenerateSubExTableParams,
+  GenerateTeamGradingParams,
+  GeneratingParams,
+  SheetPointInfo,
+  SingleTeamGradings,
+  SubExData,
+  TeamGradings,
+  TeamMarkdownData,
+} from './markdown.types';
 
 @Injectable()
 export class MarkdownService {
@@ -74,6 +33,30 @@ export class MarkdownService {
     private readonly scheinexamService: ScheinexamService,
     private readonly shortTestService: ShortTestService
   ) {}
+
+  /**
+   * Generates HTML from the given markdown.
+   *
+   * @param markdown Markdown to generate HTML from.
+   *
+   * @returns Generated HTML.
+   */
+  generateHTMLFromMarkdown(markdown: string): string {
+    const parser = new MarkdownIt({
+      highlight: (code, lang) => {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(lang, code).value;
+          } catch (err) {
+            return '';
+          }
+        }
+        return '';
+      },
+    });
+
+    return parser.render(markdown);
+  }
 
   /**
    * Generates a list of markdown strings for each team's grading for the given sheet.
@@ -133,6 +116,7 @@ export class MarkdownService {
     const markdownData = markdownForTeam.reduce<ITeamMarkdownData[]>((list, data) => {
       list.push({
         markdown: data.markdown,
+        html: this.generateHTMLFromMarkdown(data.markdown),
         teamName: data.teamName,
         belongsToTeam: data.belongsToTeam,
       });
@@ -158,7 +142,7 @@ export class MarkdownService {
    * @throws `NotFoundException` - If either no student with the given ID or no sheet with the given ID could be found.
    * @throws `BadRequestException` - If the student does not hold a grading for the given sheet.
    */
-  async getStudentGrading(studentId: string, sheetId: string): Promise<string> {
+  async getStudentGrading(studentId: string, sheetId: string): Promise<IStudentMarkdownData> {
     const student = await this.studentService.findById(studentId);
     const entity = await this.getExercisesEntityWithId(sheetId);
     const grading = student.getGrading(entity);
@@ -169,11 +153,13 @@ export class MarkdownService {
       );
     }
 
-    return this.generateFromGrading({
+    const markdown = this.generateFromGrading({
       entity,
       grading,
       nameOfEntity: getNameOfEntity(student),
     });
+
+    return { markdown, html: this.generateHTMLFromMarkdown(markdown) };
   }
 
   /**
@@ -210,10 +196,12 @@ export class MarkdownService {
         const studentsOfTeam = team.students.filter((stud) => grading.belongsToStudent(stud));
         const teamName = TeamModel.generateTeamname(studentsOfTeam);
         const nameOfEntity = grading.belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`;
+        const markdown = this.generateFromGrading({ entity: sheet, grading, nameOfEntity });
 
         markdownData.push({
           teamName,
-          markdown: this.generateFromGrading({ entity: sheet, grading, nameOfEntity }),
+          markdown,
+          html: this.generateHTMLFromMarkdown(markdown),
           belongsToTeam: grading.belongsToTeam,
         });
       });
@@ -221,7 +209,15 @@ export class MarkdownService {
       return markdownData.sort((a) => (a.belongsToTeam ? -1 : 1));
     } catch (err) {
       if (ignoreInvalidTeams) {
-        return [{ markdown: '', teamName: '', invalid: true, belongsToTeam: false }];
+        return [
+          {
+            markdown: '',
+            html: this.generateHTMLFromMarkdown(''),
+            teamName: '',
+            invalid: true,
+            belongsToTeam: false,
+          },
+        ];
       } else {
         throw err;
       }

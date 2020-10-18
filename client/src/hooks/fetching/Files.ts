@@ -1,4 +1,3 @@
-import { ITeamMarkdownData } from 'shared/model/Markdown';
 import axios from './Axios';
 
 export async function getAttendancePDF(tutorialId: string, date: string): Promise<Blob> {
@@ -76,22 +75,6 @@ export async function getCredentialsPDF(): Promise<Blob> {
   return Promise.reject(`Wrong response code (${response.status})`);
 }
 
-export async function getTeamCorrectionCommentMarkdown(
-  tutorialId: string,
-  sheetId: string,
-  teamId: string
-): Promise<ITeamMarkdownData[]> {
-  const response = await axios.get<ITeamMarkdownData[]>(
-    `/markdown/grading/${sheetId}/tutorial/${tutorialId}/team/${teamId}`
-  );
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong response code (${response.status})`);
-}
-
 export async function getTeamGradingFile(
   tutorialId: string,
   sheetId: string,
@@ -132,19 +115,6 @@ export async function getTeamGradingFilename(
   return response.status === 200
     ? response.data
     : Promise.reject(`Wrong response code (${response.status})`);
-}
-
-export async function getStudentCorrectionCommentMarkdown(
-  sheetId: string,
-  studentId: string
-): Promise<string> {
-  const response = await axios.get(`/markdown/grading/${sheetId}/student/${studentId}`);
-
-  if (response.status === 200) {
-    return response.data;
-  }
-
-  return Promise.reject(`Wrong response code (${response.status})`);
 }
 
 export async function getCorrectionCommentPDFs(tutorialId: string, sheetId: string): Promise<Blob> {

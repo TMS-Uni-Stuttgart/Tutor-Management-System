@@ -1,7 +1,7 @@
 import { Box, BoxProps, CircularProgress, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,8 +26,18 @@ export interface LoadingSpinnerProps extends BoxProps {
   text?: string;
 }
 
-function LoadingSpinner({ shrinkBox, text, ...props }: LoadingSpinnerProps): JSX.Element {
+function LoadingSpinner({ shrinkBox, text, ...props }: LoadingSpinnerProps): JSX.Element | null {
   const classes = useStyles();
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    const id = setTimeout(() => setShowSpinner(true), 500);
+    return () => clearTimeout(id);
+  }, []);
+
+  if (!showSpinner) {
+    return null;
+  }
 
   return (
     <Box
