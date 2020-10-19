@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import JSZip from 'jszip';
 import { SheetDocument } from '../../../database/models/sheet.model';
+import { MarkdownService } from '../../markdown/markdown.service';
 import {
   GenerateAllTeamsGradingParams,
   GenerateTeamGradingParams,
-  MarkdownService,
   SingleTeamGradings,
-} from '../../markdown/markdown.service';
+} from '../../markdown/markdown.types';
 import { SheetService } from '../../sheet/sheet.service';
 import { FileService } from '../file.service';
 import { MarkdownPDFGenerator } from './PDFGenerator.markdown';
@@ -25,10 +25,10 @@ interface ConvertZipParams {
 export class GradingPDFGenerator extends MarkdownPDFGenerator {
   constructor(
     private readonly sheetService: SheetService,
-    private readonly markdownService: MarkdownService,
-    private readonly fileService: FileService
+    private readonly fileService: FileService,
+    markdownService: MarkdownService
   ) {
-    super();
+    super(markdownService);
   }
 
   /**

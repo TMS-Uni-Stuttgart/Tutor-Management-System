@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { MarkdownService } from '../../markdown/markdown.service';
 import { PDFGenerator } from './PDFGenerator.core';
-import MarkdownIt = require('markdown-it');
 
 interface GeneratorOptions {
   markdown: string;
@@ -8,20 +8,13 @@ interface GeneratorOptions {
 
 @Injectable()
 export class MarkdownPDFGenerator extends PDFGenerator<GeneratorOptions> {
-  constructor() {
+  constructor(protected readonly markdownService: MarkdownService) {
     super();
   }
 
   public generatePDF(options: GeneratorOptions): Promise<Buffer> {
-    const body = this.generateHTMLFromMarkdown(options.markdown);
+    const body = this.markdownService.generateHTMLFromMarkdown(options.markdown);
 
     return this.generatePDFFromBodyContent(body);
-  }
-
-  private generateHTMLFromMarkdown(markdown: string): string {
-    const parser = new MarkdownIt();
-    const body = parser.render(markdown);
-
-    return body;
   }
 }

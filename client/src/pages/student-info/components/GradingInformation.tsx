@@ -7,7 +7,7 @@ import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import Markdown from '../../../components/Markdown';
 import Placeholder from '../../../components/Placeholder';
 import PointsTable from '../../../components/points-table/PointsTable';
-import { getStudentCorrectionCommentMarkdown } from '../../../hooks/fetching/Files';
+import { getStudentCorrectionCommentMarkdown } from '../../../hooks/fetching/Markdown';
 import { HasExercises } from '../../../model/Exercise';
 import { Grading } from '../../../model/Grading';
 import { Student } from '../../../model/Student';

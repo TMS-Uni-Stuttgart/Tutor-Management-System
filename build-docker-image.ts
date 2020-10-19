@@ -146,6 +146,9 @@ function getBundleCommand(): string {
 const options: ExecSyncOptions = {
   stdio: 'inherit',
   cwd: getCwd(),
+  env: {
+    DOCKER_BUILDKIT: '1',
+  },
 };
 
 const buildCommand = getBuildCommand();
