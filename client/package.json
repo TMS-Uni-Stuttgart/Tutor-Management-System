@@ -42,10 +42,10 @@
     "i18next": "^19.8.2",
     "i18next-sync-fs-backend": "^1.1.1",
     "i18next-xhr-backend": "^3.2.2",
-    "mdi-material-ui": "^6.19.0",
+    "mdi-material-ui": "^6.20.0",
     "notistack": "^1.0.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.14.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-google-charts": "^3.0.15",
     "react-i18next": "^11.7.3",
     "react-router": "^5.1.2",
@@ -57,7 +57,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@craco/craco": "^5.7.0",
     "@types/file-saver": "^2.0.1",
-    "@types/react": "^16.9.52",
+    "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "@types/react-router": "^5.1.8",
     "@types/react-router-dom": "^5.1.6",
@@ -67,6 +67,6 @@
     "babel-plugin-named-asset-import": "^0.3.6",
     "craco-alias": "^2.1.1",
     "pug-loader": "^2.4.0",
-    "react-scripts": "^3.4.3"
+    "react-scripts": "^3.4.4"
   }
 }
