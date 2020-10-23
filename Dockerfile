@@ -55,7 +55,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV TMS_PUPPETEER_EXEC_PATH "/usr/bin/chromium-browser"
 
 # Set the puppeteer version to match the one of the latest available chromium alpine package.
-RUN yarn add puppeteer@4.0.1
+RUN yarn add puppeteer@5.2.1
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
