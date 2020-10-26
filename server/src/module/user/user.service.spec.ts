@@ -730,6 +730,38 @@ describe('UserService', () => {
     await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
   });
 
+  it('delete a user with tutorials', async () => {
+    const tutorial = TUTORIAL_DOCUMENTS[0];
+    const dto: CreateUserDTO = {
+      firstname: 'Hermine',
+      lastname: 'Granger',
+      email: 'granger@hogwarts.com',
+      username: 'grangehe',
+      password: 'herminesPassword',
+      roles: [Role.TUTOR],
+      tutorials: [tutorial._id],
+      tutorialsToCorrect: [],
+    };
+
+    const user = await service.create(dto);
+    const deletedUser = await service.delete(user.id);
+
+    const tutorialService = testModule.get<TutorialService>(TutorialService);
+    const updatedTutorial = await tutorialService.findById(tutorial._id);
+
+    expect(deletedUser.id).toEqual(user.id);
+    await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
+
+    expect(updatedTutorial.tutor).toBeUndefined();
+  });
+
+  it('fail on deleting last admin', async () => {
+    const adminUser = USER_DOCUMENTS[0];
+
+    await expect(service.delete(adminUser._id)).rejects.toThrow(BadRequestException);
+    await expect(service.findById(adminUser._id)).resolves.toBeDefined();
+  });
+
   it('update the password of a user', async () => {
     const newPassword: string = 'anotherPassword';
     const dto: CreateUserDTO = {
