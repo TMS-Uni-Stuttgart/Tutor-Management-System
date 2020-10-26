@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props extends PaperTableRowProps {
   user: IUser;
   disableSendCredentials?: boolean;
+  disableDelete?: boolean;
   onEditUserClicked: (user: IUser) => void;
   onDeleteUserClicked: (user: IUser) => void;
   onSendCredentialsClicked: (user: IUser) => void;
@@ -36,6 +37,7 @@ function getRolesAsString(roles: Role[]): string {
 function UserTableRow({
   user,
   disableSendCredentials,
+  disableDelete,
   onEditUserClicked,
   onDeleteUserClicked,
   onSendCredentialsClicked,
@@ -52,6 +54,7 @@ function UserTableRow({
         <EntityListItemMenu
           onEditClicked={() => onEditUserClicked(user)}
           onDeleteClicked={() => onDeleteUserClicked(user)}
+          disableDelete={disableDelete}
           additionalItems={[
             {
               primary: 'Zugangsdaten schicken',

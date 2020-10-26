@@ -123,145 +123,145 @@ function UserManagement(): JSX.Element {
     return fetchUsers();
   }, [fetchUsers, fetchTutorials]);
 
-  const handleCreateUser: UserFormSubmitCallback = async (
-    formState,
-    { resetForm, setSubmitting, setFieldError }
-  ) => {
-    try {
-      const userToCreate: ICreateUserDTO = {
-        ...convertFormStateToUserDTO(formState, users),
-        password: formState.password,
-      };
+  const handleCreateUser: UserFormSubmitCallback = useCallback(
+    async (formState, { resetForm, setSubmitting, setFieldError }) => {
+      try {
+        const userToCreate: ICreateUserDTO = {
+          ...convertFormStateToUserDTO(formState, users),
+          password: formState.password,
+        };
 
-      const response = await createUser(userToCreate);
-      await updateData();
-
-      enqueueSnackbar(
-        `${getNameOfEntity(response, { firstNameFirst: true })} wurde erfolgreich angelegt.`,
-        { variant: 'success' }
-      );
-      resetForm();
-    } catch (reason) {
-      if (reason instanceof UsernameAlreadyTakenError) {
-        setFieldError('username', 'Nutzername bereits vergeben.');
-      }
-
-      enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleEditUserSubmit: (user: IUser) => UserFormSubmitCallback = (user) => async (
-    formState,
-    { setSubmitting, setFieldError }
-  ) => {
-    try {
-      const { password } = formState;
-      const userInformation: IUserDTO = convertFormStateToUserDTO(
-        formState,
-        users.filter((u) => u.id !== user.id)
-      );
-
-      const updatedUser = await editUser(user.id, userInformation);
-
-      if (!!password) {
-        await setTemporaryPassword(user.id, { password });
-      }
-
-      await updateData();
-
-      enqueueSnackbar(
-        `${getNameOfEntity(updatedUser, { firstNameFirst: true })} wurde erfolgreich gespeichert.`,
-        { variant: 'success' }
-      );
-      dialog.hide();
-    } catch (e) {
-      if (e instanceof UsernameAlreadyTakenError) {
-        setFieldError('username', 'Nutzername bereits vergeben.');
-      }
-
-      enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
-      setSubmitting(false);
-    }
-  };
-
-  function handleDeleteUserSubmit(user: IUser) {
-    deleteUser(user.id)
-      .then(async () => {
+        const response = await createUser(userToCreate);
         await updateData();
-      })
-      .finally(() => {
+
+        enqueueSnackbar(
+          `${getNameOfEntity(response, { firstNameFirst: true })} wurde erfolgreich angelegt.`,
+          { variant: 'success' }
+        );
+        resetForm();
+      } catch (reason) {
+        if (reason instanceof UsernameAlreadyTakenError) {
+          setFieldError('username', 'Nutzername bereits vergeben.');
+        }
+
+        enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [enqueueSnackbar, updateData, users]
+  );
+
+  const handleEditUserSubmit: (user: IUser) => UserFormSubmitCallback = useCallback(
+    (user) => async (formState, { setSubmitting, setFieldError }) => {
+      try {
+        const { password } = formState;
+        const userInformation: IUserDTO = convertFormStateToUserDTO(
+          formState,
+          users.filter((u) => u.id !== user.id)
+        );
+
+        const updatedUser = await editUser(user.id, userInformation);
+
+        if (!!password) {
+          await setTemporaryPassword(user.id, { password });
+        }
+
+        await updateData();
+
+        enqueueSnackbar(
+          `${getNameOfEntity(updatedUser, {
+            firstNameFirst: true,
+          })} wurde erfolgreich gespeichert.`,
+          { variant: 'success' }
+        );
         dialog.hide();
-        enqueueSnackbar(`Nutzer wurde erfolgreich gelöscht.`, { variant: 'success' });
+      } catch (e) {
+        if (e instanceof UsernameAlreadyTakenError) {
+          setFieldError('username', 'Nutzername bereits vergeben.');
+        }
+
+        enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
+        setSubmitting(false);
+      }
+    },
+    [dialog, enqueueSnackbar, updateData, users]
+  );
+
+  const canBeDeleted = useCallback(
+    (user: IUser) => {
+      if (user.roles.includes(Role.ADMIN)) {
+        const allAdmins = users.filter((u) => u.roles.includes(Role.ADMIN));
+
+        return allAdmins.length > 1;
+      }
+
+      return true;
+    },
+    [users]
+  );
+
+  const handleDeleteUserSubmit = useCallback(
+    (user: IUser) => {
+      deleteUser(user.id)
+        .then(async () => {
+          await updateData();
+        })
+        .finally(() => {
+          dialog.hide();
+          enqueueSnackbar(`Nutzer wurde erfolgreich gelöscht.`, { variant: 'success' });
+        });
+    },
+    [dialog, enqueueSnackbar, updateData]
+  );
+
+  const handleDeleteUser = useCallback(
+    (user: IUser) => {
+      const nameOfUser = `${user.firstname} ${user.lastname}`;
+      dialog.show({
+        title: 'Nutzer löschen',
+        content: `Soll der Nutzer "${nameOfUser}" wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.`,
+        actions: [
+          {
+            label: 'Nicht löschen',
+            onClick: () => dialog.hide(),
+          },
+          {
+            label: 'Löschen',
+            onClick: () => handleDeleteUserSubmit(user),
+            buttonProps: {
+              className: classes.dialogDeleteButton,
+            },
+          },
+        ],
       });
-  }
+    },
+    [dialog, classes.dialogDeleteButton, handleDeleteUserSubmit]
+  );
 
-  function handleDeleteUser(user: IUser) {
-    const nameOfUser = `${user.firstname} ${user.lastname}`;
-    dialog.show({
-      title: 'Nutzer löschen',
-      content: `Soll der Nutzer "${nameOfUser}" wirklich gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.`,
-      actions: [
-        {
-          label: 'Nicht löschen',
-          onClick: () => dialog.hide(),
+  const handleEditUser = useCallback(
+    (user: IUser) => {
+      dialog.show({
+        title: 'Nutzer bearbeiten',
+        content: (
+          <UserForm
+            user={user}
+            availableRoles={availableRoles}
+            tutorials={tutorials}
+            loadingTutorials={isLoadingTutorials}
+            onSubmit={handleEditUserSubmit(user)}
+            onCancelClicked={() => dialog.hide()}
+          />
+        ),
+        DialogProps: {
+          maxWidth: 'lg',
         },
-        {
-          label: 'Löschen',
-          onClick: () => handleDeleteUserSubmit(user),
-          buttonProps: {
-            className: classes.dialogDeleteButton,
-          },
-        },
-      ],
-    });
-  }
+      });
+    },
+    [dialog, handleEditUserSubmit, isLoadingTutorials, tutorials]
+  );
 
-  function handleEditUser(user: IUser) {
-    dialog.show({
-      title: 'Nutzer bearbeiten',
-      content: (
-        <UserForm
-          user={user}
-          availableRoles={availableRoles}
-          tutorials={tutorials}
-          loadingTutorials={isLoadingTutorials}
-          onSubmit={handleEditUserSubmit(user)}
-          onCancelClicked={() => dialog.hide()}
-        />
-      ),
-      DialogProps: {
-        maxWidth: 'lg',
-      },
-    });
-  }
-
-  function handleSendCredentials() {
-    dialog.show({
-      title: 'Zugangsdaten verschicken',
-      content:
-        'Sollen die Zugangsdaten der Nutzer/innen an diese geschickt werden? Dies sendet jedem/r Nutzer/in eine E-Mail mit seinen/ihren Zugangsdaten.',
-      actions: [
-        {
-          label: 'Abbrechen',
-          onClick: () => dialog.hide(),
-        },
-        {
-          label: 'Senden',
-          onClick: () => {
-            dialog.hide();
-            sendCredentials();
-          },
-          buttonProps: {
-            color: 'primary',
-          },
-        },
-      ],
-    });
-  }
-
-  async function sendCredentials() {
+  const sendCredentials = useCallback(async () => {
     setSendingCredentials(true);
 
     try {
@@ -284,9 +284,33 @@ function UserManagement(): JSX.Element {
       enqueueSnackbar('Zugangsdaten konnten nicht verschickt werden.', { variant: 'error' });
     }
     setSendingCredentials(false);
-  }
+  }, [enqueueSnackbar, enqueueSnackbarWithList, users]);
 
-  async function handlePrintCredentials() {
+  const handleSendCredentials = useCallback(() => {
+    dialog.show({
+      title: 'Zugangsdaten verschicken',
+      content:
+        'Sollen die Zugangsdaten der Nutzer/innen an diese geschickt werden? Dies sendet jedem/r Nutzer/in eine E-Mail mit seinen/ihren Zugangsdaten.',
+      actions: [
+        {
+          label: 'Abbrechen',
+          onClick: () => dialog.hide(),
+        },
+        {
+          label: 'Senden',
+          onClick: () => {
+            dialog.hide();
+            sendCredentials();
+          },
+          buttonProps: {
+            color: 'primary',
+          },
+        },
+      ],
+    });
+  }, [dialog, sendCredentials]);
+
+  const handlePrintCredentials = useCallback(async () => {
     setSendingCredentials(true);
 
     try {
@@ -298,29 +322,32 @@ function UserManagement(): JSX.Element {
     }
 
     setSendingCredentials(false);
-  }
+  }, [enqueueSnackbar]);
 
-  async function sendCredentialsToSingleUser(user: IUser) {
-    const snackbarKey = enqueueSnackbar('Verschicke Zugangsdaten...', { variant: 'info' });
+  const sendCredentialsToSingleUser = useCallback(
+    async (user: IUser) => {
+      const snackbarKey = enqueueSnackbar('Verschicke Zugangsdaten...', { variant: 'info' });
 
-    try {
-      const status: MailingStatus = await sendCredentialsToSingleUserRequest(user.id);
+      try {
+        const status: MailingStatus = await sendCredentialsToSingleUserRequest(user.id);
 
-      closeSnackbar(snackbarKey || undefined);
+        closeSnackbar(snackbarKey || undefined);
 
-      if (status.failedMailsInfo.length === 0) {
-        enqueueSnackbar('Zugangsdaten erfolgreich verschickt.', { variant: 'success' });
-      } else {
-        const name = getNameOfEntity(user, { firstNameFirst: true });
-        enqueueSnackbar(
-          `Zugangsdaten verschicken an ${name} fehlgeschlagen: ${status.failedMailsInfo[0].reason}`,
-          { variant: 'error' }
-        );
+        if (status.failedMailsInfo.length === 0) {
+          enqueueSnackbar('Zugangsdaten erfolgreich verschickt.', { variant: 'success' });
+        } else {
+          const name = getNameOfEntity(user, { firstNameFirst: true });
+          enqueueSnackbar(
+            `Zugangsdaten verschicken an ${name} fehlgeschlagen: ${status.failedMailsInfo[0].reason}`,
+            { variant: 'error' }
+          );
+        }
+      } catch {
+        enqueueSnackbar('Zugangsdaten verschicken fehlgeschlagen.', { variant: 'error' });
       }
-    } catch {
-      enqueueSnackbar('Zugangsdaten verschicken fehlgeschlagen.', { variant: 'error' });
-    }
-  }
+    },
+    [closeSnackbar, enqueueSnackbar]
+  );
 
   return (
     <div className={classes.root}>
@@ -382,6 +409,7 @@ function UserManagement(): JSX.Element {
               onDeleteUserClicked={handleDeleteUser}
               onSendCredentialsClicked={sendCredentialsToSingleUser}
               disableSendCredentials={!isMailingActive()}
+              disableDelete={!canBeDeleted(user)}
             />
           )}
         />
