@@ -14,8 +14,8 @@
     "prettier:check": "prettier --check \"**/*.(ts?(x)|md)\""
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-alpha.65",
-    "@docusaurus/preset-classic": "2.0.0-alpha.65",
+    "@docusaurus/core": "2.0.0-alpha.66",
+    "@docusaurus/preset-classic": "2.0.0-alpha.66",
     "@mdx-js/react": "^1.5.8",
     "clsx": "^1.1.1",
     "react": "^16.8.4",
@@ -34,7 +34,7 @@
     ]
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^2.0.0-alpha.65",
+    "@docusaurus/module-type-aliases": "^2.0.0-alpha.66",
     "@tsconfig/docusaurus": "^1.0.2",
     "@types/react": "^16.9.52",
     "@types/react-helmet": "^6.1.0",
