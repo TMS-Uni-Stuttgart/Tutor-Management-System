@@ -4,6 +4,10 @@ title: Settings
 sidebar_label: Settings
 ---
 
+import Roles from '../../src/components/roles/Roles';
+
+<Roles roles={['admin']} />
+
 All settings descriped here are configurable by the administrator through a special page on the client.
 One can configure those through the configuration file on the first setup, too, but it is not required to do so.
 

@@ -108,6 +108,12 @@ If you are on a machine that requires manually starting the docker engine do so 
       sudo -E docker-compose up -d
       ```
 
+1. **Login** as administrator. The TMS creates the credentials for the administrator on the first start. The credentials are `admin` for the username and `admin` (all lowercase) for the password. You are prompted to change your password on the first login (see [First Login](../handbook/login#first-login)).
+
+   :::note
+   You can also change the username of the administrator in the user management if you want to.
+   :::
+
 ### Use `docker`
 
 - **Create** a network for the MongoDB and the TMS containers:

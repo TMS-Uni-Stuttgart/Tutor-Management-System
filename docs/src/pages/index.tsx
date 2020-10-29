@@ -4,55 +4,24 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React from 'react';
+import Feature, { FeatureItem } from '../components/feature/Feature';
 import styles from './styles.module.css';
 
-const features = [
+const features: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    title: 'Track Exam Requirements',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and used to get your
-        website up and running quickly.
-      </>
-    ),
-  },
-  {
-    title: 'Focus on What Matters',
-    imageUrl: 'img/undraw_docusaurus_tree.svg',
-    description: (
-      <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go ahead and move your
-        docs into the <code>docs</code> directory.
-      </>
-    ),
-  },
-  {
-    title: 'Powered by React',
-    imageUrl: 'img/undraw_docusaurus_react.svg',
-    description: (
-      <>
-        Extend or customize your website layout by reusing React. Docusaurus can be extended while
-        reusing the same header and footer.
+        <p>
+          This tool makes it easy to track if your students meet the requirements to attend the
+          final exam of the term. The tool is developed at the University of Stuttgart and supports
+          several requirements (ie pass enough homeworks, tests, ...).
+        </p>
+        <p>You can find more information about the tool in this documentation.</p>
       </>
     ),
   },
 ];
-
-function Feature({ imageUrl, title, description }) {
-  const imgUrl = useBaseUrl(imageUrl);
-  return (
-    <div className={clsx('col col--4', styles.feature)}>
-      {imgUrl && (
-        <div className='text--center'>
-          <img className={styles.featureImage} src={imgUrl} alt={title} />
-        </div>
-      )}
-      <h3>{title}</h3>
-      <p>{description}</p>
-    </div>
-  );
-}
 
 function Home(): JSX.Element {
   const context = useDocusaurusContext();
@@ -70,11 +39,20 @@ function Home(): JSX.Element {
             <Link
               className={clsx(
                 'button button--outline button--secondary button--lg',
-                styles.getStarted
+                styles.bigButton
+              )}
+              to={useBaseUrl('docs/handbook/introduction')}
+            >
+              Handbook
+            </Link>
+            <Link
+              className={clsx(
+                'button button--outline button--secondary button--lg',
+                styles.bigButton
               )}
               to={useBaseUrl('docs/setup/installation')}
             >
-              Get Started
+              Installation
             </Link>
           </div>
         </div>

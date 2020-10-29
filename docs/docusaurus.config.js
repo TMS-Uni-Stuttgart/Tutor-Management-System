@@ -21,10 +21,22 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/setup/installation',
-          activeBasePath: 'docs',
-          label: 'Docs',
+          to: 'docs/handbook/introduction',
+          activeBasePath: 'docs/handbook',
           position: 'left',
+          label: 'Handbook',
+        },
+        {
+          to: 'docs/setup/installation',
+          activeBasePath: 'docs/setup',
+          position: 'left',
+          label: 'Setup',
+        },
+        {
+          to: 'docs/dev/setup-env',
+          activeBasePath: 'docs/dev',
+          position: 'left',
+          label: 'Development',
         },
         {
           href: 'https://github.com/Dudrie/Tutor-Management-System',
@@ -32,6 +44,20 @@ module.exports = {
           position: 'right',
         },
       ],
+      // items: [
+      //   {
+      //     to: 'docs/setup/installation',
+      //     activeBasePath: 'docs',
+      //     label: 'Docs',
+      //     position: 'left',
+
+      //   },
+      //   {
+      //     href: 'https://github.com/Dudrie/Tutor-Management-System',
+      //     label: 'GitHub',
+      //     position: 'right',
+      //   },
+      // ],
     },
     footer: {
       style: 'dark',
