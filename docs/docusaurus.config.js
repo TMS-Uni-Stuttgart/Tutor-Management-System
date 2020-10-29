@@ -1,12 +1,11 @@
 module.exports = {
   title: 'Tutor-Management-System',
-  // tagline: "The tagline of my site",
   url: 'https://dudrie.github.io/',
   baseUrl: '/Tutor-Management-System/',
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',
-  organizationName: 'dudrie', // Usually your GitHub org/user name.
-  projectName: 'Tutor-Management-System', // Usually your repo name.
+  organizationName: 'dudrie',
+  projectName: 'Tutor-Management-System',
   themeConfig: {
     colorMode: {
       // Should we use the prefers-color-scheme media-query,
@@ -44,20 +43,6 @@ module.exports = {
           position: 'right',
         },
       ],
-      // items: [
-      //   {
-      //     to: 'docs/setup/installation',
-      //     activeBasePath: 'docs',
-      //     label: 'Docs',
-      //     position: 'left',
-
-      //   },
-      //   {
-      //     href: 'https://github.com/Dudrie/Tutor-Management-System',
-      //     label: 'GitHub',
-      //     position: 'right',
-      //   },
-      // ],
     },
     footer: {
       style: 'dark',
@@ -115,9 +100,7 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
-          // editUrl:
-          //   'https://github.com/facebook/docusaurus/edit/master/website/',
+          editUrl: 'https://github.com/Dudrie/Tutor-Management-System/edit/main/docs',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
