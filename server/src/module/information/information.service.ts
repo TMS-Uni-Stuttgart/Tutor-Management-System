@@ -1,10 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { isDevelopment } from '../../helpers/isDevelopment';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import { isDevelopment } from '../../helpers/isDevelopment';
+import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
 export class InformationService {
+  constructor(private readonly settingsService: SettingsService) {}
+
   /**
    * Current server version runing. It returns the version depending on if the server is started in development or not.
    *
@@ -12,6 +15,13 @@ export class InformationService {
    */
   getVersion(): string {
     return isDevelopment() ? this.getDevelopmentVersion() : this.getProductionVersion();
+  }
+
+  /**
+   * @returns The link to the handbook if configured.
+   */
+  getHandbookUrl(): string | undefined {
+    return this.settingsService.getHandbookUrl();
   }
 
   private getDevelopmentVersion(): string {

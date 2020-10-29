@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
+  BookOpenPageVariant as HandbookIcon,
   Brightness5 as LightIcon,
   Brightness7 as DarkIcon,
   Download as DownloadIcon,
@@ -25,7 +26,9 @@ import { useRouteMatch } from 'react-router';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
+import { getHandbookUrl } from '../hooks/fetching/Information';
 import { useLogin } from '../hooks/LoginService';
+import { useFetchState } from '../hooks/useFetchState';
 import { TutorialInEntity } from '../model/LoggedInUser';
 import { Tutorial } from '../model/Tutorial';
 import { ROUTES } from '../routes/Routing.routes';
@@ -108,6 +111,11 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
 
   const [backupAnchor, setBackupAnchor] = useState<HTMLElement | undefined>(undefined);
   const [creatingXLSX, setCreatingXLSX] = useState<CreatingState>({});
+  const { value: handbookUrl, error: handbookUrlError } = useFetchState({
+    fetchFunction: getHandbookUrl,
+    immediate: true,
+    params: [],
+  });
 
   function handleThemeChangeClicked() {
     const newType: PaletteType = theme.palette.type === 'light' ? 'dark' : 'light';
@@ -222,14 +230,30 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           </IconButton>
         </Tooltip>
 
-        <IconButton
-          className={classes.iconButton}
-          href='https://github.com/Dudrie/Tutor-Management-System/issues'
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <GitHubIcon fontSize='default' />
-        </IconButton>
+        {!handbookUrlError && (
+          <Tooltip title='Benutzerhandbuch'>
+            <IconButton
+              className={classes.iconButton}
+              href={handbookUrl ?? ''}
+              disabled={!handbookUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              <HandbookIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        <Tooltip title='GitHub Repository'>
+          <IconButton
+            className={classes.iconButton}
+            href='https://github.com/Dudrie/Tutor-Management-System/issues'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <GitHubIcon fontSize='default' />
+          </IconButton>
+        </Tooltip>
       </Toolbar>
     </MuiAppBar>
   );

@@ -9,4 +9,9 @@ export class InformationController {
   async getVersion(): Promise<string> {
     return this.informationService.getVersion();
   }
+
+  @Get('/handbook-url')
+  async getHandbookURL(): Promise<string> {
+    return this.informationService.getHandbookUrl() ?? '';
+  }
 }

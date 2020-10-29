@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUrl, Min, ValidateNested } from 'class-validator';
 import { ClientSettingsDTO } from '../settings.dto';
 import { DatabaseConfiguration } from './DatabaseConfiguration';
 
@@ -11,7 +11,11 @@ export class ApplicationConfiguration {
 
   @IsOptional()
   @IsString()
-  readonly prefix: string | undefined;
+  readonly prefix?: string;
+
+  @IsOptional()
+  @IsUrl()
+  readonly handbookUrl?: string;
 
   @Type(() => DatabaseConfiguration)
   @ValidateNested()

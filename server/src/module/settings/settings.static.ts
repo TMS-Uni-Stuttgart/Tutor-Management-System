@@ -114,6 +114,13 @@ export class StaticSettings {
   }
 
   /**
+   * @returns If configured it returns the URL to the handbook, otherwise `undefined` is returned.
+   */
+  getHandbookUrl(): string | undefined {
+    return this.config.handbookUrl;
+  }
+
+  /**
    * @returns Path to the static folder.
    */
   getStaticFolder(): string {
