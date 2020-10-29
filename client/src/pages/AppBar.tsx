@@ -230,12 +230,11 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           </IconButton>
         </Tooltip>
 
-        {!handbookUrlError && (
+        {!handbookUrlError && !!handbookUrl && (
           <Tooltip title='Benutzerhandbuch'>
             <IconButton
               className={classes.iconButton}
               href={handbookUrl ?? ''}
-              disabled={!handbookUrl}
               target='_blank'
               rel='noopener noreferrer'
             >
