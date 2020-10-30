@@ -15,11 +15,11 @@ For a complete overview of all configuration options available see the [Configur
 
 ## Available settings
 
-| Setting                  | Default    | Description                                                                                                                                                                                                         |
-| ------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `defaultTeamSize`        | `2`        | Size of a 'default team'. Teams are **not** validated against this constraint but the client uses it for Quality of Life adjustments.                                                                               |
-| `canTutorExcuseStudents` | `false`    | Are tutors able to excuse their students? If this is `true` they can set the attendance state of their students to `excused`. If this is `false` only the administrator can set the attendance states to `excused`. |
-| `mailingConfig`          | (optional) | Options for [nodemailer][nodemailer]. For more information see below.                                                                                                                                               |
+| Setting                  | Default      | Description                                                                                                                                                                                                         |
+| ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `defaultTeamSize`        | `2`          | Size of a 'default team'. Teams are **not** validated against this constraint but the client uses it for Quality of Life adjustments.                                                                               |
+| `canTutorExcuseStudents` | `false`      | Are tutors able to excuse their students? If this is `true` they can set the attendance state of their students to `excused`. If this is `false` only the administrator can set the attendance states to `excused`. |
+| `mailingConfig`          | _(optional)_ | `MailingConfiguration` - Options for [nodemailer][nodemailer]. For more information see below.                                                                                                                      |
 
 ### Mailing Configuration
 
