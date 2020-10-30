@@ -39,7 +39,7 @@
     "formik": "^2.2.0",
     "generate-password": "^1.5.1",
     "html-react-parser": "^0.14.0",
-    "i18next": "^19.8.2",
+    "i18next": "^19.8.3",
     "i18next-sync-fs-backend": "^1.1.1",
     "i18next-xhr-backend": "^3.2.2",
     "mdi-material-ui": "^6.20.0",
