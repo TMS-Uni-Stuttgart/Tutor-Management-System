@@ -17,6 +17,11 @@
   --ifm-code-font-size: 95%;
 }
 
+img {
+  border-radius: var(--ifm-alert-border-radius);
+  border: var(--ifm-alert-border-width) solid var(--ifm-toc-border-color);
+}
+
 .docusaurus-highlight-code-line {
   background-color: rgb(72, 77, 91);
   display: block;
