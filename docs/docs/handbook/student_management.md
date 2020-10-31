@@ -65,7 +65,7 @@ To create new students in your tutorial click the "+ New" button on the upper ri
 
 To edit a student click the menu button <IconInText icon={MenuButton} /> on it's bar and choose "Edit". The form that opens up is the same one as for the process of creating a student ([see above](#create-students)).
 
-## Deleting Students
+## Delete Students
 
 To delete a student click the menu button <IconInText icon={MenuButton} /> on it's bar and choose "Delete". A confirmation dialog opens up if you really want to delete the student.
 

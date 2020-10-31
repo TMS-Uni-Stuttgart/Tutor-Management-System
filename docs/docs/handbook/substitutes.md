@@ -13,13 +13,13 @@ import RemoveIcon from './assets/icons/close.svg';
 
 <Roles roles={['tutor']} />
 
-## Being a Substitute
+## Access Substituted Tutorials
 
 If you are assigned as a substitute to a tutorial, you get access to it's "Attendance" and "Presentation" page. You access those pages through the submenu on your sidebar (see image below). Tutorials in which you are a substitute are marked with the substitute icon <IconInText icon={SubstituteIcon} />.
 
 ![Substitute Tutorial in Sidebar](./assets/tutorial_of_substitute.png)
 
-## Assigning a Substitute
+## Assign a Substitute
 
 To assign a substiute for one of your own tutorials go to the "Substitute" page. First, you have to select the date you want to assign a substitute for. Afterwards you have to select the substitute tutor from the list presented. As a final step you have to save your changes. You can find an explanation of all elements on that page below.
 
@@ -53,6 +53,6 @@ You can assign substitute for multiple dates and only save once in the end.
 
 1. **Save**: Saves the changes for _all_ dates.
 
-## Removing a Substitute
+## Remove a Substitute
 
 If you want to remove an assigned substitute select the date you want to remove the substitute from. Afterwards click on the small <IconInText icon={RemoveIcon} /> on the right of the selected tutor at the top (marked with `7` in the image above). Remember to hit the save button in the end.
