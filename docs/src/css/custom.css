@@ -17,7 +17,9 @@
   --ifm-code-font-size: 95%;
 }
 
-main img {
+.markdown img {
+  display: block;
+  margin: 0 auto;
   border-radius: var(--ifm-alert-border-radius);
   border: var(--ifm-alert-border-width) solid var(--ifm-toc-border-color);
 }

@@ -1,4 +1,5 @@
 .wrapper {
+  fill: var(--ifm-font-color-base);
   display: inline-flex;
   align-items: center;
   justify-content: center;
