@@ -6,4 +6,5 @@
   border-radius: 50%;
   border: var(--ifm-alert-border-width) solid #7e7e7e;
   vertical-align: middle;
+  padding: 4px;
 }
