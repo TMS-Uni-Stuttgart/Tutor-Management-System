@@ -21,7 +21,14 @@ module.exports = {
       type: 'category',
       label: 'Gradings',
       collapsed: false,
-      items: parseHandbookItems(['grading', 'attendances', 'presentations']),
+      items: [
+        // {
+        //   type: 'category',
+        //   label: 'Sheets',
+        //   items: parseHandbookItems(['point_overview']),
+        // },
+        ...parseHandbookItems(['sheet_grading', 'attendances', 'presentations']),
+      ],
     },
     {
       type: 'category',
