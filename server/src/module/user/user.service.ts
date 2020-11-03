@@ -233,10 +233,12 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
    *
    * @returns Deleted document.
    *
-   * @throws `NotFoundExceotion` - If there is no user with such an ID.
+   * @throws `NotFoundException` - If there is no user with such an ID.
+   * @throws `BadRequestException` - If the deleted user is the last available ADMIN.
    */
   async delete(id: string): Promise<UserDocument> {
     const user = await this.findById(id);
+    await this.assertUserIsDeletable(user);
 
     await Promise.all(
       user.tutorials.map((tutorial) => {
@@ -525,6 +527,28 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
       throw new BadRequestException(
         `A user with tutorials to correct needs to have the 'CORRECTOR' role`
       );
+    }
+  }
+
+  /**
+   * Checks if the user can be safely deleted.
+   *
+   * A user is considered NOT deletable if
+   * - It is the last user holding the ADMIN role.
+   *
+   * @param user User to check.
+   *
+   * @throws `BadRequestException` - If the user is the last admin.
+   */
+  private async assertUserIsDeletable(user: UserDocument) {
+    if (user.roles.includes(Role.ADMIN)) {
+      const allUsers = await this.findAll();
+      const adminUsers = allUsers.filter((u) => u.roles.includes(Role.ADMIN));
+
+      // Do NOT allow deleting the last admin.
+      if (adminUsers.length <= 1) {
+        throw new BadRequestException('ERR_DELETE_LAST_ADMIN');
+      }
     }
   }
 }
