@@ -8,7 +8,7 @@ import Roles from '../../src/components/roles/Roles';
 import IconInText from '../../src/components/icon-in-text/IconInText';
 import MenuIcon from './assets/icons/dots-vertical.svg';
 
-<Roles roles={['admin']} />
+<Roles roles={['admin', 'employee']} />
 
 ## Add a Scheincriteria
 
