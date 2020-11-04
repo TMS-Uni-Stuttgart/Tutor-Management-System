@@ -27,7 +27,7 @@ module.exports = {
         //   label: 'Sheets',
         //   items: parseHandbookItems(['point_overview']),
         // },
-        ...parseHandbookItems(['sheet_grading', 'attendances', 'presentations']),
+        ...parseHandbookItems(['sheet_gradings', 'attendances', 'presentations']),
       ],
     },
     {
@@ -38,6 +38,7 @@ module.exports = {
       items: parseHandbookItems([
         'user_management',
         'tutorial_management',
+        'student_overview',
         'hand_ins',
         'criterias',
         'settings',

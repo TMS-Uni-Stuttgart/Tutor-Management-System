@@ -1,5 +1,5 @@
 ---
-id: sheet_grading
+id: sheet_gradings
 title: Gradings for Sheets
 sidebar_label: Sheet Gradings
 ---
