@@ -8,3 +8,13 @@
   vertical-align: middle;
   padding: 4px;
 }
+
+.wrapper > svg {
+  --svg-size: 1rem;
+  width: var(--svg-size);
+  height: var(--svg-size);
+}
+
+.wrapper-small > svg {
+  --svg-size: 0.75rem;
+}
