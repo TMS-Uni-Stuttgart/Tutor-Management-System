@@ -9,7 +9,7 @@ module.exports = {
       type: 'category',
       label: 'General',
       collapsed: false,
-      items: parseHandbookItems(['introduction', 'login', 'dashboard']),
+      items: parseHandbookItems(['introduction', 'login', 'dashboard', 'navigation']),
     },
     {
       type: 'category',
