@@ -10,9 +10,7 @@ import Roles from '../../src/components/roles/Roles';
 
 To change the presentations a student has made you have to follow step (1) to (3):
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Presentations Page](./assets/presentations_page.png)
 
 1. **Sheet Selection**: Select the sheet the student has presented a solution for.
 

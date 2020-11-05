@@ -14,9 +14,7 @@ import MenuIcon from './assets/icons/dots-vertical.svg';
 
 To add a criteria click on the "+ Add" button in the upper right. A form with two input opens up (see below). Please note that it is possible to add two types of the same criteria however all criterias are linked together with a logic "AND" (therefore the students have to pass _all_ criterias). Make sure that your criterias do not contradict themselfs.
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Criteria form](./assets/criteria_forms/base_criteria_form.png)
 
 1. **Name**: A name for your criteria.
 
@@ -46,9 +44,7 @@ The forms are not as intuitiv as they could be due to the fact that they are aut
 
 A student has to attend his/her tutorial for a specified amount of times. This can either be an absolute (ie "Student has to visit 5 times") or a percentage (ie "Student has to visit 80% of all times").
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form for the attendance criteria](./assets/criteria_forms/attendance_criteria.png)
 
 1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
 
@@ -62,9 +58,7 @@ A student has to attend his/her tutorial for a specified amount of times. This c
 
 The student needs to pass a certain number of homeworks. Each homework is considered "passed" if the student scores a certain number of points in it. Both numbers can be either absolute or a percentage.
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form for the single sheets criteria](./assets/criteria_forms/sheet_single_criteria.png)
 
 1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
 
@@ -86,9 +80,7 @@ The student needs to pass a certain number of homeworks. Each homework is consid
 
 The student needs to score a certain amount of points in all homeworks together. The amount can either be an absolute (ie "The student scores 42 points in total") or a percentage value (ie "The students has to score 50% of all points").
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form for the total sheets criteria](./assets/criteria_forms/sheet_total_criteria.png)
 
 1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
 
@@ -102,9 +94,7 @@ The student needs to score a certain amount of points in all homeworks together.
 
 If there are one or more Scheinexams this criteria defines how they are evaluated. There are basicly two modes:
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form for the scheinexam criteria](./assets/criteria_forms/scheinexam_criteria.png)
 
 - `All together`: The student needs a certain percentage of all points summed through all scheinexams.
 
@@ -122,9 +112,7 @@ If there are one or more Scheinexams this criteria defines how they are evaluate
 
 The student has to pass a certain number of short tests. Each short test is considered passed if the student has achieved a certain number of points in it. Both numbers can be either absolute or a percentage.
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form for the short test criteria](./assets/criteria_forms/short_test_criteria.png)
 
 1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
 
@@ -146,8 +134,6 @@ The student has to pass a certain number of short tests. Each short test is cons
 
 A student has to present his/her solutions a certain amount of times. Only absolute values are possible.
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form for the presentation criteria](./assets/criteria_forms/presentation_criteria.png)
 
 1. **Amount**: Indicates how often a student has to present his/her solution.

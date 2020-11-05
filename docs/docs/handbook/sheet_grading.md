@@ -13,9 +13,7 @@ import MenuIcon from './assets/icons/dots-vertical.svg';
 
 ## Overview
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Overview page for sheet gradings](./assets/sheet_grading_overview.png)
 
 1. **Sheet Selection**: Select the sheet you want to display and/or edit the gradings of.
 
@@ -43,9 +41,7 @@ import MenuIcon from './assets/icons/dots-vertical.svg';
 
 Below you can find an explanation of the page for entering the points of a complete team or for an individual student.
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form for entering sheet gradings](./assets/sheet_grading_form.png)
 
 1. **Select Exercise**: Select the exercise of the sheet you want to enter the grading for. You can change the selection without the need to save your changes.
 
@@ -62,6 +58,10 @@ Below you can find an explanation of the page for entering the points of a compl
 
 1. **Reset**: Reset the form of the team _for the whole sheet_ to the last saved state.
 
-1. **Save**: Save the changes made for the currently selected team.
+1. **Save**: Save the changes made for the currently selected team. Furthermore, you can save the changes by
+
+   - Hitting the `Enter` key on your keyboard while focusing a textfield for points.
+   - Hitting `Ctrl + Enter` (or your Mac equivalent) while focusing the textfield for comments.
+   - Hitting `Ctrl + S` (or your Mac equivalent) at any time while the page is opened up.
 
 1. **Back**: Go back to the overview page.

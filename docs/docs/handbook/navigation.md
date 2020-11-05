@@ -8,4 +8,6 @@ import IconInText from '../../src/components/icon-in-text/IconInText';
 
 ## SECTION_TITLE
 
+<!-- TODO: Write article -->
+
 🛠 WORK IN PROGRESS

@@ -16,9 +16,7 @@ import CheckIcon from './assets/icons/check.svg';
 
 To create a tutorial click on "+ Add" button in the upper right of the page. A dialog with the following form opens up:
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form to add a tutorial](./assets/tutorial_form.png)
 
 1. **Slot**: The slot part of the name of the tutorial. The name of the tutorial will be displayed in the format "Tutorial #{slot}" at certain locations in the applications (if a short form is required only the slot will be displayed).
 
@@ -60,9 +58,7 @@ To generate multiple tutorials at once click on the "<IconInText icon={GenerateI
 The form does **not** display any information about tutorials which are already generated in the system.
 :::
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Form to generate multiple tutorials](./assets/generate_tutorials_form.png)
 
 1. **Starting & Ending Date**: The two dates between the generated tutorials will be hold. All matching weekdays will be added to the list of dates of each tutorial.
 
