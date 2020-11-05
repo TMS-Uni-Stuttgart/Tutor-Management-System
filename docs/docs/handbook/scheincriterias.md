@@ -12,7 +12,7 @@ import MenuIcon from './assets/icons/dots-vertical.svg';
 
 ## Add a Scheincriteria
 
-To add a criteria click on the "+ Add" button in the upper right. A form with two input opens up (see below). Please note that it is possible to add two types of the same criteria however all criterias are linked together with a logic "AND" (therefore the students have to pass _all_ criterias). Make sure that your criterias do not contradict themselfs.
+To add a criteria click on the "+ New" button in the upper right. A form with two input opens up (see below). Please note that it is possible to add two types of the same criteria however all criterias are linked together with a logic "AND" (therefore the students have to pass _all_ criterias). Make sure that your criterias do not contradict themselfs.
 
 ![Criteria form](./assets/criteria_forms/base_criteria_form.png)
 

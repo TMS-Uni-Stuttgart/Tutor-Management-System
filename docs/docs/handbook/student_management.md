@@ -5,7 +5,7 @@ sidebar_label: Student Management
 ---
 
 import IconInText from '../../src/components/icon-in-text/IconInText';
-import MenuButton from './assets/icons/dots-vertical.svg';
+import MenuIcon from './assets/icons/dots-vertical.svg';
 import Roles from '../../src/components/roles/Roles';
 
 <Roles roles={['tutor']} />
@@ -63,11 +63,11 @@ To create new students in your tutorial click the "+ New" button on the upper ri
 
 ## Edit Students
 
-To edit a student click the menu button <IconInText icon={MenuButton} /> on it's bar and choose "Edit". The form that opens up is the same one as for the process of creating a student ([see above](#create-students)).
+To edit a student click the menu button <IconInText icon={MenuIcon} /> on it's bar and choose "Edit". The form that opens up is the same one as for the process of creating a student ([see above](#create-students)).
 
 ## Delete Students
 
-To delete a student click the menu button <IconInText icon={MenuButton} /> on it's bar and choose "Delete". A confirmation dialog opens up if you really want to delete the student.
+To delete a student click the menu button <IconInText icon={MenuIcon} /> on it's bar and choose "Delete". A confirmation dialog opens up if you really want to delete the student.
 
 :::warning No restore possible
 Deleting a student is **permanent**! Deleted students can **NOT** be restored.

@@ -14,7 +14,7 @@ import CheckIcon from './assets/icons/check.svg';
 
 ## Create a Tutorial
 
-To create a tutorial click on "+ Add" button in the upper right of the page. A dialog with the following form opens up:
+To create a tutorial click on "+ New" button in the upper right of the page. A dialog with the following form opens up:
 
 ![Form to add a tutorial](./assets/tutorial_form.png)
 
