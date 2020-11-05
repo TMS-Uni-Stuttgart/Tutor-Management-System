@@ -36,10 +36,10 @@ To delete a criteria click on the menu icon <IconInText icon={MenuIcon} /> and s
 
 ## Criteria Types
 
-There are several criteria types available at the moment. Each type will be described and it's form will be explained.
+There are several criteria types available in the TMS. Each type will be described and it's form will be explained.
 
 :::note Messy Forms
-The forms are not as intuitiv as they could be due to the fact that they are automatically generated from the actual types. They will get redesigned at some point in the future.
+The forms are not as intuitiv as they could be due to the fact that they are automatically generated from the actual TypeScript types. They will get redesigned at some point in the future.
 :::
 
 ### Attendances
@@ -102,6 +102,10 @@ The student needs to score a certain amount of points in all homeworks together.
 
 If there are one or more Scheinexams this criteria defines how they are evaluated. There are basicly two modes:
 
+<!-- TODO: IMAGE -->
+
+**[[IMAGE]]**
+
 - `All together`: The student needs a certain percentage of all points summed through all scheinexams.
 
   :::note Example
@@ -113,10 +117,6 @@ If there are one or more Scheinexams this criteria defines how they are evaluate
   :::note Example
   You have 2 scheinexams, the first with a total of 30 and the second with a total of 40 points. The percentage needed is 50%. Therefore the students has to score 15 points in the first and 20 points in the second exam.
   :::
-
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
 
 ### Short Tests
 

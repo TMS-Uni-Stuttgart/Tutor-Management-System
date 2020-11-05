@@ -8,6 +8,7 @@ import Roles from '../../src/components/roles/Roles';
 import IconInText from '../../src/components/icon-in-text/IconInText';
 import MenuIcon from './assets/icons/dots-vertical.svg';
 import GenerateIcon from './assets/icons/auto-fix.svg';
+import CheckIcon from './assets/icons/check.svg';
 
 <Roles roles={['admin', 'employee']} />
 
@@ -53,13 +54,37 @@ To create a tutorial click on "+ Add" button in the upper right of the page. A d
 
 ## Generate multiple Tutorials
 
-To generate multiple tutorials at once click on the "<IconInText icon={GenerateIcon} /> Generate" button on the upper right. This will open up the following form:
+To generate multiple tutorials at once click on the "<IconInText icon={GenerateIcon} /> Generate" button on the upper right. This will open up the form shown below.
+
+:::caution
+The form does **not** display any information about tutorials which are already generated in the system.
+:::
 
 <!-- TODO: IMAGE -->
 
 **[[IMAGE]]**
 
-<!-- TODO: DESC -->
+1. **Starting & Ending Date**: The two dates between the generated tutorials will be hold. All matching weekdays will be added to the list of dates of each tutorial.
+
+1. **Excluded Dates**: You can exclude either single dates or complete date ranges. Those dates will not be added to the list of dates of the tutorials.
+
+1. **Weekday Selection**: Select the day you want to add slots to. Each day tab shows the number of _total_ tutorial slots that will be generated on this day. If the values of a weekday are invalid a red (!) is displayed instead.
+
+1. **Weekday Prefix**: The prefix for the slot names of this weekday. An example of a slot name will be shown below the textfield. It will update as you change the prefix.
+
+1. **Sort Slots**: Sorts the slot by their starting time.
+
+   :::note
+   Due to current limitations in the implementation sorting can _not_ be done automatically.
+   :::
+
+1. **Slot to generate**: Contains the information about the slots for a specific time frame which will be generated. You can adjust the information in place. It is basically the same form as for adding a slot.
+
+1. **Add slot**: This will open up a form which lets you enter a timeframe and how many tutorials you want to be generated for this time frame. You confirm your input by clicking on <IconInText icon={CheckIcon} />.
+
+1. **Generate Tutorials**: Generates the tutorials with the specified information.
+
+1. **Back**: Go back to the Tutorial Overview Page.
 
 ## Manage Tutorials
 
