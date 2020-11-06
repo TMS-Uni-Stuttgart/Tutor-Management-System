@@ -30,3 +30,21 @@
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
 }
+
+.float-image-left {
+  float: left;
+  /* !important is needed bc the .markdown img class would overwrite the margin. */
+  margin-right: 8px !important;
+}
+
+.padding-top-bottom {
+  padding: calc(var(--ifm-leading) / 2) 0px;
+}
+
+.float-break {
+  clear: both;
+}
+
+.navigation-rail-highlight {
+  color: #00beff;
+}
