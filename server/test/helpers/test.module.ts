@@ -60,7 +60,7 @@ export class TestModule implements OnApplicationShutdown {
         },
         autoStart: true,
       });
-      const connectionUri = await mongodb.getConnectionString();
+      const connectionUri = await mongodb.getUri();
       const featureModule = TypegooseModule.forFeature(models);
 
       return {
