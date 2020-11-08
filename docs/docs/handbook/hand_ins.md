@@ -14,9 +14,7 @@ import MenuIcon from './assets/icons/dots-vertical.svg';
 
 To add a new hand-in click the "+ New" button in the upper right. Each hand-in has a slightly different form (see below in the [hand-in types](#hand-in-types)). However, all three hand-in forms use the same form for their exercises.
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Exercise Form](./assets/exercise_form.png)
 
 1. **Add Exercise**: Add a new exercise to the sheet.
 
@@ -118,6 +116,22 @@ Deleting a hand-in is **permanent**! Deleted hand-ins can **NOT** be restored an
 
 ## Import Short Test Results
 
-<!-- TODO: Write section -->
+To import short test results from the Ilias system you can use the import wizard by clicking on the "Import new results" button in the upper right on the short test page. Follow the step-by-step wizard which opens up.
 
-🛠 WORK IN PROGRESS
+1. **Export results from Ilias**: Follow the on-screen instruction to export the correct CSV file from the Ilias system
+
+   :::note
+   Make sure to export the correct CSV file. There is only one file that contains the results and the Ilias names.
+   :::
+
+1. **Import CSV content**: Import the CSV content by either copy & paste the content in the input field or by uploading the file. You can upload the file by clicking the "Upload CSV-file" button and the content will be pasted into the input field after uploading. If the separator is not correctly detected on the next page you can change the seperator on _this_ page using the "Separator" input in the uper right.
+
+   :::tip Drag & Drop
+   You can also drag & drop the file on the button
+   :::
+
+1. **Map Columns**: The TMS tries to find the three needed columns automatically. It needs the Ilias name and the test results of the students together with the total results. If the columns are not properly detected you can change them through the dropdown menus on this page.
+
+1. **Map Ilias names**: If the CSV file contains any Ilias names which could not be find in the TMS system you can manually map those names to students (these mappings will only be used for this import process). The page also shows a list of all students in the TMS system which could not be found in the imported CSV (either because they do not have an Ilias name saved in the TMS or their Ilias name was not present in the CSV file).
+
+1. **Adjust Short Test**: If necessary you can adjust the short test that would be generated during the import process. By default the number gets automatically increased and it only contains one exercise which holds the total points of the test.
