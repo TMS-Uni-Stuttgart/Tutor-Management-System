@@ -15,7 +15,6 @@ import Roles from '../../src/components/roles/Roles';
 The Student Overview page shows all students in your tutorial.
 You can see which students are in which team and who would have achieved the "Schein" right now.
 Furthermore, this is the page where you can create students and edit their information.
-A click on the "Information" button on a student's bar leads to a page with more information about the selected student.
 
 ## Create Students
 
@@ -61,6 +60,10 @@ To create new students in your tutorial click the "+ New" button on the upper ri
 
 1.  **Abort button**: Closes the form without saving the information.
 
+## Information about a Student
+
+To access more information about a specific student click on the "Information" button of that student. The [_Student info page_](./student_info) of that student will be opened.
+
 ## Edit Students
 
 To edit a student click the menu button <IconInText icon={MenuIcon} /> on it's bar and choose "Edit". The form that opens up is the same one as for the process of creating a student ([see above](#create-students)).
@@ -71,4 +74,12 @@ To delete a student click the menu button <IconInText icon={MenuIcon} /> on it's
 
 :::warning No restore possible
 Deleting a student is **permanent**! Deleted students can **NOT** be restored.
+:::
+
+## Send E-Mail
+
+To send an email to a student click the menu button <IconInText icon={MenuIcon} /> on it's bar and choose "E-Mail". This will open up a new e-mail to the student in your default e-mail program.
+
+:::note
+If the student does not have an e-mail saved in the system this option will be disabled.
 :::

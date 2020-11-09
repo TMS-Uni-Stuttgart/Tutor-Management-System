@@ -47,7 +47,7 @@ Tutors have access to the following pages. Pages marked with <IconInText icon={S
 - [_Attendances_](./attendances) <IconInText icon={SubstituteIcon} small />
 - [_Presentations_](./presentations) <IconInText icon={SubstituteIcon} small />
 - [_Sheet Gradings_](./sheet_gradings)
-- _Scheinexams_ <!-- TODO: Add Link after page was created -->
+- [_Scheinexams_](./scheinexam_gradings)
 - [_Student Management_](./student_management)
 - [_Team Management_](./team_management)
 - [_Substitutes_](./substitutes)
@@ -59,7 +59,7 @@ A `CORRECTOR` user can be assinged as a corrector of a tutorial (or multiple). T
 ### Page Access
 
 - [_Sheet Gradings_](./sheet_gradings)
-- _Scheinexams_ <!-- TODO: Add Link after page was created -->
+- [_Scheinexams_](./scheinexam_gradings)
 
 ## `EMPLOYEE`
 

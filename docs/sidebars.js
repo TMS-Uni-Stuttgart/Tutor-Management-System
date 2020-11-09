@@ -15,19 +15,24 @@ module.exports = {
       type: 'category',
       label: 'Tutorial',
       collapsed: false,
-      items: parseHandbookItems(['student_management', 'team_management', 'substitutes']),
+      items: parseHandbookItems([
+        'student_management',
+        'team_management',
+        'substitutes',
+        'student_info',
+      ]),
     },
     {
       type: 'category',
       label: 'Gradings',
       collapsed: false,
       items: [
-        // {
-        //   type: 'category',
-        //   label: 'Sheets',
-        //   items: parseHandbookItems(['point_overview']),
-        // },
-        ...parseHandbookItems(['sheet_gradings', 'attendances', 'presentations']),
+        ...parseHandbookItems([
+          'sheet_gradings',
+          'attendances',
+          'presentations',
+          'scheinexam_gradings',
+        ]),
       ],
     },
     {
