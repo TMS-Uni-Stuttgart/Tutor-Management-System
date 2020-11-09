@@ -4,9 +4,9 @@ title: Student Management
 sidebar_label: Student Management
 ---
 
+import Roles from '../../src/components/roles/Roles';
 import IconInText from '../../src/components/icon-in-text/IconInText';
 import MenuIcon from './assets/icons/dots-vertical.svg';
-import Roles from '../../src/components/roles/Roles';
 
 <Roles roles={['tutor']} />
 

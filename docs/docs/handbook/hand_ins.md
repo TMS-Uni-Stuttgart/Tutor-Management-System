@@ -124,7 +124,7 @@ To import short test results from the Ilias system you can use the import wizard
    Make sure to export the correct CSV file. There is only one file that contains the results and the Ilias names.
    :::
 
-1. **Import CSV content**: Import the CSV content by either copy & paste the content in the input field or by uploading the file. You can upload the file by clicking the "Upload CSV-file" button and the content will be pasted into the input field after uploading. If the separator is not correctly detected on the next page you can change the seperator on _this_ page using the "Separator" input in the uper right.
+1. **Import CSV content**: Import the CSV content by either copy & paste the content in the input field or by uploading the file. You can upload the file by clicking the "Upload CSV-file" button and the content will be pasted into the input field after uploading. If the separator is not correctly detected on the next page you can change the seperator on _this_ page using the "Separator" input in the upper right.
 
    :::tip Drag & Drop
    You can also drag & drop the file on the button
