@@ -162,7 +162,7 @@ table
 </TabItem>
 </Tabs>
 
-### Mail template
+### Mail Template
 
 **Filename: `mail.pug`**
 
