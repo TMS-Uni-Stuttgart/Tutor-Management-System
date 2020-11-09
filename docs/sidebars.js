@@ -28,10 +28,10 @@ module.exports = {
       collapsed: false,
       items: [
         ...parseHandbookItems([
-          'sheet_gradings',
           'attendances',
-          'presentations',
+          'sheet_gradings',
           'scheinexam_gradings',
+          'presentations',
         ]),
       ],
     },
