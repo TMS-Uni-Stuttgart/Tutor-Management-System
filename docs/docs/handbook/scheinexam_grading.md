@@ -13,9 +13,7 @@ import IconInText from '../../src/components/icon-in-text/IconInText';
 
 After selecting a scheinexam from the dropdown menu you can see the gradings the students have for the selected exam. To add a grading to or change the grading of a student click the "Enter Points" button on his/her card.
 
-<!-- TODO: Image -->
-
-**[[IMAGE]]**
+![Scheinexam Grading page](./assets/scheinexam_grading_overview.png)
 
 1. **Scheinexam Selection**: Select the scheinexam you want to view.
 
@@ -28,9 +26,7 @@ After selecting a scheinexam from the dropdown menu you can see the gradings the
 
 ## Enter Points
 
-<!-- TODO: Image -->
-
-**[[IMAGE]]**
+![Scheinexam Point Entry Form](./assets/scheinexam_grading_form.png)
 
 1. **Student Selection**: Select the student you want to change the grading of.
 

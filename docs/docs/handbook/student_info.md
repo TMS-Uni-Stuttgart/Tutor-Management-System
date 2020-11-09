@@ -1,7 +1,7 @@
 ---
 id: student_info
 title: Student Information
-sidebar_label: Student Infos
+sidebar_label: Student Info
 ---
 
 import Roles from '../../src/components/roles/Roles';
@@ -9,9 +9,7 @@ import IconInText from '../../src/components/icon-in-text/IconInText';
 
 <Roles roles={['tutor']} />
 
-<!-- TODO: IMAGE -->
-
-**[[IMAGE]]**
+![Student info page](./assets/student_info_page.png)
 
 You can find the following information about the student on this page.
 

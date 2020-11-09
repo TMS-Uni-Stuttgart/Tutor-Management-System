@@ -20,9 +20,7 @@ import RandomizePasswordIcon from './assets/icons/shuffle.svg';
 
 To create a new user click on the "+ New" button in the upper right of the page. Fill out the form as described below to create a new user.
 
-<!-- TODO: Image -->
-
-**[[IMAGE]]**
+![User Form](./assets/user_form.png)
 
 1. **Firstname**: The firstname of the user.
 
