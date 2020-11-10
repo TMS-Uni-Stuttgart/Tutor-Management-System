@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, NotFoundException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import fs from 'fs';
 import path from 'path';
+import pug from 'pug';
 import { SettingsService } from '../module/settings/settings.service';
 
 const ALLOWED_EXTENSIONS = [
@@ -103,16 +103,15 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
    * @param response Response to send the index file to.
    */
   private sendIndexFile(response: Response): void {
-    const pathToIndex = path.join('./', this.staticPath, 'index.html');
+    const pathToIndex = path.join('./', this.staticPath, 'index.pug');
     const prefix = this.settings.getPathPrefix();
 
-    const index: string = fs.readFileSync(pathToIndex).toString();
-    const replaced = index
+    const template = pug.compileFile(pathToIndex, {});
+    const replaced = template({ ROUTE_PREFIX: `/${prefix}` ?? '' })
       .replace(
         /<!--\s*#{GLOBAL_VARS}\s*-->/g,
         `<script>\n\tconst ROUTE_PREFIX = ${this.getStringForPrefix()};\n</script>`
       )
-      .replace(/#{ROUTE_PREFIX}/g, !!prefix ? `/${prefix}` : '')
       .replace(/(?<!:)\/\//g, '/');
     // Only replace "//" which do NOT have a ":" in front of them (so protocols like "https://" stay correct).
 
