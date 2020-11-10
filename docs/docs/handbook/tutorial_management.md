@@ -14,7 +14,7 @@ import CheckIcon from './assets/icons/check.svg';
 
 ## Create a Tutorial
 
-To create a tutorial click on "+ New" button in the upper right of the page. A dialog with the following form opens up:
+To create a tutorial click on the "+ New" button in the upper right of the page. A dialog with the following form opens up:
 
 ![Form to add a tutorial](./assets/tutorial_form.png)
 
@@ -55,7 +55,7 @@ To create a tutorial click on "+ New" button in the upper right of the page. A d
 To generate multiple tutorials at once click on the "<IconInText icon={GenerateIcon} /> Generate" button on the upper right. This will open up the form shown below.
 
 :::caution
-The form does **not** display any information about tutorials which are already generated in the system.
+The form does **not** display any information about tutorials which are already present in the system.
 :::
 
 ![Form to generate multiple tutorials](./assets/generate_tutorials_form.png)
