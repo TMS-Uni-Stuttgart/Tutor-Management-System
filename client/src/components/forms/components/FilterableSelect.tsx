@@ -8,10 +8,13 @@ import {
   TextField,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { deburr } from 'lodash';
+import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FixedSizeList } from 'react-window';
-import { Dimensions, useResizeObserver } from '../../../hooks/useResizeObserver';
+import {
+  Dimensions,
+  useResizeObserver,
+} from '../../../hooks/useResizeObserver';
 import { useLogger } from '../../../util/Logger';
 import OutlinedBox from '../../OutlinedBox';
 
@@ -27,7 +30,7 @@ const useStyles = makeStyles((theme) =>
       flex: 1,
       overflowY: 'auto',
     },
-  })
+  }),
 );
 
 type ItemToString<T> = (item: T) => string;
@@ -60,7 +63,9 @@ function FilterableSelect<T>({
 }: FilterableSelectProps<T>): JSX.Element {
   const classes = useStyles();
   const logger = useLogger('FilterableSelect');
-  const [list, dimensions] = useResizeObserver<HTMLDivElement>(listStartDimensions);
+  const [list, dimensions] = useResizeObserver<HTMLDivElement>(
+    listStartDimensions,
+  );
 
   const [filter, setFilterText] = useState('');
   const [value, setValue] = useState<string[]>(valueFromProps ?? []);
@@ -72,21 +77,21 @@ function FilterableSelect<T>({
         return true;
       }
 
-      const itemString = deburr(itemToString(item).trim().toLowerCase());
+      const itemString = _.deburr(itemToString(item).trim().toLowerCase());
 
       return itemString.indexOf(filter) > -1;
     },
-    [filter, itemToString]
+    [filter, itemToString],
   );
 
   const handleFilterChanged = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const filterText = deburr(e.target.value.trim().toLowerCase());
+      const filterText = _.deburr(e.target.value.trim().toLowerCase());
 
       setFilterText(filterText);
       setFilteredItems(items.filter(isItemMatchingFilter));
     },
-    [items, isItemMatchingFilter]
+    [items, isItemMatchingFilter],
   );
 
   const isItemSelected = useCallback(
@@ -94,7 +99,7 @@ function FilterableSelect<T>({
       const valueOfItem = itemToValue(item);
       return value.indexOf(valueOfItem) > -1;
     },
-    [itemToValue, value]
+    [itemToValue, value],
   );
 
   const handleItemClicked = useCallback(
@@ -118,7 +123,7 @@ function FilterableSelect<T>({
         setValue(newValue);
       }
     },
-    [singleSelect, value, onChange]
+    [singleSelect, value, onChange],
   );
 
   useEffect(() => {
@@ -131,18 +136,30 @@ function FilterableSelect<T>({
 
   if (singleSelect && value.length > 1) {
     logger.error(
-      `The values of the FilterableSelect should have length 1 or 0 if 'singleSelect' is true (current length: ${value.length}).`
+      `The values of the FilterableSelect should have length 1 or 0 if 'singleSelect' is true (current length: ${value.length}).`,
     );
   }
 
   return (
-    <OutlinedBox display='flex' flexDirection='column' position='relative' {...other}>
-      <Box bgcolor='paper' position='absolute' zIndex={4} top={-10} left={8} paddingX={0.5}>
+    <OutlinedBox
+      display="flex"
+      flexDirection="column"
+      position="relative"
+      {...other}
+    >
+      <Box
+        bgcolor="paper"
+        position="absolute"
+        zIndex={4}
+        top={-10}
+        left={8}
+        paddingX={0.5}
+      >
         {label}
       </Box>
 
       <TextField
-        variant='standard'
+        variant="standard"
         placeholder={filterPlaceholder}
         className={classes.textField}
         onChange={handleFilterChanged}
@@ -176,7 +193,11 @@ function FilterableSelect<T>({
                   style={{ ...style }}
                 >
                   <ListItemIcon>
-                    <Checkbox edge='start' checked={isItemSelected(item)} disableRipple />
+                    <Checkbox
+                      edge="start"
+                      checked={isItemSelected(item)}
+                      disableRipple
+                    />
                   </ListItemIcon>
                   <ListItemText primary={itemString} />
                 </ListItem>

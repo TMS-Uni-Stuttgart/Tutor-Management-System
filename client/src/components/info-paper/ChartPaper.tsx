@@ -2,8 +2,10 @@ import { CircularProgress, PaperProps } from '@material-ui/core';
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import React from 'react';
 import Chart from 'react-google-charts';
-import { ReactGoogleChartProps } from 'react-google-charts/dist/types';
 import InfoPaper from './InfoPaper';
+
+// Do NOT import the props directly from the react-google-charts/dist/types folder because snowpack cannot load this as dependency.
+type ReactGoogleChartProps = React.ComponentProps<typeof Chart>;
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -24,7 +26,7 @@ const useStyles = makeStyles((theme) =>
       top: '50%',
       left: '50%',
     },
-  })
+  }),
 );
 
 interface Props extends ReactGoogleChartProps {

@@ -1,8 +1,8 @@
 import { Box, Tab, TabProps, Tabs, TabsProps } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
 import { ITeamMarkdownData } from 'shared/model/Markdown';
-import Markdown from '../Markdown';
 import TabPanel from '../TabPanel';
+import Markdown from './Markdown';
 
 interface TabData extends TabProps {
   label: string;
@@ -30,7 +30,7 @@ function TabsWrapper({ tabs, TabsProps }: TabsWrapperProps): JSX.Element {
       panels.push(
         <TabPanel key={tabProps.label} value={idx} index={selectedTab}>
           {content}
-        </TabPanel>
+        </TabPanel>,
       );
     });
 
@@ -59,7 +59,7 @@ function MultiGradingPreviewWithTabs({ data, TabsProps }: Props): JSX.Element {
         label: belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`,
         content: <Markdown html={html} />,
       })),
-    [data]
+    [data],
   );
 
   return <TabsWrapper tabs={tabs} TabsProps={TabsProps} />;

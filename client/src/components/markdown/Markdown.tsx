@@ -5,10 +5,10 @@ import 'github-markdown-css/github-markdown.css';
 import 'highlight.js/styles/googlecode.css';
 import HTMLParser from 'html-react-parser';
 import React, { useEffect, useMemo } from 'react';
-import { getHTMLFromMarkdown } from '../hooks/fetching/Markdown';
-import { useFetchState } from '../hooks/useFetchState';
-import { useLogger } from '../util/Logger';
-import LoadingSpinner from './loading/LoadingSpinner';
+import { getHTMLFromMarkdown } from '../../hooks/fetching/Markdown';
+import { useFetchState } from '../../hooks/useFetchState';
+import { useLogger } from '../../util/Logger';
+import LoadingSpinner from '../loading/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,15 +20,19 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       '& code': {
         backgroundColor:
-          theme.palette.type === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(174, 183, 191, .2)',
+          theme.palette.type === 'light'
+            ? 'rgba(27, 31, 35, .05)'
+            : 'rgba(174, 183, 191, .2)',
       },
       '& pre': {
         backgroundColor:
-          theme.palette.type === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(220, 220, 220, 1)',
+          theme.palette.type === 'light'
+            ? 'rgba(27, 31, 35, .05)'
+            : 'rgba(220, 220, 220, 1)',
         color: '#000',
       },
     },
-  })
+  }),
 );
 
 interface Props extends React.ComponentProps<'div'> {
@@ -40,7 +44,12 @@ function convertHTMLToJSX(html: string): React.ReactNode {
   return HTMLParser(html.replace(/>\r?\n|\r/g, '>'));
 }
 
-function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props): JSX.Element {
+function Markdown({
+  markdown,
+  html: htmlFromProps,
+  className,
+  ...props
+}: Props): JSX.Element {
   const classes = useStyles();
   const logger = useLogger('Markdown');
 
@@ -60,7 +69,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
 
       return markdown;
     },
-    [htmlFromProps, logger]
+    [htmlFromProps, logger],
   );
 
   const { value: html, execute, isLoading } = useFetchState({
@@ -79,13 +88,16 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
   if (isLoading) {
     return (
       <div {...props}>
-        <LoadingSpinner text='Lade Markdownvorschau...' shrinkBox />
+        <LoadingSpinner text="Lade Markdownvorschau..." shrinkBox />
       </div>
     );
   }
 
   return (
-    <div className={clsx(classes.background, className, 'markdown-body')} {...props}>
+    <div
+      className={clsx(classes.background, className, 'markdown-body')}
+      {...props}
+    >
       {!!html ? reactEl : <Typography>Keine Vorschau verfügbar.</Typography>}
     </div>
   );

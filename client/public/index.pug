@@ -2,12 +2,14 @@ doctype html
 html(lang=en)
   head
     meta(charset='utf-8')
-    link(rel='shortcut icon', href=`${ROUTE_PREFIX}/static/favicon.ico`)
+    //- TODO: Re-add route prefix ${ROUTE_PREFIX}
+    link(rel='shortcut icon', href=`/static/favicon.ico`)
 
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
     meta(name='theme-color', content='#000000')
 
-    link(rel='manifest', href=`${ROUTE_PREFIX}/static/manifest.json`)
+    //- TODO: Re-add route prefix ${ROUTE_PREFIX}
+    link(rel='manifest', href=`/static/manifest.json`)
 
     // Global variables
     // #{GLOBAL_VARS}
@@ -16,4 +18,7 @@ html(lang=en)
     title Tutor Management System
   body
     noscript You need to enable JavaScript to run this app.
+
     #root
+
+    script(type='module', src='/_dist_/index.js')
