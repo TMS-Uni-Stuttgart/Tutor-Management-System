@@ -30,7 +30,7 @@ function TabsWrapper({ tabs, TabsProps }: TabsWrapperProps): JSX.Element {
       panels.push(
         <TabPanel key={tabProps.label} value={idx} index={selectedTab}>
           {content}
-        </TabPanel>,
+        </TabPanel>
       );
     });
 
@@ -59,7 +59,7 @@ function MultiGradingPreviewWithTabs({ data, TabsProps }: Props): JSX.Element {
         label: belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`,
         content: <Markdown html={html} />,
       })),
-    [data],
+    [data]
   );
 
   return <TabsWrapper tabs={tabs} TabsProps={TabsProps} />;

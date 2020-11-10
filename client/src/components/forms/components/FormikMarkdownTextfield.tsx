@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       alignItems: 'flex-start',
     },
-  }),
+  })
 );
 
 interface Props {

@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) =>
       top: '50%',
       left: '50%',
     },
-  }),
+  })
 );
 
 interface Props extends ReactGoogleChartProps {

@@ -20,19 +20,15 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       '& code': {
         backgroundColor:
-          theme.palette.type === 'light'
-            ? 'rgba(27, 31, 35, .05)'
-            : 'rgba(174, 183, 191, .2)',
+          theme.palette.type === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(174, 183, 191, .2)',
       },
       '& pre': {
         backgroundColor:
-          theme.palette.type === 'light'
-            ? 'rgba(27, 31, 35, .05)'
-            : 'rgba(220, 220, 220, 1)',
+          theme.palette.type === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(220, 220, 220, 1)',
         color: '#000',
       },
     },
-  }),
+  })
 );
 
 interface Props extends React.ComponentProps<'div'> {
@@ -44,12 +40,7 @@ function convertHTMLToJSX(html: string): React.ReactNode {
   return HTMLParser(html.replace(/>\r?\n|\r/g, '>'));
 }
 
-function Markdown({
-  markdown,
-  html: htmlFromProps,
-  className,
-  ...props
-}: Props): JSX.Element {
+function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props): JSX.Element {
   const classes = useStyles();
   const logger = useLogger('Markdown');
 
@@ -69,7 +60,7 @@ function Markdown({
 
       return markdown;
     },
-    [htmlFromProps, logger],
+    [htmlFromProps, logger]
   );
 
   const { value: html, execute, isLoading } = useFetchState({
@@ -88,16 +79,13 @@ function Markdown({
   if (isLoading) {
     return (
       <div {...props}>
-        <LoadingSpinner text="Lade Markdownvorschau..." shrinkBox />
+        <LoadingSpinner text='Lade Markdownvorschau...' shrinkBox />
       </div>
     );
   }
 
   return (
-    <div
-      className={clsx(classes.background, className, 'markdown-body')}
-      {...props}
-    >
+    <div className={clsx(classes.background, className, 'markdown-body')} {...props}>
       {!!html ? reactEl : <Typography>Keine Vorschau verfügbar.</Typography>}
     </div>
   );

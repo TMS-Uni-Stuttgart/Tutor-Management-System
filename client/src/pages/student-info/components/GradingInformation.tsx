@@ -2,9 +2,7 @@ import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import CustomSelect, {
-  OnChangeHandler,
-} from '../../../components/CustomSelect';
+import CustomSelect, { OnChangeHandler } from '../../../components/CustomSelect';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
 import Markdown from '../../../components/markdown/Markdown';
 import Placeholder from '../../../components/Placeholder';
@@ -30,7 +28,7 @@ const useStyles = makeStyles((theme) =>
       borderRadius: theme.shape.borderRadius,
       padding: theme.spacing(1.5),
     },
-  }),
+  })
 );
 
 interface Props extends BoxProps {
@@ -113,8 +111,8 @@ function GradingInformation({
 
   return (
     <Box {...props}>
-      <Box display="flex" alignItems="center">
-        <Typography variant="h6">Bewertung für </Typography>
+      <Box display='flex' alignItems='center'>
+        <Typography variant='h6'>Bewertung für </Typography>
 
         <CustomSelect
           label={selectLabel}
@@ -130,22 +128,18 @@ function GradingInformation({
       </Box>
 
       <Placeholder
-        placeholderText={
-          !selectedEntity
-            ? noneSelectedPlaceholder
-            : 'Keine Bewertung verfügbar.'
-        }
+        placeholderText={!selectedEntity ? noneSelectedPlaceholder : 'Keine Bewertung verfügbar.'}
         showPlaceholder={!selectedEntity || !gradingOfSelected}
         loading={isLoading}
         reduceMarginTop={!isLoading}
       >
         {selectedEntity && gradingOfSelected && (
-          <Box marginTop={2} display="flex">
+          <Box marginTop={2} display='flex'>
             <PointsTable
               className={classes.pointsTable}
               grading={gradingOfSelected}
               sheet={selectedEntity}
-              size="medium"
+              size='medium'
               disablePaper
             />
 

@@ -294,7 +294,10 @@ describe('TeamService', () => {
   it('fail on deleting a non-existing team', async () => {
     const nonExisting = generateObjectId();
     await expect(
-      service.deleteTeamFromTutorial({ tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: nonExisting })
+      service.deleteTeamFromTutorial({
+        tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+        teamId: nonExisting,
+      })
     ).rejects.toThrow(NotFoundException);
   });
 

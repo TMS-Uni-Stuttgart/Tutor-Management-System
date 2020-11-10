@@ -8,7 +8,7 @@ export type MockedUserModel = MockedModel<UserModel> & {
   decryptFieldsSync: () => void;
 };
 
-export function createMockModel<M, T extends Record<string, unknown>>(model: M): MockedModel<M>;
+export function createMockModel<M>(model: M): MockedModel<M>;
 export function createMockModel<M, T extends Record<string, unknown>>(
   model: M,
   additional: T
