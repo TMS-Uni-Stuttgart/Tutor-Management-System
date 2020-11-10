@@ -9,7 +9,13 @@ module.exports = {
     '@snowpack/plugin-react-refresh',
     '@snowpack/plugin-dotenv',
     '@snowpack/plugin-typescript',
-    ['./plugins/snowpack-pug.js', { file: 'index.pug' }],
+    [
+      './plugins/snowpack-pug.js',
+      {
+        file: 'index.pug',
+        locals: { dev: { ROUTE_PREFIX: '' }, build: { ROUTE_PREFIX: '${ROUTE_PREFIX}' } },
+      },
+    ],
     '@snowpack/plugin-webpack',
   ],
   install: [],
