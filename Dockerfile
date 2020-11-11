@@ -48,9 +48,6 @@ COPY package.json /tms
 COPY yarn.lock /tms
 COPY server/package.json /tms/server
 
-WORKDIR /tms
-ENV NODE_ENV 'production'
-
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package. 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
@@ -69,6 +66,9 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
 
 # Run everything after as non-privileged user.
 USER pptruser
+
+WORKDIR /tms
+ENV NODE_ENV 'production'
 
 RUN yarn install --production
 
