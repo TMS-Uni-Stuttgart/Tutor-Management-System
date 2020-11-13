@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.10.4",
-    "@craco/craco": "^5.7.0",
+    "@craco/craco": "^5.8.0",
     "@types/file-saver": "^2.0.1",
     "@types/react": "^16.9.56",
     "@types/react-dom": "^16.9.8",
