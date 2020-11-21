@@ -19,7 +19,7 @@ async function tryToConnect() {
 
   for (let i = 1; i < 11; i++) {
     try {
-      console.log(chalk.blue('Trying to connect to the server...'));
+      console.log(chalk.blueBright('Trying to connect to the server...'));
       const response = await axios.get('http://localhost:8080');
 
       if (response.status !== 200) {
@@ -41,14 +41,14 @@ async function tryToConnect() {
 }
 
 async function tryPdf() {
-  console.log(chalk.blue('Trying to create a PDF...'));
-  console.log(chalk.blue('Logging into the server...'));
+  console.log(chalk.blueBright('Trying to create a PDF...'));
+  console.log(chalk.blueBright('Logging into the server...'));
 
   try {
     const axios = await login('admin', 'admin');
     console.log(chalk.green('Successfully logged in.'));
 
-    console.log(chalk.blue('Sending request for PDF...'));
+    console.log(chalk.blueBright('Sending request for PDF...'));
     const response = await axios.get('/pdf/credentials');
 
     if (response.status !== 200) {
@@ -76,7 +76,7 @@ async function testImage() {
     console.error(chalk.red(err));
     exitCode = 1;
   } finally {
-    console.log(chalk.blue('Shutting down containers...'));
+    console.log(chalk.blueBright('Shutting down containers...'));
 
     const result = spawnSync('docker-compose', ['down', '-v'], {
       ...spawnOptions,
@@ -89,13 +89,13 @@ async function testImage() {
 
     console.log(chalk.green('Containers are shut down.'));
 
-    console.log(chalk.blue(`Exiting process (code: ${exitCode})`));
+    console.log(chalk.blueBright(`Exiting process (code: ${exitCode})`));
     process.exitCode = exitCode;
   }
 }
 
 async function spawnContainer() {
-  console.log(chalk.blue('Starting image in container...'));
+  console.log(chalk.blueBright('Starting image in container...'));
 
   const containerProcess = spawn('docker-compose', ['up'], spawnOptions);
   addConsoleToProcess(containerProcess);
@@ -122,7 +122,7 @@ async function spawnContainer() {
 async function run(): Promise<void> {
   spawnSync('clear');
 
-  console.log(chalk.blue(`Start building a docker image '${IMAGE_NAME}' ...`));
+  console.log(chalk.blueBright(`Start building a docker image '${IMAGE_NAME}' ...`));
   const buildProcess = spawn(getCommand('yarn'), [
     'run',
     'ts-node',
