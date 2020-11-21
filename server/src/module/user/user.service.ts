@@ -163,6 +163,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     const { tutorials, tutorialsToCorrect } = user;
 
     await this.checkUserDTO(dto, user);
+    await this.assertUserIsChangeable(user, dto);
 
     // Remove user as tutor from all tutorials he/she is not the tutor of anymore.
     await Promise.all(
@@ -498,7 +499,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
   }
 
   /**
-   * Checks if the some more complex conditions apply to the given DTO:
+   * Checks if some more complex conditions apply to the given DTO:
    *
    * - There is no _other_ user with the `username`.
    * - If the user has `tutorials` he/she needs the TUTOR role aswell.
@@ -527,6 +528,28 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
       throw new BadRequestException(
         `A user with tutorials to correct needs to have the 'CORRECTOR' role`
       );
+    }
+  }
+
+  /**
+   * Checks if the user can be safely updated.
+   *
+   * A user is considered not NOT updatable if
+   * - It is the last user holding the ADMIN role and that role would get removed during the update.
+   *
+   * @param user User which should get updated.
+   * @param dto New data of the user if it would get updated.
+   *
+   * @throws `BadRequestException` - If the user is considered _NOT_ updatable.
+   */
+  private async assertUserIsChangeable(user: UserDocument, dto: UserDTO) {
+    if (user.roles.includes(Role.ADMIN) && !dto.roles.includes(Role.ADMIN)) {
+      const allUsers = await this.findAll();
+      const adminUsers = allUsers.filter((u) => u.roles.includes(Role.ADMIN));
+
+      if (adminUsers.length <= 1) {
+        throw new BadRequestException('ERR_REMOVE_LAST_ADMIN_ROLE');
+      }
     }
   }
 
