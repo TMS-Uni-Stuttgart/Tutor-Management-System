@@ -103,7 +103,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
    * @param response Response to send the index file to.
    */
   private sendIndexFile(response: Response): void {
-    const pathToIndex = path.join('./', this.staticPath, 'index.pug');
+    const pathToIndex = path.join('./', this.staticPath, 'index.html');
     const prefix = this.settings.getPathPrefix();
 
     const template = pug.compileFile(pathToIndex, {});

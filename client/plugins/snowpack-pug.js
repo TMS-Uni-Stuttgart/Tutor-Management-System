@@ -5,6 +5,7 @@ const fs = require('fs');
 /**
  * @type { import('snowpack').SnowpackPluginFactory<{
  *  file?: string,
+ *  excludePugFromBuild?: boolean,
  *  locals?: {
  *    dev?: Record<string, string>,
  *    build?: Record<string, string>,
@@ -23,13 +24,17 @@ module.exports = function (_, pluginOptions) {
       snowpackConfig.devOptions.fallback = fallback;
     },
     async load({ filePath, isDev }) {
-      const { locals } = pluginOptions;
+      const { locals, excludePugFromBuild } = pluginOptions;
       const template = fs.readFileSync(filePath).toString();
 
       if (isDev) {
         return { '.html': pug.render(template, { ...locals.dev }) };
       } else {
-        return { '.pug': template, '.html': pug.render(template, { ...locals.build }) };
+        if (excludePugFromBuild) {
+          return { '.html': pug.render(template, { ...locals.build }) };
+        } else {
+          return { '.pug': template, '.html': pug.render(template, { ...locals.build }) };
+        }
       }
     },
   };

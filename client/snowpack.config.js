@@ -13,10 +13,21 @@ module.exports = {
       './plugins/snowpack-pug.js',
       {
         file: 'index.pug',
-        locals: { dev: { ROUTE_PREFIX: '' }, build: { ROUTE_PREFIX: '${ROUTE_PREFIX}' } },
+        excludePugFromBuild: true,
+        locals: {
+          dev: { ROUTE_PREFIX: '' },
+          build: { ROUTE_PREFIX: '${ROUTE_PREFIX}', GLOBAL_VARS: 'some_test_data' },
+        },
       },
     ],
-    '@snowpack/plugin-webpack',
+    [
+      '@snowpack/plugin-webpack',
+      {
+        // We need to keep comments in the HTML to support the prefix option of the server.
+        htmlMinifierOptions: { removeComments: false },
+      },
+    ],
+    ['./plugins/snowpack-prefix-support.js'],
   ],
   install: [],
   installOptions: {
