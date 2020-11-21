@@ -67,6 +67,6 @@
     "babel-plugin-named-asset-import": "^0.3.7",
     "craco-alias": "^2.1.1",
     "pug-loader": "^2.4.0",
-    "react-scripts": "^3.4.4"
+    "react-scripts": "^4.0.0"
   }
 }
