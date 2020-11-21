@@ -20,7 +20,7 @@
     "docker:build": "yarn version && ts-node ./build-docker-image.ts",
     "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre",
     "docker:build:tar": "yarn version && ts-node ./build-docker-image.ts --bundle",
-    "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server",
+    "upgrade-pkg": "npm-upgrade && yarn workspace run npm-upgrade",
     "upgrade-pkg:client": "cd ./client && npm-upgrade",
     "upgrade-pkg:server": "cd ./server && npm-upgrade"
   },
