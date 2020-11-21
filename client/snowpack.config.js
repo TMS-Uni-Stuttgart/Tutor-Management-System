@@ -16,7 +16,7 @@ module.exports = {
         excludePugFromBuild: true,
         locals: {
           dev: { ROUTE_PREFIX: '' },
-          build: { ROUTE_PREFIX: '${ROUTE_PREFIX}', GLOBAL_VARS: 'some_test_data' },
+          build: { ROUTE_PREFIX: '${ROUTE_PREFIX}' },
         },
       },
     ],
