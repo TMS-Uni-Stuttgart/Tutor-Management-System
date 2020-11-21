@@ -34,6 +34,7 @@ interface Props extends Omit<FormikBaseFormProps<UserFormState>, CommonlyUsedFor
   tutorials: Tutorial[];
   onSubmit: UserFormSubmitCallback;
   loadingTutorials: boolean;
+  disableAdminDeselect?: boolean;
 }
 
 interface HasName {
@@ -118,6 +119,7 @@ function UserForm({
   tutorials,
   loadingTutorials,
   className,
+  disableAdminDeselect,
   ...other
 }: Props): JSX.Element {
   const isEditMode = user !== undefined;
@@ -192,6 +194,10 @@ function UserForm({
             itemToValue={(role) => role}
             multiple
             isItemSelected={(role) => values['roles'].indexOf(role) > -1}
+            isItemDisabled={(role) => ({
+              isDisabled: !!disableAdminDeselect && role === Role.ADMIN,
+              reason: 'Der letzte Admin kann nicht entfernt werden.',
+            })}
           />
 
           <FormikTextFieldWithButtons

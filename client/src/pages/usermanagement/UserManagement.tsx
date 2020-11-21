@@ -188,15 +188,15 @@ function UserManagement(): JSX.Element {
     [dialog, enqueueSnackbar, updateData, users]
   );
 
-  const canBeDeleted = useCallback(
+  const isLastAdmin = useCallback(
     (user: IUser) => {
       if (user.roles.includes(Role.ADMIN)) {
         const allAdmins = users.filter((u) => u.roles.includes(Role.ADMIN));
 
-        return allAdmins.length > 1;
+        return allAdmins.length <= 1;
       }
 
-      return true;
+      return false;
     },
     [users]
   );
@@ -251,6 +251,7 @@ function UserManagement(): JSX.Element {
             loadingTutorials={isLoadingTutorials}
             onSubmit={handleEditUserSubmit(user)}
             onCancelClicked={() => dialog.hide()}
+            disableAdminDeselect={isLastAdmin(user)}
           />
         ),
         DialogProps: {
@@ -258,7 +259,7 @@ function UserManagement(): JSX.Element {
         },
       });
     },
-    [dialog, handleEditUserSubmit, isLoadingTutorials, tutorials]
+    [dialog, handleEditUserSubmit, isLoadingTutorials, tutorials, isLastAdmin]
   );
 
   const sendCredentials = useCallback(async () => {
@@ -409,7 +410,7 @@ function UserManagement(): JSX.Element {
               onDeleteUserClicked={handleDeleteUser}
               onSendCredentialsClicked={sendCredentialsToSingleUser}
               disableSendCredentials={!isMailingActive()}
-              disableDelete={!canBeDeleted(user)}
+              disableDelete={isLastAdmin(user)}
             />
           )}
         />
