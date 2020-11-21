@@ -98,9 +98,7 @@ export async function setSubstituteTutor(
   }
 }
 
-export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): Promise<
-  StudentByTutorialSlotSummaryMap
-> {
+export async function getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots(): Promise<StudentByTutorialSlotSummaryMap> {
   const data: StudentByTutorialSlotSummaryMap = {};
   const [tutorials, summaries] = await Promise.all([
     getAllTutorials(),
