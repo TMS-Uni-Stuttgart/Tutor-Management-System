@@ -41,7 +41,7 @@
     "jszip": "^3.5.0",
     "luxon": "^1.25.0",
     "mongoose": "^5.10.15",
-    "mongoose-autopopulate": "^0.12.2",
+    "mongoose-autopopulate": "^0.12.3",
     "mongoose-field-encryption": "^4.0.0",
     "nestjs-typegoose": "^7.1.38",
     "nodemailer": "^6.4.13",

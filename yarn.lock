@@ -9941,10 +9941,10 @@ mongodb@3.6.3, mongodb@^3.1.0:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongoose-autopopulate@^0.12.2:
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.12.2.tgz#5209c7f9934b2642d2eac1afc84d289316138a84"
-  integrity sha512-ZpjylV6ty0iqNjSWPgQWDMaBExnXrvCNhci9EnX49O0fOIVES1Qc7r1d+nxYBKvQutYW5UWs+fauahOTTlpjww==
+mongoose-autopopulate@^0.12.3:
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.12.3.tgz#5bf111db3fa485f5031d3303f6f25625304888e3"
+  integrity sha512-yNmYsfi6OpS/GQ+48mkB0KQ199ExHmmPrt3wt3fyxPHPMtEBGts7yq3wBQR6VgKCPOQaKvCI1URbJCPOtrPeLw==
 
 mongoose-field-encryption@^4.0.0:
   version "4.0.0"
