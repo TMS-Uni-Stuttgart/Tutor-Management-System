@@ -4,7 +4,7 @@
   "workspaces": [
     "client",
     "server",
-    "dev-tools"
+    "scripts"
   ],
   "scripts": {
     "start:client": "yarn workspace client start",
