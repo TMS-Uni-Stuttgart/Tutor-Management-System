@@ -27,6 +27,12 @@ const useStyles = makeStyles((theme) =>
       marginTop: 64,
       textAlign: 'center',
     },
+    list: {
+      gridColumn: '1 / span 1',
+      marginTop: 2,
+      marginBottom: -8,
+      marginRight: -16,
+    },
   })
 );
 
@@ -117,7 +123,13 @@ function StudentList({
   );
 
   return (
-    <Box display='flex' flexDirection='column'>
+    <Box
+      flex={1}
+      height='100%'
+      display='grid'
+      gridTemplateColumns='1fr'
+      gridTemplateRows='auto minmax(350px, 1fr)'
+    >
       <StudentListTopBar
         filterText={filterText}
         onFilterTextChanged={setFilterText}
@@ -127,7 +139,7 @@ function StudentList({
         hideDefaultTopBarContent={hideDefaultTopBarContent}
       />
 
-      <div ref={root} style={{ flex: 1, marginBottom: -8, marginRight: -16 }}>
+      <div ref={root} className={classes.list}>
         {students.length === 0 ? (
           <Typography variant='h6' className={classes.placeholder}>
             Keine Studierenden vorhanden.
