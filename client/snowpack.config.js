@@ -27,7 +27,7 @@ module.exports = {
         htmlMinifierOptions: { removeComments: false },
       },
     ],
-    ['./plugins/snowpack-prefix-support.js'],
+    ['./plugins/snowpack-prefix-support.js', { prefix: '${ROUTE_PREFIX}' }],
   ],
   install: [],
   installOptions: {

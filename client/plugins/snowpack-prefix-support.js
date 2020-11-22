@@ -3,19 +3,22 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * @type { import('snowpack').SnowpackPluginFactory<{}> }
+ * @type { import('snowpack').SnowpackPluginFactory<{
+ *  prefix: string;
+ * }> }
  */
-module.exports = function (_, _pluginOptions) {
+module.exports = function (_, pluginOptions) {
   return {
     name: 'dudrie/snowpack-prefix-support',
     async optimize({ buildDirectory }) {
+      const { prefix } = pluginOptions;
       const indexPath = path.resolve(buildDirectory, 'index.html');
 
       try {
         const content = fs.readFileSync(indexPath, { encoding: 'utf-8' }).toString();
         const changedContent = content
-          .replace(/"\/css/g, '"${ROUTE_PREFIX}/css')
-          .replace(/"\/js/g, '"${ROUTE_PREFIX}/js');
+          .replace(/"\/css/g, `"${prefix}/css`)
+          .replace(/"\/js/g, `"${prefix}/js`);
 
         fs.writeFileSync(indexPath, changedContent, { encoding: 'utf-8' });
       } catch (err) {
