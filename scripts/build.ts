@@ -58,7 +58,13 @@ function copyClientIntoServer(): Promise<void> {
     writeColoredMessage({ message: 'Copying client into server build...', ...copyMsgOptions });
 
     copyfiles(
-      ['../client/build/**/*', '../server/dist/app'],
+      [
+        '../client/build/*',
+        '../client/build/js/**/*',
+        '../client/build/css/**/*',
+        '../client/build/static/**/*',
+        '../server/dist/app',
+      ],
       { error: true, up: 3, verbose: false },
       (error) => {
         if (!!error) {
