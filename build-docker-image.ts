@@ -9,7 +9,7 @@ interface ArgumentOptions {
   hasValue?: boolean;
 }
 
-const DEFAULT_IMAGE_NAME = 'dudrie/tutor-management-system';
+const DEFAULT_IMAGE_NAME = 'ghcr.io/dudrie/tutor-management-system';
 
 function getArgValue({ name, short, hasValue }: ArgumentOptions): string | undefined {
   const args = process.argv;
