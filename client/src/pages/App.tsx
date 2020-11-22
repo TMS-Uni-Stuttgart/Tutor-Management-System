@@ -34,10 +34,12 @@ const useStyles = makeStyles((theme: Theme) =>
       ...theme.mixins.scrollbar(12),
     },
     content: {
+      // Do NOT set the height on this class. If will break in Safari.
+      display: 'flex',
       width: 0,
       flexGrow: 1,
-      height: '100%',
       '& > *': {
+        width: '100%',
         height: 'inherit',
         padding: theme.spacing(2, 2, 1, 2),
         position: 'relative',

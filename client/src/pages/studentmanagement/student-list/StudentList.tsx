@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { FormikHelpers } from 'formik';
@@ -22,6 +22,16 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     lastRow: {
       marginBottom: theme.spacing(1),
+    },
+    placeholder: {
+      marginTop: 64,
+      textAlign: 'center',
+    },
+    list: {
+      gridColumn: '1 / span 1',
+      marginTop: 2,
+      marginBottom: -8,
+      marginRight: -16,
     },
   })
 );
@@ -113,7 +123,13 @@ function StudentList({
   );
 
   return (
-    <Box display='flex' flexDirection='column'>
+    <Box
+      flex={1}
+      height='100%'
+      display='grid'
+      gridTemplateColumns='1fr'
+      gridTemplateRows='auto minmax(350px, 1fr)'
+    >
       <StudentListTopBar
         filterText={filterText}
         onFilterTextChanged={setFilterText}
@@ -123,39 +139,49 @@ function StudentList({
         hideDefaultTopBarContent={hideDefaultTopBarContent}
       />
 
-      <div ref={root} style={{ flex: 1, marginBottom: -8, marginRight: -16 }}>
-        <FixedSizeList
-          height={height}
-          width={width}
-          itemCount={filteredStudents.length}
-          itemSize={80 + GUTTER_SIZE}
-        >
-          {({ index, style }) => {
-            const student = filteredStudents[index];
-            const posTop = Number.parseInt(`${style.top ?? 0}`);
-            const elHeight = Number.parseInt(`${style.height ?? 0}`);
-            const scheinStatus = summaries[student.id];
+      <div ref={root} className={classes.list}>
+        {students.length === 0 ? (
+          <Typography variant='h6' className={classes.placeholder}>
+            Keine Studierenden vorhanden.
+          </Typography>
+        ) : filteredStudents.length === 0 ? (
+          <Typography variant='h6' className={classes.placeholder}>
+            Keine Studierenden entsprechen dem Filter.
+          </Typography>
+        ) : (
+          <FixedSizeList
+            height={height}
+            width={width}
+            itemCount={filteredStudents.length}
+            itemSize={80 + GUTTER_SIZE}
+          >
+            {({ index, style }) => {
+              const student = filteredStudents[index];
+              const posTop = Number.parseInt(`${style.top ?? 0}`);
+              const elHeight = Number.parseInt(`${style.height ?? 0}`);
+              const scheinStatus = summaries[student.id];
 
-            return (
-              <StudentListRow
-                student={student}
-                subTextType={studentSubtextType}
-                scheinStatus={scheinStatus}
-                tutorialId={tutorialId}
-                onEdit={handleStudentEdit}
-                onDelete={handleStudentDelete}
-                onChangeTutorial={onStudentChangeTutorial}
-                className={clsx(index === filteredStudents.length - 1 && classes.lastRow)}
-                style={{
-                  ...style,
-                  top: posTop + GUTTER_SIZE,
-                  height: elHeight - GUTTER_SIZE,
-                  width: 'calc(100% - 16px)',
-                }}
-              />
-            );
-          }}
-        </FixedSizeList>
+              return (
+                <StudentListRow
+                  student={student}
+                  subTextType={studentSubtextType}
+                  scheinStatus={scheinStatus}
+                  tutorialId={tutorialId}
+                  onEdit={handleStudentEdit}
+                  onDelete={handleStudentDelete}
+                  onChangeTutorial={onStudentChangeTutorial}
+                  className={clsx(index === filteredStudents.length - 1 && classes.lastRow)}
+                  style={{
+                    ...style,
+                    top: posTop + GUTTER_SIZE,
+                    height: elHeight - GUTTER_SIZE,
+                    width: 'calc(100% - 16px)',
+                  }}
+                />
+              );
+            }}
+          </FixedSizeList>
+        )}
       </div>
     </Box>
   );
