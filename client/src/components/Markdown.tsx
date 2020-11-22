@@ -69,9 +69,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
   });
 
   useEffect(() => {
-    if (markdown) {
-      execute(markdown);
-    }
+    execute(markdown);
   }, [markdown, execute, logger]);
 
   const reactEl: React.ReactNode = convertHTMLToJSX(html ?? '');
