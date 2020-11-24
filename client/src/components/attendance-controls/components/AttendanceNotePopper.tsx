@@ -5,21 +5,21 @@ import {
   IconButton,
   Paper,
   Popper,
-  Typography,
   Tooltip,
+  Typography,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import { Formik } from 'formik';
 import {
   NoteText as NoteTextIcon,
   Pencil as EditIcon,
   PlusCircle as AddIcon,
 } from 'mdi-material-ui';
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { FormikSubmitCallback } from '../../../types';
 import FormikTextField from '../../forms/components/FormikTextField';
 import SubmitButton from '../../loading/SubmitButton';
-import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -71,7 +71,7 @@ function AttendanceNotePopper({ note, onNoteSave }: AttendanceNotePopperProps): 
   };
 
   const handlePopperOpen = () => {
-    setOpen(true);
+    setOpen((o) => !o);
 
     if (!note) {
       setEditMode(true);
@@ -79,7 +79,9 @@ function AttendanceNotePopper({ note, onNoteSave }: AttendanceNotePopperProps): 
   };
 
   const handlePopperClose = () => {
-    setOpen(false);
+    if (open) {
+      setOpen(false);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -97,15 +99,15 @@ function AttendanceNotePopper({ note, onNoteSave }: AttendanceNotePopperProps): 
   };
 
   return (
-    <>
-      <Tooltip title={!!note ? 'Bemerkung ansehen & bearbeiten' : 'Bemerkung hinzufügen'}>
-        <IconButton ref={iconButtonRef} onClick={handlePopperOpen}>
-          {!!note ? <NoteTextIcon /> : <AddIcon />}
-        </IconButton>
-      </Tooltip>
+    <ClickAwayListener onClickAway={handlePopperClose}>
+      <div>
+        <Tooltip title={!!note ? 'Bemerkung ansehen & bearbeiten' : 'Bemerkung hinzufügen'}>
+          <IconButton ref={iconButtonRef} onClick={handlePopperOpen}>
+            {!!note ? <NoteTextIcon /> : <AddIcon />}
+          </IconButton>
+        </Tooltip>
 
-      <Popper open={open} anchorEl={iconButtonRef.current} placement='bottom-end'>
-        <ClickAwayListener onClickAway={handlePopperClose}>
+        <Popper open={open} anchorEl={iconButtonRef.current} placement='bottom-end'>
           <Paper elevation={16} className={classes.popperPaper}>
             <Formik initialValues={initialNoteFormState} onSubmit={handleSaveNote}>
               {({ handleSubmit, isSubmitting, isValid }) => (
@@ -155,9 +157,9 @@ function AttendanceNotePopper({ note, onNoteSave }: AttendanceNotePopperProps): 
               )}
             </Formik>
           </Paper>
-        </ClickAwayListener>
-      </Popper>
-    </>
+        </Popper>
+      </div>
+    </ClickAwayListener>
   );
 }
 
