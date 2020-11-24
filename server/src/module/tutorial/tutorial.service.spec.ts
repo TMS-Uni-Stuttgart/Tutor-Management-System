@@ -199,8 +199,8 @@ function assertGeneratedTutorials({ expected, actual }: AssertGenerateTutorialsP
 
       return (
         tutorialWeekDay === weekday &&
-        time.start.toFormat(format) === startTime.toFormat(format) &&
-        time.end.toFormat(format) === endTime.toFormat(format)
+        time.start.toUTC().toFormat(format) === startTime.toUTC().toFormat(format) &&
+        time.end.toUTC().toFormat(format) === endTime.toUTC().toFormat(format)
       );
     });
 
