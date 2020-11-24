@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, NotFoundException } from '@nestjs/common';
 import { Request, Response } from 'express';
+import fs from 'fs';
 import path from 'path';
-import pug from 'pug';
 import { SettingsService } from '../module/settings/settings.service';
 
 const ALLOWED_EXTENSIONS = [
@@ -104,10 +104,11 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
    */
   private sendIndexFile(response: Response): void {
     const pathToIndex = path.join('./', this.staticPath, 'index.html');
-    const prefix = this.settings.getPathPrefix();
+    const prefix = this.settings.getPathPrefix() ?? '';
 
-    const template = pug.compileFile(pathToIndex, {});
-    const replaced = template({ ROUTE_PREFIX: `/${prefix}` ?? '' })
+    const template = fs.readFileSync(pathToIndex).toString();
+    const replaced = template
+      .replace(/\${ROUTE_PREFIX}/g, `/${prefix}`)
       .replace(
         /<!--\s*#{GLOBAL_VARS}\s*-->/g,
         `<script>\n\tconst ROUTE_PREFIX = ${this.getStringForPrefix()};\n</script>`
