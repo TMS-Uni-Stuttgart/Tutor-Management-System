@@ -55,8 +55,7 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // TODO: Replace branch with "main" before merging into main branch!
-          editUrl: 'https://github.com/Dudrie/Tutor-Management-System/edit/add-documentation/docs',
+          editUrl: 'https://github.com/Dudrie/Tutor-Management-System/edit/main/docs',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

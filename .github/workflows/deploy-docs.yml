@@ -42,12 +42,12 @@ jobs:
         with:
           name: build-folder
           path: docs/build/
-          retention-days: 1 # Keep the files for a minimal time.
+          retention-days: 1 # Keep the artifact for the minimal amount of time possible.
 
   deploy:
-    if: github.event_name != 'pull_request' # Only deploy the build if it is a push to the main branch.
     name: Deploy Docs
     needs: build
+    if: success() && github.event_name != 'pull_request' # Only deploy the build if it is a push to the main branch and the build was successful.
     runs-on: ubuntu-latest
 
     steps:
