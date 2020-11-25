@@ -1,4 +1,4 @@
-name: Documentation Actions
+name: Docs
 
 on:
   pull_request:
