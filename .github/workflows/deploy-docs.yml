@@ -36,8 +36,8 @@ jobs:
         run: |
           yarn build
 
-      - name: Upload Build 📤
-        # if: github.event_name != 'pull_request'
+      - name: Upload build artifact 📤
+        if: github.event_name != 'pull_request' # We only need the build if we deploy it later.
         uses: actions/upload-artifact@v2
         with:
           name: build-folder
@@ -45,7 +45,7 @@ jobs:
           retention-days: 1 # Keep the files for a minimal time.
 
   deploy:
-    # if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' # Only deploy the build if it is a push to the main branch.
     name: Deploy Docs
     needs: build
     runs-on: ubuntu-latest
@@ -56,20 +56,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Download Build 📥
+      - name: Download build artifact 📥
         uses: actions/download-artifact@v2
         with:
           name: build-folder
           path: docs/build/
-
-      - name: Check folder
-        working-directory: docs/build/
-        run: ls
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: docs/build # The folder the action should deploy.
+          FOLDER: docs/build # The folder the action should deploy. The same as in "Download Build" step.
           CLEAN: true # Automatically remove deleted files from the deploy branch
