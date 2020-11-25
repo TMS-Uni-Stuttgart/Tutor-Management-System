@@ -1,0 +1,11 @@
+.roleContainer {
+  margin-bottom: calc(var(--spacing) * 3);
+}
+
+.roleLabel {
+  font-weight: bold;
+}
+
+.role {
+  margin-left: var(--spacing);
+}

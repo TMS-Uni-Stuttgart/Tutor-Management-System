@@ -1,0 +1,38 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start --port 4000",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "serve": "docusaurus serve",
+    "format": "yarn --cwd ../ eslint --fix \"docs/**/*.ts?(x)\" && prettier --write \"**/*.md\"",
+    "eslint:check": "yarn --cwd ../ eslint \"docs/**/*.ts?(x)\"",
+    "prettier:check": "prettier --check \"**/*.(ts?(x)|md)\""
+  },
+  "dependencies": {
+    "@docusaurus/core": "2.0.0-alpha.66",
+    "@docusaurus/preset-classic": "2.0.0-alpha.66",
+    "@mdx-js/react": "^1.6.19"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^2.0.0-alpha.66",
+    "@tsconfig/docusaurus": "^1.0.2",
+    "@types/react-helmet": "^6.1.0"
+  }
+}

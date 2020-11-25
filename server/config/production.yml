@@ -4,6 +4,10 @@ sessionTimeout: 120
 # (Optional) If the app is hosted on a prefixed path (ie https://example.com/foo) set this property to the prefix (ie "foo"). If the app is hosted on the root path this property can be omitted.
 # prefix: subpath
 
+# Path to the handbook documentation. You only need to change this if you want to provide your own TMS documentation.
+handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
+
+# Configuration for the database access. More information can be found in the documentation.
 database:
   databaseURL: 'mongodb://mongo:27017/tms'
   maxRetries: 2
@@ -11,6 +15,7 @@ database:
     authSource: 'admin'
     authMechanism: 'SCRAM-SHA-1'
 
+# Set specific settings to a default value. These settings can also be edited through the client. More information can be found in the documentation.
 defaultSettings:
   canTutorExcuseStudents: true
   defaultTeamSize: 3
