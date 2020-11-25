@@ -6,7 +6,7 @@ sidebar_label: Hand-Ins
 
 import Roles from '../../src/components/roles/Roles';
 import IconInText from '../../src/components/icon-in-text/IconInText';
-import MenuIcon from './assets/icons/dots-vertical_DOES_NOT_EXIST.svg';
+import MenuIcon from './assets/icons/dots-vertical.svg';
 
 <Roles roles={['admin', 'employee']} />
 
