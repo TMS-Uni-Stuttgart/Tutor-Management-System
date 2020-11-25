@@ -8,37 +8,9 @@ on:
   push:
     branches:
       - main
-      - add-documentation
 
 jobs:
-  # check-build:
-  #   if: github.event_name != 'push' # We have a pull_request event.
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Checkout 🛎️
-  #       uses: actions/checkout@v2.3.1 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
-  #       with:
-  #         persist-credentials: false
-
-  #     - name: Setup Node.js 🧱
-  #       uses: actions/setup-node@v2.1.2
-  #       with:
-  #         node-version: 12.x
-
-  #     - name: Install node packages 📦
-  #       run: |
-  #         yarn install --frozen-lockfile
-  #       env:
-  #         CI: true
-
-  #     - name: Build docs 🔧
-  #       working-directory: docs/
-  #       run: |
-  #         yarn build
-
   build-and-deploy:
-    # if: github.event_name != 'pull_request' # We have a 'push' event.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -63,6 +35,7 @@ jobs:
           yarn build
 
       - name: Deploy 🚀
+        # if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
