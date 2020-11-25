@@ -1,8 +1,8 @@
 import { Box, Tab, TabProps, Tabs, TabsProps } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
 import { ITeamMarkdownData } from 'shared/model/Markdown';
-import Markdown from '../Markdown';
 import TabPanel from '../TabPanel';
+import Markdown from './Markdown';
 
 interface TabData extends TabProps {
   label: string;

@@ -44,6 +44,24 @@
       "console": "integratedTerminal",
       "preLaunchTask": "Start Client",
       "sourceMaps": true
+    },
+    {
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}/server",
+      "runtimeExecutable": "yarn",
+      "args": ["test", "--runInBand", "${input:jestArguments}"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    }
+  ],
+  "inputs": [
+    {
+      "id": "jestArguments",
+      "type": "promptString",
+      "description": "Argument string passed to the Jest launch.",
+      "default": ""
     }
   ]
 }

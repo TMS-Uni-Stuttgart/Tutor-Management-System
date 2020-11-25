@@ -104,15 +104,15 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
    */
   private sendIndexFile(response: Response): void {
     const pathToIndex = path.join('./', this.staticPath, 'index.html');
-    const prefix = this.settings.getPathPrefix();
+    const prefix = this.settings.getPathPrefix() ?? '';
 
-    const index: string = fs.readFileSync(pathToIndex).toString();
-    const replaced = index
+    const template = fs.readFileSync(pathToIndex).toString();
+    const replaced = template
+      .replace(/\${ROUTE_PREFIX}/g, `/${prefix}`)
       .replace(
         /<!--\s*#{GLOBAL_VARS}\s*-->/g,
         `<script>\n\tconst ROUTE_PREFIX = ${this.getStringForPrefix()};\n</script>`
       )
-      .replace(/#{ROUTE_PREFIX}/g, !!prefix ? `/${prefix}` : '')
       .replace(/(?<!:)\/\//g, '/');
     // Only replace "//" which do NOT have a ":" in front of them (so protocols like "https://" stay correct).
 

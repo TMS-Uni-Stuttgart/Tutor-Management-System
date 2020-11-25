@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { deburr } from 'lodash';
+import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import { Dimensions, useResizeObserver } from '../../../hooks/useResizeObserver';
@@ -72,7 +72,7 @@ function FilterableSelect<T>({
         return true;
       }
 
-      const itemString = deburr(itemToString(item).trim().toLowerCase());
+      const itemString = _.deburr(itemToString(item).trim().toLowerCase());
 
       return itemString.indexOf(filter) > -1;
     },
@@ -81,7 +81,7 @@ function FilterableSelect<T>({
 
   const handleFilterChanged = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const filterText = deburr(e.target.value.trim().toLowerCase());
+      const filterText = _.deburr(e.target.value.trim().toLowerCase());
 
       setFilterText(filterText);
       setFilteredItems(items.filter(isItemMatchingFilter));

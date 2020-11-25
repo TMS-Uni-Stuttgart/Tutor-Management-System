@@ -35,6 +35,10 @@ export class Team implements Modify<ITeam, Modified> {
       return undefined;
     }
 
+    if (gradings.length === 1) {
+      return gradings[0];
+    }
+
     return gradings.filter((grading) => grading.belongsToTeam)[0];
   }
 
@@ -65,10 +69,16 @@ export class Team implements Modify<ITeam, Modified> {
     return [...gradings.values()];
   }
 
+  /**
+   * @returns Team number as unified string with leading 0 if necessary.
+   */
   getTeamNoAsString(): string {
     return this.teamNo.toString().padStart(2, '0');
   }
 
+  /**
+   * @returns Team name with unified team number and the lastnames of the students of the team.
+   */
   toString(): string {
     const studentsInTeam = this.students.length
       ? `(${this.students.map((student) => student.lastname).join(', ')})`

@@ -217,6 +217,9 @@ export class StudentModel {
   toStudentInTeam(this: StudentDocument): IStudentInTeam {
     this.decryptFieldsSync();
 
+    // Make sure the gradings are properly transformed if the document was autopopulated and the find hooks did not fire.
+    this.transformGradings();
+
     const {
       id,
       firstname,

@@ -2,13 +2,12 @@
 #
 # Build frontend & backend
 #
-# This also copies the builded frontend into the server.
-#
 # =============================================
 FROM node:12-alpine as build
 
 COPY client/ tms/client/
 COPY server/ tms/server/
+COPY scripts/ tms/scripts/
 
 COPY package.json tms/
 COPY yarn.lock tms/

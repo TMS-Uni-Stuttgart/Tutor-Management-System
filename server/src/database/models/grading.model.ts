@@ -16,7 +16,7 @@ export class SerializableMap<K extends string, V> extends Map<K, V> {
   static fromJSON<K extends string, V>(json: unknown, type?: ClassType<V>): SerializableMap<K, V> {
     const data: unknown = typeof json === 'string' ? JSON.parse(json) : json;
 
-    if (!Array.isArray(data)) {
+    if (!Array.isArray(data) && !(data instanceof Map)) {
       return new SerializableMap();
     }
 

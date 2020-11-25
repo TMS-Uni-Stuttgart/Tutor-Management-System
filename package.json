@@ -1,56 +1,55 @@
 {
   "private": true,
-  "version": "2.1.1",
+  "version": "2.2.0",
   "workspaces": [
     "client",
     "server",
-    "dev-tools"
+    "scripts"
   ],
   "scripts": {
     "start:client": "yarn workspace client start",
     "start:server": "yarn workspace server start",
     "format": "yarn workspaces run format",
-    "build": "yarn build:client && yarn build:server && yarn copy:app",
-    "build:client": "cd ./client && yarn build",
-    "build:server": "cd ./server && yarn build",
+    "build": "cd ./scripts/ && yarn run ts-node ./build.ts",
     "ts:check": "yarn workspaces run ts:check",
     "ts:check:client": "echo Type checking client && cd ./client && yarn ts:check",
     "ts:check:server": "echo Type checking server && cd ./server && yarn ts:check",
-    "copy:app": "copyfiles -u 2 -E -V \"client/build/**/*\" server/dist/app",
     "docker:build": "yarn version && ts-node ./build-docker-image.ts",
     "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre",
     "docker:build:tar": "yarn version && ts-node ./build-docker-image.ts --bundle",
-    "upgrade-pkg": "yarn upgrade-pgk:client && yarn upgrade-pgk:server",
+    "docker:test": "cd ./scripts/ && yarn run ts-node build-test-docker/buildAndTestDocker.ts",
+    "upgrade-pkg": "npm-upgrade && yarn workspace run npm-upgrade",
     "upgrade-pkg:client": "cd ./client && npm-upgrade",
     "upgrade-pkg:server": "cd ./server && npm-upgrade"
   },
+  "dependencies": {
+    "class-transformer": "^0.3.1",
+    "github-markdown-css": "^4.0.0",
+    "lodash": "^4.17.20",
+    "luxon": "^1.25.0",
+    "markdown-it": "^12.0.2"
+  },
   "devDependencies": {
     "@prettier/plugin-pug": "^1.10.1",
+    "@types/copyfiles": "^2.4.0",
     "@types/lodash": "^4.14.165",
     "@types/luxon": "^1.25.0",
-    "@types/markdown-it": "^10.0.2",
-    "@types/node": "^14.14.2",
-    "@typescript-eslint/eslint-plugin": "^4.0.0",
-    "@typescript-eslint/parser": "^3.10.1",
+    "@types/markdown-it": "^10.0.3",
+    "@types/node": "^14.14.7",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
     "chalk": "^4.1.0",
     "copyfiles": "^2.4.0",
     "cross-env": "^7.0.2",
-    "eslint": "^7.12.1",
+    "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "github-markdown-css": "^4.0.0",
     "jest-circus": "^26.6.3",
     "prettier": "^2.1.2",
     "ts-node": "^9.0.0",
     "typescript": "^3.9.7"
-  },
-  "dependencies": {
-    "class-transformer": "^0.3.1",
-    "lodash": "^4.17.20",
-    "luxon": "^1.25.0",
-    "markdown-it": "^12.0.1"
   }
 }

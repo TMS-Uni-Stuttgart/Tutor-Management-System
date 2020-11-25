@@ -86,11 +86,15 @@ export class StaticSettings {
    */
   getPathPrefix(): string | null {
     const { prefix } = this.config;
+
     if (!prefix) {
       return null;
     }
 
-    return prefix.endsWith('/') ? prefix.substr(0, prefix.length - 1) : prefix;
+    const prefixStart = prefix.startsWith('/') ? 1 : 0;
+    const prefixLength = prefix.endsWith('/') ? prefix.length - 1 : prefix.length;
+
+    return prefix.substr(prefixStart, prefixLength);
   }
 
   /**

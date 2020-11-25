@@ -5,7 +5,7 @@ import 'github-markdown-css/github-markdown.css';
 import { FileFind as PreviewIcon } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
 import AnimatedButton from '../../AnimatedButton';
-import Markdown from '../../Markdown';
+import Markdown from '../../markdown/Markdown';
 import FormikTextField, { FormikTextFieldProps } from './FormikTextField';
 
 const useStyles = makeStyles((theme: Theme) =>

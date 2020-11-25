@@ -5,10 +5,10 @@ import 'github-markdown-css/github-markdown.css';
 import 'highlight.js/styles/googlecode.css';
 import HTMLParser from 'html-react-parser';
 import React, { useEffect, useMemo } from 'react';
-import { getHTMLFromMarkdown } from '../hooks/fetching/Markdown';
-import { useFetchState } from '../hooks/useFetchState';
-import { useLogger } from '../util/Logger';
-import LoadingSpinner from './loading/LoadingSpinner';
+import { getHTMLFromMarkdown } from '../../hooks/fetching/Markdown';
+import { useFetchState } from '../../hooks/useFetchState';
+import { useLogger } from '../../util/Logger';
+import LoadingSpinner from '../loading/LoadingSpinner';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,9 +69,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
   });
 
   useEffect(() => {
-    if (markdown) {
-      execute(markdown);
-    }
+    execute(markdown);
   }, [markdown, execute, logger]);
 
   const reactEl: React.ReactNode = convertHTMLToJSX(html ?? '');

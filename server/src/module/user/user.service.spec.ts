@@ -711,6 +711,21 @@ describe('UserService', () => {
     await expect(service.update(oldUser.id, updateDTO)).rejects.toThrow(NotFoundException);
   });
 
+  it('fail on changing the role of last admin', async () => {
+    const lastAdminUser = USER_DOCUMENTS[0];
+    const updateDTO: UserDTO = {
+      roles: [Role.TUTOR], // Remove / Replace admin role
+      firstname: lastAdminUser.firstname,
+      lastname: lastAdminUser.lastname,
+      username: lastAdminUser.username,
+      email: lastAdminUser.email,
+      tutorialsToCorrect: lastAdminUser.tutorialsToCorrect.map((t) => t.id),
+      tutorials: lastAdminUser.tutorials.map((t) => t.id),
+    };
+
+    await expect(service.update(lastAdminUser._id, updateDTO)).rejects.toThrow(BadRequestException);
+  });
+
   it('delete a user without tutorials', async () => {
     const dto: CreateUserDTO = {
       firstname: 'Hermine',

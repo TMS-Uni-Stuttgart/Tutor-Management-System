@@ -54,12 +54,13 @@ export class TestModule implements OnApplicationShutdown {
   static async forRootAsync(): Promise<DynamicModule> {
     try {
       const models = MODEL_OPTIONS.map((opt) => opt.model);
-      const mongodb = new MongoMemoryServer({
+      const mongodb = await MongoMemoryServer.create({
         instance: {
           dbName: 'tms',
         },
         autoStart: true,
       });
+
       const connectionUri = await mongodb.getUri();
       const featureModule = TypegooseModule.forFeature(models);
 
