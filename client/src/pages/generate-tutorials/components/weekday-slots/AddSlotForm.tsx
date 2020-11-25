@@ -48,9 +48,15 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
     () => ({ interval: getDefaultInterval(), count: 1 }),
     []
   );
-  const { values, errors, touched, setFieldValue, getFieldProps, isValid, submitForm } = useFormik<
-    AddSlotFormData
-  >({
+  const {
+    values,
+    errors,
+    touched,
+    setFieldValue,
+    getFieldProps,
+    isValid,
+    submitForm,
+  } = useFormik<AddSlotFormData>({
     initialValues,
     onSubmit: ({ count, interval }) => {
       onAccept({ count, interval });

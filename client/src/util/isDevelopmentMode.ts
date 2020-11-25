@@ -1,3 +1,4 @@
 export function isDevelopment(): boolean {
-  return !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+  const NODE_ENV = import.meta.env.NODE_ENV;
+  return !NODE_ENV || NODE_ENV === 'development';
 }

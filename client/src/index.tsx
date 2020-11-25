@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import 'reflect-metadata';
 import ContextWrapper from './components/ContextWrapper';
 import App from './pages/App';
-import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <ContextWrapper Router={BrowserRouter}>
@@ -13,7 +12,12 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
+// Learn more: https://www.snowpack.dev/#hot-module-replacement
+if (import.meta.hot) {
+  import.meta.hot!.accept();
+}
+
+export function isDevelopment(): boolean {
+  return import.meta.env.NODE_ENV === 'development';
+}

@@ -1,28 +1,25 @@
 {
-  "extends": "./tsconfig.extends.json",
+  "include": ["src"],
   "compilerOptions": {
-    "target": "es6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "sourceMap": true,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
     "module": "esnext",
+    "target": "esnext",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": "src",
+    /* paths - If you configure Snowpack import aliases, add them here. */
+    "paths": {
+      "shared/*": ["../../server/src/shared/*"]
+    },
+    /* noEmit - Snowpack builds (emits) files, not tsc. */
     "noEmit": true,
-    "noImplicitAny": true,
-    "jsx": "preserve"
-  },
-  "include": [
-    "src"
-  ]
+    /* Additional Options */
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "importsNotUsedAsValues": "remove",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
 }

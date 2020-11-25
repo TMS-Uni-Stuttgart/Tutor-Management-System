@@ -36,7 +36,7 @@ export class TeamModel {
     ref: 'StudentModel',
     foreignField: 'team',
     localField: '_id',
-    autopopulate: { maxDepth: 1 },
+    autopopulate: { maxDepth: 2 },
   })
   students!: StudentDocument[];
 

@@ -99,9 +99,7 @@ export async function getScheinCriteriaSummaryOfStudent(
   return Promise.reject(`Wrong status code (${response.status}).`);
 }
 
-export async function getScheinCriteriaSummaryOfAllStudents(): Promise<
-  ScheincriteriaSummaryByStudents
-> {
+export async function getScheinCriteriaSummaryOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
   const response = await axios.get<ScheincriteriaSummaryByStudents>(`/scheincriteria/student`);
 
   if (response.status === 200) {

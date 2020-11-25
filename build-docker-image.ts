@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as childProcess from 'child_process';
 import { ExecSyncOptions } from 'child_process';
 import * as fs from 'fs';

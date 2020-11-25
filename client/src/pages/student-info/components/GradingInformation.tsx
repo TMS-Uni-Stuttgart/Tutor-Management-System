@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import CustomSelect, { OnChangeHandler } from '../../../components/CustomSelect';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
-import Markdown from '../../../components/Markdown';
+import Markdown from '../../../components/markdown/Markdown';
 import Placeholder from '../../../components/Placeholder';
 import PointsTable from '../../../components/points-table/PointsTable';
 import { getStudentCorrectionCommentMarkdown } from '../../../hooks/fetching/Markdown';

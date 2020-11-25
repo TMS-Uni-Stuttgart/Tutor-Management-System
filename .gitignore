@@ -15,3 +15,5 @@
 *.zip
 
 *.log
+
+client_old/**
