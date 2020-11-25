@@ -3,6 +3,7 @@
   "version": "2.2.0",
   "workspaces": [
     "client",
+    "docs",
     "server",
     "scripts"
   ],
