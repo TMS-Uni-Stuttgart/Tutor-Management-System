@@ -1,4 +1,4 @@
-name: Build and Deploy Docs
+name: Documentation Actions
 
 on:
   pull_request:
@@ -11,6 +11,7 @@ on:
 
 jobs:
   build-and-deploy:
+    name: Build and Deploy Docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
