@@ -88,11 +88,11 @@ values={[
 ```pug
 h3(style='text-align: center') Anwesenheitsliste
 
-div(style='display: flex; width: 100%;')
+div(style='display: flex; width: 100%')
   span Tutorium #{tutorialSlot}
-  span(style='margin-left: auto; float: right;') Datum: #{date.toFormat('dd.MM.yyyy')}
+  span(style='margin-left: auto; float: right') Datum: #{date.toFormat('dd.MM.yyyy')}
 
-div(style='margin-bottom: 16px;')
+div(style='margin-bottom: 16px')
   span Tutor: #{tutorName}
 
 table

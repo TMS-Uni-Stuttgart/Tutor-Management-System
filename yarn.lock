@@ -2074,10 +2074,10 @@
     consola "^2.15.0"
     node-fetch "^2.6.1"
 
-"@prettier/plugin-pug@^1.10.1":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@prettier/plugin-pug/-/plugin-pug-1.11.0.tgz#a729c5f91cb71eabac34f1b1e65b44bcee3eb425"
-  integrity sha512-sjx9hZ97T7BrRqKSItwMcS3Mxda3hC9Pt29umC3y8QDesfAIy3cDFYDIx6AXdNNS3IPFYLKo0OIsA8LGdNTOdQ==
+"@prettier/plugin-pug@^1.12.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@prettier/plugin-pug/-/plugin-pug-1.12.0.tgz#48252fe4d41889bcb4f6cd89f04ad7be58023fb0"
+  integrity sha512-8HzrXNkdPz94UjAPEqT7JrLbkFwJxwGGQ0GOa0SWhyK92G4mlm4x1Koo9rC0yEvWCa2AqwRWFMHHDTtMzbPsvQ==
   dependencies:
     pug-lexer "^5.0.0"
 
