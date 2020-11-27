@@ -31,7 +31,7 @@ function ImportShortTestInformation(): JSX.Element {
           { primary: 'Wähle den Reiter "Export" aus.' },
           {
             primary:
-              'Wähle als Typ "Erstelle Exportdatei" (engl.: "Create Test Results Export File")',
+              'Wähle als Typ "Erstelle Ergebnisdatei" (engl.: "Create Test Results Export File")',
             secondary:
               'Das ist der einzige Dateityp, der sowohl die Ergebnisse als auch die Ilias-Namen der Studierenden enthält.',
           },
