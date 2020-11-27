@@ -42,7 +42,6 @@ function convertParsedToInternalCSV(data: ParsedCSVData): CSVData {
   const { headers, rows: parsedRows } = data;
   const rows: CSVDataRow[] = parsedRows.map((row, idx) => ({ rowNr: idx, data: row }));
 
-  headers.sort((a, b) => a.localeCompare(b));
   return { headers, rows };
 }
 

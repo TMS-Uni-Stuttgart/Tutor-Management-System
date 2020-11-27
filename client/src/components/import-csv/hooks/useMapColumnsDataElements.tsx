@@ -26,6 +26,7 @@ export function useMapColumnsDataElements(
 ): UseMapColumnsDataElements {
   const { information, groups } = mapColumnsData;
   const classes = useStyles();
+  const sortedHeaders = useMemo(() => [...headers].sort((a, b) => a.localeCompare(b)), [headers]);
 
   const { boxesByGroup, validationShape } = useMemo(() => {
     const validationShape: Yup.ObjectSchemaDefinition<Record<string, unknown>> = {};
@@ -53,7 +54,7 @@ export function useMapColumnsDataElements(
           required={value.required}
           helperText={helperText}
           nameOfNoneItem={!value.required ? 'Keine Spalte auswählen' : undefined}
-          items={headers}
+          items={sortedHeaders}
           itemToValue={(i) => i}
           itemToString={(i) => i}
           emptyPlaceholder='Keine Überschriften verfügbar'
@@ -63,7 +64,7 @@ export function useMapColumnsDataElements(
     }
 
     return { boxesByGroup, validationShape };
-  }, [classes.select, headers, information]);
+  }, [classes.select, sortedHeaders, information]);
 
   const boxes: JSX.Element[] = useMemo(() => {
     const generatedBoxes: JSX.Element[] = [];
