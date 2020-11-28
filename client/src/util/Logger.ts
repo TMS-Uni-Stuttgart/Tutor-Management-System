@@ -18,8 +18,13 @@ interface LogOptions {
   context?: string;
 }
 
+/**
+ * Logger used in the application.
+ *
+ * If you just want to use the static `logger` property of the class you could just import the `logger` object provided by this module. It's a reference on the static logger of this class.
+ */
 export class Logger {
-  static logger = new Logger('Static Logger');
+  static readonly logger = new Logger('Static Logger');
 
   private readonly console: Console;
   private readonly logLevelToPrint: LogLevel;
@@ -136,3 +141,5 @@ export function useLogger(context?: string): Logger {
   const logger = useMemo(() => new Logger(context), [context]);
   return logger;
 }
+
+export const logger: Logger = Logger.logger;

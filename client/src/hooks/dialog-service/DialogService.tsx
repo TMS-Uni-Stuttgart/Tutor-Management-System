@@ -11,7 +11,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
-import { Logger } from '../../util/Logger';
+import { logger } from '../../util/Logger';
 import SelectionDialogContent, {
   SelectionDialogChildrenProps,
 } from './components/SelectionDialogContent';
@@ -72,7 +72,7 @@ export interface DialogHelpers {
 type CreateDialogFunction = (dialog: DialogOptions | undefined) => void;
 
 const DialogContext = React.createContext<CreateDialogFunction>(() => {
-  Logger.logger.error('Not initialized', { context: 'DialogContext' });
+  logger.error('Not initialized', { context: 'DialogContext' });
 });
 
 const defaultDialog: DialogOptions = {
@@ -145,7 +145,7 @@ function DialogService({ children }: RequireChildrenProp): JSX.Element {
 
 function showDialogOutsideContext(dialogOptions: Partial<DialogOptions>) {
   if (!showDialogGlobal) {
-    Logger.logger.error(
+    logger.error(
       'There is no function specified for showing a dialog outside the context. You have to include the context to initialize set function.',
       { context: 'DialogService' }
     );
@@ -157,7 +157,7 @@ function showDialogOutsideContext(dialogOptions: Partial<DialogOptions>) {
 
 function hideDialogOutsideContext() {
   if (!closeDialogGlobal) {
-    Logger.logger.error(
+    logger.error(
       'There is no function specified for hiding a dialog outside the context. You have to include the context to initialize set function.',
       { context: 'DialogService' }
     );
