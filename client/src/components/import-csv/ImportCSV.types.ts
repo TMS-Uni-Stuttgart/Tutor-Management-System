@@ -1,4 +1,4 @@
-interface ParsedCSVDataRow {
+export interface ParsedCSVDataRow {
   [header: string]: string;
 }
 
