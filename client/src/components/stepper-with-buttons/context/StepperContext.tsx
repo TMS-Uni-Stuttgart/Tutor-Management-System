@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { throwContextNotInitialized } from '../../../util/throwFunctions';
 
 export interface NextStepInformation {
@@ -44,8 +44,25 @@ export const StepperContext = React.createContext<StepperContextValue>({
   getNextCallback: throwContextNotInitialized('StepperContext'),
 });
 
-export function useStepper(): Omit<StepperContextValue, 'getNextCallback'> {
-  const { getNextCallback, ...context } = useContext(StepperContext);
+/**
+ * Use the stepper context.
+ *
+ * If a callback is provided as an argument it gets set as the one called by the "Next" button. This hook also removes the callback on cleanup.
+ *
+ * @param cb Callback used for the next button if provided.
+ */
+export function useStepper(cb?: NextStepCallback): Omit<StepperContextValue, 'getNextCallback'> {
+  const { getNextCallback, setNextCallback, removeNextCallback, ...context } = useContext(
+    StepperContext
+  );
 
-  return { ...context };
+  useEffect(() => {
+    if (cb) {
+      setNextCallback(cb);
+    }
+
+    return removeNextCallback;
+  }, [cb, setNextCallback, removeNextCallback]);
+
+  return { ...context, setNextCallback, removeNextCallback };
 }
