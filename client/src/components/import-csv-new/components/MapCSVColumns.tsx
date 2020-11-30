@@ -3,6 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik, FormikProps } from 'formik';
 import React, { useMemo, useRef } from 'react';
 import * as Yup from 'yup';
+import FormikDebugDisplay from '../../forms/components/FormikDebugDisplay';
 import FormikSelect from '../../forms/components/FormikSelect';
 import OutlinedBox from '../../OutlinedBox';
 import { useImportCSVContext } from '../ImportCSV.context';
@@ -56,7 +57,11 @@ function useMapForm({ headers, metadata }: UseMapFormParams): UseMapForm {
             ? `Spalten für Auto-Zuordnung: ${value.headersToAutoMap.join(', ')}`
             : 'Kein Auto-Zuordnung möglich.';
 
-        initialValues[key] = '';
+        headers.forEach((header) => {
+          if (value.headersToAutoMap.includes(header)) {
+            initialValues[key] = header;
+          }
+        });
 
         boxesByGroup[value.group].push(
           <FormikSelect
@@ -76,7 +81,7 @@ function useMapForm({ headers, metadata }: UseMapFormParams): UseMapForm {
     }
 
     return { initialValues, boxesByGroup, validationShape };
-  }, [metadata, sortedHeaders]);
+  }, [metadata, sortedHeaders, headers]);
 
   const formContent: JSX.Element[] = useMemo(() => {
     const formContent: JSX.Element[] = [];
@@ -92,15 +97,17 @@ function useMapForm({ headers, metadata }: UseMapFormParams): UseMapForm {
           marginTop={2}
           paddingX={1.5}
           paddingY={1}
+          gridRowGap={8}
         >
           <Typography variant='h6'>{value.name}</Typography>
+
           <Box
             display='grid'
             gridColumn='1fr'
             gridAutoRows='auto'
             gridAutoFlow='row'
             marginTop={1}
-            gridRowGap={8}
+            gridRowGap={24}
             gridColumnGap={8}
           >
             {boxesOfGroup}
@@ -144,6 +151,8 @@ function MapCSVColumns(): JSX.Element {
         {({ handleSubmit }) => (
           <form className={classes.form} onSubmit={handleSubmit}>
             {formContent}
+
+            <FormikDebugDisplay />
           </form>
         )}
       </Formik>

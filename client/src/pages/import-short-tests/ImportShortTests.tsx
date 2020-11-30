@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router';
+import ImportCSV from '../../components/import-csv-new/components/ImportCSV';
 import MapCSVColumns from '../../components/import-csv-new/components/MapCSVColumns';
 import { CSVImportProvider } from '../../components/import-csv-new/ImportCSV.context';
 import { CSVMapColumsMetadata } from '../../components/import-csv-new/ImportCSV.types';
@@ -45,15 +46,13 @@ function ImportShortTests(): JSX.Element {
   const { shortTestId } = useParams<Params>();
   const groupMetadata = useMemo(getCSVGroupMetadata, []);
 
-  console.log(groupMetadata);
-
   return (
     <CSVImportProvider groupMetadata={groupMetadata}>
       <StepperWithButtons
         steps={[
           // FIXME: Re-Add all unused steps.
           // { label: 'Export-Anleitung', component: ImportShortTestInformation },
-          // { label: 'CSV importieren', component: ImportCSV },
+          { label: 'CSV importieren', component: ImportCSV },
           { label: 'Spalten zuordnen', component: MapCSVColumns },
           // { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
           // { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
