@@ -398,7 +398,7 @@ function UserManagement(): JSX.Element {
                 startIcon={<ImportIcon />}
                 style={{ marginLeft: 8 }}
               >
-                Generieren
+                Importieren
               </Button>
             </>
           }
