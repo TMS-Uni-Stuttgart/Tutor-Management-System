@@ -1,4 +1,4 @@
-import { ParsedCSVData } from '../import-csv/ImportCSV.types';
+import { CSVData, ParsedCSVData } from '../import-csv/ImportCSV.types';
 
 export interface CSVMapColumnsHelpers<COL extends string, GRP extends string> {
   /**
@@ -101,14 +101,18 @@ interface CSVColumnsGroup {
 
 export interface CSVContext<COL extends string, GRP extends string> {
   /**
+   * Currently imported CSV as data.
+   *
+   * If no CSV got imported previously all object array properties are empty arrays.
+   */
+  readonly csvData: CSVData;
+
+  /**
    * Sets the CSV data to the given one.
    *
    * If other properties (ie mapping columns, ...) rely on the CSV data those properties get (re)-initialized after setting the data.
    */
   setCSVData: (data: ParsedCSVData) => void;
-
-  // /** Helper functions and data to import CSV data. */
-  // readonly importHelpers: CSVImportHelpers;
 
   /** Helper functions and data to allow (re-)mapping of the CSV headers to internal data structures. */
   readonly mapColumnsHelpers: CSVMapColumnsHelpers<COL, GRP>;

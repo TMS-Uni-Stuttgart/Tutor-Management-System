@@ -1,18 +1,11 @@
 import React, { PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { throwContextNotInitialized } from '../../util/throwFunctions';
 import { CSVData, CSVDataRow, ParsedCSVData } from '../import-csv/ImportCSV.types';
-import { CSVContext, CSVMapColumnsHelpers, CSVMapColumsMetadata } from './ImportCSV.types';
+import { CSVContext, CSVMapColumsMetadata } from './ImportCSV.types';
 
 const CSVImportContext = React.createContext<CSVContext<any, any>>({
-  // isLoading: false,
+  csvData: { headers: [], rows: [] },
   setCSVData: throwContextNotInitialized('CSVContext'),
-  // importHelpers: {
-  //   mode: ImportMode.FILE,
-  //   setMode: throwContextNotInitialized('CSVContext'),
-  //   setFileContent: throwContextNotInitialized('CSVContext'),
-  //   setTextFieldValue: throwContextNotInitialized('CSVContext'),
-  //   importCSV: throwContextNotInitialized('CSVContext'),
-  // },
   mapColumnsHelpers: {
     metadata: { information: {}, groups: {} },
     mappedColumns: {},
@@ -36,7 +29,7 @@ export function CSVImportProvider<COL extends string, GRP extends string>({
   children,
   groupMetadata,
 }: PropsWithChildren<ProviderProps<COL, GRP>>): JSX.Element {
-  const [csvData, setInternalCSVData] = useState<CSVData>();
+  const [csvData, setInternalCSVData] = useState<CSVData>({ headers: [], rows: [] });
 
   const setCSVData = useCallback((csvData: ParsedCSVData) => {
     // TODO: Prepare data for the mapping?!
@@ -45,14 +38,16 @@ export function CSVImportProvider<COL extends string, GRP extends string>({
 
   // TODO: Replace with real helpers!
   const mapColumnsHelpers_DUMMY = {
-    metadata: { information: {}, groups: {} },
+    metadata: { ...groupMetadata },
     mappedColumns: {},
     isValidMapping: true,
     mapColumn: throwContextNotInitialized('CSVContext'),
   };
 
   return (
-    <CSVImportContext.Provider value={{ setCSVData, mapColumnsHelpers: mapColumnsHelpers_DUMMY }}>
+    <CSVImportContext.Provider
+      value={{ csvData, setCSVData, mapColumnsHelpers: mapColumnsHelpers_DUMMY }}
+    >
       {children}
     </CSVImportContext.Provider>
   );
@@ -70,10 +65,10 @@ export function useImportCSVContext<COL extends string, GRP extends string>(): C
 //   return importHelpers;
 // }
 
-export function useCSVColumnMapping<COL extends string, GRP extends string>(): CSVMapColumnsHelpers<
-  COL,
-  GRP
-> {
-  const { mapColumnsHelpers } = useContext<CSVContext<COL, GRP>>(CSVImportContext);
-  return mapColumnsHelpers;
-}
+// export function useCSVColumnMapping<COL extends string, GRP extends string>(): CSVMapColumnsHelpers<
+//   COL,
+//   GRP
+// > {
+//   const { mapColumnsHelpers } = useContext<CSVContext<COL, GRP>>(CSVImportContext);
+//   return mapColumnsHelpers;
+// }
