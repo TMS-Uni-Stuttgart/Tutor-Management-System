@@ -35,10 +35,20 @@ export interface CSVMapColumnsHelpers<COL extends string, GRP extends string> {
   mapColumn: (field: COL, columns: string | string[]) => void;
 }
 
+export function isDynamicColumnInformation(
+  info: CSVColumnInformation<string>
+): info is CSVDynamicColumnInformation {
+  return !!(info as CSVDynamicColumnInformation).dynamic;
+}
+
+type CSVColumnInformation<GRP extends string> =
+  | CSVStaticColumnInformation<GRP>
+  | CSVDynamicColumnInformation;
+
 export interface CSVMapColumsMetadata<COL extends string, GRP extends string> {
   /** Information about the columns to map. */
   readonly information: {
-    readonly [key in COL]: CSVStaticColumnInformation<GRP> | CSVDynamicColumnInformation;
+    readonly [key in COL]: CSVColumnInformation<GRP>;
   };
   /** Information about the visual groups. */
   readonly groups: {
