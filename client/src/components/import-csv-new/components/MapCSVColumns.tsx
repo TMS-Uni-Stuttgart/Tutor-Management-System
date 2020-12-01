@@ -1,11 +1,14 @@
 import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik, FormikProps } from 'formik';
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import * as Yup from 'yup';
+import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { FormikSubmitCallback } from '../../../types';
 import FormikDebugDisplay from '../../forms/components/FormikDebugDisplay';
 import FormikSelect from '../../forms/components/FormikSelect';
 import OutlinedBox from '../../OutlinedBox';
+import { NextStepCallback, useStepper } from '../../stepper-with-buttons/context/StepperContext';
 import { useImportCSVContext } from '../ImportCSV.context';
 import { CSVMapColumsMetadata, isDynamicColumnInformation } from '../ImportCSV.types';
 
@@ -51,6 +54,8 @@ function useMapForm({ headers, metadata }: UseMapFormParams): UseMapForm {
         if (value.required) {
           validationShape[key] = Yup.string().required('Benötigt.');
         }
+
+        initialValues[key] = '';
 
         const helperText =
           value.headersToAutoMap.length > 0
@@ -125,6 +130,7 @@ function useMapForm({ headers, metadata }: UseMapFormParams): UseMapForm {
 function MapCSVColumns(): JSX.Element {
   const classes = useStyles();
   const { csvData, mapColumnsHelpers } = useImportCSVContext();
+  const { enqueueSnackbar } = useCustomSnackbar();
   const { metadata } = mapColumnsHelpers;
 
   // We save a ref on the form data to be able to use the submit function with the Stepper but without creating a wrapper component.
@@ -134,6 +140,44 @@ function MapCSVColumns(): JSX.Element {
     headers: csvData.headers,
     metadata,
   });
+
+  const saveMapping: (values: FormProps) => Promise<void> = useCallback(async (values) => {
+    // TODO: Implement me. Throw error in fail.
+    throw new Error('NOT_IMPLEMENTED');
+  }, []);
+
+  const stepperCallback: NextStepCallback = useCallback(async () => {
+    const currentForm = formInstance.current;
+    if (!currentForm) {
+      return { goToNext: false };
+    }
+
+    const errors = await currentForm.validateForm();
+
+    // Make sure that the errornous fields are "touched" so the errors are properly shown.
+    for (const key of Object.keys(errors)) {
+      currentForm.setFieldTouched(key, true);
+    }
+
+    if (!currentForm.isValid) {
+      enqueueSnackbar('Eingaben sind ungültig.', { variant: 'error' });
+      return { goToNext: false, error: true };
+    }
+
+    for (const [key, value] of Object.entries(currentForm.values)) {
+      mapColumnsHelpers.mapColumn(key, value);
+    }
+    // currentForm.resetForm({ values: currentForm.values });
+
+    return { goToNext: true };
+  }, [mapColumnsHelpers, enqueueSnackbar]);
+
+  const { nextStep } = useStepper(stepperCallback);
+
+  const handleSubmit: FormikSubmitCallback<FormProps> = useCallback(async () => {
+    // Just call next step bc this will run the callback defined above.
+    await nextStep();
+  }, [nextStep]);
 
   return (
     <Box width='100%'>
@@ -145,7 +189,7 @@ function MapCSVColumns(): JSX.Element {
         }}
         enableReinitialize
         initialValues={initialValues}
-        onSubmit={() => {}}
+        onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
         {({ handleSubmit }) => (
