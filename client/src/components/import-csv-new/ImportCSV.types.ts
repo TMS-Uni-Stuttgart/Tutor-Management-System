@@ -20,13 +20,6 @@ export interface CSVMapColumnsHelpers<COL extends string, GRP extends string> {
   };
 
   /**
-   * Indicates that the given mapping is a valid one.
-   *
-   * A valid mapping maps at least one column to each `required` field as indicated by the `metadata`.
-   */
-  readonly isValidMapping: boolean;
-
-  /**
    * Saves the given columns as mapped to the given field.
    *
    * @param field Field to which the columns belong to.

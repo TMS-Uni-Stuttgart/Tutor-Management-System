@@ -141,13 +141,9 @@ function MapCSVColumns(): JSX.Element {
     metadata,
   });
 
-  const saveMapping: (values: FormProps) => Promise<void> = useCallback(async (values) => {
-    // TODO: Implement me. Throw error in fail.
-    throw new Error('NOT_IMPLEMENTED');
-  }, []);
-
   const stepperCallback: NextStepCallback = useCallback(async () => {
     const currentForm = formInstance.current;
+
     if (!currentForm) {
       return { goToNext: false };
     }
