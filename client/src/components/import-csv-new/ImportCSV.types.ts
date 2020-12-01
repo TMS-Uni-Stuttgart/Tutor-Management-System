@@ -34,7 +34,7 @@ export function isDynamicColumnInformation(
   return !!(info as CSVDynamicColumnInformation).dynamic;
 }
 
-type CSVColumnInformation<GRP extends string> =
+export type CSVColumnInformation<GRP extends string> =
   | CSVStaticColumnInformation<GRP>
   | CSVDynamicColumnInformation;
 
@@ -57,7 +57,7 @@ interface CSVColumnsInformation {
   readonly required?: boolean;
 }
 
-interface CSVStaticColumnInformation<GRP extends string> extends CSVColumnsInformation {
+export interface CSVStaticColumnInformation<GRP extends string> extends CSVColumnsInformation {
   /** Used internally to try and auto-match the CSV columns without user interaction. */
   readonly headersToAutoMap: string[];
 
@@ -65,7 +65,7 @@ interface CSVStaticColumnInformation<GRP extends string> extends CSVColumnsInfor
   readonly group: GRP;
 }
 
-interface CSVDynamicColumnInformation extends CSVColumnsInformation {
+export interface CSVDynamicColumnInformation extends CSVColumnsInformation {
   /**
    * Marks the field as dynamic.
    *
