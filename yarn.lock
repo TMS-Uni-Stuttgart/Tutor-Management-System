@@ -2401,10 +2401,10 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/docusaurus/-/docusaurus-1.0.2.tgz#400ef146d3e7da2f78bf9749c943d123dce5fd97"
   integrity sha512-x4rRVb346vjyym6QbeB1Tv01XXwhbkujOmvDmtf0bT20oc2gbDhbmwpskKqZ5Of2Q/Vk4jNk1WMiLsZdJ9t7Dw==
 
-"@typegoose/typegoose@^7.4.1":
-  version "7.4.2"
-  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-7.4.2.tgz#9c84cfef564080b663b4c820785ca6a53e2f1edf"
-  integrity sha512-+jBuN42GLepNzFNKrswZPpSv6hdU020M7qGxIS6f4iFfISHzm1aW5IFDf2QSmUb6ySUsEKSDPSX77c5KRp6Ziw==
+"@typegoose/typegoose@^7.4.5":
+  version "7.4.5"
+  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-7.4.5.tgz#19ff469b559c9d68aa1793ef837ea60040bd892c"
+  integrity sha512-OfLKMMMzdbLMALZVbD8P24LkHICw2idSBOagKFzW185rdEqZf1a2/PO0eqybQ5bGqEKe8kFs+ln7zFg5zzu8+A==
   dependencies:
     lodash "^4.17.20"
     loglevel "^1.7.0"
