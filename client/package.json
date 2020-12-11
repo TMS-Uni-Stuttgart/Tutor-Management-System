@@ -37,7 +37,7 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@snowpack/plugin-dotenv": "^2.0.4",
+    "@snowpack/plugin-dotenv": "^2.0.5",
     "@snowpack/plugin-react-refresh": "^2.3.6",
     "@snowpack/plugin-typescript": "^1.1.0",
     "@snowpack/plugin-webpack": "^2.1.2",
