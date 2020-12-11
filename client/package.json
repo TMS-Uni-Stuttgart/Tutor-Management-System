@@ -52,7 +52,7 @@
     "@types/react-window": "^1.8.2",
     "@types/snowpack-env": "^2.3.0",
     "@types/yup": "^0.29.10",
-    "@web/test-runner": "^0.9.7",
+    "@web/test-runner": "^0.10.0",
     "chai": "^4.2.0",
     "snowpack": "^2.18.0"
   },
