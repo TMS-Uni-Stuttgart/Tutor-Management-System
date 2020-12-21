@@ -67,6 +67,12 @@ enum FilterOption {
   ALL = 'Alle (aktiv & inaktiv)',
 }
 
+interface FilterParams {
+  allStudents: Student[];
+  filterOption: FilterOption;
+  tutorial: Tutorial;
+}
+
 function getAvailableDates(
   tutorial: Tutorial | undefined,
   user: LoggedInUser | undefined,
@@ -89,24 +95,26 @@ function getAvailableDates(
   return [...tutorial.dates];
 }
 
-function getFilteredStudents(allStudents: Student[], filterOption: FilterOption): Student[] {
-  return allStudents.filter((stud) => {
-    switch (filterOption) {
-      case FilterOption.ACTIVE_ONLY:
-        return stud.status === StudentStatus.ACTIVE;
+function getFilteredStudents({ allStudents, filterOption, tutorial }: FilterParams): Student[] {
+  return allStudents
+    .filter((stud) => stud.tutorial.id === tutorial.id)
+    .filter((stud) => {
+      switch (filterOption) {
+        case FilterOption.ACTIVE_ONLY:
+          return stud.status === StudentStatus.ACTIVE;
 
-      case FilterOption.ACTIVE_AND_NO_SCHEIN_REQUIRED:
-        return (
-          stud.status === StudentStatus.ACTIVE || stud.status === StudentStatus.NO_SCHEIN_REQUIRED
-        );
+        case FilterOption.ACTIVE_AND_NO_SCHEIN_REQUIRED:
+          return (
+            stud.status === StudentStatus.ACTIVE || stud.status === StudentStatus.NO_SCHEIN_REQUIRED
+          );
 
-      case FilterOption.ALL:
-        return true;
+        case FilterOption.ALL:
+          return true;
 
-      default:
-        return false;
-    }
-  });
+        default:
+          return false;
+      }
+    });
 }
 
 function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element {
@@ -162,8 +170,12 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   }, [tutorialFromProps, tutorials, tutorial]);
 
   useEffect(() => {
-    setFilteredStudents(getFilteredStudents(fetchedStudents, filterOption));
-  }, [fetchedStudents, filterOption]);
+    if (tutorial) {
+      setFilteredStudents(
+        getFilteredStudents({ allStudents: fetchedStudents, filterOption, tutorial })
+      );
+    }
+  }, [fetchedStudents, filterOption, tutorial]);
 
   function handleTutoriumSelectionChanged(e: ChangeEvent<{ name?: string; value: unknown }>) {
     if (typeof e.target.value !== 'string') {
@@ -361,7 +373,6 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
             <SubmitButton
               variant='contained'
-              // color='primary'
               isSubmitting={isSettingPresent}
               className={classes.allPresentButton}
               onClick={handleAllStudentPresent}
