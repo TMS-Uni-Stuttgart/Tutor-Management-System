@@ -1,43 +1,30 @@
 import { Box, Typography } from '@material-ui/core';
-import React, { useCallback } from 'react';
+import { FormikProps } from 'formik';
+import React, { RefObject, useCallback, useRef } from 'react';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { NextStepCallback, useStepper } from '../../stepper-with-buttons/context/StepperContext';
 import { useImportCSVContext } from '../ImportCSV.context';
-import MapForm from './MapForm';
+import MapForm, { MapFormValues } from './MapForm';
+
+function useGenerateSaveCallback(
+  formikRef: RefObject<FormikProps<MapFormValues>>
+): NextStepCallback {
+  const { enqueueSnackbar } = useCustomSnackbar();
+  const callback: NextStepCallback = useCallback(async () => {
+    // TODO: Add implementation for new form.
+    return { goToNext: false };
+  }, []);
+
+  return callback;
+}
 
 function MapCSVColumns(): JSX.Element {
   const { csvData, mapColumnsHelpers } = useImportCSVContext();
-  const { enqueueSnackbar } = useCustomSnackbar();
   const { metadata } = mapColumnsHelpers;
 
-  const stepperCallback: NextStepCallback = useCallback(async () => {
-    // TODO: Add implementation for new form.
-    return { goToNext: false };
-    // const currentForm = formInstance.current;
-
-    // if (!currentForm) {
-    //   return { goToNext: false };
-    // }
-
-    // const errors = await currentForm.validateForm();
-
-    // // Make sure that the errornous fields are "touched" so the errors are properly shown.
-    // for (const key of Object.keys(errors)) {
-    //   currentForm.setFieldTouched(key, true);
-    // }
-
-    // if (!currentForm.isValid) {
-    //   enqueueSnackbar('Eingaben sind ungültig.', { variant: 'error' });
-    //   return { goToNext: false, error: true };
-    // }
-
-    // for (const [key, value] of Object.entries(currentForm.values)) {
-    //   mapColumnsHelpers.mapColumn(key, value);
-    // }
-    // // currentForm.resetForm({ values: currentForm.values });
-
-    // return { goToNext: true };
-  }, []);
+  // Pass in `null` to make sure that a `RefObject` is returned as type.
+  const formikRef: RefObject<FormikProps<MapFormValues>> = useRef(null);
+  const stepperCallback: NextStepCallback = useGenerateSaveCallback(formikRef);
 
   useStepper(stepperCallback);
 
@@ -45,7 +32,12 @@ function MapCSVColumns(): JSX.Element {
     <Box width='100%'>
       <Typography variant='h4'>Spalten zuordnen</Typography>
 
-      <MapForm headers={csvData.headers} metadata={metadata} />
+      <MapForm
+        formikRef={formikRef}
+        headers={csvData.headers}
+        metadata={metadata}
+        onSubmit={stepperCallback}
+      />
     </Box>
   );
 }
