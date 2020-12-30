@@ -7,6 +7,7 @@ import { CSVMapColumsMetadata } from '../../components/import-csv-new/ImportCSV.
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
 import AdjustGeneratedShortTest from './components_new/AdjustGeneratedShortTest';
+import MapStudentsToIliasNames from './components_new/MapStudentsToIliasNames';
 
 export type ShortTestColumns =
   | 'iliasName'
@@ -65,8 +66,8 @@ function ImportShortTests(): JSX.Element {
           // { label: 'Export-Anleitung', component: ImportShortTestInformation },
           { label: 'CSV importieren', component: ImportCSV },
           { label: 'Spalten zuordnen', component: MapCSVColumns },
+          { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
           { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
-          // { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
         ]}
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'
