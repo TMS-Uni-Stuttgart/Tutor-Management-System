@@ -180,7 +180,7 @@ function CustomSelect<T>({
                 itemToValue,
                 classes.chip
               )
-            : undefined
+            : (value) => itemToString(value as T)
         }
         classes={{
           ...classesFromProps,
@@ -221,7 +221,7 @@ function CustomSelect<T>({
                   <ListItemText {...text} />
                 </>
               ) : (
-                itemString
+                <ListItemText {...text} />
               )}
             </MenuItem>
           );
