@@ -7,7 +7,11 @@ import { CSVMapColumsMetadata } from '../../components/import-csv-new/ImportCSV.
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
 
-export type ShortTestColumns = 'iliasName' | 'testResultStudent' | 'testMaximumPoints';
+export type ShortTestColumns =
+  | 'iliasName'
+  | 'testResultStudent'
+  | 'testMaximumPoints'
+  | 'exercises';
 type ColumnGroups = 'general';
 
 interface Params {
@@ -35,9 +39,13 @@ function getCSVGroupMetadata(): CSVMapColumsMetadata<ShortTestColumns, ColumnGro
         headersToAutoMap: ['Maximal erreichbare Punktezahl', 'Maximum Available Points'],
         required: true,
       },
+      exercises: {
+        dynamic: true,
+        label: 'Aufgaben des Tests',
+      },
     },
     groups: {
-      general: { index: 0, name: 'Spalten' },
+      general: { index: 0, name: 'Daten für Studierende' },
     },
   };
 }

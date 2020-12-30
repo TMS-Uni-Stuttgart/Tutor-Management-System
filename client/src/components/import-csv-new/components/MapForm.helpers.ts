@@ -1,17 +1,26 @@
-import { CSVStaticColumnInformation, isDynamicColumnInformation } from '../ImportCSV.types';
+import {
+  CSVDynamicColumnInformation,
+  CSVStaticColumnInformation,
+  isDynamicColumnInformation,
+} from '../ImportCSV.types';
 import { MapFormValues, Metadata } from './MapForm';
 
-export interface BoxData {
+export interface StaticBoxData {
   key: string;
   label: string;
   required: boolean;
   helperText: string;
 }
 
-export interface BoxGroup {
+export interface StaticBoxGroup {
   key: string;
   title: string;
-  boxData: BoxData[];
+  boxData: StaticBoxData[];
+}
+
+export interface DynamicBoxData {
+  key: string;
+  title: string;
 }
 
 export function generateInitialValues(metadata: Metadata, headers: string[]): MapFormValues {
@@ -19,7 +28,7 @@ export function generateInitialValues(metadata: Metadata, headers: string[]): Ma
 
   for (const [key, value] of Object.entries(metadata.information)) {
     if (isDynamicColumnInformation(value)) {
-      // TODO: Dynamic case!
+      values[key] = [];
     } else {
       values[key] = '';
 
@@ -34,8 +43,8 @@ export function generateInitialValues(metadata: Metadata, headers: string[]): Ma
   return values;
 }
 
-export function groupData(metadata: Metadata): BoxGroup[] {
-  const groups: BoxGroup[] = [];
+export function groupStaticData(metadata: Metadata): StaticBoxGroup[] {
+  const groups: StaticBoxGroup[] = [];
   const entries = Object.entries(metadata.groups).sort(([, a], [, b]) => b.index - a.index);
 
   for (const [key, value] of entries) {
@@ -45,7 +54,7 @@ export function groupData(metadata: Metadata): BoxGroup[] {
       const [, info] = entry;
       return !isDynamicColumnInformation(info) && info.group === key;
     });
-    const boxData: BoxData[] = [];
+    const boxData: StaticBoxData[] = [];
 
     columns.forEach(([key, column]) => {
       const helperText =
@@ -65,4 +74,20 @@ export function groupData(metadata: Metadata): BoxGroup[] {
   }
 
   return groups;
+}
+
+export function getDynamicData(metadata: Metadata): DynamicBoxData[] {
+  const boxes: DynamicBoxData[] = [];
+  const dynamicData: [string, CSVDynamicColumnInformation][] = Object.entries(
+    metadata.information
+  ).filter(function (entry): entry is [string, CSVDynamicColumnInformation] {
+    const [, info] = entry;
+    return isDynamicColumnInformation(info);
+  });
+
+  dynamicData.forEach(([key, data]) => {
+    boxes.push({ key, title: data.label });
+  });
+
+  return boxes;
 }

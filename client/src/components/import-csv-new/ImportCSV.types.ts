@@ -58,6 +58,8 @@ interface CSVColumnsInformation {
 }
 
 export interface CSVStaticColumnInformation<GRP extends string> extends CSVColumnsInformation {
+  readonly dynamic?: undefined;
+
   /** Used internally to try and auto-match the CSV columns without user interaction. */
   readonly headersToAutoMap: string[];
 
@@ -72,16 +74,6 @@ export interface CSVDynamicColumnInformation extends CSVColumnsInformation {
    * The user can select how many columns and which ones to map to this label.
    */
   readonly dynamic: true;
-
-  /**
-   * Indicates from where the columns should be taken.
-   *
-   * - 'last': Take the last N columns of the CSV data,
-   * - 'first': Take the first N columns of the CSV data,
-   *
-   * where N is the number of dynamic columns the users enters.
-   */
-  readonly columnSelection?: 'last' | 'first';
 }
 
 interface CSVColumnsGroup {
