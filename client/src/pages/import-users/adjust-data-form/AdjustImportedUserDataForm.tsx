@@ -12,13 +12,15 @@ import {
 } from '../../../components/forms/UserForm';
 import { useMapColumnsHelpers } from '../../../components/import-csv/hooks/useMapColumnsHelpers';
 import Placeholder from '../../../components/Placeholder';
-import { useStepper } from '../../../components/stepper-with-buttons/context/StepperContext';
+import {
+  NextStepInformation,
+  useStepper,
+} from '../../../components/stepper-with-buttons/context/StepperContext';
 import { getAllTutorials } from '../../../hooks/fetching/Tutorial';
 import { createManyUsers } from '../../../hooks/fetching/User';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { useFetchState } from '../../../hooks/useFetchState';
 import { Tutorial } from '../../../model/Tutorial';
-import { ROUTES } from '../../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../../types';
 import UserDataBox from './components/UserDataBox';
 import { convertCSVDataToFormData } from './components/UserDataBox.helpers';
@@ -59,25 +61,24 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
   const history = useHistory();
 
   useEffect(() => {
-    setNextCallback(async () => {
-      const errors = await validateForm();
+    setNextCallback(
+      async (): Promise<NextStepInformation> => {
+        const errors = await validateForm();
 
-      if (Object.entries(errors).length > 0) {
-        enqueueSnackbar('Nutzerdaten sind ungültig.', { variant: 'error' });
-        return { goToNext: false, error: true };
+        if (Object.entries(errors).length > 0) {
+          enqueueSnackbar('Nutzerdaten sind ungültig.', { variant: 'error' });
+          return { goToNext: false, error: true };
+        }
+
+        const isSuccess: any = await submitForm();
+
+        if (!!isSuccess) {
+          return { goToNext: true };
+        } else {
+          return { goToNext: false, error: true };
+        }
       }
-
-      const isSuccess: any = await submitForm();
-
-      if (!!isSuccess) {
-        return {
-          goToNext: true,
-          runAfterFinished: () => history.push(ROUTES.MANAGE_USERS.create({})),
-        };
-      } else {
-        return { goToNext: false, error: true };
-      }
-    });
+    );
 
     return () => removeNextCallback();
   }, [

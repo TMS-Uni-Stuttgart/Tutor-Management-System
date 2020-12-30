@@ -53,6 +53,7 @@ function getCSVGroupMetadata(): CSVMapColumsMetadata<ShortTestColumns, ColumnGro
 }
 
 function ImportShortTests(): JSX.Element {
+  // TODO: Add support for re-import of results.
   const { shortTestId } = useParams<Params>();
   const groupMetadata = useMemo(getCSVGroupMetadata, []);
 
@@ -64,13 +65,14 @@ function ImportShortTests(): JSX.Element {
           // { label: 'Export-Anleitung', component: ImportShortTestInformation },
           { label: 'CSV importieren', component: ImportCSV },
           { label: 'Spalten zuordnen', component: MapCSVColumns },
+          { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
           // { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
-          // { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
         ]}
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'
         nextButtonDoneLabel='Fertigstellen'
         backButtonRoute={ROUTES.MANAGE_HAND_INS.create({ location: '1' })}
+        routeAfterLastStep={{ route: ROUTES.MANAGE_HAND_INS, params: { location: '1' } }}
       />
     </CSVImportProvider>
   );

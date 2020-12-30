@@ -80,6 +80,7 @@ function ImportUsers(): JSX.Element {
         nextButtonLabel='Weiter'
         nextButtonDoneLabel='Fertigstellen'
         backButtonRoute={ROUTES.MANAGE_USERS.create({})}
+        routeAfterLastStep={{ route: ROUTES.MANAGE_USERS, params: {} }}
       />
     </ImportCSVContext>
   );

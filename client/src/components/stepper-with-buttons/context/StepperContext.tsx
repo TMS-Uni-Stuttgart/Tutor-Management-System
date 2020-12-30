@@ -4,7 +4,6 @@ import { throwContextNotInitialized } from '../../../util/throwFunctions';
 export interface NextStepInformation {
   goToNext: boolean;
   error?: boolean;
-  runAfterFinished?: () => void;
 }
 
 export type NextStepCallback = () => Promise<NextStepInformation>;
