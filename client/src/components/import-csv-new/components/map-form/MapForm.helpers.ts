@@ -2,7 +2,7 @@ import {
   CSVDynamicColumnInformation,
   CSVStaticColumnInformation,
   isDynamicColumnInformation,
-} from '../ImportCSV.types';
+} from '../../ImportCSV.types';
 import { MapFormValues, Metadata } from './MapForm';
 
 export interface StaticBoxData {
@@ -86,7 +86,8 @@ export function getDynamicData(metadata: Metadata): DynamicBoxData[] {
   });
 
   dynamicData.forEach(([key, data]) => {
-    boxes.push({ key, title: data.label });
+    const astrix = data.required ? '*' : '';
+    boxes.push({ key, title: `${data.label}${astrix}` });
   });
 
   return boxes;

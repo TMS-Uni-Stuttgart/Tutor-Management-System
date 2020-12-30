@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router';
 import ImportCSV from '../../components/import-csv-new/components/ImportCSV';
-import MapCSVColumns from '../../components/import-csv-new/components/MapCSVColumns';
+import MapCSVColumns from '../../components/import-csv-new/components/map-form/MapCSVColumns';
 import { CSVImportProvider } from '../../components/import-csv-new/ImportCSV.context';
 import { CSVMapColumsMetadata } from '../../components/import-csv-new/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
+import AdjustGeneratedShortTest from './components_new/AdjustGeneratedShortTest';
 
 export type ShortTestColumns =
   | 'iliasName'
@@ -42,6 +43,7 @@ function getCSVGroupMetadata(): CSVMapColumsMetadata<ShortTestColumns, ColumnGro
       exercises: {
         dynamic: true,
         label: 'Aufgaben des Tests',
+        required: true,
       },
     },
     groups: {
