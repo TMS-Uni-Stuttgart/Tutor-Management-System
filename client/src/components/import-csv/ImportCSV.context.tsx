@@ -123,6 +123,7 @@ function ImportCSVContext<T extends MapColumnsData<any, any>>({
           title: 'CSV konnte nicht importiert werden.',
           textBeforeList: 'Folgende Fehler sind aufgetreten:',
           items: response.errors.map((err) => `${err.message} (Zeile: ${err.row})`),
+          variant: 'error',
         });
         isSuccess = false;
       } else if (!response.meta.fields) {

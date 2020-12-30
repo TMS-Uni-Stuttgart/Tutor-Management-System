@@ -130,6 +130,7 @@ function AdjustImportedUserDataForm(): JSX.Element {
           textBeforeList:
             'Da bei einigen Nutzer/innen ein Fehler aufgetreten ist, wurde kein/e Nutzer/in erstellt. Folgende Nutzer/innen konnte nicht erstellt werden:',
           items: errors,
+          variant: 'error',
         });
       } else {
         enqueueSnackbar(`Es konnten keine Nutzer/innen erstellt werden.`, { variant: 'error' });

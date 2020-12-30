@@ -279,6 +279,7 @@ function UserManagement(): JSX.Element {
             'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:',
           items: convertedInfo,
           isOpen: true,
+          variant: 'error',
         });
       }
     } catch {

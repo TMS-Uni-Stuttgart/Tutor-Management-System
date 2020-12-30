@@ -49,6 +49,7 @@ export default async function submitCSV({
         title: 'CSV konnte nicht importiert werden.',
         textBeforeList,
         items: errors.map((err) => `${err.message} (Zeile: ${err.row})`),
+        variant: 'error',
       });
       isSuccess = false;
     } else if (!response.meta.fields) {
