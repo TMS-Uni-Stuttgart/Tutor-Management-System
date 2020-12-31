@@ -40,7 +40,7 @@
     "highlight.js": "^10.5.0",
     "jszip": "^3.5.0",
     "luxon": "^1.25.0",
-    "mongoose": "^5.11.4",
+    "mongoose": "^5.11.9",
     "mongoose-autopopulate": "^0.12.3",
     "mongoose-field-encryption": "^4.0.0",
     "nestjs-typegoose": "^7.1.38",
