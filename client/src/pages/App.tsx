@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
         maxWidth: '100vw',
         maxHeight: '100vh',
         '& *': {
-          ...theme.mixins.scrollbar(8),
+          ...theme.mixins.scrollbar(12),
         },
       },
     },
