@@ -30,7 +30,7 @@
     "@nestjs/mongoose": "^7.0.2",
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.5.1",
-    "@nestjs/swagger": "^4.7.2",
+    "@nestjs/swagger": "^4.7.9",
     "@typegoose/typegoose": "^7.4.5",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.12.2",
