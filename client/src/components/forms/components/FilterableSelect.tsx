@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import { Dimensions, useResizeObserver } from '../../../hooks/useResizeObserver';
 import { useLogger } from '../../../util/Logger';
+import { ItemDisplayInformation } from '../../CustomSelect';
 import OutlinedBox from '../../OutlinedBox';
 
 const useStyles = makeStyles((theme) =>
@@ -30,14 +31,15 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-type ItemToString<T> = (item: T) => string;
+type ItemToString<T> = (item: T) => string | ItemDisplayInformation;
+type ItemToValue<T> = (item: T) => string;
 
 export interface FilterableSelectProps<T> extends Omit<BoxProps, 'onChange'> {
   label: string;
   emptyPlaceholder: string;
   items: T[];
   itemToString: ItemToString<T>;
-  itemToValue: ItemToString<T>;
+  itemToValue: ItemToValue<T>;
   filterPlaceholder: string;
   onChange?: (newValue: string[], oldValue: string[]) => void;
   value?: string[];
@@ -72,9 +74,11 @@ function FilterableSelect<T>({
         return true;
       }
 
-      const itemString = _.deburr(itemToString(item).trim().toLowerCase());
+      const itemString = itemToString(item);
+      const primaryString = typeof itemString === 'string' ? itemString : itemString.primary;
+      const deburredString = _.deburr(primaryString.trim().toLowerCase());
 
-      return itemString.indexOf(filter) > -1;
+      return deburredString.indexOf(filter) > -1;
     },
     [filter, itemToString]
   );
@@ -167,6 +171,15 @@ function FilterableSelect<T>({
               const item = filteredItems[index];
               const itemValue = itemToValue(item);
               const itemString = itemToString(item);
+              const text: ItemDisplayInformation =
+                typeof itemString === 'string'
+                  ? {
+                      primary: itemString,
+                    }
+                  : {
+                      primary: itemString.primary,
+                      secondary: itemString.secondary,
+                    };
 
               return (
                 <ListItem
@@ -178,7 +191,7 @@ function FilterableSelect<T>({
                   <ListItemIcon>
                     <Checkbox edge='start' checked={isItemSelected(item)} disableRipple />
                   </ListItemIcon>
-                  <ListItemText primary={itemString} />
+                  <ListItemText {...text} />
                 </ListItem>
               );
             }}
