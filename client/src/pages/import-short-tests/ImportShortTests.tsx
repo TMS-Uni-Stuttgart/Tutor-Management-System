@@ -7,7 +7,8 @@ import { CSVMapColumsMetadata } from '../../components/import-csv-new/ImportCSV.
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
 import AdjustGeneratedShortTest from './components_new/AdjustGeneratedShortTest';
-import MapStudentsToIliasNames from './components_new/MapStudentsToIliasNames';
+import IliasMappingProvider from './components_new/map-students-ilias-names/IliasMapping.context';
+import MapStudentsToIliasNames from './components_new/map-students-ilias-names/MapStudentsToIliasNames';
 
 export type ShortTestColumns =
   | 'iliasName'
@@ -60,21 +61,23 @@ function ImportShortTests(): JSX.Element {
 
   return (
     <CSVImportProvider groupMetadata={groupMetadata}>
-      <StepperWithButtons
-        steps={[
-          // FIXME: Re-Add all unused steps.
-          // { label: 'Export-Anleitung', component: ImportShortTestInformation },
-          { label: 'CSV importieren', component: ImportCSV },
-          { label: 'Spalten zuordnen', component: MapCSVColumns },
-          { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
-          { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
-        ]}
-        backButtonLabel='Zurück'
-        nextButtonLabel='Weiter'
-        nextButtonDoneLabel='Fertigstellen'
-        backButtonRoute={ROUTES.MANAGE_HAND_INS.create({ location: '1' })}
-        routeAfterLastStep={{ route: ROUTES.MANAGE_HAND_INS, params: { location: '1' } }}
-      />
+      <IliasMappingProvider shortTestId={shortTestId}>
+        <StepperWithButtons
+          steps={[
+            // FIXME: Re-Add all unused steps.
+            // { label: 'Export-Anleitung', component: ImportShortTestInformation },
+            { label: 'CSV importieren', component: ImportCSV },
+            { label: 'Spalten zuordnen', component: MapCSVColumns },
+            { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
+            { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
+          ]}
+          backButtonLabel='Zurück'
+          nextButtonLabel='Weiter'
+          nextButtonDoneLabel='Fertigstellen'
+          backButtonRoute={ROUTES.MANAGE_HAND_INS.create({ location: '1' })}
+          routeAfterLastStep={{ route: ROUTES.MANAGE_HAND_INS, params: { location: '1' } }}
+        />
+      </IliasMappingProvider>
     </CSVImportProvider>
   );
 }
