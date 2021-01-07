@@ -48,7 +48,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router": "^5.1.9",
-    "@types/react-router-dom": "^5.1.6",
+    "@types/react-router-dom": "^5.1.7",
     "@types/react-window": "^1.8.2",
     "@types/snowpack-env": "^2.3.3",
     "@types/yup": "^0.29.10",
