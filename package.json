@@ -34,7 +34,7 @@
     "@prettier/plugin-pug": "^1.13.1",
     "@types/copyfiles": "^2.4.0",
     "@types/lodash": "^4.14.166",
-    "@types/luxon": "^1.25.0",
+    "@types/luxon": "^1.25.1",
     "@types/markdown-it": "^10.0.3",
     "@types/node": "^14.14.7",
     "@typescript-eslint/eslint-plugin": "^4.11.1",
