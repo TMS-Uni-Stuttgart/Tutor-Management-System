@@ -2366,10 +2366,10 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/docusaurus/-/docusaurus-1.0.2.tgz#400ef146d3e7da2f78bf9749c943d123dce5fd97"
   integrity sha512-x4rRVb346vjyym6QbeB1Tv01XXwhbkujOmvDmtf0bT20oc2gbDhbmwpskKqZ5Of2Q/Vk4jNk1WMiLsZdJ9t7Dw==
 
-"@typegoose/typegoose@^7.4.5":
-  version "7.4.5"
-  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-7.4.5.tgz#19ff469b559c9d68aa1793ef837ea60040bd892c"
-  integrity sha512-OfLKMMMzdbLMALZVbD8P24LkHICw2idSBOagKFzW185rdEqZf1a2/PO0eqybQ5bGqEKe8kFs+ln7zFg5zzu8+A==
+"@typegoose/typegoose@^7.4.7":
+  version "7.4.7"
+  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-7.4.7.tgz#3c8078a5bb3267804302dfbd832b56037f5ce81c"
+  integrity sha512-w8JUb6VNVr140Kv6MwlXk9rUoQAn4gBcDgRGlhCzk/fiImUFRrmwVYHIxVamox7q7e7LQsmIeQCXpE2WyQhj4A==
   dependencies:
     lodash "^4.17.20"
     loglevel "^1.7.0"
@@ -6617,10 +6617,10 @@ eslint-plugin-import@^2.22.1:
     resolve "^1.17.0"
     tsconfig-paths "^3.9.0"
 
-eslint-plugin-prettier@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-3.2.0.tgz#af391b2226fa0e15c96f36c733f6e9035dbd952c"
-  integrity sha512-kOUSJnFjAUFKwVxuzy6sA5yyMx6+o9ino4gCdShzBNx4eyFRudWRYKCFolKjoM40PEiuU6Cn7wBLfq3WsGg7qg==
+eslint-plugin-prettier@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-3.3.1.tgz#7079cfa2497078905011e6f82e8dd8453d1371b7"
+  integrity sha512-Rq3jkcFY8RYeQLgk2cCwuc0P7SEFwDravPhsJZOQ5N4YI4DSg50NyqJ/9gdZHzQlHf8MvafSesbNJCcP/FF6pQ==
   dependencies:
     prettier-linter-helpers "^1.0.0"
 
@@ -8150,10 +8150,10 @@ html-parse-stringify2@2.0.1:
   dependencies:
     void-elements "^2.0.1"
 
-html-react-parser@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.1.1.tgz#081d309a02aac9ae2683a5d96eb48846940d830b"
-  integrity sha512-z2O8aeh36Bnn17AtRReEZckpzVUaqRMsY8TMIxCyjQhCblQuN8l2D4mWY7V2bdLL7B2/FS4YD/dpndxuHtvYIQ==
+html-react-parser@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.1.2.tgz#66b67269048b22996328df799c92b9ec71e58225"
+  integrity sha512-nR2UNyJvH9kY/GnVFd0XUbctl/ic02Zpr/FrOREwTp84nqnxqN+tCGa3arJrg0j+UbdZWK+bJYdAMbXWOJru6Q==
   dependencies:
     html-dom-parser "1.0.0"
     react-property "1.0.1"
