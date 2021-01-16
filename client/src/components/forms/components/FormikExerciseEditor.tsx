@@ -14,6 +14,12 @@ import FormikTextField from './FormikTextField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    infoBox: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      borderBottom: `1.5px solid ${theme.palette.divider}`,
+      paddingBottom: theme.spacing(0.5),
+    },
     exercise: {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr max-content 56px',
@@ -209,14 +215,22 @@ function FormikExerciseEditor({
       name={name}
       render={(arrayHelpers) => (
         <Box gridColumn='1 / span 2' display='flex' flexDirection='column'>
-          <Typography>
-            Gesamtpunktzahl:{' '}
-            {exercises.reduce((pts, ex) => {
-              const pointsOfExercise = Number.parseFloat(ex.maxPoints);
+          <div className={classes.infoBox}>
+            <Typography>
+              Gesamtpunktzahl:{' '}
+              {exercises.reduce((pts, ex) => {
+                const pointsOfExercise = Number.parseFloat(ex.maxPoints);
 
-              return Number.isNaN(pointsOfExercise) ? pts : pts + pointsOfExercise;
-            }, 0)}
-          </Typography>
+                return Number.isNaN(pointsOfExercise) ? pts : pts + pointsOfExercise;
+              }, 0)}
+            </Typography>
+
+            {touched && error && typeof error === 'string' && (
+              <Typography color='error' align='right'>
+                {error}
+              </Typography>
+            )}
+          </div>
 
           {exercises.map((ex, idx) => (
             <div key={idx} className={classes.exercise}>
