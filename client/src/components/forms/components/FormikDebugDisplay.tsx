@@ -14,8 +14,9 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: theme.zIndex.modal + 1000,
       padding: theme.spacing(2),
       maxWidth: '35vw',
-      overflowX: 'auto',
-      ...theme.mixins.scrollbar(4),
+      maxHeight: '90vh',
+      display: 'grid',
+      gridTemplateRows: '1fr auto',
     },
     titleBar: {
       display: 'flex',
@@ -27,6 +28,11 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     codeContainer: {
       marginTop: theme.spacing(1),
+      marginRight: theme.spacing(-2),
+      paddingRight: theme.spacing(0.5),
+      flex: 1,
+      overflowX: 'auto',
+      ...theme.mixins.scrollbar(4),
     },
     code: {
       whiteSpace: 'pre',
