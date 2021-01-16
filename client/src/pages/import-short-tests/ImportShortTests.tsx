@@ -6,7 +6,7 @@ import { CSVImportProvider } from '../../components/import-csv-new/ImportCSV.con
 import { CSVMapColumsMetadata } from '../../components/import-csv-new/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
-import AdjustGeneratedShortTest from './components_new/AdjustGeneratedShortTest';
+import AdjustGeneratedShortTest from './components_new/adjust-generated-short-test/AdjustGeneratedShortTest';
 import IliasMappingProvider from './components_new/map-students-ilias-names/IliasMapping.context';
 import MapStudentsToIliasNames from './components_new/map-students-ilias-names/MapStudentsToIliasNames';
 
