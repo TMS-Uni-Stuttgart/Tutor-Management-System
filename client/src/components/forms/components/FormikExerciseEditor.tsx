@@ -106,12 +106,15 @@ export interface FormikExerciseEditorProps {
   name: string;
   disableAutofocus?: boolean;
   disableSubExercises?: boolean;
+  disableExerciseNameChange?: boolean;
+  disableAddExercise?: boolean;
 }
 
 interface ExerciseDataFieldsProps {
   namePrefix: string;
   disablePoints?: boolean;
   disableAutofocus?: boolean;
+  disableExerciseNameChange?: boolean;
 }
 
 function getNewExercise(exName: string = ''): ExerciseFormExercise {
@@ -128,6 +131,7 @@ function ExerciseDataFields({
   namePrefix,
   disablePoints,
   disableAutofocus,
+  disableExerciseNameChange,
 }: ExerciseDataFieldsProps): JSX.Element {
   return (
     <>
@@ -136,6 +140,7 @@ function ExerciseDataFields({
         label='Aufgabenbezeichnung'
         fullWidth={false}
         autoFocus={!disableAutofocus}
+        disabled={!!disableExerciseNameChange}
       />
 
       <FormikTextField
@@ -156,6 +161,8 @@ function FormikExerciseEditor({
   name,
   disableAutofocus,
   disableSubExercises,
+  disableAddExercise,
+  disableExerciseNameChange,
 }: FormikExerciseEditorProps): JSX.Element {
   const classes = useStyles();
   const [, { value, error, touched }] = useField<ExerciseFormExercise[]>(name);
@@ -239,6 +246,7 @@ function FormikExerciseEditor({
                 namePrefix={`${name}.${idx}`}
                 disablePoints={ex.subexercises.length > 0}
                 disableAutofocus={disableAutofocus}
+                disableExerciseNameChange={disableExerciseNameChange}
               />
 
               <IconButton
@@ -286,6 +294,7 @@ function FormikExerciseEditor({
             color='secondary'
             size='large'
             onClick={handleCreateExercise(arrayHelpers)}
+            disabled={disableAddExercise}
           >
             <PlusIcon className={classes.iconInButton} />
             Neue Aufgabe hinzufügen

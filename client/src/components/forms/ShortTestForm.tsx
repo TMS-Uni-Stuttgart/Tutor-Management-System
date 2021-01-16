@@ -69,11 +69,11 @@ function ShortTestForm({
 
   return (
     <FormikBaseForm
+      enableDebug
       {...other}
       initialValues={initalFormState}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
-      enableDebug
     >
       <FormikTextField
         name='shortTestNo'
