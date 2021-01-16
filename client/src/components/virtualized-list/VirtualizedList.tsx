@@ -8,7 +8,6 @@ import { useResizeObserver } from '../../hooks/useResizeObserver';
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
-      marginRight: -16,
       width: 'inherit',
       maxWidth: 'inherit',
     },
@@ -45,14 +44,20 @@ interface Props<T> extends HTMLProps<HTMLDivElement> {
 
   /** A placeholder to show if no items are present. */
   placeholder: string;
-}
 
-const GUTTER_SIZE = 16;
+  /**
+   * Spacing between rows in px.
+   *
+   * Default: 16px.
+   */
+  rowSpacing?: number;
+}
 
 function VirtualizedList<T>({
   items,
   children: ItemRow,
   placeholder,
+  rowSpacing = 16,
   ...props
 }: Props<T>): JSX.Element {
   const classes = useStyles();
@@ -69,7 +74,7 @@ function VirtualizedList<T>({
           height={height}
           width={width}
           itemCount={items.length}
-          itemSize={80 + GUTTER_SIZE}
+          itemSize={80 + rowSpacing}
         >
           {({ index, style, isScrolling }) => {
             const item = items[index];
@@ -81,8 +86,8 @@ function VirtualizedList<T>({
                 className={classes.itemRow}
                 style={{
                   ...style,
-                  top: posTop + GUTTER_SIZE,
-                  height: elHeight - GUTTER_SIZE,
+                  top: posTop,
+                  height: elHeight - rowSpacing,
                   width: 'calc(100% - 16px)',
                 }}
               >
