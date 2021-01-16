@@ -1,6 +1,5 @@
-import { Button, Chip, TableCell } from '@material-ui/core';
+import { Box, Button, Chip, Typography } from '@material-ui/core';
 import React from 'react';
-import PaperTableRow from '../../../../components/PaperTableRow';
 import { Student } from '../../../../model/Student';
 
 interface Props {
@@ -17,17 +16,19 @@ function MapStudentRow({
   onRemoveMapping,
 }: Props): JSX.Element {
   return (
-    <PaperTableRow
-      label={iliasName}
-      elevation={0}
-      buttonCellContent={<Button onClick={onMapStudent}>Studierenden zuordnen</Button>}
-    >
-      <TableCell>
-        {mappedStudent && (
+    <>
+      <Typography>{iliasName}</Typography>
+
+      {mappedStudent && (
+        <Box marginX={2}>
           <Chip label={mappedStudent.name} onDelete={onRemoveMapping} color='primary' />
-        )}
-      </TableCell>
-    </PaperTableRow>
+        </Box>
+      )}
+
+      <Box marginLeft='auto'>
+        <Button onClick={onMapStudent}>Studierende/n zuordnen</Button>
+      </Box>
+    </>
   );
 }
 

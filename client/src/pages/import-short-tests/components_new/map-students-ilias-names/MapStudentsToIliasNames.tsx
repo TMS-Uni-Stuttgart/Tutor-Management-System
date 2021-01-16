@@ -4,7 +4,7 @@ import { CheckCircleOutline as CheckIcon } from 'mdi-material-ui';
 import React, { useCallback } from 'react';
 import OutlinedBox from '../../../../components/OutlinedBox';
 import Placeholder from '../../../../components/Placeholder';
-import TableWithPadding from '../../../../components/TableWithPadding';
+import VirtualizedList from '../../../../components/virtualized-list/VirtualizedList';
 import { SelectionDialogChildrenProps } from '../../../../hooks/dialog-service/components/SelectionDialogContent';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { Student } from '../../../../model/Student';
@@ -15,6 +15,7 @@ import MapStudentRow from './MapStudentRow';
 const useStyles = makeStyles((theme) =>
   createStyles({
     checkIcon: { color: theme.palette.green.main, marginLeft: theme.spacing(2) },
+    studentList: { flex: 1 },
   })
 );
 
@@ -73,10 +74,10 @@ function MapStudentsToIliasNames(): JSX.Element {
   return (
     <Box
       display='grid'
+      width='100%'
       gridRowGap={32}
       gridTemplateColumns='1fr'
-      gridAutoRows='max-content'
-      width='100%'
+      gridTemplateRows='auto minmax(350px, 1fr)'
     >
       <Typography variant='h4'>Studierende &amp; Ilias-Namen zuordnen</Typography>
 
@@ -99,13 +100,15 @@ function MapStudentsToIliasNames(): JSX.Element {
               <CheckIcon className={classes.checkIcon} />
             </OutlinedBox>
           ) : (
-            <Box display='grid' gridRowGap={16}>
-              <Typography variant='h5'>Nicht zuordenbare Ilias-Namen</Typography>
+            <Box display='flex' flexDirection='column' maxWidth='100%'>
+              <Typography variant='h5'>Nicht zuordenbare Ilias-Namen derpy</Typography>
 
-              <TableWithPadding
+              <VirtualizedList
                 items={iliasNamesWithoutStudent}
                 placeholder='Alle Ilias-Namen konnten zugeordnet werden.'
-                createRowFromItem={(iliasName) => (
+                className={classes.studentList}
+              >
+                {({ item: iliasName }) => (
                   <MapStudentRow
                     iliasName={iliasName}
                     mappedStudent={getMapping(iliasName)}
@@ -113,7 +116,7 @@ function MapStudentsToIliasNames(): JSX.Element {
                     onRemoveMapping={() => handleRemoveStudentMapping(iliasName)}
                   />
                 )}
-              />
+              </VirtualizedList>
             </Box>
           ))}
       </Placeholder>

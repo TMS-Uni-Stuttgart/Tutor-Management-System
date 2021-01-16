@@ -1,40 +1,19 @@
-import { Box, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
+import { Box } from '@material-ui/core';
 import { FormikHelpers } from 'formik';
 import React, { useCallback, useMemo, useState } from 'react';
-import { FixedSizeList } from 'react-window';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { IStudentDTO } from 'shared/model/Student';
 import StudentForm, {
   convertFormStateToDTO,
   StudentFormState,
 } from '../../../components/forms/StudentForm';
+import VirtualizedList from '../../../components/virtualized-list/VirtualizedList';
 import { useDialog } from '../../../hooks/dialog-service/DialogService';
-import { useResizeObserver } from '../../../hooks/useResizeObserver';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
 import StudentListRow, { SubtextType } from './components/StudentListRow';
 import StudentListTopBar from './components/StudentListTopBar';
 import { getFilteredStudents, StudentSortOption } from './StudentList.helpers';
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    lastRow: {
-      marginBottom: theme.spacing(1),
-    },
-    placeholder: {
-      marginTop: 64,
-      textAlign: 'center',
-    },
-    list: {
-      gridColumn: '1 / span 1',
-      marginTop: 2,
-      marginBottom: -8,
-      marginRight: -16,
-    },
-  })
-);
 
 interface Props {
   students: Student[];
@@ -53,8 +32,6 @@ interface Props {
   tutorialId?: string;
 }
 
-const GUTTER_SIZE = 16;
-
 function StudentList({
   students,
   studentSubtextType,
@@ -67,10 +44,7 @@ function StudentList({
   tutorialId,
   additionalTopBarItem,
 }: Props): JSX.Element {
-  const classes = useStyles();
   const dialog = useDialog();
-
-  const [root, { height, width }] = useResizeObserver<HTMLDivElement>();
 
   const [filterText, setFilterText] = useState('');
   const [sortOption, setSortOption] = useState<StudentSortOption>(StudentSortOption.ALPHABETICAL);
@@ -138,51 +112,29 @@ function StudentList({
         additionalTopBarItem={additionalTopBarItem}
         hideDefaultTopBarContent={hideDefaultTopBarContent}
       />
-
-      <div ref={root} className={classes.list}>
-        {students.length === 0 ? (
-          <Typography variant='h6' className={classes.placeholder}>
-            Keine Studierenden vorhanden.
-          </Typography>
-        ) : filteredStudents.length === 0 ? (
-          <Typography variant='h6' className={classes.placeholder}>
-            Keine Studierenden entsprechen dem Filter.
-          </Typography>
-        ) : (
-          <FixedSizeList
-            height={height}
-            width={width}
-            itemCount={filteredStudents.length}
-            itemSize={80 + GUTTER_SIZE}
-          >
-            {({ index, style }) => {
-              const student = filteredStudents[index];
-              const posTop = Number.parseInt(`${style.top ?? 0}`);
-              const elHeight = Number.parseInt(`${style.height ?? 0}`);
-              const scheinStatus = summaries[student.id];
-
-              return (
-                <StudentListRow
-                  student={student}
-                  subTextType={studentSubtextType}
-                  scheinStatus={scheinStatus}
-                  tutorialId={tutorialId}
-                  onEdit={handleStudentEdit}
-                  onDelete={handleStudentDelete}
-                  onChangeTutorial={onStudentChangeTutorial}
-                  className={clsx(index === filteredStudents.length - 1 && classes.lastRow)}
-                  style={{
-                    ...style,
-                    top: posTop + GUTTER_SIZE,
-                    height: elHeight - GUTTER_SIZE,
-                    width: 'calc(100% - 16px)',
-                  }}
-                />
-              );
-            }}
-          </FixedSizeList>
-        )}
-      </div>
+      <VirtualizedList
+        items={filteredStudents}
+        placeholder={
+          students.length === 0
+            ? '  Keine Studierenden vorhanden.'
+            : 'Keine Studierenden entsprechen dem Filter.'
+        }
+      >
+        {({ item: student }) => {
+          const scheinStatus = summaries[student.id];
+          return (
+            <StudentListRow
+              student={student}
+              subTextType={studentSubtextType}
+              scheinStatus={scheinStatus}
+              tutorialId={tutorialId}
+              onEdit={handleStudentEdit}
+              onDelete={handleStudentDelete}
+              onChangeTutorial={onStudentChangeTutorial}
+            />
+          );
+        }}
+      </VirtualizedList>
     </Box>
   );
 }

@@ -1,6 +1,5 @@
-import { Box, Button, Paper, PaperProps, Typography } from '@material-ui/core';
+import { Box, Button, PaperProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
 import {
   AccountSwitch as ChangeTutorialIcon,
   InformationOutline as InfoIcon,
@@ -18,14 +17,6 @@ import ScheinStatusBox from '../../../student-info/components/ScheinStatusBox';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    studentBar: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(2),
-      '&:hover': {
-        background: theme.palette.action.hover,
-      },
-    },
     infoButton: {
       marginLeft: 'auto',
       marginRight: theme.spacing(2),
@@ -98,7 +89,7 @@ function StudentListRow({
   }, [onChangeTutorial, student]);
 
   return (
-    <Paper {...props} className={clsx(className, classes.studentBar)}>
+    <>
       <StudentAvatar student={student} />
 
       <Box marginLeft={2} minWidth={250} display='flex' flexDirection='column'>
@@ -129,7 +120,7 @@ function StudentListRow({
         onDeleteClicked={() => onDelete(student)}
         additionalItems={additionalMenuItems}
       />
-    </Paper>
+    </>
   );
 }
 
