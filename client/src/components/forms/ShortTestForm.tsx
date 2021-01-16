@@ -4,6 +4,7 @@ import { ShortTest } from '../../model/ShortTest';
 import { FormikSubmitCallback } from '../../types';
 import FormikExerciseEditor, {
   ExerciseFormExercise,
+  FormikExerciseEditorProps,
   mapExerciseToFormExercise,
 } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
@@ -32,6 +33,7 @@ interface Props extends Omit<FormikBaseFormProps<ShortTestFormState>, CommonlyUs
   allShortTests?: ShortTest[];
   initialValues?: ShortTestFormState;
   children?: React.ReactNode;
+  editorProps: Omit<FormikExerciseEditorProps, 'name'>;
 }
 
 export function getInitialShortTestFormState(
@@ -53,6 +55,7 @@ function ShortTestForm({
   allShortTests,
   initialValues,
   children,
+  editorProps,
   ...other
 }: Props): JSX.Element {
   const initalFormState = useMemo(
@@ -84,7 +87,11 @@ function ShortTestForm({
         inputProps={{ min: 0, max: 100, step: 1 }}
       />
 
-      <FormikExerciseEditor name='exercises' disableAutofocus={!!shortTest} />
+      <FormikExerciseEditor
+        {...editorProps}
+        name='exercises'
+        disableAutofocus={!!editorProps?.disableAutofocus || !!shortTest}
+      />
 
       {children}
     </FormikBaseForm>

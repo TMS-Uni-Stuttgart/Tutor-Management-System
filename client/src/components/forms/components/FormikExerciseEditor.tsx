@@ -1,4 +1,4 @@
-import { Button, IconButton, Typography } from '@material-ui/core';
+import { Box, Button, IconButton, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { FieldArray, FieldArrayRenderProps, useField } from 'formik';
@@ -14,11 +14,6 @@ import FormikTextField from './FormikTextField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    exerciseBox: {
-      gridColumn: '1 / span 2',
-      display: 'flex',
-      flexDirection: 'column',
-    },
     exercise: {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr max-content 56px',
@@ -101,9 +96,10 @@ export function mapExerciseToFormExercise(exercise: IExercise): ExerciseFormExer
   };
 }
 
-interface Props {
+export interface FormikExerciseEditorProps {
   name: string;
   disableAutofocus?: boolean;
+  disableSubExercises?: boolean;
 }
 
 interface ExerciseDataFieldsProps {
@@ -150,7 +146,11 @@ function ExerciseDataFields({
   );
 }
 
-function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
+function FormikExerciseEditor({
+  name,
+  disableAutofocus,
+  disableSubExercises,
+}: FormikExerciseEditorProps): JSX.Element {
   const classes = useStyles();
   const [, { value, error, touched }] = useField<ExerciseFormExercise[]>(name);
 
@@ -175,6 +175,10 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
 
   function handleAddSubexercise(idx: number, arrayHelpers: FieldArrayRenderProps) {
     return () => {
+      if (!!disableSubExercises) {
+        return;
+      }
+
       const exercise: ExerciseFormExercise = value[idx];
 
       exercise.subexercises.push(getNewExercise());
@@ -204,24 +208,33 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
     <FieldArray
       name={name}
       render={(arrayHelpers) => (
-        <div className={classes.exerciseBox}>
+        <Box gridColumn='1 / span 2' display='flex' flexDirection='column'>
+          <Typography>
+            Gesamtpunktzahl:{' '}
+            {exercises.reduce((pts, ex) => {
+              const pointsOfExercise = Number.parseFloat(ex.maxPoints);
+
+              return Number.isNaN(pointsOfExercise) ? pts : pts + pointsOfExercise;
+            }, 0)}
+          </Typography>
+
           {exercises.map((ex, idx) => (
-            <React.Fragment key={idx}>
-              <div className={classes.exercise}>
-                {/* TODO: Add calculation of points if there are subexercises. */}
-                <ExerciseDataFields
-                  namePrefix={`${name}.${idx}`}
-                  disablePoints={ex.subexercises.length > 0}
-                  disableAutofocus={disableAutofocus}
-                />
+            <div key={idx} className={classes.exercise}>
+              {/* TODO: Add calculation of points if there are subexercises. */}
+              <ExerciseDataFields
+                namePrefix={`${name}.${idx}`}
+                disablePoints={ex.subexercises.length > 0}
+                disableAutofocus={disableAutofocus}
+              />
 
-                <IconButton
-                  className={classes.deleteButton}
-                  onClick={handleExerciseDelete(idx, arrayHelpers)}
-                >
-                  <MinusIcon />
-                </IconButton>
+              <IconButton
+                className={classes.deleteButton}
+                onClick={handleExerciseDelete(idx, arrayHelpers)}
+              >
+                <MinusIcon />
+              </IconButton>
 
+              {!disableSubExercises && (
                 <div className={classes.subexerciseBox}>
                   {ex.subexercises.map((_, subIdx) => (
                     <div
@@ -250,8 +263,8 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
                     Neue Teilaufgabe hinzufügen
                   </Button>
                 </div>
-              </div>
-            </React.Fragment>
+              )}
+            </div>
           ))}
 
           <Button
@@ -269,7 +282,7 @@ function FormikExerciseEditor({ name, disableAutofocus }: Props): JSX.Element {
               {error}
             </Typography>
           )}
-        </div>
+        </Box>
       )}
     />
   );

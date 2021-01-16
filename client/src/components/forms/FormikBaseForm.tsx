@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     form: {
       display: 'grid',
+      height: 'fit-content',
       gridTemplateColumns: '1fr 1fr',
       gridColumnGap: theme.spacing(1),
       gridRowGap: theme.spacing(2),
