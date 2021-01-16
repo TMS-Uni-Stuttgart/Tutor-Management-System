@@ -33,7 +33,7 @@ interface Props extends Omit<FormikBaseFormProps<ShortTestFormState>, CommonlyUs
   allShortTests?: ShortTest[];
   initialValues?: ShortTestFormState;
   children?: React.ReactNode;
-  editorProps: Omit<FormikExerciseEditorProps, 'name'>;
+  editorProps?: Omit<FormikExerciseEditorProps, 'name'>;
 }
 
 export function getInitialShortTestFormState(
