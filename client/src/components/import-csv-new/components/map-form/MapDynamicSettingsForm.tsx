@@ -66,7 +66,7 @@ function MapDynamicSettingsForm({ onSubmit, headerCount }: MapDynamicFormProps):
   return (
     <Box display='flex' flexDirection='row'>
       <TextField
-        label='Anzahl Aufgaben'
+        label='Spaltenanzahl'
         type='number'
         value={count}
         onChange={(e) => {
