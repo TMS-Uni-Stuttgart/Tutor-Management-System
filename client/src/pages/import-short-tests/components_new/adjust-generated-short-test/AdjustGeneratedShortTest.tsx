@@ -1,48 +1,18 @@
 import { Box, Typography } from '@material-ui/core';
-import { FormikErrors, useFormikContext } from 'formik';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useHistory } from 'react-router';
+import { FormikErrors } from 'formik';
+import React, { useCallback, useMemo, useState } from 'react';
 import ShortTestForm, { ShortTestFormState } from '../../../../components/forms/ShortTestForm';
 import { useImportCSVContext } from '../../../../components/import-csv-new/ImportCSV.context';
 import LoadingModal from '../../../../components/loading/LoadingModal';
 import Placeholder from '../../../../components/Placeholder';
-import { useStepper } from '../../../../components/stepper-with-buttons/context/StepperContext';
+import HookUpStepperWithFormik from '../../../../components/stepper-with-buttons/HookUpStepperWithFormik';
 import { useFetchState } from '../../../../hooks/useFetchState';
-import { ROUTES } from '../../../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../../../types';
 import { ShortTestColumns } from '../../ImportShortTests';
 import { useIliasMappingContext } from '../map-students-ilias-names/IliasMapping.context';
 import { generateInitialValues, validateExercises, validateShortTestNumber } from './formHelpers';
 
 type ShortTestValidator = (values: ShortTestFormState) => FormikErrors<ShortTestFormState>;
-
-function HookUpStepper(): null {
-  const history = useHistory();
-  const { submitForm } = useFormikContext<ShortTestFormState>();
-
-  const { setNextCallback, removeNextCallback } = useStepper();
-
-  useEffect(() => {
-    setNextCallback(async () => {
-      const isSuccess: any = await submitForm();
-
-      if (!!isSuccess) {
-        return {
-          goToNext: true,
-          runAfterFinished: () => {
-            history.push(ROUTES.MANAGE_HAND_INS.create({ location: '1' }));
-          },
-        };
-      } else {
-        return { goToNext: false, error: true };
-      }
-    });
-
-    return () => removeNextCallback();
-  }, [setNextCallback, removeNextCallback, submitForm, history]);
-
-  return null;
-}
 
 function AdjustGeneratedShortTest(): JSX.Element {
   const {
@@ -109,7 +79,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
           validateOnMount
           initialTouched={{ exercises: [] }}
         >
-          <HookUpStepper />
+          <HookUpStepperWithFormik />
         </ShortTestForm>
       </Placeholder>
 
