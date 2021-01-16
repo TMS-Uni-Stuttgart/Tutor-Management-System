@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { RefObject, useEffect, useRef, useState } from 'react';
 
 export interface Dimensions {
@@ -31,7 +32,7 @@ export function useResizeObserver<T extends HTMLElement>(
       setDimensions({ height, width });
     }
 
-    const resizeObserver = new ResizeObserver(handleResize);
+    const resizeObserver = new ResizeObserver(_.debounce(handleResize, 10));
     resizeObserver.observe(rootElement, { box: 'border-box' });
 
     return () => resizeObserver.disconnect();
