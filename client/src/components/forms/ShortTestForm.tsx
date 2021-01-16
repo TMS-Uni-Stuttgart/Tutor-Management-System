@@ -21,7 +21,10 @@ export interface ShortTestFormState {
 
 const validationSchema = Yup.object().shape<ShortTestFormState>({
   shortTestNo: Yup.string().required('Benötigt'),
-  percentageNeeded: Yup.number().required('Benötigt'),
+  percentageNeeded: Yup.number()
+    .required('Benötigt')
+    .min(0, 'Muss mind. 0% betragen.')
+    .max(1, 'Darf höchstens 100% betragen.'),
   exercises: Yup.array<ExerciseFormExercise>()
     .of(exerciseValidationSchema)
     .required('Mind. 1 Aufgabe benötigt.'),

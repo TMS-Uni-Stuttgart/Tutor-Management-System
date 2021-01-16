@@ -60,6 +60,7 @@ export async function generateInitialValues(
 
 export function validateShortTestNumber(
   values: ShortTestFormState,
+  shortTest: ShortTest | undefined,
   shortTests: ShortTest[]
 ): string | undefined {
   const shortTestNo: number = Number.parseFloat(values.shortTestNo);
@@ -69,18 +70,12 @@ export function validateShortTestNumber(
   }
 
   for (const test of shortTests) {
-    if (test.shortTestNo === shortTestNo) {
+    if (test.shortTestNo === shortTestNo && shortTestNo !== shortTest?.shortTestNo) {
       return 'Es gibt bereits einen Test mit dieser Nummer.';
     }
   }
 
   return undefined;
-}
-
-export function validatePercentage({ percentageNeeded }: ShortTestFormState): string | undefined {
-  return percentageNeeded >= 0 && percentageNeeded <= 1
-    ? undefined
-    : 'Muss zwischen 0% und 100% liegen.';
 }
 
 export function validateExercises(

@@ -12,12 +12,7 @@ import { ROUTES } from '../../../../routes/Routing.routes';
 import { FormikSubmitCallback } from '../../../../types';
 import { ShortTestColumns } from '../../ImportShortTests';
 import { useIliasMappingContext } from '../map-students-ilias-names/IliasMapping.context';
-import {
-  generateInitialValues,
-  validateExercises,
-  validatePercentage,
-  validateShortTestNumber,
-} from './formHelpers';
+import { generateInitialValues, validateExercises, validateShortTestNumber } from './formHelpers';
 
 type ShortTestValidator = (values: ShortTestFormState) => FormikErrors<ShortTestFormState>;
 
@@ -77,12 +72,11 @@ function AdjustGeneratedShortTest(): JSX.Element {
   const validateShortTest: ShortTestValidator = useCallback(
     (values) => {
       return {
-        shortTestNo: validateShortTestNumber(values, value?.shortTests ?? []),
-        percentageNeeded: validatePercentage(values),
+        shortTestNo: validateShortTestNumber(values, shortTest, value?.shortTests ?? []),
         exercises: validateExercises(values, totalPointsOfTest),
       };
     },
-    [totalPointsOfTest, value?.shortTests]
+    [totalPointsOfTest, value?.shortTests, shortTest]
   );
 
   const handleSubmit: FormikSubmitCallback<ShortTestFormState> = useCallback(
