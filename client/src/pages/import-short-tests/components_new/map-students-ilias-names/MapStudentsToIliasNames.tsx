@@ -101,7 +101,7 @@ function MapStudentsToIliasNames(): JSX.Element {
             </OutlinedBox>
           ) : (
             <Box display='flex' flexDirection='column' maxWidth='100%'>
-              <Typography variant='h5'>Nicht zuordenbare Ilias-Namen derpy</Typography>
+              <Typography variant='h5'>Nicht zuordenbare Ilias-Namen</Typography>
 
               <VirtualizedList
                 items={iliasNamesWithoutStudent}

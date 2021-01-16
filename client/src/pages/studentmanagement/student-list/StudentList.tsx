@@ -111,6 +111,7 @@ function StudentList({
         onSortOptionChanged={setSortOption}
         additionalTopBarItem={additionalTopBarItem}
         hideDefaultTopBarContent={hideDefaultTopBarContent}
+        marginBottom={1}
       />
       <VirtualizedList
         items={filteredStudents}

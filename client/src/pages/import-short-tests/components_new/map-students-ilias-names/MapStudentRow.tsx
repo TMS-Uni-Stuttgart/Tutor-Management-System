@@ -16,19 +16,26 @@ function MapStudentRow({
   onRemoveMapping,
 }: Props): JSX.Element {
   return (
-    <>
+    <Box
+      width='inherit'
+      height='inherit'
+      display='grid'
+      gridTemplateColumns='auto 1fr auto'
+      gridColumnGap={16}
+      alignItems='center'
+    >
       <Typography>{iliasName}</Typography>
 
-      {mappedStudent && (
-        <Box marginX={2}>
+      <Box justifySelf='end'>
+        {mappedStudent && (
           <Chip label={mappedStudent.name} onDelete={onRemoveMapping} color='primary' />
-        </Box>
-      )}
+        )}
+      </Box>
 
-      <Box marginLeft='auto'>
+      <Box>
         <Button onClick={onMapStudent}>Studierende/n zuordnen</Button>
       </Box>
-    </>
+    </Box>
   );
 }
 
