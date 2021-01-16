@@ -1,5 +1,9 @@
 import { CSVData, ParsedCSVData } from '../import-csv/ImportCSV.types';
 
+export type CSVMappedColumns<COL extends string> = {
+  readonly [key in COL]: string | string[];
+};
+
 export interface CSVMapColumnsHelpers<COL extends string, GRP extends string> {
   /**
    * Metadata for the mapping process.
@@ -15,9 +19,7 @@ export interface CSVMapColumnsHelpers<COL extends string, GRP extends string> {
    *
    * Will contain one column for a 'static' mapping and an array for a 'dynamic' mapping (indicated by the provided `metadata`).
    */
-  readonly mappedColumns: {
-    readonly [key in COL]: string | string[];
-  };
+  readonly mappedColumns: CSVMappedColumns<COL>;
 
   /**
    * Saves the given columns as mapped to the given field.
