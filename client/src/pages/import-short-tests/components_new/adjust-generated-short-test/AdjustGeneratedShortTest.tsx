@@ -2,7 +2,7 @@ import { Box, Typography } from '@material-ui/core';
 import { FormikErrors } from 'formik';
 import _ from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import { IExerciseGradingDTO, IGradingDTO } from 'server/src/shared/model/Gradings';
+import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings';
 import ShortTestForm, { ShortTestFormState } from '../../../../components/forms/ShortTestForm';
 import { useImportCSVContext } from '../../../../components/import-csv-new/ImportCSV.context';
 import { CSVMappedColumns } from '../../../../components/import-csv-new/ImportCSV.types';
