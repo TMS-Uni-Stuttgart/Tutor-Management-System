@@ -1,5 +1,4 @@
 import { FormikHelpers } from 'formik';
-import pwGenerator from 'generate-password';
 import { Restore as RestoreOutlinedIcon, Shuffle as ShuffleIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Role } from 'shared/model/Role';
@@ -7,6 +6,7 @@ import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
+import { PasswordGenerator } from '../../util/password-generator/PasswordGenerator';
 import { passwordValidationSchema } from '../../util/validationSchemas';
 import FormikPasswordField from './components/FormikPasswordField';
 import FormikSelect from './components/FormikSelect';
@@ -43,12 +43,12 @@ interface HasName {
 }
 
 export function generateTemporaryPassword(): string {
-  return pwGenerator.generate({
+  return new PasswordGenerator({
     length: 16,
     numbers: true,
     excludeSimilarCharacters: true,
     strict: true,
-  });
+  }).generate();
 }
 
 export function generateUsernameFromName({ firstname, lastname }: HasName): string {
