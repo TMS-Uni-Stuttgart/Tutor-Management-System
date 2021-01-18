@@ -31,8 +31,8 @@ interface ActionParams {
   deleteButton?: boolean;
 }
 
-interface DialogOptions {
-  title: string;
+export interface DialogOptions {
+  title?: string;
   content:
     | React.ReactNode
     | React.FunctionComponent<{ actionRef: React.RefObject<HTMLElement | undefined> }>;
@@ -110,7 +110,7 @@ function DialogService({ children }: RequireChildrenProp): JSX.Element {
 
       {dialog !== undefined && (
         <Dialog open onClose={handleCloseDialog} fullWidth {...dialog.DialogProps}>
-          <DialogTitle>{dialog.title}</DialogTitle>
+          {dialog.title && <DialogTitle>{dialog.title}</DialogTitle>}
 
           <DialogContent>
             {typeof dialog.content === 'string' ? (

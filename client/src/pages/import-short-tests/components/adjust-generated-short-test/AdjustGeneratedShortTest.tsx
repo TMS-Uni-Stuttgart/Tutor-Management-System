@@ -6,6 +6,7 @@ import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings';
 import ShortTestForm, { ShortTestFormState } from '../../../../components/forms/ShortTestForm';
 import { useImportCSVContext } from '../../../../components/import-csv/ImportCSV.context';
 import { CSVDataRow, CSVMappedColumns } from '../../../../components/import-csv/ImportCSV.types';
+import InformationButton from '../../../../components/information-box/InformationButton';
 import LoadingModal from '../../../../components/loading/LoadingModal';
 import Placeholder from '../../../../components/Placeholder';
 import HookUpStepperWithFormik from '../../../../components/stepper-with-buttons/HookUpStepperWithFormik';
@@ -178,7 +179,14 @@ function AdjustGeneratedShortTest(): JSX.Element {
 
   return (
     <Box display='grid' gridRowGap={32} width='100%' gridTemplateRows='auto 1fr'>
-      <Typography variant='h4'>Importierten Kurztest anpassen</Typography>
+      <Box display='grid' gridTemplateColumns='1fr auto'>
+        <Typography variant='h4'>Importierten Kurztest anpassen</Typography>
+        <InformationButton
+          title='Generierter Kurztest'
+          information='Werden Ergebnisse neu (!) importiert, so wird versucht, einen möglichst guten Test zu generieren. Dafür müssen allerdings pro Aufgabe die maximale Punktzahl, die von einem/r Studierenden erreicht wurde, genommen werden (der Iliasexport enthält die Punkte für die Aufgaben nicht). Deshalb kann es sein, dass die generierte Bepunktung der Aufgaben nicht zu 100% mit der realen Bepunktung übereinstimmt und diese angepasst werden muss.'
+          dialogWidth='md'
+        />
+      </Box>
 
       <Placeholder
         loading={isLoading}

@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) =>
 
 function ImportShortTestInformation(): JSX.Element {
   const classes = useStyles();
+
   return (
     <Box display='flex' flexDirection='column'>
       <Typography variant='h4'>Kurztestergebnisse aus dem Ilias exportieren</Typography>
