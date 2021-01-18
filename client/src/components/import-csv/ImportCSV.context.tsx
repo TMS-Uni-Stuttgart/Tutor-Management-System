@@ -1,200 +1,62 @@
-import { Formik } from 'formik';
-import _ from 'lodash';
-import React, { useCallback, useState } from 'react';
-import { getParsedCSV } from '../../hooks/fetching/CSV';
-import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
-import { FormikSubmitCallback } from '../../types';
-import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
+import React, { PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 import { throwContextNotInitialized } from '../../util/throwFunctions';
-import { useMapColumnsDataElements } from './hooks/useMapColumnsDataElements';
 import {
-  Column,
+  CSVContext,
   CSVData,
   CSVDataRow,
-  CSVFormData,
-  DataContextValue,
-  HandleSubmit,
-  MapColumnsData,
-  MappedColumns,
+  CSVMapColumsMetadata,
   ParsedCSVData,
 } from './ImportCSV.types';
 
-export const DataContext = React.createContext<DataContextValue<any, any>>({
-  data: { headers: [], rows: [] },
-  isLoading: false,
-  importCsvHelpers: {
-    canSubmitCSV: false,
-    csvFormData: { csvInput: '', separator: '' },
-    setCSVFormData: throwContextNotInitialized('ImportUsersContext'),
-    handleCSVFormSubmit: throwContextNotInitialized('ImportUsersContext'),
-  },
+const CSVImportContext = React.createContext<CSVContext<any, any>>({
+  csvData: { headers: [], rows: [] },
+  setCSVData: throwContextNotInitialized('CSVContext'),
   mapColumnsHelpers: {
-    mapColumnsData: { information: {}, groups: {} },
+    metadata: { information: {}, groups: {} },
     mappedColumns: {},
-    setMappedColumns: throwContextNotInitialized('ImportUsersContext'),
-    handleMappedColumnsSubmit: throwContextNotInitialized('ImportUsersContext'),
-    mapColumnBoxes: [],
-    isValidFormState: false,
+    mapColumn: throwContextNotInitialized('CSVContext'),
   },
 });
 
-function convertParsedToInternalCSV(data: ParsedCSVData): CSVData {
+interface ProviderProps<COL extends string, GRP extends string> {
+  groupMetadata: CSVMapColumsMetadata<COL, GRP>;
+}
+
+function convertParsedToCSVData(data: ParsedCSVData): CSVData {
   const { headers, rows: parsedRows } = data;
   const rows: CSVDataRow[] = parsedRows.map((row, idx) => ({ rowNr: idx, data: row }));
 
   return { headers, rows };
 }
 
-function generateInitialMapping<COL extends string, GRP extends string>(
-  data: MapColumnsData<COL, GRP>
-): MappedColumns<COL> {
-  const mapped: Record<string, string> = {};
-
-  for (const key of Object.keys(data.information)) {
-    mapped[key] = '';
-  }
-
-  return mapped as MappedColumns<COL>;
-}
-
-interface Props<T extends MapColumnsData<any, any>> extends RequireChildrenProp {
-  mapColumnsData: T;
-}
-
-function ImportCSVContext<T extends MapColumnsData<any, any>>({
+export function CSVImportProvider<COL extends string, GRP extends string>({
   children,
-  mapColumnsData,
-}: Props<T>): JSX.Element {
-  const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
+  groupMetadata,
+}: PropsWithChildren<ProviderProps<COL, GRP>>): JSX.Element {
+  const [csvData, setInternalCSVData] = useState<CSVData>({ headers: [], rows: [] });
+  const [mappedColumns, setMappedColumns] = useState<Record<string, string | string[]>>({});
+  const metadata = useMemo(() => ({ ...groupMetadata }), [groupMetadata]);
 
-  const [isLoading, setLoading] = useState(false);
-  const [data, setInternalData] = useState<CSVData>(() =>
-    convertParsedToInternalCSV({ headers: [], rows: [] })
-  );
-  const [mappedColumns, setMappedColumns] = useState<MappedColumns<Column<T>>>(() =>
-    generateInitialMapping(mapColumnsData)
-  );
-  const [csvFormData, setCSVFormData] = useState<CSVFormData>({ csvInput: '', separator: '' });
-  const { boxes, validationSchema } = useMapColumnsDataElements(mapColumnsData, data.headers);
+  const setCSVData = useCallback((csvData: ParsedCSVData) => {
+    setInternalCSVData(convertParsedToCSVData(csvData));
+  }, []);
 
-  const setData = useCallback(
-    (data: ParsedCSVData) => {
-      const newMappedColumns: MappedColumns<Column<T>> = generateInitialMapping(mapColumnsData);
-      const parsedHeaders: Map<string, string> = new Map();
-
-      for (const header of data.headers) {
-        parsedHeaders.set(header, _.deburr(header).toLowerCase());
-      }
-
-      for (const [key, value] of Object.entries(mapColumnsData.information)) {
-        const headersToAutoMap = value.headersToAutoMap.map((h) => _.deburr(h).toLowerCase());
-
-        parsedHeaders.forEach((parsedHeader, header) => {
-          if (headersToAutoMap.includes(parsedHeader)) {
-            (newMappedColumns as any)[key] = header;
-          }
-        });
-      }
-
-      setMappedColumns(newMappedColumns);
-      setInternalData(convertParsedToInternalCSV(data));
-    },
-    [mapColumnsData]
-  );
-
-  const handleCSVFormSubmit = useCallback<HandleSubmit>(async () => {
-    const { csvInput, separator } = csvFormData;
-
-    if (!csvInput) {
-      return { isSuccess: false };
-    }
-
-    let isSuccess: boolean = true;
-
-    try {
-      setLoading(true);
-      const response = await getParsedCSV<{ [header: string]: string }>({
-        data: csvInput.trim(),
-        options: { header: true, delimiter: separator },
-      });
-
-      if (response.errors.length !== 0) {
-        enqueueSnackbarWithList({
-          title: 'CSV konnte nicht importiert werden.',
-          textBeforeList: 'Folgende Fehler sind aufgetreten:',
-          items: response.errors.map((err) => `${err.message} (Zeile: ${err.row})`),
-          variant: 'error',
-        });
-        isSuccess = false;
-      } else if (!response.meta.fields) {
-        enqueueSnackbar('Spaltenüberschriften konnten nicht identifiziert werden.', {
-          variant: 'error',
-        });
-      } else {
-        setData({ headers: response.meta.fields, rows: response.data });
-      }
-    } catch {
-      enqueueSnackbar('CSV konnte nicht importiert werden.', { variant: 'error' });
-      isSuccess = false;
-    } finally {
-      setLoading(false);
-    }
-    return { isSuccess };
-  }, [csvFormData, setData, enqueueSnackbar, enqueueSnackbarWithList]);
-
-  const handleMappedColumnsFormSubmit = useCallback<FormikSubmitCallback<MappedColumns<string>>>(
-    async (values) => {
-      // This function needs to be async so formik itself can return the returned value of this function.
-      setMappedColumns(values);
-      return true;
-    },
-    []
-  );
-
-  const handleMappedColumnsSubmit = useCallback(
-    (submitForm: () => Promise<any>) => async () => {
-      setLoading(true);
-      const isSuccess = await submitForm();
-      setLoading(false);
-
-      return { isSuccess: !!isSuccess };
-    },
-    []
-  );
+  const mapColumn = useCallback((key: string, value: string | string[]) => {
+    setMappedColumns((mappedColumns) => ({ ...mappedColumns, [key]: value }));
+  }, []);
 
   return (
-    <Formik
-      initialValues={mappedColumns}
-      enableReinitialize
-      validationSchema={validationSchema}
-      onSubmit={handleMappedColumnsFormSubmit}
+    <CSVImportContext.Provider
+      value={{ csvData, setCSVData, mapColumnsHelpers: { metadata, mappedColumns, mapColumn } }}
     >
-      {({ isValid, submitForm }) => (
-        <DataContext.Provider
-          value={{
-            data,
-            isLoading,
-            importCsvHelpers: {
-              csvFormData,
-              canSubmitCSV: !!csvFormData.csvInput,
-              setCSVFormData,
-              handleCSVFormSubmit,
-            },
-            mapColumnsHelpers: {
-              handleMappedColumnsSubmit: handleMappedColumnsSubmit(submitForm),
-              mapColumnsData,
-              mappedColumns,
-              setMappedColumns,
-              mapColumnBoxes: boxes,
-              isValidFormState: isValid,
-            },
-          }}
-        >
-          {children}
-        </DataContext.Provider>
-      )}
-    </Formik>
+      {children}
+    </CSVImportContext.Provider>
   );
 }
 
-export default ImportCSVContext;
+export function useImportCSVContext<COL extends string, GRP extends string>(): CSVContext<
+  COL,
+  GRP
+> {
+  return useContext(CSVImportContext);
+}

@@ -1,156 +1,130 @@
-import {
-  Box,
-  Button,
-  createStyles,
-  Divider,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import { Upload as UploadIcon } from 'mdi-material-ui';
-import React, { useCallback, useState } from 'react';
-import { useDialog } from '../../../hooks/dialog-service/DialogService';
+import { Box, TextField, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { FileTableOutline as FileImportIcon, Text as TextImportIcon } from 'mdi-material-ui';
+import React, { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
-import DragAndDrop from '../../drag-and-drop/DragAndDrop';
 import LoadingModal from '../../loading/LoadingModal';
-import { useImportCSVHelpers } from '../hooks/useImportCSVHelpers';
+import { NextStepCallback, useStepper } from '../../stepper-with-buttons/context/StepperContext';
+import submitCSV from '../helpers/submitCSV';
+import { useImportCSVContext } from '../ImportCSV.context';
+import ImportCSVFromFile, { FileInformation } from './ImportCSVFromFile';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    divider: { flex: 1, margin: theme.spacing(0, 2) },
-    uploadLabel: { flex: 1 },
-    uploadButton: { width: '100%' },
+    modeButtons: {
+      marginRight: theme.spacing(2),
+    },
+    modeIcon: {
+      marginRight: theme.spacing(1),
+    },
   })
 );
 
+enum ImportMode {
+  FILE = 'FILE',
+  TEXT = 'TEXT',
+}
+
 function ImportCSV(): JSX.Element {
   const classes = useStyles();
-  const { enqueueSnackbar } = useCustomSnackbar();
-  const { showConfirmationDialog } = useDialog();
+  const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
+  const { setCSVData } = useImportCSVContext();
 
-  const { csvFormData, setCSVFormData, isLoading: isLoadingInContext } = useImportCSVHelpers();
-  const [isLoadingCSV, setLoadingCSV] = useState(false);
+  const [fileInfo, setFileInfo] = useState<FileInformation>({ content: '', fileName: '' });
+  const [textFieldValue, setTextFieldValue] = useState<string>('');
+  const [mode, setMode] = useState<string>(ImportMode.FILE);
+  const [separator, setSeparator] = useState<string>('');
 
-  const setCSVInput = useCallback(
-    (csvInput: string) => {
-      setCSVFormData({ ...csvFormData, csvInput });
-    },
-    [csvFormData, setCSVFormData]
-  );
+  const handleSubmitCSV = useCallback<NextStepCallback>(async () => {
+    const csv = mode === ImportMode.FILE ? fileInfo.content : textFieldValue;
 
-  const setSeparator = useCallback(
-    (separator: string) => {
-      setCSVFormData({ ...csvFormData, separator });
-    },
-    [csvFormData, setCSVFormData]
-  );
+    return submitCSV({ csv, separator, setCSVData, enqueueSnackbar, enqueueSnackbarWithList });
+  }, [
+    fileInfo.content,
+    mode,
+    textFieldValue,
+    separator,
+    setCSVData,
+    enqueueSnackbar,
+    enqueueSnackbarWithList,
+  ]);
 
-  const loadFileContent = useCallback(
-    async (file: File) => {
-      if (file.type !== 'application/vnd.ms-excel') {
-        enqueueSnackbar('Ausgewählte Datei ist keine CSV-Datei.', { variant: 'error' });
-        return;
-      }
+  const handleModeChange = useCallback((_: MouseEvent<HTMLElement>, newMode: string | null) => {
+    if (!!newMode) {
+      setMode(newMode);
+    }
+  }, []);
 
-      setLoadingCSV(true);
-      if (!!csvFormData.csvInput) {
-        const overrideExisting = await showConfirmationDialog({
-          title: 'Überschreiben?',
-          content:
-            'Es sind noch Daten im Textfeld vorhanden. Sollen diese wirklich überschrieben werden?',
-          acceptProps: { label: 'Überschreiben', deleteButton: true },
-          cancelProps: { label: 'Nicht überschreiben' },
-        });
+  const { setNextDisabled, isWaitingOnNextCallback } = useStepper(handleSubmitCSV);
 
-        if (!overrideExisting) {
-          setLoadingCSV(false);
-          return;
-        }
-      }
-      const content: string = await file.text();
-
-      // Reset the file so the user could select the same file twice.
-      setCSVInput(content);
-      setLoadingCSV(false);
-    },
-    [csvFormData.csvInput, setCSVInput, enqueueSnackbar, showConfirmationDialog]
-  );
-
-  const handleFileUpload = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      // We need the target after async code to reset the text field.
-      e.persist();
-      const file = e.target.files?.[0];
-
-      if (!file) {
-        return;
-      }
-
-      await loadFileContent(file);
-
-      e.target.value = '';
-    },
-    [loadFileContent]
-  );
+  useEffect(() => {
+    setNextDisabled(mode === ImportMode.FILE ? !fileInfo.content : !textFieldValue);
+  }, [mode, fileInfo, textFieldValue, setNextDisabled]);
 
   return (
-    <Box display='flex' flexDirection='column' width='100%'>
-      <Box display='flex' marginBottom={2} alignItems='center'>
+    <Box
+      display='grid'
+      gridRowGap={16}
+      gridColumnGap={8}
+      gridTemplateRows='max-content 1fr'
+      gridTemplateColumns='1fr max-content'
+      width='100%'
+      paddingTop={1}
+    >
+      <Box gridArea='1 / 1'>
         <Typography variant='h4'>CSV importieren</Typography>
+      </Box>
+
+      <Box gridArea='1 / 2'>
+        <ToggleButtonGroup
+          exclusive
+          value={mode}
+          onChange={handleModeChange}
+          className={classes.modeButtons}
+        >
+          <ToggleButton value={ImportMode.FILE}>
+            <FileImportIcon className={classes.modeIcon} /> Datei
+          </ToggleButton>
+          <ToggleButton value={ImportMode.TEXT}>
+            <TextImportIcon className={classes.modeIcon} /> Text
+          </ToggleButton>
+        </ToggleButtonGroup>
 
         <TextField
           variant='outlined'
           label='Seperator'
           helperText='Der Seperator wird automatisch bestimmt, wenn Feld leer'
-          value={csvFormData.separator}
+          value={separator}
           onChange={(e) => setSeparator(e.target.value)}
-          style={{ marginLeft: 'auto' }}
         />
       </Box>
 
-      <DragAndDrop
-        supportedFileTypes={['application/vnd.ms-excel']}
-        handleFileDrop={loadFileContent}
+      <Box
+        gridArea='2 / 1 / span 1 / span 2'
+        overflow='auto'
+        display='flex'
+        flexDirection='column'
+        paddingTop={1}
       >
-        <Box display='flex'>
-          <input
-            accept='.csv'
-            style={{ display: 'none' }}
-            id='icon-button-file'
-            type='file'
-            onChange={handleFileUpload}
+        {mode === ImportMode.FILE ? (
+          <ImportCSVFromFile
+            fileInfo={fileInfo}
+            onFileInfoChanged={(newInfo) => setFileInfo(newInfo)}
           />
-          <label htmlFor='icon-button-file' className={classes.uploadLabel}>
-            <Button
-              variant='outlined'
-              disableElevation
-              className={classes.uploadButton}
-              component='span'
-              startIcon={<UploadIcon />}
-            >
-              CSV-Datei hochladen
-            </Button>
-          </label>
-        </Box>
-      </DragAndDrop>
-
-      <Box display='flex' alignItems='center' marginY={2}>
-        <Divider className={classes.divider} />
-        <Typography>ODER</Typography>
-        <Divider className={classes.divider} />
+        ) : (
+          <TextField
+            label='CSV Daten einfügen'
+            inputProps={{ rowsMin: 8 }}
+            value={textFieldValue}
+            onChange={(e) => setTextFieldValue(e.target.value)}
+            fullWidth
+            multiline
+          />
+        )}
       </Box>
 
-      <TextField
-        variant='outlined'
-        label='CSV Daten einfügen'
-        inputProps={{ rowsMin: 8 }}
-        value={csvFormData.csvInput}
-        onChange={(e) => setCSVInput(e.target.value)}
-        fullWidth
-        multiline
-      />
-
-      <LoadingModal modalText='Importiere CSV...' open={isLoadingInContext || isLoadingCSV} />
+      <LoadingModal modalText='Importiere CSV...' open={isWaitingOnNextCallback} />
     </Box>
   );
 }

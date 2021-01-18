@@ -1,10 +1,9 @@
 import { ExerciseFormExercise } from '../../../../components/forms/components/FormikExerciseEditor';
 import { ShortTestFormState } from '../../../../components/forms/ShortTestForm';
-import { CSVMappedColumns } from '../../../../components/import-csv-new/ImportCSV.types';
-import { CSVDataRow } from '../../../../components/import-csv/ImportCSV.types';
+import { CSVDataRow, CSVMappedColumns } from '../../../../components/import-csv/ImportCSV.types';
 import { getAllShortTests } from '../../../../hooks/fetching/ShortTests';
 import { ShortTest } from '../../../../model/ShortTest';
-import { ShortTestColumns } from '../../ImportShortTests';
+import { ShortTestColumns } from '../ImportShortTests';
 
 interface InitialData {
   shortTests: ShortTest[];

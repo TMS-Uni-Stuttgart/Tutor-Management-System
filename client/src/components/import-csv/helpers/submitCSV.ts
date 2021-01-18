@@ -1,10 +1,9 @@
 import { ProviderContext } from 'notistack';
 import type { ParseError } from 'papaparse';
 import { getParsedCSV } from '../../../hooks/fetching/CSV';
-import { ParsedCSVDataRow } from '../../import-csv/ImportCSV.types';
 import { UseSnackbarWithList } from '../../snackbar-with-list/useSnackbarWithList';
 import { NextStepInformation } from '../../stepper-with-buttons/context/StepperContext';
-import { CSVContext } from '../ImportCSV.types';
+import { CSVContext, ParsedCSVDataRow } from '../ImportCSV.types';
 
 interface SubmitParams {
   csv: string;

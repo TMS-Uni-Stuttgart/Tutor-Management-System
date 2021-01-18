@@ -10,7 +10,7 @@ import {
   generateTemporaryPassword,
   generateUsernameFromName,
 } from '../../../components/forms/UserForm';
-import { useMapColumnsHelpers } from '../../../components/import-csv/hooks/useMapColumnsHelpers';
+import { useImportCSVContext } from '../../../components/import-csv/ImportCSV.context';
 import Placeholder from '../../../components/Placeholder';
 import {
   NextStepInformation,
@@ -22,6 +22,7 @@ import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { useFetchState } from '../../../hooks/useFetchState';
 import { Tutorial } from '../../../model/Tutorial';
 import { FormikSubmitCallback } from '../../../types';
+import { UserColumns } from '../ImportUsers';
 import UserDataBox from './components/UserDataBox';
 import { convertCSVDataToFormData } from './components/UserDataBox.helpers';
 
@@ -102,7 +103,10 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
 }
 
 function AdjustImportedUserDataForm(): JSX.Element {
-  const { data, mappedColumns } = useMapColumnsHelpers();
+  const {
+    csvData,
+    mapColumnsHelpers: { mappedColumns },
+  } = useImportCSVContext<UserColumns, string>();
   const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
   const { isLoading, value: tutorials } = useFetchState({
     fetchFunction: getAllTutorials,
@@ -111,8 +115,12 @@ function AdjustImportedUserDataForm(): JSX.Element {
   });
 
   const initialValues: UserFormState = useMemo(() => {
-    return convertCSVDataToFormData({ data, values: mappedColumns, tutorials: tutorials ?? [] });
-  }, [data, mappedColumns, tutorials]);
+    return convertCSVDataToFormData({
+      data: csvData,
+      values: mappedColumns,
+      tutorials: tutorials ?? [],
+    });
+  }, [csvData, mappedColumns, tutorials]);
 
   const handleSubmit: FormikSubmitCallback<UserFormState> = async (values) => {
     const dtos: ICreateUserDTO[] = convertValuesToDTOS(values);

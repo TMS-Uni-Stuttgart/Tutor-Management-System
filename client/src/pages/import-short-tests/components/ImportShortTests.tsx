@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router';
-import ImportCSV from '../../components/import-csv-new/components/ImportCSV';
-import MapCSVColumns from '../../components/import-csv-new/components/map-form/MapCSVColumns';
-import { CSVImportProvider } from '../../components/import-csv-new/ImportCSV.context';
-import { CSVMapColumsMetadata } from '../../components/import-csv-new/ImportCSV.types';
-import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
-import { ROUTES } from '../../routes/Routing.routes';
-import AdjustGeneratedShortTest from './components_new/adjust-generated-short-test/AdjustGeneratedShortTest';
-import IliasMappingProvider from './components_new/map-students-ilias-names/IliasMapping.context';
-import MapStudentsToIliasNames from './components_new/map-students-ilias-names/MapStudentsToIliasNames';
+import ImportCSV from '../../../components/import-csv/components/ImportCSV';
+import MapCSVColumns from '../../../components/import-csv/components/map-form/MapCSVColumns';
+import { CSVImportProvider } from '../../../components/import-csv/ImportCSV.context';
+import { CSVMapColumsMetadata } from '../../../components/import-csv/ImportCSV.types';
+import StepperWithButtons from '../../../components/stepper-with-buttons/StepperWithButtons';
+import { ROUTES } from '../../../routes/Routing.routes';
+import AdjustGeneratedShortTest from './adjust-generated-short-test/AdjustGeneratedShortTest';
+import ImportShortTestInformation from './ImportShortTestInformation';
+import IliasMappingProvider from './map-students-ilias-names/IliasMapping.context';
+import MapStudentsToIliasNames from './map-students-ilias-names/MapStudentsToIliasNames';
 
 export type ShortTestColumns =
   | 'iliasName'
@@ -64,8 +65,7 @@ function ImportShortTests(): JSX.Element {
       <IliasMappingProvider shortTestId={shortTestId}>
         <StepperWithButtons
           steps={[
-            // FIXME: Re-Add all unused steps.
-            // { label: 'Export-Anleitung', component: ImportShortTestInformation },
+            { label: 'Export-Anleitung', component: ImportShortTestInformation },
             { label: 'CSV importieren', component: ImportCSV },
             { label: 'Spalten zuordnen', component: MapCSVColumns },
             { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },

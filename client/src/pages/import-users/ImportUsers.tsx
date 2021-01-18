@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import ImportCSVWithStepper from '../../components/import-csv/components/ImportCSVWithStepper';
-import MapCSVColumnsWithStepper from '../../components/import-csv/components/MapCSVColumnsWithStepper';
-import ImportCSVContext from '../../components/import-csv/ImportCSV.context';
-import { MapColumnsData } from '../../components/import-csv/ImportCSV.types';
+import ImportCSV from '../../components/import-csv/components/ImportCSV';
+import MapCSVColumns from '../../components/import-csv/components/map-form/MapCSVColumns';
+import { CSVImportProvider } from '../../components/import-csv/ImportCSV.context';
+import { CSVMapColumsMetadata } from '../../components/import-csv/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
 import { ROUTES } from '../../routes/Routing.routes';
 import AdjustImportedUserDataForm from './adjust-data-form/AdjustImportedUserDataForm';
@@ -19,7 +19,7 @@ export type UserColumns =
 type ColumnGroups = 'userInformation' | 'tutorialInformation' | 'credentials';
 
 function ImportUsers(): JSX.Element {
-  const mapColumnData: MapColumnsData<UserColumns, ColumnGroups> = useMemo(
+  const groupMetadata: CSVMapColumsMetadata<UserColumns, ColumnGroups> = useMemo(
     () => ({
       information: {
         firstname: {
@@ -68,11 +68,11 @@ function ImportUsers(): JSX.Element {
   );
 
   return (
-    <ImportCSVContext mapColumnsData={mapColumnData}>
+    <CSVImportProvider groupMetadata={groupMetadata}>
       <StepperWithButtons
         steps={[
-          { label: 'CSV importieren', component: ImportCSVWithStepper },
-          { label: 'Spalten zuordnen', component: MapCSVColumnsWithStepper },
+          { label: 'CSV importieren', component: ImportCSV },
+          { label: 'Spalten zuordnen', component: MapCSVColumns },
           { label: 'Nutzer importieren', component: AdjustImportedUserDataForm },
         ]}
         alternativeLabel={false}
@@ -82,7 +82,7 @@ function ImportUsers(): JSX.Element {
         backButtonRoute={ROUTES.MANAGE_USERS.create({})}
         routeAfterLastStep={{ route: ROUTES.MANAGE_USERS, params: {} }}
       />
-    </ImportCSVContext>
+    </CSVImportProvider>
   );
 }
 

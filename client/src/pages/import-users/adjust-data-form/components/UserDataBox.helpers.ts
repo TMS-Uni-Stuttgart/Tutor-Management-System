@@ -1,12 +1,12 @@
 import { Role } from 'shared/model/Role';
-import { CSVData, MappedColumns } from '../../../../components/import-csv/ImportCSV.types';
+import { CSVData, CSVMappedColumns } from '../../../../components/import-csv/ImportCSV.types';
 import { Tutorial } from '../../../../model/Tutorial';
 import { UserColumns } from '../../ImportUsers';
 import { UserFormState } from '../AdjustImportedUserDataForm';
 
 interface ConversionParams {
   data: CSVData;
-  values: MappedColumns<UserColumns>;
+  values: CSVMappedColumns<UserColumns>;
   tutorials: Tutorial[];
 }
 
@@ -58,14 +58,17 @@ export function convertCSVDataToFormData(params: ConversionParams): UserFormStat
     const key = rowNr.toString();
     userFormState[key] = {
       rowNr,
-      firstname: data[values.firstname] ?? emptyString,
-      lastname: data[values.lastname] ?? emptyString,
-      email: data[values.email] ?? emptyString,
-      roles: convertColumnToRoles(data[values.roles]),
-      username: data[values.username],
-      password: data[values.password],
-      tutorials: convertColumnToTutorials(tutorials, data[values.tutorials]),
-      tutorialsToCorrect: convertColumnToTutorials(tutorials, data[values.tutorialsToCorrect]),
+      firstname: data[values.firstname as string] ?? emptyString,
+      lastname: data[values.lastname as string] ?? emptyString,
+      email: data[values.email as string] ?? emptyString,
+      roles: convertColumnToRoles(data[values.roles as string]),
+      username: data[values.username as string],
+      password: data[values.password as string],
+      tutorials: convertColumnToTutorials(tutorials, data[values.tutorials as string]),
+      tutorialsToCorrect: convertColumnToTutorials(
+        tutorials,
+        data[values.tutorialsToCorrect as string]
+      ),
     };
   });
 

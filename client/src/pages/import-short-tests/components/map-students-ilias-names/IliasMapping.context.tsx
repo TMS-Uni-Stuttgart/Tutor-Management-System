@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useMapColumnsHelpers } from '../../../../components/import-csv/hooks/useMapColumnsHelpers';
+import { useImportCSVContext } from '../../../../components/import-csv/ImportCSV.context';
 import { getShortTest } from '../../../../hooks/fetching/ShortTests';
 import { getAllStudents } from '../../../../hooks/fetching/Student';
 import { useFetchState, UseFetchState } from '../../../../hooks/useFetchState';
@@ -8,7 +8,7 @@ import { ShortTest } from '../../../../model/ShortTest';
 import { Student } from '../../../../model/Student';
 import { RequireChildrenProp } from '../../../../typings/RequireChildrenProp';
 import { throwContextNotInitialized } from '../../../../util/throwFunctions';
-import { ShortTestColumns } from '../../ImportShortTests';
+import { ShortTestColumns } from '../ImportShortTests';
 
 interface ContextValue extends UseFetchState<Student[], []> {
   iliasNameMapping: Map<string, Student>;
@@ -17,6 +17,7 @@ interface ContextValue extends UseFetchState<Student[], []> {
   shortTest: ShortTest | undefined;
 
   addMapping: (iliasName: string, student: Student) => void;
+  getMapping: (iliasName: string) => Student | undefined;
   removeMapping: (iliasName: string) => void;
 }
 
@@ -30,6 +31,7 @@ const IliasMappingContext = React.createContext<ContextValue>({
   shortTest: undefined,
   execute: throwContextNotInitialized('IliasMappingContext'),
   addMapping: throwContextNotInitialized('IliasMappingContext'),
+  getMapping: throwContextNotInitialized('IliasMappingContext'),
   removeMapping: throwContextNotInitialized('IliasMappingContext'),
 });
 
@@ -42,7 +44,10 @@ export function useIliasMappingContext(): ContextValue {
 }
 
 function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
-  const { data, mappedColumns } = useMapColumnsHelpers<ShortTestColumns>();
+  const {
+    csvData,
+    mapColumnsHelpers: { mappedColumns },
+  } = useImportCSVContext<ShortTestColumns, string>();
   const { isLoading: isLoadingStudents, error, value: students, execute } = useFetchState({
     fetchFunction: getAllStudents,
     immediate: true,
@@ -79,9 +84,10 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
 
     if (!isLoading && students) {
       setWorking(true);
-      const iliasNamesInData = data.rows
-        .map(({ data }) => data[mappedColumns.iliasName])
-        .filter(Boolean);
+
+      // This must be a string (and not a string array) bc 'iliasName' is defined as 'static' column.
+      const iliasName = mappedColumns.iliasName as string;
+      const iliasNamesInData = csvData.rows.map(({ data }) => data[iliasName]).filter(Boolean);
 
       iliasNamesInData.forEach((iliasName) => {
         if (iliasName) {
@@ -103,13 +109,15 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
         }
       });
 
+      iliasNamesWithoutStudent.sort((a, b) => a.localeCompare(b));
+
       setIliasNameMapping(iliasNameMapping);
       setStudentsMappedFromCSV(studentsAlreadyMapped);
       setWithoutStudent(iliasNamesWithoutStudent);
       setStudentsWithoutResult(studentsWithoutResult);
       setWorking(false);
     }
-  }, [data.rows, isLoading, students, mappedColumns.iliasName]);
+  }, [csvData.rows, isLoading, students, mappedColumns.iliasName]);
 
   const addMapping = useCallback(
     (iliasName, student) => {
@@ -130,6 +138,10 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     },
     [iliasNameMapping]
   );
+
+  const getMapping = useCallback((iliasName: string) => iliasNameMapping.get(iliasName), [
+    iliasNameMapping,
+  ]);
 
   const removeMapping = useCallback(
     (iliasName: string) => {
@@ -155,6 +167,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
         shortTest,
         execute,
         addMapping,
+        getMapping,
         removeMapping,
       }}
     >
