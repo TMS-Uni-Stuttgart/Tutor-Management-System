@@ -32,7 +32,9 @@ export async function generateInitialValues(
     let maxPoints = 0;
 
     for (const row of csvRows) {
-      const pointsOfStudent: number = Number.parseFloat(row.data[exerciseColumn]);
+      const pointsOfStudent: number = Number.parseFloat(
+        row.data[exerciseColumn].replace(/,/g, '.')
+      );
 
       if (pointsOfStudent > maxPoints) {
         maxPoints = pointsOfStudent;

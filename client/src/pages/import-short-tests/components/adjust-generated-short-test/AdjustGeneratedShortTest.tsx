@@ -66,7 +66,9 @@ function getShortTestGradingForStudent({
   const exerciseGradings = new Map<string, IExerciseGradingDTO>();
 
   for (const exercise of shortTest.exercises) {
-    let pointsOfExercise: number = Number.parseFloat(csvRow.data[exercise.exName]);
+    let pointsOfExercise: number = Number.parseFloat(
+      csvRow.data[exercise.exName].replace(/,/g, '.')
+    );
 
     if (Number.isNaN(pointsOfExercise)) {
       Logger.logger.error(
