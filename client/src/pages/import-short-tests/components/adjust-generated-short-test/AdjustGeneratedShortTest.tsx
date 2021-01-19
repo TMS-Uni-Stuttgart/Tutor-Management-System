@@ -191,7 +191,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
       <Placeholder
         loading={isLoading}
         placeholderText='Generiere Kurztest...'
-        showPlaceholder={!value?.initialValues}
+        showPlaceholder={!shortTest && !value?.initialValues}
       >
         <ShortTestForm
           onSubmit={handleSubmit}
