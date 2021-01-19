@@ -65,11 +65,11 @@ function ImportShortTests(): JSX.Element {
       <IliasMappingProvider shortTestId={shortTestId}>
         <StepperWithButtons
           steps={[
-            { label: 'Export-Anleitung', component: ImportShortTestInformation },
-            { label: 'CSV importieren', component: ImportCSV },
-            { label: 'Spalten zuordnen', component: MapCSVColumns },
-            { label: 'Studierende zuordnen', component: MapStudentsToIliasNames },
-            { label: 'Kurztest anpassen', component: AdjustGeneratedShortTest },
+            { label: 'Export-Anleitung', component: <ImportShortTestInformation /> },
+            { label: 'CSV importieren', component: <ImportCSV /> },
+            { label: 'Spalten zuordnen', component: <MapCSVColumns /> },
+            { label: 'Studierende zuordnen', component: <MapStudentsToIliasNames /> },
+            { label: 'Kurztest anpassen', component: <AdjustGeneratedShortTest /> },
           ]}
           backButtonLabel='Zurück'
           nextButtonLabel='Weiter'

@@ -10,7 +10,7 @@ import { NextStepCallback, StepData, StepperContext } from './context/StepperCon
 
 export interface StepInformation {
   label: string;
-  component: React.FunctionComponent;
+  component: React.ReactChild;
   skippable?: boolean;
 }
 

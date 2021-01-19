@@ -4,12 +4,12 @@ import { useStepper } from '../context/StepperContext';
 
 function StepperContent(props: BoxProps): JSX.Element {
   const { activeStep, steps } = useStepper();
-  const StepElement =
+  const StepElement: React.ReactChild =
     steps[activeStep]?.component ?? (() => <div>NO ELEMENT FOUND FOR STEP {activeStep}</div>);
 
   return (
     <Box marginTop={2} {...props}>
-      <StepElement />
+      {StepElement}
     </Box>
   );
 }

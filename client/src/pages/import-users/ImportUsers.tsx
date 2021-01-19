@@ -71,9 +71,9 @@ function ImportUsers(): JSX.Element {
     <CSVImportProvider groupMetadata={groupMetadata}>
       <StepperWithButtons
         steps={[
-          { label: 'CSV importieren', component: ImportCSV },
-          { label: 'Spalten zuordnen', component: MapCSVColumns },
-          { label: 'Nutzer importieren', component: AdjustImportedUserDataForm },
+          { label: 'CSV importieren', component: <ImportCSV /> },
+          { label: 'Spalten zuordnen', component: <MapCSVColumns /> },
+          { label: 'Nutzer importieren', component: <AdjustImportedUserDataForm /> },
         ]}
         alternativeLabel={false}
         backButtonLabel='Zurück'

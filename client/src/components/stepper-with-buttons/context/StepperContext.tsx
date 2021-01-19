@@ -10,7 +10,7 @@ export type NextStepCallback = () => Promise<NextStepInformation>;
 
 export interface StepData {
   label: string;
-  component: React.FunctionComponent;
+  component: React.ReactChild;
   error?: boolean;
   skippable?: boolean;
 }
