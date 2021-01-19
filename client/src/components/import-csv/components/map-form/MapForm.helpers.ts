@@ -45,7 +45,7 @@ export function generateInitialValues(metadata: Metadata, headers: string[]): Ma
 
 export function groupStaticData(metadata: Metadata): StaticBoxGroup[] {
   const groups: StaticBoxGroup[] = [];
-  const entries = Object.entries(metadata.groups).sort(([, a], [, b]) => b.index - a.index);
+  const entries = Object.entries(metadata.groups).sort(([, a], [, b]) => a.index - b.index);
 
   for (const [key, value] of entries) {
     const columns = Object.entries(metadata.information).filter(function (
