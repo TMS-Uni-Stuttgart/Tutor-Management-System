@@ -4,6 +4,7 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { FileTableOutline as FileImportIcon, Text as TextImportIcon } from 'mdi-material-ui';
 import React, { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import InformationButton from '../../information-box/InformationButton';
 import LoadingModal from '../../loading/LoadingModal';
 import { NextStepCallback, useStepper } from '../../stepper-with-buttons/context/StepperContext';
 import submitCSV from '../helpers/submitCSV';
@@ -21,12 +22,17 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
+interface Props {
+  infoLabel?: string;
+  infoContent?: React.ReactNode;
+}
+
 enum ImportMode {
   FILE = 'FILE',
   TEXT = 'TEXT',
 }
 
-function ImportCSV(): JSX.Element {
+function ImportCSV({ infoLabel, infoContent }: Props): JSX.Element {
   const classes = useStyles();
   const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
   const { setCSVData } = useImportCSVContext();
@@ -72,17 +78,33 @@ function ImportCSV(): JSX.Element {
       width='100%'
       paddingTop={1}
     >
-      <Box gridArea='1 / 1'>
+      <Box
+        gridArea='1 / 1'
+        display='grid'
+        gridGap={8}
+        gridAutoFlow='row'
+        gridAutoColumns='max-content'
+        justifyItems='flex-start'
+        alignItems='flex-start'
+      >
         <Typography variant='h4'>CSV importieren</Typography>
+
+        {!!infoContent && (
+          <InformationButton size='small' information={infoContent}>
+            {infoLabel}
+          </InformationButton>
+        )}
       </Box>
 
-      <Box gridArea='1 / 2'>
-        <ToggleButtonGroup
-          exclusive
-          value={mode}
-          onChange={handleModeChange}
-          className={classes.modeButtons}
-        >
+      <Box
+        gridArea='1 / 2'
+        display='grid'
+        gridAutoFlow='column'
+        gridAutoColumns='auto'
+        alignItems='flex-start'
+        gridColumnGap={8}
+      >
+        <ToggleButtonGroup exclusive value={mode} onChange={handleModeChange}>
           <ToggleButton value={ImportMode.FILE}>
             <FileImportIcon className={classes.modeIcon} /> Datei
           </ToggleButton>

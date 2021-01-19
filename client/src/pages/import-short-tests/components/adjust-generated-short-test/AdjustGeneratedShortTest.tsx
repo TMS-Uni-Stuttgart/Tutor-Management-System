@@ -187,7 +187,9 @@ function AdjustGeneratedShortTest(): JSX.Element {
           title='Generierter Kurztest'
           information='Werden Ergebnisse neu (!) importiert, so wird versucht, einen möglichst guten Test zu generieren. Dafür müssen allerdings pro Aufgabe die maximale Punktzahl, die von einem/r Studierenden erreicht wurde, genommen werden (der Iliasexport enthält die Punkte für die Aufgaben nicht). Deshalb kann es sein, dass die generierte Bepunktung der Aufgaben nicht zu 100% mit der realen Bepunktung übereinstimmt und diese angepasst werden muss.'
           dialogWidth='md'
-        />
+        >
+          Info
+        </InformationButton>
       </Box>
 
       <Placeholder

@@ -56,7 +56,6 @@ function getCSVGroupMetadata(): CSVMapColumsMetadata<ShortTestColumns, ColumnGro
 }
 
 function ImportShortTests(): JSX.Element {
-  // TODO: Add support for re-import of results.
   const { shortTestId } = useParams<Params>();
   const groupMetadata = useMemo(getCSVGroupMetadata, []);
 
@@ -65,8 +64,15 @@ function ImportShortTests(): JSX.Element {
       <IliasMappingProvider shortTestId={shortTestId}>
         <StepperWithButtons
           steps={[
-            { label: 'Export-Anleitung', component: <ImportShortTestInformation /> },
-            { label: 'CSV importieren', component: <ImportCSV /> },
+            {
+              label: 'CSV importieren',
+              component: (
+                <ImportCSV
+                  infoLabel='Ergebnisse exportieren'
+                  infoContent={<ImportShortTestInformation />}
+                />
+              ),
+            },
             { label: 'Spalten zuordnen', component: <MapCSVColumns /> },
             { label: 'Studierende zuordnen', component: <MapStudentsToIliasNames /> },
             { label: 'Kurztest anpassen', component: <AdjustGeneratedShortTest /> },
