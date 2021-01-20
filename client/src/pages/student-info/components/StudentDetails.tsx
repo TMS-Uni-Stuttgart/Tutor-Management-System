@@ -17,7 +17,7 @@ const STATUS_TO_STRING: { [key in StudentStatus]: string } = {
 function StudentDetails({ student, ...props }: Props): JSX.Element {
   return (
     <InfoPaper {...props} title='Details'>
-      <Table>
+      <Table size='small'>
         <TableBody>
           <TableRow hover>
             <TableCell>Status</TableCell>
@@ -30,6 +30,10 @@ function StudentDetails({ student, ...props }: Props): JSX.Element {
           <TableRow hover>
             <TableCell>E-Mail</TableCell>
             <TableCell>{student.email || 'Keine E-Mailadresse'}</TableCell>
+          </TableRow>
+          <TableRow hover>
+            <TableCell>Iliasname</TableCell>
+            <TableCell>{student.iliasName || 'Kein Iliasname'}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
