@@ -8,7 +8,7 @@ import { Student } from '../../../model/Student';
 import { Tutorial } from '../../../model/Tutorial';
 import { parseDateToMapKey } from '../../../util/helperFunctions';
 
-interface Props extends TableProps {
+export interface AttendanceInformationProps extends TableProps {
   student: Student;
   tutorialOfStudent: Tutorial;
   onAttendanceChange: (date: DateTime, attendance?: AttendanceState) => void;
@@ -21,7 +21,7 @@ function AttendanceInformation({
   onAttendanceChange,
   onNoteChange,
   ...props
-}: Props): JSX.Element {
+}: AttendanceInformationProps): JSX.Element {
   const { canStudentBeExcused } = useSettings();
 
   return (

@@ -1,4 +1,4 @@
-import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
+import { Box, Grid, Paper, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +7,6 @@ import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Atten
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import BackButton from '../../components/back-button/BackButton';
 import Placeholder from '../../components/Placeholder';
-import TabPanel from '../../components/TabPanel';
 import { getScheinCriteriaSummaryOfStudent } from '../../hooks/fetching/Scheincriteria';
 import { getAllScheinExams } from '../../hooks/fetching/ScheinExam';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
@@ -19,9 +18,8 @@ import { useFetchState } from '../../hooks/useFetchState';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES } from '../../routes/Routing.routes';
-import AttendanceInformation from './components/AttendanceInformation';
 import CriteriaCharts from './components/CriteriaCharts';
-import GradingInformation from './components/GradingInformation';
+import GradingTabs from './components/GradingTabs';
 import ScheinStatusBox from './components/ScheinStatusBox';
 import StudentDetails from './components/StudentDetails';
 
@@ -34,7 +32,7 @@ const useStyles = makeStyles((theme) =>
     studentDetails: {
       height: '100%',
     },
-    criteriaCharts: {
+    cardGrid: {
       marginBottom: theme.spacing(1),
     },
   })
@@ -50,7 +48,6 @@ function StudentInfo(): JSX.Element {
 
   const { studentId, tutorialId } = useParams<RouteParams>();
   const { enqueueSnackbar, setError } = useCustomSnackbar();
-  const [selectedTab, setSelectedTab] = useState(0);
 
   const [student, setStudent] = useState<Student>();
   const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
@@ -100,10 +97,6 @@ function StudentInfo(): JSX.Element {
         enqueueSnackbar('Tutorium konnte nicht abgerufen werden.', { variant: 'error' });
       });
   }, [student, enqueueSnackbar]);
-
-  const handleTabChange = (_: React.ChangeEvent<unknown>, newValue: number) => {
-    setSelectedTab(newValue);
-  };
 
   const handleStudentAttendanceChange = (student?: Student) => async (
     date: DateTime,
@@ -172,76 +165,28 @@ function StudentInfo(): JSX.Element {
       <Placeholder
         placeholderText='Kein Studierender verfügbar.'
         showPlaceholder={false}
-        loading={!student}
+        loading={!student || !tutorialOfStudent}
       >
         <Box display='flex' flexDirection='column' marginBottom={1}>
-          {scheinStatus && (
-            <CriteriaCharts
-              scheinStatus={scheinStatus}
-              firstCard={
-                student && <StudentDetails student={student} className={classes.studentDetails} />
-              }
-              className={classes.criteriaCharts}
-            />
-          )}
+          <Grid container spacing={2} className={classes.cardGrid}>
+            <Grid item sm={12} md={6} lg={4}>
+              {student && <StudentDetails student={student} className={classes.studentDetails} />}
+            </Grid>
 
-          {student && (
+            {scheinStatus && <CriteriaCharts scheinStatus={scheinStatus} sm={12} md={6} lg={4} />}
+          </Grid>
+
+          {student && tutorialOfStudent && (
             <Paper variant='outlined'>
-              <Tabs value={selectedTab} onChange={handleTabChange}>
-                <Tab label='Übungsblätter' />
-                <Tab label='Anwesenheiten' />
-                <Tab label='Kurztests' />
-                <Tab label='Scheinklausuren' />
-              </Tabs>
-
-              <TabPanel value={selectedTab} index={0}>
-                <GradingInformation
-                  student={student}
-                  entities={sheets}
-                  selectLabel='Übungsblatt'
-                  selectEmptyPlaceholder='Keine Übungsblätter vorhanden'
-                  selectNameOfNoneItem='Kein Übungsblatt'
-                  noneSelectedPlaceholder='Kein Übungsblatt ausgewählt'
-                  marginBottom={1}
-                />
-              </TabPanel>
-
-              <TabPanel value={selectedTab} index={1}>
-                {tutorialOfStudent && (
-                  <AttendanceInformation
-                    student={student}
-                    tutorialOfStudent={tutorialOfStudent}
-                    onAttendanceChange={handleStudentAttendanceChange(student)}
-                    onNoteChange={handleStudentNoteChange(student)}
-                  />
-                )}
-              </TabPanel>
-
-              <TabPanel value={selectedTab} index={2}>
-                <GradingInformation
-                  student={student}
-                  entities={shortTests}
-                  disableCommentDisplay
-                  selectLabel='Kurztest'
-                  selectEmptyPlaceholder='Keine Kurztests vorhanden'
-                  selectNameOfNoneItem='Kein Kurztest'
-                  noneSelectedPlaceholder='Kein Kurztest ausgewählt'
-                  marginBottom={1}
-                />
-              </TabPanel>
-
-              <TabPanel value={selectedTab} index={3}>
-                <GradingInformation
-                  student={student}
-                  entities={exams}
-                  disableCommentDisplay
-                  selectLabel='Scheinklausur'
-                  selectEmptyPlaceholder='Keine Scheinklausuren vorhanden'
-                  selectNameOfNoneItem='Keine Scheinklausur'
-                  noneSelectedPlaceholder='Keine Scheinklausur ausgewählt'
-                  marginBottom={1}
-                />
-              </TabPanel>
+              <GradingTabs
+                student={student}
+                tutorialOfStudent={tutorialOfStudent}
+                sheets={sheets}
+                shortTests={shortTests}
+                exams={exams}
+                onAttendanceChange={handleStudentAttendanceChange(student)}
+                onNoteChange={handleStudentNoteChange(student)}
+              />
             </Paper>
           )}
         </Box>
