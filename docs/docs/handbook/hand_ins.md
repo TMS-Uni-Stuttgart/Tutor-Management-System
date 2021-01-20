@@ -114,24 +114,60 @@ To delete a hand-in click the menu button <IconInText icon={MenuIcon} /> on it's
 Deleting a hand-in is **permanent**! Deleted hand-ins can **NOT** be restored and gradings related to it are **lost**!
 :::
 
-## Import Short Test Results
+## Short Test Results
+
+### Import new results
 
 To import short test results from the Ilias system you can use the import wizard by clicking on the "Import new results" button in the upper right on the short test page. Follow the step-by-step wizard which opens up.
 
-1. **Export results from Ilias**: Follow the on-screen instruction to export the correct CSV file from the Ilias system
+1. **Import CSV content**: You can choose between two modes to import the CSV content into the system by clicking on the corresponding button. Also, you can set the separator used in the CSV data set. If you leave the seperator empty the TMS will try to figure out the used seperator automatically.
 
-   :::note
-   Make sure to export the correct CSV file. There is only one file that contains the results and the Ilias names.
+   1. _File mode_ (default): You select a CSV file from your disk (either by clicking on the upload button or with drag & drop onto that button). The content of this file will get send to and parsed by the TMS server by clicking on the "Next" button (upper right).
+      :::note Use the correct file
+      Make sure to export the correct CSV file. There is only one file that contains the results and the Ilias names. For more information click the "Export results" button in the upper left of the page (below the title).
+      :::
+
+   1. _Text mode_: You copy the contents of the CSV file into the textfield. The content gets send to and parsed by the server by clicking on the "Next" button (upper right).
+
+1. **Map Columns**:
+
+   1. **Required static columns**: The TMS tries to find the three required columns automatically. It needs the Ilias name and the test results of the students together with the total results. If the columns are not properly detected you can change them through the dropdown menus on this page.
+
+   1. **Exercise result columns**: At the bottom of the page you find a small form to specify the exercise columns. You enter the _amount_ of exercises and whether the TMS should get those columns from the end or the start of the table. After clicking "Accept" you can verify and/or change the identified columns. Furthermore you can add and/or delete more columns which resemble exercises.
+
+      :::note
+      By default, the Ilias puts the columns with the results of the exericses at the end of the generated table.
+      :::
+
+1. **Map Ilias names**:
+   If the CSV file contains any Ilias names which could not be find in the TMS system you can manually map those names to students (these mappings will only be used for this import process).
+   By clicking on the "Map student" button you get a list of all students which are not already mapped to an ilias name (here you can find the tutorial they are in, too).
+
+1. **Adjust Short Test**:
+   The TMS tries to generate a short test from the given information.
+   It uses the columns used earlier to try and figure out the points each exercise gives.
+   However, due to those information not available inside the CSV the TMS can only _guess_ the points by using the maximum points any student has achieved in the exercise.
+   This can result in a short test that is not 100% correct and you have to adjust the exercises.
+   The TMS will warn you if the total points of the test given by the CSV and the total points of the generated one are not equal.
+
+   :::caution
+   You cannot continue until the total points in the generated test are the same as the total points of the actual test.
    :::
 
-1. **Import CSV content**: Import the CSV content by either copy & paste the content in the input field or by uploading the file. You can upload the file by clicking the "Upload CSV-file" button and the content will be pasted into the input field after uploading. If the separator is not correctly detected on the next page you can change the seperator on _this_ page using the "Separator" input in the upper right.
+1. **Finish the import**:
+   By clicking "Done" the TMS will create a new short test based on the CSV file and your input.
+   Afterwards it will add a grading to each student which has an ilias name inside the CSV dataset.
+   This last part might take a few seconds to complete.
 
-   :::tip Drag & Drop
-   You can also drag & drop the file on the button
-   :::
+### Re-import / Change results
 
-1. **Map Columns**: The TMS tries to find the three needed columns automatically. It needs the Ilias name and the test results of the students together with the total results. If the columns are not properly detected you can change them through the dropdown menus on this page.
+To re-import results of a short test (ie because they have changed) you can basically follow the steps above.
+However, you must enter the wizard by clicking on "Re-import results" inside the additional options menu of the short test you want to re-import the results of.
+Please note that you have to enter some information again even though you already entered them while importing the results the first time:
 
-1. **Map Ilias names**: If the CSV file contains any Ilias names which could not be find in the TMS system you can manually map those names to students (these mappings will only be used for this import process). The page also shows a list of all students in the TMS system which could not be found in the imported CSV (either because they do not have an Ilias name saved in the TMS or their Ilias name was not present in the CSV file).
+- Amount of exercises in the test in the step "Map Colums"
+- Mapping of ilias names (if ilias names where not added in the meantime).
 
-1. **Adjust Short Test**: If necessary you can adjust the short test that would be generated during the import process. By default the number gets automatically increased and it only contains one exercise which holds the total points of the test.
+:::caution
+The TMS currently does NOT check if the CSV data set complies to the already existing short test.
+:::

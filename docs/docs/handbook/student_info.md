@@ -15,7 +15,7 @@ You can find the following information about the student on this page.
 
 1. **Details**: Current state, matriculation number and e-mail are being displayed here.
 
-1. **Criteria progress**: The current progress or state of the criterias. Each criteria is represented by a pie chart which has a "passed" and "not passed" section.
+1. **Criteria progress**: The current progress or state of the criterias. Each criteria is represented by a pie chart which has a "passed" and "not passed" section. The number of charts is determined by the number of criterias that exist in the configuration of your TMS instance (ie if there is no attendance criteria defined the pie chart resembling attendances would not be shown).
 
 1. **Gradings & Attendances**: Gradings for sheets, short tests and scheinexams are being shown here aswell as the attendances of the student. After selecting a hand-in the gradings show the achieved points on the left and the rendered markdown on the right (ie as it would appear in the PDF).
 

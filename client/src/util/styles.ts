@@ -131,6 +131,9 @@ export function createTheme(type: PaletteType): Theme {
       MuiButton: {
         variant: 'outlined',
       },
+      MuiTextField: {
+        variant: 'outlined',
+      },
     },
     overrides: {
       MuiChip: {

@@ -14,7 +14,7 @@ import { FormControlProps } from '@material-ui/core/FormControl';
 import { SelectProps } from '@material-ui/core/Select';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLogger } from '../util/Logger';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -138,20 +138,32 @@ function CustomSelect<T>({
     );
   }
 
-  const NONE_ITEM = new EmptyItem('NONE', 'NONE_NAME');
-
   const classes = useStyles();
   const inputLabel = useRef<HTMLLabelElement>(null);
+  const itemCache = useRef<Map<string, T>>(new Map());
   const [labelWidth, setLabelWidth] = useState(0);
 
-  const items: (T | EmptyItem)[] = !!nameOfNoneItem
-    ? [NONE_ITEM, ...itemsFromProps]
-    : itemsFromProps;
+  const NONE_ITEM = useMemo(() => new EmptyItem('NONE', 'NONE_NAME'), []);
+  const items: (T | EmptyItem)[] = useMemo(
+    () => (!!nameOfNoneItem ? [NONE_ITEM, ...itemsFromProps] : itemsFromProps),
+    [NONE_ITEM, itemsFromProps, nameOfNoneItem]
+  );
 
   useEffect(() => {
     const label = inputLabel.current;
     setLabelWidth(label ? label.offsetWidth : 0);
   }, []);
+
+  useEffect(() => {
+    logger.debug(`Rebuilding item cache of select ${name}`);
+    itemCache.current.clear();
+
+    items.forEach((item) => {
+      if (!(item instanceof EmptyItem)) {
+        itemCache.current.set(itemToValue(item), item);
+      }
+    });
+  }, [items, itemToValue, logger, name]);
 
   return (
     <FormControl {...FormControlProps} className={className} variant='outlined' error={error}>
@@ -180,7 +192,14 @@ function CustomSelect<T>({
                 itemToValue,
                 classes.chip
               )
-            : undefined
+            : (value) => {
+                if (typeof value !== 'string') {
+                  throw new Error('Non string values are not supported.');
+                }
+
+                const selectedItem: T | undefined = itemCache.current.get(value);
+                return selectedItem === undefined ? '' : itemToString(selectedItem);
+              }
         }
         classes={{
           ...classesFromProps,
@@ -221,7 +240,7 @@ function CustomSelect<T>({
                   <ListItemText {...text} />
                 </>
               ) : (
-                itemString
+                <ListItemText {...text} />
               )}
             </MenuItem>
           );

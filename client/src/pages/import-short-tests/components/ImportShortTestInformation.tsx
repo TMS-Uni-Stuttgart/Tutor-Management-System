@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) =>
 
 function ImportShortTestInformation(): JSX.Element {
   const classes = useStyles();
+
   return (
     <Box display='flex' flexDirection='column'>
       <Typography variant='h4'>Kurztestergebnisse aus dem Ilias exportieren</Typography>
@@ -31,7 +32,7 @@ function ImportShortTestInformation(): JSX.Element {
           { primary: 'Wähle den Reiter "Export" aus.' },
           {
             primary:
-              'Wähle als Typ "Erstelle Exportdatei" (engl.: "Create Test Results Export File")',
+              'Wähle als Typ "Erstelle Ergebnisdatei" (engl.: "Create Test Results Export File")',
             secondary:
               'Das ist der einzige Dateityp, der sowohl die Ergebnisse als auch die Ilias-Namen der Studierenden enthält.',
           },

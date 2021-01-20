@@ -4,6 +4,7 @@ import { ShortTest } from '../../model/ShortTest';
 import { FormikSubmitCallback } from '../../types';
 import FormikExerciseEditor, {
   ExerciseFormExercise,
+  FormikExerciseEditorProps,
   mapExerciseToFormExercise,
 } from './components/FormikExerciseEditor';
 import FormikTextField from './components/FormikTextField';
@@ -20,7 +21,10 @@ export interface ShortTestFormState {
 
 const validationSchema = Yup.object().shape<ShortTestFormState>({
   shortTestNo: Yup.string().required('Benötigt'),
-  percentageNeeded: Yup.number().required('Benötigt'),
+  percentageNeeded: Yup.number()
+    .required('Benötigt')
+    .min(0, 'Muss mind. 0% betragen.')
+    .max(1, 'Darf höchstens 100% betragen.'),
   exercises: Yup.array<ExerciseFormExercise>()
     .of(exerciseValidationSchema)
     .required('Mind. 1 Aufgabe benötigt.'),
@@ -32,6 +36,7 @@ interface Props extends Omit<FormikBaseFormProps<ShortTestFormState>, CommonlyUs
   allShortTests?: ShortTest[];
   initialValues?: ShortTestFormState;
   children?: React.ReactNode;
+  editorProps?: Omit<FormikExerciseEditorProps, 'name'>;
 }
 
 export function getInitialShortTestFormState(
@@ -53,6 +58,7 @@ function ShortTestForm({
   allShortTests,
   initialValues,
   children,
+  editorProps,
   ...other
 }: Props): JSX.Element {
   const initalFormState = useMemo(
@@ -63,11 +69,11 @@ function ShortTestForm({
 
   return (
     <FormikBaseForm
+      enableDebug
       {...other}
       initialValues={initalFormState}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
-      enableDebug
     >
       <FormikTextField
         name='shortTestNo'
@@ -84,7 +90,11 @@ function ShortTestForm({
         inputProps={{ min: 0, max: 100, step: 1 }}
       />
 
-      <FormikExerciseEditor name='exercises' disableAutofocus={!!shortTest} />
+      <FormikExerciseEditor
+        {...editorProps}
+        name='exercises'
+        disableAutofocus={!!editorProps?.disableAutofocus || !!shortTest}
+      />
 
       {children}
     </FormikBaseForm>

@@ -1,8 +1,7 @@
-import { Box, Typography } from '@material-ui/core';
+import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
 import { ClipboardArrowDown as DropIcon, CloseCircle as NotAllowedIcon } from 'mdi-material-ui';
 import React, { useCallback, useRef, useState } from 'react';
-import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
 
 const useStyles = makeStyles((theme) => {
   const background = fade(theme.palette.background.paper, 0.85);
@@ -18,7 +17,8 @@ const useStyles = makeStyles((theme) => {
   });
 });
 
-interface Props extends RequireChildrenProp {
+interface Props
+  extends Omit<BoxProps, 'onDragEnter' | 'onDragLeave' | 'onDrop' | 'onDragOver' | 'position'> {
   /** List of all MIME types that should be accepted */
   supportedFileTypes: string[];
 
@@ -28,6 +28,9 @@ interface Props extends RequireChildrenProp {
    * - The dropped file has one of the supported types
    */
   handleFileDrop: (file: File) => void;
+
+  /** Disables the drop feature. */
+  disabled?: boolean;
 }
 
 interface OverlayData {
@@ -49,7 +52,13 @@ function areAllItemsSupported(items: DataTransferItemList, supportedFileTypes: s
   return true;
 }
 
-function DragAndDrop({ children, supportedFileTypes, handleFileDrop }: Props): JSX.Element {
+function DragAndDrop({
+  children,
+  supportedFileTypes,
+  handleFileDrop,
+  disabled,
+  ...boxProps
+}: Props): JSX.Element {
   const classes = useStyles();
   const [overlayData, setOverlayData] = useState<OverlayData | undefined>();
 
@@ -65,6 +74,10 @@ function DragAndDrop({ children, supportedFileTypes, handleFileDrop }: Props): J
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
+
+      if (disabled) {
+        return;
+      }
 
       if (dragDepth.current === 0) {
         if (e.dataTransfer.items.length === 0) {
@@ -82,24 +95,36 @@ function DragAndDrop({ children, supportedFileTypes, handleFileDrop }: Props): J
 
       dragDepth.current++;
     },
-    [supportedFileTypes]
+    [supportedFileTypes, disabled]
   );
 
-  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDragLeave = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    dragDepth.current--;
+      if (disabled) {
+        return;
+      }
 
-    if (dragDepth.current === 0) {
-      setOverlayData(undefined);
-    }
-  }, []);
+      dragDepth.current--;
+
+      if (dragDepth.current <= 0) {
+        setOverlayData(undefined);
+        dragDepth.current = 0;
+      }
+    },
+    [disabled]
+  );
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
+
+      if (disabled) {
+        return;
+      }
 
       dragDepth.current = 0;
       setOverlayData(undefined);
@@ -116,11 +141,12 @@ function DragAndDrop({ children, supportedFileTypes, handleFileDrop }: Props): J
         handleFileDrop(file);
       }
     },
-    [handleFileDrop, supportedFileTypes]
+    [handleFileDrop, supportedFileTypes, disabled]
   );
 
   return (
     <Box
+      {...boxProps}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

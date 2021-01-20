@@ -279,6 +279,7 @@ function UserManagement(): JSX.Element {
             'Die Zugangsdaten konnten nicht an folgende Nutzer/innen zugestellt werden:',
           items: convertedInfo,
           isOpen: true,
+          variant: 'error',
         });
       }
     } catch {
@@ -398,7 +399,7 @@ function UserManagement(): JSX.Element {
                 startIcon={<ImportIcon />}
                 style={{ marginLeft: 8 }}
               >
-                Generieren
+                Importieren
               </Button>
             </>
           }

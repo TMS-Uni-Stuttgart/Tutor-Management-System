@@ -20,7 +20,7 @@ import CriteriaInfoView from '../pages/criteria-info-view/CriteriaInfoView';
 import Dashboard from '../pages/dashboard/Dashboard';
 import GenerateTutorials from '../pages/generate-tutorials/GenerateTutorials';
 import HandInsPage from '../pages/hand-ins/HandInsPage';
-import ImportShortTests from '../pages/import-short-tests/ImportShortTests';
+import ImportShortTests from '../pages/import-short-tests/components/ImportShortTests';
 import ImportUsers from '../pages/import-users/ImportUsers';
 import Login from '../pages/Login';
 import EnterScheinexamPoints from '../pages/points-scheinexam/enter-form/EnterScheinexamPoints';

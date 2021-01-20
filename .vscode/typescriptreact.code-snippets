@@ -61,12 +61,22 @@
     "body": [
       "import { makeStyles, createStyles } from '@material-ui/core/styles';",
       "",
-      "const useStyles = makeStyles(theme =>",
+      "const useStyles = makeStyles((theme) =>",
       "\tcreateStyles({",
       "\t\t$0",
       "\t})",
       ");"
     ]
+  },
+  "useCallback": {
+    "prefix": "useCallback",
+    "description": "boilerplate for a useCallback usage (synchronous)",
+    "body": "useCallback(($1) => {$0}, []);"
+  },
+  "useCallback (async)": {
+    "prefix": "useCallback async",
+    "description": "boilerplate for an async useCallback usage",
+    "body": "useCallback(async ($1) => {$0}, []);"
   },
   "mongoose document": {
     "prefix": "mongoose document",
@@ -81,73 +91,6 @@
       "}",
       "",
       "export type $1Document = DocumentType<$1Model>;",
-      ""
-    ]
-  },
-  "express server": {
-    "prefix": "express service",
-    "description": "boilerplate code for a CRUD service",
-    "body": [
-      "import { DocumentNotFoundError } from '../../model/Errors';",
-      "import { getIdOfDocumentRef } from '../../helpers/documentHelpers';",
-      "",
-      "class ${1:Type}Service {",
-      "\tpublic async getAll$1s(): Promise<$1$0[]> {",
-      "\t\tthrow new Error('[$1Service] -- Not implemented yet.');",
-      "\t}",
-      "",
-      "\tpublic async create$1(dto: $1DTO): Promise<$1> {",
-      "\t\tthrow new Error('[$1Service] -- Not implemented yet.');",
-      "\t}",
-      "",
-      "\tpublic async update$1(id: string, dto: $1DTO): Promise<$1> {",
-      "\t\tthrow new Error('[$1Service] -- Not implemented yet.');",
-      "\t}",
-      "",
-      "\tpublic async delete$1(id: string): Promise<$1> {",
-      "\t\tthrow new Error('[$1Service] -- Not implemented yet.');",
-      "\t}",
-      "",
-      "\tpublic async get$1WithId(id: string): Promise<$1> {",
-      "\t\tconst ${1/(.*)/${1:/downcase}/}: $1Document | null = await this.get$1DocumentWithId(id);",
-      "",
-      "\t\treturn this.get$1OrReject(${1/(.*)/${1:/downcase}/});",
-      "\t}",
-      "",
-      "\tprivate async get$1DocumentWithId(id: string): Promise<$1Document> {",
-      "\t\tthrow new Error('[$1Service] -- Not implemented yet.');",
-      "\t}",
-      "",
-      "\tprivate async get$1OrReject(${1/(.*)/${1:/downcase}/}: $1Document | null): Promise<$1> {",
-      "\t\tthrow new Error('[$1Service] -- Not implemented yet.');",
-      "\t}",
-      "",
-      "\tprivate async reject$1NotFound(): Promise<any> {",
-      "\t\treturn Promise.reject(new DocumentNotFoundError('$1 with that ID was not found.'));",
-      "\t}",
-      "}",
-      "",
-      "const ${1/(.*)/${1:/downcase}/}Service = new $1Service();",
-      "",
-      "export default ${1/(.*)/${1:/downcase}/}Service;",
-      ""
-    ]
-  },
-  "express router": {
-    "prefix": "express router",
-    "description": "boilerplate code for an express router file",
-    "body": [
-      "import Router from 'express-promise-router';",
-      "import { Role } from 'shared/dist/model/Role';",
-      "import { checkRoleAccess } from '../../middleware/AccessControl';",
-      "",
-      "const ${1:type}Router = Router();",
-      "",
-      "$1Router.get('/', ...checkRoleAccess(Role.ADMIN), async (req, res) => {",
-      "\t$0",
-      "});",
-      "",
-      "export default $1Router;",
       ""
     ]
   },

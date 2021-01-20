@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import FilterableSelect from '../../../../components/forms/components/FilterableSelect';
 import { SelectionDialogChildrenProps } from '../../../../hooks/dialog-service/components/SelectionDialogContent';
 import { Student } from '../../../../model/Student';
+import { Tutorial } from '../../../../model/Tutorial';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -51,7 +52,10 @@ function MappingDialog({
         emptyPlaceholder='Keine Studierenden vorhanden.'
         filterPlaceholder='Suche nach Namen'
         items={students}
-        itemToString={(student) => student.name}
+        itemToString={(student) => ({
+          primary: student.name,
+          secondary: Tutorial.getDisplayString(student.tutorial),
+        })}
         itemToValue={(student) => student.id}
         value={selected ? [selected.id] : []}
         onChange={(newValue) => {

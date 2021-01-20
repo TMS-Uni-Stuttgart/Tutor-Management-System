@@ -17,7 +17,9 @@ import { ChevronDown as ExpandMoreIcon, Close as CloseIcon } from 'mdi-material-
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
-const useStyles = makeStyles((theme: Theme) =>
+type Variant = 'info' | 'warn' | 'error';
+
+const useStyles = makeStyles<Theme, { variant?: Variant }>((theme: Theme) =>
   createStyles({
     card: {
       width: 420,
@@ -29,9 +31,30 @@ const useStyles = makeStyles((theme: Theme) =>
     actionRoot: {
       display: 'flex',
       padding: theme.spacing(1, 1, 1, 2),
-      backgroundColor: theme.palette.orange.main,
       color: theme.palette.getContrastText(theme.palette.orange.main),
       cursor: 'pointer',
+    },
+    actionRootBackground: ({ variant }) => {
+      let backgroundColor: string;
+
+      switch (variant) {
+        case 'info':
+          backgroundColor = theme.palette.info.main;
+          break;
+
+        case 'warn':
+          backgroundColor = theme.palette.warning.main;
+          break;
+
+        case 'error':
+          backgroundColor = theme.palette.error.main;
+          break;
+
+        default:
+          backgroundColor = theme.palette.info.main;
+      }
+
+      return { backgroundColor };
     },
     expand: {
       color: theme.palette.getContrastText(theme.palette.orange.main),
@@ -64,15 +87,22 @@ export interface SnackbarWithListProps {
   textBeforeList: string;
   items: string[];
   isOpen?: boolean;
+
+  /**
+   * Variant of the snackbar.
+   *
+   * Defaults to 'info'.
+   */
+  variant?: Variant;
 }
 
 function Component(
-  { title, textBeforeList, items, id, isOpen }: SnackbarWithListProps,
+  { title, textBeforeList, items, id, isOpen, variant }: SnackbarWithListProps,
   ref: React.Ref<SnackbarContentProps>
 ): JSX.Element {
   const [isExpanded, setExpanded] = useState(!!isOpen);
   const { closeSnackbar } = useSnackbar();
-  const classes = useStyles();
+  const classes = useStyles({ variant });
 
   function handleExpandClick() {
     setExpanded(!isExpanded);
@@ -87,7 +117,10 @@ function Component(
 
   return (
     <Card ref={ref} className={classes.card}>
-      <CardActions classes={{ root: classes.actionRoot }} onClick={handleExpandClick}>
+      <CardActions
+        classes={{ root: clsx(classes.actionRoot, classes.actionRootBackground) }}
+        onClick={handleExpandClick}
+      >
         <Typography variant='subtitle2' className={classes.typography}>
           {title}
         </Typography>

@@ -3,12 +3,12 @@ import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Role } from 'shared/model/Role';
-import { PathParam, PathPart, Route, RouteParams } from './typesafe-react-router';
+import { PathParam, Route, RouteParams } from './typesafe-react-router';
+import { RouteParamBaseArray } from './typesafe-react-router/types';
 
 type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
-type BaseArray = Array<PathPart<any, any>>;
 
-interface RouteOptions<Parts extends BaseArray> {
+interface RouteOptions<Parts extends RouteParamBaseArray> {
   /**
    * Parts of the route.
    *
@@ -72,19 +72,19 @@ interface RouteOptions<Parts extends BaseArray> {
   roles?: Role[] | 'all';
 }
 
-interface PrivateRouteOptions<Parts extends BaseArray>
+interface PrivateRouteOptions<Parts extends RouteParamBaseArray>
   extends Omit<RouteOptions<Parts>, 'isPrivate'> {
   /** Roles allowed to access this route. */
   roles: Role[] | 'all';
 }
 
-interface DrawerRouteOptions<Parts extends BaseArray>
+interface DrawerRouteOptions<Parts extends RouteParamBaseArray>
   extends Omit<PrivateRouteOptions<Parts>, 'isInDrawer'> {
   /** Icon displayed in the drawer. */
   icon: React.ComponentType<SvgIconProps>;
 }
 
-interface CombineParams<A extends BaseArray, B extends BaseArray> {
+interface CombineParams<A extends RouteParamBaseArray, B extends RouteParamBaseArray> {
   /**
    * Route which forms the first part of the path of the combined route. Must __NOT__ contain any optional parameters.
    *
@@ -111,7 +111,7 @@ interface CombineParams<A extends BaseArray, B extends BaseArray> {
  *
  * @returns Unmodified `parts`.
  */
-export function parts<Parts extends BaseArray>(...parts: Parts): Parts {
+export function parts<Parts extends RouteParamBaseArray>(...parts: Parts): Parts {
   return parts;
 }
 
@@ -120,7 +120,7 @@ export function parts<Parts extends BaseArray>(...parts: Parts): Parts {
  *
  * If possible use the helper classes `PrivateRoute` or `DrawerRoute` to use their presets.
  */
-export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
+export class CustomRoute<Parts extends RouteParamBaseArray> extends Route<Parts> {
   readonly title: string;
   readonly component: RouteComponent;
   readonly icon: React.ComponentType<SvgIconProps> | null;
@@ -140,7 +140,7 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
    *
    * @returns New route combined from the given ones with the `options` provided.
    */
-  static combine<A extends BaseArray, B extends BaseArray>({
+  static combine<A extends RouteParamBaseArray, B extends RouteParamBaseArray>({
     baseRoute,
     extension,
     options,
@@ -305,7 +305,7 @@ export class CustomRoute<Parts extends BaseArray> extends Route<Parts> {
 /**
  * Creates a route which is only accessible by logged in users with the appropriate role.
  */
-export class PrivateRoute<Parts extends BaseArray> extends CustomRoute<Parts> {
+export class PrivateRoute<Parts extends RouteParamBaseArray> extends CustomRoute<Parts> {
   constructor(params: PrivateRouteOptions<Parts>) {
     super({ ...params, isPrivate: true });
   }
@@ -314,7 +314,7 @@ export class PrivateRoute<Parts extends BaseArray> extends CustomRoute<Parts> {
 /**
  * Creates a route which gets displayed in the drawer.
  */
-export class DrawerRoute<Parts extends BaseArray> extends PrivateRoute<Parts> {
+export class DrawerRoute<Parts extends RouteParamBaseArray> extends PrivateRoute<Parts> {
   constructor(params: DrawerRouteOptions<Parts>) {
     super({ ...params, isInDrawer: true });
   }
