@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
     textField: {
       flex: 1,
       alignItems: 'flex-start',
+      fontFamily: '"Roboto Mono", monospace',
     },
   })
 );
