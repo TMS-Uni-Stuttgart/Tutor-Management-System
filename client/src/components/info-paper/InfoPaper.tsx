@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) =>
     },
     title: {
       textAlign: 'center',
+      marginBottom: theme.spacing(1),
     },
   })
 );
