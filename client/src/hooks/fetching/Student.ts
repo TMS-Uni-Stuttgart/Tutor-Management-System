@@ -69,7 +69,8 @@ export async function setAttendanceOfStudent(
 }
 
 export async function setPointsOfMultipleStudents(points: Map<string, IGradingDTO>): Promise<void> {
-  const response = await axios.put('student/grading', [...points]);
+  // Timeout = 0 to prevent the request from timeouting.
+  const response = await axios.put('student/grading', [...points], { timeout: 0 });
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong status code (${response.status}).`);
