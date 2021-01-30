@@ -7,18 +7,18 @@ import { SettingsService } from './settings.service';
 
 @Controller('setting')
 export class SettingsController {
-  constructor(private readonly settingsService: SettingsService) {}
+    constructor(private readonly settingsService: SettingsService) {}
 
-  @Get('/')
-  @UseGuards(AuthenticatedGuard)
-  async getAllSettings(): Promise<IClientSettings> {
-    return this.settingsService.getClientSettings();
-  }
+    @Get('/')
+    @UseGuards(AuthenticatedGuard)
+    async getAllSettings(): Promise<IClientSettings> {
+        return this.settingsService.getClientSettings();
+    }
 
-  @Put('/')
-  @UseGuards(HasRoleGuard)
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async setSettings(@Body() settings: ClientSettingsDTO): Promise<void> {
-    await this.settingsService.setClientSettings(settings);
-  }
+    @Put('/')
+    @UseGuards(HasRoleGuard)
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    async setSettings(@Body() settings: ClientSettingsDTO): Promise<void> {
+        await this.settingsService.setClientSettings(settings);
+    }
 }

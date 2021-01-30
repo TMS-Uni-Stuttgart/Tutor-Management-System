@@ -4,25 +4,25 @@ import { ClientSettingsDTO } from '../settings.dto';
 import { DatabaseConfiguration } from './DatabaseConfiguration';
 
 export class ApplicationConfiguration {
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  readonly sessionTimeout?: number;
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    readonly sessionTimeout?: number;
 
-  @IsOptional()
-  @IsString()
-  readonly prefix?: string;
+    @IsOptional()
+    @IsString()
+    readonly prefix?: string;
 
-  @IsOptional()
-  @IsUrl()
-  readonly handbookUrl?: string;
+    @IsOptional()
+    @IsUrl()
+    readonly handbookUrl?: string;
 
-  @Type(() => DatabaseConfiguration)
-  @ValidateNested()
-  readonly database!: DatabaseConfiguration;
+    @Type(() => DatabaseConfiguration)
+    @ValidateNested()
+    readonly database!: DatabaseConfiguration;
 
-  @IsOptional()
-  @Type(() => ClientSettingsDTO)
-  @ValidateNested()
-  readonly defaultSettings: ClientSettingsDTO | undefined;
+    @IsOptional()
+    @Type(() => ClientSettingsDTO)
+    @ValidateNested()
+    readonly defaultSettings: ClientSettingsDTO | undefined;
 }

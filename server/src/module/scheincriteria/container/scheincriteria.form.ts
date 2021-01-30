@@ -5,11 +5,11 @@ import { ClassType } from 'class-transformer/ClassTransformer';
 export type ScheincriteriaClass = ClassType<Scheincriteria>;
 
 export class ScheincriteriaForm {
-  readonly blueprint: ScheincriteriaClass;
-  readonly formDataSet: Map<string, FormFieldData>;
+    readonly blueprint: ScheincriteriaClass;
+    readonly formDataSet: Map<string, FormFieldData>;
 
-  constructor(blueprint: ScheincriteriaClass) {
-    this.blueprint = blueprint;
-    this.formDataSet = new Map();
-  }
+    constructor(blueprint: ScheincriteriaClass) {
+        this.blueprint = blueprint;
+        this.formDataSet = new Map();
+    }
 }

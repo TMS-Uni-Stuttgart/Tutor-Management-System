@@ -1,26 +1,26 @@
 interface NameOptions {
-  firstNameFirst: boolean;
+    firstNameFirst: boolean;
 }
 
 interface HasName {
-  firstname: string;
-  lastname: string;
+    firstname: string;
+    lastname: string;
 }
 
 export function getNameOfEntity(
-  entity: HasName,
-  { firstNameFirst }: Partial<NameOptions> = {}
+    entity: HasName,
+    { firstNameFirst }: Partial<NameOptions> = {}
 ): string {
-  if (firstNameFirst) {
-    return `${entity.firstname} ${entity.lastname}`;
-  } else {
-    return `${entity.lastname}, ${entity.firstname} `;
-  }
+    if (firstNameFirst) {
+        return `${entity.firstname} ${entity.lastname}`;
+    } else {
+        return `${entity.lastname}, ${entity.firstname} `;
+    }
 }
 
 export function sortByName(a: HasName, b: HasName): number {
-  const nameOfA = getNameOfEntity(a);
-  const nameOfB = getNameOfEntity(b);
+    const nameOfA = getNameOfEntity(a);
+    const nameOfB = getNameOfEntity(b);
 
-  return nameOfA.localeCompare(nameOfB);
+    return nameOfA.localeCompare(nameOfB);
 }

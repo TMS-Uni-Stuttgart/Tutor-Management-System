@@ -30,9 +30,9 @@ After selecting a scheinexam from the dropdown menu you can see the gradings the
 
 1. **Student Selection**: Select the student you want to change the grading of.
 
-   :::note Unsaved changes
-   If you have unsaved changes you are prompted to save them before switching. If do **not** the changes are lost.
-   :::
+    :::note Unsaved changes
+    If you have unsaved changes you are prompted to save them before switching. If do **not** the changes are lost.
+    :::
 
 1. **Points for exercises**: Enter the points the student got for each exercise. Please note that exercises are always "bundled" together and that no sub-exercises are shown.
 

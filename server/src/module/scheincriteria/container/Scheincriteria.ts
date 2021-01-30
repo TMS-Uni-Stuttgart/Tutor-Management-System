@@ -10,56 +10,56 @@ import { ScheinCriteriaDTO } from '../scheincriteria.dto';
 import { ScheincriteriaContainer } from './scheincriteria.container';
 
 export interface CriteriaPayload {
-  student: StudentDocument;
-  sheets: SheetDocument[];
-  exams: ScheinexamDocument[];
-  shortTests: ShortTestDocument[];
+    student: StudentDocument;
+    sheets: SheetDocument[];
+    exams: ScheinexamDocument[];
+    shortTests: ShortTestDocument[];
 }
 
 export interface InformationPayload {
-  students: StudentDocument[];
-  sheets: SheetDocument[];
-  exams: ScheinexamDocument[];
-  shortTests: ShortTestDocument[];
+    students: StudentDocument[];
+    sheets: SheetDocument[];
+    exams: ScheinexamDocument[];
+    shortTests: ShortTestDocument[];
 }
 
 export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;
 export type CriteriaInformationWithoutName = Omit<CriteriaInformation, 'name' | 'studentSummaries'>;
 
 export abstract class Scheincriteria {
-  @IsString()
-  readonly identifier: string;
+    @IsString()
+    readonly identifier: string;
 
-  constructor(identifier: string) {
-    this.identifier = identifier;
-  }
-
-  /**
-   * Generates a Scheincriteria from the given dto.
-   *
-   * The returned criteria will be an instance of the class which was saved as blueprint with the given `identifier`. The given `data` will be validated against said class before creating an instancen of it.
-   *
-   * @param dto DTO containing the information for the criteria.
-   *
-   * @returns Created scheincriteria from the dto.
-   *
-   * @throws `NotFoundException` - If no blue print of the given identifier could be found.
-   * @throws `BadRequestException` - If the data is not successfully validated against the criteria class to use.
-   */
-  static fromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
-    const bluePrintData = ScheincriteriaContainer.getContainer().getBluePrint(identifier);
-
-    const criteria = plainToClass(bluePrintData.blueprint, data);
-    const errors = validateSync(criteria, { whitelist: true, forbidNonWhitelisted: true });
-
-    if (errors.length > 0) {
-      throw new BadRequestException(errors);
+    constructor(identifier: string) {
+        this.identifier = identifier;
     }
 
-    return criteria;
-  }
+    /**
+     * Generates a Scheincriteria from the given dto.
+     *
+     * The returned criteria will be an instance of the class which was saved as blueprint with the given `identifier`. The given `data` will be validated against said class before creating an instancen of it.
+     *
+     * @param dto DTO containing the information for the criteria.
+     *
+     * @returns Created scheincriteria from the dto.
+     *
+     * @throws `NotFoundException` - If no blue print of the given identifier could be found.
+     * @throws `BadRequestException` - If the data is not successfully validated against the criteria class to use.
+     */
+    static fromDTO({ identifier, data }: ScheinCriteriaDTO): Scheincriteria {
+        const bluePrintData = ScheincriteriaContainer.getContainer().getBluePrint(identifier);
 
-  abstract checkCriteriaStatus(payload: CriteriaPayload): StatusCheckResponse;
+        const criteria = plainToClass(bluePrintData.blueprint, data);
+        const errors = validateSync(criteria, { whitelist: true, forbidNonWhitelisted: true });
 
-  abstract getInformation(payload: InformationPayload): CriteriaInformationWithoutName;
+        if (errors.length > 0) {
+            throw new BadRequestException(errors);
+        }
+
+        return criteria;
+    }
+
+    abstract checkCriteriaStatus(payload: CriteriaPayload): StatusCheckResponse;
+
+    abstract getInformation(payload: InformationPayload): CriteriaInformationWithoutName;
 }

@@ -8,12 +8,12 @@ sessionTimeout: 120
 handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
 database:
-  databaseURL: 'mongodb://localhost:27017/tms-new-grading'
-  maxRetries: 2
-  config:
-    authSource: 'admin'
-    authMechanism: 'SCRAM-SHA-1'
+    databaseURL: 'mongodb://localhost:27017/tms-new-grading'
+    maxRetries: 2
+    config:
+        authSource: 'admin'
+        authMechanism: 'SCRAM-SHA-1'
 
 defaultSettings:
-  canTutorExcuseStudents: true
-  defaultTeamSize: 3
+    canTutorExcuseStudents: true
+    defaultTeamSize: 3

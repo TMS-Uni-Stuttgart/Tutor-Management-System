@@ -9,16 +9,16 @@ import { MarkdownController } from './markdown.controller';
 import { MarkdownService } from './markdown.service';
 
 @Module({
-  imports: [
-    StudentModule,
-    TeamModule,
-    TutorialModule,
-    SheetModule,
-    ScheinexamModule,
-    ShortTestModule,
-  ],
-  providers: [MarkdownService],
-  controllers: [MarkdownController],
-  exports: [MarkdownService],
+    imports: [
+        StudentModule,
+        TeamModule,
+        TutorialModule,
+        SheetModule,
+        ScheinexamModule,
+        ShortTestModule,
+    ],
+    providers: [MarkdownService],
+    controllers: [MarkdownController],
+    exports: [MarkdownService],
 })
 export class MarkdownModule {}

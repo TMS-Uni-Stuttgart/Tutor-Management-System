@@ -7,27 +7,27 @@ import { DateTime, Interval } from 'luxon';
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsLuxonDateTime(validationOptions?: ValidationOptions) {
-  return function (object: Record<string, any>, propertyName: string): void {
-    const message: any = {
-      message: validationOptions?.each
-        ? `each date in ${propertyName} must be in a valid ISO format`
-        : `${propertyName} must be in the ISO format`,
+    return function (object: Record<string, any>, propertyName: string): void {
+        const message: any = {
+            message: validationOptions?.each
+                ? `each date in ${propertyName} must be in a valid ISO format`
+                : `${propertyName} must be in the ISO format`,
+        };
+
+        registerDecorator({
+            name: 'isLuxonDate',
+            target: object.constructor,
+            propertyName,
+            options: { ...message, ...validationOptions },
+            validator: {
+                validate(value: any): boolean {
+                    const date = DateTime.fromISO(value);
+
+                    return date.isValid;
+                },
+            },
+        });
     };
-
-    registerDecorator({
-      name: 'isLuxonDate',
-      target: object.constructor,
-      propertyName,
-      options: { ...message, ...validationOptions },
-      validator: {
-        validate(value: any): boolean {
-          const date = DateTime.fromISO(value);
-
-          return date.isValid;
-        },
-      },
-    });
-  };
 }
 
 /**
@@ -36,25 +36,25 @@ export function IsLuxonDateTime(validationOptions?: ValidationOptions) {
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsLuxonInterval(validationOptions?: ValidationOptions) {
-  return function (object: Record<string, any>, propertyName: string): void {
-    const message: any = {
-      message: validationOptions?.each
-        ? `each interval in ${propertyName} must be in a valid ISO format`
-        : `${propertyName} must be in the ISO format`,
+    return function (object: Record<string, any>, propertyName: string): void {
+        const message: any = {
+            message: validationOptions?.each
+                ? `each interval in ${propertyName} must be in a valid ISO format`
+                : `${propertyName} must be in the ISO format`,
+        };
+
+        registerDecorator({
+            name: 'isLuxonInterval',
+            target: object.constructor,
+            propertyName,
+            options: { ...message, ...validationOptions },
+            validator: {
+                validate(value: any): boolean {
+                    const interval = Interval.fromISO(value);
+
+                    return interval.isValid && !interval.invalidReason;
+                },
+            },
+        });
     };
-
-    registerDecorator({
-      name: 'isLuxonInterval',
-      target: object.constructor,
-      propertyName,
-      options: { ...message, ...validationOptions },
-      validator: {
-        validate(value: any): boolean {
-          const interval = Interval.fromISO(value);
-
-          return interval.isValid && !interval.invalidReason;
-        },
-      },
-    });
-  };
 }

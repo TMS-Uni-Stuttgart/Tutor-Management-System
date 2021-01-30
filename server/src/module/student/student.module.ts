@@ -9,15 +9,15 @@ import { StudentController } from './student.controller';
 import { StudentService } from './student.service';
 
 @Module({
-  imports: [
-    forwardRef(() => TeamModule),
-    forwardRef(() => TutorialModule),
-    SheetModule,
-    ScheinexamModule,
-    ShortTestModule,
-  ],
-  controllers: [StudentController],
-  providers: [StudentService, GradingService],
-  exports: [StudentService, GradingService],
+    imports: [
+        forwardRef(() => TeamModule),
+        forwardRef(() => TutorialModule),
+        SheetModule,
+        ScheinexamModule,
+        ShortTestModule,
+    ],
+    controllers: [StudentController],
+    providers: [StudentService, GradingService],
+    exports: [StudentService, GradingService],
 })
 export class StudentModule {}

@@ -4,17 +4,17 @@ import { LocalesService, MissingKeyContainer } from './locales.service';
 
 @Controller('locales')
 export class LocalesController {
-  constructor(private readonly localesService: LocalesService) {}
+    constructor(private readonly localesService: LocalesService) {}
 
-  @Post('/:lang/:namespace')
-  @UseGuards(AuthenticatedGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async markMissingLocaleKey(
-    @Param('lang') lang: string,
-    @Param('namespace') namespace: string,
-    @Body() missingKeys: Record<string, string>
-  ): Promise<void> {
-    const container = new MissingKeyContainer(missingKeys);
-    this.localesService.addMissingLanguageKey({ lang, namespace, container });
-  }
+    @Post('/:lang/:namespace')
+    @UseGuards(AuthenticatedGuard)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async markMissingLocaleKey(
+        @Param('lang') lang: string,
+        @Param('namespace') namespace: string,
+        @Body() missingKeys: Record<string, string>
+    ): Promise<void> {
+        const container = new MissingKeyContainer(missingKeys);
+        this.localesService.addMissingLanguageKey({ lang, namespace, container });
+    }
 }

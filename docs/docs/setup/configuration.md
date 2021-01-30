@@ -8,8 +8,8 @@ sidebar_label: Configuration
 
 Within the `tms/config/` directory containing the configuration files the following items have to be present:
 
-- `production.yml`: YAML file containing the general configuration for the server.
-- `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
+-   `production.yml`: YAML file containing the general configuration for the server.
+-   `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
 
 Those files are provided through a docker volume. See the [installation guide](installation) for more information.
 
@@ -89,23 +89,23 @@ values={[
 h3(style='text-align: center') Anwesenheitsliste
 
 div(style='display: flex; width: 100%')
-  span Tutorium #{tutorialSlot}
-  span(style='margin-left: auto; float: right') Datum: #{date.toFormat('dd.MM.yyyy')}
+    span Tutorium #{tutorialSlot}
+    span(style='margin-left: auto; float: right') Datum: #{date.toFormat('dd.MM.yyyy')}
 
 div(style='margin-bottom: 16px')
-  span Tutor: #{tutorName}
+    span Tutor: #{tutorName}
 
 table
-  thead
-    tr
-      th Name
-      th Unterschrift
+    thead
+        tr
+            th Name
+            th Unterschrift
 
-  tbody
-    each student in students
-      tr
-        td #{student.name}
-        td
+    tbody
+        each student in students
+            tr
+                td #{student.name}
+                td
 ```
 
 </TabItem>
@@ -135,28 +135,28 @@ values={[
 h3(style='text-align: center') Zugangsdaten
 
 table
-  style(scoped).
-    td {
-      padding: 0.5em 1em;
-      font-family: "Courier New", Courier, monospace;
-      line-height: 200%;
-    }
-  
-  thead
-    tr
-      th Name
-      th Nutzername
-      th Password
+    style(scoped).
+        td {
+          padding: 0.5em 1em;
+          font-family: "Courier New", Courier, monospace;
+          line-height: 200%;
+        }
+    
+    thead
+        tr
+            th Name
+            th Nutzername
+            th Password
 
-  tbody
-    each user in users
-      tr
-        td #{user.name}
-        td #{user.username}
-        if !!user.password
-          td #{user.password}
-        else
-          td Kein tmp. Passwort
+    tbody
+        each user in users
+            tr
+                td #{user.name}
+                td #{user.username}
+                if !!user.password
+                    td #{user.password}
+                else
+                    td Kein tmp. Passwort
 ```
 
 </TabItem>
@@ -224,28 +224,28 @@ values={[
 h3(style='text-align: center') Scheinklausur Nr. #{scheinExamNo}
 
 table
-  style(scoped).
-    td {
-      padding: 0.5em 1em;
-      font-family: "Courier New", Courier, monospace;
-      line-height: 200%;
-    }
-  
-  thead
-    tr
-      th Matrikelnummer
-      th Bestanden / Nicht bestanden
+    style(scoped).
+        td {
+          padding: 0.5em 1em;
+          font-family: "Courier New", Courier, monospace;
+          line-height: 200%;
+        }
+    
+    thead
+        tr
+            th Matrikelnummer
+            th Bestanden / Nicht bestanden
 
-  tbody
-    each status in statuses
-      tr
-        td #{status.matriculationNo}
-        if status.state === "passed"
-          td Bestanden
-        else if status.state === "notPassed"
-          td Nicht bestanden
-        else
-          td Abwesend
+    tbody
+        each status in statuses
+            tr
+                td #{status.matriculationNo}
+                if status.state === "passed"
+                    td Bestanden
+                else if status.state === "notPassed"
+                    td Nicht bestanden
+                else
+                    td Abwesend
 ```
 
 </TabItem>
@@ -275,26 +275,26 @@ values={[
 h3(style='text-align: center') Scheinliste
 
 table
-  style(scoped).
-    td {
-      padding: 0.5em 1em;
-      font-family: "Courier New", Courier, monospace;
-      line-height: 200%;
-    }
-  
-  thead
-    tr
-      th Matrikelnummer
-      th Bestanden / Nicht bestanden
+    style(scoped).
+        td {
+          padding: 0.5em 1em;
+          font-family: "Courier New", Courier, monospace;
+          line-height: 200%;
+        }
+    
+    thead
+        tr
+            th Matrikelnummer
+            th Bestanden / Nicht bestanden
 
-  tbody
-    each status in statuses
-      tr
-        td #{status.matriculationNo}
-        if status.state === "passed"
-          td Bestanden
-        else
-          td Nicht bestanden
+    tbody
+        each status in statuses
+            tr
+                td #{status.matriculationNo}
+                if status.state === "passed"
+                    td Bestanden
+                else
+                    td Nicht bestanden
 ```
 
 </TabItem>

@@ -28,17 +28,17 @@ To create new students in your tutorial click the "+ New" button on the upper ri
 
 1.  **Status** (required): The status of the student. There are three statuses available:
 
-    - `ACTIVE`: The student is still activly participating in the course.
-    - `INACTIVE`: The student is not participating anymore (ie has aborted the course).
-    - `HAS SCHEIN`: The student is participating in the course but already has a valid Schein from an earlier term.
+    -   `ACTIVE`: The student is still activly participating in the course.
+    -   `INACTIVE`: The student is not participating anymore (ie has aborted the course).
+    -   `HAS SCHEIN`: The student is participating in the course but already has a valid Schein from an earlier term.
 
 1.  **Team** (required): The team of the student.
     The TMS automatically selects the first team with a free slot (slot counts are configured by the admin). If no such team could be selected the _New team_ option gets selected.
     You can manually select one of three options:
 
-    - _No team_: The student gets not assigned to any team.
-    - _New team_: A new team is created and the student assigned to it.
-    - _Team #XX_: The student gets assigned to the selected team.
+    -   _No team_: The student gets not assigned to any team.
+    -   _New team_: A new team is created and the student assigned to it.
+    -   _Team #XX_: The student gets assigned to the selected team.
 
 1.  **Matriculation number** (semi-required): The matriculation number of the student. Gets used to map the results to the students later for the corresponding office at the university.
 

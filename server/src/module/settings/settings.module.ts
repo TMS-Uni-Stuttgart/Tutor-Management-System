@@ -4,8 +4,8 @@ import { SettingsService } from './settings.service';
 
 @Global()
 @Module({
-  providers: [SettingsService],
-  exports: [SettingsService],
-  controllers: [SettingsController],
+    providers: [SettingsService],
+    exports: [SettingsService],
+    controllers: [SettingsController],
 })
 export class SettingsModule {}

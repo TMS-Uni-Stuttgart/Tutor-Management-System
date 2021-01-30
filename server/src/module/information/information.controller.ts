@@ -3,15 +3,15 @@ import { InformationService } from './information.service';
 
 @Controller('information')
 export class InformationController {
-  constructor(private readonly informationService: InformationService) {}
+    constructor(private readonly informationService: InformationService) {}
 
-  @Get('/version')
-  async getVersion(): Promise<string> {
-    return this.informationService.getVersion();
-  }
+    @Get('/version')
+    async getVersion(): Promise<string> {
+        return this.informationService.getVersion();
+    }
 
-  @Get('/handbook-url')
-  async getHandbookURL(): Promise<string> {
-    return this.informationService.getHandbookUrl() ?? '';
-  }
+    @Get('/handbook-url')
+    async getHandbookURL(): Promise<string> {
+        return this.informationService.getHandbookUrl() ?? '';
+    }
 }

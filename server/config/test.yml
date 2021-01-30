@@ -1,8 +1,8 @@
 database:
-  # Empty string is needed so the configuration validation does not fail on tests.
-  databaseURL: ''
-  maxRetries: 2
-  config:
-    # This is needed bc of the docker-compose file
-    authSource: 'admin'
-    authMechanism: 'SCRAM-SHA-1'
+    # Empty string is needed so the configuration validation does not fail on tests.
+    databaseURL: ''
+    maxRetries: 2
+    config:
+        # This is needed bc of the docker-compose file
+        authSource: 'admin'
+        authMechanism: 'SCRAM-SHA-1'

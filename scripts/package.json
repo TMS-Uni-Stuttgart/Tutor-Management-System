@@ -1,14 +1,14 @@
 {
-  "name": "scripts",
-  "version": "1.0.0",
-  "description": "",
-  "author": "",
-  "license": "ISC",
-  "scripts": {
-    "eslint:check": "eslint \"./**/*.ts?(x)\"",
-    "format": "eslint --fix \"./**/*.ts?(x)\"",
-    "prettier:check": "prettier --check \"./**/*.ts?(x)\"",
-    "ts:check": "tsc --project . --noEmit",
-    "ts:check:watch": "tsc --project . --noEmit -w"
-  }
+    "name": "scripts",
+    "version": "1.0.0",
+    "description": "",
+    "author": "",
+    "license": "ISC",
+    "scripts": {
+        "eslint:check": "eslint \"./**/*.ts?(x)\"",
+        "format": "eslint --fix \"./**/*.ts?(x)\"",
+        "prettier:check": "prettier --check \"./**/*.ts?(x)\"",
+        "ts:check": "tsc --project . --noEmit",
+        "ts:check:watch": "tsc --project . --noEmit -w"
+    }
 }

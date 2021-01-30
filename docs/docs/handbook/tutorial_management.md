@@ -22,23 +22,23 @@ To create a tutorial click on the "+ New" button in the upper right of the page.
 
 1. **Tutor** _(optional)_: Assign a tutor to the tutorial.
 
-   :::note
-   Only users with the `TUTOR` role will be shown in the dropdown menu.
-   :::
+    :::note
+    Only users with the `TUTOR` role will be shown in the dropdown menu.
+    :::
 
 1. **Starting date**: Select a date on which the tutorial starts. The starting date also determines the day of the week on which the tutorial is held. If the ending date was not changed it will be set to the starting date plus 12 weeks.
 
 1. **Ending date**: Set the ending date of the tutorial.
 
-   :::note
-   All dates between starting and ending date with the same weekday will be added to the list of dates.
-   :::
+    :::note
+    All dates between starting and ending date with the same weekday will be added to the list of dates.
+    :::
 
 1. **Date Selection**: You can manually select dates in the calendar or remove already selected dates. The list of dates get prefilled after selecting a starting and an ending date.
 
-   :::caution
-   Date selection is **not** limited to the same weekday as the starting date.
-   :::
+    :::caution
+    Date selection is **not** limited to the same weekday as the starting date.
+    :::
 
 1. **Starting time**: The time on which the tutorial starts. If the ending time was not changed it gets set to the starting time plus 90 minutes.
 
@@ -46,9 +46,9 @@ To create a tutorial click on the "+ New" button in the upper right of the page.
 
 1. **Correctors** _(optional)_: You can assign one or more correctors to this tutorial.
 
-   :::note
-   Only users with the `CORRECTOR` role will be shown in the dropdown menu.
-   :::
+    :::note
+    Only users with the `CORRECTOR` role will be shown in the dropdown menu.
+    :::
 
 ## Generate multiple Tutorials
 
@@ -70,9 +70,9 @@ The form does **not** display any information about tutorials which are already 
 
 1. **Sort Slots**: Sorts the slot by their starting time.
 
-   :::note
-   Due to current limitations in the implementation sorting can _not_ be done automatically.
-   :::
+    :::note
+    Due to current limitations in the implementation sorting can _not_ be done automatically.
+    :::
 
 1. **Slot to generate**: Contains the information about the slots for a specific time frame which will be generated. You can adjust the information in place. It is basically the same form as for adding a slot.
 

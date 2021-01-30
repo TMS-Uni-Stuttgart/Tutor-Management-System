@@ -8,29 +8,29 @@ import { IShortTestDTO } from '../../shared/model/ShortTest';
 import { ExerciseDTO } from '../sheet/sheet.dto';
 
 export class HasExercisesDTO implements IHasExercisesDTO {
-  @IsArray()
-  @ArrayNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => ExerciseDTO)
-  exercises!: ExerciseDTO[];
+    @IsArray()
+    @ArrayNotEmpty()
+    @ValidateNested({ each: true })
+    @Type(() => ExerciseDTO)
+    exercises!: ExerciseDTO[];
 }
 
 export class RatedEntityDTO extends HasExercisesDTO implements IRatedEntityDTO {
-  @IsNumber()
-  @Min(0)
-  @Max(1)
-  percentageNeeded!: number;
+    @IsNumber()
+    @Min(0)
+    @Max(1)
+    percentageNeeded!: number;
 }
 
 export class ShortTestDTO extends RatedEntityDTO implements IShortTestDTO {
-  @IsNumber()
-  shortTestNo!: number;
+    @IsNumber()
+    shortTestNo!: number;
 }
 
 export class ScheinexamDTO extends RatedEntityDTO implements IScheinexamDTO {
-  @IsNumber()
-  scheinExamNo!: number;
+    @IsNumber()
+    scheinExamNo!: number;
 
-  @IsLuxonDateTime()
-  date!: string;
+    @IsLuxonDateTime()
+    date!: string;
 }

@@ -16,9 +16,9 @@ To change the presentations a student has made you have to follow step (1) to (3
 
 1. **Presentation Points**: Enter the amount of presentation points the student has gained for the selected sheet.
 
-   :::note
-   You can enter the presentation points for multiple students at once and only save one time in the end.
-   :::
+    :::note
+    You can enter the presentation points for multiple students at once and only save one time in the end.
+    :::
 
 1. **Save**: Save the changes.
 

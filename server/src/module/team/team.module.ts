@@ -5,9 +5,9 @@ import { TeamController } from './team.controller';
 import { TeamService } from './team.service';
 
 @Module({
-  imports: [forwardRef(() => StudentModule), forwardRef(() => TutorialModule)],
-  providers: [TeamService],
-  controllers: [TeamController],
-  exports: [TeamService],
+    imports: [forwardRef(() => StudentModule), forwardRef(() => TutorialModule)],
+    providers: [TeamService],
+    controllers: [TeamController],
+    exports: [TeamService],
 })
 export class TeamModule {}

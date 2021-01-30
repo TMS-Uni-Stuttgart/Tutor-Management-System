@@ -27,9 +27,9 @@ _From left to right_:
 
 1. **Backup**: Create a backup XLSX file for your tutorial(s). The list will be empty for users without any tutorial.
 
-   :::caution
-   The backup is humanly readable and **not** encrypted! Only save it if absolutly necessary and store it at a safe location.
-   :::
+    :::caution
+    The backup is humanly readable and **not** encrypted! Only save it if absolutly necessary and store it at a safe location.
+    :::
 
 1. **Logged in User**: The name of the currently logged in user (this should be you).
 
@@ -37,9 +37,9 @@ _From left to right_:
 
 1. **Switch Theme**: Switch the theme of the app between a light and a dark theme.
 
-   :::note
-   By default the app uses your preferences configured in your browser.
-   :::
+    :::note
+    By default the app uses your preferences configured in your browser.
+    :::
 
 1. **Handbook**: Opens this handbook in a new tab of your browser.
 

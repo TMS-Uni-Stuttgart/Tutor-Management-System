@@ -32,25 +32,25 @@ After pulling your fork and creating a new branch for your issue you have to set
 
 1. **Navigate** into the repository folder install all needed npm packages by running the following command (_Please note that this might take some time for the first time installing._):
 
-   ```sh
-   yarn
-   ```
+    ```sh
+    yarn
+    ```
 
 1. **Download** the [`docker-compose.yml` file](../assets/dev/docker-compose.yml) for the development. It contains two services: `mongo` and `mongo-express`.
 
 1. **Run** either of these two commands depending on your needs:
 
-   1. Just set up a mongo database:
+    1. Just set up a mongo database:
 
-      ```sh
-      docker-compose up -d mongo
-      ```
+        ```sh
+        docker-compose up -d mongo
+        ```
 
-   1. If you want to also get an administrative board for your local database:
-      ```sh
-      docker-compose up -d mongo mongo-express
-      ```
-      This starts the MongoDB aswell as a webinterface which connects to it. To access this interface visit [localhost:8081](localhost:8081).
+    1. If you want to also get an administrative board for your local database:
+        ```sh
+        docker-compose up -d mongo mongo-express
+        ```
+        This starts the MongoDB aswell as a webinterface which connects to it. To access this interface visit [localhost:8081](localhost:8081).
 
 **Note:** If you want to bring your own MongoDB you can do so. However, you have to make sure to change the `server/config/development.yml` to include the configuration of your MongoDB.
 
@@ -64,13 +64,13 @@ Take care to **NOT** commit & push files which include credentials of yours!
 
 If you use Visual Studio Code (short 'Code') starting the development servers is easy. You can pick one of the preconfigured launch options listed below. Both servers (frontend & backend) have hot-reloading preconfigured.
 
-- `Launch NodeJS server`: This starts the development version of the backend. During start up the Code debugger will be automatically attached to the running server.
-- `Launch NodeJS server & client`: This starts both development servers (frontend & backend - in this order). The Code debugger will be attached to the backend.
-- `Launch Chrome`: _Needs a running frontend server!_ Will open a seperate Chrome instance and attach a Code debugger to the running frontend server.
+-   `Launch NodeJS server`: This starts the development version of the backend. During start up the Code debugger will be automatically attached to the running server.
+-   `Launch NodeJS server & client`: This starts both development servers (frontend & backend - in this order). The Code debugger will be attached to the backend.
+-   `Launch Chrome`: _Needs a running frontend server!_ Will open a seperate Chrome instance and attach a Code debugger to the running frontend server.
 
-  :::important Required extension
-  The [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome) extension is required.
-  :::
+    :::important Required extension
+    The [Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome) extension is required.
+    :::
 
 Please note: Sometimes starting the server initially takes longer than 10s resulting in a "timeout error" appearing in Code. However, you can configure the debugger in Code to auto attach to a running node process and it will connect after the server started.
 

@@ -9,28 +9,32 @@ import { UserFormState } from '../AdjustImportedUserDataForm';
 import UserDataRow from './UserDataRow';
 
 interface Props {
-  tutorials: Tutorial[];
+    tutorials: Tutorial[];
 }
 
 function UserDataBox({ tutorials }: Props): JSX.Element {
-  const { values } = useFormikContext<UserFormState>();
-  const users = useMemo(
-    () =>
-      Object.values(values).sort((a, b) => getNameOfEntity(a).localeCompare(getNameOfEntity(b))),
-    [values]
-  );
+    const { values } = useFormikContext<UserFormState>();
+    const users = useMemo(
+        () =>
+            Object.values(values).sort((a, b) =>
+                getNameOfEntity(a).localeCompare(getNameOfEntity(b))
+            ),
+        [values]
+    );
 
-  return (
-    <OutlinedBox flex={1}>
-      <Typography>Nutzerdaten festlegen</Typography>
+    return (
+        <OutlinedBox flex={1}>
+            <Typography>Nutzerdaten festlegen</Typography>
 
-      <TableWithPadding
-        items={users}
-        createRowFromItem={(item) => <UserDataRow name={`${item.rowNr}`} tutorials={tutorials} />}
-        BoxProps={{ marginTop: 2 }}
-      />
-    </OutlinedBox>
-  );
+            <TableWithPadding
+                items={users}
+                createRowFromItem={(item) => (
+                    <UserDataRow name={`${item.rowNr}`} tutorials={tutorials} />
+                )}
+                BoxProps={{ marginTop: 2 }}
+            />
+        </OutlinedBox>
+    );
 }
 
 export default UserDataBox;

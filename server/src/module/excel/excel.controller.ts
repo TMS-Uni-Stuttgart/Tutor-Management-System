@@ -1,15 +1,15 @@
 import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Res,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-  HttpCode,
-  HttpStatus,
+    Body,
+    Controller,
+    Get,
+    Param,
+    Post,
+    Res,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
+    HttpCode,
+    HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
@@ -21,23 +21,23 @@ import { ExcelService } from './excel.service';
 
 @Controller('excel')
 export class ExcelController {
-  constructor(private readonly excelService: ExcelService) {}
+    constructor(private readonly excelService: ExcelService) {}
 
-  @Get('/tutorial/:id')
-  @UseGuards(TutorialGuard)
-  @AllowCorrectors()
-  async getTutorialXLSX(@Param('id') id: string, @Res() res: Response): Promise<void> {
-    const buffer = await this.excelService.generateTutorialBackup(id);
+    @Get('/tutorial/:id')
+    @UseGuards(TutorialGuard)
+    @AllowCorrectors()
+    async getTutorialXLSX(@Param('id') id: string, @Res() res: Response): Promise<void> {
+        const buffer = await this.excelService.generateTutorialBackup(id);
 
-    res.contentType('xlsx');
-    res.send(buffer);
-  }
+        res.contentType('xlsx');
+        res.send(buffer);
+    }
 
-  @Post('/parseCSV')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(HasRoleGuard)
-  @UsePipes(ValidationPipe)
-  async parseCSV(@Body() body: ParseCsvDTO): Promise<ParseCsvResult<unknown>> {
-    return await this.excelService.parseCSV(body);
-  }
+    @Post('/parseCSV')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(HasRoleGuard)
+    @UsePipes(ValidationPipe)
+    async parseCSV(@Body() body: ParseCsvDTO): Promise<ParseCsvResult<unknown>> {
+        return await this.excelService.parseCSV(body);
+    }
 }

@@ -1,11 +1,11 @@
 import {
-  Divider,
-  Drawer,
-  DrawerProps,
-  Link,
-  List,
-  ListSubheader,
-  Typography,
+    Divider,
+    Drawer,
+    DrawerProps,
+    Link,
+    List,
+    ListSubheader,
+    Typography,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -21,149 +21,157 @@ const DRAWER_WIDTH_OPEN = 280;
 const DRAWER_WIDTH_CLOSED = 56;
 
 const useStyles = makeStyles((theme) =>
-  createStyles({
-    drawer: {
-      maxWidth: DRAWER_WIDTH_OPEN,
-      flexShrink: 0,
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-    },
-    drawerOpen: {
-      width: DRAWER_WIDTH_OPEN,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
-    drawerClose: {
-      width: DRAWER_WIDTH_CLOSED,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-    },
-    displayNone: {
-      display: 'none',
-    },
-    toolbar: theme.mixins.toolbar,
-    list: {
-      overflowY: 'auto',
-      overflowX: 'hidden',
-      ...theme.mixins.scrollbar(4),
-    },
-    version: {
-      margin: theme.spacing(0.5, 0),
-      marginTop: 'auto',
-      textAlign: 'center',
-      width: '100%',
-    },
-  })
+    createStyles({
+        drawer: {
+            maxWidth: DRAWER_WIDTH_OPEN,
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+        },
+        drawerOpen: {
+            width: DRAWER_WIDTH_OPEN,
+            transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+        },
+        drawerClose: {
+            width: DRAWER_WIDTH_CLOSED,
+            transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+        },
+        displayNone: {
+            display: 'none',
+        },
+        toolbar: theme.mixins.toolbar,
+        list: {
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            ...theme.mixins.scrollbar(4),
+        },
+        version: {
+            margin: theme.spacing(0.5, 0),
+            marginTop: 'auto',
+            textAlign: 'center',
+            width: '100%',
+        },
+    })
 );
 
 function NavigationRail({
-  className,
-  classes: PaperClasses,
-  open,
-  onClose,
-  PaperProps,
-  ...other
+    className,
+    classes: PaperClasses,
+    open,
+    onClose,
+    PaperProps,
+    ...other
 }: DrawerProps): JSX.Element {
-  const classes = useStyles();
-  const { userData } = useLogin();
-  const [version, setVersion] = useState<string | undefined>(undefined);
+    const classes = useStyles();
+    const { userData } = useLogin();
+    const [version, setVersion] = useState<string | undefined>(undefined);
 
-  if (!userData) {
-    throw new Error('Drawer without a user should be rendered. This is forbidden.');
-  }
+    if (!userData) {
+        throw new Error('Drawer without a user should be rendered. This is forbidden.');
+    }
 
-  const { withoutTutorialRoutes, tutorialRoutes, managementRoutes } = useMemo(
-    () => filterRoutes(userData.roles),
-    [userData.roles]
-  );
+    const { withoutTutorialRoutes, tutorialRoutes, managementRoutes } = useMemo(
+        () => filterRoutes(userData.roles),
+        [userData.roles]
+    );
 
-  useEffect(() => {
-    getVersionOfApp()
-      .then((version) => setVersion(version))
-      .catch(() => setVersion(undefined));
-  }, []);
+    useEffect(() => {
+        getVersionOfApp()
+            .then((version) => setVersion(version))
+            .catch(() => setVersion(undefined));
+    }, []);
 
-  return (
-    <Drawer
-      PaperProps={{ elevation: 2, ...PaperProps }}
-      {...other}
-      variant='permanent'
-      open={open}
-      className={clsx(classes.drawer, className, {
-        [classes.drawerOpen]: open,
-        [classes.drawerClose]: !open,
-      })}
-      classes={{
-        ...PaperClasses,
-        paper: clsx(PaperClasses && PaperClasses.paper, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        }),
-      }}
-    >
-      <div className={classes.toolbar} />
+    return (
+        <Drawer
+            PaperProps={{ elevation: 2, ...PaperProps }}
+            {...other}
+            variant='permanent'
+            open={open}
+            className={clsx(classes.drawer, className, {
+                [classes.drawerOpen]: open,
+                [classes.drawerClose]: !open,
+            })}
+            classes={{
+                ...PaperClasses,
+                paper: clsx(PaperClasses && PaperClasses.paper, {
+                    [classes.drawerOpen]: open,
+                    [classes.drawerClose]: !open,
+                }),
+            }}
+        >
+            <div className={classes.toolbar} />
 
-      <List className={classes.list}>
-        {withoutTutorialRoutes.map((route) => (
-          <RailItem
-            key={route.template}
-            path={route.create({})}
-            text={route.title}
-            icon={route.icon}
-          />
-        ))}
+            <List className={classes.list}>
+                {withoutTutorialRoutes.map((route) => (
+                    <RailItem
+                        key={route.template}
+                        path={route.create({})}
+                        text={route.title}
+                        icon={route.icon}
+                    />
+                ))}
 
-        {tutorialRoutes.length > 0 && (
-          <>
-            <Divider />
+                {tutorialRoutes.length > 0 && (
+                    <>
+                        <Divider />
 
-            <ListSubheader className={clsx(!open && classes.displayNone)}>Tutorium</ListSubheader>
+                        <ListSubheader className={clsx(!open && classes.displayNone)}>
+                            Tutorium
+                        </ListSubheader>
 
-            {tutorialRoutes.map((route) => (
-              <TutorialRailItem key={route.template} route={route} userData={userData} />
-            ))}
-          </>
-        )}
+                        {tutorialRoutes.map((route) => (
+                            <TutorialRailItem
+                                key={route.template}
+                                route={route}
+                                userData={userData}
+                            />
+                        ))}
+                    </>
+                )}
 
-        {managementRoutes.length > 0 && (
-          <>
-            <Divider />
+                {managementRoutes.length > 0 && (
+                    <>
+                        <Divider />
 
-            <ListSubheader className={clsx(!open && classes.displayNone)}>Verwaltung</ListSubheader>
+                        <ListSubheader className={clsx(!open && classes.displayNone)}>
+                            Verwaltung
+                        </ListSubheader>
 
-            {managementRoutes.map((route) => (
-              <RailItem
-                key={route.template}
-                path={route.create({})}
-                text={route.title}
-                icon={route.icon}
-              />
-            ))}
-          </>
-        )}
-      </List>
+                        {managementRoutes.map((route) => (
+                            <RailItem
+                                key={route.template}
+                                path={route.create({})}
+                                text={route.title}
+                                icon={route.icon}
+                            />
+                        ))}
+                    </>
+                )}
+            </List>
 
-      {open && version && (
-        <Typography className={classes.version} variant='caption'>
-          {<>Version: </>}
+            {open && version && (
+                <Typography className={classes.version} variant='caption'>
+                    {<>Version: </>}
 
-          <Link
-            color='inherit'
-            href={`https://github.com/Dudrie/Tutor-Management-System/releases/tag/${version}`}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            {version}
-            <ExternalLinkIcon fontSize='inherit' />
-          </Link>
-        </Typography>
-      )}
-    </Drawer>
-  );
+                    <Link
+                        color='inherit'
+                        href={`https://github.com/Dudrie/Tutor-Management-System/releases/tag/${version}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
+                        {version}
+                        <ExternalLinkIcon fontSize='inherit' />
+                    </Link>
+                </Typography>
+            )}
+        </Drawer>
+    );
 }
 
 export default NavigationRail;

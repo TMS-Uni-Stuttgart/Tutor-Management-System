@@ -1,25 +1,25 @@
 h3(style='text-align: center') Scheinklausur Nr. #{scheinExamNo}
 
 table
-  style(scoped).
-    td {
-      padding: 0.5em 1em;
-      font-family: 'Courier New', Courier, monospace;
-      line-height: 200%;
-    }
+    style(scoped).
+        td {
+          padding: 0.5em 1em;
+          font-family: "Courier New", Courier, monospace;
+          line-height: 200%;
+        }
     
-  thead
-    tr 
-      th Matrikelnummer
-      th Bestanden / Nicht bestanden
+    thead
+        tr 
+            th Matrikelnummer
+            th Bestanden / Nicht bestanden
 
-  tbody
-    each status in statuses
-      tr
-        td #{status.matriculationNo}
-        if status.state === "passed"
-          td Bestanden
-        else if status.state === "notPassed"
-          td Nicht bestanden
-        else
-          td Abwesend
+    tbody
+        each status in statuses
+            tr
+                td #{status.matriculationNo}
+                if status.state === "passed"
+                    td Bestanden
+                else if status.state === "notPassed"
+                    td Nicht bestanden
+                else
+                    td Abwesend

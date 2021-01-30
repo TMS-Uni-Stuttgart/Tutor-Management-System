@@ -3,10 +3,10 @@ import { Request } from 'express';
 
 @Injectable()
 export class RequestLoggerMiddleware implements NestMiddleware {
-  use(req: Request, _: unknown, next: () => void): void {
-    const user: string = req.user?._id ?? 'Not identified user';
+    use(req: Request, _: unknown, next: () => void): void {
+        const user: string = req.user?._id ?? 'Not identified user';
 
-    Logger.debug(`Request: ${user} -> ${req.path}@${req.method}`);
-    next();
-  }
+        Logger.debug(`Request: ${user} -> ${req.path}@${req.method}`);
+        next();
+    }
 }

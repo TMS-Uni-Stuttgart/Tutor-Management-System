@@ -1,22 +1,22 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "paths": {
-      "shared/*": ["./src/shared/*"]
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "target": "es2017",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "paths": {
+            "shared/*": ["./src/shared/*"]
+        },
+        "strict": true,
+        "incremental": true,
+        "esModuleInterop": true,
+        "lib": ["es2020"],
+        "skipLibCheck": true
     },
-    "strict": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "lib": ["es2020"],
-    "skipLibCheck": true
-  },
-  "exclude": ["node_modules", "dist"]
+    "exclude": ["node_modules", "dist"]
 }

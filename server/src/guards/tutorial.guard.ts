@@ -6,9 +6,9 @@ import { HasRoleGuard } from './has-role.guard';
 import { UseMetadata } from './helpers/UseMetadata';
 
 interface HasAccessParams {
-  tutorial: TutorialDocument;
-  user: Express.User;
-  context: ExecutionContext;
+    tutorial: TutorialDocument;
+    user: Express.User;
+    context: ExecutionContext;
 }
 
 /**
@@ -22,63 +22,63 @@ interface HasAccessParams {
  */
 @Injectable()
 export class TutorialGuard extends UseMetadata {
-  constructor(protected readonly tutorialService: TutorialService, reflector: Reflector) {
-    super(reflector);
-  }
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const roleGuard = new HasRoleGuard(this.reflector);
-
-    if (roleGuard.canActivate(context)) {
-      return true;
+    constructor(protected readonly tutorialService: TutorialService, reflector: Reflector) {
+        super(reflector);
     }
 
-    const user = this.getUserFromRequest(context);
-    const tutorial = await this.getTutorialFromRequest(context);
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const roleGuard = new HasRoleGuard(this.reflector);
 
-    return this.hasUserAccessToTutorial({ user, tutorial, context });
-  }
-
-  /**
-   * Returns if the user is allowed to access the given endpoint or not.
-   *
-   * This takes into account the metadata set by the `@AllowSubstitutes` and `@AllowCorrectors` decorators.
-   *
-   * @param params Must contain the user and tutorial to check and the current execution context.
-   *
-   * @returs Is the given user allowed to access the annotated endpoint?
-   */
-  protected hasUserAccessToTutorial({ tutorial, user, context }: HasAccessParams): boolean {
-    const userId = user._id;
-    const allowSubstitutes = this.isAllowedForSubstitutes(context);
-    const allowCorrectors = this.isAllowedForCorrectors(context);
-
-    if (tutorial.tutor?.id === userId) {
-      return true;
-    }
-
-    if (allowSubstitutes) {
-      for (const [, substId] of tutorial.getAllSubstitutes()) {
-        if (userId === substId) {
-          return true;
+        if (roleGuard.canActivate(context)) {
+            return true;
         }
-      }
+
+        const user = this.getUserFromRequest(context);
+        const tutorial = await this.getTutorialFromRequest(context);
+
+        return this.hasUserAccessToTutorial({ user, tutorial, context });
     }
 
-    if (allowCorrectors) {
-      for (const corrector of tutorial.correctors) {
-        if (userId === corrector.id) {
-          return true;
+    /**
+     * Returns if the user is allowed to access the given endpoint or not.
+     *
+     * This takes into account the metadata set by the `@AllowSubstitutes` and `@AllowCorrectors` decorators.
+     *
+     * @param params Must contain the user and tutorial to check and the current execution context.
+     *
+     * @returs Is the given user allowed to access the annotated endpoint?
+     */
+    protected hasUserAccessToTutorial({ tutorial, user, context }: HasAccessParams): boolean {
+        const userId = user._id;
+        const allowSubstitutes = this.isAllowedForSubstitutes(context);
+        const allowCorrectors = this.isAllowedForCorrectors(context);
+
+        if (tutorial.tutor?.id === userId) {
+            return true;
         }
-      }
+
+        if (allowSubstitutes) {
+            for (const [, substId] of tutorial.getAllSubstitutes()) {
+                if (userId === substId) {
+                    return true;
+                }
+            }
+        }
+
+        if (allowCorrectors) {
+            for (const corrector of tutorial.correctors) {
+                if (userId === corrector.id) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
-    return false;
-  }
+    protected async getTutorialFromRequest(context: ExecutionContext): Promise<TutorialDocument> {
+        const tutorialId = this.getIdFieldContentFromContext(context);
 
-  protected async getTutorialFromRequest(context: ExecutionContext): Promise<TutorialDocument> {
-    const tutorialId = this.getIdFieldContentFromContext(context);
-
-    return this.tutorialService.findById(tutorialId);
-  }
+        return this.tutorialService.findById(tutorialId);
+    }
 }

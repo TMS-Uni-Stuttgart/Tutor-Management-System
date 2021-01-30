@@ -5,86 +5,89 @@ import BackButton from '../../components/back-button/BackButton';
 import { ROUTES } from '../../routes/Routing.routes';
 
 const useStyles = makeStyles((theme) =>
-  createStyles({
-    backButton: {
-      marginRight: theme.spacing(2),
-      alignSelf: 'center',
-    },
-    graphGrid: {
-      marginTop: theme.spacing(1.5),
-      marginBottom: theme.spacing(2),
-    },
-    studentRow: {
-      marginBottom: theme.spacing(2),
-    },
-  })
+    createStyles({
+        backButton: {
+            marginRight: theme.spacing(2),
+            alignSelf: 'center',
+        },
+        graphGrid: {
+            marginTop: theme.spacing(1.5),
+            marginBottom: theme.spacing(2),
+        },
+        studentRow: {
+            marginBottom: theme.spacing(2),
+        },
+    })
 );
 
 interface PathParams {
-  id: string;
+    id: string;
 }
 
 function CriteriaInfoView(): JSX.Element {
-  const classes = useStyles();
-  // const theme = useTheme();
+    const classes = useStyles();
+    // const theme = useTheme();
 
-  // const { id: criteriaId } = useParams<PathParams>();
-  // const { setError } = useErrorSnackbar();
+    // const { id: criteriaId } = useParams<PathParams>();
+    // const { setError } = useErrorSnackbar();
 
-  // const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
+    // const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
 
-  // const [students, setStudents] = useState<Student[]>();
-  // const [criteriaInfo, setCriteriaInfo] = useState<CriteriaInformation>();
-  // const [information, setInformation] = useState<CriteriaInformationItem>();
-  // const [selectedSheetOrExam, setSelectetSheetOrExam] = useState<HasExercises>();
+    // const [students, setStudents] = useState<Student[]>();
+    // const [criteriaInfo, setCriteriaInfo] = useState<CriteriaInformation>();
+    // const [information, setInformation] = useState<CriteriaInformationItem>();
+    // const [selectedSheetOrExam, setSelectetSheetOrExam] = useState<HasExercises>();
 
-  // useEffect(() => {
-  //   getAllStudents()
-  //     .then(response => {
-  //       setStudents(response);
-  //     })
-  //     .catch(() => {
-  //       setError('Studierende konnten nicht abgerufen werden.');
-  //       setStudents(undefined);
-  //     });
-  // }, [setError]);
+    // useEffect(() => {
+    //   getAllStudents()
+    //     .then(response => {
+    //       setStudents(response);
+    //     })
+    //     .catch(() => {
+    //       setError('Studierende konnten nicht abgerufen werden.');
+    //       setStudents(undefined);
+    //     });
+    // }, [setError]);
 
-  // useEffect(() => {
-  //   getScheincriteriaInformation(criteriaId)
-  //     .then(response => {
-  //       setCriteriaInfo(response);
-  //     })
-  //     .catch(() => {
-  //       setError('Informationen über das Kriterium konnten nicht abgerufen werden.');
-  //     });
-  // }, [criteriaId, setError]);
+    // useEffect(() => {
+    //   getScheincriteriaInformation(criteriaId)
+    //     .then(response => {
+    //       setCriteriaInfo(response);
+    //     })
+    //     .catch(() => {
+    //       setError('Informationen über das Kriterium konnten nicht abgerufen werden.');
+    //     });
+    // }, [criteriaId, setError]);
 
-  // useEffect(() => {
-  //   setInformation(
-  //     selectedSheetOrExam ? criteriaInfo?.information[selectedSheetOrExam.id] : undefined
-  //   );
-  // }, [criteriaInfo, selectedSheetOrExam]);
+    // useEffect(() => {
+    //   setInformation(
+    //     selectedSheetOrExam ? criteriaInfo?.information[selectedSheetOrExam.id] : undefined
+    //   );
+    // }, [criteriaInfo, selectedSheetOrExam]);
 
-  // const handleSheetOrExamChange: OnChangeHandler = event => {
-  //   if (!criteriaInfo?.sheetsOrExams) {
-  //     return;
-  //   }
+    // const handleSheetOrExamChange: OnChangeHandler = event => {
+    //   if (!criteriaInfo?.sheetsOrExams) {
+    //     return;
+    //   }
 
-  //   const exam = criteriaInfo.sheetsOrExams.find(exam => exam.id === event.target.value);
+    //   const exam = criteriaInfo.sheetsOrExams.find(exam => exam.id === event.target.value);
 
-  //   setSelectetSheetOrExam(exam);
-  // };
+    //   setSelectetSheetOrExam(exam);
+    // };
 
-  return (
-    <Box display='flex' flexDirection='column'>
-      <Box display='flex' marginBottom={3}>
-        <BackButton to={ROUTES.MANAGE_SCHEIN_CRITERIAS.create({})} className={classes.backButton} />
+    return (
+        <Box display='flex' flexDirection='column'>
+            <Box display='flex' marginBottom={3}>
+                <BackButton
+                    to={ROUTES.MANAGE_SCHEIN_CRITERIAS.create({})}
+                    className={classes.backButton}
+                />
 
-        {/* {criteriaInfo && <Typography variant='h4'>{criteriaInfo.name}</Typography>} */}
-      </Box>
+                {/* {criteriaInfo && <Typography variant='h4'>{criteriaInfo.name}</Typography>} */}
+            </Box>
 
-      <Box>WORK IN PROGRESS</Box>
-      {/* <Placeholder
+            <Box>WORK IN PROGRESS</Box>
+            {/* <Placeholder
         placeholderText='Keine Informationen verfügbar.'
         showPlaceholder={!criteriaInfo?.sheetsOrExams}
         loading={!criteriaInfo}
@@ -247,8 +250,8 @@ function CriteriaInfoView(): JSX.Element {
           </Box>
         )}
       </Placeholder> */}
-    </Box>
-  );
+        </Box>
+    );
 }
 
 export default CriteriaInfoView;

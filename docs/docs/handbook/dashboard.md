@@ -12,11 +12,11 @@ import Roles from '../../src/components/roles/Roles';
 
 If you are assigned to one or more tutorials your dashboard contains the following items per tutorial:
 
-- **Information about tutorial**: These information are number of participants, number of teams, time slot and weekday.
+-   **Information about tutorial**: These information are number of participants, number of teams, time slot and weekday.
 
-- **Current schein status**: A pie chart which shows how many students would have passed and not passed the schein at the current moment.
+-   **Current schein status**: A pie chart which shows how many students would have passed and not passed the schein at the current moment.
 
-- **Data about criterias**: Different graphs for the criterias. The graph vary between the different criterias.
+-   **Data about criterias**: Different graphs for the criterias. The graph vary between the different criterias.
 
 ## As `ADMIN`
 

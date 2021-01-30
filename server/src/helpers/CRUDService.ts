@@ -11,13 +11,13 @@
  * ```
  */
 export interface CRUDService<RES, DTO, DOC> {
-  findAll(): Promise<DOC[]>;
+    findAll(): Promise<DOC[]>;
 
-  findById(id: string): Promise<DOC>;
+    findById(id: string): Promise<DOC>;
 
-  create(dto: DTO): Promise<RES>;
+    create(dto: DTO): Promise<RES>;
 
-  update(id: string, dto: DTO): Promise<RES>;
+    update(id: string, dto: DTO): Promise<RES>;
 
-  delete(id: string): Promise<DOC>;
+    delete(id: string): Promise<DOC>;
 }
