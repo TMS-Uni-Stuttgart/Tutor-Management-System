@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.4
         with:
-          node-version: 12.x
+          node-version: 14.x
       - name: Install node packages
         run: |
           yarn install
@@ -38,7 +38,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.4
         with:
-          node-version: 12.x
+          node-version: 14.x
       - name: Install node packages
         run: |
           yarn install
@@ -59,7 +59,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.4
         with:
-          node-version: 10.x
+          node-version: 14.x
       - name: Install node packages
         run: |
           yarn install
