@@ -12,18 +12,18 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "start:client": "yarn workspace client start",
-    "start:server": "yarn workspace server start",
-    "format": "yarn workspaces run format",
-    "build": "cd ./scripts/ && yarn run ts-node ./build.ts",
-    "ts:check": "yarn workspaces run ts:check",
-    "ts:check:client": "echo Type checking client && cd ./client && yarn ts:check",
-    "ts:check:server": "echo Type checking server && cd ./server && yarn ts:check",
-    "docker:build": "yarn version && ts-node ./build-docker-image.ts",
-    "docker:build:pre": "yarn version && ts-node ./build-docker-image.ts --pre",
-    "docker:build:tar": "yarn version && ts-node ./build-docker-image.ts --bundle",
-    "docker:test": "cd ./scripts/ && yarn run ts-node build-test-docker/buildAndTestDocker.ts",
-    "upgrade-pkg": "npm-upgrade && yarn workspace run npm-upgrade",
+    "start:client": "cd ./client/ && pnpm start",
+    "start:server": "cd ./server/ && pnpm start",
+    "format": "pnpm run --recursive format",
+    "build": "cd ./scripts/ && ts-node ./build.ts",
+    "ts:check": "pnpm run --recursive ts:check",
+    "ts:check:client": "echo Type checking client && cd ./client && pnpm run ts:check",
+    "ts:check:server": "echo Type checking server && cd ./server && pnpm run ts:check",
+    "docker:build": "ts-node ./build-docker-image.ts",
+    "docker:build:pre": "ts-node ./build-docker-image.ts --pre",
+    "docker:build:tar": "ts-node ./build-docker-image.ts --bundle",
+    "docker:test": "cd ./scripts/ && ts-node build-test-docker/buildAndTestDocker.ts",
+    "upgrade-pkg": "npm-upgrade && pnpm run --recursive npm-upgrade",
     "upgrade-pkg:client": "cd ./client && npm-upgrade",
     "upgrade-pkg:server": "cd ./server && npm-upgrade"
   },
@@ -55,6 +55,6 @@
     "jest-circus": "^26.6.3",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
-    "typescript": "^3.9.7"
+    "typescript": "^4.1.3"
   }
 }

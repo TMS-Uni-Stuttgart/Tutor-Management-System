@@ -141,7 +141,7 @@ table
       font-family: "Courier New", Courier, monospace;
       line-height: 200%;
     }
-  
+
   thead
     tr
       th Name
@@ -230,7 +230,7 @@ table
       font-family: "Courier New", Courier, monospace;
       line-height: 200%;
     }
-  
+
   thead
     tr
       th Matrikelnummer
@@ -281,7 +281,7 @@ table
       font-family: "Courier New", Courier, monospace;
       line-height: 200%;
     }
-  
+
   thead
     tr
       th Matrikelnummer
