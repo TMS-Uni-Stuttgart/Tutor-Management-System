@@ -11,6 +11,7 @@
     "scripts"
   ],
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "start:client": "yarn workspace client start",
     "start:server": "yarn workspace server start",
     "format": "yarn workspaces run format",
