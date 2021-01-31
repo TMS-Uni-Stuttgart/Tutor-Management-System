@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       # Change the version to be the correct one so the version in the image is always the correct one.
+      # We use npm (and not pnpm) here because pnpm does not have a "version" command.
       - name: Set new version
         run: npm version ${{ github.event.release.tag_name }}
 

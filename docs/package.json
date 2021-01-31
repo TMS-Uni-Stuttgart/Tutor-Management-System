@@ -10,7 +10,7 @@
     "deploy": "docusaurus deploy",
     "serve": "docusaurus serve",
     "format": "eslint --fix \"**/*.ts?(x)\" && prettier --write \"**/*.md\"",
-    "eslint:check": "pnpm run --cwd ../ eslint \"docs/**/*.ts?(x)\"",
+    "eslint:check": "pnpm run --dir ../ eslint -- \"docs/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"**/*.(ts?(x)|md)\""
   },
   "dependencies": {
