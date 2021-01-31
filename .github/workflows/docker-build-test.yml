@@ -19,13 +19,15 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
+      - name: Install pnpm
+        run: npm i -g pnpm
       - name: Install node packages
         run: |
-          yarn install
+          pnpm install
         env:
           CI: true
       - name: Test docker image
         working-directory: scripts/
-        run: yarn run ts-node ./build-test-docker/buildAndTestDocker.ts
+        run: pnpm run ts-node -- ./build-test-docker/buildAndTestDocker.ts
         env:
           CI: true
