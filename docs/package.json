@@ -10,13 +10,16 @@
     "deploy": "docusaurus deploy",
     "serve": "docusaurus serve",
     "format": "eslint --fix \"**/*.ts?(x)\" && prettier --write \"**/*.md\"",
-    "eslint:check": "pnpm run --dir ../ eslint -- \"docs/**/*.ts?(x)\"",
+    "eslint:check": "eslint \"**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"**/*.(ts?(x)|md)\""
   },
   "dependencies": {
     "@docusaurus/core": "2.0.0-alpha.70",
     "@docusaurus/preset-classic": "2.0.0-alpha.70",
-    "@mdx-js/react": "^1.6.22"
+    "@mdx-js/react": "^1.6.22",
+    "clsx": "^1.1.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "browserslist": {
     "production": [
@@ -32,7 +35,10 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^2.0.0-alpha.70",
+    "@svgr/webpack": "^5.5.0",
     "@tsconfig/docusaurus": "^1.0.2",
-    "@types/react-helmet": "^6.1.0"
+    "@types/react-helmet": "^6.1.0",
+    "file-loader": "^6.2.0",
+    "url-loader": "^4.1.1"
   }
 }
