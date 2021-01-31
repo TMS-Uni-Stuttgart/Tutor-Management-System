@@ -21,7 +21,7 @@ jobs:
         run: npm i -g pnpm
       - name: Install node packages
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
         env:
           CI: true
       - name: Run tests on server

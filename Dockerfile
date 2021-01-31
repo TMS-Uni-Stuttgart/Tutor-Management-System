@@ -40,8 +40,9 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont \
     terminus-font \
-    nodejs-current \
-    && npm install -g pnpm
+    nodejs-current 
+
+RUN npm -g pnpm
 
 COPY --from=build tms/server/dist tms/server
 
