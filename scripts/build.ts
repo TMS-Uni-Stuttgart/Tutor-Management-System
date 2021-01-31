@@ -8,14 +8,14 @@ import {
   writeColoredMessage,
 } from './util/cmdHelpers';
 
-const yarn = getCommand('yarn');
+const pnpm = getCommand('pnpm');
 
 function buildClient(): Promise<void> {
   return new Promise((resolve, reject) => {
     const clientMsgOptions: MessageOptions = { prefix: 'client', color: 'cyan' };
     writeColoredMessage({ message: 'Building client...\n', ...clientMsgOptions });
 
-    const childProcess = spawn(`${yarn}`, ['build'], { cwd: '../client' });
+    const childProcess = spawn(`${pnpm}`, ['build'], { cwd: '../client' });
 
     addColoredConsoleToProcess({ childProcess, ...clientMsgOptions });
 
@@ -36,7 +36,7 @@ function buildServer(): Promise<void> {
     const serverMsgOptions: MessageOptions = { prefix: 'server', color: 'orange' };
     writeColoredMessage({ message: 'Building server...\n', ...serverMsgOptions });
 
-    const childProcess = spawn(`${yarn}`, ['build'], { cwd: '../server' });
+    const childProcess = spawn(`${pnpm}`, ['build'], { cwd: '../server' });
 
     addColoredConsoleToProcess({ childProcess, ...serverMsgOptions });
 

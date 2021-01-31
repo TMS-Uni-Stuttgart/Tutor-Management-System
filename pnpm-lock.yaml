@@ -160,7 +160,10 @@ importers:
       '@tsconfig/docusaurus': ^1.0.2
       '@types/react-helmet': ^6.1.0
   scripts:
-    specifiers: {}
+    devDependencies:
+      axios: 0.21.1
+    specifiers:
+      axios: ^0.21.1
   server:
     dependencies:
       '@nestjs/common': 7.6.7_69380a4460e378818a4b4204993fe511
@@ -4324,7 +4327,6 @@ packages:
   /axios/0.21.1:
     dependencies:
       follow-redirects: 1.13.2
-    dev: false
     resolution:
       integrity: sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   /babel-code-frame/6.26.0:
