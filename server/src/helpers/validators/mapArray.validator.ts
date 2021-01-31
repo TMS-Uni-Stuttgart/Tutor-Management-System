@@ -1,5 +1,4 @@
-import { plainToClass } from 'class-transformer';
-import { ClassType } from 'class-transformer/ClassTransformer';
+import { ClassConstructor, plainToClass } from 'class-transformer';
 import { registerDecorator, validate, ValidationOptions } from 'class-validator';
 
 /**
@@ -8,7 +7,10 @@ import { registerDecorator, validate, ValidationOptions } from 'class-validator'
  * @param classType ClassType to check the second entry of the array against.
  * @param validationOptions Options passed to the class-validator.
  */
-export function IsMapEntry(classType: ClassType<any>, validationOptions?: ValidationOptions) {
+export function IsMapEntry(
+  classType: ClassConstructor<any>,
+  validationOptions?: ValidationOptions
+) {
   return function (object: Record<string, any>, propertyName: string): void {
     const message: any = {
       message: validationOptions?.each

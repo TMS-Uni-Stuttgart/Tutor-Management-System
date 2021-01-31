@@ -21,7 +21,7 @@ export class TutorialInEntity implements Omit<ITutorialInEntity, 'time'> {
   readonly slot!: string;
   readonly weekday!: number;
 
-  @Transform((value: unknown) => {
+  @Transform(({ value }) => {
     if (typeof value === 'string') {
       return Interval.fromISO(value);
     }
@@ -36,7 +36,7 @@ export class TutorialInEntity implements Omit<ITutorialInEntity, 'time'> {
 }
 
 class LoggedInSubstituteTutorial extends TutorialInEntity {
-  @Transform((values: string[]) => values.map((val) => DateTime.fromISO(val)), {
+  @Transform(({ value }) => value.map((val: string) => DateTime.fromISO(val)), {
     toClassOnly: true,
   })
   readonly dates!: DateTime[];
@@ -49,7 +49,7 @@ export class LoggedInUser implements Modify<ILoggedInUser, Modified> {
   readonly roles!: Role[];
 
   @Type(() => TutorialInEntity)
-  @Transform((values: TutorialInEntity[]) => {
+  @Transform(({ value: values }) => {
     if (!Array.isArray(values)) {
       return values;
     }

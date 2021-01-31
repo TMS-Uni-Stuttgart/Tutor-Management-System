@@ -44,7 +44,7 @@ i18n
     },
   });
 
-export function useTranslation(namespace: string): UseTranslationResponse {
+export function useTranslation(namespace: string): UseTranslationResponse<string> {
   return usei18nTranslation(namespace);
 }
 

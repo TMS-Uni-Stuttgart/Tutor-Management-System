@@ -14,7 +14,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
    *
    * @returns Generated PDF as Buffer.
    */
-  public abstract async generatePDF(options: T): Promise<Buffer>;
+  public abstract generatePDF(options: T): Promise<Buffer>;
 
   /**
    * Generates a PDF from the given body. The body gets put in a HTML wrapper first.

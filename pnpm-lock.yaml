@@ -61,6 +61,7 @@ importers:
       '@material-ui/core': 4.11.3_4695a47c40ef995f48f8c834d2fb82ec
       '@material-ui/lab': 4.0.0-alpha.57_0ccdcaa3fbbaae4c459e50ee1fb71c84
       '@material-ui/pickers': 3.2.10_c640d2d0176bfcab1d99b942ffa7ebe7
+      '@material-ui/styles': 4.11.3_4695a47c40ef995f48f8c834d2fb82ec
       axios: 0.21.1
       clsx: 1.1.1
       file-saver: 2.0.5
@@ -105,6 +106,7 @@ importers:
       '@material-ui/core': ^4.11.2
       '@material-ui/lab': ^4.0.0-alpha.57
       '@material-ui/pickers': ^3.2.10
+      '@material-ui/styles': ^4.11.3
       '@snowpack/plugin-dotenv': ^2.0.5
       '@snowpack/plugin-react-refresh': ^2.3.9
       '@snowpack/plugin-typescript': ^1.1.0

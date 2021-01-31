@@ -16,7 +16,7 @@ export class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModifie
   readonly comment?: string;
   readonly additionalPoints?: number;
 
-  @Transform((value) => new Map(value))
+  @Transform(({ value }) => new Map(value))
   readonly subExercisePoints?: Map<string, number>;
 
   /**
@@ -62,7 +62,7 @@ export class Grading implements Modify<IGrading, Modified> {
   readonly additionalPoints?: number;
 
   @Type(() => ExerciseGrading)
-  @Transform((value) => new Map(value))
+  @Transform(({ value }) => new Map(value))
   readonly exerciseGradings!: Map<string, ExerciseGrading>;
 
   /**

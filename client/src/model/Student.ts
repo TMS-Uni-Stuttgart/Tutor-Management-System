@@ -24,14 +24,14 @@ export class StudentInTeam implements Modify<IStudentInTeam, Modified> {
   readonly iliasName!: string;
 
   @Type(() => Grading)
-  @Transform((value) => new Map(value))
+  @Transform(({ value }) => new Map(value))
   readonly gradings!: Map<string, Grading>;
 
   @Type(() => Object)
-  @Transform((value) => new Map(value))
+  @Transform(({ value }) => new Map(value))
   readonly attendances!: Map<string, IAttendance>;
 
-  @Transform((value) => new Map(value))
+  @Transform(({ value }) => new Map(value))
   readonly presentationPoints!: Map<string, number>;
 
   readonly courseOfStudies?: string;
