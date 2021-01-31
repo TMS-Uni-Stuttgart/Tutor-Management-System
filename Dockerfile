@@ -3,7 +3,7 @@
 # Build frontend & backend
 #
 # =============================================
-FROM node:12-alpine as build
+FROM node:14-alpine as build
 
 COPY client/ tms/client/
 COPY server/ tms/server/
