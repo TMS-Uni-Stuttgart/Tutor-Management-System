@@ -176,8 +176,10 @@ importers:
   scripts:
     devDependencies:
       axios: 0.21.1
+      ts-node: 9.1.1
     specifiers:
       axios: ^0.21.1
+      ts-node: ^9.1.1
   server:
     dependencies:
       '@nestjs/common': 7.6.7_69380a4460e378818a4b4204993fe511
@@ -4340,7 +4342,7 @@ packages:
       integrity: sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
   /axios/0.21.1:
     dependencies:
-      follow-redirects: 1.13.2_debug@4.3.1
+      follow-redirects: 1.13.2
     resolution:
       integrity: sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   /babel-code-frame/6.26.0:
@@ -7608,7 +7610,6 @@ packages:
     resolution:
       integrity: sha512-eNMNr5exLoavuAMhIUVsOKF79SWd/zG104ef6sxBTSw+cZc6BXdQXDvYcGvp0VbxVVSp1XDUNoz7mg1xMtSznA==
   /follow-redirects/1.13.2:
-    dev: true
     engines:
       node: '>=4.0'
     peerDependencies:
@@ -7621,6 +7622,7 @@ packages:
   /follow-redirects/1.13.2_debug@4.3.1:
     dependencies:
       debug: 4.3.1_supports-color@6.1.0
+    dev: false
     engines:
       node: '>=4.0'
     peerDependencies:
@@ -15498,6 +15500,22 @@ packages:
       webpack: '*'
     resolution:
       integrity: sha512-Jt/hHlUnApOZjnSjTmZ+AbD5BGlQFx3f1D0nYuNKwz0JJnuDGHJas6az+FlWKwwRTu+26GXpv249A8UAnYUpqA==
+  /ts-node/9.1.1:
+    dependencies:
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      source-map-support: 0.5.19
+      yn: 3.1.1
+    dev: true
+    engines:
+      node: '>=10.0.0'
+    hasBin: true
+    peerDependencies:
+      typescript: '>=2.7'
+    resolution:
+      integrity: sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==
   /ts-node/9.1.1_typescript@4.1.3:
     dependencies:
       arg: 4.1.3

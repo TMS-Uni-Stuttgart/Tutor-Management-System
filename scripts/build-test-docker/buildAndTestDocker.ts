@@ -123,10 +123,8 @@ async function run(): Promise<void> {
   spawnSync('clear');
 
   console.log(chalk.blueBright(`Start building a docker image '${IMAGE_NAME}' ...`));
-  const buildProcess = spawn(getCommand('pnpm'), [
-    'run',
+  const buildProcess = spawn(getCommand('pnpx'), [
     'ts-node',
-    '--',
     '../build-docker-image.ts',
     `--name=${IMAGE_NAME}`,
     '--version=0.0.0',

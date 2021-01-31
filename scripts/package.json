@@ -12,6 +12,7 @@
     "ts:check:watch": "tsc --project . --noEmit -w"
   },
   "devDependencies": {
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "ts-node": "^9.1.1"
   }
 }
