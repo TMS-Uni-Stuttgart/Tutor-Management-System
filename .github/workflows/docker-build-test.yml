@@ -28,6 +28,6 @@ jobs:
           CI: true
       - name: Test docker image
         working-directory: scripts/
-        run: pnpm run ts-node -- ./build-test-docker/buildAndTestDocker.ts
+        run: pnpx ts-node -- ./build-test-docker/buildAndTestDocker.ts
         env:
           CI: true
