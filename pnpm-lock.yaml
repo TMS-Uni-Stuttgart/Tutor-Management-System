@@ -274,7 +274,7 @@ importers:
       jszip: ^3.5.0
       luxon: ^1.25.0
       mongodb-memory-server: ^6.9.3
-      mongoose: 5.10.18
+      mongoose: ^5.10.18
       mongoose-autopopulate: ^0.12.3
       mongoose-field-encryption: ^4.0.1
       nestjs-typegoose: ^7.1.38
