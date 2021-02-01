@@ -12,6 +12,6 @@
 
 ## 🛠 Configuration
 
-**Configuration files** for this release can be found [in the v2.1.0 release](https://github.com/Dudrie/Tutor-Management-System/releases/download/2.1.0/config_2.1.0.zip). Information about the **environment variables** can be found on the [Configuration page](https://dudrie.github.io/Tutor-Management-System/docs/setup/configuration#environment-variables) of the documentation.
+**Configuration files** for this release can be found [in the v2.2.0 release](https://github.com/Dudrie/Tutor-Management-System/releases/download/2.2.0/config_2.2.0.zip). Information about the **environment variables** can be found on the [Configuration page](https://dudrie.github.io/Tutor-Management-System/docs/setup/configuration/#environment-variables) of the documentation.
 
 <!-- Include a link to the current config files OR a note that this release contains new config files. -->
