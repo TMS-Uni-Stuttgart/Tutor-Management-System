@@ -1,9 +1,9 @@
 import { IRatedEntity, IRatedEntityDTO } from './RatedEntity';
 
 export interface IShortTest extends IRatedEntity {
-  shortTestNo: number;
+    shortTestNo: number;
 }
 
 export interface IShortTestDTO extends IRatedEntityDTO {
-  shortTestNo: number;
+    shortTestNo: number;
 }

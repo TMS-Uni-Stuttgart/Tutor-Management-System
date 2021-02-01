@@ -12,49 +12,49 @@ import { IScheinCriteria } from '../../shared/model/ScheinCriteria';
  * @param doc Document to perform transformation on or `null`.
  */
 function transformCriteriaToInstance(doc: ScheincriteriaModel | null) {
-  if (!doc) {
-    return;
-  }
+    if (!doc) {
+        return;
+    }
 
-  const { identifier, ...data } = doc.criteria;
-  doc.criteria = Scheincriteria.fromDTO({ identifier, data, name: doc.name });
+    const { identifier, ...data } = doc.criteria;
+    doc.criteria = Scheincriteria.fromDTO({ identifier, data, name: doc.name });
 }
 
 @post<ScheincriteriaModel>('find', function (result) {
-  result.forEach(transformCriteriaToInstance);
+    result.forEach(transformCriteriaToInstance);
 })
 @post<ScheincriteriaModel>('findOne', transformCriteriaToInstance)
 @modelOptions({
-  schemaOptions: { collection: CollectionName.SCHEINCRITERIA },
-  options: { allowMixed: Severity.ALLOW },
+    schemaOptions: { collection: CollectionName.SCHEINCRITERIA },
+    options: { allowMixed: Severity.ALLOW },
 })
 export class ScheincriteriaModel {
-  constructor(fields: NoFunctions<ScheincriteriaModel>) {
-    Object.assign(this, fields);
-  }
-
-  @prop({ required: true })
-  name!: string;
-
-  @prop({ required: true, type: mongoose.Schema.Types.Mixed })
-  criteria!: Scheincriteria;
-
-  toDTO(this: ScheincriteriaDocument): IScheinCriteria {
-    const data: IScheinCriteria['data'] = {};
-
-    for (const key in JSON.parse(JSON.stringify(this.criteria))) {
-      if (key !== 'identifier') {
-        data[key] = (this.criteria as any)[key];
-      }
+    constructor(fields: NoFunctions<ScheincriteriaModel>) {
+        Object.assign(this, fields);
     }
 
-    return {
-      id: this.id,
-      identifier: this.criteria.identifier,
-      name: this.name,
-      data,
-    };
-  }
+    @prop({ required: true })
+    name!: string;
+
+    @prop({ required: true, type: mongoose.Schema.Types.Mixed })
+    criteria!: Scheincriteria;
+
+    toDTO(this: ScheincriteriaDocument): IScheinCriteria {
+        const data: IScheinCriteria['data'] = {};
+
+        for (const key in JSON.parse(JSON.stringify(this.criteria))) {
+            if (key !== 'identifier') {
+                data[key] = (this.criteria as any)[key];
+            }
+        }
+
+        return {
+            id: this.id,
+            identifier: this.criteria.identifier,
+            name: this.name,
+            data,
+        };
+    }
 }
 
 export type ScheincriteriaDocument = DocumentType<ScheincriteriaModel>;

@@ -25,16 +25,19 @@ jobs:
         with:
           node-version: 14.x
 
+      - name: Install pnpm 🏃‍♀️
+        run: npm i -g pnpm
+
       - name: Install node packages 📦
         run: |
-          yarn install --frozen-lockfile
+          pnpm install --frozen-lockfile
         env:
           CI: true
 
       - name: Build docs 🔧
         working-directory: docs/
         run: |
-          yarn build
+          pnpm build
 
       - name: Upload build artifact 📤
         if: github.event_name != 'pull_request' # We only need the build if we deploy it later.

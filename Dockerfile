@@ -10,7 +10,8 @@ COPY server/ tms/server/
 COPY scripts/ tms/scripts/
 
 COPY package.json tms/
-COPY yarn.lock tms/
+COPY pnpm-lock.yaml tms/
+COPY pnpm-workspace.yaml tms/
 
 WORKDIR /tms/
 
@@ -19,7 +20,8 @@ WORKDIR /tms/
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV MONGOMS_DISABLE_POSTINSTALL 1
 
-RUN yarn && yarn build
+RUN npm install -g pnpm
+RUN pnpm install && pnpm build
 
 # =============================================
 #
@@ -28,7 +30,7 @@ RUN yarn && yarn build
 # =============================================
 FROM alpine:3
 
-# Installs latest Chromium package.
+# Installs latest Chromium package, NodeJS and pnpm.
 RUN apk add --no-cache \
     chromium \
     nss \
@@ -39,12 +41,15 @@ RUN apk add --no-cache \
     ttf-freefont \
     terminus-font \
     nodejs-current \
-    yarn 
+    npm
+
+RUN npm install -g pnpm
 
 COPY --from=build tms/server/dist tms/server
 
 COPY package.json /tms
-COPY yarn.lock /tms
+COPY pnpm-lock.yaml tms/
+COPY pnpm-workspace.yaml tms/
 COPY server/package.json /tms/server
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package. 
@@ -54,7 +59,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV TMS_PUPPETEER_EXEC_PATH "/usr/bin/chromium-browser"
 
 # Set the puppeteer version to match the one of the latest available chromium alpine package.
-RUN yarn add puppeteer@5.2.1
+RUN pnpm add puppeteer@5.2.1
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
@@ -69,7 +74,7 @@ USER pptruser
 WORKDIR /tms
 ENV NODE_ENV 'production'
 
-RUN yarn install --production
+RUN pnpm install --frozen-lockfile
 
 # Set up container entrypoint to be the server file.
 EXPOSE 8080

@@ -1,0 +1,88 @@
+/* stylelint-disable docusaurus/copyright-header */
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+    --ifm-color-primary: #00beff;
+    --ifm-color-primary-dark: #00abe6;
+    --ifm-color-primary-darker: #00a2d9;
+    --ifm-color-primary-darkest: #0085b3;
+    --ifm-color-primary-light: #1ac5ff;
+    --ifm-color-primary-lighter: #26c8ff;
+    --ifm-color-primary-lightest: #4dd2ff;
+    --ifm-code-font-size: 95%;
+
+    // Alert stuff
+    --custom-alert-border-width: 16px;
+    --custom-alert-opacity: 0.3;
+    --custom-text-color: #000;
+    --ifm-alert-color: #000;
+
+    /* 
+     * Colors are the only the values of the parameters passed into the rgb (or the first 3 of rgba) function.
+     * The reason is: The color is used to determine a transparent background and non-transparent border color.
+    */
+    --ifm-color-success: 0, 164, 0;
+    --ifm-color-info: 84, 199, 236;
+    --ifm-color-warning: 255, 186, 0;
+    --ifm-color-danger: 250, 56, 62;
+    --custom-color-secondary: 206, 206, 206;
+    --custom-derp: rgb(206, 206, 206);
+}
+
+:root[data-theme='dark'] {
+    --ifm-alert-color: #fff;
+    --custom-text-color: #fff;
+    --custom-alert-opacity: 0.6;
+}
+
+.alert {
+    background-color: rgba(var(--ifm-alert-background-color), var(--custom-alert-opacity));
+    border: 0 solid var(--ifm-alert-border-color);
+    border-left: var(--custom-alert-border-width) solid rgba(var(--ifm-alert-border-color), 1);
+    border-radius: var(--ifm-alert-border-radius);
+    padding: var(--ifm-alert-padding-vertical) var(--ifm-alert-padding-horizontal);
+}
+
+.alert--secondary {
+    --ifm-alert-background-color: var(--custom-color-secondary);
+    --ifm-alert-border-color: var(--custom-color-secondary);
+    --ifm-alert-color: var(--custom-text-color);
+    --ra-admonition-icon-color: var(--ifm-alert-color);
+}
+
+.markdown img {
+    display: block;
+    margin: 0 auto;
+    border-radius: var(--ifm-alert-border-radius);
+    border: var(--ifm-alert-border-width) solid var(--ifm-toc-border-color);
+}
+
+.docusaurus-highlight-code-line {
+    background-color: rgb(72, 77, 91);
+    display: block;
+    margin: 0 calc(-1 * var(--ifm-pre-padding));
+    padding: 0 var(--ifm-pre-padding);
+}
+
+.float-image-left {
+    float: left;
+    /* !important is needed bc the .markdown img class would overwrite the margin. */
+    margin-right: 8px !important;
+}
+
+.padding-top-bottom {
+    padding: calc(var(--ifm-leading) / 2) 0px;
+}
+
+.float-break {
+    clear: both;
+}
+
+.navigation-rail-highlight {
+    color: #00beff;
+}

@@ -1,32 +1,13 @@
 version: 2
 updates:
-  # Maintain NPM dependencies
-  - package-ecosystem: npm
-    directory: '/'
-    open-pull-requests-limit: 99
-    schedule:
-      interval: weekly
-      day: friday
-      time: '00:00'
-      timezone: Europe/Berlin
-    labels:
-      - "\U0001F4E6 dependencies"
-      - "\U0001F916 bot"
-    ignore:
-      - dependency-name: '@date-io/luxon'
-        versions:
-          - '> 1.3.13'
-
-      - dependency-name: '@docusaurus*'
-
   # Maintain dependencies for GitHub Actions
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: "github-actions"
+    directory: "/"
     open-pull-requests-limit: 99
     schedule:
       interval: weekly
       day: friday
-      time: '00:00'
+      time: "00:00"
       timezone: Europe/Berlin
     labels:
       - "\U0001F4E6 dependencies"

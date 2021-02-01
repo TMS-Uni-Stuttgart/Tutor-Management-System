@@ -3,23 +3,23 @@ import { IExercise, ISubexercise } from '../../src/shared/model/HasExercises';
 import { MockedExerciseModel, MockedSubExerciseModel } from '../mocks/documents.mock';
 
 interface AssertSubExerciseParams {
-  expected: MockedSubExerciseModel;
-  actual: ISubexercise;
+    expected: MockedSubExerciseModel;
+    actual: ISubexercise;
 }
 
 interface AssertExerciseParams {
-  expected: MockedExerciseModel;
-  actual: IExercise;
+    expected: MockedExerciseModel;
+    actual: IExercise;
 }
 
 interface AssertExerciseDTOsParams {
-  expected: ExerciseDTO[];
-  actual: IExercise[];
+    expected: ExerciseDTO[];
+    actual: IExercise[];
 }
 
 interface AssertSubExerciseDTOParams {
-  expected: SubExerciseDTO[];
-  actual: ISubexercise[];
+    expected: SubExerciseDTO[];
+    actual: ISubexercise[];
 }
 
 /**
@@ -30,11 +30,11 @@ interface AssertSubExerciseDTOParams {
  * @param params Must contain an expected SubExercise and an actual SubExercise.
  */
 function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
-  const { _id, pointInfo, ...restExpected } = expected;
-  const { id, ...restActual } = actual;
+    const { _id, pointInfo, ...restExpected } = expected;
+    const { id, ...restActual } = actual;
 
-  expect(id).toEqual(_id);
-  expect(restActual).toEqual(restExpected);
+    expect(id).toEqual(_id);
+    expect(restActual).toEqual(restExpected);
 }
 
 /**
@@ -47,22 +47,22 @@ function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
  * @param params Must contain an expected ExerciseDocument and an actual Exercise.
  */
 export function assertExercise({ expected, actual }: AssertExerciseParams): void {
-  const { subexercises, ...restExpected } = expected;
-  const { subexercises: actualSubexercises, ...restActual } = actual;
+    const { subexercises, ...restExpected } = expected;
+    const { subexercises: actualSubexercises, ...restActual } = actual;
 
-  assertSubExercise({ expected: restExpected, actual: restActual });
+    assertSubExercise({ expected: restExpected, actual: restActual });
 
-  if (!subexercises) {
-    expect(actualSubexercises).toHaveLength(0);
-  } else {
-    expect(actualSubexercises.length).toEqual(subexercises.length);
-    for (let i = 0; i < subexercises.length; i++) {
-      assertSubExercise({
-        expected: subexercises[i],
-        actual: actualSubexercises[i],
-      });
+    if (!subexercises) {
+        expect(actualSubexercises).toHaveLength(0);
+    } else {
+        expect(actualSubexercises.length).toEqual(subexercises.length);
+        for (let i = 0; i < subexercises.length; i++) {
+            assertSubExercise({
+                expected: subexercises[i],
+                actual: actualSubexercises[i],
+            });
+        }
     }
-  }
 }
 
 /**
@@ -71,35 +71,35 @@ export function assertExercise({ expected, actual }: AssertExerciseParams): void
  * @param params Must contain a list of expected DTOs and a list with the actual exercises.
  */
 export function assertExerciseDTOs({ expected, actual }: AssertExerciseDTOsParams): void {
-  expect(actual.length).toEqual(expected.length);
+    expect(actual.length).toEqual(expected.length);
 
-  for (let i = 0; i < expected.length; i++) {
-    const { id, subexercises, maxPoints, ...restExpected } = expected[i];
-    const {
-      id: actualId,
-      subexercises: actualSubexercises,
-      maxPoints: actualMaxPoints,
-      ...restActual
-    } = actual[i];
+    for (let i = 0; i < expected.length; i++) {
+        const { id, subexercises, maxPoints, ...restExpected } = expected[i];
+        const {
+            id: actualId,
+            subexercises: actualSubexercises,
+            maxPoints: actualMaxPoints,
+            ...restActual
+        } = actual[i];
 
-    if (!!id) {
-      expect(actualId).toEqual(id);
-    } else {
-      expect(actualId).toBeDefined();
+        if (!!id) {
+            expect(actualId).toEqual(id);
+        } else {
+            expect(actualId).toBeDefined();
+        }
+
+        expect(restActual).toEqual(restExpected);
+
+        if (!!subexercises) {
+            const expectedMaxPoints = subexercises.reduce((sum, cur) => sum + cur.maxPoints, 0);
+
+            expect(actualMaxPoints).toEqual(expectedMaxPoints);
+            assertSubExerciseDTOs({ expected: subexercises, actual: actualSubexercises });
+        } else {
+            expect(actualMaxPoints).toEqual(maxPoints);
+            expect(actualSubexercises).toHaveLength(0);
+        }
     }
-
-    expect(restActual).toEqual(restExpected);
-
-    if (!!subexercises) {
-      const expectedMaxPoints = subexercises.reduce((sum, cur) => sum + cur.maxPoints, 0);
-
-      expect(actualMaxPoints).toEqual(expectedMaxPoints);
-      assertSubExerciseDTOs({ expected: subexercises, actual: actualSubexercises });
-    } else {
-      expect(actualMaxPoints).toEqual(maxPoints);
-      expect(actualSubexercises).toHaveLength(0);
-    }
-  }
 }
 
 /**
@@ -108,18 +108,18 @@ export function assertExerciseDTOs({ expected, actual }: AssertExerciseDTOsParam
  * @param params Must contain a list of the expected SubExerciseDTOs and the actual SubExercises.
  */
 function assertSubExerciseDTOs({ expected, actual }: AssertSubExerciseDTOParams) {
-  expect(actual.length).toEqual(expected.length);
+    expect(actual.length).toEqual(expected.length);
 
-  for (let k = 0; k < expected.length; k++) {
-    const { id, ...restExpected } = expected[k];
-    const { id: actualId, ...restActual } = actual[k];
+    for (let k = 0; k < expected.length; k++) {
+        const { id, ...restExpected } = expected[k];
+        const { id: actualId, ...restActual } = actual[k];
 
-    expect(restActual).toEqual(restExpected);
+        expect(restActual).toEqual(restExpected);
 
-    if (!!id) {
-      expect(actualId).toEqual(id);
-    } else {
-      expect(actualId).toBeDefined();
+        if (!!id) {
+            expect(actualId).toEqual(id);
+        } else {
+            expect(actualId).toBeDefined();
+        }
     }
-  }
 }

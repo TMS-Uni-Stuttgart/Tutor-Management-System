@@ -19,28 +19,28 @@ import { ScheinResultsPDFGenerator } from './subservices/PDFGenerator.schein';
 import { ScheinexamResultPDFGenerator } from './subservices/PDFGenerator.scheinexam';
 
 @Module({
-  imports: [
-    TutorialModule,
-    UserModule,
-    StudentModule,
-    ScheincriteriaModule,
-    ScheinexamModule,
-    MarkdownModule,
-    TemplateModule,
-    SheetModule,
-    TeamModule,
-    TutorialModule,
-  ],
-  providers: [
-    PdfService,
-    FileService,
-    AttendancePDFGenerator,
-    CredentialsPDFGenerator,
-    ScheinexamResultPDFGenerator,
-    ScheinResultsPDFGenerator,
-    MarkdownPDFGenerator,
-    GradingPDFGenerator,
-  ],
-  controllers: [PdfController],
+    imports: [
+        TutorialModule,
+        UserModule,
+        StudentModule,
+        ScheincriteriaModule,
+        ScheinexamModule,
+        MarkdownModule,
+        TemplateModule,
+        SheetModule,
+        TeamModule,
+        TutorialModule,
+    ],
+    providers: [
+        PdfService,
+        FileService,
+        AttendancePDFGenerator,
+        CredentialsPDFGenerator,
+        ScheinexamResultPDFGenerator,
+        ScheinResultsPDFGenerator,
+        MarkdownPDFGenerator,
+        GradingPDFGenerator,
+    ],
+    controllers: [PdfController],
 })
 export class PdfModule {}

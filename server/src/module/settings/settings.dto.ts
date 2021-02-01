@@ -4,21 +4,21 @@ import { IChangeSettingsDTO } from '../../shared/model/Settings';
 import { MailingConfiguration } from './model/MailingConfiguration';
 
 export class ClientSettingsDTO implements IChangeSettingsDTO {
-  @IsNumber()
-  @Min(1)
-  defaultTeamSize!: number;
+    @IsNumber()
+    @Min(1)
+    defaultTeamSize!: number;
 
-  @IsBoolean()
-  canTutorExcuseStudents!: boolean;
+    @IsBoolean()
+    canTutorExcuseStudents!: boolean;
 
-  @IsString()
-  gradingFilename!: string;
+    @IsString()
+    gradingFilename!: string;
 
-  @IsString()
-  tutorialGradingFilename!: string;
+    @IsString()
+    tutorialGradingFilename!: string;
 
-  @IsOptional()
-  @Type(() => MailingConfiguration)
-  @ValidateNested()
-  mailingConfig?: MailingConfiguration;
+    @IsOptional()
+    @Type(() => MailingConfiguration)
+    @ValidateNested()
+    mailingConfig?: MailingConfiguration;
 }

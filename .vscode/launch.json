@@ -23,7 +23,7 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceRoot}/server",
-      "runtimeExecutable": "yarn",
+      "runtimeExecutable": "pnpm",
       "args": ["start"],
       "port": 9229,
       "restart": true,
@@ -36,7 +36,7 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceRoot}/server",
-      "runtimeExecutable": "yarn",
+      "runtimeExecutable": "pnpm",
       "args": ["start"],
       "port": 9229,
       "restart": true,
@@ -50,8 +50,8 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceRoot}/server",
-      "runtimeExecutable": "yarn",
-      "args": ["test", "--runInBand", "${input:jestArguments}"],
+      "runtimeExecutable": "pnpm",
+      "args": ["test", "--", "--runInBand", "${input:jestArguments}"],
       "console": "integratedTerminal",
       "sourceMaps": true
     }

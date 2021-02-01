@@ -2,17 +2,17 @@
 sessionTimeout: 120
 
 database:
-  databaseURL: 'mongodb://mongo_test:27017/tms-nestjs'
-  maxRetries: 2
-  config:
-    # This is needed bc of the docker-compose file
-    authSource: 'admin'
-    authMechanism: 'SCRAM-SHA-1'
+    databaseURL: 'mongodb://mongo_test:27017/tms-nestjs'
+    maxRetries: 2
+    config:
+        # This is needed bc of the docker-compose file
+        authSource: 'admin'
+        authMechanism: 'SCRAM-SHA-1'
 
 mailing:
-  testingMode: true
-  host: HOST
-  port: 587
-  auth:
-    user: USER
-    pass: PASS
+    testingMode: true
+    host: HOST
+    port: 587
+    auth:
+        user: USER
+        pass: PASS

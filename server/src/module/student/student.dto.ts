@@ -1,141 +1,141 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsArray,
-  IsBoolean,
-  IsEmail,
-  IsEnum,
-  IsMongoId,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
+    IsArray,
+    IsBoolean,
+    IsEmail,
+    IsEnum,
+    IsMongoId,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Min,
 } from 'class-validator';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
 import { AttendanceState, IAttendanceDTO } from '../../shared/model/Attendance';
 import {
-  IExerciseGradingDTO,
-  IGradingDTO,
-  IPresentationPointsDTO,
+    IExerciseGradingDTO,
+    IGradingDTO,
+    IPresentationPointsDTO,
 } from '../../shared/model/Gradings';
 import { ICakeCountDTO, IStudentDTO, StudentStatus } from '../../shared/model/Student';
 
 export class StudentDTO implements IStudentDTO {
-  @IsNotEmpty()
-  firstname!: string;
+    @IsNotEmpty()
+    firstname!: string;
 
-  @IsNotEmpty()
-  lastname!: string;
+    @IsNotEmpty()
+    lastname!: string;
 
-  @IsOptional()
-  @IsString()
-  iliasName?: string;
+    @IsOptional()
+    @IsString()
+    iliasName?: string;
 
-  @IsNotEmpty()
-  @IsEnum(StudentStatus)
-  status!: StudentStatus;
+    @IsNotEmpty()
+    @IsEnum(StudentStatus)
+    status!: StudentStatus;
 
-  @IsNotEmpty()
-  tutorial!: string;
+    @IsNotEmpty()
+    tutorial!: string;
 
-  @ApiProperty({ type: String })
-  @IsOptional()
-  @IsString()
-  courseOfStudies?: string;
+    @ApiProperty({ type: String })
+    @IsOptional()
+    @IsString()
+    courseOfStudies?: string;
 
-  @ApiProperty({ type: String })
-  @IsOptional()
-  @IsEmail()
-  email?: string;
+    @ApiProperty({ type: String })
+    @IsOptional()
+    @IsEmail()
+    email?: string;
 
-  @ApiProperty({ type: String })
-  @IsOptional()
-  @IsString()
-  matriculationNo?: string;
+    @ApiProperty({ type: String })
+    @IsOptional()
+    @IsString()
+    matriculationNo?: string;
 
-  @ApiProperty({ type: String })
-  @IsOptional()
-  @IsMongoId()
-  team?: string;
+    @ApiProperty({ type: String })
+    @IsOptional()
+    @IsMongoId()
+    team?: string;
 
-  constructor(fields: IStudentDTO) {
-    Object.assign(this, fields);
-  }
+    constructor(fields: IStudentDTO) {
+        Object.assign(this, fields);
+    }
 }
 
 export class AttendanceDTO implements IAttendanceDTO {
-  @IsLuxonDateTime()
-  date!: string;
+    @IsLuxonDateTime()
+    date!: string;
 
-  @IsOptional()
-  @IsString()
-  note?: string;
+    @IsOptional()
+    @IsString()
+    note?: string;
 
-  @IsOptional()
-  @IsEnum(AttendanceState)
-  state?: AttendanceState;
+    @IsOptional()
+    @IsEnum(AttendanceState)
+    state?: AttendanceState;
 }
 
 export class CakeCountDTO implements ICakeCountDTO {
-  @IsNumber()
-  @Min(0)
-  cakeCount!: number;
+    @IsNumber()
+    @Min(0)
+    cakeCount!: number;
 }
 
 export class ExerciseGradingDTO implements IExerciseGradingDTO {
-  @IsOptional()
-  @IsString()
-  comment?: string;
+    @IsOptional()
+    @IsString()
+    comment?: string;
 
-  @IsOptional()
-  @IsNumber()
-  additionalPoints?: number;
+    @IsOptional()
+    @IsNumber()
+    additionalPoints?: number;
 
-  @IsOptional()
-  @IsNumber()
-  points?: number;
+    @IsOptional()
+    @IsNumber()
+    points?: number;
 
-  @IsOptional()
-  @IsArray()
-  @IsNumberMapEntry({ each: true })
-  subExercisePoints?: [string, number][];
+    @IsOptional()
+    @IsArray()
+    @IsNumberMapEntry({ each: true })
+    subExercisePoints?: [string, number][];
 }
 
 export class GradingDTO implements IGradingDTO {
-  @IsArray()
-  @IsMapEntry(ExerciseGradingDTO, { each: true })
-  exerciseGradings!: [string, ExerciseGradingDTO][];
+    @IsArray()
+    @IsMapEntry(ExerciseGradingDTO, { each: true })
+    exerciseGradings!: [string, ExerciseGradingDTO][];
 
-  @IsBoolean()
-  createNewGrading!: boolean;
+    @IsBoolean()
+    createNewGrading!: boolean;
 
-  @IsOptional()
-  @IsString()
-  sheetId?: string;
+    @IsOptional()
+    @IsString()
+    sheetId?: string;
 
-  @IsOptional()
-  @IsString()
-  examId?: string;
+    @IsOptional()
+    @IsString()
+    examId?: string;
 
-  @IsOptional()
-  @IsString()
-  shortTestId?: string;
+    @IsOptional()
+    @IsString()
+    shortTestId?: string;
 
-  @IsOptional()
-  @IsString()
-  comment?: string;
+    @IsOptional()
+    @IsString()
+    comment?: string;
 
-  @IsOptional()
-  @IsNumber()
-  additionalPoints?: number;
+    @IsOptional()
+    @IsNumber()
+    additionalPoints?: number;
 }
 
 export class PresentationPointsDTO implements IPresentationPointsDTO {
-  @IsString()
-  sheetId!: string;
+    @IsString()
+    sheetId!: string;
 
-  @IsNumber()
-  @Min(0)
-  points!: number;
+    @IsNumber()
+    @Min(0)
+    points!: number;
 }

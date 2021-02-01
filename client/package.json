@@ -6,8 +6,8 @@
     "start": "snowpack dev",
     "build": "snowpack build",
     "test": "web-test-runner \"src/**/*.test.tsx\"",
-    "format": "yarn --cwd ../ eslint --fix \"client/src/**/*.ts?(x)\"",
-    "eslint:check": "yarn --cwd ../ eslint \"client/src/**/*.ts?(x)\"",
+    "format": "eslint --fix \"src/**/*.ts?(x)\"",
+    "eslint:check": "eslint \"src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
     "ts:check": "tsc --project . --noEmit",
     "ts:check:watch": "tsc --project . --noEmit -w"
@@ -17,6 +17,7 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.2.10",
+    "@material-ui/styles": "^4.11.3",
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
     "file-saver": "^2.0.2",
@@ -56,6 +57,7 @@
     "chai": "^4.2.0",
     "core-js": "^3.8.3",
     "http-proxy": "^1.18.1",
+    "regenerator-runtime": "^0.13.7",
     "snowpack": "^3.0.11"
   },
   "browserslist": ">0.2%, not dead, not ie <= 11, not op_mini all"

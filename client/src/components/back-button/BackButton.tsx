@@ -7,41 +7,41 @@ import { Link } from 'react-router-dom';
 import { useDisableBackButton } from './DisableBackButton.context';
 
 const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    backIcon: {
-      marginLeft: theme.spacing(-0.5),
-      marginRight: theme.spacing(0.5),
-    },
-    backButton: {
-      width: 'max-content',
-    },
-  })
+    createStyles({
+        backIcon: {
+            marginLeft: theme.spacing(-0.5),
+            marginRight: theme.spacing(0.5),
+        },
+        backButton: {
+            width: 'max-content',
+        },
+    })
 );
 
 interface Props {
-  to: string;
-  className?: string;
+    to: string;
+    className?: string;
 }
 
 function BackButton({ to, className }: Props): JSX.Element | null {
-  const classes = useStyles();
-  const { isBackDisabled } = useDisableBackButton();
+    const classes = useStyles();
+    const { isBackDisabled } = useDisableBackButton();
 
-  if (isBackDisabled) {
-    return null;
-  }
+    if (isBackDisabled) {
+        return null;
+    }
 
-  return (
-    <Button
-      variant='outlined'
-      className={clsx(className, classes.backButton)}
-      component={Link}
-      to={to}
-    >
-      <BackIcon className={classes.backIcon} />
-      Zurück
-    </Button>
-  );
+    return (
+        <Button
+            variant='outlined'
+            className={clsx(className, classes.backButton)}
+            component={Link}
+            to={to}
+        >
+            <BackIcon className={classes.backIcon} />
+            Zurück
+        </Button>
+    );
 }
 
 export default BackButton;

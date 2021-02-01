@@ -8,8 +8,8 @@ sidebar_label: Configuration
 
 Within the `tms/config/` directory containing the configuration files the following items have to be present:
 
-- `production.yml`: YAML file containing the general configuration for the server.
-- `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
+-   `production.yml`: YAML file containing the general configuration for the server.
+-   `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
 
 Those files are provided through a docker volume. See the [installation guide](installation) for more information.
 
@@ -26,7 +26,7 @@ The configuration object is of type `ApplicationConfiguration`.
 | `database`        | **Required**                               | `DatabaseConfiguration` - Configuration of the database. See below for more information.                                                                                                                                                                               |
 | `sessionTimeout`  | _Default: 120_                             | `Number` - The time of inactivity in **minutes** after which the session of the user times out and he/she must log in again.                                                                                                                                           |
 | `prefix`          | _(optional, no default)_                   | `String` - Prefix of the root path the application is hosted on. If the application is hosted on the root path this setting must be omitted. Otherwise it has to be set to the prefix (ie. for the path `https://example.org/foo` this setting has to be set to `foo`) |
-| `handbookUrl`     | _(optional, no default)_                   | `String` - URL to the handbook of the TMS. You should only have to change this if you want to provide your own version of the handbook.                                                                                                                                |
+| `handbookUrl`     | _(optional, no default)_                   | `String` - URL to the handbook of the TMS (the sample configuration sets this to the URL of this handbook). You should only have to change this if you want to provide your own version of the handbook.                                                               |
 | `defaultSettings` | _(optional, defaults see "Settings" page)_ | Settings to initialize parts of the server with. Those settings can also be configured through the client later on. See [Settings](../handbook/settings) for more information.                                                                                         |
 
 ### `DatabaseConfiguration`
@@ -89,23 +89,23 @@ values={[
 h3(style='text-align: center') Anwesenheitsliste
 
 div(style='display: flex; width: 100%')
-  span Tutorium #{tutorialSlot}
-  span(style='margin-left: auto; float: right') Datum: #{date.toFormat('dd.MM.yyyy')}
+    span Tutorium #{tutorialSlot}
+    span(style='margin-left: auto; float: right') Datum: #{date.toFormat('dd.MM.yyyy')}
 
 div(style='margin-bottom: 16px')
-  span Tutor: #{tutorName}
+    span Tutor: #{tutorName}
 
 table
-  thead
-    tr
-      th Name
-      th Unterschrift
+    thead
+        tr
+            th Name
+            th Unterschrift
 
-  tbody
-    each student in students
-      tr
-        td #{student.name}
-        td
+    tbody
+        each student in students
+            tr
+                td #{student.name}
+                td
 ```
 
 </TabItem>
@@ -141,7 +141,7 @@ table
       font-family: "Courier New", Courier, monospace;
       line-height: 200%;
     }
-  
+
   thead
     tr
       th Name
@@ -230,7 +230,7 @@ table
       font-family: "Courier New", Courier, monospace;
       line-height: 200%;
     }
-  
+
   thead
     tr
       th Matrikelnummer
@@ -281,7 +281,7 @@ table
       font-family: "Courier New", Courier, monospace;
       line-height: 200%;
     }
-  
+
   thead
     tr
       th Matrikelnummer

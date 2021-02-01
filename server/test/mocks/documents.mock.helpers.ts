@@ -14,15 +14,15 @@ import { USER_DOCUMENTS } from './documents.mock';
  * @throws `Error` - If no user with such role could be found.
  */
 export function getUserDocWithRole(role: Role): MockedModel<UserModel> {
-  for (const doc of USER_DOCUMENTS) {
-    if (doc.roles.includes(role)) {
-      return doc;
+    for (const doc of USER_DOCUMENTS) {
+        if (doc.roles.includes(role)) {
+            return doc;
+        }
     }
-  }
 
-  throw new NotFoundException(
-    `There is no user with the '${role} role present in the USER_DOCUMENTS.'`
-  );
+    throw new NotFoundException(
+        `There is no user with the '${role} role present in the USER_DOCUMENTS.'`
+    );
 }
 
 /**
@@ -35,19 +35,19 @@ export function getUserDocWithRole(role: Role): MockedModel<UserModel> {
  * @throws `Error` - If no user with the given role could be found.
  */
 export function getAllUserDocsWithRole(role: Role): MockedModel<UserModel>[] {
-  const docs: MockedModel<UserModel>[] = [];
+    const docs: MockedModel<UserModel>[] = [];
 
-  for (const doc of USER_DOCUMENTS) {
-    if (doc.roles.includes(role)) {
-      docs.push(doc);
+    for (const doc of USER_DOCUMENTS) {
+        if (doc.roles.includes(role)) {
+            docs.push(doc);
+        }
     }
-  }
 
-  if (docs.length === 0) {
-    throw new NotFoundException(
-      `There is no user with the '${role} role present in the USER_DOCUMENTS.'`
-    );
-  }
+    if (docs.length === 0) {
+        throw new NotFoundException(
+            `There is no user with the '${role} role present in the USER_DOCUMENTS.'`
+        );
+    }
 
-  return docs;
+    return docs;
 }

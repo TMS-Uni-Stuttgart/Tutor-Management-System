@@ -12,20 +12,20 @@ import { UseUserFromRequest } from './helpers/UseUserFromRequest';
  */
 @Injectable()
 export class CreatedInOwnTutorialGuard extends UseUserFromRequest {
-  constructor(private readonly tutorialService: TutorialService) {
-    super();
-  }
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const user = this.getUserFromRequest(context);
-
-    if (user.roles.includes(Role.ADMIN)) {
-      return true;
+    constructor(private readonly tutorialService: TutorialService) {
+        super();
     }
 
-    const body: StudentDTO = context.switchToHttp().getRequest<Request>().body;
-    const tutorial = await this.tutorialService.findById(body.tutorial);
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const user = this.getUserFromRequest(context);
 
-    return tutorial.tutor?.id === user._id;
-  }
+        if (user.roles.includes(Role.ADMIN)) {
+            return true;
+        }
+
+        const body: StudentDTO = context.switchToHttp().getRequest<Request>().body;
+        const tutorial = await this.tutorialService.findById(body.tutorial);
+
+        return tutorial.tutor?.id === user._id;
+    }
 }

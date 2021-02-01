@@ -1,6 +1,6 @@
 mailing:
-  auth:
-    user: 'TMS_SMTP_USER_MAIL'
-    clientId: 'TMS_SMTP_CLIENT_ID'
-    clientSecret: 'TMS_SMTP_CLIENT_SECRET'
-    refreshToken: 'TMS_SMTP_REFRESH_TOKEN'
+    auth:
+        user: 'TMS_SMTP_USER_MAIL'
+        clientId: 'TMS_SMTP_CLIENT_ID'
+        clientSecret: 'TMS_SMTP_CLIENT_SECRET'
+        refreshToken: 'TMS_SMTP_REFRESH_TOKEN'

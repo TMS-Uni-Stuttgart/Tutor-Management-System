@@ -35,11 +35,11 @@ If you want to remove the note just edit the old one and remove all text present
 
 1. **Attendance Options**: Choose the attendance option that fit the attendance state of the student. You have the following attendance options:
 
-   - `Present`: The student counts as present for the corresponding criteria.
+    - `Present`: The student counts as present for the corresponding criteria.
 
-   - `Excused`: The student was not present but had an excuse. He/She will count as present for the criteria.
+    - `Excused`: The student was not present but had an excuse. He/She will count as present for the criteria.
 
-   - `Unexcused`: The student was not present and hand no excuse for it. He/She will _not_ count as present for the criteria.
+    - `Unexcused`: The student was not present and hand no excuse for it. He/She will _not_ count as present for the criteria.
 
 1. **Add / Change a Note**: Add or change a note. You can find more information above.
 
@@ -47,11 +47,11 @@ If you want to remove the note just edit the old one and remove all text present
 
 1. **Student Filter**: You can filter the student by one of the following three options:
 
-   - `Only active students`: The list of students will only show students which are considered "active".
+    - `Only active students`: The list of students will only show students which are considered "active".
 
-   - `Active & with schein`: The list of students will show all "active" students and all students which already have a schein.
+    - `Active & with schein`: The list of students will show all "active" students and all students which already have a schein.
 
-   - `All`: The list of students will show all students regardless of their status.
+    - `All`: The list of students will show all students regardless of their status.
 
 1. **All Present**: All students without an attendance state for the day are assigned the `Present` state.
 

@@ -5,9 +5,9 @@ import { TutorialController } from './tutorial.controller';
 import { TutorialService } from './tutorial.service';
 
 @Module({
-  imports: [forwardRef(() => UserModule), forwardRef(() => StudentModule)],
-  providers: [TutorialService],
-  controllers: [TutorialController],
-  exports: [TutorialService],
+    imports: [forwardRef(() => UserModule), forwardRef(() => StudentModule)],
+    providers: [TutorialService],
+    controllers: [TutorialController],
+    exports: [TutorialService],
 })
 export class TutorialModule {}

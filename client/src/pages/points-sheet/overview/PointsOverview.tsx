@@ -12,170 +12,170 @@ import { ROUTES } from '../../../routes/Routing.routes';
 import TeamCardList from './components/TeamCardList';
 
 const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    topBar: {
-      display: 'flex',
-      marginBottom: theme.spacing(2),
-      alignItems: 'center',
-    },
-    sheetSelect: {
-      flex: 1,
-      marginRight: theme.spacing(1),
-    },
-    createPdfsButton: {
-      height: '100%',
-      marginRight: theme.spacing(1),
-    },
-  })
+    createStyles({
+        root: {
+            display: 'flex',
+            flexDirection: 'column',
+        },
+        topBar: {
+            display: 'flex',
+            marginBottom: theme.spacing(2),
+            alignItems: 'center',
+        },
+        sheetSelect: {
+            flex: 1,
+            marginRight: theme.spacing(1),
+        },
+        createPdfsButton: {
+            height: '100%',
+            marginRight: theme.spacing(1),
+        },
+    })
 );
 
 interface RouteParams {
-  sheetId?: string;
-  tutorialId?: string;
+    sheetId?: string;
+    tutorialId?: string;
 }
 
 enum LoadingState {
-  NONE,
-  SINGLE,
-  MULTIPLE,
-  PREVIEW,
+    NONE,
+    SINGLE,
+    MULTIPLE,
+    PREVIEW,
 }
 
 function getGenerationModalText(state: LoadingState): string {
-  switch (state) {
-    case LoadingState.SINGLE:
-      return 'Erstelle PDF...';
-    case LoadingState.MULTIPLE:
-      return 'Erstelle PDFs...';
-    case LoadingState.PREVIEW:
-      return 'Erstelle Vorschau...';
-    default:
-      return '';
-  }
+    switch (state) {
+        case LoadingState.SINGLE:
+            return 'Erstelle PDF...';
+        case LoadingState.MULTIPLE:
+            return 'Erstelle PDFs...';
+        case LoadingState.PREVIEW:
+            return 'Erstelle Vorschau...';
+        default:
+            return '';
+    }
 }
 
 function PointsOverview(): JSX.Element {
-  const classes = useStyles();
-  const { tutorialId } = useParams<RouteParams>();
+    const classes = useStyles();
+    const { tutorialId } = useParams<RouteParams>();
 
-  const { SheetSelector, currentSheet, isLoadingSheets } = useSheetSelector({
-    generatePath: ({ sheetId }) => {
-      if (!tutorialId) {
-        throw new Error('The path needs to contain a tutorialId parameter.');
-      }
+    const { SheetSelector, currentSheet, isLoadingSheets } = useSheetSelector({
+        generatePath: ({ sheetId }) => {
+            if (!tutorialId) {
+                throw new Error('The path needs to contain a tutorialId parameter.');
+            }
 
-      return ROUTES.ENTER_POINTS_OVERVIEW.create({ tutorialId, sheetId });
-    },
-  });
+            return ROUTES.ENTER_POINTS_OVERVIEW.create({ tutorialId, sheetId });
+        },
+    });
 
-  const { enqueueSnackbar, setError } = useCustomSnackbar();
-  const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
+    const { enqueueSnackbar, setError } = useCustomSnackbar();
+    const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.NONE);
+    const [teams, setTeams] = useState<Team[]>([]);
+    const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.NONE);
 
-  useEffect(() => {
-    if (!tutorialId) {
-      setError('Es wurde keine Tutoriums ID über den Pfad mitgegeben.');
+    useEffect(() => {
+        if (!tutorialId) {
+            setError('Es wurde keine Tutoriums ID über den Pfad mitgegeben.');
 
-      return;
+            return;
+        }
+
+        getTeamsOfTutorial(tutorialId)
+            .then((teamResponse) => {
+                setError(undefined);
+
+                setTeams(teamResponse);
+            })
+            .catch(() => setError('Daten konnten nicht abgerufen werden.'));
+    }, [tutorialId, setError]);
+
+    async function handlePdfPreviewClicked(team: Team) {
+        if (!currentSheet || !tutorialId) {
+            return;
+        }
+
+        try {
+            setLoadingState(LoadingState.PREVIEW);
+            await showSinglePdfPreview({ tutorialId, sheet: currentSheet, team });
+        } catch {
+            enqueueSnackbar('Preview konnte nicht geladen werden.', { variant: 'error' });
+        } finally {
+            setLoadingState(LoadingState.NONE);
+        }
     }
 
-    getTeamsOfTutorial(tutorialId)
-      .then((teamResponse) => {
-        setError(undefined);
+    async function handleGenerateSinglePdf(team: Team) {
+        if (!currentSheet || !tutorialId) {
+            return;
+        }
 
-        setTeams(teamResponse);
-      })
-      .catch(() => setError('Daten konnten nicht abgerufen werden.'));
-  }, [tutorialId, setError]);
+        try {
+            setLoadingState(LoadingState.SINGLE);
 
-  async function handlePdfPreviewClicked(team: Team) {
-    if (!currentSheet || !tutorialId) {
-      return;
+            await generateSinglePdf({ tutorialId, sheet: currentSheet, team });
+        } catch {
+            enqueueSnackbar('PDF konnte nicht erstellt werden.', { variant: 'error' });
+        } finally {
+            setLoadingState(LoadingState.NONE);
+        }
     }
 
-    try {
-      setLoadingState(LoadingState.PREVIEW);
-      await showSinglePdfPreview({ tutorialId, sheet: currentSheet, team });
-    } catch {
-      enqueueSnackbar('Preview konnte nicht geladen werden.', { variant: 'error' });
-    } finally {
-      setLoadingState(LoadingState.NONE);
-    }
-  }
+    async function handleGeneratingAllPDFs() {
+        if (!currentSheet || !tutorialId) {
+            return;
+        }
 
-  async function handleGenerateSinglePdf(team: Team) {
-    if (!currentSheet || !tutorialId) {
-      return;
-    }
+        try {
+            setLoadingState(LoadingState.MULTIPLE);
 
-    try {
-      setLoadingState(LoadingState.SINGLE);
-
-      await generateSinglePdf({ tutorialId, sheet: currentSheet, team });
-    } catch {
-      enqueueSnackbar('PDF konnte nicht erstellt werden.', { variant: 'error' });
-    } finally {
-      setLoadingState(LoadingState.NONE);
-    }
-  }
-
-  async function handleGeneratingAllPDFs() {
-    if (!currentSheet || !tutorialId) {
-      return;
+            await generateAllPdfs({ tutorialId, sheet: currentSheet });
+        } catch {
+            enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
+        } finally {
+            setLoadingState(LoadingState.NONE);
+        }
     }
 
-    try {
-      setLoadingState(LoadingState.MULTIPLE);
+    return (
+        <div className={classes.root}>
+            <div className={classes.topBar}>
+                <SheetSelector className={classes.sheetSelect} />
 
-      await generateAllPdfs({ tutorialId, sheet: currentSheet });
-    } catch {
-      enqueueSnackbar('PDFs konnten nicht erstellt werden.', { variant: 'error' });
-    } finally {
-      setLoadingState(LoadingState.NONE);
-    }
-  }
+                <SubmitButton
+                    isSubmitting={loadingState !== LoadingState.NONE}
+                    variant='outlined'
+                    color='default'
+                    className={classes.createPdfsButton}
+                    onClick={handleGeneratingAllPDFs}
+                    disabled={!currentSheet}
+                    modalText={getGenerationModalText(loadingState)}
+                >
+                    PDFs erstellen
+                </SubmitButton>
+            </div>
 
-  return (
-    <div className={classes.root}>
-      <div className={classes.topBar}>
-        <SheetSelector className={classes.sheetSelect} />
-
-        <SubmitButton
-          isSubmitting={loadingState !== LoadingState.NONE}
-          variant='outlined'
-          color='default'
-          className={classes.createPdfsButton}
-          onClick={handleGeneratingAllPDFs}
-          disabled={!currentSheet}
-          modalText={getGenerationModalText(loadingState)}
-        >
-          PDFs erstellen
-        </SubmitButton>
-      </div>
-
-      <Placeholder
-        placeholderText='Kein Blatt ausgewählt.'
-        showPlaceholder={!currentSheet}
-        loading={isLoadingSheets}
-      >
-        {currentSheet && tutorialId && (
-          <TeamCardList
-            tutorialId={tutorialId}
-            teams={teams}
-            sheet={currentSheet}
-            onPdfPreviewClicked={handlePdfPreviewClicked}
-            onGeneratePdfClicked={handleGenerateSinglePdf}
-          />
-        )}
-      </Placeholder>
-    </div>
-  );
+            <Placeholder
+                placeholderText='Kein Blatt ausgewählt.'
+                showPlaceholder={!currentSheet}
+                loading={isLoadingSheets}
+            >
+                {currentSheet && tutorialId && (
+                    <TeamCardList
+                        tutorialId={tutorialId}
+                        teams={teams}
+                        sheet={currentSheet}
+                        onPdfPreviewClicked={handlePdfPreviewClicked}
+                        onGeneratePdfClicked={handleGenerateSinglePdf}
+                    />
+                )}
+            </Placeholder>
+        </div>
+    );
 }
 
 export default PointsOverview;

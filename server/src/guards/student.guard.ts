@@ -17,30 +17,30 @@ import { TutorialGuard } from './tutorial.guard';
  */
 @Injectable()
 export class StudentGuard extends TutorialGuard {
-  constructor(
-    private readonly studentService: StudentService,
-    tutorialService: TutorialService,
-    reflector: Reflector
-  ) {
-    super(tutorialService, reflector);
-  }
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const hasRoleGuard = new HasRoleGuard(this.reflector);
-
-    if (hasRoleGuard.canActivate(context)) {
-      return true;
+    constructor(
+        private readonly studentService: StudentService,
+        tutorialService: TutorialService,
+        reflector: Reflector
+    ) {
+        super(tutorialService, reflector);
     }
 
-    const user = this.getUserFromRequest(context);
-    const student = await this.getStudentFromRequest(context);
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const hasRoleGuard = new HasRoleGuard(this.reflector);
 
-    return this.hasUserAccessToTutorial({ user, context, tutorial: student.tutorial });
-  }
+        if (hasRoleGuard.canActivate(context)) {
+            return true;
+        }
 
-  private async getStudentFromRequest(context: ExecutionContext): Promise<StudentDocument> {
-    const studentId = this.getIdFieldContentFromContext(context);
+        const user = this.getUserFromRequest(context);
+        const student = await this.getStudentFromRequest(context);
 
-    return this.studentService.findById(studentId);
-  }
+        return this.hasUserAccessToTutorial({ user, context, tutorial: student.tutorial });
+    }
+
+    private async getStudentFromRequest(context: ExecutionContext): Promise<StudentDocument> {
+        const studentId = this.getIdFieldContentFromContext(context);
+
+        return this.studentService.findById(studentId);
+    }
 }

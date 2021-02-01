@@ -8,42 +8,44 @@ import { ShortTestDTO } from '../scheinexam/scheinexam.dto';
 
 @Injectable()
 export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, ShortTestDocument> {
-  constructor(
-    @InjectModel(ShortTestModel)
-    private readonly shortTestModel: ReturnModelType<typeof ShortTestModel>
-  ) {}
+    constructor(
+        @InjectModel(ShortTestModel)
+        private readonly shortTestModel: ReturnModelType<typeof ShortTestModel>
+    ) {}
 
-  async findAll(): Promise<ShortTestDocument[]> {
-    return await this.shortTestModel.find().exec();
-  }
-
-  async findById(id: string): Promise<ShortTestDocument> {
-    const shortTest = await this.shortTestModel.findById(id).exec();
-
-    if (!shortTest) {
-      throw new NotFoundException(`Short test document with the ID "${id}" could not be found.`);
+    async findAll(): Promise<ShortTestDocument[]> {
+        return await this.shortTestModel.find().exec();
     }
 
-    return shortTest;
-  }
+    async findById(id: string): Promise<ShortTestDocument> {
+        const shortTest = await this.shortTestModel.findById(id).exec();
 
-  async create(dto: ShortTestDTO): Promise<IShortTest> {
-    const shortTest = ShortTestModel.fromDTO(dto);
-    const created = await this.shortTestModel.create(shortTest);
+        if (!shortTest) {
+            throw new NotFoundException(
+                `Short test document with the ID "${id}" could not be found.`
+            );
+        }
 
-    return created.toDTO();
-  }
+        return shortTest;
+    }
 
-  async update(id: string, dto: ShortTestDTO): Promise<IShortTest> {
-    const shortTest = await this.findById(id);
-    const updated = await shortTest.updateFromDTO(dto).save();
+    async create(dto: ShortTestDTO): Promise<IShortTest> {
+        const shortTest = ShortTestModel.fromDTO(dto);
+        const created = await this.shortTestModel.create(shortTest);
 
-    return updated.toDTO();
-  }
+        return created.toDTO();
+    }
 
-  async delete(id: string): Promise<ShortTestDocument> {
-    const shortTest = await this.findById(id);
+    async update(id: string, dto: ShortTestDTO): Promise<IShortTest> {
+        const shortTest = await this.findById(id);
+        const updated = await shortTest.updateFromDTO(dto).save();
 
-    return shortTest.remove();
-  }
+        return updated.toDTO();
+    }
+
+    async delete(id: string): Promise<ShortTestDocument> {
+        const shortTest = await this.findById(id);
+
+        return shortTest.remove();
+    }
 }

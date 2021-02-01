@@ -12,27 +12,27 @@ import { UseMetadata } from './helpers/UseMetadata';
  */
 @Injectable()
 export class HasRoleGuard extends UseMetadata {
-  constructor(reflector: Reflector) {
-    super(reflector);
-  }
-
-  canActivate(context: ExecutionContext): boolean {
-    const authGuard = new AuthenticatedGuard();
-    const isAuthenticated = authGuard.canActivate(context);
-
-    if (!isAuthenticated) {
-      throw new UnauthorizedException();
+    constructor(reflector: Reflector) {
+        super(reflector);
     }
 
-    const { roles } = this.getUserFromRequest(context);
-    const allowedRoles = this.getAllowedRolesFromContext(context);
+    canActivate(context: ExecutionContext): boolean {
+        const authGuard = new AuthenticatedGuard();
+        const isAuthenticated = authGuard.canActivate(context);
 
-    for (const role of allowedRoles) {
-      if (roles.includes(role)) {
-        return true;
-      }
+        if (!isAuthenticated) {
+            throw new UnauthorizedException();
+        }
+
+        const { roles } = this.getUserFromRequest(context);
+        const allowedRoles = this.getAllowedRolesFromContext(context);
+
+        for (const role of allowedRoles) {
+            if (roles.includes(role)) {
+                return true;
+            }
+        }
+
+        return false;
     }
-
-    return false;
-  }
 }

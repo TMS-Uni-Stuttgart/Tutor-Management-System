@@ -4,8 +4,8 @@ import { InformationController } from './information.controller';
 import { InformationService } from './information.service';
 
 @Module({
-  providers: [InformationService],
-  controllers: [InformationController],
-  imports: [SettingsModule],
+    providers: [InformationService],
+    controllers: [InformationController],
+    imports: [SettingsModule],
 })
 export class InformationModule {}

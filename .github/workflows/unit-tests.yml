@@ -17,14 +17,16 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
+      - name: Install pnpm
+        run: npm i -g pnpm
       - name: Install node packages
         run: |
-          yarn install
+          pnpm install --frozen-lockfile
         env:
           CI: true
       - name: Run tests on server
         working-directory: server/
         run: |
-          yarn test
+          pnpm test
         env:
           CI: true

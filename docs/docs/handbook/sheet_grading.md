@@ -21,21 +21,21 @@ import MenuIcon from './assets/icons/dots-vertical.svg';
 
 1. **Enter Points**: Click the button to enter points for the complete team. If you want to enter points for a single student of that team click the small arrow icon <IconInText icon={ArrowDownIcon} /> on the right and select "Single for students".
 
-   :::note
-   If students already have individual gradings for the selected sheet the "Single for students" option is pre-selected and cannot be changed.
-   :::
+    :::note
+    If students already have individual gradings for the selected sheet the "Single for students" option is pre-selected and cannot be changed.
+    :::
 
 1. **Card Menu**: To access more options for a team click on the menu icon <IconInText icon={MenuIcon} /> in the upper right of a card.
 
-   1. `PDF Preview`: A dialog opens up which shows a preview of the content of the PDF(s). If students have different gradings the previews are seperated by name.
+    1. `PDF Preview`: A dialog opens up which shows a preview of the content of the PDF(s). If students have different gradings the previews are seperated by name.
 
-   1. `Dowload PDF(s)`: Download the PDF(s) which belong to the team. If multiple PDFs need to be generated (bc students have different gradings) they are bundled in a ZIP file.
+    1. `Dowload PDF(s)`: Download the PDF(s) which belong to the team. If multiple PDFs need to be generated (bc students have different gradings) they are bundled in a ZIP file.
 
 1. **Create PDFs**: Create PDFs for all gradings of this sheet. PDFs are created for each team (if several students of that team have the same grading) and for each student with an individual grading. All created PDFs are bundled in a ZIP file.
 
-   :::note
-   The names of the PDF files are unified throughout the app. The administration can change the name of the files through their settings menu.
-   :::
+    :::note
+    The names of the PDF files are unified throughout the app. The administration can change the name of the files through their settings menu.
+    :::
 
 ## Enter Points
 
@@ -60,8 +60,8 @@ Below you can find an explanation of the page for entering the points of a compl
 
 1. **Save**: Save the changes made for the currently selected team. Furthermore, you can save the changes by
 
-   - Hitting the `Enter` key on your keyboard while focusing a textfield for points.
-   - Hitting `Ctrl + Enter` (or your Mac equivalent) while focusing the textfield for comments.
-   - Hitting `Ctrl + S` (or your Mac equivalent) at any time while the page is opened up.
+    - Hitting the `Enter` key on your keyboard while focusing a textfield for points.
+    - Hitting `Ctrl + Enter` (or your Mac equivalent) while focusing the textfield for comments.
+    - Hitting `Ctrl + S` (or your Mac equivalent) at any time while the page is opened up.
 
 1. **Back**: Go back to the overview page.

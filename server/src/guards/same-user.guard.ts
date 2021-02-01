@@ -11,18 +11,18 @@ import { HasRoleGuard } from './has-role.guard';
  */
 @Injectable()
 export class SameUserGuard extends HasRoleGuard {
-  constructor(reflector: Reflector) {
-    super(reflector);
-  }
-
-  canActivate(context: ExecutionContext): boolean {
-    if (super.canActivate(context)) {
-      return true;
+    constructor(reflector: Reflector) {
+        super(reflector);
     }
 
-    const user = this.getUserFromRequest(context);
-    const paramId = this.getIdFieldContentFromContext(context);
+    canActivate(context: ExecutionContext): boolean {
+        if (super.canActivate(context)) {
+            return true;
+        }
 
-    return user._id.toString() === paramId;
-  }
+        const user = this.getUserFromRequest(context);
+        const paramId = this.getIdFieldContentFromContext(context);
+
+        return user._id.toString() === paramId;
+    }
 }

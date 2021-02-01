@@ -11,4 +11,4 @@ export const ROLE_METADATA_KEY = 'roles';
  * @param roles Roles which can be read by the guard.
  */
 export const Roles = (...roles: Role[]): CustomDecorator<string> =>
-  SetMetadata(ROLE_METADATA_KEY, roles);
+    SetMetadata(ROLE_METADATA_KEY, roles);

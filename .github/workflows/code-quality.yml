@@ -18,14 +18,16 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
+      - name: Install pnpm
+        run: npm i -g pnpm
       - name: Install node packages
         run: |
-          yarn install
+          pnpm install
         env:
           CI: true
       - name: Type check client
         working-directory: client/
-        run: yarn ts:check
+        run: pnpm ts:check
         env:
           CI: true
 
@@ -39,14 +41,16 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
+      - name: Install pnpm
+        run: npm i -g pnpm
       - name: Install node packages
         run: |
-          yarn install
+          pnpm install
         env:
           CI: true
       - name: Type check server
         working-directory: server/
-        run: yarn ts:check
+        run: pnpm ts:check
         env:
           CI: true
 
@@ -60,14 +64,16 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
+      - name: Install pnpm
+        run: npm i -g pnpm
       - name: Install node packages
         run: |
-          yarn install
+          pnpm install
         env:
           CI: true
       - name: Check code quality in workspace
         run: |
-          yarn workspaces run prettier:check
-          yarn workspaces run eslint:check
+          pnpm run --recursive prettier:check
+          pnpm run --recursive eslint:check
         env:
           CI: true

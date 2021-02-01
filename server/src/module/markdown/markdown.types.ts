@@ -9,58 +9,58 @@ import { IMarkdownToHTMLPayload, ITeamMarkdownData } from '../../shared/model/Ma
 import { ITeamId } from '../../shared/model/Team';
 
 export class MarkdownHTMLDTO implements IMarkdownToHTMLPayload {
-  @IsString()
-  @IsNotEmpty()
-  markdown!: string;
+    @IsString()
+    @IsNotEmpty()
+    markdown!: string;
 }
 
 export interface GenerateTeamGradingParams {
-  teamId: ITeamId;
-  sheetId: string;
+    teamId: ITeamId;
+    sheetId: string;
 }
 
 export interface GenerateAllTeamsGradingParams {
-  tutorialId: string;
-  sheetId: string;
+    tutorialId: string;
+    sheetId: string;
 }
 
 export interface TeamMarkdownData extends ITeamMarkdownData {
-  invalid?: boolean;
+    invalid?: boolean;
 }
 
 export interface TeamGradings {
-  sheetNo: string;
-  markdownData: TeamMarkdownData[];
+    sheetNo: string;
+    markdownData: TeamMarkdownData[];
 }
 
 export interface SingleTeamGradings extends TeamGradings {
-  teamName: string;
+    teamName: string;
 }
 
 export interface SheetPointInfo {
-  achieved: number;
-  total: { must: number; bonus: number };
+    achieved: number;
+    total: { must: number; bonus: number };
 }
 
 export interface GeneratingParams {
-  entity: HasExercisesDocument;
-  grading: Grading;
-  nameOfEntity: string;
+    entity: HasExercisesDocument;
+    grading: Grading;
+    nameOfEntity: string;
 }
 
 export interface GenerateFromTeamParams {
-  team: TeamDocument;
-  sheet: SheetDocument;
-  ignoreInvalidTeams: boolean;
+    team: TeamDocument;
+    sheet: SheetDocument;
+    ignoreInvalidTeams: boolean;
 }
 
 export interface GenerateSubExTableParams {
-  subexercises: SubExerciseDocument[];
-  gradingForExercise: ExerciseGrading;
+    subexercises: SubExerciseDocument[];
+    gradingForExercise: ExerciseGrading;
 }
 
 export interface SubExData {
-  name: string;
-  achieved: number;
-  total: ExercisePointsInfo;
+    name: string;
+    achieved: number;
+    total: ExercisePointsInfo;
 }

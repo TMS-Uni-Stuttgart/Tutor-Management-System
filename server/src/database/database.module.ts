@@ -7,62 +7,62 @@ import { StaticSettings } from '../module/settings/settings.static';
 @Global()
 @Module({})
 export class DatabaseModule {
-  static async forRootAsync(): Promise<DynamicModule> {
-    const connection = await this.connectToDB();
+    static async forRootAsync(): Promise<DynamicModule> {
+        const connection = await this.connectToDB();
 
-    const connectionName = getConnectionToken();
-    const connectionNameProvider: Provider = {
-      provide: TYPEGOOSE_CONNECTION_NAME,
-      useValue: connectionName,
-    };
+        const connectionName = getConnectionToken();
+        const connectionNameProvider: Provider = {
+            provide: TYPEGOOSE_CONNECTION_NAME,
+            useValue: connectionName,
+        };
 
-    const connectionProvider: Provider = {
-      provide: connectionName,
-      useFactory: () => connection,
-    };
+        const connectionProvider: Provider = {
+            provide: connectionName,
+            useFactory: () => connection,
+        };
 
-    return {
-      module: DatabaseModule,
-      providers: [connectionProvider, connectionNameProvider],
-      exports: [connectionProvider],
-    };
-  }
+        return {
+            module: DatabaseModule,
+            providers: [connectionProvider, connectionNameProvider],
+            exports: [connectionProvider],
+        };
+    }
 
-  private static connectToDB(): Promise<Connection> {
-    return new Promise((resolve, reject) => {
-      const databaseConfig = StaticSettings.getService().getDatabaseConfiguration();
-      const maxRetries = databaseConfig.maxRetries ?? 2;
+    private static connectToDB(): Promise<Connection> {
+        return new Promise((resolve, reject) => {
+            const databaseConfig = StaticSettings.getService().getDatabaseConfiguration();
+            const maxRetries = databaseConfig.maxRetries ?? 2;
 
-      async function tryToConnect(prevTries: number) {
-        if (prevTries >= maxRetries) {
-          return reject(
-            new Error(`Connection to MongoDB database failed after ${prevTries} tries.`)
-          );
-        }
+            async function tryToConnect(prevTries: number) {
+                if (prevTries >= maxRetries) {
+                    return reject(
+                        new Error(`Connection to MongoDB database failed after ${prevTries} tries.`)
+                    );
+                }
 
-        try {
-          Logger.log(
-            `Connecting to MongoDB database (previous tries: ${prevTries})...`,
-            DatabaseModule.name
-          );
+                try {
+                    Logger.log(
+                        `Connecting to MongoDB database (previous tries: ${prevTries})...`,
+                        DatabaseModule.name
+                    );
 
-          const connection = await mongoose.createConnection(databaseConfig.databaseURL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true,
-            poolSize: 10,
-            ...databaseConfig.config,
-          });
+                    const connection = await mongoose.createConnection(databaseConfig.databaseURL, {
+                        useNewUrlParser: true,
+                        useUnifiedTopology: true,
+                        useCreateIndex: true,
+                        poolSize: 10,
+                        ...databaseConfig.config,
+                    });
 
-          Logger.log('Connection to MongoDB database established.', DatabaseModule.name);
+                    Logger.log('Connection to MongoDB database established.', DatabaseModule.name);
 
-          return resolve(connection);
-        } catch {
-          tryToConnect(++prevTries);
-        }
-      }
+                    return resolve(connection);
+                } catch {
+                    tryToConnect(++prevTries);
+                }
+            }
 
-      tryToConnect(0);
-    });
-  }
+            tryToConnect(0);
+        });
+    }
 }

@@ -6,35 +6,35 @@ import { HasExercisesModel } from './ratedEntity.model';
 
 @modelOptions({ schemaOptions: { collection: CollectionName.SHEET } })
 export class SheetModel extends HasExercisesModel {
-  static fromDTO(dto: SheetDTO): SheetModel {
-    const model = new SheetModel();
+    static fromDTO(dto: SheetDTO): SheetModel {
+        const model = new SheetModel();
 
-    super.assignDTO(model, dto);
+        super.assignDTO(model, dto);
 
-    model.sheetNo = dto.sheetNo;
-    model.bonusSheet = dto.bonusSheet;
+        model.sheetNo = dto.sheetNo;
+        model.bonusSheet = dto.bonusSheet;
 
-    return model;
-  }
+        return model;
+    }
 
-  @prop({ required: true })
-  sheetNo!: number;
+    @prop({ required: true })
+    sheetNo!: number;
 
-  @prop({ required: true })
-  bonusSheet!: boolean;
+    @prop({ required: true })
+    bonusSheet!: boolean;
 
-  get sheetNoAsString(): string {
-    return this.sheetNo.toString(10).padStart(2, '0');
-  }
+    get sheetNoAsString(): string {
+        return this.sheetNo.toString(10).padStart(2, '0');
+    }
 
-  toDTO(this: SheetDocument): ISheet {
-    return {
-      id: this.id,
-      sheetNo: this.sheetNo,
-      bonusSheet: this.bonusSheet,
-      exercises: this.exercises.map((ex) => ex.toDTO()),
-    };
-  }
+    toDTO(this: SheetDocument): ISheet {
+        return {
+            id: this.id,
+            sheetNo: this.sheetNo,
+            bonusSheet: this.bonusSheet,
+            exercises: this.exercises.map((ex) => ex.toDTO()),
+        };
+    }
 }
 
 export type SheetDocument = DocumentType<SheetModel>;

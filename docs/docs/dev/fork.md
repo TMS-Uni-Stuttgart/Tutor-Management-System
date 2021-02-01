@@ -17,22 +17,22 @@ You could also just completly remove the action. In this case you have to make s
 
 1. Generate a new Personal Access Token (PAT) and copy it for the next step. Make sure you follow the guide lines in the [official GitHub guide for generating a PAT for the Container Repository][get-pat-cr] and to set the permission described there.
 
-   :::caution
-   The PAT has to belong to the user who owns the repository!
-   :::
+    :::caution
+    The PAT has to belong to the user who owns the repository!
+    :::
 
 1. Add the PAT as a secret to your fork and name it `GH_REGISTRY_TOKEN`. Go to `Settings` > `Secrets` on your repository page to do so. If you change the name of this token you have to follow the next step aswell.
 
 1. (_Only if you changed the name of the token_) Replace the `GH_REGISTRY_TOKEN` name inside the workflow file (`.github/workflows/build-push-docker.yml`) in the login step to your name.
-   ```yml
-   # Login to repository
-   - name: Login to DockerHub
-     uses: docker/login-action@v1
-     with:
-       registry: ghcr.io
-       username: ${{ github.repository_owner }}
-       password: ${{ secrets.GH_REGISTRY_TOKEN }}
-   ```
+    ```yml
+    # Login to repository
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GH_REGISTRY_TOKEN }}
+    ```
 
 <!-- References --->
 

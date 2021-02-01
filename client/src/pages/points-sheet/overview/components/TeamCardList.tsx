@@ -6,36 +6,36 @@ import TeamCard from './TeamCard';
 import Placeholder from '../../../../components/Placeholder';
 
 interface Props {
-  tutorialId: string;
-  teams: Team[];
-  sheet: Sheet;
-  onPdfPreviewClicked: (team: Team) => void;
-  onGeneratePdfClicked: (team: Team) => void;
+    tutorialId: string;
+    teams: Team[];
+    sheet: Sheet;
+    onPdfPreviewClicked: (team: Team) => void;
+    onGeneratePdfClicked: (team: Team) => void;
 }
 
 function TeamCardList({
-  tutorialId,
-  teams,
-  sheet,
-  onPdfPreviewClicked,
-  onGeneratePdfClicked,
+    tutorialId,
+    teams,
+    sheet,
+    onPdfPreviewClicked,
+    onGeneratePdfClicked,
 }: Props): JSX.Element {
-  return (
-    <Placeholder placeholderText='Keine Teams verfügbar.' showPlaceholder={teams.length === 0}>
-      <CardList>
-        {teams.map((team) => (
-          <TeamCard
-            key={team.id}
-            tutorialId={tutorialId}
-            team={team}
-            sheet={sheet}
-            onPdfPreviewClicked={onPdfPreviewClicked}
-            onGeneratePdfClicked={onGeneratePdfClicked}
-          />
-        ))}
-      </CardList>
-    </Placeholder>
-  );
+    return (
+        <Placeholder placeholderText='Keine Teams verfügbar.' showPlaceholder={teams.length === 0}>
+            <CardList>
+                {teams.map((team) => (
+                    <TeamCard
+                        key={team.id}
+                        tutorialId={tutorialId}
+                        team={team}
+                        sheet={sheet}
+                        onPdfPreviewClicked={onPdfPreviewClicked}
+                        onGeneratePdfClicked={onGeneratePdfClicked}
+                    />
+                ))}
+            </CardList>
+        </Placeholder>
+    );
 }
 
 export default TeamCardList;

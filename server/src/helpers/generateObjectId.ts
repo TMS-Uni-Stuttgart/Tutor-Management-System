@@ -6,5 +6,5 @@ import { mongoose } from '@typegoose/typegoose';
  * @returns The generated ID
  */
 export function generateObjectId(): string {
-  return new mongoose.Types.ObjectId().toHexString();
+    return new mongoose.Types.ObjectId().toHexString();
 }
