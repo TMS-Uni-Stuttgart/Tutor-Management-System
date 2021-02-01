@@ -5,77 +5,77 @@ import TabPanel from '../TabPanel';
 import Markdown from './Markdown';
 
 interface TabData extends TabProps {
-  label: string;
-  content: React.ReactNode;
+    label: string;
+    content: React.ReactNode;
 }
 
 interface TabsWrapperProps {
-  tabs: TabData[];
-  TabsProps?: Omit<TabsProps, 'value' | 'onChange'>;
+    tabs: TabData[];
+    TabsProps?: Omit<TabsProps, 'value' | 'onChange'>;
 }
 
 interface Props {
-  data: ITeamMarkdownData[];
-  TabsProps?: TabsWrapperProps['TabsProps'];
+    data: ITeamMarkdownData[];
+    TabsProps?: TabsWrapperProps['TabsProps'];
 }
 
 function TabsWrapper({ tabs, TabsProps }: TabsWrapperProps): JSX.Element {
-  const [selectedTab, setSelectedTab] = useState(0);
-  const { panels, tabElements } = useMemo(() => {
-    const tabElements: JSX.Element[] = [];
-    const panels: JSX.Element[] = [];
+    const [selectedTab, setSelectedTab] = useState(0);
+    const { panels, tabElements } = useMemo(() => {
+        const tabElements: JSX.Element[] = [];
+        const panels: JSX.Element[] = [];
 
-    tabs.forEach(({ content, ...tabProps }, idx) => {
-      tabElements.push(<Tab key={tabProps.label} value={idx} {...tabProps} />);
-      panels.push(
-        <TabPanel key={tabProps.label} value={idx} index={selectedTab}>
-          {content}
-        </TabPanel>
-      );
-    });
+        tabs.forEach(({ content, ...tabProps }, idx) => {
+            tabElements.push(<Tab key={tabProps.label} value={idx} {...tabProps} />);
+            panels.push(
+                <TabPanel key={tabProps.label} value={idx} index={selectedTab}>
+                    {content}
+                </TabPanel>
+            );
+        });
 
-    return { tabElements, panels };
-  }, [tabs, selectedTab]);
+        return { tabElements, panels };
+    }, [tabs, selectedTab]);
 
-  const handleChange = (_: React.ChangeEvent<unknown>, newValue: number) => {
-    setSelectedTab(newValue);
-  };
+    const handleChange = (_: React.ChangeEvent<unknown>, newValue: number) => {
+        setSelectedTab(newValue);
+    };
 
-  return (
-    <>
-      <Tabs {...TabsProps} value={selectedTab} onChange={handleChange}>
-        {tabElements}
-      </Tabs>
+    return (
+        <>
+            <Tabs {...TabsProps} value={selectedTab} onChange={handleChange}>
+                {tabElements}
+            </Tabs>
 
-      {panels}
-    </>
-  );
+            {panels}
+        </>
+    );
 }
 
 function MultiGradingPreviewWithTabs({ data, TabsProps }: Props): JSX.Element {
-  const tabs: TabData[] = useMemo(
-    () =>
-      data.map(({ teamName, html, belongsToTeam }) => ({
-        label: belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`,
-        content: <Markdown html={html} />,
-      })),
-    [data]
-  );
+    const tabs: TabData[] = useMemo(
+        () =>
+            data.map(({ teamName, html, belongsToTeam }) => ({
+                label: belongsToTeam ? `Team ${teamName}` : `Student/in ${teamName}`,
+                content: <Markdown html={html} />,
+            })),
+        [data]
+    );
 
-  return <TabsWrapper tabs={tabs} TabsProps={TabsProps} />;
+    return <TabsWrapper tabs={tabs} TabsProps={TabsProps} />;
 }
 
 function MultiGradingPreview(props: Props): JSX.Element {
-  const { data } = props;
-  let content: React.ReactNode;
+    const { data } = props;
+    let content: React.ReactNode;
 
-  if (data.length <= 1) {
-    content = <Markdown html={data[0]?.html ?? ''} />;
-  } else {
-    content = <MultiGradingPreviewWithTabs {...props} />;
-  }
+    if (data.length <= 1) {
+        content = <Markdown html={data[0]?.html ?? ''} />;
+    } else {
+        content = <MultiGradingPreviewWithTabs {...props} />;
+    }
 
-  return <Box>{content}</Box>;
+    return <Box>{content}</Box>;
 }
 
 export default MultiGradingPreview;

@@ -4,129 +4,130 @@ import { CollectionName } from '../../helpers/CollectionName';
 import { ClientSettingsDTO } from '../../module/settings/settings.dto';
 import { StaticSettings } from '../../module/settings/settings.static';
 import {
-  IClientSettings,
-  IMailingAuthConfiguration,
-  IMailingSettings,
+    IClientSettings,
+    IMailingAuthConfiguration,
+    IMailingSettings,
 } from '../../shared/model/Settings';
 
 @modelOptions({ schemaOptions: { _id: false } })
 class MailingAuthModel implements IMailingAuthConfiguration {
-  @prop({ required: true })
-  readonly user!: string;
+    @prop({ required: true })
+    readonly user!: string;
 
-  @prop({ required: true })
-  readonly pass!: string;
+    @prop({ required: true })
+    readonly pass!: string;
 }
 
 @plugin(fieldEncryption, {
-  secret: StaticSettings.getService().getDatabaseSecret(),
-  fields: ['host', 'port', 'from', 'subject', 'auth'],
+    secret: StaticSettings.getService().getDatabaseSecret(),
+    fields: ['host', 'port', 'from', 'subject', 'auth'],
 })
 @modelOptions({ schemaOptions: { _id: false } })
 class MailingSettingsModel implements IMailingSettings {
-  @prop({ required: true })
-  readonly host!: string;
+    @prop({ required: true })
+    readonly host!: string;
 
-  @prop({ required: true })
-  readonly port!: number;
+    @prop({ required: true })
+    readonly port!: number;
 
-  @prop({ required: true })
-  readonly from!: string;
+    @prop({ required: true })
+    readonly from!: string;
 
-  @prop({ required: true })
-  readonly subject!: string;
+    @prop({ required: true })
+    readonly subject!: string;
 
-  @prop({ required: true, type: MailingAuthModel })
-  readonly auth!: MailingAuthModel;
+    @prop({ required: true, type: MailingAuthModel })
+    readonly auth!: MailingAuthModel;
 
-  constructor(fields?: IMailingSettings) {
-    Object.assign(this, fields);
-  }
+    constructor(fields?: IMailingSettings) {
+        Object.assign(this, fields);
+    }
 
-  toDTO(): IMailingSettings {
-    const { host, port, from, auth, subject } = this;
-    return { host, port, from, auth, subject };
-  }
+    toDTO(): IMailingSettings {
+        const { host, port, from, auth, subject } = this;
+        return { host, port, from, auth, subject };
+    }
 }
 
 @modelOptions({ schemaOptions: { collection: CollectionName.SETTINGS } })
 export class SettingsModel {
-  private static get internalDefaults(): IClientSettings {
-    return {
-      defaultTeamSize: 2,
-      canTutorExcuseStudents: false,
-      gradingFilename: 'Ex#{sheetNo}_#{teamName}',
-      tutorialGradingFilename: 'Tutorial_#{tutorialSlot}_Ex#{sheetNo}',
-    };
-  }
+    private static get internalDefaults(): IClientSettings {
+        return {
+            defaultTeamSize: 2,
+            canTutorExcuseStudents: false,
+            gradingFilename: 'Ex#{sheetNo}_#{teamName}',
+            tutorialGradingFilename: 'Tutorial_#{tutorialSlot}_Ex#{sheetNo}',
+        };
+    }
 
-  @prop({ required: true })
-  defaultTeamSize: number;
+    @prop({ required: true })
+    defaultTeamSize: number;
 
-  @prop({ required: true })
-  canTutorExcuseStudents: boolean;
+    @prop({ required: true })
+    canTutorExcuseStudents: boolean;
 
-  @prop({ required: true })
-  gradingFilename: string;
+    @prop({ required: true })
+    gradingFilename: string;
 
-  @prop({ required: true })
-  tutorialGradingFilename: string;
+    @prop({ required: true })
+    tutorialGradingFilename: string;
 
-  @prop({ type: MailingSettingsModel, required: false })
-  mailingConfig?: MailingSettingsModel;
+    @prop({ type: MailingSettingsModel, required: false })
+    mailingConfig?: MailingSettingsModel;
 
-  constructor(fields?: Partial<IClientSettings>) {
-    const {
-      defaultTeamSize,
-      canTutorExcuseStudents,
-      gradingFilename,
-      tutorialGradingFilename,
-    } = SettingsModel.internalDefaults;
+    constructor(fields?: Partial<IClientSettings>) {
+        const {
+            defaultTeamSize,
+            canTutorExcuseStudents,
+            gradingFilename,
+            tutorialGradingFilename,
+        } = SettingsModel.internalDefaults;
 
-    this.defaultTeamSize = fields?.defaultTeamSize ?? defaultTeamSize;
-    this.canTutorExcuseStudents = fields?.canTutorExcuseStudents ?? canTutorExcuseStudents;
-    this.gradingFilename = fields?.gradingFilename ?? gradingFilename;
-    this.tutorialGradingFilename = fields?.tutorialGradingFilename ?? tutorialGradingFilename;
+        this.defaultTeamSize = fields?.defaultTeamSize ?? defaultTeamSize;
+        this.canTutorExcuseStudents = fields?.canTutorExcuseStudents ?? canTutorExcuseStudents;
+        this.gradingFilename = fields?.gradingFilename ?? gradingFilename;
+        this.tutorialGradingFilename = fields?.tutorialGradingFilename ?? tutorialGradingFilename;
 
-    this.mailingConfig = fields?.mailingConfig
-      ? new MailingSettingsModel(fields.mailingConfig)
-      : undefined;
-  }
+        this.mailingConfig = fields?.mailingConfig
+            ? new MailingSettingsModel(fields.mailingConfig)
+            : undefined;
+    }
 
-  toDTO(): IClientSettings {
-    const defaultSettings = SettingsModel.internalDefaults;
+    toDTO(): IClientSettings {
+        const defaultSettings = SettingsModel.internalDefaults;
 
-    return {
-      defaultTeamSize: this.defaultTeamSize ?? defaultSettings.defaultTeamSize,
-      canTutorExcuseStudents: this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
-      mailingConfig: this.mailingConfig?.toDTO(),
-      gradingFilename: this.gradingFilename,
-      tutorialGradingFilename: this.tutorialGradingFilename,
-    };
-  }
+        return {
+            defaultTeamSize: this.defaultTeamSize ?? defaultSettings.defaultTeamSize,
+            canTutorExcuseStudents:
+                this.canTutorExcuseStudents ?? defaultSettings.canTutorExcuseStudents,
+            mailingConfig: this.mailingConfig?.toDTO(),
+            gradingFilename: this.gradingFilename,
+            tutorialGradingFilename: this.tutorialGradingFilename,
+        };
+    }
 
-  /**
-   * Changes this settings document to use the newly provided settings.
-   *
-   * This will override __all__ settings with the ones from the given DTO.
-   *
-   * @param dto DTO with the new settings information.
-   */
-  assignDTO(dto: ClientSettingsDTO): void {
-    this.defaultTeamSize = dto.defaultTeamSize;
-    this.canTutorExcuseStudents = dto.canTutorExcuseStudents;
+    /**
+     * Changes this settings document to use the newly provided settings.
+     *
+     * This will override __all__ settings with the ones from the given DTO.
+     *
+     * @param dto DTO with the new settings information.
+     */
+    assignDTO(dto: ClientSettingsDTO): void {
+        this.defaultTeamSize = dto.defaultTeamSize;
+        this.canTutorExcuseStudents = dto.canTutorExcuseStudents;
 
-    this.mailingConfig = dto.mailingConfig
-      ? new MailingSettingsModel(dto.mailingConfig)
-      : undefined;
+        this.mailingConfig = dto.mailingConfig
+            ? new MailingSettingsModel(dto.mailingConfig)
+            : undefined;
 
-    this.gradingFilename = this.removeFileExtension(dto.gradingFilename);
-    this.tutorialGradingFilename = this.removeFileExtension(dto.tutorialGradingFilename);
-  }
+        this.gradingFilename = this.removeFileExtension(dto.gradingFilename);
+        this.tutorialGradingFilename = this.removeFileExtension(dto.tutorialGradingFilename);
+    }
 
-  private removeFileExtension(filename: string): string {
-    return filename.replace(/\.[^/.]+$/, '');
-  }
+    private removeFileExtension(filename: string): string {
+        return filename.replace(/\.[^/.]+$/, '');
+    }
 }
 
 export type SettingsDocument = DocumentType<SettingsModel>;

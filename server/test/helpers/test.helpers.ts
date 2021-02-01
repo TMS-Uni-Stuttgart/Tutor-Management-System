@@ -12,7 +12,7 @@ import { mongoose } from '@typegoose/typegoose';
  * @returns The adjusted object.
  */
 export function sanitizeObject<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj)) as T;
+    return JSON.parse(JSON.stringify(obj)) as T;
 }
 
 /**
@@ -21,5 +21,5 @@ export function sanitizeObject<T>(obj: T): T {
  * @returns The generated ID
  */
 export function generateObjectId(): string {
-  return new mongoose.Types.ObjectId().toHexString();
+    return new mongoose.Types.ObjectId().toHexString();
 }

@@ -20,23 +20,23 @@ If you want to update your existing deployment to a new version please refer to 
 
 Here are the most important libraries listed which are used in any part of the project.
 
-- [TypeScript](https://typescriptlang.org) - Programming language.
-- [React](https://reactjs.org/) - Frontend framework.
-- [Material-UI](https://material-ui.com) - Frontend component library.
-- [NestJS](https://nestjs.com/) - Backend framework used.
-- [Formik](https://jaredpalmer.com/formik/) - Used to clean up the React mess in forms.
-- [axios](https://github.com/axios/axios) - Used to make the REST calls against the backend.
-- [mongoose](https://mongoosejs.com/) - Used to connect to the MongoDB.
-- [typegoose](https://github.com/typegoose/typegoose) - Makes working with mongoose documents & typescript easier.
+-   [TypeScript](https://typescriptlang.org) - Programming language.
+-   [React](https://reactjs.org/) - Frontend framework.
+-   [Material-UI](https://material-ui.com) - Frontend component library.
+-   [NestJS](https://nestjs.com/) - Backend framework used.
+-   [Formik](https://jaredpalmer.com/formik/) - Used to clean up the React mess in forms.
+-   [axios](https://github.com/axios/axios) - Used to make the REST calls against the backend.
+-   [mongoose](https://mongoosejs.com/) - Used to connect to the MongoDB.
+-   [typegoose](https://github.com/typegoose/typegoose) - Makes working with mongoose documents & typescript easier.
 
 The following tools are used in the maintaining & deploying processes.
 
-- [ESLint](https://eslint.org/) - Used to ensure code quality.
-- [Prettier](https://prettier.io/) - Used to ensure a unified code style.
-- [GitHub Actions](https://github.com/features/actions) - Used for CI.
-- [Node](https://nodejs.org/) - Runs the production server aswell as the development servers.
-- [ts-node](https://github.com/TypeStrong/ts-node) - Used to run `.ts` scripts directly on NodeJS without compiling them.
-- [Docker](https://www.docker.com/) - Used to build the docker images.
+-   [ESLint](https://eslint.org/) - Used to ensure code quality.
+-   [Prettier](https://prettier.io/) - Used to ensure a unified code style.
+-   [GitHub Actions](https://github.com/features/actions) - Used for CI.
+-   [Node](https://nodejs.org/) - Runs the production server aswell as the development servers.
+-   [ts-node](https://github.com/TypeStrong/ts-node) - Used to run `.ts` scripts directly on NodeJS without compiling them.
+-   [Docker](https://www.docker.com/) - Used to build the docker images.
 
 ## Contributing
 

@@ -15,20 +15,20 @@ import { TutorialGuard } from './tutorial.guard';
  */
 @Injectable()
 export class TeamGuard extends TutorialGuard {
-  constructor(tutorialService: TutorialService, reflector: Reflector) {
-    super(tutorialService, reflector);
-  }
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const hasRoleGuard = new HasRoleGuard(this.reflector);
-
-    if (hasRoleGuard.canActivate(context)) {
-      return true;
+    constructor(tutorialService: TutorialService, reflector: Reflector) {
+        super(tutorialService, reflector);
     }
 
-    const user = this.getUserFromRequest(context);
-    const tutorial = await this.getTutorialFromRequest(context);
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const hasRoleGuard = new HasRoleGuard(this.reflector);
 
-    return this.hasUserAccessToTutorial({ user, tutorial, context });
-  }
+        if (hasRoleGuard.canActivate(context)) {
+            return true;
+        }
+
+        const user = this.getUserFromRequest(context);
+        const tutorial = await this.getTutorialFromRequest(context);
+
+        return this.hasUserAccessToTutorial({ user, tutorial, context });
+    }
 }

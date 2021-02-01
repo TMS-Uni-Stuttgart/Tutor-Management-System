@@ -8,8 +8,8 @@ sidebar_label: Configuration
 
 Within the `tms/config/` directory containing the configuration files the following items have to be present:
 
-- `production.yml`: YAML file containing the general configuration for the server.
-- `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
+-   `production.yml`: YAML file containing the general configuration for the server.
+-   `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
 
 Those files are provided through a docker volume. See the [installation guide](installation) for more information.
 
@@ -89,23 +89,23 @@ values={[
 h3(style='text-align: center') Anwesenheitsliste
 
 div(style='display: flex; width: 100%')
-  span Tutorium #{tutorialSlot}
-  span(style='margin-left: auto; float: right') Datum: #{date.toFormat('dd.MM.yyyy')}
+    span Tutorium #{tutorialSlot}
+    span(style='margin-left: auto; float: right') Datum: #{date.toFormat('dd.MM.yyyy')}
 
 div(style='margin-bottom: 16px')
-  span Tutor: #{tutorName}
+    span Tutor: #{tutorName}
 
 table
-  thead
-    tr
-      th Name
-      th Unterschrift
+    thead
+        tr
+            th Name
+            th Unterschrift
 
-  tbody
-    each student in students
-      tr
-        td #{student.name}
-        td
+    tbody
+        each student in students
+            tr
+                td #{student.name}
+                td
 ```
 
 </TabItem>

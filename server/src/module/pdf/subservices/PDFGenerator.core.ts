@@ -72,20 +72,20 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
 
       throw err;
     }
-  }
+}
 
-  /**
-   * Puts the given body in corresponding a `<body>` element. The returned string is a complete HTML "file" with slightly customized GitHub Markdown CSS.
-   *
-   * @param body Body to embed in HTML.
-   *
-   * @returns Complete HTML "file" which contains the given `body` as body.
-   */
-  private async putBodyInHTML(body: string): Promise<string> {
-    const githubCSS = await this.getGithubMarkdownCSS();
-    const highlightCSS = await this.getHighlightCSS();
+    /**
+     * Puts the given body in corresponding a `<body>` element. The returned string is a complete HTML "file" with slightly customized GitHub Markdown CSS.
+     *
+     * @param body Body to embed in HTML.
+     *
+     * @returns Complete HTML "file" which contains the given `body` as body.
+     */
+    private async putBodyInHTML(body: string): Promise<string> {
+        const githubCSS = await this.getGithubMarkdownCSS();
+        const highlightCSS = await this.getHighlightCSS();
 
-    return `
+        return `
     <html>
     <head>
     <style>${githubCSS}</style>
@@ -95,38 +95,38 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     <body class="markdown-body">${body}</body>
     </html>
     `;
-  }
-
-  /**
-   * @returns The GitHub markdown CSS.
-   */
-  private async getGithubMarkdownCSS(): Promise<string> {
-    return this.loadCSSFile('github-markdown-css/github-markdown.css');
-  }
-
-  /**
-   * @returns The HighlightJS CSS.
-   */
-  private async getHighlightCSS(): Promise<string> {
-    return this.loadCSSFile('highlight.js/styles/googlecode.css');
-  }
-
-  private async loadCSSFile(moduleName: string): Promise<string> {
-    try {
-      const pathToFile = require.resolve(moduleName);
-      const css = fs.readFileSync(pathToFile);
-
-      return css.toString();
-    } catch (err) {
-      this.logger.error(`Could not load CSS file '${moduleName}'`);
-      return '';
     }
-  }
 
-  /**
-   * @returns Some small customizations to the GitHub markdown CSS.
-   */
-  private getCustomCSS(): string {
-    return '.markdown-body table { display: table; width: 100%; }';
-  }
+    /**
+     * @returns The GitHub markdown CSS.
+     */
+    private async getGithubMarkdownCSS(): Promise<string> {
+        return this.loadCSSFile('github-markdown-css/github-markdown.css');
+    }
+
+    /**
+     * @returns The HighlightJS CSS.
+     */
+    private async getHighlightCSS(): Promise<string> {
+        return this.loadCSSFile('highlight.js/styles/googlecode.css');
+    }
+
+    private async loadCSSFile(moduleName: string): Promise<string> {
+        try {
+            const pathToFile = require.resolve(moduleName);
+            const css = fs.readFileSync(pathToFile);
+
+            return css.toString();
+        } catch (err) {
+            this.logger.error(`Could not load CSS file '${moduleName}'`);
+            return '';
+        }
+    }
+
+    /**
+     * @returns Some small customizations to the GitHub markdown CSS.
+     */
+    private getCustomCSS(): string {
+        return '.markdown-body table { display: table; width: 100%; }';
+    }
 }

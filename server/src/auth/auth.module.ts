@@ -7,9 +7,9 @@ import { SessionSerializer } from './session.serializer';
 import { AuthController } from './auth.controller';
 
 @Module({
-  imports: [UserModule, PassportModule],
-  providers: [AuthService, LocalStratey, SessionSerializer],
-  exports: [AuthService],
-  controllers: [AuthController],
+    imports: [UserModule, PassportModule],
+    providers: [AuthService, LocalStratey, SessionSerializer],
+    exports: [AuthService],
+    controllers: [AuthController],
 })
 export class AuthModule {}

@@ -16,94 +16,97 @@ import { getRouteWithPrefix } from '../util/routePrefix';
 import { createTheme } from '../util/styles';
 
 interface Props {
-  Router: React.ComponentType<MemoryRouterProps | BrowserRouterProps>;
+    Router: React.ComponentType<MemoryRouterProps | BrowserRouterProps>;
 }
 
 type ChangeThemeTypeFunction = (type: PaletteType) => void;
 
 const ThemeTypeContext = React.createContext<ChangeThemeTypeFunction>(() => {
-  throw new Error(
-    `Cannot use useChangeTheme without adding the ContextWrapper somewhere in the app.`
-  );
+    throw new Error(
+        `Cannot use useChangeTheme without adding the ContextWrapper somewhere in the app.`
+    );
 });
 
 function CustomThemeProvider({ children }: RequireChildrenProp): JSX.Element {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [themeType, setThemeType] = useState<PaletteType>(prefersDarkMode ? 'dark' : 'light');
-  const theme = createTheme(themeType);
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    const [themeType, setThemeType] = useState<PaletteType>(prefersDarkMode ? 'dark' : 'light');
+    const theme = createTheme(themeType);
 
-  useEffect(() => {
-    setThemeType(prefersDarkMode ? 'dark' : 'light');
-  }, [prefersDarkMode]);
+    useEffect(() => {
+        setThemeType(prefersDarkMode ? 'dark' : 'light');
+    }, [prefersDarkMode]);
 
-  return (
-    <ThemeTypeContext.Provider value={setThemeType}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </ThemeTypeContext.Provider>
-  );
+    return (
+        <ThemeTypeContext.Provider value={setThemeType}>
+            <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </ThemeTypeContext.Provider>
+    );
 }
 
 function handleUserConfirmation(message: string, callback: (ok: boolean) => void) {
-  const dialog = getDialogOutsideContext();
+    const dialog = getDialogOutsideContext();
 
-  dialog.show({
-    title: 'Seite verlassen?',
-    content: message,
-    actions: [
-      {
-        label: 'Abbrechen',
-        onClick: () => {
-          dialog.hide();
-          callback(false);
-        },
-        buttonProps: {
-          color: 'primary',
-          variant: 'outlined',
-        },
-      },
-      {
-        label: 'Verlassen',
-        onClick: () => {
-          dialog.hide();
-          callback(true);
-        },
-        buttonProps: {
-          color: 'primary',
-          variant: 'contained',
-        },
-      },
-    ],
-    DialogProps: {},
-  });
+    dialog.show({
+        title: 'Seite verlassen?',
+        content: message,
+        actions: [
+            {
+                label: 'Abbrechen',
+                onClick: () => {
+                    dialog.hide();
+                    callback(false);
+                },
+                buttonProps: {
+                    color: 'primary',
+                    variant: 'outlined',
+                },
+            },
+            {
+                label: 'Verlassen',
+                onClick: () => {
+                    dialog.hide();
+                    callback(true);
+                },
+                buttonProps: {
+                    color: 'primary',
+                    variant: 'contained',
+                },
+            },
+        ],
+        DialogProps: {},
+    });
 }
 
 function ContextWrapper({ children, Router }: PropsWithChildren<Props>): JSX.Element {
-  return (
-    <Router getUserConfirmation={handleUserConfirmation} basename={getRouteWithPrefix('')}>
-      <I18nextProvider i18n={i18n}>
-        <CustomThemeProvider>
-          <LoginContextProvider>
-            <SettingsProvider>
-              <MuiPickersUtilsProvider locale={navigator.language ?? 'de'} utils={LuxonUtils}>
-                <SnackbarProvider
-                  maxSnack={3}
-                  anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
-                >
-                  <DialogService>{children}</DialogService>
-                </SnackbarProvider>
-              </MuiPickersUtilsProvider>
-            </SettingsProvider>
-          </LoginContextProvider>
-        </CustomThemeProvider>
-      </I18nextProvider>
-    </Router>
-  );
+    return (
+        <Router getUserConfirmation={handleUserConfirmation} basename={getRouteWithPrefix('')}>
+            <I18nextProvider i18n={i18n}>
+                <CustomThemeProvider>
+                    <LoginContextProvider>
+                        <SettingsProvider>
+                            <MuiPickersUtilsProvider
+                                locale={navigator.language ?? 'de'}
+                                utils={LuxonUtils}
+                            >
+                                <SnackbarProvider
+                                    maxSnack={3}
+                                    anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+                                >
+                                    <DialogService>{children}</DialogService>
+                                </SnackbarProvider>
+                            </MuiPickersUtilsProvider>
+                        </SettingsProvider>
+                    </LoginContextProvider>
+                </CustomThemeProvider>
+            </I18nextProvider>
+        </Router>
+    );
 }
 
 export function useChangeTheme(): ChangeThemeTypeFunction {
-  const changeTheme = useContext(ThemeTypeContext);
+    const changeTheme = useContext(ThemeTypeContext);
 
-  return changeTheme;
+    return changeTheme;
 }
 
 export default ContextWrapper;

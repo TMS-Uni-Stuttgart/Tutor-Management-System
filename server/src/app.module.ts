@@ -20,31 +20,31 @@ import { TutorialModule } from './module/tutorial/tutorial.module';
 import { UserModule } from './module/user/user.module';
 
 @Module({
-  imports: [
-    DatabaseModule.forRootAsync(),
-    ModelsModule.init(),
-    AuthModule,
-    TutorialModule,
-    UserModule,
-    StudentModule,
-    SheetModule,
-    ScheinexamModule,
-    ScheincriteriaModule,
-    TeamModule,
-    InformationModule,
-    PdfModule,
-    MarkdownModule,
-    MailModule,
-    ExcelModule,
-    SettingsModule,
-    LocalesModule,
-    ShortTestModule,
-  ],
-  controllers: [],
-  providers: [],
+    imports: [
+        DatabaseModule.forRootAsync(),
+        ModelsModule.init(),
+        AuthModule,
+        TutorialModule,
+        UserModule,
+        StudentModule,
+        SheetModule,
+        ScheinexamModule,
+        ScheincriteriaModule,
+        TeamModule,
+        InformationModule,
+        PdfModule,
+        MarkdownModule,
+        MailModule,
+        ExcelModule,
+        SettingsModule,
+        LocalesModule,
+        ShortTestModule,
+    ],
+    controllers: [],
+    providers: [],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(RequestLoggerMiddleware).forRoutes('/');
-  }
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(RequestLoggerMiddleware).forRoutes('/');
+    }
 }

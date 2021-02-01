@@ -4,17 +4,17 @@ import { Scheincriteria } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 
 export abstract class PossiblePercentageCriteria extends Scheincriteria {
-  @IsBoolean()
-  readonly percentage: boolean;
+    @IsBoolean()
+    readonly percentage: boolean;
 
-  @IsNonNegativeNumberValue({ isFloat: true })
-  @ScheincriteriaPossiblePercentage('percentage')
-  readonly valueNeeded: number;
+    @IsNonNegativeNumberValue({ isFloat: true })
+    @ScheincriteriaPossiblePercentage('percentage')
+    readonly valueNeeded: number;
 
-  constructor(identifier: string, percentage: boolean, valueNeeded: number) {
-    super(identifier);
+    constructor(identifier: string, percentage: boolean, valueNeeded: number) {
+        super(identifier);
 
-    this.percentage = percentage;
-    this.valueNeeded = valueNeeded;
-  }
+        this.percentage = percentage;
+        this.valueNeeded = valueNeeded;
+    }
 }

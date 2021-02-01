@@ -14,24 +14,24 @@ import { UserModel } from './user.model';
 @Global()
 @Module({})
 export class ModelsModule {
-  static init(): DynamicModule {
-    const moduleWithModels = TypegooseModule.forFeature([
-      AttendanceModel,
-      StudentModel,
-      TeamModel,
-      TutorialModel,
-      UserModel,
-      SheetModel,
-      ScheinexamModel,
-      ScheincriteriaModel,
-      SettingsModel,
-      ShortTestModel,
-    ]);
+    static init(): DynamicModule {
+        const moduleWithModels = TypegooseModule.forFeature([
+            AttendanceModel,
+            StudentModel,
+            TeamModel,
+            TutorialModel,
+            UserModel,
+            SheetModel,
+            ScheinexamModel,
+            ScheincriteriaModel,
+            SettingsModel,
+            ShortTestModel,
+        ]);
 
-    return {
-      module: ModelsModule,
-      imports: [moduleWithModels],
-      exports: [moduleWithModels],
-    };
-  }
+        return {
+            module: ModelsModule,
+            imports: [moduleWithModels],
+            exports: [moduleWithModels],
+        };
+    }
 }

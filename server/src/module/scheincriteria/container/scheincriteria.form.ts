@@ -5,11 +5,11 @@ import { Scheincriteria } from './Scheincriteria';
 export type ScheincriteriaClass = ClassConstructor<Scheincriteria>;
 
 export class ScheincriteriaForm {
-  readonly blueprint: ScheincriteriaClass;
-  readonly formDataSet: Map<string, FormFieldData>;
+    readonly blueprint: ScheincriteriaClass;
+    readonly formDataSet: Map<string, FormFieldData>;
 
-  constructor(blueprint: ScheincriteriaClass) {
-    this.blueprint = blueprint;
-    this.formDataSet = new Map();
-  }
+    constructor(blueprint: ScheincriteriaClass) {
+        this.blueprint = blueprint;
+        this.formDataSet = new Map();
+    }
 }

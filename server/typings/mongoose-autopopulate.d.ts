@@ -1,7 +1,7 @@
 declare module 'mongoose-autopopulate' {
-  import { Schema } from 'mongoose';
+    import { Schema } from 'mongoose';
 
-  function mongooseAutoPopulate(schema: Schema): void;
+    function mongooseAutoPopulate(schema: Schema): void;
 
-  export default mongooseAutoPopulate;
+    export default mongooseAutoPopulate;
 }

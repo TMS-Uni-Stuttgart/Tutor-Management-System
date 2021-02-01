@@ -19,42 +19,42 @@ import { ScheincriteriaService } from './scheincriteria.service';
 export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
 
 @Module({
-  imports: [StudentModule, SheetModule, ScheinexamModule, TutorialModule, ShortTestModule],
-  providers: [ScheincriteriaService],
-  controllers: [ScheincriteriaController],
-  exports: [ScheincriteriaService],
+    imports: [StudentModule, SheetModule, ScheinexamModule, TutorialModule, ShortTestModule],
+    providers: [ScheincriteriaService],
+    controllers: [ScheincriteriaController],
+    exports: [ScheincriteriaService],
 })
 export class ScheincriteriaModule implements OnModuleInit {
-  onModuleInit(): void {
-    const criterias: ScheincriteriaConstructor[] = [
-      AttendanceCriteria,
-      PresentationCriteria,
-      SheetIndividualCriteria,
-      SheetTotalCriteria,
-      ScheinexamCriteria,
-      ShortTestCriteria,
-    ];
+    onModuleInit(): void {
+        const criterias: ScheincriteriaConstructor[] = [
+            AttendanceCriteria,
+            PresentationCriteria,
+            SheetIndividualCriteria,
+            SheetTotalCriteria,
+            ScheinexamCriteria,
+            ShortTestCriteria,
+        ];
 
-    criterias.forEach((criteria) => this.registerCriteria(criteria));
-  }
+        criterias.forEach((criteria) => this.registerCriteria(criteria));
+    }
 
-  /**
-   * Registers the given criteria to the `ScheincriteriaContainer`.
-   *
-   * This way it can be accessed later as a blue print. The actual saved data in the criterias passed to this do _not_ matter. They only serve as 'blueprints'.
-   *
-   * @param criteria Criteria to register to the `ScheincriteriaContainer`.
-   */
-  private registerCriteria(criteriaClass: ScheincriteriaClass) {
-    const logContext = ScheincriteriaModule.name;
-    const container = ScheincriteriaContainer.getContainer();
-    const criteria = new criteriaClass();
-    const identifier = criteria.identifier;
+    /**
+     * Registers the given criteria to the `ScheincriteriaContainer`.
+     *
+     * This way it can be accessed later as a blue print. The actual saved data in the criterias passed to this do _not_ matter. They only serve as 'blueprints'.
+     *
+     * @param criteria Criteria to register to the `ScheincriteriaContainer`.
+     */
+    private registerCriteria(criteriaClass: ScheincriteriaClass) {
+        const logContext = ScheincriteriaModule.name;
+        const container = ScheincriteriaContainer.getContainer();
+        const criteria = new criteriaClass();
+        const identifier = criteria.identifier;
 
-    Logger.log(`Registering scheincriteria '${identifier}'...`, logContext);
+        Logger.log(`Registering scheincriteria '${identifier}'...`, logContext);
 
-    container.registerBluePrint(criteriaClass);
+        container.registerBluePrint(criteriaClass);
 
-    Logger.log(`Scheincriteria ${identifier} registered`, logContext);
-  }
+        Logger.log(`Scheincriteria ${identifier} registered`, logContext);
+    }
 }

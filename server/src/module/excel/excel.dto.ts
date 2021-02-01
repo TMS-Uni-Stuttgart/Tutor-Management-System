@@ -3,9 +3,9 @@ import { ParseConfig } from 'papaparse';
 import { IParseCsvDTO } from '../../shared/model/CSV';
 
 export class ParseCsvDTO implements IParseCsvDTO {
-  @IsString()
-  data!: string;
+    @IsString()
+    data!: string;
 
-  @IsOptional()
-  options?: ParseConfig<unknown>;
+    @IsOptional()
+    options?: ParseConfig<unknown>;
 }

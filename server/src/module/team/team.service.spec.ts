@@ -4,9 +4,9 @@ import { generateObjectId } from '../../../test/helpers/test.helpers';
 import { TestModule } from '../../../test/helpers/test.module';
 import { MockedModel } from '../../../test/helpers/testdocument';
 import {
-  STUDENT_DOCUMENTS,
-  TEAM_DOCUMENTS,
-  TUTORIAL_DOCUMENTS,
+    STUDENT_DOCUMENTS,
+    TEAM_DOCUMENTS,
+    TUTORIAL_DOCUMENTS,
 } from '../../../test/mocks/documents.mock';
 import { TeamModel } from '../../database/models/team.model';
 import { ITeam, ITeamId } from '../../shared/model/Team';
@@ -24,18 +24,18 @@ import { TeamDTO } from './team.dto';
 import { TeamService } from './team.service';
 
 interface AssertTeamParams {
-  expected: MockedModel<TeamModel>;
-  actual: ITeam;
+    expected: MockedModel<TeamModel>;
+    actual: ITeam;
 }
 
 interface AssertTeamListParams {
-  expected: MockedModel<TeamModel>[];
-  actual: ITeam[];
+    expected: MockedModel<TeamModel>[];
+    actual: ITeam[];
 }
 
 interface AssertTeamDTOParams {
-  expected: TeamDTO;
-  actual: ITeam;
+    expected: TeamDTO;
+    actual: ITeam;
 }
 
 /**
@@ -48,18 +48,18 @@ interface AssertTeamDTOParams {
  * @param params Must contain an actual and an expected Team.
  */
 function assertTeam({ expected, actual }: AssertTeamParams) {
-  const { _id, tutorial, students, teamNo } = expected;
-  const { id, tutorial: actualTutorial, students: actualStudents, teamNo: actualTeamNo } = actual;
+    const { _id, tutorial, students, teamNo } = expected;
+    const { id, tutorial: actualTutorial, students: actualStudents, teamNo: actualTeamNo } = actual;
 
-  expect(id).toEqual(_id);
-  expect(actualTutorial).toEqual(tutorial._id);
-  expect(actualTeamNo).toEqual(teamNo);
+    expect(id).toEqual(_id);
+    expect(actualTutorial).toEqual(tutorial._id);
+    expect(actualTeamNo).toEqual(teamNo);
 
-  expect(actualStudents.map((s) => s.id)).toEqual(students.map((s) => s._id));
+    expect(actualStudents.map((s) => s.id)).toEqual(students.map((s) => s._id));
 
-  actualStudents.forEach((student) => {
-    expect(student.team?.id).toEqual(_id);
-  });
+    actualStudents.forEach((student) => {
+        expect(student.team?.id).toEqual(_id);
+    });
 }
 
 /**
@@ -71,11 +71,11 @@ function assertTeam({ expected, actual }: AssertTeamParams) {
  * @param params Must contain a list of actual Teams and expected TeamDocuments.
  */
 function assertTeamList({ expected, actual }: AssertTeamListParams) {
-  expect(actual.length).toEqual(expected.length);
+    expect(actual.length).toEqual(expected.length);
 
-  for (let i = 0; i < actual.length; i++) {
-    assertTeam({ expected: expected[i], actual: actual[i] });
-  }
+    for (let i = 0; i < actual.length; i++) {
+        assertTeam({ expected: expected[i], actual: actual[i] });
+    }
 }
 
 /**
@@ -88,295 +88,301 @@ function assertTeamList({ expected, actual }: AssertTeamListParams) {
  * @param params Must contain an actual Team and the expected TeamDTO.
  */
 function assertTeamDTO({ expected, actual }: AssertTeamDTOParams) {
-  const { students } = expected;
-  const { id, students: actualStudents } = actual;
+    const { students } = expected;
+    const { id, students: actualStudents } = actual;
 
-  expect(id).toBeDefined();
-  expect(actualStudents.map((s) => s.id)).toEqual(students);
+    expect(id).toBeDefined();
+    expect(actualStudents.map((s) => s.id)).toEqual(students);
 
-  actualStudents.forEach((student) => {
-    expect(student.team?.id).toEqual(id);
-  });
+    actualStudents.forEach((student) => {
+        expect(student.team?.id).toEqual(id);
+    });
 }
 
 describe('TeamService', () => {
-  const TUTORIAL_OF_ALL_TEAMS = TUTORIAL_DOCUMENTS[0];
+    const TUTORIAL_OF_ALL_TEAMS = TUTORIAL_DOCUMENTS[0];
 
-  let testModule: TestingModule;
-  let service: TeamService;
+    let testModule: TestingModule;
+    let service: TeamService;
 
-  beforeAll(async () => {
-    testModule = await Test.createTestingModule({
-      imports: [TestModule.forRootAsync()],
-      providers: [
-        TeamService,
-        TutorialService,
-        StudentService,
-        UserService,
-        SheetService,
-        ScheinexamService,
-        ShortTestService,
-        GradingService,
-      ],
-    }).compile();
-  });
-
-  afterAll(async () => {
-    await testModule.close();
-  });
-
-  beforeEach(async () => {
-    await testModule.get<TestModule>(TestModule).reset();
-
-    service = testModule.get<TeamService>(TeamService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  it('find all teams in tutorial', async () => {
-    const teams = await service.findAllTeamsInTutorial(TUTORIAL_OF_ALL_TEAMS._id);
-
-    assertTeamList({ expected: TEAM_DOCUMENTS, actual: teams.map((team) => team.toDTO()) });
-  });
-
-  it('find specific team', async () => {
-    const expected = TEAM_DOCUMENTS[0];
-    const team = await service.findById({
-      tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
-      teamId: expected._id,
+    beforeAll(async () => {
+        testModule = await Test.createTestingModule({
+            imports: [TestModule.forRootAsync()],
+            providers: [
+                TeamService,
+                TutorialService,
+                StudentService,
+                UserService,
+                SheetService,
+                ScheinexamService,
+                ShortTestService,
+                GradingService,
+            ],
+        }).compile();
     });
 
-    assertTeam({ expected, actual: team.toDTO() });
-  });
+    afterAll(async () => {
+        await testModule.close();
+    });
 
-  it('fail on finding non-existing team', async () => {
-    const nonExisting = generateObjectId();
+    beforeEach(async () => {
+        await testModule.get<TestModule>(TestModule).reset();
 
-    await expect(
-      service.findById({ tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: nonExisting })
-    ).rejects.toThrow(NotFoundException);
-  });
+        service = testModule.get<TeamService>(TeamService);
+    });
 
-  it('create a new team without students', async () => {
-    const dto: TeamDTO = {
-      students: [],
-    };
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
 
-    const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
+    it('find all teams in tutorial', async () => {
+        const teams = await service.findAllTeamsInTutorial(TUTORIAL_OF_ALL_TEAMS._id);
 
-    assertTeamDTO({ expected: dto, actual: team });
-  });
+        assertTeamList({ expected: TEAM_DOCUMENTS, actual: teams.map((team) => team.toDTO()) });
+    });
 
-  it('create a new team with students', async () => {
-    const dto: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
-    };
+    it('find specific team', async () => {
+        const expected = TEAM_DOCUMENTS[0];
+        const team = await service.findById({
+            tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+            teamId: expected._id,
+        });
 
-    const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
+        assertTeam({ expected, actual: team.toDTO() });
+    });
 
-    assertTeamDTO({ expected: dto, actual: team });
-  });
+    it('fail on finding non-existing team', async () => {
+        const nonExisting = generateObjectId();
 
-  it('fail on creating team inside non-exisiting tutorial', async () => {
-    const nonExisting = generateObjectId();
-    const dto: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
-    };
+        await expect(
+            service.findById({ tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: nonExisting })
+        ).rejects.toThrow(NotFoundException);
+    });
 
-    await expect(service.createTeamInTutorial(nonExisting, dto)).rejects.toThrow(NotFoundException);
-  });
+    it('create a new team without students', async () => {
+        const dto: TeamDTO = {
+            students: [],
+        };
 
-  it('fail on creating team with non-existing student', async () => {
-    const nonExisting = generateObjectId();
-    const dto: TeamDTO = {
-      students: [nonExisting, STUDENT_DOCUMENTS[0]._id],
-    };
+        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
 
-    await expect(service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto)).rejects.toThrow(
-      NotFoundException
-    );
-  });
+        assertTeamDTO({ expected: dto, actual: team });
+    });
 
-  it('fail on creating team with students which are in different tutorials', async () => {
-    const dto: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[3]._id],
-    };
+    it('create a new team with students', async () => {
+        const dto: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+        };
 
-    await expect(service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto)).rejects.toThrow(
-      BadRequestException
-    );
-  });
+        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
 
-  it('update a team', async () => {
-    const updateDTO: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
-    };
-    const createDTO: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
-    };
+        assertTeamDTO({ expected: dto, actual: team });
+    });
 
-    const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
-    const updated = await service.updateTeamInTutorial(
-      { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: oldTeam.id },
-      updateDTO
-    );
+    it('fail on creating team inside non-exisiting tutorial', async () => {
+        const nonExisting = generateObjectId();
+        const dto: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+        };
 
-    assertTeamDTO({ expected: updateDTO, actual: updated });
-  });
+        await expect(service.createTeamInTutorial(nonExisting, dto)).rejects.toThrow(
+            NotFoundException
+        );
+    });
 
-  it('fail on updating a team inside a non-existing tutorial', async () => {
-    const updateDTO: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
-    };
-    const createDTO: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
-    };
-    const nonExisting = generateObjectId();
+    it('fail on creating team with non-existing student', async () => {
+        const nonExisting = generateObjectId();
+        const dto: TeamDTO = {
+            students: [nonExisting, STUDENT_DOCUMENTS[0]._id],
+        };
 
-    const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
+        await expect(service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto)).rejects.toThrow(
+            NotFoundException
+        );
+    });
 
-    await expect(
-      service.updateTeamInTutorial({ tutorialId: nonExisting, teamId: oldTeam.id }, updateDTO)
-    ).rejects.toThrow(NotFoundException);
-  });
+    it('fail on creating team with students which are in different tutorials', async () => {
+        const dto: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[3]._id],
+        };
 
-  it('fail on updating a team with non-existing student', async () => {
-    const nonExisting = generateObjectId();
-    const updateDTO: TeamDTO = {
-      students: [nonExisting, STUDENT_DOCUMENTS[1]._id],
-    };
-    const createDTO: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
-    };
+        await expect(service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto)).rejects.toThrow(
+            BadRequestException
+        );
+    });
 
-    const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
+    it('update a team', async () => {
+        const updateDTO: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+        };
+        const createDTO: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+        };
 
-    await expect(
-      service.updateTeamInTutorial(
-        { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: oldTeam.id },
-        updateDTO
-      )
-    ).rejects.toThrow(NotFoundException);
-  });
+        const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
+        const updated = await service.updateTeamInTutorial(
+            { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: oldTeam.id },
+            updateDTO
+        );
 
-  it('fail on updating a team with students in different tutorials', async () => {
-    const updateDTO: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[3]._id],
-    };
-    const createDTO: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
-    };
+        assertTeamDTO({ expected: updateDTO, actual: updated });
+    });
 
-    const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
-    await expect(
-      service.updateTeamInTutorial(
-        { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id },
-        updateDTO
-      )
-    ).rejects.toThrow(BadRequestException);
-  });
+    it('fail on updating a team inside a non-existing tutorial', async () => {
+        const updateDTO: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+        };
+        const createDTO: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+        };
+        const nonExisting = generateObjectId();
 
-  it('delete a team', async () => {
-    const dto: TeamDTO = {
-      students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
-    };
+        const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
 
-    const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
-    const teamId: ITeamId = { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id };
-    const deletedTeam = await service.deleteTeamFromTutorial(teamId);
+        await expect(
+            service.updateTeamInTutorial({ tutorialId: nonExisting, teamId: oldTeam.id }, updateDTO)
+        ).rejects.toThrow(NotFoundException);
+    });
 
-    expect(deletedTeam.id).toEqual(team.id);
-    await expect(service.findById(teamId)).rejects.toThrow(NotFoundException);
-  });
+    it('fail on updating a team with non-existing student', async () => {
+        const nonExisting = generateObjectId();
+        const updateDTO: TeamDTO = {
+            students: [nonExisting, STUDENT_DOCUMENTS[1]._id],
+        };
+        const createDTO: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+        };
 
-  it('fail on deleting a non-existing team', async () => {
-    const nonExisting = generateObjectId();
-    await expect(
-      service.deleteTeamFromTutorial({
-        tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
-        teamId: nonExisting,
-      })
-    ).rejects.toThrow(NotFoundException);
-  });
+        const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
 
-  it('fail on deleting a team inside non-existing tutorial', async () => {
-    const nonExisting = generateObjectId();
-    await expect(
-      service.deleteTeamFromTutorial({ tutorialId: nonExisting, teamId: TEAM_DOCUMENTS[0]._id })
-    ).rejects.toThrow(NotFoundException);
-  });
+        await expect(
+            service.updateTeamInTutorial(
+                { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: oldTeam.id },
+                updateDTO
+            )
+        ).rejects.toThrow(NotFoundException);
+    });
 
-  it('set grading of a complete team (without students have a grading)', async () => {
-    const sheetService = testModule.get<SheetService>(SheetService);
-    const team = TEAM_DOCUMENTS[0];
-    const teamId = { tutorialId: team.tutorial._id, teamId: team._id };
-    const sheetDTO: SheetDTO = {
-      sheetNo: 42,
-      bonusSheet: false,
-      exercises: [
-        {
-          exName: '1',
-          maxPoints: 10,
-          bonus: false,
-        },
-        {
-          exName: '2',
-          bonus: false,
-          maxPoints: 0,
-          subexercises: [
-            {
-              exName: '(a)',
-              maxPoints: 5,
-              bonus: false,
-            },
-            {
-              exName: '(b)',
-              maxPoints: 7,
-              bonus: false,
-            },
-          ],
-        },
-      ],
-    };
+    it('fail on updating a team with students in different tutorials', async () => {
+        const updateDTO: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[3]._id],
+        };
+        const createDTO: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+        };
 
-    const sheet = await sheetService.create(sheetDTO);
-    const gradingDTO: GradingDTO = {
-      sheetId: sheet.id,
-      createNewGrading: true,
-      exerciseGradings: [
-        [
-          sheet.exercises[0].id,
-          { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
-        ],
-        [
-          sheet.exercises[1].id,
-          {
-            comment: 'Comment for exercise 2',
-            additionalPoints: 0,
-            subExercisePoints: [
-              [sheet.exercises[1].subexercises[0].id, 4],
-              [sheet.exercises[1].subexercises[1].id, 5],
+        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
+        await expect(
+            service.updateTeamInTutorial(
+                { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id },
+                updateDTO
+            )
+        ).rejects.toThrow(BadRequestException);
+    });
+
+    it('delete a team', async () => {
+        const dto: TeamDTO = {
+            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+        };
+
+        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
+        const teamId: ITeamId = { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id };
+        const deletedTeam = await service.deleteTeamFromTutorial(teamId);
+
+        expect(deletedTeam.id).toEqual(team.id);
+        await expect(service.findById(teamId)).rejects.toThrow(NotFoundException);
+    });
+
+    it('fail on deleting a non-existing team', async () => {
+        const nonExisting = generateObjectId();
+        await expect(
+            service.deleteTeamFromTutorial({
+                tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+                teamId: nonExisting,
+            })
+        ).rejects.toThrow(NotFoundException);
+    });
+
+    it('fail on deleting a team inside non-existing tutorial', async () => {
+        const nonExisting = generateObjectId();
+        await expect(
+            service.deleteTeamFromTutorial({
+                tutorialId: nonExisting,
+                teamId: TEAM_DOCUMENTS[0]._id,
+            })
+        ).rejects.toThrow(NotFoundException);
+    });
+
+    it('set grading of a complete team (without students have a grading)', async () => {
+        const sheetService = testModule.get<SheetService>(SheetService);
+        const team = TEAM_DOCUMENTS[0];
+        const teamId = { tutorialId: team.tutorial._id, teamId: team._id };
+        const sheetDTO: SheetDTO = {
+            sheetNo: 42,
+            bonusSheet: false,
+            exercises: [
+                {
+                    exName: '1',
+                    maxPoints: 10,
+                    bonus: false,
+                },
+                {
+                    exName: '2',
+                    bonus: false,
+                    maxPoints: 0,
+                    subexercises: [
+                        {
+                            exName: '(a)',
+                            maxPoints: 5,
+                            bonus: false,
+                        },
+                        {
+                            exName: '(b)',
+                            maxPoints: 7,
+                            bonus: false,
+                        },
+                    ],
+                },
             ],
-          },
-        ],
-      ],
-      additionalPoints: 0,
-      comment: 'This is a comment for the grading',
-    };
+        };
 
-    await service.setGrading(teamId, gradingDTO);
-    const updatedTeam = await service.findById(teamId);
+        const sheet = await sheetService.create(sheetDTO);
+        const gradingDTO: GradingDTO = {
+            sheetId: sheet.id,
+            createNewGrading: true,
+            exerciseGradings: [
+                [
+                    sheet.exercises[0].id,
+                    { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
+                ],
+                [
+                    sheet.exercises[1].id,
+                    {
+                        comment: 'Comment for exercise 2',
+                        additionalPoints: 0,
+                        subExercisePoints: [
+                            [sheet.exercises[1].subexercises[0].id, 4],
+                            [sheet.exercises[1].subexercises[1].id, 5],
+                        ],
+                    },
+                ],
+            ],
+            additionalPoints: 0,
+            comment: 'This is a comment for the grading',
+        };
 
-    for (const student of updatedTeam.students) {
-      const [, actualGrading] = student.toDTO().gradings.find(([key]) => key === sheet.id) ?? [];
+        await service.setGrading(teamId, gradingDTO);
+        const updatedTeam = await service.findById(teamId);
 
-      assertGrading({ expected: gradingDTO, actual: actualGrading });
-    }
-  });
+        for (const student of updatedTeam.students) {
+            const [, actualGrading] =
+                student.toDTO().gradings.find(([key]) => key === sheet.id) ?? [];
 
-  it.todo('set grading of a complete team (with ONE student have a grading)');
+            assertGrading({ expected: gradingDTO, actual: actualGrading });
+        }
+    });
 
-  it.todo('set grading of a complete team (with ALL student have a grading)');
+    it.todo('set grading of a complete team (with ONE student have a grading)');
+
+    it.todo('set grading of a complete team (with ALL student have a grading)');
 });

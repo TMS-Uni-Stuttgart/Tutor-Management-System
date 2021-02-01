@@ -4,9 +4,9 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [forwardRef(() => TutorialModule)],
-  controllers: [UserController],
-  providers: [UserService],
-  exports: [UserService],
+    imports: [forwardRef(() => TutorialModule)],
+    controllers: [UserController],
+    providers: [UserService],
+    exports: [UserService],
 })
 export class UserModule {}
