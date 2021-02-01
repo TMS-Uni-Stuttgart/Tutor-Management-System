@@ -16,9 +16,13 @@ In addition you need to change a few things regarding the used actions inside th
 
 To get started you need a few development tools. The following are required to run and test your changes locally:
 
-1. [NodeJS 12.x.x](https://nodejs.org)
-   **Note:** NodeJS 10.x.x might work aswell but 12.x.x is the officially supported version.
-2. Package manager [yarn](https://yarnpkg.com)
+1. [NodeJS 14.x.x](https://nodejs.org)
+   **Note:** You must use NodeJS 14.x.x or higher.
+2. Package manager [pnpm](https://pnpm.js.org/en/)
+   If you have not already you can install `pnpm` with
+   ```cmd
+   npm install -g pnpm
+   ```
 
 While [Docker](https://docs.docker.com/install/) is not needed it helps you to set up your environment more easily. It's mostly used to spin up a Mongo database on your system in closely to no time. If you don't use Docker you need to provide an alternative MongoDB database (_Note: Technically any `mongoose` compatible database should work aswell._) and to change the configuration in `server/config/development.yml`.
 
@@ -30,10 +34,10 @@ Make sure that you do **NOT** commit & push any sensitive information (ie authen
 
 After pulling your fork and creating a new branch for your issue you have to setup the development environment first.
 
-1. **Navigate** into the repository folder install all needed npm packages by running the following command (_Please note that this might take some time for the first time installing._):
+1. **Navigate** into the repository folder and install all needed npm packages by running the following command (_Please note that this might take some time for the first time installing._):
 
    ```sh
-   yarn
+   pnpm install
    ```
 
 1. **Download** the [`docker-compose.yml` file](../assets/dev/docker-compose.yml) for the development. It contains two services: `mongo` and `mongo-express`.
@@ -76,7 +80,7 @@ Please note: Sometimes starting the server initially takes longer than 10s resul
 
 ### Command line
 
-Both servers can be run manually from the command line using the `yarn start` command in the respective folder (`client/` or `server/`) or using the command `yarn start:server` and `yarn start:client` in the root folder.
+Both servers can be run manually from the command line using the `pnpm start` command in the respective folder (`client/` or `server/`) or using the command `pnpm start:server` and `pnpm start:client` in the root folder.
 
 ## Editor
 
@@ -92,7 +96,7 @@ Below you find two of all possible choices:
 
 ## Docker Image
 
-To build a Docker image one can execute the `./build-docker-image.ts` file. This can also be achieved by executing on of the following yarn commands: `docker:build` and `docker:build:pre`. For more information see the section below.
+To build a Docker image one can execute the `./build-docker-image.ts` file. This can also be achieved by executing one of the following npm scripts: `docker:build` and `docker:build:pre`. For more information see the section below.
 
 ### Script parameters
 
@@ -105,14 +109,26 @@ The `build-docker-image.ts` script takes in the following parameters but all are
 | `--skip-bundle`            | -     | The image will not get bundled into `.tar` file.                                                                            |
 | `--version=`               | `-v=` | Overrides the version used for the image tag. Must be followed by the semantic version which should be used (ie `-v=2.0.1`) |
 
-### Yarn commands
+### Npm scripts
 
 #### `docker:build`
 
-This will run two commands in succession: First `yarn version` which lets one update the version of the TMS. Afterwards the `build-docker-image.ts` script gets executed without any additional parameters. One can specify all of the parameters above for this yarn command aswell.
+This will run the `build-docker-image.ts` script.
+One can specify all of the parameters above for this script aswell.
+If you run `pnpm run docker:build` you can pass in the parameters after a `--`:
+
+```cmd
+pnpm run docker:build -- <additional params>
+```
+
+:::info PowerShell on Windows
+The PowerShell on Windows treats the `--` in a special manner: It simply removes it from the command.
+You have to wrap it in `""` (like `"--"`) to use it inside the PowerShell.
+:::
 
 #### `docker:build:pre`
 
-This will run two commands in succession: First `yarn version` which lets one update the version of the TMS. Afterwards the `build-docker-image.ts` script gets executed with the `--pre` and `--skip-bundle` parameters provided (see above). Additional parameters can be provided aswell.
+Executes the `build-docker-image.ts` script with the two parameters `--pre` and `--skip-bundle` passed.
+Additional parameters can be provided aswell (see above).
 
 [fork-doc]: ./fork
