@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { isDocument } from '@typegoose/typegoose';
 import { ClassConstructor, plainToClass, Transform, Type } from 'class-transformer';
 import { Types } from 'mongoose';
@@ -19,6 +19,11 @@ export class SerializableMap<K extends string, V> extends Map<K, V> {
     const data: unknown = typeof json === 'string' ? JSON.parse(json) : json;
 
     if (!Array.isArray(data) && !(data instanceof Map)) {
+      Logger.error(
+        'Given data is not an array and therefore not serializable to a SerializableMap. An empty Map is returned instead.',
+        undefined,
+        'SerializableMap'
+      );
       return new SerializableMap();
     }
 
@@ -46,7 +51,7 @@ export class ExerciseGrading {
   comment?: string;
   additionalPoints?: number;
 
-  @Transform((value) => SerializableMap.fromJSON(value))
+  @Transform(({ value }) => SerializableMap.fromJSON(value))
   subExercisePoints?: SerializableMap<string, number>;
 
   private _points: number;
@@ -137,7 +142,7 @@ export class ExerciseGrading {
 export class Grading {
   id: string;
 
-  @Transform((value) => SerializableMap.fromJSON(value, ExerciseGrading))
+  @Transform(({ value }) => SerializableMap.fromJSON(value, ExerciseGrading))
   exerciseGradings: SerializableMap<string, ExerciseGrading>;
 
   comment?: string;
