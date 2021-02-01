@@ -100,14 +100,14 @@ To build a Docker image one can execute the `./build-docker-image.ts` file. This
 
 ### Script parameters
 
-The `build-docker-image.ts` script takes in the following parameters but all are _optional_. If the parameter itself needs a value the value has to be put after a `=` (ie `--version=2.0.0`). The image will be tagged with "dudrie/tutor-management-system" as a name followed by the version from the root `package.json` by default. Afterwards the image will get bundled into a `.tar` file by default.
+The `build-docker-image.ts` script takes in the following parameters but all are _optional_. If the parameter itself needs a value the value has to be put after a `=` (ie `--version=2.0.0`). The image will be tagged with "ghcr.io/dudrie/tutor-management-system" as a name followed by the version from the root `package.json` by default.
 
 | Parameter                  | Short | Description                                                                                                                 |
 | -------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------------- |
-| `--no-version-in-tar-name` | -     | The generated `.tar` file will **not** contain the version of the image tag.                                                |
-| `--pre`                    | -     | If provided the image tag will get a `-pre` suffix after the version ("dudrie/tutor-management-system:2.0.1-pre")           |
-| `--skip-bundle`            | -     | The image will not get bundled into `.tar` file.                                                                            |
 | `--version=`               | `-v=` | Overrides the version used for the image tag. Must be followed by the semantic version which should be used (ie `-v=2.0.1`) |
+| `--pre`                    | -     | If provided the image tag will get a `-pre` suffix after the version ("ghcr.io/dudrie/tutor-management-system:2.0.1-pre")   |
+| `--bundle`                 | -     | The image will get bundled into a `.tar` file.                                                                              |
+| `--no-version-in-tar-name` | -     | The generated `.tar` file will **not** contain the version of the image tag.                                                |
 
 ### Npm scripts
 
@@ -128,7 +128,12 @@ You have to wrap it in `""` (like `"--"`) to use it inside the PowerShell.
 
 #### `docker:build:pre`
 
-Executes the `build-docker-image.ts` script with the two parameters `--pre` and `--skip-bundle` passed.
+Executes the `build-docker-image.ts` script with the `--pre` parameter.
+Additional parameters can be provided aswell (see above).
+
+#### `docker:build:tar`
+
+Executes the `build-docker-image.ts` script with the `--bundle` parameter.
 Additional parameters can be provided aswell (see above).
 
 [fork-doc]: ./fork

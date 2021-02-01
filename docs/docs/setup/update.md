@@ -20,7 +20,7 @@ To update an existing version of the TMS on your docker just follow the steps be
 
 1. **Update** the version of your image. This step depends on wether a version tag is used or not:
 
-    1.1 If a version tag is used: Update the version tag of the `dudrie/tutor-management-system` image in the `docker-compose.yml` file.
+    1.1 If a version tag is used: Update the version tag of the `ghcr.io/dudrie/tutor-management-system` image in the `docker-compose.yml` file.
 
     1.2 If **no** version tag is used: Run the following command to update your local image to the `latest` version:
 
