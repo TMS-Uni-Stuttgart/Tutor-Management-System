@@ -13,8 +13,8 @@ export class Scheinexam extends HasExercises implements Modify<IScheinExam, Modi
     readonly scheinExamNo!: number;
     readonly percentageNeeded!: number;
 
-  @Transform(({ value }) => DateTime.fromISO(value))
-  readonly date!: DateTime;
+    @Transform(({ value }) => DateTime.fromISO(value))
+    readonly date!: DateTime;
 
     toDisplayString(): string {
         return `Scheinklausur #${this.scheinExamNo} (${this.date.toLocaleString(

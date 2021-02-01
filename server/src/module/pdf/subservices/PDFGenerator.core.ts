@@ -6,73 +6,73 @@ import puppeteer from 'puppeteer';
  * @param T Type of the options passed to `generatePDF`.
  */
 export abstract class PDFGenerator<T = Record<string, unknown>> {
-  private readonly logger = new Logger(PDFGenerator.name);
-  /**
-   * Generates a PDF from the given options.
-   *
-   * @param options Options from which the PDF gets generated.
-   *
-   * @returns Generated PDF as Buffer.
-   */
-  public abstract generatePDF(options: T): Promise<Buffer>;
+    private readonly logger = new Logger(PDFGenerator.name);
+    /**
+     * Generates a PDF from the given options.
+     *
+     * @param options Options from which the PDF gets generated.
+     *
+     * @returns Generated PDF as Buffer.
+     */
+    public abstract generatePDF(options: T): Promise<Buffer>;
 
-  /**
-   * Generates a PDF from the given body. The body gets put in a HTML wrapper first.
-   *
-   * @param body Body content to be put in the PDF as HTML body.
-   *
-   * @returns Buffer containing the generated PDF.
-   */
-  protected async generatePDFFromBodyContent(body: string): Promise<Buffer> {
-    const html = await this.putBodyInHTML(body);
-    let browser: puppeteer.Browser | undefined;
+    /**
+     * Generates a PDF from the given body. The body gets put in a HTML wrapper first.
+     *
+     * @param body Body content to be put in the PDF as HTML body.
+     *
+     * @returns Buffer containing the generated PDF.
+     */
+    protected async generatePDFFromBodyContent(body: string): Promise<Buffer> {
+        const html = await this.putBodyInHTML(body);
+        let browser: puppeteer.Browser | undefined;
 
-    this.logger.debug('Starting browser...');
-    this.logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);
+        this.logger.debug('Starting browser...');
+        this.logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);
 
-    try {
-      browser = await puppeteer.launch({
-        args: ['--disable-dev-shm-usage'],
-        executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
-      });
+        try {
+            browser = await puppeteer.launch({
+                args: ['--disable-dev-shm-usage'],
+                executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
+            });
 
-      this.logger.debug('Browser started.');
+            this.logger.debug('Browser started.');
 
-      const page = await browser.newPage();
-      this.logger.debug('Page created.');
+            const page = await browser.newPage();
+            this.logger.debug('Page created.');
 
-      await page.setContent(html, { waitUntil: 'domcontentloaded' });
-      this.logger.debug('Page content loaded');
+            await page.setContent(html, { waitUntil: 'domcontentloaded' });
+            this.logger.debug('Page content loaded');
 
-      const buffer = await page.pdf({
-        format: 'A4',
-        margin: {
-          top: '1cm',
-          right: '1cm',
-          bottom: '1cm',
-          left: '1cm',
-        },
-        // Fixes CSS 'background' not being respected in printed PDFs.
-        printBackground: true,
-      });
+            const buffer = await page.pdf({
+                format: 'A4',
+                margin: {
+                    top: '1cm',
+                    right: '1cm',
+                    bottom: '1cm',
+                    left: '1cm',
+                },
+                // Fixes CSS 'background' not being respected in printed PDFs.
+                printBackground: true,
+            });
 
-      this.logger.debug('PDF created.');
+            this.logger.debug('PDF created.');
 
-      await browser.close();
+            await browser.close();
 
-      this.logger.debug('Browser closed');
+            this.logger.debug('Browser closed');
 
-      return buffer;
-    } catch (err) {
-      if (browser) {
-        browser.close();
-      }
+            return buffer;
+        } catch (err) {
+            if (browser) {
+                browser.close();
+            }
 
-      Logger.error(JSON.stringify(err, null, 2));
+            Logger.error(JSON.stringify(err, null, 2));
 
-      throw err;
+            throw err;
+        }
     }
-}
 
     /**
      * Puts the given body in corresponding a `<body>` element. The returned string is a complete HTML "file" with slightly customized GitHub Markdown CSS.

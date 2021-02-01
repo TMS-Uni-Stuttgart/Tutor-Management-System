@@ -14,10 +14,10 @@ import {
 import { ScheincriteriaNumber } from '../scheincriteria.decorators';
 
 export class PresentationCriteria extends Scheincriteria {
-  @IsNonNegativeNumberValue()
-  @Transform(({ value }) => Number.parseInt(value))
-  @ScheincriteriaNumber({ min: 0 })
-  readonly presentationsNeeded: number;
+    @IsNonNegativeNumberValue()
+    @Transform(({ value }) => Number.parseInt(value))
+    @ScheincriteriaNumber({ min: 0 })
+    readonly presentationsNeeded: number;
 
     constructor(presentationsNeeded: number) {
         super(ScheincriteriaIdentifier.PRESENTATION);

@@ -8,15 +8,15 @@ import { registerDecorator, validate, ValidationOptions } from 'class-validator'
  * @param validationOptions Options passed to the class-validator.
  */
 export function IsMapEntry(
-  classType: ClassConstructor<any>,
-  validationOptions?: ValidationOptions
+    classType: ClassConstructor<any>,
+    validationOptions?: ValidationOptions
 ) {
-  return function (object: Record<string, any>, propertyName: string): void {
-    const message: any = {
-      message: validationOptions?.each
-        ? `each element in ${propertyName} must be a 2-tupel in the form [string, ${classType.name}]`
-        : `${propertyName} must be an array in the form [string, ${classType.name}]`,
-    };
+    return function (object: Record<string, any>, propertyName: string): void {
+        const message: any = {
+            message: validationOptions?.each
+                ? `each element in ${propertyName} must be a 2-tupel in the form [string, ${classType.name}]`
+                : `${propertyName} must be an array in the form [string, ${classType.name}]`,
+        };
 
         registerDecorator({
             name: 'isMapEntry',

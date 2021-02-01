@@ -12,20 +12,20 @@ export class SerializableMap<K extends string, V> extends Map<K, V> {
         return JSON.stringify([...this]);
     }
 
-  static fromJSON<K extends string, V>(
-    json: unknown,
-    type?: ClassConstructor<V>
-  ): SerializableMap<K, V> {
-    const data: unknown = typeof json === 'string' ? JSON.parse(json) : json;
+    static fromJSON<K extends string, V>(
+        json: unknown,
+        type?: ClassConstructor<V>
+    ): SerializableMap<K, V> {
+        const data: unknown = typeof json === 'string' ? JSON.parse(json) : json;
 
-    if (!Array.isArray(data) && !(data instanceof Map)) {
-      Logger.error(
-        'Given data is not an array and therefore not serializable to a SerializableMap. An empty Map is returned instead.',
-        undefined,
-        'SerializableMap'
-      );
-      return new SerializableMap();
-    }
+        if (!Array.isArray(data) && !(data instanceof Map)) {
+            Logger.error(
+                'Given data is not an array and therefore not serializable to a SerializableMap. An empty Map is returned instead.',
+                undefined,
+                'SerializableMap'
+            );
+            return new SerializableMap();
+        }
 
         const map = new SerializableMap<K, V>(data);
 
@@ -51,8 +51,8 @@ export class ExerciseGrading {
     comment?: string;
     additionalPoints?: number;
 
-  @Transform(({ value }) => SerializableMap.fromJSON(value))
-  subExercisePoints?: SerializableMap<string, number>;
+    @Transform(({ value }) => SerializableMap.fromJSON(value))
+    subExercisePoints?: SerializableMap<string, number>;
 
     private _points: number;
 
