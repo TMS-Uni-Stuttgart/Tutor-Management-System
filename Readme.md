@@ -31,6 +31,7 @@ Here are the most important libraries listed which are used in any part of the p
 
 The following tools are used in the maintaining & deploying processes.
 
+-   [pnpm](https://pnpm.js.org/en/) - Used package manager.
 -   [ESLint](https://eslint.org/) - Used to ensure code quality.
 -   [Prettier](https://prettier.io/) - Used to ensure a unified code style.
 -   [GitHub Actions](https://github.com/features/actions) - Used for CI.
