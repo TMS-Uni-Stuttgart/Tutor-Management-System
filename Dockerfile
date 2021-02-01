@@ -43,7 +43,7 @@ RUN apk add --no-cache \
     nodejs-current \
     npm
 
-RUN npm -g pnpm
+RUN npm install -g pnpm
 
 COPY --from=build tms/server/dist tms/server
 
