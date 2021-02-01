@@ -74,7 +74,7 @@ USER pptruser
 WORKDIR /tms
 ENV NODE_ENV 'production'
 
-RUN pnpm install --prod
+RUN pnpm install --frozen-lockfile
 
 # Set up container entrypoint to be the server file.
 EXPOSE 8080
