@@ -40,7 +40,8 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont \
     terminus-font \
-    nodejs-current 
+    nodejs-current \
+    npm
 
 RUN npm -g pnpm
 
