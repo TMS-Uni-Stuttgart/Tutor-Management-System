@@ -6,6 +6,7 @@ module.exports = {
     favicon: 'img/favicon.ico',
     organizationName: 'dudrie',
     projectName: 'Tutor-Management-System',
+    plugins: ['docusaurus-plugin-sass'],
     themeConfig: {
         colorMode: {
             // Should we use the prefers-color-scheme media-query,
@@ -58,7 +59,7 @@ module.exports = {
                     editUrl: 'https://github.com/Dudrie/Tutor-Management-System/edit/main/docs',
                 },
                 theme: {
-                    customCss: require.resolve('./src/css/custom.css'),
+                    customCss: require.resolve('./src/css/custom.scss'),
                 },
             },
         ],
