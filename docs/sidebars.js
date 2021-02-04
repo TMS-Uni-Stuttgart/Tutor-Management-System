@@ -51,5 +51,5 @@ module.exports = {
             ]),
         },
     ],
-    dev: ['dev/setup-env', 'dev/fork'],
+    dev: ['dev/setup-env', 'dev/fork', 'dev/server-doc'],
 };
