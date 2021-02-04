@@ -1,18 +1,18 @@
 ---
 id: server-doc
-title: Server Documentation
-sidebar_label: Server Documentation
+title: Server API Documentation
+sidebar_label: Server API
 ---
 
 ## Access Documentation
 
-You can find the documentation [here](pathname:///server-doc) (opens in an external tab / window).
+You can find the documentation of the server API [here](pathname:///server-doc) (opens in an external tab / window).
 
 ## Information about the Documentation
 
 <!-- Please note that the "pathname://" syntax/protocol is an escape hatch solution provided by docusaurus because the do not have an other solution at the moment (https://github.com/facebook/docusaurus/issues/3894#issuecomment-740622170) -->
 
-This documentation comes with a seperat and auto-generated documentation for the server.
+This documentation comes with a seperat and auto-generated documentation for the server API.
 It uses [compodoc](https://compodoc.app/) to generate the documentation based on the modules, controllers, services, classes, ... present in the server.
 The generator creates corresponding diagrams and uses the JSDoc (if present).
 
@@ -22,7 +22,7 @@ Please note that compodoc only support a few JSDoc tags. You can find a complete
 
 ## Generate Documentation
 
-The documentation for the server is automatically generated upon running the build command for this documentation.
+The documentation for the server API is automatically generated upon running the build command for this documentation.
 
 ```cmd
 pnpm build
