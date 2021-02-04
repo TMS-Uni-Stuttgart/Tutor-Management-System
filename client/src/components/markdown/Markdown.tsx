@@ -67,7 +67,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
         [htmlFromProps, logger]
     );
 
-    const { value: html, execute, isLoading } = useFetchState({
+    const [html, isLoading, , execute] = useFetchState({
         fetchFunction,
         immediate: false,
     });

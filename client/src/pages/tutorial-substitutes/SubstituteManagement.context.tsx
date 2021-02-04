@@ -4,7 +4,7 @@ import React, { PropsWithChildren, useCallback, useContext, useEffect, useState 
 import { NamedElement } from 'shared/model/Common';
 import { getTutorial } from '../../hooks/fetching/Tutorial';
 import { getUserNames } from '../../hooks/fetching/User';
-import { UseFetchState, useFetchState } from '../../hooks/useFetchState';
+import { BaseArrayType, FetchFunction, useFetchState } from '../../hooks/useFetchState';
 import { Tutorial } from '../../model/Tutorial';
 import { throwContextNotInitialized } from '../../util/throwFunctions';
 
@@ -12,9 +12,16 @@ interface Props {
     tutorialId: string;
 }
 
+interface ResponseState<T, P extends BaseArrayType> {
+    value?: T;
+    isLoading: boolean;
+    error?: string;
+    execute: FetchFunction<P>;
+}
+
 export interface SubstituteManagementContextType {
-    tutorial: UseFetchState<Tutorial, [string]>;
-    tutors: UseFetchState<NamedElement[], []>;
+    tutorial: ResponseState<Tutorial, [string]>;
+    tutors: ResponseState<NamedElement[], []>;
     selectedDate?: DateTime;
     setSelectedDate: (date: DateTime) => void;
     isSubstituteChanged: (date: DateTime) => boolean;
@@ -26,7 +33,7 @@ export interface SubstituteManagementContextType {
     resetDirty: () => void;
 }
 
-const ERR_NOT_INITIALIZED: UseFetchState<never, []> = {
+const ERR_NOT_INITIALIZED: ResponseState<never, []> = {
     error: 'Context not initialized',
     isLoading: false,
     execute: throwContextNotInitialized('SubstituteManagementContext'),
@@ -51,20 +58,30 @@ export function useSubstituteManagementContext(): SubstituteManagementContextTyp
     return { ...value };
 }
 
-function SubstituteManagementContextProvider({
-    children,
-    tutorialId,
-}: PropsWithChildren<Props>): JSX.Element {
-    const tutorial = useFetchState({
+function useTutorial(tutorialId: string): ResponseState<Tutorial, [string]> {
+    const [value, isLoading, error, execute] = useFetchState({
         fetchFunction: getTutorial,
         immediate: true,
         params: [tutorialId],
     });
-    const tutors = useFetchState({
+    return { value, isLoading, error, execute };
+}
+
+function useTutors(): ResponseState<NamedElement[], []> {
+    const [value, isLoading, error, execute] = useFetchState({
         fetchFunction: getUserNames,
         immediate: true,
         params: [],
     });
+    return { value, isLoading, error, execute };
+}
+
+function SubstituteManagementContextProvider({
+    children,
+    tutorialId,
+}: PropsWithChildren<Props>): JSX.Element {
+    const tutorial = useTutorial(tutorialId);
+    const tutors = useTutors();
 
     const [selectedDate, setSelectedDate] = useState<DateTime>();
     const [selectedSubstitutes, updateSubstituteMap] = useState(new Map<string, NamedElement>());

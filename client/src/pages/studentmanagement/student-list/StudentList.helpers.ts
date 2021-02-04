@@ -62,7 +62,7 @@ export function useStudentsForStudentList({
     const [students, setStudents] = useState<Student[]>([]);
     const { enqueueSnackbar } = useSnackbar();
 
-    const { value: summaries = {}, isLoading: isLoadingSummaries } = useFetchState({
+    const [summaries = {}, isLoadingSummaries] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
             const fetchedSummaries = await (tutorialId
                 ? getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
@@ -77,7 +77,7 @@ export function useStudentsForStudentList({
         immediate: true,
         params: [tutorialId ?? ''],
     });
-    const { value: teams, execute: fetchTeams } = useFetchState({
+    const [teams, , , fetchTeams] = useFetchState({
         fetchFunction: tutorialId ? getTeamsOfTutorial : async () => undefined,
         immediate: true,
         params: [tutorialId ?? ''],

@@ -53,17 +53,17 @@ function StudentInfo(): JSX.Element {
     const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
     const [scheinStatus, setScheinStatus] = useState<ScheinCriteriaSummary>();
 
-    const { value: sheets = [] } = useFetchState({
+    const [sheets = []] = useFetchState({
         fetchFunction: getAllSheets,
         immediate: true,
         params: [],
     });
-    const { value: exams = [] } = useFetchState({
+    const [exams = []] = useFetchState({
         fetchFunction: getAllScheinExams,
         immediate: true,
         params: [],
     });
-    const { value: shortTests = [] } = useFetchState({
+    const [shortTests = []] = useFetchState({
         fetchFunction: getAllShortTests,
         immediate: true,
         params: [],
