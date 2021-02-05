@@ -108,7 +108,64 @@ Inside the client project `src/` folder you can find the following structure:
 
 ### `server/`
 
-**TODO: WRITE**
+Contains the project for the TMS backend.
+It uses [NestJS](https://nestjs.com/) as framework.
+Inside the `server/` folder you find the following subfolders:
+
+-   `app/`:
+    Contains a mock html-file so the server would not throw an error if one access a non-api route during development directly.
+    Please note that while the production build also contains an `app/` folder this folder is not related to files used in production.
+
+-   `config/`:
+    Contains several configuration files and pug templates used by the server.
+    The server will use the file that matches the `NODE_ENV` variable on start up (if `NODE_ENV` is not set the `development` configuration will be used).
+    The sample configurations attached to the releases on GitHub only contains the templates and the production configuration.
+
+-   `src/`:
+    Contains the source code (excluding tests) for the server.
+    The source folder has several supfolders itself.
+    The folders have names with speak for themselfs:
+
+    -   `auth/`: Code related to authentication.
+    -   `database/`: Contains the data models for the database and the code to connect to a database.
+    -   `exception/`: Custom, TMS specific exceptions.
+    -   `filter/`:
+        Custom filters.
+        :::info Client App
+        The `NotFoundExceptionFilter` is used to serve the client application properly.
+        Special handling is needed because the client is a single page application.
+        :::
+    -   `guards/`: Guards used to protect the REST API endpoints.
+    -   `middleware/`: Custom middleware for the TMS server.
+    -   `module/`:
+        Contains all modules of the server.
+        The modules are organized into subfolders.
+        :::info Creating a new module
+        To generate a new module run the following command (replace `<name>` with the actual module name).
+        The NestJS CLI will create all neccessary files and adds the module to the `app.module.js` file.
+        ```cmd
+        nest g module module/<name>
+        ```
+        :::
+    -   `pipes/`: Custom pipes for the TMS server.
+    -   `shared/`:
+        Contains enums and interfaces used by the server and client to make sure that requests and responses are properly typed.
+        :::caution
+        Don't put actual classes in here because the work has shown that the server implements the interfaces in a different manner with different needs than the client.
+        :::
+
+-   `test/`:
+    Contains files with mocked data and helper functions used solely in tests.
+    Please note that the actual tests are suited next to the corresponding services files.
+
+    :::caution
+    Do not place production code here.
+    It will break the production build.
+    :::
+
+-   `typings/`:
+    Contains TypeScript `.d.ts` type definition files for modules used and which had no types available.
+    Please note that only required typings are defined so these type definitions are not complete.
 
 ### `docs/`
 
