@@ -136,6 +136,8 @@ The following scripts are included:
     After building the docker image a docker container with the image is created.
     Afterwards the script requests a PDF file from the docker container.
     If successful the script exits with a code 0, if not a non-zero code is used.
+    More information can be found inside the [Build & Release section][build-release-doc].
+
     :::note Why does this script exist?
     The reason for this explicit test is that the server uses puppeteer to generate PDFs.
     However, puppeteer's PDF generation might break inside the container (especially if an alpine image is used).
@@ -154,3 +156,5 @@ The following scripts are included:
 ## Architecture
 
 **TODO: ARCHITECTURE**
+
+[build-release-doc]: ./build-release#build-docker-image
