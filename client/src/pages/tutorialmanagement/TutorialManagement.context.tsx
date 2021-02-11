@@ -7,6 +7,7 @@ import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { useFetchState } from '../../hooks/useFetchState';
 import { Tutorial } from '../../model/Tutorial';
 import { throwContextNotInitialized } from '../../util/throwFunctions';
+import { SORTERS, SupportedSorters, TutorialSorter } from './sorters/Sorters';
 
 interface Props {
     children?: ReactNode;
@@ -23,7 +24,8 @@ export interface TutorialManagementContextType {
     tutors: IUser[];
     correctors: IUser[];
     isLoading: boolean;
-    setTutorials: (tutorials: Tutorial[]) => void;
+    setSortingMethod: (method: SupportedSorters) => void;
+    fetchTutorials: () => Promise<void>;
     error?: FetchErrors;
 }
 
@@ -32,8 +34,9 @@ const Context = React.createContext<TutorialManagementContextType>({
     tutors: [],
     correctors: [],
     isLoading: false,
+    setSortingMethod: throwContextNotInitialized('TutorialManagementContext'),
+    fetchTutorials: throwContextNotInitialized('TutorialManagementContext'),
     error: undefined,
-    setTutorials: throwContextNotInitialized('TutorialManagementContext'),
 });
 
 export function useTutorialManagementContext(): TutorialManagementContextType {
@@ -43,8 +46,9 @@ export function useTutorialManagementContext(): TutorialManagementContextType {
 
 function TutorialManagementContextProvider({ children }: Props): JSX.Element {
     const { enqueueSnackbarWithList } = useCustomSnackbar();
+    const [sorter, setSorter] = useState<TutorialSorter>(SORTERS.alphabetical);
 
-    const [tutorials = [], isLoadingTutorials, errorTutorials] = useFetchState({
+    const [tutorials = [], isLoadingTutorials, errorTutorials, fetchTutorials] = useFetchState({
         fetchFunction: getAllTutorials,
         immediate: true,
         params: [],
@@ -60,7 +64,7 @@ function TutorialManagementContextProvider({ children }: Props): JSX.Element {
         params: [Role.CORRECTOR],
     });
 
-    const [sortedTutorials, setSortedTutorials] = useState<Tutorial[]>([]);
+    const sortedTutorials = useMemo<Tutorial[]>(() => sorter.sort(tutorials), [tutorials, sorter]);
     const isLoading = isLoadingTutorials || isLoadingTutors || isLoadingCorrectors;
     const error = useMemo<FetchErrors | undefined>(() => {
         if (!errorTutorials && !errorTutors && !errorCorrectors) {
@@ -70,14 +74,14 @@ function TutorialManagementContextProvider({ children }: Props): JSX.Element {
         return { tutors: errorTutors, tutorials: errorTutorials, correctors: errorCorrectors };
     }, [errorTutors, errorTutorials, errorCorrectors]);
 
-    const setTutorials = useCallback((tutorials: Tutorial[]) => {
-        // TODO: Add sorting / filter support
-        setSortedTutorials(tutorials);
+    const setSortingMethod = useCallback((method: SupportedSorters) => {
+        const newSorter: TutorialSorter | undefined = SORTERS[method];
+        if (newSorter) {
+            setSorter(newSorter);
+        } else {
+            throw new Error(`Unsupported sorter method "${method}"`);
+        }
     }, []);
-
-    useEffect(() => {
-        setTutorials(tutorials);
-    }, [tutorials, setTutorials]);
 
     useEffect(() => {
         const items: string[] = [];
@@ -112,7 +116,8 @@ function TutorialManagementContextProvider({ children }: Props): JSX.Element {
                 correctors,
                 isLoading,
                 error,
-                setTutorials,
+                setSortingMethod,
+                fetchTutorials,
             }}
         >
             {children}

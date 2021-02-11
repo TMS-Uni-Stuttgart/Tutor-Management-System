@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { DateTime } from 'luxon';
 import { AutoFix as GenerateIcon } from 'mdi-material-ui';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { HasId } from 'shared/model/Common';
 import { ITutorialDTO } from 'shared/model/Tutorial';
@@ -15,7 +15,7 @@ import TutorialForm, {
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/dialog-service/DialogService';
-import { createTutorial, deleteTutorial, editTutorial } from '../../hooks/fetching/Tutorial';
+import { createTutorial, deleteTutorial } from '../../hooks/fetching/Tutorial';
 import { useLoggedInUser } from '../../hooks/LoginService';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { Tutorial } from '../../model/Tutorial';
@@ -75,59 +75,58 @@ function TutorialManagementContent(): JSX.Element {
         tutors,
         correctors,
         isLoading,
-        setTutorials,
+        fetchTutorials,
     } = useTutorialManagementContext();
 
-    const handleCreateTutorial: TutorialFormSubmitCallback = async (
-        values,
-        { setSubmitting, resetForm, setFieldError }
-    ) => {
-        const isSlotInUse = tutorials.find((t) => t.slot === values.slot) !== undefined;
+    const handleCreateTutorial: TutorialFormSubmitCallback = useCallback(
+        async (values, { setSubmitting, resetForm, setFieldError }) => {
+            const isSlotInUse = tutorials.find((t) => t.slot === values.slot) !== undefined;
 
-        if (isSlotInUse) {
-            setFieldError('slot', 'Dieser Slot ist bereits vergeben.');
-            return;
-        }
+            if (isSlotInUse) {
+                setFieldError('slot', 'Dieser Slot ist bereits vergeben.');
+                return;
+            }
 
-        try {
-            const response = await createTutorial(generateCreateTutorialDTO(values));
-            const allTutorials = [...tutorials, response];
-            setTutorials(allTutorials);
+            try {
+                await createTutorial(generateCreateTutorialDTO(values));
+                await fetchTutorials();
 
-            enqueueSnackbar('Tutorium wurde erstellt.', { variant: 'success' });
-            resetForm({ values: getInitialTutorialFormValues() });
-        } catch (reason) {
-            logger.log(reason);
-        } finally {
-            setSubmitting(false);
-        }
-    };
+                enqueueSnackbar('Tutorium wurde erstellt.', { variant: 'success' });
+                resetForm({ values: getInitialTutorialFormValues() });
+            } catch (reason) {
+                logger.log(reason);
+            } finally {
+                setSubmitting(false);
+            }
+        },
+        [enqueueSnackbar, logger, fetchTutorials, tutorials]
+    );
 
-    const handleEditTutorialSubmit: (tutorial: HasId) => TutorialFormSubmitCallback = (
-        tutorial
-    ) => async (values, { setSubmitting }) => {
-        try {
-            const updatedTutorial = await editTutorial(
-                tutorial.id,
-                generateCreateTutorialDTO(values)
-            );
+    const handleEditTutorialSubmit: (tutorial: HasId) => TutorialFormSubmitCallback = useCallback(
+        (tutorial) => async (values, { setSubmitting }) => {
+            try {
+                await fetchTutorials();
+                enqueueSnackbar('Tutorium erfolgreich geändert.', { variant: 'success' });
+                dialog.hide();
+            } catch {
+                enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
+                setSubmitting(false);
+            }
+        },
+        [enqueueSnackbar, fetchTutorials, dialog]
+    );
 
-            setTutorials(
-                tutorials.map((t) => {
-                    if (t.id !== updatedTutorial.id) {
-                        return t;
-                    }
-
-                    return updatedTutorial;
-                })
-            );
-            enqueueSnackbar('Tutorium erfolgreich geändert.', { variant: 'success' });
+    const handleDeleteTutorialSubmit = useCallback(
+        async (tutorial: Tutorial) => {
+            await deleteTutorial(tutorial.id);
+            await fetchTutorials();
+            enqueueSnackbar(`${tutorial.toDisplayString()} wurde gelöscht.`, {
+                variant: 'success',
+            });
             dialog.hide();
-        } catch {
-            enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
-            setSubmitting(false);
-        }
-    };
+        },
+        [dialog, fetchTutorials, enqueueSnackbar]
+    );
 
     function handleEditTutorial(tutorial: Tutorial) {
         dialog.show({
@@ -165,17 +164,6 @@ function TutorialManagementContent(): JSX.Element {
                 },
             ],
         });
-    }
-
-    function handleDeleteTutorialSubmit(tutorial: Tutorial) {
-        deleteTutorial(tutorial.id)
-            .then(() => {
-                setTutorials(tutorials.filter((t) => t.id !== tutorial.id));
-                enqueueSnackbar(`${tutorial.toDisplayString()} wurde gelöscht.`, {
-                    variant: 'success',
-                });
-            })
-            .finally(() => dialog.hide());
     }
 
     return (
