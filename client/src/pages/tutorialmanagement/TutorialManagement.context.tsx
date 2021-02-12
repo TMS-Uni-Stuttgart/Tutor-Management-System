@@ -46,7 +46,7 @@ export function useTutorialManagementContext(): TutorialManagementContextType {
 
 function TutorialManagementContextProvider({ children }: Props): JSX.Element {
     const { enqueueSnackbarWithList } = useCustomSnackbar();
-    const [sorter, setSorter] = useState<TutorialSorter>(SORTERS.alphabetical);
+    const [sorter, setSorter] = useState<TutorialSorter>(SORTERS.date);
 
     const [tutorials = [], isLoadingTutorials, errorTutorials, fetchTutorials] = useFetchState({
         fetchFunction: getAllTutorials,
