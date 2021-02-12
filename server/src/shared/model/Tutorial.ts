@@ -32,11 +32,6 @@ export interface ISubstituteDTO {
     dates: string[];
 }
 
-// export enum TutorialGenerationDataType {
-//   SINGLE = 'single',
-//   MULTIPLE = 'multiple',
-// }
-
 /**
  * Numerated weekdays. These follow the same numeration than the [weekdays in luxon](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html#instance-get-weekday).
  */
@@ -68,15 +63,3 @@ export interface IExcludedDate {
     date?: string;
     interval?: string;
 }
-
-// export type IExcludedDate = IExcludedSingleDate | IExcludedMultipleDate;
-
-// export interface IExcludedSingleDate {
-//   type: TutorialGenerationDataType.SINGLE;
-//   date: string;
-// }
-
-// export interface IExcludedMultipleDate {
-//   type: TutorialGenerationDataType.MULTIPLE;
-//   interval: string;
-// }

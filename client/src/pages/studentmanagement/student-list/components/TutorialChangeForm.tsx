@@ -45,7 +45,7 @@ function TutorialChangeForm({
 }: Props): JSX.Element {
     const classes = useStyles();
 
-    const { value: allTutorials, isLoading } = useFetchState({
+    const [allTutorials, isLoading] = useFetchState({
         fetchFunction: getAllTutorials,
         immediate: true,
         params: [],

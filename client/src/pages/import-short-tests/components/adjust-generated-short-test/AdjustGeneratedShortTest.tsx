@@ -101,7 +101,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
     } = useImportCSVContext<ShortTestColumns, string>();
     const { getMapping, shortTest } = useIliasMappingContext();
     const [isImporting, setImporting] = useState(false);
-    const { isLoading, value } = useFetchState({
+    const [value, isLoading] = useFetchState({
         fetchFunction: generateInitialValues,
         immediate: true,
         params: [shortTest, mappedColumns, csvData.rows],

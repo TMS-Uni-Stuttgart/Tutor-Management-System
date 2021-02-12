@@ -50,20 +50,15 @@ async function getTutorialSummariesForUser(
 function Dashboard(): JSX.Element {
     const { userData } = useLogin();
 
-    const {
-        value: tutorialsWithScheinCriteriaSummaries,
-        isLoading: isLoadingTutorialSummaries,
-    } = useFetchState({
+    const [tutorialsWithScheinCriteriaSummaries, isLoadingTutorialSummaries] = useFetchState({
         fetchFunction: getTutorialSummariesForUser,
         immediate: true,
         params: [userData],
     });
 
-    const {
-        execute: fetchSummaries,
-        isLoading: isLoadingAdminGraph,
-        value: summaries,
-    } = useFetchState({ fetchFunction: getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots });
+    const [summaries, isLoadingAdminGraph, , fetchSummaries] = useFetchState({
+        fetchFunction: getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
+    });
 
     return (
         <div>

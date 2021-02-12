@@ -92,9 +92,7 @@ function getTitleFromPath(path: string | undefined): string {
 
 function useTitleFromRoute(): string {
     const match = useRouteMatch([...TITLE_TEXTS.keys()]);
-    const title = useMemo(() => getTitleFromPath(match?.path), [match]);
-
-    return title;
+    return useMemo(() => getTitleFromPath(match?.path), [match]);
 }
 
 function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
@@ -111,7 +109,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
 
     const [backupAnchor, setBackupAnchor] = useState<HTMLElement | undefined>(undefined);
     const [creatingXLSX, setCreatingXLSX] = useState<CreatingState>({});
-    const { value: handbookUrl, error: handbookUrlError } = useFetchState({
+    const [handbookUrl, , handbookUrlError] = useFetchState({
         fetchFunction: getHandbookUrl,
         immediate: true,
         params: [],

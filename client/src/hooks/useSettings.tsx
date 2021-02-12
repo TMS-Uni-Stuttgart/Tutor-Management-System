@@ -32,7 +32,7 @@ const SettingsContext = React.createContext<ContextType>({
 
 export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element {
     const { userData } = useLogin();
-    const { value, isLoading, execute } = useFetchState({ fetchFunction: getSettings });
+    const [value, isLoading, , execute] = useFetchState({ fetchFunction: getSettings });
     const updateSettings = useCallback(async () => {
         if (!!userData) {
             await execute();
