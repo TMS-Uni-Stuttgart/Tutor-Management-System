@@ -15,7 +15,7 @@ import TutorialForm, {
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/dialog-service/DialogService';
-import { createTutorial, deleteTutorial } from '../../hooks/fetching/Tutorial';
+import { createTutorial, deleteTutorial, editTutorial } from '../../hooks/fetching/Tutorial';
 import { useLoggedInUser } from '../../hooks/LoginService';
 import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { Tutorial } from '../../model/Tutorial';
@@ -105,6 +105,7 @@ function TutorialManagementContent(): JSX.Element {
     const handleEditTutorialSubmit: (tutorial: HasId) => TutorialFormSubmitCallback = useCallback(
         (tutorial) => async (values, { setSubmitting }) => {
             try {
+                await editTutorial(tutorial.id, generateCreateTutorialDTO(values));
                 await fetchTutorials();
                 enqueueSnackbar('Tutorium erfolgreich geändert.', { variant: 'success' });
                 dialog.hide();
