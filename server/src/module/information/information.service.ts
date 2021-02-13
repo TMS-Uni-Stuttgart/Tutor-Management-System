@@ -20,8 +20,15 @@ export class InformationService {
     /**
      * @returns The link to the handbook if configured.
      */
-    getHandbookUrl(): string | undefined {
-        return this.settingsService.getHandbookUrl();
+    getHandbookUrl(): string {
+        const url = this.settingsService.getHandbookUrl();
+
+        if (!url) {
+            Logger.warn('URL to the handbook is not set.', 'InformationService');
+            return '';
+        }
+
+        return url;
     }
 
     private getDevelopmentVersion(): string {
