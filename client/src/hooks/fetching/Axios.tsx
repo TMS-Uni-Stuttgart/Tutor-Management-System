@@ -8,10 +8,6 @@ import { useLogin } from '../LoginService';
 const axios = Axios.create({
     baseURL: getApiUrl(),
     withCredentials: true,
-    headers: {
-        // This header prevents the spring backend to add a header which will make a popup appear if the credentials are wrong.
-        'X-Requested-With': 'XMLHttpRequest',
-    },
     validateStatus: validateStatus,
 });
 
