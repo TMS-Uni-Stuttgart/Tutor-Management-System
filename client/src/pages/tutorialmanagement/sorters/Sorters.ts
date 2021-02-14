@@ -17,7 +17,7 @@ export class DateTutorialSorter extends TutorialSorter {
             } else if (!dateB) {
                 return 1;
             } else {
-                const diff = dateA.diff(dateB, 'days').days;
+                const diff = dateA.weekday - dateB.weekday;
                 return diff === 0 ? a.toDisplayString().localeCompare(b.toDisplayString()) : diff;
             }
         });
