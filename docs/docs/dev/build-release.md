@@ -52,7 +52,7 @@ Additional parameters can be provided aswell (see above).
 Upon publishing a new release the `Build and push Docker image` workflow is triggered.
 It will build a corresponding docker image using the tag of the release as image tag.
 Afterwards this image is pushed to the GitHub container repository of the Tutor-Management-System repository.
-For more information visit the [GitHub workflow page](./workflow).
+For more information visit the [GitHub workflow page](./gh-workflows).
 
 :::info Version bump
 The script itself will bump the version internally to the tag of the release.
