@@ -24,7 +24,7 @@ jobs:
 
       # Change the version to be the correct one so the version in the image is always the correct one.
       - name: Set new version
-        run: pnpm version --no-git-tag-version ${{ github.event.release.tag_name }}
+        run: pnpm version --no-git-tag-version --allow-same-version ${{ github.event.release.tag_name }}
 
       # Setting up Buildx because it's needed by build-push-action
       - name: Setup Docker Buildx
