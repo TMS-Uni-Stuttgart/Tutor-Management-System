@@ -54,7 +54,7 @@ It will build a corresponding docker image using the tag of the release as image
 Afterwards this image is pushed to the GitHub container repository of the Tutor-Management-System repository.
 For more information visit the [GitHub workflow page](./workflow).
 
-:::caution Version bump
+:::info Version bump
 The script itself will bump the version internally to the tag of the release.
 However, this bump will **not** be pushed back into the repository.
 :::
