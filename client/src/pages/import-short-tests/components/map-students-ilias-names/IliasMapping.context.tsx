@@ -3,14 +3,14 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { useImportCSVContext } from '../../../../components/import-csv/ImportCSV.context';
 import { getShortTest } from '../../../../hooks/fetching/ShortTests';
 import { getAllStudents } from '../../../../hooks/fetching/Student';
-import { useFetchState, UseFetchState } from '../../../../hooks/useFetchState';
+import { FetchFunction, useFetchState } from '../../../../hooks/useFetchState';
 import { ShortTest } from '../../../../model/ShortTest';
 import { Student } from '../../../../model/Student';
 import { RequireChildrenProp } from '../../../../typings/RequireChildrenProp';
 import { throwContextNotInitialized } from '../../../../util/throwFunctions';
 import { ShortTestColumns } from '../ImportShortTests';
 
-interface ContextValue extends UseFetchState<Student[], []> {
+interface ContextValue {
     iliasNameMapping: Map<string, Student>;
     iliasNamesWithoutStudent: string[];
     studentsWithoutResult: Student[];
@@ -19,6 +19,11 @@ interface ContextValue extends UseFetchState<Student[], []> {
     addMapping: (iliasName: string, student: Student) => void;
     getMapping: (iliasName: string) => Student | undefined;
     removeMapping: (iliasName: string) => void;
+
+    isLoading: boolean;
+    error?: string;
+    value: Student[];
+    execute: FetchFunction;
 }
 
 const IliasMappingContext = React.createContext<ContextValue>({
@@ -48,12 +53,12 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
         csvData,
         mapColumnsHelpers: { mappedColumns },
     } = useImportCSVContext<ShortTestColumns, string>();
-    const { isLoading: isLoadingStudents, error, value: students, execute } = useFetchState({
+    const [students, isLoadingStudents, error, execute] = useFetchState({
         fetchFunction: getAllStudents,
         immediate: true,
         params: [],
     });
-    const { isLoading: isLoadingShortTest, value: shortTest } = useFetchState({
+    const [shortTest, isLoadingShortTest] = useFetchState({
         fetchFunction: async () => {
             if (!shortTestId) {
                 return undefined;

@@ -75,7 +75,7 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
 
                 let state = PassedState.NOT_PASSED;
                 if (this.isPercentagePerTest) {
-                    if (achieved / total >= this.valuePerTestNeeded) {
+                    if (shortTest.hasPassed(student)) {
                         state = PassedState.PASSED;
                     }
                 } else {

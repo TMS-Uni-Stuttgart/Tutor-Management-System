@@ -109,7 +109,7 @@ function AdjustImportedUserDataForm(): JSX.Element {
         mapColumnsHelpers: { mappedColumns },
     } = useImportCSVContext<UserColumns, string>();
     const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
-    const { isLoading, value: tutorials } = useFetchState({
+    const [tutorials, isLoading] = useFetchState({
         fetchFunction: getAllTutorials,
         immediate: true,
         params: [],

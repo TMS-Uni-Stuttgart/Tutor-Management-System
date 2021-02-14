@@ -12,6 +12,6 @@ export class InformationController {
 
     @Get('/handbook-url')
     async getHandbookURL(): Promise<string> {
-        return this.informationService.getHandbookUrl() ?? '';
+        return this.informationService.getHandbookUrl();
     }
 }

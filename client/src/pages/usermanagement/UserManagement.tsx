@@ -98,16 +98,16 @@ function UserManagement(): JSX.Element {
     const { isMailingActive } = useSettings();
     const { enqueueSnackbar, closeSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
 
-    const { value: users = [], isLoading: isLoadingUsers, execute: fetchUsers } = useFetchState({
+    const [users = [], isLoadingUsers, , fetchUsers] = useFetchState({
         fetchFunction: getUsers,
         immediate: true,
         params: [],
     });
-    const {
-        value: tutorials = [],
-        isLoading: isLoadingTutorials,
-        execute: fetchTutorials,
-    } = useFetchState({ fetchFunction: getAllTutorials, immediate: true, params: [] });
+    const [tutorials = [], isLoadingTutorials, , fetchTutorials] = useFetchState({
+        fetchFunction: getAllTutorials,
+        immediate: true,
+        params: [],
+    });
 
     const [isLoadingInitially, setLoadingInitially] = useState(true);
     const [isSendingCredentials, setSendingCredentials] = useState(false);

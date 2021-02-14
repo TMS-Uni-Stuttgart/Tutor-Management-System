@@ -39,7 +39,7 @@ function ShortTestManagement(): JSX.Element {
     const dialog = useDialog();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { isLoading, value } = useFetchState({
+    const [value, isLoading] = useFetchState({
         fetchFunction: getAllShortTests,
         immediate: true,
         params: [],

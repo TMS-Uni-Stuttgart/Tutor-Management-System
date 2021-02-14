@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 
-type BaseArrayType = readonly unknown[];
+export type BaseArrayType = readonly unknown[];
 
 interface UseFetchStateParamsDelayed<T, P extends BaseArrayType> {
     fetchFunction: (...params: P) => Promise<T>;
@@ -19,15 +19,14 @@ export type UseFetchStateParams<T, P extends BaseArrayType> =
     | UseFetchStateParamsDelayed<T, P>
     | UseFetchStateParamsImmediate<T, P>;
 
-export interface UseFetchState<T, P extends BaseArrayType> extends FetchState<T> {
-    execute: (...params: P) => Promise<void>;
-}
+export type FetchFunction<P extends BaseArrayType = []> = (...params: P) => Promise<void>;
 
-export interface FetchState<T> {
-    value?: T;
-    isLoading: boolean;
-    error?: string;
-}
+export type UseFetchState<T, P extends BaseArrayType> = [
+    T | undefined,
+    boolean,
+    string | undefined,
+    FetchFunction<P>
+];
 
 export function useFetchState<T, P extends BaseArrayType>({
     fetchFunction,
@@ -72,5 +71,5 @@ export function useFetchState<T, P extends BaseArrayType>({
         }
     }, [execute, immediate, params, prevParams]);
 
-    return { execute, value, isLoading, error };
+    return [value, isLoading, error, execute];
 }
