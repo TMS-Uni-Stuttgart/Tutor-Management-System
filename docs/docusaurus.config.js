@@ -59,7 +59,7 @@ module.exports = {
                     editUrl: 'https://github.com/Dudrie/Tutor-Management-System/edit/main/docs',
                 },
                 theme: {
-                    customCss: require.resolve('./src/css/custom.scss'),
+                    customCss: [require.resolve('./src/css/custom.scss')],
                 },
             },
         ],
