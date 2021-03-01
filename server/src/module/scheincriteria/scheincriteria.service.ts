@@ -158,7 +158,9 @@ export class ScheincriteriaService
      * @throws `NotFoundException` - If no criteria with the given ID could be found.
      */
     async getInfoAboutCriteria(criteriaId: string): Promise<CriteriaInformation> {
-        const { criterias, ...params } = await this.getRequiredDocuments({ criteriaId });
+        const { criterias, ...params } = await this.getRequiredDocuments({
+            criteriaId,
+        });
 
         const criteriaDoc = criterias[0];
         const criteria: Scheincriteria = Scheincriteria.fromDTO(criteriaDoc.toDTO());
@@ -193,9 +195,14 @@ export class ScheincriteriaService
      * @throws `NotFoundException` - If no student with the given ID could be found.
      */
     async getResultOfStudent(studentId: string): Promise<ScheincriteriaSummary> {
-        const { students, ...params } = await this.getRequiredDocuments({ studentId });
+        const { students, ...params } = await this.getRequiredDocuments({
+            studentId,
+        });
 
-        return this.calculateResultOfSingleStudent({ ...params, student: students[0] });
+        return this.calculateResultOfSingleStudent({
+            ...params,
+            student: students[0],
+        });
     }
 
     /**
@@ -271,7 +278,10 @@ export class ScheincriteriaService
         const summaries: ScheincriteriaSummaryByStudents = {};
 
         students.forEach((student) => {
-            const result = this.calculateResultOfSingleStudent({ ...infos, student });
+            const result = this.calculateResultOfSingleStudent({
+                ...infos,
+                student,
+            });
 
             summaries[student.id] = result;
         });

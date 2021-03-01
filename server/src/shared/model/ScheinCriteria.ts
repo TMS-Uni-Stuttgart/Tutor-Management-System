@@ -25,9 +25,13 @@ export interface IScheinCriteriaDTO {
     identifier: string;
 }
 
-export type ScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCriteriaSummary };
+export type ScheincriteriaSummaryByStudents = {
+    [studentId: string]: ScheinCriteriaSummary;
+};
 
-export type SingleScheincriteriaSummaryByStudents = { [studentId: string]: ScheinCriteriaStatus };
+export type SingleScheincriteriaSummaryByStudents = {
+    [studentId: string]: ScheinCriteriaStatus;
+};
 
 export interface ScheinCriteriaSummary {
     student: IStudent;

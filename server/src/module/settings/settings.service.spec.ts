@@ -66,7 +66,11 @@ describe('SettingsService', () => {
     it.each<ClientSettingsDTO>([
         { ...DEFAULT_SETTINGS, defaultTeamSize: 5 },
         { ...DEFAULT_SETTINGS, canTutorExcuseStudents: true },
-        { ...DEFAULT_SETTINGS, defaultTeamSize: 3, canTutorExcuseStudents: true },
+        {
+            ...DEFAULT_SETTINGS,
+            defaultTeamSize: 3,
+            canTutorExcuseStudents: true,
+        },
         {
             ...DEFAULT_SETTINGS,
             gradingFilename: 'Grading_Ex#{sheetNo}_#{teamName}',
@@ -83,7 +87,10 @@ describe('SettingsService', () => {
         await service.setClientSettings(newSetting);
 
         const settings = await service.getClientSettings();
-        assertSettings({ actual: settings, expected: { ...SETTINGS_DOCUMENTS[0], ...newSetting } });
+        assertSettings({
+            actual: settings,
+            expected: { ...SETTINGS_DOCUMENTS[0], ...newSetting },
+        });
     });
 
     it('remove mailing settings', async () => {

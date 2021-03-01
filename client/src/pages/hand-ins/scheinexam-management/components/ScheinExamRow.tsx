@@ -6,45 +6,43 @@ import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperT
 import { Scheinexam } from '../../../../model/Scheinexam';
 
 interface Props extends PaperTableRowProps {
-    exam: Scheinexam;
-    onEditExamClicked: (exam: Scheinexam) => void;
-    onHandleGenerateResultPDFClicked: (exam: Scheinexam) => void;
-    onDeleteExamClicked: (exam: Scheinexam) => void;
+  exam: Scheinexam;
+  onEditExamClicked: (exam: Scheinexam) => void;
+  onHandleGenerateResultPDFClicked: (exam: Scheinexam) => void;
+  onDeleteExamClicked: (exam: Scheinexam) => void;
 }
 
 function ScheinExamRow({
-    exam,
-    onEditExamClicked,
-    onHandleGenerateResultPDFClicked,
-    onDeleteExamClicked,
-    ...other
+  exam,
+  onEditExamClicked,
+  onHandleGenerateResultPDFClicked,
+  onDeleteExamClicked,
+  ...other
 }: Props): JSX.Element {
-    return (
-        <PaperTableRow
-            label={exam.toDisplayString()}
-            buttonCellContent={
-                <EntityListItemMenu
-                    onEditClicked={() => onEditExamClicked(exam)}
-                    onDeleteClicked={() => onDeleteExamClicked(exam)}
-                    additionalItems={[
-                        {
-                            primary: 'Ergebnisse',
-                            Icon: PDFGenerationIcon,
-                            onClick: () => onHandleGenerateResultPDFClicked(exam),
-                        },
-                    ]}
-                />
-            }
-            {...other}
-        >
-            <TableCell>
-                <Typography variant='body2'>Anzahl Aufgaben: {exam.exercises.length}</Typography>
-                <Typography variant='body2'>
-                    Gesamtpunktzahl: {exam.getPointInfoAsString()}
-                </Typography>
-            </TableCell>
-        </PaperTableRow>
-    );
+  return (
+    <PaperTableRow
+      label={exam.toDisplayString()}
+      buttonCellContent={
+        <EntityListItemMenu
+          onEditClicked={() => onEditExamClicked(exam)}
+          onDeleteClicked={() => onDeleteExamClicked(exam)}
+          additionalItems={[
+            {
+              primary: 'Ergebnisse',
+              Icon: PDFGenerationIcon,
+              onClick: () => onHandleGenerateResultPDFClicked(exam),
+            },
+          ]}
+        />
+      }
+      {...other}
+    >
+      <TableCell>
+        <Typography variant='body2'>Anzahl Aufgaben: {exam.exercises.length}</Typography>
+        <Typography variant='body2'>Gesamtpunktzahl: {exam.getPointInfoAsString()}</Typography>
+      </TableCell>
+    </PaperTableRow>
+  );
 }
 
 export default ScheinExamRow;

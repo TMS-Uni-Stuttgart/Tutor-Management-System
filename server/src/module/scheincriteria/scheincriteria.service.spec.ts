@@ -308,7 +308,10 @@ describe('ScheincriteriaService', () => {
         const oldCriteria = await service.create(createDTO);
         const updatedCriteria = await service.update(oldCriteria.id, updateDTO);
 
-        assertScheincriteriaDTO({ expected: updateDTO, actual: updatedCriteria });
+        assertScheincriteriaDTO({
+            expected: updateDTO,
+            actual: updatedCriteria,
+        });
     });
 
     it('fail on updating attendance criteria with wrong property type', async () => {

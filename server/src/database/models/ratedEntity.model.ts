@@ -37,7 +37,10 @@ export abstract class HasExercisesModel implements HandInDocument {
     }
 
     toDTO(this: HasExercisesDocument): IHasExercises {
-        return { id: this.id, exercises: this.exercises.map((ex) => ex.toDTO()) };
+        return {
+            id: this.id,
+            exercises: this.exercises.map((ex) => ex.toDTO()),
+        };
     }
 }
 
@@ -57,7 +60,11 @@ export class RatedEntityModel extends HasExercisesModel {
         return model;
     }
 
-    hasPassed(student: StudentDocument): PassedInformation {
+    hasPassed(student: StudentDocument): boolean {
+        return this.getPassedInformation(student).passed;
+    }
+
+    getPassedInformation(student: StudentDocument): PassedInformation {
         const total = this.totalPoints;
         const grading = student.getGrading(this);
 

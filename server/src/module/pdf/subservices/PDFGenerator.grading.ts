@@ -82,7 +82,9 @@ export class GradingPDFGenerator extends MarkdownPDFGenerator {
                     teamName: gradingMD.teamName,
                     extension: 'pdf',
                 }),
-                payload: await this.generatePDF({ markdown: gradingMD.markdown }),
+                payload: await this.generatePDF({
+                    markdown: gradingMD.markdown,
+                }),
             });
         }
 

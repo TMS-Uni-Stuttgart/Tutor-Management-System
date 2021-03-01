@@ -74,7 +74,10 @@ export class PdfController {
         @Param('sheetId') sheetId: string,
         @Res() res: Response
     ): Promise<void> {
-        const zipStream = await this.pdfService.generateTutorialGradingZIP({ tutorialId, sheetId });
+        const zipStream = await this.pdfService.generateTutorialGradingZIP({
+            tutorialId,
+            sheetId,
+        });
 
         res.contentType('zip');
         zipStream.pipe(res);
@@ -112,7 +115,10 @@ export class PdfController {
         @Param('tutorialId') tutorialId: string,
         @Param('sheetId') sheetId: string
     ): Promise<string> {
-        return this.pdfService.generateTutorialGradingFilename({ sheetId, tutorialId });
+        return this.pdfService.generateTutorialGradingFilename({
+            sheetId,
+            tutorialId,
+        });
     }
 
     @Get('/grading/filename/tutorial/:tutorialId/sheet/:sheetId/team/:teamId')
@@ -124,6 +130,9 @@ export class PdfController {
         @Param('sheetId') sheetId: string,
         @Param('teamId') teamId: string
     ): Promise<string> {
-        return this.pdfService.generateGradingFilename({ sheetId, teamId: { teamId, tutorialId } });
+        return this.pdfService.generateGradingFilename({
+            sheetId,
+            teamId: { teamId, tutorialId },
+        });
     }
 }

@@ -47,7 +47,10 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
     }
 
     checkCriteriaStatus({ student, shortTests }: CriteriaPayload): StatusCheckResponse {
-        const { passed: testsPassed, infos } = this.checkShortTests({ student, shortTests });
+        const { passed: testsPassed, infos } = this.checkShortTests({
+            student,
+            shortTests,
+        });
         const totalShortTestCount = shortTests.length;
         const passed: boolean = this.percentage
             ? testsPassed / shortTests.length >= this.valueNeeded

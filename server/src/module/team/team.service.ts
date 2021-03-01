@@ -93,7 +93,10 @@ export class TeamService {
 
         await this.addAllStudentToTeam(created, studentDocs);
 
-        const teamWithStudents = await this.findById({ tutorialId, teamId: created.id });
+        const teamWithStudents = await this.findById({
+            tutorialId,
+            teamId: created.id,
+        });
         return teamWithStudents.toDTO();
     }
 

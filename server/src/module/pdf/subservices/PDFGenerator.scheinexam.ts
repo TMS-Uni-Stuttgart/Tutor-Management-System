@@ -63,7 +63,10 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
                 statuses.push({ matriculationNo: shortenedNo, state });
             } else {
                 const matriculationNo = students.find((s) => s.id === studentId)?.matriculationNo;
-                statuses.push({ matriculationNo: `${matriculationNo} (${shortenedNo})`, state });
+                statuses.push({
+                    matriculationNo: `${matriculationNo} (${shortenedNo})`,
+                    state,
+                });
             }
         });
 
@@ -87,7 +90,7 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
             const hasAttended = examGrading !== undefined;
 
             if (hasAttended) {
-                results[student.id] = exam.hasPassed(student).passed
+                results[student.id] = exam.hasPassed(student)
                     ? PassedState.PASSED
                     : PassedState.NOT_PASSED;
             } else {

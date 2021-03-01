@@ -50,7 +50,10 @@ export abstract class Scheincriteria {
         const bluePrintData = ScheincriteriaContainer.getContainer().getBluePrint(identifier);
 
         const criteria = plainToClass(bluePrintData.blueprint, data);
-        const errors = validateSync(criteria, { whitelist: true, forbidNonWhitelisted: true });
+        const errors = validateSync(criteria, {
+            whitelist: true,
+            forbidNonWhitelisted: true,
+        });
 
         if (errors.length > 0) {
             throw new BadRequestException(errors);

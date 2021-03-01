@@ -318,7 +318,11 @@ describe('StudentService', () => {
         const oldStudent = await service.create(createDTO);
         const updatedStudent = await service.update(oldStudent.id, updateDTO);
 
-        assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
+        assertStudentDTO({
+            expected: updateDTO,
+            actual: updatedStudent,
+            oldStudent,
+        });
     });
 
     it('update student with new tutorial', async () => {
@@ -344,7 +348,11 @@ describe('StudentService', () => {
         const oldStudent = await service.create(createDTO);
         const updatedStudent = await service.update(oldStudent.id, updateDTO);
 
-        assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
+        assertStudentDTO({
+            expected: updateDTO,
+            actual: updatedStudent,
+            oldStudent,
+        });
     });
 
     it('update a student by changing its team', async () => {
@@ -373,7 +381,11 @@ describe('StudentService', () => {
         const oldStudent = await service.create(createDTO);
         const updatedStudent = await service.update(oldStudent.id, updateDTO);
 
-        assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
+        assertStudentDTO({
+            expected: updateDTO,
+            actual: updatedStudent,
+            oldStudent,
+        });
     });
 
     it('update a student by removing its team', async () => {
@@ -398,7 +410,11 @@ describe('StudentService', () => {
         const oldStudent = await service.create(createDTO);
         const updatedStudent = await service.update(oldStudent.id, updateDTO);
 
-        assertStudentDTO({ expected: updateDTO, actual: updatedStudent, oldStudent });
+        assertStudentDTO({
+            expected: updateDTO,
+            actual: updatedStudent,
+            oldStudent,
+        });
     });
 
     it('fail on updating a non-existing student', async () => {
@@ -551,7 +567,11 @@ describe('StudentService', () => {
             exerciseGradings: [
                 [
                     sheet.exercises[0].id,
-                    { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
+                    {
+                        comment: 'Comment for exercise 1',
+                        additionalPoints: 0,
+                        points: 8,
+                    },
                 ],
                 [
                     sheet.exercises[1].id,
@@ -616,7 +636,11 @@ describe('StudentService', () => {
             exerciseGradings: [
                 [
                     sheet.exercises[0].id,
-                    { comment: 'Comment for exercise 1', additionalPoints: 0, points: 0 },
+                    {
+                        comment: 'Comment for exercise 1',
+                        additionalPoints: 0,
+                        points: 0,
+                    },
                 ],
                 [
                     sheet.exercises[1].id,
@@ -682,7 +706,11 @@ describe('StudentService', () => {
             exerciseGradings: [
                 [
                     scheinexam.exercises[0].id,
-                    { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
+                    {
+                        comment: 'Comment for exercise 1',
+                        additionalPoints: 0,
+                        points: 8,
+                    },
                 ],
                 [
                     scheinexam.exercises[1].id,

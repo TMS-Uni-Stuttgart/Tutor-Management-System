@@ -85,7 +85,13 @@ export class MarkdownService {
         const gradingsMD: TeamMarkdownData[] = [];
 
         teams.forEach((team) => {
-            gradingsMD.push(...this.generateFromTeam({ team, sheet, ignoreInvalidTeams: true }));
+            gradingsMD.push(
+                ...this.generateFromTeam({
+                    team,
+                    sheet,
+                    ignoreInvalidTeams: true,
+                })
+            );
         });
 
         return {
@@ -112,7 +118,11 @@ export class MarkdownService {
         const team = await this.teamService.findById(teamId);
         const sheet = await this.sheetService.findById(sheetId);
 
-        const markdownForTeam = this.generateFromTeam({ team, sheet, ignoreInvalidTeams: false });
+        const markdownForTeam = this.generateFromTeam({
+            team,
+            sheet,
+            ignoreInvalidTeams: false,
+        });
         const markdownData = markdownForTeam.reduce<ITeamMarkdownData[]>((list, data) => {
             list.push({
                 markdown: data.markdown,
@@ -200,7 +210,11 @@ export class MarkdownService {
                 const nameOfEntity = grading.belongsToTeam
                     ? `Team ${teamName}`
                     : `Student/in ${teamName}`;
-                const markdown = this.generateFromGrading({ entity: sheet, grading, nameOfEntity });
+                const markdown = this.generateFromGrading({
+                    entity: sheet,
+                    grading,
+                    nameOfEntity,
+                });
 
                 markdownData.push({
                     teamName,
@@ -229,7 +243,10 @@ export class MarkdownService {
     }
 
     private generateFromGrading({ entity, grading, nameOfEntity }: GeneratingParams): string {
-        const pointInfo: SheetPointInfo = { achieved: 0, total: { must: 0, bonus: 0 } };
+        const pointInfo: SheetPointInfo = {
+            achieved: 0,
+            total: { must: 0, bonus: 0 },
+        };
         let exerciseMarkdown: string = '';
 
         entity.exercises.forEach((exercise) => {
@@ -242,7 +259,10 @@ export class MarkdownService {
             const achieved = gradingForExercise?.points ?? 0;
             const exMaxPoints = convertExercisePointInfoToString(total);
             const subExTable = gradingForExercise
-                ? this.generateSubExerciseTable({ subexercises, gradingForExercise })
+                ? this.generateSubExerciseTable({
+                      subexercises,
+                      gradingForExercise,
+                  })
                 : undefined;
 
             pointInfo.achieved += achieved;

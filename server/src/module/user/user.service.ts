@@ -25,7 +25,8 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     constructor(
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
-        @InjectModel(UserModel) private readonly userModel: ReturnModelType<typeof UserModel>
+        @InjectModel(UserModel)
+        private readonly userModel: ReturnModelType<typeof UserModel>
     ) {}
 
     /**
@@ -365,7 +366,11 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
         return users
             .filter((u) => u.roles.includes(Role.TUTOR))
-            .map<NamedElement>(({ id, firstname, lastname }) => ({ id, firstname, lastname }));
+            .map<NamedElement>(({ id, firstname, lastname }) => ({
+                id,
+                firstname,
+                lastname,
+            }));
     }
 
     /**
@@ -401,7 +406,11 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
 
         const result = (await this.userModel.create(userDocument)) as UserDocument;
 
-        await this.updateTutorialsWithUser({ tutor: result, tutorials, tutorialsToCorrect });
+        await this.updateTutorialsWithUser({
+            tutor: result,
+            tutorials,
+            tutorialsToCorrect,
+        });
 
         return this.findById(result.id);
     }

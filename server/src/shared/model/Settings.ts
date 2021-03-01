@@ -21,4 +21,6 @@ export interface IClientSettings {
     mailingConfig?: IMailingSettings;
 }
 
-export type IChangeSettingsDTO = { [K in keyof IClientSettings]: IClientSettings[K] };
+export type IChangeSettingsDTO = {
+    [K in keyof IClientSettings]: IClientSettings[K];
+};

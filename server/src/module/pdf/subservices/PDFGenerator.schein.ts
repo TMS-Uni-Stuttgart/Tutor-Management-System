@@ -48,7 +48,10 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
                 statuses.push({ matriculationNo: shortenedNo, state });
             } else {
                 const matriculationNo = students.find((s) => s.id === studentId)?.matriculationNo;
-                statuses.push({ matriculationNo: `${matriculationNo} (${shortenedNo})`, state });
+                statuses.push({
+                    matriculationNo: `${matriculationNo} (${shortenedNo})`,
+                    state,
+                });
             }
         });
 

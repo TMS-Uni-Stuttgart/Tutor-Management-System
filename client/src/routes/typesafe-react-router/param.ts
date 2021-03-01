@@ -11,12 +11,12 @@ import { PathParam } from './types';
 export function param<T extends string, B extends boolean>(param: T, optional: B): PathParam<T, B>;
 export function param<T extends string, B extends boolean>(param: T): PathParam<T, false>;
 export function param<T extends string, B extends boolean>(
-    param: T,
-    optional?: B
+  param: T,
+  optional?: B
 ): PathParam<T, B> {
-    if (optional === undefined) {
-        return { param, optional: false } as PathParam<T, B>;
-    }
+  if (optional === undefined) {
+    return { param, optional: false } as PathParam<T, B>;
+  }
 
-    return { param, optional };
+  return { param, optional };
 }

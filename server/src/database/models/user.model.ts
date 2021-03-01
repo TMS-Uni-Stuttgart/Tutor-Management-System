@@ -29,7 +29,12 @@ type AssignableFields = Omit<NoFunctions<UserModel>, 'tutorials' | 'tutorialsToC
     this.password = hashedPassword;
     next();
 })
-@modelOptions({ schemaOptions: { collection: CollectionName.USER, toObject: { virtuals: true } } })
+@modelOptions({
+    schemaOptions: {
+        collection: CollectionName.USER,
+        toObject: { virtuals: true },
+    },
+})
 export class UserModel {
     constructor(fields: AssignableFields) {
         Object.assign(this, fields);

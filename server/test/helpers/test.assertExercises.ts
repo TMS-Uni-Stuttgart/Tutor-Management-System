@@ -94,7 +94,10 @@ export function assertExerciseDTOs({ expected, actual }: AssertExerciseDTOsParam
             const expectedMaxPoints = subexercises.reduce((sum, cur) => sum + cur.maxPoints, 0);
 
             expect(actualMaxPoints).toEqual(expectedMaxPoints);
-            assertSubExerciseDTOs({ expected: subexercises, actual: actualSubexercises });
+            assertSubExerciseDTOs({
+                expected: subexercises,
+                actual: actualSubexercises,
+            });
         } else {
             expect(actualMaxPoints).toEqual(maxPoints);
             expect(actualSubexercises).toHaveLength(0);

@@ -37,7 +37,10 @@ export class PdfService {
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
     async generateAttendancePDF(tutorialId: string, date: string): Promise<Buffer> {
-        return this.attendancePDF.generatePDF({ tutorialId, date: DateTime.fromISO(date) });
+        return this.attendancePDF.generatePDF({
+            tutorialId,
+            date: DateTime.fromISO(date),
+        });
     }
 
     /**
@@ -61,7 +64,9 @@ export class PdfService {
      * @returns Buffer containing the generated PDF.
      */
     async generateStudentScheinOverviewPDF(enableShortMatriculationNo: boolean): Promise<Buffer> {
-        return this.scheinResultsPDF.generatePDF({ enableShortMatriculationNo });
+        return this.scheinResultsPDF.generatePDF({
+            enableShortMatriculationNo,
+        });
     }
 
     /**
@@ -78,7 +83,10 @@ export class PdfService {
         id: string,
         enableShortMatriculationNo: boolean
     ): Promise<Buffer> {
-        return this.scheinexamResultPDF.generatePDF({ id, enableShortMatriculationNo });
+        return this.scheinexamResultPDF.generatePDF({
+            id,
+            enableShortMatriculationNo,
+        });
     }
 
     /**

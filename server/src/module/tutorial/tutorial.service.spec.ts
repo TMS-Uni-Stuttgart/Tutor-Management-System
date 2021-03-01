@@ -66,7 +66,11 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
 
     expect(actual.students).toEqual(students.map((s) => s._id));
     expect(actual.correctors).toEqual(
-        correctors.map((c) => ({ id: c.id, firstname: c.firstname, lastname: c.lastname }))
+        correctors.map((c) => ({
+            id: c.id,
+            firstname: c.firstname,
+            lastname: c.lastname,
+        }))
     );
 
     const options: ToISOTimeOptions = {
@@ -264,7 +268,10 @@ describe('TutorialService', () => {
     it('find a tutorial by id', async () => {
         const tutorial = await service.findById(TUTORIAL_DOCUMENTS[0]._id);
 
-        assertTutorial({ expected: TUTORIAL_DOCUMENTS[0], actual: tutorial.toDTO() });
+        assertTutorial({
+            expected: TUTORIAL_DOCUMENTS[0],
+            actual: tutorial.toDTO(),
+        });
     });
 
     it('fail on finding non existing tutorial (by ID)', async () => {
@@ -417,7 +424,11 @@ describe('TutorialService', () => {
         const oldTutorial = await service.create(createDTO);
         const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
 
-        assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+        assertTutorialDTO({
+            expected: updatedDTO,
+            actual: updatedTutorial,
+            oldTutorial,
+        });
     });
 
     it('update tutor of tutorial', async () => {
@@ -440,7 +451,11 @@ describe('TutorialService', () => {
         const oldTutorial = await service.create(createDTO);
         const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
 
-        assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+        assertTutorialDTO({
+            expected: updatedDTO,
+            actual: updatedTutorial,
+            oldTutorial,
+        });
     });
 
     it('update tutorial to not have a tutor anymore', async () => {
@@ -463,7 +478,11 @@ describe('TutorialService', () => {
         const oldTutorial = await service.create(createDTO);
         const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
 
-        assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+        assertTutorialDTO({
+            expected: updatedDTO,
+            actual: updatedTutorial,
+            oldTutorial,
+        });
     });
 
     it('update correctors of tutorial', async () => {
@@ -487,7 +506,11 @@ describe('TutorialService', () => {
         const oldTutorial = await service.create(createDTO);
         const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
 
-        assertTutorialDTO({ expected: updatedDTO, actual: updatedTutorial, oldTutorial });
+        assertTutorialDTO({
+            expected: updatedDTO,
+            actual: updatedTutorial,
+            oldTutorial,
+        });
     });
 
     it('fail on updating with a non-existing tutor', async () => {
