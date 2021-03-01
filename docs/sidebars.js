@@ -53,7 +53,6 @@ module.exports = {
     ],
     dev: [
         'dev/setup-env',
-        'dev/editor-setup',
         'dev/structure',
         'dev/server-doc',
         'dev/gh-workflows',
