@@ -67,12 +67,16 @@ Make sure the version tag of your releases match the semantic versioning: `major
 
 ## Deploy docs
 
-| Trigger | Branches |
-| ------- | -------- |
-| Push    | main     |
+| Trigger      | Branches |
+| ------------ | -------- |
+| Pull Request | main     |
+| Push         | main     |
 
-**Required to merge pull request:** No
+**Required to merge pull request:** Yes
 
-Everytime something is pushed to the `main` branch of the repository this documentation gets build.
+In a pull request made against the `main` branch one job of the workflow checks if this documentation could be build.
+Due to the second job being skipped in pull requests it shows so inside the CI box at the bottom of the pull request.
+
+Everytime something is **pushed** to the `main` branch of the repository this documentation gets build with the second job.
 Afterwards it gets pushed to the corresponding GitHub pages branch of the repository.
 If you push against the `main` branch of a fork the docs get updated inside the fork not the original repository.
