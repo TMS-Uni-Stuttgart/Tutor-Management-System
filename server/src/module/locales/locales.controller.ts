@@ -15,6 +15,10 @@ export class LocalesController {
         @Body() missingKeys: Record<string, string>
     ): Promise<void> {
         const container = new MissingKeyContainer(missingKeys);
-        this.localesService.addMissingLanguageKey({ lang, namespace, container });
+        this.localesService.addMissingLanguageKey({
+            lang,
+            namespace,
+            container,
+        });
     }
 }

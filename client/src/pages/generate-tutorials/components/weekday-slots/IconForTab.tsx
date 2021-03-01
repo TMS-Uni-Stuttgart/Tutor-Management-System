@@ -5,35 +5,35 @@ import { FormState } from '../../GenerateTutorials';
 import { WeekdayTimeSlot } from './FormikWeekdaySlot';
 
 interface TabIconProps {
-    weekday: string;
-    showError: boolean;
+  weekday: string;
+  showError: boolean;
 }
 
 function IconForTab({ weekday, showError }: TabIconProps): JSX.Element {
-    const { values } = useFormikContext<FormState>();
+  const { values } = useFormikContext<FormState>();
 
-    const weekdayValues: WeekdayTimeSlot[] | undefined = values.weekdays[weekday];
-    const slotCountOnWeekday: number =
-        weekdayValues?.reduce((sum, current) => {
-            const parsed = Number.parseInt(current.count);
+  const weekdayValues: WeekdayTimeSlot[] | undefined = values.weekdays[weekday];
+  const slotCountOnWeekday: number =
+    weekdayValues?.reduce((sum, current) => {
+      const parsed = Number.parseInt(current.count);
 
-            return Number.isSafeInteger(parsed) ? sum + parsed : sum;
-        }, 0) ?? 0;
+      return Number.isSafeInteger(parsed) ? sum + parsed : sum;
+    }, 0) ?? 0;
 
-    return (
-        <Box
-            width={28}
-            height={28}
-            border={2}
-            borderColor='textPrimary'
-            borderRadius='50%'
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
-        >
-            {!showError ? slotCountOnWeekday : '!'}
-        </Box>
-    );
+  return (
+    <Box
+      width={28}
+      height={28}
+      border={2}
+      borderColor='textPrimary'
+      borderRadius='50%'
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+    >
+      {!showError ? slotCountOnWeekday : '!'}
+    </Box>
+  );
 }
 
 export default IconForTab;

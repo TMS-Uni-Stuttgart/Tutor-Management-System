@@ -2,8 +2,8 @@ import { OptionsObject, useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 
 export interface UseErrorSnackbar {
-    setError: React.Dispatch<React.SetStateAction<string | undefined>>;
-    isError: boolean;
+  setError: React.Dispatch<React.SetStateAction<string | undefined>>;
+  isError: boolean;
 }
 
 /**
@@ -12,25 +12,25 @@ export interface UseErrorSnackbar {
  * @returns Object containing a React useState dispatch function to set an error text.
  */
 export function useErrorSnackbar(): UseErrorSnackbar {
-    const [error, setError] = useState<string>();
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [error, setError] = useState<string>();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    useEffect(() => {
-        let snackbar: OptionsObject['key'] | null | undefined = undefined;
+  useEffect(() => {
+    let snackbar: OptionsObject['key'] | null | undefined = undefined;
 
-        if (error) {
-            snackbar = enqueueSnackbar(error, { variant: 'error', persist: true });
-        }
+    if (error) {
+      snackbar = enqueueSnackbar(error, { variant: 'error', persist: true });
+    }
 
-        return () => {
-            if (!!snackbar) {
-                closeSnackbar(snackbar);
-            }
-        };
-    }, [error, enqueueSnackbar, closeSnackbar]);
-
-    return {
-        setError,
-        isError: !!error,
+    return () => {
+      if (!!snackbar) {
+        closeSnackbar(snackbar);
+      }
     };
+  }, [error, enqueueSnackbar, closeSnackbar]);
+
+  return {
+    setError,
+    isError: !!error,
+  };
 }

@@ -162,7 +162,11 @@ export class TutorialModel {
             id,
             slot,
             tutor: tutor
-                ? { id: tutor.id, firstname: tutor.firstname, lastname: tutor.lastname }
+                ? {
+                      id: tutor.id,
+                      firstname: tutor.firstname,
+                      lastname: tutor.lastname,
+                  }
                 : undefined,
             dates: dates.map((date) => date.toISODate() ?? 'DATE_NOT_PARSEABLE'),
             startTime: startTime.toISOTime(dateOptions) ?? 'DATE_NOT_PARSABLE',

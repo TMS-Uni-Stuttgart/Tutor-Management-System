@@ -56,7 +56,10 @@ export class MailService {
             if (this.isValidEmail(user.email)) {
                 mails.push(this.sendMail({ user, transport, options }));
             } else {
-                failedMails.push({ userId: user.id, reason: 'INVALID_EMAIL_ADDRESS' });
+                failedMails.push({
+                    userId: user.id,
+                    reason: 'INVALID_EMAIL_ADDRESS',
+                });
             }
         }
 
@@ -115,7 +118,10 @@ export class MailService {
     private generateMailingStatus(
         promiseResults: PromiseSettledResult<SentMessageInfo>[]
     ): MailingStatus {
-        const status: MailingStatus = { failedMailsInfo: [], successFullSend: 0 };
+        const status: MailingStatus = {
+            failedMailsInfo: [],
+            successFullSend: 0,
+        };
 
         for (const mail of promiseResults) {
             if (mail.status === 'fulfilled') {
@@ -131,7 +137,10 @@ export class MailService {
                         )}`,
                     });
                 } else {
-                    status.failedMailsInfo.push({ userId: 'UNKNOWN', reason: 'UNKNOWN_ERROR' });
+                    status.failedMailsInfo.push({
+                        userId: 'UNKNOWN',
+                        reason: 'UNKNOWN_ERROR',
+                    });
                 }
             }
         }

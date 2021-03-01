@@ -152,7 +152,9 @@ export class StaticSettings {
         });
 
         this.assertConfigNoErrors(
-            validateSync(config, { groups: [DatabaseConfigurationValidationGroup.ALL] })
+            validateSync(config, {
+                groups: [DatabaseConfigurationValidationGroup.ALL],
+            })
         );
 
         return config;
@@ -300,7 +302,9 @@ export class StaticSettings {
             const config = plainToClass(ApplicationConfiguration, configString);
 
             this.assertConfigNoErrors(
-                validateSync(config, { groups: [DatabaseConfigurationValidationGroup.FILE] })
+                validateSync(config, {
+                    groups: [DatabaseConfigurationValidationGroup.FILE],
+                })
             );
 
             this.logger.log(`Configuration loaded for "${environment}" environment`);

@@ -12,75 +12,68 @@ import { getAttendanceColor } from './AttendanceButton';
 import CakeCount from './CakeCount';
 
 const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        row: {
-            height: 76,
-        },
-        cakeIcon: {
-            marginLeft: theme.spacing(0.5),
-        },
-    })
+  createStyles({
+    row: {
+      height: 76,
+    },
+    cakeIcon: {
+      marginLeft: theme.spacing(0.5),
+    },
+  })
 );
 
 interface Props {
-    student: Student;
-    attendance: IAttendance | undefined;
-    onAttendanceSelection: (state?: AttendanceState) => void;
-    onNoteSave: NoteFormCallback;
-    onCakeCountChanged?: (cakeCount: number) => void;
-    canBeExcused: boolean;
+  student: Student;
+  attendance: IAttendance | undefined;
+  onAttendanceSelection: (state?: AttendanceState) => void;
+  onNoteSave: NoteFormCallback;
+  onCakeCountChanged?: (cakeCount: number) => void;
+  canBeExcused: boolean;
 }
 
 function StudentAttendanceRow({
-    student,
-    attendance,
-    onAttendanceSelection,
-    onNoteSave,
-    onCakeCountChanged,
-    canBeExcused,
-    ...rest
+  student,
+  attendance,
+  onAttendanceSelection,
+  onNoteSave,
+  onCakeCountChanged,
+  canBeExcused,
+  ...rest
 }: Props): JSX.Element {
-    const classes = useStyles();
-    const theme = useTheme();
+  const classes = useStyles();
+  const theme = useTheme();
 
-    const attendanceState: AttendanceState | undefined = attendance ? attendance.state : undefined;
+  const attendanceState: AttendanceState | undefined = attendance ? attendance.state : undefined;
 
-    return (
-        <PaperTableRow
-            label={student.name}
-            subText={
-                student.team
-                    ? `Team: #${student.team.teamNo.toString().padStart(2, '0')}`
-                    : 'Kein Team'
-            }
-            Avatar={<StudentAvatar student={student} />}
-            SubTextProps={!student.team ? { color: 'error' } : undefined}
-            {...rest}
-            className={clsx(classes.row)}
-            colorOfBottomBar={
-                attendanceState ? getAttendanceColor(attendanceState, theme) : undefined
-            }
-        >
-            {onCakeCountChanged && (
-                <TableCell>
-                    <CakeCount
-                        cakeCount={student.cakeCount}
-                        onCakeCountChanged={onCakeCountChanged}
-                    />
-                </TableCell>
-            )}
+  return (
+    <PaperTableRow
+      label={student.name}
+      subText={
+        student.team ? `Team: #${student.team.teamNo.toString().padStart(2, '0')}` : 'Kein Team'
+      }
+      Avatar={<StudentAvatar student={student} />}
+      SubTextProps={!student.team ? { color: 'error' } : undefined}
+      {...rest}
+      className={clsx(classes.row)}
+      colorOfBottomBar={attendanceState ? getAttendanceColor(attendanceState, theme) : undefined}
+    >
+      {onCakeCountChanged && (
+        <TableCell>
+          <CakeCount cakeCount={student.cakeCount} onCakeCountChanged={onCakeCountChanged} />
+        </TableCell>
+      )}
 
-            <TableCell align='right'>
-                <AttendanceControls
-                    attendance={attendance}
-                    onAttendanceChange={onAttendanceSelection}
-                    onNoteChange={onNoteSave}
-                    justifyContent='flex-end'
-                    excuseDisabled={!canBeExcused}
-                />
-            </TableCell>
-        </PaperTableRow>
-    );
+      <TableCell align='right'>
+        <AttendanceControls
+          attendance={attendance}
+          onAttendanceChange={onAttendanceSelection}
+          onNoteChange={onNoteSave}
+          justifyContent='flex-end'
+          excuseDisabled={!canBeExcused}
+        />
+      </TableCell>
+    </PaperTableRow>
+  );
 }
 
 export default StudentAttendanceRow;

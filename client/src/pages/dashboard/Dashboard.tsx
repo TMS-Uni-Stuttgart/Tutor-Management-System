@@ -6,8 +6,8 @@ import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import Placeholder from '../../components/Placeholder';
 import { getScheinCriteriaSummariesOfAllStudentsOfTutorial } from '../../hooks/fetching/Scheincriteria';
 import {
-    getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
-    getTutorial,
+  getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
+  getTutorial,
 } from '../../hooks/fetching/Tutorial';
 import { useLogin } from '../../hooks/LoginService';
 import { useFetchState } from '../../hooks/useFetchState';
@@ -18,98 +18,93 @@ import AllTutorialStatistics from './components/AllTutorialStatistics';
 import TutorialStatistics from './components/TutorialStatistics';
 
 export interface TutorialSummaryInfo {
-    tutorial: Tutorial;
-    studentInfos: ScheincriteriaSummaryByStudents;
+  tutorial: Tutorial;
+  studentInfos: ScheincriteriaSummaryByStudents;
 }
 
 function isAdmin(userData: LoggedInUser | undefined): boolean {
-    return !!userData && userData.roles.includes(Role.ADMIN);
+  return !!userData && userData.roles.includes(Role.ADMIN);
 }
 
 async function getTutorialSummariesForUser(
-    userData: LoggedInUser | undefined
+  userData: LoggedInUser | undefined
 ): Promise<TutorialSummaryInfo[]> {
-    if (!userData) {
-        return [];
-    }
+  if (!userData) {
+    return [];
+  }
 
-    const summaries: TutorialSummaryInfo[] = [];
+  const summaries: TutorialSummaryInfo[] = [];
 
-    for (const loggedInTutorial of userData.tutorials) {
-        const tutorial = await getTutorial(loggedInTutorial.id);
-        const studentInfos = await getScheinCriteriaSummariesOfAllStudentsOfTutorial(
-            loggedInTutorial.id
-        );
+  for (const loggedInTutorial of userData.tutorials) {
+    const tutorial = await getTutorial(loggedInTutorial.id);
+    const studentInfos = await getScheinCriteriaSummariesOfAllStudentsOfTutorial(
+      loggedInTutorial.id
+    );
 
-        summaries.push({ tutorial, studentInfos });
-    }
+    summaries.push({ tutorial, studentInfos });
+  }
 
-    return summaries;
+  return summaries;
 }
 
 function Dashboard(): JSX.Element {
-    const { userData } = useLogin();
+  const { userData } = useLogin();
 
-    const [tutorialsWithScheinCriteriaSummaries, isLoadingTutorialSummaries] = useFetchState({
-        fetchFunction: getTutorialSummariesForUser,
-        immediate: true,
-        params: [userData],
-    });
+  const [tutorialsWithScheinCriteriaSummaries, isLoadingTutorialSummaries] = useFetchState({
+    fetchFunction: getTutorialSummariesForUser,
+    immediate: true,
+    params: [userData],
+  });
 
-    const [summaries, isLoadingAdminGraph, , fetchSummaries] = useFetchState({
-        fetchFunction: getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
-    });
+  const [summaries, isLoadingAdminGraph, , fetchSummaries] = useFetchState({
+    fetchFunction: getScheinCriteriaSummaryOfAllStudentsWithTutorialSlots,
+  });
 
-    return (
-        <div>
-            {isLoadingTutorialSummaries ? (
-                <LoadingSpinner />
-            ) : (
-                <>
-                    {isAdmin(userData) && (
-                        <>
-                            {!summaries && !isLoadingAdminGraph ? (
-                                <Box display='flex' justifyContent='center'>
-                                    <Button
-                                        disabled={isLoadingAdminGraph}
-                                        onClick={() => fetchSummaries()}
-                                    >
-                                        Tutorienübersicht laden
-                                    </Button>
-                                </Box>
-                            ) : (
-                                <Placeholder
-                                    placeholderText={'Keine Daten für Tutorienübersicht verfügbar.'}
-                                    showPlaceholder={
-                                        !!summaries && Object.entries(summaries).length === 0
-                                    }
-                                    loading={isLoadingAdminGraph}
-                                    SpinnerProps={{
-                                        shrinkBox: true,
-                                        text: 'Lade Tutorienübersicht',
-                                    }}
-                                >
-                                    {!!summaries && Object.entries(summaries).length > 0 && (
-                                        <div>
-                                            <AdminStatsCard studentsByTutorialSummary={summaries} />
-                                        </div>
-                                    )}
-                                </Placeholder>
-                            )}
+  return (
+    <div>
+      {isLoadingTutorialSummaries ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          {isAdmin(userData) && (
+            <>
+              {!summaries && !isLoadingAdminGraph ? (
+                <Box display='flex' justifyContent='center'>
+                  <Button disabled={isLoadingAdminGraph} onClick={() => fetchSummaries()}>
+                    Tutorienübersicht laden
+                  </Button>
+                </Box>
+              ) : (
+                <Placeholder
+                  placeholderText={'Keine Daten für Tutorienübersicht verfügbar.'}
+                  showPlaceholder={!!summaries && Object.entries(summaries).length === 0}
+                  loading={isLoadingAdminGraph}
+                  SpinnerProps={{
+                    shrinkBox: true,
+                    text: 'Lade Tutorienübersicht',
+                  }}
+                >
+                  {!!summaries && Object.entries(summaries).length > 0 && (
+                    <div>
+                      <AdminStatsCard studentsByTutorialSummary={summaries} />
+                    </div>
+                  )}
+                </Placeholder>
+              )}
 
-                            <Divider style={{ margin: '16px 0px' }} />
-                        </>
-                    )}
+              <Divider style={{ margin: '16px 0px' }} />
+            </>
+          )}
 
-                    <AllTutorialStatistics
-                        items={tutorialsWithScheinCriteriaSummaries ?? []}
-                        createRowFromItem={(item) => <TutorialStatistics value={item} />}
-                        placeholder='Keine Tutorien vorhanden'
-                    />
-                </>
-            )}
-        </div>
-    );
+          <AllTutorialStatistics
+            items={tutorialsWithScheinCriteriaSummaries ?? []}
+            createRowFromItem={(item) => <TutorialStatistics value={item} />}
+            placeholder='Keine Tutorien vorhanden'
+          />
+        </>
+      )}
+    </div>
+  );
 }
 
 export default Dashboard;

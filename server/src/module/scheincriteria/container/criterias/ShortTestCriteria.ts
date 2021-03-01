@@ -47,7 +47,10 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
     }
 
     checkCriteriaStatus({ student, shortTests }: CriteriaPayload): StatusCheckResponse {
-        const { passed: testsPassed, infos } = this.checkShortTests({ student, shortTests });
+        const { passed: testsPassed, infos } = this.checkShortTests({
+            student,
+            shortTests,
+        });
         const totalShortTestCount = shortTests.length;
         const passed: boolean = this.percentage
             ? testsPassed / shortTests.length >= this.valueNeeded
@@ -73,16 +76,9 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
                 const achieved = student.getGrading(shortTest)?.points ?? 0;
                 const total = shortTest.totalPoints.must;
 
-                let state = PassedState.NOT_PASSED;
-                if (this.isPercentagePerTest) {
-                    if (shortTest.hasPassed(student)) {
-                        state = PassedState.PASSED;
-                    }
-                } else {
-                    if (achieved >= this.valuePerTestNeeded) {
-                        state = PassedState.PASSED;
-                    }
-                }
+                const state = shortTest.hasPassed(student)
+                    ? PassedState.PASSED
+                    : PassedState.NOT_PASSED;
 
                 return {
                     passed: state === PassedState.PASSED ? prev.passed + 1 : prev.passed,

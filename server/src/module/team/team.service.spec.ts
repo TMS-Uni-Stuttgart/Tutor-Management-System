@@ -138,7 +138,10 @@ describe('TeamService', () => {
     it('find all teams in tutorial', async () => {
         const teams = await service.findAllTeamsInTutorial(TUTORIAL_OF_ALL_TEAMS._id);
 
-        assertTeamList({ expected: TEAM_DOCUMENTS, actual: teams.map((team) => team.toDTO()) });
+        assertTeamList({
+            expected: TEAM_DOCUMENTS,
+            actual: teams.map((team) => team.toDTO()),
+        });
     });
 
     it('find specific team', async () => {
@@ -155,7 +158,10 @@ describe('TeamService', () => {
         const nonExisting = generateObjectId();
 
         await expect(
-            service.findById({ tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: nonExisting })
+            service.findById({
+                tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+                teamId: nonExisting,
+            })
         ).rejects.toThrow(NotFoundException);
     });
 
@@ -286,7 +292,10 @@ describe('TeamService', () => {
         };
 
         const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
-        const teamId: ITeamId = { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id };
+        const teamId: ITeamId = {
+            tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+            teamId: team.id,
+        };
         const deletedTeam = await service.deleteTeamFromTutorial(teamId);
 
         expect(deletedTeam.id).toEqual(team.id);
@@ -353,7 +362,11 @@ describe('TeamService', () => {
             exerciseGradings: [
                 [
                     sheet.exercises[0].id,
-                    { comment: 'Comment for exercise 1', additionalPoints: 0, points: 8 },
+                    {
+                        comment: 'Comment for exercise 1',
+                        additionalPoints: 0,
+                        points: 8,
+                    },
                 ],
                 [
                     sheet.exercises[1].id,

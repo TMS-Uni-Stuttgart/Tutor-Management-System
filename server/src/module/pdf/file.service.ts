@@ -100,7 +100,10 @@ export class FileService {
         await this.loadFilenameTemplates();
 
         const filename =
-            this.gradingFilename?.({ sheetNo: sheet.sheetNoAsString, teamName }) ?? 'NO_FILE_NAME';
+            this.gradingFilename?.({
+                sheetNo: sheet.sheetNoAsString,
+                teamName,
+            }) ?? 'NO_FILE_NAME';
 
         return !!extension ? `${filename}.${extension}` : filename;
     }
@@ -122,8 +125,10 @@ export class FileService {
         await this.loadFilenameTemplates();
 
         const filename =
-            this.tutorialGradingFilename?.({ sheetNo: sheet.sheetNoAsString, tutorialSlot }) ??
-            'NO_FILE_NAME';
+            this.tutorialGradingFilename?.({
+                sheetNo: sheet.sheetNoAsString,
+                tutorialSlot,
+            }) ?? 'NO_FILE_NAME';
 
         return !!extension ? `${filename}.${extension}` : filename;
     }
