@@ -80,7 +80,7 @@ export class ScheinexamCriteria extends Scheincriteria {
                     return;
                 }
 
-                const result = exam.hasPassed(student);
+                const result = exam.getPassedInformation(student);
                 const distributionForThisResult = distribution[result.achieved] ?? {
                     value: 0,
                     aboveThreshhold: result.achieved / result.total.must >= exam.percentageNeeded,
@@ -143,7 +143,7 @@ export class ScheinexamCriteria extends Scheincriteria {
         let examsPassed = 0;
 
         for (const exam of exams) {
-            const { passed, achieved, total } = exam.hasPassed(student);
+            const { passed, achieved, total } = exam.getPassedInformation(student);
             const state: PassedState = passed ? PassedState.PASSED : PassedState.NOT_PASSED;
 
             if (passed) {

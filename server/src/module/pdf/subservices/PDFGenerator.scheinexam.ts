@@ -87,7 +87,7 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
             const hasAttended = examGrading !== undefined;
 
             if (hasAttended) {
-                results[student.id] = exam.hasPassed(student).passed
+                results[student.id] = exam.hasPassed(student)
                     ? PassedState.PASSED
                     : PassedState.NOT_PASSED;
             } else {
