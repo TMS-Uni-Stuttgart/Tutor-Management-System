@@ -92,7 +92,10 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         const { tutorial: tutorialId, team: teamId, ...rest } = dto;
         const tutorial = await this.tutorialService.findById(tutorialId);
         const team = !!teamId
-            ? await this.teamService.findById({ tutorialId: tutorial.id, teamId })
+            ? await this.teamService.findById({
+                  tutorialId: tutorial.id,
+                  teamId,
+              })
             : undefined;
 
         const doc = new StudentModel({
@@ -241,6 +244,9 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
             return undefined;
         }
 
-        return this.teamService.findById({ tutorialId: student.tutorial.id, teamId: dto.team });
+        return this.teamService.findById({
+            tutorialId: student.tutorial.id,
+            teamId: dto.team,
+        });
     }
 }

@@ -825,9 +825,21 @@ describe('UserService', () => {
 
     it('get the name of all tutors', async () => {
         const expected: NamedElement[] = [
-            { id: '5e501290468622e257c2db16', firstname: 'Harry', lastname: 'Potter' },
-            { id: '5e5013711922d1957bcf0c30', firstname: 'Ron', lastname: 'Weasley' },
-            { id: '5e503ac11015dc73652731a6', firstname: 'Ginny', lastname: 'Weasley' },
+            {
+                id: '5e501290468622e257c2db16',
+                firstname: 'Harry',
+                lastname: 'Potter',
+            },
+            {
+                id: '5e5013711922d1957bcf0c30',
+                firstname: 'Ron',
+                lastname: 'Weasley',
+            },
+            {
+                id: '5e503ac11015dc73652731a6',
+                firstname: 'Ginny',
+                lastname: 'Weasley',
+            },
         ];
         const namesOfTutors: NamedElement[] = await service.getNamesOfAllTutors();
         expect(namesOfTutors).toEqual(expected);

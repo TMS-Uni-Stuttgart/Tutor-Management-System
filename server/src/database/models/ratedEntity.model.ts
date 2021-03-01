@@ -37,7 +37,10 @@ export abstract class HasExercisesModel implements HandInDocument {
     }
 
     toDTO(this: HasExercisesDocument): IHasExercises {
-        return { id: this.id, exercises: this.exercises.map((ex) => ex.toDTO()) };
+        return {
+            id: this.id,
+            exercises: this.exercises.map((ex) => ex.toDTO()),
+        };
     }
 }
 

@@ -135,7 +135,11 @@ export class StudentController {
         @Body() dto: AttendanceDTO,
         @Request() request: ExpressRequest
     ): Promise<IAttendance> {
-        await this.checkUserCanExcuseOrThrow({ dto, studentId: id, user: request.user });
+        await this.checkUserCanExcuseOrThrow({
+            dto,
+            studentId: id,
+            user: request.user,
+        });
 
         const attendance = await this.studentService.setAttendance(id, dto);
 

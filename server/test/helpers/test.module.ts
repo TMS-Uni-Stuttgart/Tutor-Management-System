@@ -36,7 +36,10 @@ const MODEL_OPTIONS: ModelMockOptions[] = [
     { model: TeamModel, initialDocuments: [...TEAM_DOCUMENTS] },
     { model: SheetModel, initialDocuments: [...SHEET_DOCUMENTS] },
     { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
-    { model: ScheincriteriaModel, initialDocuments: [...SCHEINCRITERIA_DOCUMENTS] },
+    {
+        model: ScheincriteriaModel,
+        initialDocuments: [...SCHEINCRITERIA_DOCUMENTS],
+    },
     { model: SettingsModel, initialDocuments: [...SETTINGS_DOCUMENTS] },
     { model: ShortTestModel, initialDocuments: [] },
 ];

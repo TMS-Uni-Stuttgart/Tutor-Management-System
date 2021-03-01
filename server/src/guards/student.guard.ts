@@ -35,7 +35,11 @@ export class StudentGuard extends TutorialGuard {
         const user = this.getUserFromRequest(context);
         const student = await this.getStudentFromRequest(context);
 
-        return this.hasUserAccessToTutorial({ user, context, tutorial: student.tutorial });
+        return this.hasUserAccessToTutorial({
+            user,
+            context,
+            tutorial: student.tutorial,
+        });
     }
 
     private async getStudentFromRequest(context: ExecutionContext): Promise<StudentDocument> {

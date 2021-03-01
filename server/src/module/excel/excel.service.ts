@@ -141,8 +141,14 @@ export class ExcelService {
             const { firstname, lastname, matriculationNo, courseOfStudies, email } = student;
             cellData['firstname'].push({ content: firstname, row });
             cellData['lastname'].push({ content: lastname, row });
-            cellData['matriculationNo'].push({ content: matriculationNo || 'N/A', row });
-            cellData['courseOfStudies'].push({ content: courseOfStudies || 'N/A', row });
+            cellData['matriculationNo'].push({
+                content: matriculationNo || 'N/A',
+                row,
+            });
+            cellData['courseOfStudies'].push({
+                content: courseOfStudies || 'N/A',
+                row,
+            });
             cellData['email'].push({ content: email || 'N/A', row });
 
             row++;
@@ -201,7 +207,11 @@ export class ExcelService {
                 });
 
                 if (!!grading) {
-                    data[ex.id].push({ content: grading.points, type: 'number', row });
+                    data[ex.id].push({
+                        content: grading.points,
+                        type: 'number',
+                        row,
+                    });
                 } else {
                     data[ex.id].push({ content: 'N/A', row });
                 }

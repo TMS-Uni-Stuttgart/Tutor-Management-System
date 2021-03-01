@@ -72,7 +72,10 @@ export function getPointsOfExercise(exercise: IExercise): ExercisePointsInfo {
 
     if (exercise.subexercises.length === 0) {
         if (exercise.bonus) {
-            return new ExercisePointsInfo({ must: 0, bonus: exercise.maxPoints });
+            return new ExercisePointsInfo({
+                must: 0,
+                bonus: exercise.maxPoints,
+            });
         } else {
             return new ExercisePointsInfo({ must: exercise.maxPoints });
         }

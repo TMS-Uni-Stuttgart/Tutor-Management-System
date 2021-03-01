@@ -113,7 +113,10 @@ export class MongooseMockModelProvider<T> {
         additionalProperties?: AdditionalProperties
     ): MockedDocument<T> {
         const id = '_id' in document ? (document as any)._id : undefined;
-        const adjustedDocument: any = Object.assign(document, { id, ...additionalProperties });
+        const adjustedDocument: any = Object.assign(document, {
+            id,
+            ...additionalProperties,
+        });
 
         return Object.assign(document, {
             id,

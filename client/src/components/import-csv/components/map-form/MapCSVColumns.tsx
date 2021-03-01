@@ -8,91 +8,91 @@ import { CSVMapColumsMetadata, isDynamicColumnInformation } from '../../ImportCS
 import MapForm, { MapFormValues } from './MapForm';
 
 function validateForm(
-    values: MapFormValues,
-    metadata: CSVMapColumsMetadata<string, string>
+  values: MapFormValues,
+  metadata: CSVMapColumsMetadata<string, string>
 ): string[] {
-    const errors: string[] = [];
+  const errors: string[] = [];
 
-    for (const [key, info] of Object.entries(metadata.information)) {
-        if (info.required) {
-            if (!values[key] || values[key].length === 0) {
-                errors.push(`Zuordnung für "${info.label}" benötigt.`);
-            }
-        }
-
-        if (isDynamicColumnInformation(info)) {
-            if (!Array.isArray(values[key])) {
-                errors.push(`Keine Liste für "${info.label}" zugeordnet.`);
-            }
-        }
+  for (const [key, info] of Object.entries(metadata.information)) {
+    if (info.required) {
+      if (!values[key] || values[key].length === 0) {
+        errors.push(`Zuordnung für "${info.label}" benötigt.`);
+      }
     }
 
-    return errors;
+    if (isDynamicColumnInformation(info)) {
+      if (!Array.isArray(values[key])) {
+        errors.push(`Keine Liste für "${info.label}" zugeordnet.`);
+      }
+    }
+  }
+
+  return errors;
 }
 
 function useGenerateSaveCallback(
-    formikRef: RefObject<FormikProps<MapFormValues>>
+  formikRef: RefObject<FormikProps<MapFormValues>>
 ): NextStepCallback {
-    const {
-        mapColumnsHelpers: { mapColumn, metadata },
-    } = useImportCSVContext();
-    const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
-    const callback: NextStepCallback = useCallback(async () => {
-        const values = formikRef.current?.values;
+  const {
+    mapColumnsHelpers: { mapColumn, metadata },
+  } = useImportCSVContext();
+  const { enqueueSnackbar, enqueueSnackbarWithList } = useCustomSnackbar();
+  const callback: NextStepCallback = useCallback(async () => {
+    const values = formikRef.current?.values;
 
-        if (!values) {
-            enqueueSnackbar('Spalten konnten nicht zugeordnet werden: NO_VALUES', {
-                variant: 'error',
-            });
-            return { goToNext: false };
-        }
+    if (!values) {
+      enqueueSnackbar('Spalten konnten nicht zugeordnet werden: NO_VALUES', {
+        variant: 'error',
+      });
+      return { goToNext: false };
+    }
 
-        const errors = validateForm(values, metadata);
+    const errors = validateForm(values, metadata);
 
-        if (errors.length > 0) {
-            enqueueSnackbarWithList({
-                title: 'Ungültige Zuordnung',
-                textBeforeList: 'Die folgenden Fehler sind in der Zuordnung vorhanden:',
-                items: errors,
-                isOpen: true,
-                variant: 'error',
-            });
-            return { goToNext: false, error: true };
-        }
+    if (errors.length > 0) {
+      enqueueSnackbarWithList({
+        title: 'Ungültige Zuordnung',
+        textBeforeList: 'Die folgenden Fehler sind in der Zuordnung vorhanden:',
+        items: errors,
+        isOpen: true,
+        variant: 'error',
+      });
+      return { goToNext: false, error: true };
+    }
 
-        for (const [key, value] of Object.entries(values)) {
-            mapColumn(key, value);
-        }
+    for (const [key, value] of Object.entries(values)) {
+      mapColumn(key, value);
+    }
 
-        enqueueSnackbar('Spalten erfolgreich zugeordnet.', { variant: 'success' });
-        return { goToNext: true };
-    }, [formikRef, mapColumn, metadata, enqueueSnackbar, enqueueSnackbarWithList]);
+    enqueueSnackbar('Spalten erfolgreich zugeordnet.', { variant: 'success' });
+    return { goToNext: true };
+  }, [formikRef, mapColumn, metadata, enqueueSnackbar, enqueueSnackbarWithList]);
 
-    return callback;
+  return callback;
 }
 
 function MapCSVColumns(): JSX.Element {
-    const { csvData, mapColumnsHelpers } = useImportCSVContext();
-    const { metadata } = mapColumnsHelpers;
+  const { csvData, mapColumnsHelpers } = useImportCSVContext();
+  const { metadata } = mapColumnsHelpers;
 
-    // Pass in `null` to make sure that a `RefObject` is returned as type.
-    const formikRef: RefObject<FormikProps<MapFormValues>> = useRef(null);
-    const stepperCallback: NextStepCallback = useGenerateSaveCallback(formikRef);
+  // Pass in `null` to make sure that a `RefObject` is returned as type.
+  const formikRef: RefObject<FormikProps<MapFormValues>> = useRef(null);
+  const stepperCallback: NextStepCallback = useGenerateSaveCallback(formikRef);
 
-    useStepper(stepperCallback);
+  useStepper(stepperCallback);
 
-    return (
-        <Box width='100%'>
-            <Typography variant='h4'>Spalten zuordnen</Typography>
+  return (
+    <Box width='100%'>
+      <Typography variant='h4'>Spalten zuordnen</Typography>
 
-            <MapForm
-                formikRef={formikRef}
-                headers={csvData.headers}
-                metadata={metadata}
-                onSubmit={stepperCallback}
-            />
-        </Box>
-    );
+      <MapForm
+        formikRef={formikRef}
+        headers={csvData.headers}
+        metadata={metadata}
+        onSubmit={stepperCallback}
+      />
+    </Box>
+  );
 }
 
 export default MapCSVColumns;
