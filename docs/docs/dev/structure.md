@@ -212,6 +212,29 @@ The following scripts are included:
 
 ## Architecture
 
-**TODO: ARCHITECTURE**
+![Software Architecture](./assets/Architecture.png)
+
+The diagram above shows the _basic_ architecture of the Tutor-Management-System.
+The orange colored arrows describe the basic flow of a request through the system whereas black colored arrows are interaction between components.
+
+The TMS uses a basic **3-layer architecture**:
+A _client_ layer, a _server_ layer and a _data_ layer.
+The _data_ layer is one MongoDB which stores all data necessary.
+This database must be provided externally and is not part of the docker images which get released.
+The _server_ layer consists of a [NestJS server][nestjs-server] which handles the requests from the client aswell as reading data from and writing data to the database.
+The _client_ layer is a webapp build with [React][react].
+Server and client communicate through REST request.
+Both, server and client, have their own folder each with their corresponding project in it (see above).
+
+Each request follows this basic route:
+First, it runs through the authentication and one or more authorization guards to ensure the user making the request is allowed to do so.
+Second, if the request has a body the body gets parsed and converted to an actual object.
+During this process the body is also validated (if it is invalid an error response is sent and the request handling ends).
+Afterwards the request gets handed to the approriate controller which passed it onto the corresponding service.
+The service communicates with the database to gather and update the necessary resources.
+Finally a response is send to the client.
+The response could either contain the requested data (or a success message if no data was requested) or it contains an error message if something went wrong.
 
 [build-release-doc]: ./build-release#build-docker-image
+[nestjs-server]: https://nestjs.com/
+[react]: https://reactjs.org/
