@@ -3,6 +3,7 @@
 
 # Production
 /build
+/static/server-doc
 
 # Generated files
 .docusaurus

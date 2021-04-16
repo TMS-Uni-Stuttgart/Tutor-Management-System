@@ -51,5 +51,12 @@ module.exports = {
             ]),
         },
     ],
-    dev: ['dev/setup-env', 'dev/fork'],
+    dev: [
+        'dev/setup-env',
+        'dev/structure',
+        'dev/server-doc',
+        'dev/gh-workflows',
+        'dev/fork',
+        'dev/build-release',
+    ],
 };

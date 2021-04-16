@@ -22,7 +22,7 @@ jobs:
         run: npm i -g pnpm
       - name: Install node packages
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
         env:
           CI: true
       - name: Type check client
@@ -45,7 +45,7 @@ jobs:
         run: npm i -g pnpm
       - name: Install node packages
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
         env:
           CI: true
       - name: Type check server
@@ -68,7 +68,7 @@ jobs:
         run: npm i -g pnpm
       - name: Install node packages
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
         env:
           CI: true
       - name: Check code quality in workspace

@@ -29,7 +29,7 @@
     "upgrade-pkg:server": "cd ./server && npm-upgrade"
   },
   "dependencies": {
-    "class-transformer": "^0.3.1",
+    "class-transformer": "^0.4.0",
     "github-markdown-css": "^4.0.0",
     "lodash": "^4.17.20",
     "luxon": "^1.25.0",

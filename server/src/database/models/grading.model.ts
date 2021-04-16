@@ -1,7 +1,8 @@
 import { BadRequestException, Logger } from '@nestjs/common';
 import { isDocument } from '@typegoose/typegoose';
-import { ClassConstructor, plainToClass, Transform, Type } from 'class-transformer';
+import { plainToClass, Transform, Type } from 'class-transformer';
 import { Types } from 'mongoose';
+import { ClassType } from '../../helpers/ClassConstructor';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
@@ -14,7 +15,7 @@ export class SerializableMap<K extends string, V> extends Map<K, V> {
 
     static fromJSON<K extends string, V>(
         json: unknown,
-        type?: ClassConstructor<V>
+        type?: ClassType<V>
     ): SerializableMap<K, V> {
         const data: unknown = typeof json === 'string' ? JSON.parse(json) : json;
 
@@ -24,6 +25,7 @@ export class SerializableMap<K extends string, V> extends Map<K, V> {
                 undefined,
                 'SerializableMap'
             );
+            Logger.error(json);
             return new SerializableMap();
         }
 
