@@ -1,5 +1,6 @@
-import { ClassConstructor, plainToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import { registerDecorator, validate, ValidationOptions } from 'class-validator';
+import { ClassType } from '../ClassConstructor';
 
 /**
  * Validates the property to match the format [string, ClassType]. Those arrays can be used as entries in a Map with number values.
@@ -7,10 +8,7 @@ import { registerDecorator, validate, ValidationOptions } from 'class-validator'
  * @param classType ClassType to check the second entry of the array against.
  * @param validationOptions Options passed to the class-validator.
  */
-export function IsMapEntry(
-    classType: ClassConstructor<any>,
-    validationOptions?: ValidationOptions
-) {
+export function IsMapEntry(classType: ClassType<any>, validationOptions?: ValidationOptions) {
     return function (object: Record<string, any>, propertyName: string): void {
         const message: any = {
             message: validationOptions?.each

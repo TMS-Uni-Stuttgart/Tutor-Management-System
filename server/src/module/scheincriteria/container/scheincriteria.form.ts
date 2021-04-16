@@ -1,8 +1,8 @@
-import { ClassConstructor } from 'class-transformer';
+import { ClassType } from '../../../helpers/ClassConstructor';
 import { FormFieldData } from '../../../shared/model/FormTypes';
 import { Scheincriteria } from './Scheincriteria';
 
-export type ScheincriteriaClass = ClassConstructor<Scheincriteria>;
+export type ScheincriteriaClass = ClassType<Scheincriteria>;
 
 export class ScheincriteriaForm {
     readonly blueprint: ScheincriteriaClass;
