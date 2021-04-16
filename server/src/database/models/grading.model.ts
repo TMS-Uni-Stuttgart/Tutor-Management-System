@@ -25,6 +25,7 @@ export class SerializableMap<K extends string, V> extends Map<K, V> {
                 undefined,
                 'SerializableMap'
             );
+            Logger.error(json);
             return new SerializableMap();
         }
 

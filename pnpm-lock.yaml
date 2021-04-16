@@ -13,7 +13,7 @@ importers:
       '@typescript-eslint/eslint-plugin': ^4.14.1
       '@typescript-eslint/parser': ^4.14.1
       chalk: ^4.1.0
-      class-transformer: ^0.3.1
+      class-transformer: ^0.4.0
       copyfiles: ^2.4.1
       cross-env: ^7.0.3
       env-cmd: ^10.1.0
@@ -32,7 +32,7 @@ importers:
       ts-node: ^9.1.1
       typescript: ^4.1.3
     dependencies:
-      class-transformer: 0.3.1
+      class-transformer: 0.4.0
       github-markdown-css: 4.0.0
       lodash: 4.17.21
       luxon: 1.26.0
@@ -210,14 +210,14 @@ importers:
       '@nestjs/schematics': ^7.2.6
       '@nestjs/swagger': ^4.7.9
       '@nestjs/testing': ^7.6.5
-      '@typegoose/typegoose': ^7.4.8
+      '@typegoose/typegoose': ^7.6.0
       '@types/bcryptjs': ^2.4.2
       '@types/express': ^4.17.11
       '@types/express-serve-static-core': ^4.17.18
       '@types/express-session': ^1.17.0
       '@types/jest': ^26.0.20
       '@types/luxon': ^1.25.1
-      '@types/mongoose': ^5.10.3
+      '@types/mongoose': ^5.10.4
       '@types/node': ^14.14.21
       '@types/nodemailer': ^6.4.0
       '@types/papaparse': ^5.2.4
@@ -231,13 +231,13 @@ importers:
       connect-mongo: ^3.2.0
       excel4node: ^1.7.2
       express-session: ^1.17.1
-      highlight.js: ^10.5.0
+      highlight.js: ^10.7.2
       jest: ^26.6.3
       jszip: ^3.5.0
       luxon: ^1.25.0
-      mongodb-memory-server: ^6.9.3
-      mongoose: ^5.10.18
-      mongoose-autopopulate: ^0.12.3
+      mongodb-memory-server: ^6.9.6
+      mongoose: 5.10.18
+      mongoose-autopopulate: ^0.13.0
       mongoose-field-encryption: ^4.0.1
       nestjs-typegoose: ^7.1.38
       nodemailer: ^6.4.17
@@ -259,11 +259,11 @@ importers:
     dependencies:
       '@nestjs/common': 7.6.15_a8de7d544c1ccc7a81d684dbaf8588e7
       '@nestjs/core': 7.6.15_19fd72ad6e93e20796310d8f58ce21b0
-      '@nestjs/mongoose': 7.2.4_1958aba1bb79a76835b4f06ceba0b816
+      '@nestjs/mongoose': 7.2.4_8bab7e237dc495417985728b8fa6080d
       '@nestjs/passport': 7.1.5_829a9ce5dbb5f1a36ae717115f40c1f8
       '@nestjs/platform-express': 7.6.15_a5e284bf185e3b13e505d42d771fb371
       '@nestjs/swagger': 4.8.0_7ecb02b8f353b1470f2a8182a3372292
-      '@typegoose/typegoose': 7.6.0_a4f8872f389e1a216669157f54aa0188
+      '@typegoose/typegoose': 7.6.0_15488ee382947d326284657eb70719f3
       bcryptjs: 2.4.3
       body-parser: 1.19.0
       class-validator: 0.12.2
@@ -273,10 +273,10 @@ importers:
       highlight.js: 10.7.2
       jszip: 3.6.0
       luxon: 1.26.0
-      mongoose: 5.12.3
-      mongoose-autopopulate: 0.12.3_mongoose@5.12.3
-      mongoose-field-encryption: 4.0.1_mongoose@5.12.3
-      nestjs-typegoose: 7.1.38_fb28202b61a66d349b4c426bd1a4748c
+      mongoose: 5.10.18
+      mongoose-autopopulate: 0.13.0_mongoose@5.10.18
+      mongoose-field-encryption: 4.0.1_mongoose@5.10.18
+      nestjs-typegoose: 7.1.38_216297b694cc13f4e064452a810ff420
       nodemailer: 6.5.0
       papaparse: 5.3.0
       passport: 0.4.1
@@ -2660,7 +2660,7 @@ packages:
       reflect-metadata: 0.1.13
     dev: false
 
-  /@nestjs/mongoose/7.2.4_1958aba1bb79a76835b4f06ceba0b816:
+  /@nestjs/mongoose/7.2.4_8bab7e237dc495417985728b8fa6080d:
     resolution: {integrity: sha512-NTE/IwijFUEJytPHLoHRYe0X5p16W1Awf8tm6I3mWsIUuBnSDfMyN0fy30uVaM/exYvCkMwEsAVpeSeKVPMHxg==}
     peerDependencies:
       '@nestjs/common': ^6.0.0 || ^7.0.0
@@ -2671,7 +2671,7 @@ packages:
     dependencies:
       '@nestjs/common': 7.6.15_a8de7d544c1ccc7a81d684dbaf8588e7
       '@nestjs/core': 7.6.15_19fd72ad6e93e20796310d8f58ce21b0
-      mongoose: 5.12.3
+      mongoose: 5.10.18
       reflect-metadata: 0.1.13
       rxjs: 6.6.7
     dev: false
@@ -3085,7 +3085,7 @@ packages:
     resolution: {integrity: sha512-x4rRVb346vjyym6QbeB1Tv01XXwhbkujOmvDmtf0bT20oc2gbDhbmwpskKqZ5Of2Q/Vk4jNk1WMiLsZdJ9t7Dw==}
     dev: true
 
-  /@typegoose/typegoose/7.6.0_a4f8872f389e1a216669157f54aa0188:
+  /@typegoose/typegoose/7.6.0_15488ee382947d326284657eb70719f3:
     resolution: {integrity: sha512-m7iz8L52y6bQLGQpPnOwKJQsfpFZkICa0TSiGIlZNy1DLrElj+GZfatQG4Ag5wHZRxhOMaEaBS0iqDGmvtm7Tg==}
     engines: {node: '>=10.15.0'}
     peerDependencies:
@@ -3095,7 +3095,7 @@ packages:
       '@types/mongoose': 5.10.4
       lodash: 4.17.21
       loglevel: 1.7.1
-      mongoose: 5.12.3
+      mongoose: 5.10.18
       reflect-metadata: 0.1.13
       semver: 7.3.5
       tslib: 2.2.0
@@ -3159,6 +3159,7 @@ packages:
     resolution: {integrity: sha512-mVRvYnTOZJz3ccpxhr3wgxVmSeiYinW+zlzQz3SXWaJmD1DuL05Jeq7nKw3SnbKmbleW5qrLG5vdyWe/A9sXhw==}
     dependencies:
       '@types/node': 14.14.37
+    dev: true
 
   /@types/chai/4.2.16:
     resolution: {integrity: sha512-vI5iOAsez9+roLS3M3+Xx7w+WRuDtSmF8bQkrbcIJ2sC1PcDgVoA0WGpa+bIrJ+y8zqY2oi//fUctkxtIcXJCw==}
@@ -3384,6 +3385,7 @@ packages:
     dependencies:
       '@types/bson': 4.0.3
       '@types/node': 14.14.37
+    dev: true
 
   /@types/mongoose/5.10.4:
     resolution: {integrity: sha512-U7fNDcTcdaSGzQ3+mlSBeebiYr6eaacJi330LTLOEh8Sm6mXfuec70ag/UXkL+alFm7pfAjFqfc7jEaJEJvAHQ==}
@@ -5461,8 +5463,8 @@ packages:
     resolution: {integrity: sha512-uc2Vix1frTfnuzxxu1Hp4ktSvM3QaI4oXl4ZUqL1wjTu/BGki9TrCWoqLTg/drR1KwAEarXuRFCG2Svr1GxPFw==}
     dev: true
 
-  /class-transformer/0.3.1:
-    resolution: {integrity: sha512-cKFwohpJbuMovS8xVLmn8N2AUbAuc8pVo4zEfsUVo8qgECOogns1WVk/FkOZoxhOPTyTYFckuoH+13FO+MQ8GA==}
+  /class-transformer/0.4.0:
+    resolution: {integrity: sha512-ETWD/H2TbWbKEi7m9N4Km5+cw1hNcqJSxlSYhsLsNjQzWWiZIYA1zafxpK9PwVfaZ6AqR5rrjPVUBGESm5tQUA==}
     dev: false
 
   /class-utils/0.3.6:
@@ -10301,8 +10303,8 @@ packages:
       set-immediate-shim: 1.0.1
     dev: false
 
-  /kareem/2.3.2:
-    resolution: {integrity: sha512-STHz9P7X2L4Kwn72fA4rGyqyXdmrMSdxqHx9IXon/FXluXieaFA6KJ2upcHAHxQPQ0LeM/OjLrhFxifHewOALQ==}
+  /kareem/2.3.1:
+    resolution: {integrity: sha512-l3hLhffs9zqoDe8zjmb/mAN4B8VT3L56EUvKNqLFVs9YlFA+zx7ke1DO8STAdDyYNkeSo1nKmjuvQeI12So8Xw==}
     dev: false
 
   /keygrip/1.1.0:
@@ -11247,8 +11249,8 @@ packages:
       - supports-color
     dev: true
 
-  /mongodb/3.6.5:
-    resolution: {integrity: sha512-mQlYKw1iGbvJJejcPuyTaytq0xxlYbIoVDm2FODR+OHxyEiMR021vc32bTvamgBjCswsD54XIRwhg3yBaWqJjg==}
+  /mongodb/3.6.3:
+    resolution: {integrity: sha512-rOZuR0QkodZiM+UbQE5kDsJykBqWi0CL4Ec2i1nrGrUI3KO11r6Fbxskqmq3JK2NH7aW4dcccBuUujAP0ERl5w==}
     engines: {node: '>=4'}
     peerDependencies:
       aws4: '*'
@@ -11312,41 +11314,40 @@ packages:
     optionalDependencies:
       saslprep: 1.0.3
 
-  /mongoose-autopopulate/0.12.3_mongoose@5.12.3:
-    resolution: {integrity: sha512-yNmYsfi6OpS/GQ+48mkB0KQ199ExHmmPrt3wt3fyxPHPMtEBGts7yq3wBQR6VgKCPOQaKvCI1URbJCPOtrPeLw==}
+  /mongoose-autopopulate/0.13.0_mongoose@5.10.18:
+    resolution: {integrity: sha512-Uo7CvJ3lp3/AfQZ514z2ObIKa2GEgOJUggF4jIZB7seDYO5YIAASF/mDW0+KY191pydFxOeX/3P6z6+p9FX7QA==}
     peerDependencies:
-      mongoose: 4.x || 5.x
+      mongoose: '>= 5.12.4'
     dependencies:
-      mongoose: 5.12.3
+      mongoose: 5.10.18
     dev: false
 
-  /mongoose-field-encryption/4.0.1_mongoose@5.12.3:
+  /mongoose-field-encryption/4.0.1_mongoose@5.10.18:
     resolution: {integrity: sha512-WfCDJ5CON3IeUbYJqVeS47BbCVqAHhWNVl30RDTgt+PcrhJ+9bgVAnLD/rXlUcif96haoSXsbZVhG8vhzOl7iw==}
     peerDependencies:
       mongoose: '>=4.11.0'
     dependencies:
-      mongoose: 5.12.3
+      mongoose: 5.10.18
     dev: false
 
-  /mongoose-legacy-pluralize/1.0.2_mongoose@5.12.3:
+  /mongoose-legacy-pluralize/1.0.2_mongoose@5.10.18:
     resolution: {integrity: sha512-Yo/7qQU4/EyIS8YDFSeenIvXxZN+ld7YdV9LqFVQJzTLye8unujAWPZ4NWKfFA+RNjh+wvTWKY9Z3E5XM6ZZiQ==}
     peerDependencies:
       mongoose: '*'
     dependencies:
-      mongoose: 5.12.3
+      mongoose: 5.10.18
     dev: false
 
-  /mongoose/5.12.3:
-    resolution: {integrity: sha512-frsSR9yeldaRpSUeTegXCSB0Tu5UGq8sHuHBuEV31Jk3COyxlKFQPL7UsdMhxPUCmk74FpOYSmNwxhWBEqgzQg==}
+  /mongoose/5.10.18:
+    resolution: {integrity: sha512-vaLUzBpUxqacoCqP/xXWMg/uVwCDrlc8LvYjDXCf8hdApvX/CXa0HLa7v2ieFaVd5Fgv3W2QXODLoC4Z/abbNw==}
     engines: {node: '>=4.0.0'}
     dependencies:
-      '@types/mongodb': 3.6.12
       bson: 1.1.6
-      kareem: 2.3.2
-      mongodb: 3.6.5
-      mongoose-legacy-pluralize: 1.0.2_mongoose@5.12.3
-      mpath: 0.8.3
-      mquery: 3.2.5
+      kareem: 2.3.1
+      mongodb: 3.6.3
+      mongoose-legacy-pluralize: 1.0.2_mongoose@5.10.18
+      mpath: 0.7.0
+      mquery: 3.2.2
       ms: 2.1.2
       regexp-clone: 1.0.0
       safe-buffer: 5.2.1
@@ -11371,13 +11372,13 @@ packages:
       rimraf: 2.7.1
       run-queue: 1.0.3
 
-  /mpath/0.8.3:
-    resolution: {integrity: sha512-eb9rRvhDltXVNL6Fxd2zM9D4vKBxjVVQNLNijlj7uoXUy19zNDsIif5zR+pWmPCWNKwAtqyo4JveQm4nfD5+eA==}
+  /mpath/0.7.0:
+    resolution: {integrity: sha512-Aiq04hILxhz1L+f7sjGyn7IxYzWm1zLNNXcfhDtx04kZ2Gk7uvFdgZ8ts1cWa/6d0TQmag2yR8zSGZUmp0tFNg==}
     engines: {node: '>=4.0.0'}
     dev: false
 
-  /mquery/3.2.5:
-    resolution: {integrity: sha512-VjOKHHgU84wij7IUoZzFRU07IAxd5kWJaDmyUzQlbjHjyoeK5TNeeo8ZsFDtTYnSgpW6n/nMNIHvE3u8Lbrf4A==}
+  /mquery/3.2.2:
+    resolution: {integrity: sha512-XB52992COp0KP230I3qloVUbkLUxJIu328HBP2t2EsxSFtf4W1HPSOBWOXf1bqxK4Xbb66lfMJ+Bpfd9/yZE1Q==}
     engines: {node: '>=4.0.0'}
     dependencies:
       bluebird: 3.5.1
@@ -11459,7 +11460,7 @@ packages:
   /neo-async/2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  /nestjs-typegoose/7.1.38_fb28202b61a66d349b4c426bd1a4748c:
+  /nestjs-typegoose/7.1.38_216297b694cc13f4e064452a810ff420:
     resolution: {integrity: sha512-hYgDliG2IS5CJkzRsTbbfwZk+IP0jEyCaxcRqqXvxZaP5miiH9UvGm3K0hg8X5DuVkmsgTzW3+MxOXmcLm9BOA==}
     engines: {node: '>=8.10.0'}
     peerDependencies:
@@ -11470,9 +11471,9 @@ packages:
     dependencies:
       '@nestjs/common': 7.6.15_a8de7d544c1ccc7a81d684dbaf8588e7
       '@nestjs/core': 7.6.15_19fd72ad6e93e20796310d8f58ce21b0
-      '@typegoose/typegoose': 7.6.0_a4f8872f389e1a216669157f54aa0188
+      '@typegoose/typegoose': 7.6.0_15488ee382947d326284657eb70719f3
       is-class: 0.0.9
-      mongoose: 5.12.3
+      mongoose: 5.10.18
       reflect-metadata: 0.1.13
     dev: false
 
