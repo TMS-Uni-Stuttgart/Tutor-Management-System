@@ -1,25 +1,25 @@
 {
-    "include": ["src"],
-    "compilerOptions": {
-        "module": "esnext",
-        "target": "esnext",
-        "moduleResolution": "node",
-        "jsx": "react",
-        "baseUrl": "src",
-        /* paths - If you configure Snowpack import aliases, add them here. */
-        "paths": {
-            "shared/*": ["../../server/src/shared/*"]
-        },
-        /* noEmit - Snowpack builds (emits) files, not tsc. */
-        "noEmit": true,
-        /* Additional Options */
-        "strict": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true,
-        "importsNotUsedAsValues": "remove",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
-    }
+  "include": ["src"],
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "baseUrl": "src",
+    /* paths - If you configure Snowpack import aliases, add them here. */
+    "paths": {
+      "shared/*": ["../../server/src/shared/*"]
+    },
+    /* noEmit - Snowpack builds (emits) files, not tsc. */
+    "noEmit": true,
+    /* Additional Options */
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "importsNotUsedAsValues": "remove",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
 }

@@ -8,8 +8,8 @@ sidebar_label: Configuration
 
 Within the `tms/config/` directory containing the configuration files the following items have to be present:
 
--   `production.yml`: YAML file containing the general configuration for the server.
--   `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
+- `production.yml`: YAML file containing the general configuration for the server.
+- `templates/`: Directory containing the [Pug](https://pugjs.org/) template files (see below).
 
 Those files are provided through a docker volume. See the [installation guide](installation) for more information.
 
