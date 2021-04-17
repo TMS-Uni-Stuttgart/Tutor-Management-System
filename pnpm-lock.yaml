@@ -204,6 +204,7 @@ importers:
       '@mikro-orm/core': ^4.5.3
       '@mikro-orm/nestjs': ^4.2.0
       '@mikro-orm/postgresql': ^4.5.3
+      '@mikro-orm/reflection': ^4.5.3
       '@nestjs/cli': ^7.5.4
       '@nestjs/common': ^7.6.7
       '@nestjs/core': ^7.6.7
@@ -263,6 +264,7 @@ importers:
       '@mikro-orm/core': 4.5.3_@mikro-orm+postgresql@4.5.3
       '@mikro-orm/nestjs': 4.2.0_c34c9362a98660be1fc98a816c8b9639
       '@mikro-orm/postgresql': 4.5.3_@mikro-orm+core@4.5.3
+      '@mikro-orm/reflection': 4.5.3_@mikro-orm+core@4.5.3
       '@nestjs/common': 7.6.15_a8de7d544c1ccc7a81d684dbaf8588e7
       '@nestjs/core': 7.6.15_19fd72ad6e93e20796310d8f58ce21b0
       '@nestjs/mongoose': 7.2.4_8bab7e237dc495417985728b8fa6080d
@@ -2657,6 +2659,17 @@ packages:
       - supports-color
     dev: false
 
+  /@mikro-orm/reflection/4.5.3_@mikro-orm+core@4.5.3:
+    resolution: {integrity: sha512-ZHz+6h5uh27RSdH4+mB62cUJhdIGQ6kfJ7LV9qlSM0fDS2YowJvRmY1B9o24uPnbGeJlRCt8+nZ7TJ+iu/z0Eg==}
+    engines: {node: '>= 10.13.0'}
+    peerDependencies:
+      '@mikro-orm/core': ^4.0.0
+    dependencies:
+      '@mikro-orm/core': 4.5.3_@mikro-orm+postgresql@4.5.3
+      globby: 11.0.3
+      ts-morph: 10.0.2
+    dev: false
+
   /@mrmlnc/readdir-enhanced/2.2.1:
     resolution: {integrity: sha512-bPHp6Ji8b41szTOcaP63VlnbbO5Ny6dwAATtY6JTjh5N2OLrb5Qk/Th5cRkRQhkWCt+EJsYrNB0MiL+Gpn6e3g==}
     engines: {node: '>=4'}
@@ -3186,6 +3199,14 @@ packages:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
     dev: true
+
+  /@ts-morph/common/0.9.0:
+    resolution: {integrity: sha512-yPcW6koNVK1hVKUu+KhPzhfgMb0uwzr2FewF+q8kxLerl0b+YZwmjvFMU2qbIawytIHT2VBI4bi+C09EFPB4aw==}
+    dependencies:
+      fast-glob: 3.2.5
+      minimatch: 3.0.4
+      mkdirp: 1.0.4
+    dev: false
 
   /@tsconfig/docusaurus/1.0.2:
     resolution: {integrity: sha512-x4rRVb346vjyym6QbeB1Tv01XXwhbkujOmvDmtf0bT20oc2gbDhbmwpskKqZ5Of2Q/Vk4jNk1WMiLsZdJ9t7Dw==}
@@ -5727,6 +5748,10 @@ packages:
       '@types/q': 1.5.4
       chalk: 2.4.2
       q: 1.5.1
+
+  /code-block-writer/10.1.1:
+    resolution: {integrity: sha512-67ueh2IRGst/51p0n6FvPrnRjAGHY5F8xdjkgrYE7DDzpJe6qA07RYQ9VcoUeo5ATOjSOiWpSL3SWBRRbempMw==}
+    dev: false
 
   /code-point-at/1.1.0:
     resolution: {integrity: sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=}
@@ -16089,6 +16114,13 @@ packages:
       micromatch: 4.0.4
       semver: 7.3.5
     dev: true
+
+  /ts-morph/10.0.2:
+    resolution: {integrity: sha512-TVuIfEqtr9dW25K3Jajqpqx7t/zLRFxKu2rXQZSDjTm4MO4lfmuj1hn8WEryjeDDBFcNOCi+yOmYUYR4HucrAg==}
+    dependencies:
+      '@ts-morph/common': 0.9.0
+      code-block-writer: 10.1.1
+    dev: false
 
   /ts-node/9.1.1:
     resolution: {integrity: sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==}
