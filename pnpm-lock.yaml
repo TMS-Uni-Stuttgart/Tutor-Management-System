@@ -229,6 +229,7 @@ importers:
       '@types/pug': ^2.0.4
       '@types/puppeteer': 5.4.2
       '@types/supertest': ^2.0.10
+      '@types/uuid': ^8.3.0
       bcryptjs: ^2.4.3
       body-parser: ^1.19.0
       class-validator: ^0.12.2
@@ -259,6 +260,7 @@ importers:
       ts-jest: ^26.4.4
       ts-loader: ^8.0.12
       tsconfig-paths: ^3.9.0
+      uuid: ^8.3.2
       yaml: ^1.10.0
     dependencies:
       '@mikro-orm/core': 4.5.3_@mikro-orm+postgresql@4.5.3
@@ -272,6 +274,7 @@ importers:
       '@nestjs/platform-express': 7.6.15_a5e284bf185e3b13e505d42d771fb371
       '@nestjs/swagger': 4.8.0_7ecb02b8f353b1470f2a8182a3372292
       '@typegoose/typegoose': 7.6.0_15488ee382947d326284657eb70719f3
+      '@types/uuid': 8.3.0
       bcryptjs: 2.4.3
       body-parser: 1.19.0
       class-validator: 0.12.2
@@ -295,6 +298,7 @@ importers:
       rimraf: 3.0.2
       rxjs: 6.6.7
       swagger-ui-express: 4.1.6
+      uuid: 8.3.2
       yaml: 1.10.2
     devDependencies:
       '@nestjs/cli': 7.6.0
@@ -3722,6 +3726,10 @@ packages:
 
   /@types/unist/2.0.3:
     resolution: {integrity: sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==}
+    dev: false
+
+  /@types/uuid/8.3.0:
+    resolution: {integrity: sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==}
     dev: false
 
   /@types/validator/13.0.0:
