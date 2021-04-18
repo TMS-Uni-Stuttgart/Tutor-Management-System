@@ -2,14 +2,14 @@ import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { AttendanceState } from 'shared/model/Attendance';
 import { v4 } from 'uuid';
+import { LuxonDateType } from '../types/LuxonDateType';
 
 @Entity()
 export class Attendance {
     @PrimaryKey()
     id = v4();
 
-    // TODO: Make special DateTime to handle luxon dates with mikro.
-    @Property()
+    @Property({ type: LuxonDateType })
     date!: DateTime;
 
     @Property()
