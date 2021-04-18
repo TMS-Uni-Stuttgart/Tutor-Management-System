@@ -7,9 +7,19 @@ export class Scheincriteria {
     id = v4();
 
     @Property()
-    name!: string;
+    name: string;
 
     // TODO: How to handle this one?
     @Property()
-    criteria!: Scheincriteria;
+    criteria: Scheincriteria;
+
+    constructor(params: ScheincriteriaParams) {
+        this.name = params.name;
+        this.criteria = params.criteria;
+    }
+}
+
+interface ScheincriteriaParams {
+    name: string;
+    criteria: Scheincriteria;
 }

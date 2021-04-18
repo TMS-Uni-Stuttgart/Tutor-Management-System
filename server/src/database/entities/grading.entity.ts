@@ -18,16 +18,20 @@ import { Student } from './student.entity';
 @Embeddable()
 export class ExerciseGrading {
     @Property()
-    points!: number;
+    points: number;
 
     @Property({ type: MapType })
-    subExercisePoints!: Map<string, number>;
+    subExercisePoints: Map<string, number> = new Map();
 
     @Property()
     comment?: string;
 
     @Property({ type: 'double precision' })
     additionalPoints?: number;
+
+    constructor(points: number) {
+        this.points = points;
+    }
 }
 
 @Entity()
@@ -55,4 +59,6 @@ export class Grading {
 
     @ManyToMany(() => Student, 'gradings')
     students = new Collection<Student>(this);
+
+    // TODO: Does this need a constructor?
 }

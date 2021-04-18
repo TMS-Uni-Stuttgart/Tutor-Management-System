@@ -20,16 +20,16 @@ export class Tutorial {
     id = v4();
 
     @Property()
-    slot!: string;
+    slot: string;
 
     @Property({ type: new LuxonDateType({ array: true }) })
-    dates!: DateTime[];
+    dates: DateTime[];
 
     @Property({ type: LuxonTimeType })
-    startTime!: DateTime;
+    startTime: DateTime;
 
     @Property({ type: LuxonTimeType })
-    endTime!: DateTime;
+    endTime: DateTime;
 
     @ManyToOne()
     tutor?: User;
@@ -39,4 +39,18 @@ export class Tutorial {
 
     @ManyToMany(() => User, 'tutorialsToCorrect')
     correctors = new Collection<User>(this);
+
+    constructor(params: TutorialParams) {
+        this.slot = params.slot;
+        this.dates = [...params.dates];
+        this.startTime = params.startTime;
+        this.endTime = params.endTime;
+    }
+}
+
+interface TutorialParams {
+    slot: string;
+    dates: DateTime[];
+    startTime: DateTime;
+    endTime: DateTime;
 }

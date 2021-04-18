@@ -20,16 +20,16 @@ export class Student {
     id = v4();
 
     @Property()
-    firstname!: string;
+    firstname: string;
 
     @Property()
-    lastname!: string;
+    lastname: string;
 
     @Property()
-    matriculationNo!: string;
+    matriculationNo: string;
 
     @Enum(() => StudentStatus)
-    status!: StudentStatus;
+    status: StudentStatus;
 
     @Property()
     iliasName?: string;
@@ -44,11 +44,11 @@ export class Student {
     cakeCount: number = 0;
 
     @Property({ type: MapType })
-    presentationPoints!: Map<string, number>;
+    presentationPoints: Map<string, number> = new Map();
 
     // TODO: Make an actual 1:n relation?
     // @Property({ type: MapType })
-    // attendances!: Map<string, Attendance>;
+    // attendances: Map<string, Attendance>;
 
     @ManyToOne()
     tutorial?: Tutorial;
@@ -58,4 +58,18 @@ export class Student {
 
     @ManyToMany(() => Grading, 'students', { owner: true })
     gradings = new Collection<Grading>(this);
+
+    constructor(params: StudentParams) {
+        this.firstname = params.firstname;
+        this.lastname = params.lastname;
+        this.matriculationNo = params.matriculationNo;
+        this.status = params.status;
+    }
+}
+
+interface StudentParams {
+    firstname: string;
+    lastname: string;
+    matriculationNo: string;
+    status: StudentStatus;
 }

@@ -10,11 +10,15 @@ export class Attendance {
     id = v4();
 
     @Property({ type: LuxonDateType })
-    date!: DateTime;
+    date: DateTime;
 
     @Property()
     note?: string;
 
     @Enum()
     state?: AttendanceState;
+
+    constructor(date: DateTime) {
+        this.date = date;
+    }
 }

@@ -8,8 +8,12 @@ export class Team {
     id = v4();
 
     @Property()
-    teamNo!: number;
+    teamNo: number;
 
     @OneToMany(() => Student, (student) => student.team)
     students = new Collection<Student>(this);
+
+    constructor(teamNo: number) {
+        this.teamNo = teamNo;
+    }
 }
