@@ -10,7 +10,7 @@ import {
 import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
-import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/shared/model/User';
+import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { UserDocument, UserModel } from '../../database/models/user.model';

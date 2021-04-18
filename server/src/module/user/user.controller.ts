@@ -12,14 +12,14 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { IUser } from 'src/shared/model/User';
+import { IUser } from 'shared/model/User';
 import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { SameUserGuard } from '../../guards/same-user.guard';
+import { NamedElement } from '../../shared/model/Common';
 import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, PasswordDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
-import { NamedElement } from '../../shared/model/Common';
 
 @Controller('user')
 export class UserController {

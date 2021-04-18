@@ -2,7 +2,7 @@ import { DocumentType, modelOptions, plugin, pre, prop } from '@typegoose/typego
 import bcrypt from 'bcryptjs';
 import mongooseAutopopulate from 'mongoose-autopopulate';
 import { EncryptedDocument, fieldEncryption } from 'mongoose-field-encryption';
-import { Role } from 'src/shared/model/Role';
+import { Role } from 'shared/model/Role';
 import { CollectionName } from '../../helpers/CollectionName';
 import { NoFunctions } from '../../helpers/NoFunctions';
 import { StaticSettings } from '../../module/settings/settings.static';
