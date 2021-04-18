@@ -1,6 +1,15 @@
-import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+    Collection,
+    Entity,
+    Enum,
+    ManyToMany,
+    OneToMany,
+    PrimaryKey,
+    Property,
+} from '@mikro-orm/core';
 import { Role } from 'shared/model/Role';
 import { v4 } from 'uuid';
+import { Tutorial } from './tutorial.entity';
 
 @Entity()
 export class User {
@@ -27,4 +36,10 @@ export class User {
 
     @Property()
     temporaryPassword?: string;
+
+    @OneToMany(() => Tutorial, (tutorial) => tutorial.tutor)
+    tutorials = new Collection<Tutorial>(this);
+
+    @ManyToMany(() => Tutorial, 'correctors', { owner: true })
+    tutorialsToCorrect = new Collection<Tutorial>(this);
 }

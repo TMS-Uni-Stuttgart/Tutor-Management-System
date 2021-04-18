@@ -1,8 +1,18 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+    Collection,
+    Entity,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryKey,
+    Property,
+} from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { v4 } from 'uuid';
 import { LuxonDateType } from '../types/LuxonDateType';
 import { LuxonTimeType } from '../types/LuxonTimeType';
+import { Student } from './student.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Tutorial {
@@ -20,4 +30,13 @@ export class Tutorial {
 
     @Property({ type: LuxonTimeType })
     endTime!: DateTime;
+
+    @ManyToOne()
+    tutor?: User;
+
+    @OneToMany(() => Student, (student) => student.tutorial)
+    students = new Collection<Student>(this);
+
+    @ManyToMany(() => User, 'tutorialsToCorrect')
+    correctors = new Collection<User>(this);
 }

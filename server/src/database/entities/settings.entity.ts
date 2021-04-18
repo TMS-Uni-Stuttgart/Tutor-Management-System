@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Embeddable()
 export class MailAuthSetting {
@@ -29,6 +29,12 @@ export class MailSetting {
 
 @Entity()
 export class Setting {
+    /**
+     * The PK is set to be a specific string to ensure there always is at most one `Setting` object saved in the database.
+     */
+    @PrimaryKey({ type: 'varchar(8)' })
+    readonly id = 'SETTINGS';
+
     @Property()
     defaultTeamSize!: number;
 
