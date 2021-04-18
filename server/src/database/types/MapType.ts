@@ -33,7 +33,7 @@ export class MapType extends Type<Map<unknown, unknown>, string> {
         }
     }
 
-    getColumnType(_prop: EntityProperty, _platform: Platform): string {
-        return 'longtext';
+    getColumnType(_prop: EntityProperty, platform: Platform): string {
+        return platform.getJsonDeclarationSQL();
     }
 }
