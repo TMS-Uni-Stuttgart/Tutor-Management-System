@@ -17,22 +17,22 @@ export class User {
     id = v4();
 
     @Property()
-    firstname!: string;
+    firstname: string;
 
     @Property()
-    lastname!: string;
+    lastname: string;
 
     @Enum({ items: () => Role })
-    roles!: Role[];
+    roles: Role[];
 
     @Property()
-    username!: string;
+    username: string;
 
     @Property()
-    password!: string;
+    password: string;
 
     @Property()
-    email!: string;
+    email: string;
 
     @Property()
     temporaryPassword?: string;
@@ -42,4 +42,22 @@ export class User {
 
     @ManyToMany(() => Tutorial, 'correctors', { owner: true })
     tutorialsToCorrect = new Collection<Tutorial>(this);
+
+    constructor({ firstname, lastname, roles, username, password, email }: UserParams) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.roles = roles;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+}
+
+interface UserParams {
+    firstname: string;
+    lastname: string;
+    roles: Role[];
+    username: string;
+    password: string;
+    email: string;
 }
