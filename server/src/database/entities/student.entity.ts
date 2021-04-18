@@ -1,5 +1,6 @@
 import {
     Collection,
+    Embedded,
     Entity,
     Enum,
     ManyToMany,
@@ -10,6 +11,7 @@ import {
 import { StudentStatus } from 'shared/model/Student';
 import { v4 } from 'uuid';
 import { MapType } from '../types/MapType';
+import { Attendance } from './attendance.entity';
 import { Grading } from './grading.entity';
 import { Team } from './team.entity';
 import { Tutorial } from './tutorial.entity';
@@ -46,9 +48,8 @@ export class Student {
     @Property({ type: MapType })
     presentationPoints: Map<string, number> = new Map();
 
-    // TODO: Make an actual 1:n relation?
-    // @Property({ type: MapType })
-    // attendances: Map<string, Attendance>;
+    @Embedded(() => Attendance, { array: true })
+    attendances: Attendance[] = [];
 
     @ManyToOne()
     tutorial?: Tutorial;
