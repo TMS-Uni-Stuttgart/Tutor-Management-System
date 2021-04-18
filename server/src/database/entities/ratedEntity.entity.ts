@@ -21,7 +21,7 @@ export class SubExercise {
 
 @Embeddable()
 export class Exercise extends SubExercise {
-    @Embedded({ array: true })
+    @Embedded(() => SubExercise, { array: true })
     subexercises: SubExercise[] = [];
 
     constructor(params: ExerciseParams) {
@@ -34,7 +34,7 @@ export abstract class HasExercises {
     @PrimaryKey()
     id = v4();
 
-    @Embedded({ array: true })
+    @Embedded(() => Exercise, { array: true })
     exercises: Exercise[] = [];
 
     constructor(params: HasExercisesParams) {

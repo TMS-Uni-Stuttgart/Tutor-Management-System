@@ -45,7 +45,7 @@ export class Grading {
     @Property()
     comment?: string;
 
-    @Embedded({ array: true })
+    @Embedded(() => ExerciseGrading, { array: true })
     exerciseGrading: ExerciseGrading[] = [];
 
     @ManyToOne()
