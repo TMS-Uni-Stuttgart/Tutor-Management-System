@@ -26,7 +26,7 @@ export class ExerciseGrading {
     @Property()
     comment?: string;
 
-    @Property({ type: 'double precision' })
+    @Property({ type: 'float' })
     additionalPoints?: number;
 
     constructor(points: number) {
@@ -39,7 +39,7 @@ export class Grading {
     @PrimaryKey()
     id = v4();
 
-    @Property({ type: 'double precision' })
+    @Property({ type: 'float' })
     additionalPoints: number = 0;
 
     @Property()

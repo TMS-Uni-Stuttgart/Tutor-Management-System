@@ -43,8 +43,8 @@ export abstract class HasExercises {
 }
 
 export abstract class RatedEntity extends HasExercises {
-    // TODO: Replace with DoubleType in MikroORM v5
-    @Property({ type: 'double precision' })
+    // TODO: Replace with FloatType in MikroORM v5
+    @Property({ type: 'float' })
     percentageNeeded: number;
 
     constructor(params: RatedEntityParams) {

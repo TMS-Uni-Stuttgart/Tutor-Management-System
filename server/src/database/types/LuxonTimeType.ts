@@ -12,6 +12,8 @@ export class LuxonTimeType extends LuxonType {
     }
 
     getSingleColumnType(_prop: EntityProperty, _platform: Platform): string {
-        return 'time with time zone';
+        // TODO: Can we use the platform in v5?
+        // We need DATETIME because TIME does not support timezones.
+        return 'datetime';
     }
 }
