@@ -14,7 +14,12 @@ export class Attendance {
     @Enum()
     state?: AttendanceState;
 
+    /**
+     * The given date gets set to the start of the day before being assigned to the `date`.
+     *
+     * @param date Date of the attendance.
+     */
     constructor(date: DateTime) {
-        this.date = date;
+        this.date = date.startOf('day');
     }
 }

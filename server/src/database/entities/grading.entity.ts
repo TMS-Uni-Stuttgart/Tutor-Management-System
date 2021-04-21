@@ -49,16 +49,44 @@ export class Grading {
     exerciseGrading: ExerciseGrading[] = [];
 
     @ManyToOne()
-    sheetId?: Sheet;
+    sheet?: Sheet;
 
     @ManyToOne()
-    examId?: Scheinexam;
+    exam?: Scheinexam;
 
     @ManyToOne()
-    shortTestId?: ShortTest;
+    shortTest?: ShortTest;
 
     @ManyToMany(() => Student, 'gradings')
     students = new Collection<Student>(this);
 
     // TODO: Does this need a constructor?
+
+    get entityId(): string {
+        this.assertOnlyOneEntityIsSet();
+
+        if (this.sheet) {
+            return this.sheet.id;
+        }
+
+        if (this.exam) {
+            return this.exam.id;
+        }
+
+        if (this.shortTest) {
+            return this.shortTest.id;
+        }
+
+        throw new Error('Neither the sheet nor the exam nor the shortTest field is set.');
+    }
+
+    private assertOnlyOneEntityIsSet() {
+        const ids = [this.sheet, this.exam, this.shortTest].filter(Boolean);
+
+        if (ids.length >= 2) {
+            throw new Error(
+                'Multiple of the fields "sheet", "exam" and "shortTest" are set. This is not a valid entity state. Only one of those fields must be set.'
+            );
+        }
+    }
 }

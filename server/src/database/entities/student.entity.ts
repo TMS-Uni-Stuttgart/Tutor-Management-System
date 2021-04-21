@@ -8,11 +8,13 @@ import {
     PrimaryKey,
     Property,
 } from '@mikro-orm/core';
+import { DateTime } from 'luxon';
 import { StudentStatus } from 'shared/model/Student';
 import { v4 } from 'uuid';
 import { MapType } from '../types/MapType';
 import { Attendance } from './attendance.entity';
 import { Grading } from './grading.entity';
+import { HandInDocument } from './ratedEntity.entity';
 import { Team } from './team.entity';
 import { Tutorial } from './tutorial.entity';
 
@@ -65,6 +67,43 @@ export class Student {
         this.lastname = params.lastname;
         this.matriculationNo = params.matriculationNo;
         this.status = params.status;
+    }
+
+    /**
+     * Saves the given attendance in the student.
+     *
+     * The attendance will be saved for it's date. If there is already an attendance saved for that date it will be overriden.
+     *
+     * This function marks the corresponding path as modified.
+     *
+     * @param attendance Attendance to set.
+     */
+    setAttendance(attendance: Attendance): void {}
+
+    /**
+     * Returns the grading for the given hand-in if one is saved, if not `undefined` is returned.
+     *
+     * @param handIn hand-in to get grading for.
+     *
+     * @returns Grading for the given hand-in or `undefined`
+     */
+    getGrading(handIn: HandInDocument): Grading | undefined {
+        for (const grading of this.gradings) {
+            if (grading.entityId === handIn.id) {
+                return grading;
+            }
+        }
+        return undefined;
+    }
+
+    private getDateKey(date: DateTime): string {
+        const dateKey = date.toISODate();
+
+        if (!dateKey) {
+            throw new Error(`Date '${date}' is not parseable to an ISODate.`);
+        }
+
+        return dateKey;
     }
 }
 
