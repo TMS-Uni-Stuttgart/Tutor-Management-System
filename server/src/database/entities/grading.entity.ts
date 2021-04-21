@@ -60,10 +60,18 @@ export class Grading {
     @ManyToMany(() => Student, 'gradings')
     students = new Collection<Student>(this);
 
-    // TODO: Does this need a constructor?
+    /**
+     * Ensures that exactly one of the following properties is set: `sheet`, `exam`, `shortTest`.
+     */
+    constructor({ sheet, exam, shortTest }: GradingParams) {
+        this.sheet = sheet;
+        this.exam = exam;
+        this.shortTest = shortTest;
+        this.assertEntitiesAreAValidSet();
+    }
 
     get entityId(): string {
-        this.assertOnlyOneEntityIsSet();
+        this.assertEntitiesAreAValidSet();
 
         if (this.sheet) {
             return this.sheet.id;
@@ -80,13 +88,21 @@ export class Grading {
         throw new Error('Neither the sheet nor the exam nor the shortTest field is set.');
     }
 
-    private assertOnlyOneEntityIsSet() {
+    private assertEntitiesAreAValidSet() {
         const ids = [this.sheet, this.exam, this.shortTest].filter(Boolean);
 
         if (ids.length >= 2) {
             throw new Error(
                 'Multiple of the fields "sheet", "exam" and "shortTest" are set. This is not a valid entity state. Only one of those fields must be set.'
             );
+        } else if (ids.length === 0) {
+            throw new Error('Neither the sheet nor the exam nor the shortTest field is set.');
         }
     }
+}
+
+interface GradingParams {
+    sheet?: Sheet;
+    exam?: Scheinexam;
+    shortTest?: ShortTest;
 }

@@ -183,6 +183,8 @@ export class Grading {
         this.id = Types.ObjectId().toHexString();
         this.students = [];
         this.exerciseGradings = new SerializableMap();
+
+        this.assertOnlyOneIdIsSet();
     }
 
     /**

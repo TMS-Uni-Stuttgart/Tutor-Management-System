@@ -47,12 +47,6 @@ export class Student {
     @Property()
     cakeCount: number = 0;
 
-    @Property({ type: MapType })
-    presentationPoints: Map<string, number> = new Map();
-
-    @Embedded(() => Attendance, { array: true })
-    attendances: Attendance[] = [];
-
     @ManyToOne()
     tutorial?: Tutorial;
 
@@ -61,6 +55,12 @@ export class Student {
 
     @ManyToMany(() => Grading, 'students', { owner: true })
     gradings = new Collection<Grading>(this);
+
+    @Property({ type: MapType })
+    private presentationPoints: Map<string, number> = new Map();
+
+    @Embedded(() => Attendance, { array: true })
+    private attendances: Attendance[] = [];
 
     constructor(params: StudentParams) {
         this.firstname = params.firstname;
@@ -78,7 +78,43 @@ export class Student {
      *
      * @param attendance Attendance to set.
      */
-    setAttendance(attendance: Attendance): void {}
+    setAttendance(attendance: Attendance): void {
+        const index = this.attendances.findIndex((a) => a.isOnSameDay(attendance));
+
+        if (index === -1) {
+            this.attendances.push(attendance);
+        } else {
+            this.attendances[index] = attendance;
+        }
+    }
+
+    /**
+     * Returns the attendance of the given date if there is one saved. If not `undefined` is returned.
+     *
+     * @param date Date to look up
+     *
+     * @returns Returns the attendance of the date or `undefined`.
+     */
+    getAttendance(date: DateTime): Attendance | undefined {
+        return this.attendances.find((attendance) => attendance.isOnDay(date));
+    }
+
+    /**
+     * Saves the given grading for this student.
+     *
+     * If there is already a saved grading for same hand-in the old one will get replaced.
+     *
+     * @param grading Grading so save.
+     */
+    setGrading(grading: Grading): void {
+        const index = this.getIndexOfGradingForSameEntity(grading);
+
+        if (index === -1) {
+            this.gradings.add(grading);
+        } else {
+            this.gradings[index] = grading;
+        }
+    }
 
     /**
      * Returns the grading for the given hand-in if one is saved, if not `undefined` is returned.
@@ -96,14 +132,46 @@ export class Student {
         return undefined;
     }
 
-    private getDateKey(date: DateTime): string {
-        const dateKey = date.toISODate();
+    /**
+     * Saves the given presentation points for the given hand-in.
+     *
+     * If there are already saved presentation points for the given hand-in the old ones will get overridden.
+     *
+     * @param handIn Hand-in to save grading for.
+     * @param points Presentation points to save.
+     */
+    setPresentationPoints(handIn: HandInDocument, points: number): void {
+        this.presentationPoints.set(handIn.id, points);
+    }
 
-        if (!dateKey) {
-            throw new Error(`Date '${date}' is not parseable to an ISODate.`);
+    /**
+     * Returns the presentation points for the given hand-in if there are any saved. If not `undefined` is returned.
+     *
+     * @param handIn Hand-in to get presentation points for.
+     *
+     * @returns Presentation points for the given hand-in or `undefined`.
+     */
+    getPresentationPoints(handIn: HandInDocument): number | undefined {
+        return this.presentationPoints.get(handIn.id);
+    }
+
+    /**
+     * Searches for a grading for the same entity as the given one.
+     *
+     * Returns the index of the found grading, if there is one. Otherwise `-1` is returned.
+     *
+     * @param grading Grading to check
+     * @returns Index of the grading for the same entity. `-1` if there is no such entity.
+     */
+    private getIndexOfGradingForSameEntity(grading: Grading): number {
+        for (let i = 0; i < this.gradings.length; i++) {
+            const grad = this.gradings[i];
+            if (grad.entityId === grading.entityId) {
+                return i;
+            }
         }
 
-        return dateKey;
+        return -1;
     }
 }
 
