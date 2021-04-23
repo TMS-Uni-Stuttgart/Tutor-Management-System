@@ -9,7 +9,7 @@ export class Scheincriteria {
     @Property()
     name: string;
 
-    // TODO: How to handle this one?
+    // TODO: How to handle this one? -- JSON???
     @Property()
     criteria: Scheincriteria;
 

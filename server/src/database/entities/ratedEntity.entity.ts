@@ -20,6 +20,9 @@ export class SubExercise {
         this.maxPoints = params.maxPoints;
     }
 
+    /**
+     * @returns Total points of this exercise split by must-have and bonus points.
+     */
     get pointInfo(): ExercisePointsInfo {
         return new ExercisePointsInfo({
             must: this.bonus ? 0 : this.maxPoints,
@@ -38,6 +41,11 @@ export class Exercise extends SubExercise {
         this.subexercises = [...params.subexercises];
     }
 
+    /**
+     * The total points of the exercise not caring about bonus (sub)exercises.
+     *
+     * @returns Total points of the exercise.
+     */
     get totalPoints(): number {
         if (this.subexercises.length > 0) {
             return this.subexercises.reduce((sum, current) => sum + current.maxPoints, 0);
@@ -46,6 +54,13 @@ export class Exercise extends SubExercise {
         }
     }
 
+    /**
+     * Returns the total points of this exercise split by must-have and bonus points.
+     *
+     * Takes subexercises into the account.
+     *
+     * @returns Total points of this exercise split by must-have and bonus points.
+     */
     get pointInfo(): ExercisePointsInfo {
         if (this.subexercises.length === 0) {
             return super.pointInfo;
@@ -73,6 +88,9 @@ export abstract class HasExercises implements HandInDocument {
         this.exercises = [...params.exercises];
     }
 
+    /**
+     * @returns Total points of all exercises of the hand-in split by must-have and bonus points.
+     */
     get totalPoints(): ExercisePointsInfo {
         const info: IExercisePointsInfo = this.exercises.reduce(
             (sum, current) => {
@@ -95,10 +113,25 @@ export abstract class RatedEntity extends HasExercises {
         this.percentageNeeded = params.percentageNeeded;
     }
 
+    /**
+     * @param student Student to check
+     * @returns `True` if the student passes this rated entity.
+     */
     hasPassed(student: Student): boolean {
         return this.getPassedInformation(student).passed;
     }
 
+    /**
+     * Returns the `PassedInformation` for the given student.
+     *
+     * Those information contain:
+     * - Has the student passed?
+     * - How many points does the student achieve?
+     * - How many must-have points has this entity.
+     *
+     * @param student Student to get the `PassedInformation` of.
+     * @returns The `PassedInformation` of the given student related to the entity.
+     */
     getPassedInformation(student: Student): PassedInformation {
         const total = this.totalPoints;
         const grading = student.getGrading(this);

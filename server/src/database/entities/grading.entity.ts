@@ -70,6 +70,20 @@ export class Grading {
         this.assertEntitiesAreAValidSet();
     }
 
+    /**
+     * @returns Sum of all points of all exercises and the `additionalPoints` of this grading.
+     */
+    get points(): number {
+        const additional = this.additionalPoints ?? 0;
+
+        return additional + this.exerciseGrading.reduce((sum, grading) => sum + grading.points, 0);
+    }
+
+    /**
+     * @returns ID of the related hand-in entity.
+     *
+     * @throws `Error` - If this grading does not have a related hand-in entity.
+     */
     get entityId(): string {
         this.assertEntitiesAreAValidSet();
 
@@ -86,6 +100,14 @@ export class Grading {
         }
 
         throw new Error('Neither the sheet nor the exam nor the shortTest field is set.');
+    }
+
+    /**
+     * @param student Student to check
+     * @returns `True` if this grading belongs to the given student.
+     */
+    belongsToStudent(student: Student): boolean {
+        return this.students.getItems().findIndex((s) => s.id === student.id) !== -1;
     }
 
     private assertEntitiesAreAValidSet() {

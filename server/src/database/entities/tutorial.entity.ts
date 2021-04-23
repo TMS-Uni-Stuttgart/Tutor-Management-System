@@ -40,6 +40,9 @@ export class Tutorial {
     @ManyToMany(() => User, 'tutorialsToCorrect')
     correctors = new Collection<User>(this);
 
+    // TODO: Substitutes!
+    // Relation Tutorial-User: n:1 with `date` property.
+
     constructor(params: TutorialParams) {
         this.slot = params.slot;
         this.dates = [...params.dates];
