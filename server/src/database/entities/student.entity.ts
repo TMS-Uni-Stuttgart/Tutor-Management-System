@@ -14,7 +14,7 @@ import { v4 } from 'uuid';
 import { MapType } from '../types/MapType';
 import { Attendance } from './attendance.entity';
 import { Grading } from './grading.entity';
-import { HandInDocument } from './ratedEntity.entity';
+import { HandIn } from './ratedEntity.entity';
 import { Team } from './team.entity';
 import { Tutorial } from './tutorial.entity';
 
@@ -123,7 +123,7 @@ export class Student {
      *
      * @returns Grading for the given hand-in or `undefined`
      */
-    getGrading(handIn: HandInDocument): Grading | undefined {
+    getGrading(handIn: HandIn): Grading | undefined {
         for (const grading of this.gradings) {
             if (grading.entityId === handIn.id) {
                 return grading;
@@ -140,7 +140,7 @@ export class Student {
      * @param handIn Hand-in to save grading for.
      * @param points Presentation points to save.
      */
-    setPresentationPoints(handIn: HandInDocument, points: number): void {
+    setPresentationPoints(handIn: HandIn, points: number): void {
         this.presentationPoints.set(handIn.id, points);
     }
 
@@ -151,7 +151,7 @@ export class Student {
      *
      * @returns Presentation points for the given hand-in or `undefined`.
      */
-    getPresentationPoints(handIn: HandInDocument): number | undefined {
+    getPresentationPoints(handIn: HandIn): number | undefined {
         return this.presentationPoints.get(handIn.id);
     }
 

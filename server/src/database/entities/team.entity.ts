@@ -1,7 +1,7 @@
 import { Collection, Entity, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 } from 'uuid';
 import { Grading } from './grading.entity';
-import { HandInDocument } from './ratedEntity.entity';
+import { HandIn } from './ratedEntity.entity';
 import { Student } from './student.entity';
 
 @Entity()
@@ -37,7 +37,7 @@ export class Team {
         return Team.generateTeamname(this.students.getItems());
     }
 
-    getGradings(handIn: HandInDocument): Grading[] {
+    getGradings(handIn: HandIn): Grading[] {
         const gradings: Grading[] = [];
 
         for (const student of this.students) {

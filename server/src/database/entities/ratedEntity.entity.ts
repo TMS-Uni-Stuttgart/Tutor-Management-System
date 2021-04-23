@@ -77,7 +77,7 @@ export class Exercise extends SubExercise {
     }
 }
 
-export abstract class HasExercises implements HandInDocument {
+export abstract class HasExercises implements HandIn {
     @PrimaryKey()
     id = v4();
 
@@ -149,7 +149,7 @@ export abstract class RatedEntity extends HasExercises {
     }
 }
 
-export interface HandInDocument {
+export interface HandIn {
     id: string;
     exercises: Exercise[];
 }
