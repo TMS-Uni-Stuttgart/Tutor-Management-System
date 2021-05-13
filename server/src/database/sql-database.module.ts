@@ -18,7 +18,6 @@ import { Module } from '@nestjs/common';
             user: 'root',
             password: 'some-password',
             dbName: 'tms-poc-stuff',
-            // clientUrl: 'postgresql://postgres:some-password@127.0.0.1:5432/tms-poc-stuff',
         }),
     ],
 })

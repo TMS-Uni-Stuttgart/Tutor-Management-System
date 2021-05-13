@@ -2,12 +2,12 @@ import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nest
 import { ReturnModelType } from '@typegoose/typegoose';
 import { FilterQuery } from 'mongoose';
 import { InjectModel } from 'nestjs-typegoose';
+import { IAttendance } from 'shared/model/Attendance';
+import { IStudent } from 'shared/model/Student';
 import { AttendanceModel } from '../../database/models/attendance.model';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { TeamDocument } from '../../database/models/team.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { IAttendance } from '../../shared/model/Attendance';
-import { IStudent } from '../../shared/model/Student';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
