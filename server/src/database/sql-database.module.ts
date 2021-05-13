@@ -6,6 +6,7 @@ import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { StartUpException } from '../exceptions/StartUpException';
 import { wait } from '../helpers/wait';
 import { StaticSettings } from '../module/settings/settings.static';
+import { EncryptionSubscriber } from './subscribers/EncryptionSubscriber';
 
 @Module({
     imports: [
@@ -15,7 +16,8 @@ import { StaticSettings } from '../module/settings/settings.static';
             baseDir: process.cwd(),
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
-            // TODO: Make overridable in tests (sqlite, because it supports in-memory stuff?)
+            // TODO: Make overridable in tests (sqlite, because it supports in-memory stuff?),
+            subscribers: [new EncryptionSubscriber()],
             type: 'mysql',
             // TODO: Make everything below adjustable.
             host: '127.0.0.1',
@@ -55,7 +57,6 @@ export class SqlDatabaseModule implements OnModuleInit {
         currentTry: number
     ): Promise<void> {
         this.logger.log(`Establishing connection to the database (try: ${currentTry})...`);
-
         const maxRetries = this.databaseConfig.maxRetries ?? 2;
         const reconnectTimeout = this.databaseConfig.reconnectTimeout ?? 10000;
 

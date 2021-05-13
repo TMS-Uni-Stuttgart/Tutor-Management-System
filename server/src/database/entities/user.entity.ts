@@ -13,10 +13,11 @@ import {
 import bcrypt from 'bcryptjs';
 import { Role } from 'shared/model/Role';
 import { v4 } from 'uuid';
+import { IEncryptedEntity } from '../subscribers/EncryptionSubscriber';
 import { Tutorial } from './tutorial.entity';
 
 @Entity()
-export class User {
+export class User implements IEncryptedEntity {
     @PrimaryKey()
     id = v4();
 
@@ -73,6 +74,10 @@ export class User {
             const salt = bcrypt.genSaltSync(10);
             this.password = bcrypt.hashSync(this.password, salt);
         }
+    }
+
+    getEncryptedFieldNames(): string[] {
+        return ['firstname', 'lastname'];
     }
 }
 
