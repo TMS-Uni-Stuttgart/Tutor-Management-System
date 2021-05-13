@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/mysql';
 import {
     BadRequestException,
     forwardRef,
@@ -5,26 +6,31 @@ import {
     Injectable,
     Logger,
     NotFoundException,
-    OnModuleInit,
+    OnApplicationBootstrap,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
+import { NamedElement } from 'shared/model/Common';
+import { Role } from 'shared/model/Role';
 import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
+import { User } from '../../database/entities/user.entity';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { UserDocument, UserModel } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { NamedElement } from '../../shared/model/Common';
-import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
 @Injectable()
-export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
+export class UserService
+    implements OnApplicationBootstrap, CRUDService<IUser, UserDTO, UserDocument> {
+    private readonly logger = new Logger(UserService.name);
+
     constructor(
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
+        private readonly em: EntityManager,
         @InjectModel(UserModel)
         private readonly userModel: ReturnModelType<typeof UserModel>
     ) {}
@@ -32,27 +38,27 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     /**
      * Creates a new administrator on application start if there are no users present in the DB.
      */
-    async onModuleInit(): Promise<void> {
-        const users = await this.findAll();
+    async onApplicationBootstrap(): Promise<void> {
+        const userRepository = this.em.getRepository(User);
+        // TODO: Can you find users with admin role? Just check for those maybe?
+        // Or make this configurable: Check specifically for admins or for users in general.
+        const areUsersPresent = (await userRepository.findAll()).length > 0;
 
-        if (users.length === 0) {
-            Logger.log(
-                'No user present in the database. Creating a default administrator user...',
-                UserService.name
+        if (!areUsersPresent) {
+            this.logger.log('No admin user found in database. Creating new admin...');
+            const user = await userRepository.create(
+                new User({
+                    firstname: 'Test',
+                    lastname: 'Admin',
+                    roles: [Role.ADMIN],
+                    username: 'admin',
+                    password: 'someAdminPassword',
+                    email: 'admin@email.mail',
+                })
             );
 
-            await this.create({
-                firstname: 'admin',
-                lastname: 'admin',
-                username: 'admin',
-                password: 'admin',
-                roles: [Role.ADMIN],
-                tutorials: [],
-                tutorialsToCorrect: [],
-                email: '',
-            });
-
-            Logger.log('Default administrator created.', UserService.name);
+            await userRepository.persistAndFlush(user);
+            this.logger.log('Admin user successfully created.');
         }
     }
 

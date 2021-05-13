@@ -68,7 +68,6 @@ export class User {
     @BeforeCreate()
     @BeforeUpdate()
     private hashPassword(args: EventArgs<User>): void {
-        // TODO: Can this function stay private?
         const isSamePassword = this.password === args.changeSet?.originalEntity?.password;
         if (!isSamePassword) {
             const salt = bcrypt.genSaltSync(10);

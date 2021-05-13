@@ -45,8 +45,8 @@ export class Setting {
     /**
      * The PK is set to be a specific string to ensure there always is at most one `Setting` object saved in the database.
      */
-    @PrimaryKey({ type: 'varchar(8)' })
-    readonly id = 'SETTINGS';
+    @PrimaryKey()
+    readonly id: string = 'SETTINGS';
 
     @Property()
     defaultTeamSize: number;
