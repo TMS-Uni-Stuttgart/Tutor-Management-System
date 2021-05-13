@@ -2,14 +2,16 @@
 sessionTimeout: 120
 
 # (Optional) If the app is hosted on a prefixed path (ie https://example.com/foo) set this property to the prefix (ie "foo"). If the app is hosted on the root path this property can be omitted.
-# prefix: derpy
+# prefix: subpath
 
 # Path to the handbook documentation. You only need to change this if you want to provide your own TMS documentation.
 handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
+# Configuration for the database access. More information can be found in the documentation.
 database:
     databaseURL: 'mongodb://localhost:27017/tms-new-grading'
     maxRetries: 2
+    reconnectTimeout: 10000
     config:
         authSource: 'admin'
         authMechanism: 'SCRAM-SHA-1'

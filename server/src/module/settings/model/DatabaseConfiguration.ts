@@ -10,9 +10,15 @@ export class DatabaseConfiguration {
     @IsString({ always: true })
     readonly databaseURL!: string;
 
+    @IsOptional({ always: true })
     @IsNumber({}, { always: true })
     @Min(0, { always: true })
-    readonly maxRetries!: number;
+    readonly maxRetries?: number;
+
+    @IsOptional({ always: true })
+    @IsNumber({}, { always: true })
+    @Min(0, { always: true })
+    readonly reconnectTimeout?: number;
 
     @IsString({ groups: [DatabaseConfigurationValidationGroup.ALL] })
     readonly secret!: string;

@@ -11,6 +11,7 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 database:
     databaseURL: 'mongodb://mongo:27017/tms'
     maxRetries: 2
+    reconnectTimeout: 10000
     config:
         authSource: 'admin'
         authMechanism: 'SCRAM-SHA-1'
