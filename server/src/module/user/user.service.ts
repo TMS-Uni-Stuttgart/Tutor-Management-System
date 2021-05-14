@@ -17,6 +17,7 @@ import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { User } from '../../database/entities/user.entity';
 import { CRUDService } from '../../helpers/CRUDService';
+import { EncryptionEngine } from '../../helpers/EncryptionEngine';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
@@ -362,8 +363,9 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @returns Is there already a user with that username?
      */
     private async doesUserWithUsernameExist(username: string, user?: User): Promise<boolean> {
-        // TODO: Handle that the username is encrypted!
-        const usersWithUsername: User[] = await this.getUserRepository().find({ username });
+        const usersWithUsername: User[] = await this.getUserRepository().find({
+            username: new EncryptionEngine().encrypt(username),
+        });
 
         if (!user) {
             return usersWithUsername.length > 0;
@@ -390,8 +392,9 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @throws `NotFoundException` - If there is no user with that username.
      */
     private async getUserWithUsername(username: string): Promise<User> {
-        // TODO: Handle that the username is encrypted!
-        const user = await this.getUserRepository().findOne({ username });
+        const user = await this.getUserRepository().findOne({
+            username: new EncryptionEngine().encrypt(username),
+        });
 
         if (!user) {
             throw new NotFoundException(`User with username "${username}" was not found`);
