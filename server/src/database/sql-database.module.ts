@@ -6,7 +6,6 @@ import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { StartUpException } from '../exceptions/StartUpException';
 import { wait } from '../helpers/wait';
 import { StaticSettings } from '../module/settings/settings.static';
-import { EncryptionSubscriber } from './subscribers/EncryptionSubscriber';
 
 @Module({
     imports: [
@@ -17,7 +16,6 @@ import { EncryptionSubscriber } from './subscribers/EncryptionSubscriber';
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
             // TODO: Make overridable in tests (sqlite, because it supports in-memory stuff?),
-            subscribers: [new EncryptionSubscriber()],
             type: 'mysql',
             // TODO: Make everything below adjustable.
             host: '127.0.0.1',
@@ -81,7 +79,7 @@ export class SqlDatabaseModule implements OnModuleInit {
 
         // TODO: Is there a better indicator when we should update the schema?
         //       Or make a DB dump and use it as a backup.
-        if (updateDump.includes('create table')) {
+        if (updateDump.includes('create table') || updateDump.includes('alter table')) {
             this.logger.log('Updating SQL schema...');
             await generator.updateSchema(true, true);
             this.logger.log('SQL schema successfully updated.');

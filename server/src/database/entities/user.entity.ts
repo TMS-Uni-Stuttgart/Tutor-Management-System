@@ -13,33 +13,35 @@ import {
 import bcrypt from 'bcryptjs';
 import { Role } from 'shared/model/Role';
 import { v4 } from 'uuid';
-import { IEncryptedEntity } from '../subscribers/EncryptionSubscriber';
+import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { Tutorial } from './tutorial.entity';
 
 @Entity()
-export class User implements IEncryptedEntity {
+export class User {
     @PrimaryKey()
     id = v4();
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     firstname: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     lastname: string;
 
+    // TODO: Support enum arrays in encryption (or do you need to encrypt roles? -> Searching for admins)
     @Enum({ items: () => Role })
     roles: Role[];
 
+    // TODO: How to encrypt and search for it?
     @Property()
     username: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     password: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     email: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     temporaryPassword?: string;
 
     @OneToMany(() => Tutorial, (tutorial) => tutorial.tutor)
@@ -74,10 +76,6 @@ export class User implements IEncryptedEntity {
             const salt = bcrypt.genSaltSync(10);
             this.password = bcrypt.hashSync(this.password, salt);
         }
-    }
-
-    getEncryptedFieldNames(): string[] {
-        return ['firstname', 'lastname'];
     }
 }
 
