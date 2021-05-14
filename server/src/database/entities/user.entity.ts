@@ -12,6 +12,7 @@ import {
 } from '@mikro-orm/core';
 import bcrypt from 'bcryptjs';
 import { Role } from 'shared/model/Role';
+import { IUser } from 'shared/model/User';
 import { v4 } from 'uuid';
 import { EncryptedEnumArrayType } from '../types/encryption/EncryptedEnumArrayType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
@@ -56,6 +57,25 @@ export class User {
         this.username = username;
         this.password = password;
         this.email = email;
+    }
+
+    toDTO(): IUser {
+        const tutorials = this.tutorials.getItems().map((tutorial) => tutorial.toInEntity());
+        const tutorialsToCorrect = this.tutorialsToCorrect
+            .getItems()
+            .map((tutorial) => tutorial.toInEntity());
+
+        return {
+            id: this.id,
+            username: this.username,
+            firstname: this.firstname,
+            lastname: this.lastname,
+            roles: [...this.roles],
+            email: this.email,
+            temporaryPassword: this.temporaryPassword,
+            tutorials,
+            tutorialsToCorrect,
+        };
     }
 
     /**

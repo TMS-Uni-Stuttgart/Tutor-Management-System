@@ -1,3 +1,4 @@
+import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
 import {
     BadRequestException,
@@ -8,38 +9,32 @@ import {
     NotFoundException,
     OnApplicationBootstrap,
 } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
-import { InjectModel } from 'nestjs-typegoose';
 import { NamedElement } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
 import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
+import { Tutorial } from '../../database/entities/tutorial.entity';
 import { User } from '../../database/entities/user.entity';
-import { TutorialDocument } from '../../database/models/tutorial.model';
-import { UserDocument, UserModel } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
 @Injectable()
-export class UserService
-    implements OnApplicationBootstrap, CRUDService<IUser, UserDTO, UserDocument> {
+export class UserService implements OnApplicationBootstrap, CRUDService<IUser, UserDTO, User> {
     private readonly logger = new Logger(UserService.name);
 
     constructor(
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
-        private readonly em: EntityManager,
-        @InjectModel(UserModel)
-        private readonly userModel: ReturnModelType<typeof UserModel>
+        private readonly entityManager: EntityManager
     ) {}
 
     /**
      * Creates a new administrator on application start if there are no users present in the DB.
      */
     async onApplicationBootstrap(): Promise<void> {
-        const userRepository = this.em.getRepository(User);
+        const userRepository = this.getUserRepository();
         // TODO: Can you find users with admin role? Just check for those maybe?
         // Or make this configurable: Check specifically for admins or for users in general.
         const areUsersPresent = (await userRepository.findAll()).length > 0;
@@ -65,10 +60,8 @@ export class UserService
     /**
      * @returns All users saved in the database.
      */
-    async findAll(): Promise<UserDocument[]> {
-        const users = (await this.userModel.find().exec()) as UserDocument[];
-
-        return users;
+    async findAll(): Promise<User[]> {
+        return this.getUserRepository().findAll();
     }
 
     /**
@@ -80,8 +73,8 @@ export class UserService
      *
      * @throws `NotFoundException` - If there is no user with the given ID.
      */
-    async findById(id: string): Promise<UserDocument> {
-        const user = (await this.userModel.findById(id).exec()) as UserDocument | null;
+    async findById(id: string): Promise<User> {
+        const user = await this.getUserRepository().findOne({ id });
 
         if (!user) {
             throw new NotFoundException(`User with the ID '${id}' could not be found.`);
@@ -116,6 +109,7 @@ export class UserService
      */
     async create(user: CreateUserDTO): Promise<IUser> {
         const createdUser = await this.createUser(user);
+        await this.entityManager.persistAndFlush(createdUser);
         return createdUser.toDTO();
     }
 
@@ -127,25 +121,30 @@ export class UserService
      * @returns Created users.
      */
     async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
-        const created: UserDocument[] = [];
+        const em = this.entityManager.fork(false);
+        await em.begin();
         const errors: string[] = [];
+        const created: User[] = [];
 
         for (const user of users) {
             try {
-                const doc = await this.createUser(user);
-                created.push(doc);
+                const createdUser = await this.createUser(user);
+                created.push(createdUser);
+                em.persist(createdUser);
             } catch (err) {
                 const message = err.message || 'Unknown error.';
                 errors.push(`[${user.lastname}, ${user.firstname}]: ${message}`);
             }
         }
 
-        if (errors.length > 0) {
-            await Promise.all(created.map((u) => u.remove()));
+        if (errors.length === 0) {
+            await em.commit();
+        } else {
+            await em.rollback();
             throw new BadRequestException(errors);
         }
 
-        return created.map((u) => u.toDTO());
+        return created.map((user) => user.toDTO());
     }
 
     /**
@@ -167,71 +166,25 @@ export class UserService
      */
     async update(id: string, dto: UserDTO): Promise<IUser> {
         const user = await this.findById(id);
-        const { tutorials, tutorialsToCorrect } = user;
 
         await this.checkUserDTO(dto, user);
         await this.assertUserIsChangeable(user, dto);
 
-        // Remove user as tutor from all tutorials he/she is not the tutor of anymore.
-        await Promise.all(
-            tutorials
-                .filter((tut) => !dto.tutorials.includes(tut.id))
-                .map((tutorial) => {
-                    tutorial.tutor = undefined;
-                    return tutorial.save();
-                })
-        );
+        const [tutorials, tutorialsToCorrect] = await Promise.all([
+            this.getAllTutorials(dto.tutorials),
+            this.getAllTutorials(dto.tutorialsToCorrect),
+        ]);
 
-        // Add user as tutor to all tutorials he/she is the tutor of.
-        const idsOfTutorialsToAdd: string[] = dto.tutorials.filter(
-            (id) => !tutorials.map((tut) => tut.id).includes(id)
-        );
-        const tutorialsToAdd = await this.getAllTutorials(idsOfTutorialsToAdd);
-
-        await Promise.all(
-            tutorialsToAdd.map((tutorial) => {
-                tutorial.tutor = user;
-                return tutorial.save();
-            })
-        );
-
-        // Remove user from all tutorials to correct he's not the corrector of anymore.
-        await Promise.all(
-            tutorialsToCorrect
-                .filter((tutorial) => !dto.tutorialsToCorrect.includes(tutorial.id))
-                .map((tutorial) => {
-                    tutorial.correctors = [
-                        ...tutorial.correctors.filter((corrector) => corrector.id !== user.id),
-                    ];
-
-                    tutorial.markModified('correctors');
-                    return tutorial.save();
-                })
-        );
-
-        // Add user as corrector to all tutorials he's corrector of, now (old correctors stay).
-        const idsOfTutorialsToCorrect = dto.tutorialsToCorrect.filter(
-            (id) => !tutorialsToCorrect.map((t) => t.id).includes(id)
-        );
-        const additionalToCorrect = await this.getAllTutorials(idsOfTutorialsToCorrect);
-
-        await Promise.all(
-            additionalToCorrect.map((tutorial) => {
-                tutorial.correctors.push(user);
-                return tutorial.save();
-            })
-        );
-
-        // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
         user.firstname = dto.firstname;
         user.lastname = dto.lastname;
         user.username = dto.username;
         user.email = dto.email;
         user.roles = dto.roles;
+        user.tutorials.set(tutorials);
+        user.tutorialsToCorrect.set(tutorialsToCorrect);
 
-        const updatedUser = await user.save();
-
-        return updatedUser.toDTO();
+        await this.entityManager.persistAndFlush(user);
+        return user.toDTO();
     }
 
     /**
@@ -244,18 +197,13 @@ export class UserService
      * @throws `NotFoundException` - If there is no user with such an ID.
      * @throws `BadRequestException` - If the deleted user is the last available ADMIN.
      */
-    async delete(id: string): Promise<UserDocument> {
+    async delete(id: string): Promise<void> {
         const user = await this.findById(id);
         await this.assertUserIsDeletable(user);
 
-        await Promise.all(
-            user.tutorials.map((tutorial) => {
-                tutorial.tutor = undefined;
-                return tutorial.save();
-            })
-        );
+        // TODO: Does cascading work properly or do we need to adjust the tutorials of the user?
 
-        return user.remove();
+        await this.entityManager.removeAndFlush(user);
     }
 
     /**
@@ -270,16 +218,14 @@ export class UserService
      *
      * @throws `NotFoundException` - If no user with the given ID could be found.
      */
-    async setPassword(id: string, password: string): Promise<UserDocument> {
+    async setPassword(id: string, password: string): Promise<User> {
         const user = await this.findById(id);
 
         user.password = password;
         user.temporaryPassword = undefined;
+        await this.entityManager.persistAndFlush(user);
 
-        const updatedUser = await user.save();
-        updatedUser.decryptFieldsSync();
-
-        return updatedUser;
+        return user;
     }
 
     /**
@@ -290,20 +236,18 @@ export class UserService
      * @param id ID of the user.
      * @param password (New) password.
      *
-     * @returns Updated UserDocument
+     * @returns Updated User
      *
      * @throws `NotFoundException` - If no user with the given ID could be found.
      */
-    async setTemporaryPassword(id: string, password: string): Promise<UserDocument> {
+    async setTemporaryPassword(id: string, password: string): Promise<User> {
         const user = await this.findById(id);
 
         user.password = password;
         user.temporaryPassword = password;
+        await this.entityManager.persistAndFlush(user);
 
-        const updatedUser = await user.save();
-        updatedUser.decryptFieldsSync();
-
-        return updatedUser;
+        return user;
     }
 
     /**
@@ -389,7 +333,7 @@ export class UserService
      * @returns Created UserDocument.
      * @throws `BadRequestException` - If the DTO is invalid  a BadRequestException is thrown. More information: See function `checkUserDTO()`.
      */
-    private async createUser(user: CreateUserDTO): Promise<UserDocument> {
+    private async createUser(user: CreateUserDTO): Promise<User> {
         await this.checkUserDTO(user);
         const {
             tutorials: tutorialIds,
@@ -398,54 +342,17 @@ export class UserService
             username,
             ...dto
         } = user;
-        const userDocument: UserModel = new UserModel({
-            ...dto,
-            username,
-            password,
-            temporaryPassword: password,
-        });
 
         const [tutorials, tutorialsToCorrect] = await Promise.all([
             this.getAllTutorials(tutorialIds),
             this.getAllTutorials(toCorrectIds),
         ]);
+        const userEntity: User = new User({ ...dto, username, password });
+        userEntity.temporaryPassword = password;
+        userEntity.tutorials.set(tutorials);
+        userEntity.tutorialsToCorrect.set(tutorialsToCorrect);
 
-        const result = (await this.userModel.create(userDocument)) as UserDocument;
-
-        await this.updateTutorialsWithUser({
-            tutor: result,
-            tutorials,
-            tutorialsToCorrect,
-        });
-
-        return this.findById(result.id);
-    }
-
-    /**
-     * Sets the given `tutor` as tutor for all given `tutorials` and as corrector for all given `tutorialsToCorrect`.
-     *
-     * @param tutor Tutor or corrector to set as tutor of the `tutorials` and as corrector of the `tutorialsToCorrect`.
-     * @param tutorials Tutorials to set the given `tutor` as tutor.
-     * @param tutorialsToCorrect Tutorials to set the given `tutor` as corrector.
-     */
-    private async updateTutorialsWithUser({
-        tutor,
-        tutorials,
-        tutorialsToCorrect,
-    }: UpdateTutorialsParams): Promise<void> {
-        await Promise.all(
-            tutorials.map((tutorial) => {
-                tutorial.tutor = tutor;
-                return tutorial.save();
-            })
-        );
-
-        await Promise.all(
-            tutorialsToCorrect.map((tutorial) => {
-                tutorial.correctors.push(tutor);
-                return tutorial.save();
-            })
-        );
+        return userEntity;
     }
 
     /**
@@ -454,13 +361,9 @@ export class UserService
      * @param username Username to check
      * @returns Is there already a user with that username?
      */
-    private async doesUserWithUsernameExist(
-        username: string,
-        user?: UserDocument
-    ): Promise<boolean> {
-        const usersWithUsername: UserDocument[] = (await this.userModel
-            .find({ username })
-            .exec()) as UserDocument[];
+    private async doesUserWithUsernameExist(username: string, user?: User): Promise<boolean> {
+        // TODO: Handle that the username is encrypted!
+        const usersWithUsername: User[] = await this.getUserRepository().find({ username });
 
         if (!user) {
             return usersWithUsername.length > 0;
@@ -486,23 +389,15 @@ export class UserService
      *
      * @throws `NotFoundException` - If there is no user with that username.
      */
-    private async getUserWithUsername(username: string): Promise<UserDocument> {
-        const userDoc = await this.userModel
-            .findOne(
-                {
-                    username,
-                },
-                undefined,
-                // Make sure that the query is case insensitive.
-                { collation: { locale: 'en', strength: 2 } }
-            )
-            .exec();
+    private async getUserWithUsername(username: string): Promise<User> {
+        // TODO: Handle that the username is encrypted!
+        const user = await this.getUserRepository().findOne({ username });
 
-        if (!userDoc) {
+        if (!user) {
             throw new NotFoundException(`User with username "${username}" was not found`);
         }
 
-        return userDoc as UserDocument;
+        return user;
     }
 
     /**
@@ -514,8 +409,12 @@ export class UserService
      *
      * @returns Tutorials matching the given IDs.
      */
-    private async getAllTutorials(ids: string[]): Promise<TutorialDocument[]> {
+    private async getAllTutorials(ids: string[]): Promise<Tutorial[]> {
         return Promise.all(ids.map((id) => this.tutorialService.findById(id)));
+    }
+
+    private getUserRepository(): EntityRepository<User> {
+        return this.entityManager.getRepository(User);
     }
 
     /**
@@ -534,7 +433,7 @@ export class UserService
      */
     private async checkUserDTO(
         { tutorials, tutorialsToCorrect, username, roles }: UserDTO,
-        user?: UserDocument
+        user?: User
     ) {
         if (await this.doesUserWithUsernameExist(username, user)) {
             throw new BadRequestException(`A user with the username '${username}' already exists.`);
@@ -562,7 +461,7 @@ export class UserService
      *
      * @throws `BadRequestException` - If the user is considered _NOT_ updatable.
      */
-    private async assertUserIsChangeable(user: UserDocument, dto: UserDTO) {
+    private async assertUserIsChangeable(user: User, dto: UserDTO) {
         if (user.roles.includes(Role.ADMIN) && !dto.roles.includes(Role.ADMIN)) {
             const allUsers = await this.findAll();
             const adminUsers = allUsers.filter((u) => u.roles.includes(Role.ADMIN));
@@ -583,7 +482,7 @@ export class UserService
      *
      * @throws `BadRequestException` - If the user is the last admin.
      */
-    private async assertUserIsDeletable(user: UserDocument) {
+    private async assertUserIsDeletable(user: User) {
         if (user.roles.includes(Role.ADMIN)) {
             const allUsers = await this.findAll();
             const adminUsers = allUsers.filter((u) => u.roles.includes(Role.ADMIN));
@@ -594,10 +493,4 @@ export class UserService
             }
         }
     }
-}
-
-interface UpdateTutorialsParams {
-    tutor: UserDocument;
-    tutorials: TutorialDocument[];
-    tutorialsToCorrect: TutorialDocument[];
 }

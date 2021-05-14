@@ -11,8 +11,8 @@ import { StaticSettings } from '../module/settings/settings.static';
     imports: [
         MikroOrmModule.forRoot({
             metadataProvider: TsMorphMetadataProvider,
-            autoLoadEntities: true,
             baseDir: process.cwd(),
+            autoLoadEntities: true,
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
             // TODO: Make overridable in tests (sqlite, because it supports in-memory stuff?),

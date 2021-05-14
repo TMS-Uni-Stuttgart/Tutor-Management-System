@@ -7,7 +7,8 @@ import {
     PrimaryKey,
     Property,
 } from '@mikro-orm/core';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
+import { ITutorialInEntity } from 'shared/model/Common';
 import { v4 } from 'uuid';
 import { LuxonDateType } from '../types/LuxonDateType';
 import { LuxonTimeType } from '../types/LuxonTimeType';
@@ -48,6 +49,15 @@ export class Tutorial {
         this.dates = [...params.dates];
         this.startTime = params.startTime;
         this.endTime = params.endTime;
+    }
+
+    toInEntity(): ITutorialInEntity {
+        return {
+            id: this.id,
+            slot: this.slot,
+            weekday: this.dates[0].weekday,
+            time: Interval.fromDateTimes(this.startTime, this.endTime).toISO(),
+        };
     }
 }
 

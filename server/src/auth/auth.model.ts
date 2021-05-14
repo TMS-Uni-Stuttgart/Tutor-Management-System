@@ -1,4 +1,4 @@
-import { Role } from '../shared/model/Role';
+import { Role } from 'shared/model/Role';
 
 export interface UserCredentials {
     readonly _id: string;
