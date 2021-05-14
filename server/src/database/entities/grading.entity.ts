@@ -9,6 +9,8 @@ import {
     Property,
 } from '@mikro-orm/core';
 import { v4 } from 'uuid';
+import { EncryptedFloatType } from '../types/encryption/EncryptedNumberType';
+import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { MapType } from '../types/MapType';
 import { Scheinexam } from './scheinexam.entity';
 import { Sheet } from './sheet.entity';
@@ -17,16 +19,17 @@ import { Student } from './student.entity';
 
 @Embeddable()
 export class ExerciseGrading {
-    @Property()
+    @Property({ type: EncryptedFloatType })
     points: number;
 
+    // TODO: Encrypt this map?
     @Property({ type: MapType })
     subExercisePoints: Map<string, number> = new Map();
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     comment?: string;
 
-    @Property({ type: 'float' })
+    @Property({ type: EncryptedFloatType })
     additionalPoints?: number;
 
     constructor(points: number) {
@@ -39,10 +42,10 @@ export class Grading {
     @PrimaryKey()
     id = v4();
 
-    @Property({ type: 'float' })
+    @Property({ type: EncryptedFloatType })
     additionalPoints: number = 0;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     comment?: string;
 
     @Embedded(() => ExerciseGrading, { array: true })

@@ -13,6 +13,7 @@ import {
 import bcrypt from 'bcryptjs';
 import { Role } from 'shared/model/Role';
 import { v4 } from 'uuid';
+import { EncryptedEnumArrayType } from '../types/encryption/EncryptedEnumArrayType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { Tutorial } from './tutorial.entity';
 
@@ -27,12 +28,10 @@ export class User {
     @Property({ type: EncryptedStringType })
     lastname: string;
 
-    // TODO: Support enum arrays in encryption (or do you need to encrypt roles? -> Searching for admins)
-    @Enum({ items: () => Role })
+    @Enum({ type: EncryptedEnumArrayType })
     roles: Role[];
 
-    // TODO: How to encrypt and search for it?
-    @Property()
+    @Property({ type: EncryptedStringType })
     username: string;
 
     @Property({ type: EncryptedStringType })

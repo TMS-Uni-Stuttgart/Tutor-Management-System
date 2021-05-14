@@ -11,6 +11,9 @@ import {
 import { DateTime } from 'luxon';
 import { StudentStatus } from 'shared/model/Student';
 import { v4 } from 'uuid';
+import { EncryptedEnumType } from '../types/encryption/EncryptedEnumType';
+import { EncryptedIntType } from '../types/encryption/EncryptedNumberType';
+import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { MapType } from '../types/MapType';
 import { Attendance } from './attendance.entity';
 import { Grading } from './grading.entity';
@@ -23,28 +26,28 @@ export class Student {
     @PrimaryKey()
     id = v4();
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     firstname: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     lastname: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     matriculationNo: string;
 
-    @Enum(() => StudentStatus)
+    @Enum({ type: EncryptedEnumType })
     status: StudentStatus;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     iliasName?: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     email?: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     courseOfStudies?: string;
 
-    @Property()
+    @Property({ type: EncryptedIntType })
     cakeCount: number = 0;
 
     @ManyToOne()

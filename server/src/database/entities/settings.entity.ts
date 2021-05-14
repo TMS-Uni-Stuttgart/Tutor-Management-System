@@ -1,11 +1,13 @@
 import { Embeddable, Embedded, Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { EncryptedIntType } from '../types/encryption/EncryptedNumberType';
+import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 
 @Embeddable()
 export class MailAuthSetting {
-    @Property()
+    @Property({ type: EncryptedStringType })
     user: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     password: string;
 
     constructor(params: MailAuthParams) {
@@ -16,16 +18,16 @@ export class MailAuthSetting {
 
 @Embeddable()
 export class MailSetting {
-    @Property()
+    @Property({ type: EncryptedStringType })
     host: string;
 
-    @Property()
+    @Property({ type: EncryptedIntType })
     port: number;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     from: string;
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     subject: string;
 
     @Embedded()

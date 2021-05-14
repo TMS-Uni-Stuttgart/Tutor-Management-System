@@ -4,7 +4,7 @@ interface EncryptedNumberOptions {
     readonly float?: boolean;
 }
 
-export class EncryptedNumberType extends EncryptedType<number> {
+class EncryptedNumberType extends EncryptedType<number> {
     constructor(private readonly options: EncryptedNumberOptions = {}) {
         super();
     }
@@ -15,5 +15,17 @@ export class EncryptedNumberType extends EncryptedType<number> {
 
     convertValueToString(value: number): string {
         return value.toString(10);
+    }
+}
+
+export class EncryptedIntType extends EncryptedNumberType {
+    constructor() {
+        super({ float: false });
+    }
+}
+
+export class EncryptedFloatType extends EncryptedNumberType {
+    constructor() {
+        super({ float: true });
     }
 }
