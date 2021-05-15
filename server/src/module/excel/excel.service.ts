@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import xl, { Workbook, Worksheet } from 'excel4node';
 import { parse } from 'papaparse';
-import { SheetDocument } from '../../database/models/sheet.model';
-import { StudentDocument } from '../../database/models/student.model';
-import { TutorialDocument } from '../../database/models/tutorial.model';
-import { AttendanceState } from '../../shared/model/Attendance';
-import { ParseCsvResult } from '../../shared/model/CSV';
+import { AttendanceState } from 'shared/model/Attendance';
+import { ParseCsvResult } from 'shared/model/CSV';
+import { Sheet } from '../../database/entities/sheet.entity';
+import { Student } from '../../database/entities/student.entity';
+import { Tutorial } from '../../database/entities/tutorial.entity';
 import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { ParseCsvDTO } from './excel.dto';
@@ -74,11 +74,11 @@ export class ExcelService {
 
         sheets.sort((a, b) => a.sheetNo - b.sheetNo);
 
-        this.createMemberWorksheet(workbook, tutorial.students);
-        this.createAttendanceWorksheet(workbook, tutorial, tutorial.students);
+        this.createMemberWorksheet(workbook, tutorial.getStudents());
+        this.createAttendanceWorksheet(workbook, tutorial, tutorial.getStudents());
 
         for (const sheet of sheets) {
-            await this.createWorksheetForExerciseSheet(workbook, sheet, tutorial.students);
+            await this.createWorksheetForExerciseSheet(workbook, sheet, tutorial.getStudents());
         }
 
         return workbook.writeToBuffer();
@@ -99,7 +99,7 @@ export class ExcelService {
         return parse(data, options);
     }
 
-    private createMemberWorksheet(workbook: Workbook, students: StudentDocument[]) {
+    private createMemberWorksheet(workbook: Workbook, students: Student[]) {
         const overviewSheet = workbook.addWorksheet('Teilnehmer');
         const headers: HeaderDataCollection<MemberKeys> = {
             firstname: {
@@ -159,8 +159,8 @@ export class ExcelService {
 
     private async createWorksheetForExerciseSheet(
         workbook: Workbook,
-        sheet: SheetDocument,
-        students: StudentDocument[]
+        sheet: Sheet,
+        students: Student[]
     ) {
         const worksheet = workbook.addWorksheet(`Übungsblatt ${sheet.sheetNo}`);
         const headers: HeaderDataCollection<any> = {
@@ -186,7 +186,7 @@ export class ExcelService {
         let column = 4;
         for (const ex of sheet.exercises) {
             headers[ex.id] = {
-                name: `Aufgabe ${ex.exName}`,
+                name: `Aufgabe ${ex.exerciseName}`,
                 column,
             };
             data[ex.id] = [];
@@ -229,11 +229,7 @@ export class ExcelService {
         this.fillSheet(worksheet, headers, data);
     }
 
-    private createAttendanceWorksheet(
-        workbook: Workbook,
-        tutorial: TutorialDocument,
-        students: StudentDocument[]
-    ) {
+    private createAttendanceWorksheet(workbook: Workbook, tutorial: Tutorial, students: Student[]) {
         const sheet = workbook.addWorksheet('Anwesenheiten');
         const headers: HeaderDataCollection<any> = {
             firstname: {
