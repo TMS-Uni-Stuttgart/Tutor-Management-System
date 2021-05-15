@@ -1,13 +1,14 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
-import { HandInDocument } from '../../database/models/exercise.model';
-import { Grading } from '../../database/models/grading.model';
-import { StudentDocument } from '../../database/models/student.model';
+import { Grading } from '../../database/entities/grading.entity';
+import { HandIn } from '../../database/entities/ratedEntity.entity';
+import { Student } from '../../database/entities/student.entity';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
-import { GradingDTO } from '../student/student.dto';
+import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
 
+// TODO: Rewrite me because with SQL this should be way less code...
 @Injectable()
 export class GradingService {
     constructor(
@@ -26,8 +27,8 @@ export class GradingService {
      * @param student Student to set the grading for.
      * @param dto DTO which resembles the grading.
      */
-    async setGradingOfStudent(student: StudentDocument, dto: GradingDTO): Promise<void> {
-        const handIn: HandInDocument = await this.getHandInFromDTO(dto);
+    async setGradingOfStudent(student: Student, dto: GradingDTO): Promise<void> {
+        const handIn: HandIn = await this.getHandInFromDTO(dto);
         const oldGrading: Grading | undefined = student.getGrading(handIn);
         let newGrading: Grading;
 
@@ -47,11 +48,8 @@ export class GradingService {
      * @param students Students to set the grading.
      * @param dto DTO which resembles the grading.
      */
-    async setGradingOfMultipleStudents(
-        students: StudentDocument[],
-        dto: GradingDTO
-    ): Promise<void> {
-        const handIn: HandInDocument = await this.getHandInFromDTO(dto);
+    async setGradingOfMultipleStudents(students: Student[], dto: GradingDTO): Promise<void> {
+        const handIn: HandIn = await this.getHandInFromDTO(dto);
         const gradingFromDTO = Grading.fromDTO(dto);
 
         for (const student of students) {
@@ -67,8 +65,8 @@ export class GradingService {
     }
 
     private async assignGradingToStudent(
-        handIn: HandInDocument,
-        student: StudentDocument,
+        handIn: HandIn,
+        student: Student,
         grading: Grading,
         createNewGrading: boolean
     ): Promise<void> {
@@ -111,7 +109,7 @@ export class GradingService {
      *
      * @throws `BadRequestException` - If either all fields (`sheetId`, `examId` and `shortTestId`) or none of those fields are set.
      */
-    async getHandInFromDTO(dto: GradingDTO): Promise<HandInDocument> {
+    async getHandInFromDTO(dto: GradingDTO): Promise<HandIn> {
         const { sheetId, examId, shortTestId } = dto;
 
         if (!!sheetId && !!examId && !!shortTestId) {
@@ -135,18 +133,5 @@ export class GradingService {
         throw new BadRequestException(
             'You have to either set the sheetId or the examId or the shortTestId field.'
         );
-    }
-
-    /**
-     * Fetches all students of the given grading from the DB.
-     *
-     * @param grading Grading to get students of.
-     *
-     * @returns StudentDocuments of all students attached to the given grading.
-     */
-    private async getStudentsOfGrading(grading: Grading): Promise<StudentDocument[]> {
-        return await this.studentService.findByCondition({
-            _id: { $in: grading.getStudents() },
-        });
     }
 }

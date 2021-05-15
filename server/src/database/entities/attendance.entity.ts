@@ -1,6 +1,7 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
+import { AttendanceDTO } from '../../module/student/student.dto';
 import { EncryptedEnumType } from '../types/encryption/EncryptedEnumType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { LuxonDateType } from '../types/LuxonDateType';
@@ -59,5 +60,12 @@ export class Attendance {
 
     toDTO(): IAttendance {
         return { date: this.date.toISODate(), note: this.note, state: this.state };
+    }
+
+    static fromDTO(dto: AttendanceDTO): Attendance {
+        const attendance = new Attendance(DateTime.fromISO(dto.date));
+        attendance.state = dto.state;
+        attendance.note = dto.note;
+        return attendance;
     }
 }

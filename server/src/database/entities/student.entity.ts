@@ -36,7 +36,7 @@ export class Student {
     lastname: string;
 
     @Property({ type: EncryptedStringType })
-    matriculationNo: string;
+    matriculationNo?: string;
 
     @Enum({ type: EncryptedEnumType })
     status: StudentStatus;
@@ -222,7 +222,7 @@ export class Student {
 interface StudentParams {
     firstname: string;
     lastname: string;
-    matriculationNo: string;
+    matriculationNo?: string;
     status: StudentStatus;
     tutorial: Tutorial;
 }

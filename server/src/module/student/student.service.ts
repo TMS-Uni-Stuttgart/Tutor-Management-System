@@ -1,13 +1,11 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { FilterQuery } from 'mongoose';
 import { IAttendance } from 'shared/model/Attendance';
 import { IStudent } from 'shared/model/Student';
+import { Attendance } from '../../database/entities/attendance.entity';
 import { Student } from '../../database/entities/student.entity';
-import { AttendanceModel } from '../../database/models/attendance.model';
-import { StudentDocument, StudentModel } from '../../database/models/student.model';
-import { TeamDocument } from '../../database/models/team.model';
+import { Team } from '../../database/entities/team.entity';
 import { CRUDService } from '../../helpers/CRUDService';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
@@ -22,7 +20,7 @@ import {
 } from './student.dto';
 
 @Injectable()
-export class StudentService implements CRUDService<IStudent, StudentDTO, StudentDocument> {
+export class StudentService implements CRUDService<IStudent, StudentDTO, Student> {
     private readonly logger = new Logger(StudentService.name);
 
     constructor(
@@ -39,27 +37,31 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     /**
      * @returns All students saved in the database.
      */
-    async findAll(): Promise<StudentDocument[]> {
+    async findAll(): Promise<Student[]> {
         const timeA = Date.now();
-        const allStudents = (await this.studentModel.find().exec()) as StudentDocument[];
-
+        const allStudents = await this.getStudentRepository().findAll();
         const timeB = Date.now();
 
         this.logger.log(`Time to fetch all students: ${timeB - timeA}ms`);
         return allStudents;
     }
 
-    async findMany(studentIds: string[]): Promise<Student[]> {
-        return this.getStudentRepository().find({ id: { $in: studentIds } });
-    }
-
     /**
-     * @param conditions mongoosea uery to filter the documents.
+     * @param ids IDs of the students to get.
+     * @returns Students with the given IDs.
      *
-     * @returns All StudentDocuments which meet the given query.
+     * @throws {@link NotFoundException} - If at least one student could not be found.
      */
-    async findByCondition(conditions: FilterQuery<StudentModel>): Promise<StudentDocument[]> {
-        const students = (await this.studentModel.find(conditions).exec()) as StudentDocument[];
+    async findMany(ids: string[]): Promise<Student[]> {
+        const students = await this.getStudentRepository().find({ id: { $in: ids } });
+
+        if (students.length !== ids.length) {
+            const studentIds = students.map((student) => student.id);
+            const notFound = ids.filter((id) => !studentIds.includes(id));
+            throw new NotFoundException(
+                `Could not find the students with the following ids: [${notFound.join(', ')}]`
+            );
+        }
 
         return students;
     }
@@ -73,8 +75,8 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      *
      * @throws `NotFoundException` - If no student with the given ID could be found.
      */
-    async findById(id: string): Promise<StudentDocument> {
-        const student = (await this.studentModel.findById(id).exec()) as StudentDocument | null;
+    async findById(id: string): Promise<Student> {
+        const student = await this.getStudentRepository().findOne({ id });
 
         if (!student) {
             throw new NotFoundException(`Student with the ID ${id} could not be found`);
@@ -93,7 +95,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      * @throws `NotFoundException` - If the tutorial or the team of the student could not be found.
      */
     async create(dto: StudentDTO): Promise<IStudent> {
-        const { tutorial: tutorialId, team: teamId, ...rest } = dto;
+        const { tutorial: tutorialId, team: teamId } = dto;
         const tutorial = await this.tutorialService.findById(tutorialId);
         const team = !!teamId
             ? await this.teamService.findById({
@@ -102,15 +104,17 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
               })
             : undefined;
 
-        const doc = new StudentModel({
-            ...rest,
+        const student = new Student({
+            firstname: dto.firstname,
+            lastname: dto.lastname,
+            matriculationNo: dto.matriculationNo,
+            status: dto.status,
             tutorial,
-            team,
-            cakeCount: 0,
         });
-        const created: StudentDocument = (await this.studentModel.create(doc)) as StudentDocument;
+        student.team = team;
 
-        return created.toDTO();
+        await this.entityManager.persistAndFlush(student);
+        return student.toDTO();
     }
 
     /**
@@ -125,17 +129,12 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      */
     async update(id: string, dto: StudentDTO): Promise<IStudent> {
         const student = await this.findById(id);
-
-        const team = await this.getTeamFromDTO(dto, student);
-        student.team = team;
+        student.team = await this.getTeamFromDTO(dto, student);
 
         if (dto.tutorial !== student.tutorial.id) {
-            const tutorial = await this.tutorialService.findById(dto.tutorial);
-            student.tutorial = tutorial;
+            student.tutorial = await this.tutorialService.findById(dto.tutorial);
             student.team = undefined;
         }
-
-        student.markModified('team');
 
         student.firstname = dto.firstname;
         student.lastname = dto.lastname;
@@ -145,9 +144,8 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         student.email = dto.email;
         student.matriculationNo = dto.matriculationNo;
 
-        const updatedStudent = await student.save();
-
-        return updatedStudent.toDTO();
+        await this.entityManager.persistAndFlush(student);
+        return student.toDTO();
     }
 
     /**
@@ -161,8 +159,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      */
     async delete(id: string): Promise<void> {
         const student = await this.findById(id);
-
-        return student.remove();
+        await this.entityManager.removeAndFlush(student);
     }
 
     /**
@@ -177,10 +174,10 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      */
     async setAttendance(id: string, dto: AttendanceDTO): Promise<IAttendance> {
         const student = await this.findById(id);
-        const attendance = AttendanceModel.fromDTO(dto);
+        const attendance = Attendance.fromDTO(dto);
 
         student.setAttendance(attendance);
-        await student.save();
+        await this.entityManager.persistAndFlush(student);
 
         return attendance.toDTO();
     }
@@ -222,7 +219,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         const sheet = await this.sheetService.findById(dto.sheetId);
 
         student.setPresentationPoints(sheet, dto.points);
-        await student.save();
+        await this.entityManager.persistAndFlush(student);
     }
 
     /**
@@ -235,19 +232,15 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      */
     async setCakeCount(id: string, dto: CakeCountDTO): Promise<void> {
         const student = await this.findById(id);
-
         student.cakeCount = dto.cakeCount;
-        await student.save();
+        await this.entityManager.persistAndFlush(student);
     }
 
     private getStudentRepository(): EntityRepository<Student> {
         return this.entityManager.getRepository(Student);
     }
 
-    private async getTeamFromDTO(
-        dto: StudentDTO,
-        student: StudentDocument
-    ): Promise<TeamDocument | undefined> {
+    private async getTeamFromDTO(dto: StudentDTO, student: Student): Promise<Team | undefined> {
         if (!dto.team) {
             return undefined;
         }

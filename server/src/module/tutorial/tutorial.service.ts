@@ -43,7 +43,10 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
     /**
      *
-     * @param ids
+     * @param ids IDs of the tutorials to get.
+     * @returns Tutorials with the given IDs.
+     *
+     * @throws {@link NotFoundException} - If at least one of the tutorials could not be found.
      */
     async findMultiple(ids: string[]): Promise<Tutorial[]> {
         const tutorials = await this.getTutorialRepository().find({ id: { $in: ids } });
