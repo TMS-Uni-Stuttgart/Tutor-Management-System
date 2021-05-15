@@ -1,3 +1,5 @@
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import {
     BadRequestException,
     forwardRef,
@@ -5,15 +7,14 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime, Interval } from 'luxon';
-import { InjectModel } from 'nestjs-typegoose';
+import { Role } from 'shared/model/Role';
+import { ITutorial } from 'shared/model/Tutorial';
+import { Substitute } from '../../database/entities/substitute.entity';
+import { Tutorial } from '../../database/entities/tutorial.entity';
+import { User } from '../../database/entities/user.entity';
 import { StudentDocument } from '../../database/models/student.model';
-import { TutorialDocument, TutorialModel } from '../../database/models/tutorial.model';
-import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { Role } from '../../shared/model/Role';
-import { ITutorial } from '../../shared/model/Tutorial';
 import { StudentService } from '../student/student.service';
 import { UserService } from '../user/user.service';
 import {
@@ -24,21 +25,36 @@ import {
 } from './tutorial.dto';
 
 @Injectable()
-export class TutorialService implements CRUDService<ITutorial, TutorialDTO, TutorialDocument> {
+export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tutorial> {
     constructor(
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
-        @InjectModel(TutorialModel)
-        private readonly tutorialModel: ReturnModelType<typeof TutorialModel>
+        private readonly entityManager: EntityManager
     ) {}
 
     /**
      * @returns All tutorials saved in the database.
      */
-    async findAll(): Promise<TutorialDocument[]> {
-        const tutorials: TutorialDocument[] = await this.tutorialModel.find().exec();
+    async findAll(): Promise<Tutorial[]> {
+        return this.getTutorialRepository().findAll();
+    }
+
+    /**
+     *
+     * @param ids
+     */
+    async findMultiple(ids: string[]): Promise<Tutorial[]> {
+        const tutorials = await this.getTutorialRepository().find({ id: { $in: ids } });
+
+        if (tutorials.length !== ids.length) {
+            const tutorialIds = tutorials.map((tutorial) => tutorial.id);
+            const notFound = ids.filter((id) => !tutorialIds.includes(id));
+            throw new NotFoundException(
+                `Could not find the tutorials with the following ids: [${notFound.join(', ')}]`
+            );
+        }
 
         return tutorials;
     }
@@ -52,8 +68,8 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      *
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
-    async findById(id: string): Promise<TutorialDocument> {
-        const tutorial: TutorialDocument | null = await this.tutorialModel.findById(id).exec();
+    async findById(id: string): Promise<Tutorial> {
+        const tutorial = await this.getTutorialRepository().findOne({ id });
 
         if (!tutorial) {
             throw new NotFoundException(`Tutorial with the ID ${id} could not be found.`);
@@ -68,7 +84,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @param dto Information about the tutorial to create.
      *
      * @throws `NotFoundException` - If the tutor or any of the correctors could not be found.
-     * @throws `BadRequestExpcetion` - If the tutor to be assigned does not have the TUTOR role or if any of the correctors to be assigned does not have the CORRECTOR role.
+     * @throws `BadRequestException` - If the tutor to be assigned does not have the TUTOR role or if any of the correctors to be assigned does not have the CORRECTOR role.
      *
      * @returns Created tutorial.
      */
@@ -101,7 +117,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      *
      * @returns Updated document.
      *
-     * @throws `BadRequestExpcetion` - If the tutor to be assigned does not have the TUTOR role or if any of the correctors to be assigned does not have the CORRECTOR role.
+     * @throws `BadRequestException` - If the tutor to be assigned does not have the TUTOR role or if any of the correctors to be assigned does not have the CORRECTOR role.
      * @throws `NotFoundException` - If the tutorial with the given ID or if the tutor with the ID in the DTO or if any corrector with the ID in the DTO could NOT be found.
      */
     async update(id: string, dto: TutorialDTO): Promise<ITutorial> {
@@ -120,11 +136,10 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         tutorial.endTime = DateTime.fromISO(dto.endTime);
 
         tutorial.tutor = tutor;
-        tutorial.correctors = correctors;
+        tutorial.correctors.set(correctors);
 
-        const updatedTutorial = await tutorial.save();
-
-        return updatedTutorial.toDTO();
+        await this.getTutorialRepository().persistAndFlush(tutorial);
+        return tutorial.toDTO();
     }
 
     /**
@@ -139,16 +154,23 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      * @throws `BadRequestException` - If the tutorial to delete still has one or more student assigned to it.
      */
-    async delete(id: string): Promise<TutorialDocument> {
+    async delete(id: string): Promise<void> {
         const tutorial = await this.findById(id);
 
         if (tutorial.students.length > 0) {
             throw new BadRequestException(`A tutorial with students can NOT be deleted.`);
         }
 
-        await Promise.all(tutorial.teams.map((team) => team.remove()));
-
-        return tutorial.remove();
+        const em = this.entityManager.fork(false);
+        await em.begin();
+        try {
+            tutorial.teams.getItems().map((team) => em.remove(team));
+            em.remove(tutorial);
+            await em.commit();
+        } catch (e) {
+            await em.rollback();
+            throw new BadRequestException(e);
+        }
     }
 
     /**
@@ -158,13 +180,13 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     async setSubstitute(id: string, dto: SubstituteDTO): Promise<void> {
         const tutorial = await this.findById(id);
-        this.setTutorialSubstitute(tutorial, dto);
+        await this.setTutorialSubstitute(tutorial, dto);
     }
 
     /**
      * Sets the substitutes of a tutorial according to the given DTOs.
      *
-     * Every DTO in the given array will be handled seperatly.
+     * Every DTO in the given array will be handled separately.
      *
      * @see setTutorialSubstitute
      */
@@ -187,22 +209,83 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws `BadRequestException` - If the tutorial of the given `id` parameter could not be found.
      * @throws `BadRequestException` - If the `tutorId` field contains a user ID which can not be found or which does not belong to a tutor.
      */
-    private async setTutorialSubstitute(
-        tutorial: TutorialDocument,
-        dto: SubstituteDTO
-    ): Promise<void> {
-        const { dates, tutorId } = dto;
+    private async setTutorialSubstitute(tutorial: Tutorial, dto: SubstituteDTO): Promise<void> {
+        const dates = dto.dates.map((date) => DateTime.fromISO(date));
+        const em = this.entityManager.fork(false);
+        await em.begin();
 
-        if (!tutorId) {
-            dates.forEach((date) => tutorial.removeSubstitute(DateTime.fromISO(date)));
-        } else {
-            const tutor = await this.userService.findById(tutorId);
-            this.assertTutorHasTutorRole(tutor);
+        try {
+            if (!dto.tutorId) {
+                await this.removeSubstituteForDates({ tutorial: tutorial, dates: dates, em: em });
+            } else {
+                await this.addSubstituteForDates({
+                    tutorId: dto.tutorId,
+                    tutorial: tutorial,
+                    dates: dates,
+                    em: em,
+                });
+            }
 
-            dates.forEach((date) => tutorial.setSubstitute(DateTime.fromISO(date), tutor));
+            await em.commit();
+        } catch (e) {
+            await em.rollback();
+            throw new BadRequestException(e);
         }
+    }
 
-        await tutorial.save();
+    /**
+     * Adds the tutor with the given id as substitute of the tutorial to the given dates.
+     *
+     * The updates are persisted in the given {@link EntityManager} but not flushed or committed. Therefore they must be committed manually.
+     *
+     * @param tutorId ID of the substitute tutor.
+     * @param tutorial Tutorial to substitute.
+     * @param dates Dates to substitute.
+     * @param em {@link EntityManager} to use.
+     *
+     * @throws {@link NotFoundException} - If no tutor with the given `tutorId` could be found.
+     * @private
+     */
+    private async addSubstituteForDates({
+        tutorId,
+        tutorial,
+        dates,
+        em,
+    }: AddSubstituteForDatesParams): Promise<void> {
+        const tutor = await this.userService.findById(tutorId);
+        this.assertTutorHasTutorRole(tutor);
+
+        dates.forEach((date) =>
+            em.persist(
+                new Substitute({
+                    tutorialToSubstitute: tutorial,
+                    substituteTutor: tutor,
+                    date,
+                })
+            )
+        );
+    }
+
+    /**
+     * Removes all substitute from the tutorial at the given dates.
+     *
+     * The changes are persisted in the given {@link EntityManager} but not flushed or committed. Therefore they must be committed manually.
+     *
+     * @param tutorial Tutorial to remove the substitutes.
+     * @param dates Dates to remove the substitutes.
+     * @param em {@link EntityManager} to use.
+     * @private
+     */
+    private async removeSubstituteForDates({
+        tutorial,
+        dates,
+        em,
+    }: RemoveSubstituteForDatesParams): Promise<void> {
+        const substituteForGivenDates = em.find(Substitute, {
+            tutorialToSubstitute: tutorial,
+            date: { $in: dates },
+        });
+        em.remove(substituteForGivenDates);
     }
 
     /**
@@ -226,13 +309,13 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      *
      * The created tutorials will **not** have any correctors or a tutor assigned but will have all dates specified in the DTO.
      *
-     * @param dto DTO with the informatio of the tutorials to generate.
+     * @param dto DTO with the information of the tutorials to generate.
      *
      * @returns Array containing the response DTOs of the created tutorials.
      */
     async createMany(dto: TutorialGenerationDTO): Promise<ITutorial[]> {
         const { excludedDates, generationDatas } = dto;
-        const createdTutorials: TutorialDocument[] = [];
+        const createdTutorials: Tutorial[] = [];
         const interval = Interval.fromDateTimes(dto.getFirstDay(), dto.getLastDay());
         const daysInInterval = this.datesInIntervalGroupedByWeekday(interval);
         const indexForWeekday: { [key: string]: number } = {};
@@ -282,21 +365,17 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         endTime,
         dates,
         correctors,
-    }: CreateParameters): Promise<TutorialDocument> {
+    }: CreateParameters): Promise<Tutorial> {
         this.assertTutorHasTutorRole(tutor);
         this.assertCorrectorsHaveCorrectorRole(correctors);
         this.assertAtLeastOneDate(dates);
 
-        const tutorial = new TutorialModel({
-            slot,
-            tutor,
-            startTime,
-            endTime,
-            dates,
-            correctors,
-        });
+        const tutorial = new Tutorial({ slot, dates, startTime, endTime });
+        tutorial.tutor = tutor;
+        tutorial.correctors.set(correctors);
+        await this.getTutorialRepository().persistAndFlush(tutorial);
 
-        return this.tutorialModel.create(tutorial);
+        return tutorial;
     }
 
     /**
@@ -353,13 +432,21 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         return dateArray;
     }
 
-    private assertTutorHasTutorRole(tutor?: UserDocument) {
+    /**
+     * @returns TutorialRepository
+     * @private
+     */
+    private getTutorialRepository(): EntityRepository<Tutorial> {
+        return this.entityManager.getRepository(Tutorial);
+    }
+
+    private assertTutorHasTutorRole(tutor?: User) {
         if (tutor && !tutor.roles.includes(Role.TUTOR)) {
             throw new BadRequestException('The tutor of a tutorial needs to have the TUTOR role.');
         }
     }
 
-    private assertCorrectorsHaveCorrectorRole(correctors: UserDocument[]) {
+    private assertCorrectorsHaveCorrectorRole(correctors: User[]) {
         for (const doc of correctors) {
             if (!doc.roles.includes(Role.CORRECTOR)) {
                 throw new BadRequestException(
@@ -370,14 +457,14 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     }
 
     private async assertTutorialSlot(slot: string) {
-        const tutorialWithSameSlot = await this.tutorialModel.findOne({ slot }).exec();
+        const tutorialWithSameSlot = await this.getTutorialRepository().findOne({ slot });
 
         if (!!tutorialWithSameSlot) {
             throw new BadRequestException(`A tutorial with the slot '${slot} already exists.`);
         }
     }
 
-    private async assertAtLeastOneDate(dates: DateTime[]) {
+    private assertAtLeastOneDate(dates: DateTime[]) {
         if (dates.length === 0) {
             throw new BadRequestException(
                 `A tutorial without dates should be generated. This is not allowed.`
@@ -388,9 +475,22 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
 interface CreateParameters {
     slot: string;
-    tutor: UserDocument | undefined;
+    tutor: User | undefined;
     startTime: DateTime;
     endTime: DateTime;
     dates: DateTime[];
-    correctors: UserDocument[];
+    correctors: User[];
+}
+
+interface AddSubstituteForDatesParams {
+    tutorId: string;
+    tutorial: Tutorial;
+    dates: DateTime[];
+    em: EntityManager;
+}
+
+interface RemoveSubstituteForDatesParams {
+    tutorial: Tutorial;
+    dates: DateTime[];
+    em: EntityManager;
 }

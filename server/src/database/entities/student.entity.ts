@@ -59,6 +59,7 @@ export class Student {
     @ManyToMany(() => Grading, 'students', { owner: true })
     gradings = new Collection<Grading>(this);
 
+    // TODO: Encrypt this map?!
     @Property({ type: MapType })
     private presentationPoints: Map<string, number> = new Map();
 
