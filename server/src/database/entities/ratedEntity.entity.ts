@@ -1,10 +1,15 @@
 import { Embeddable, Embedded, PrimaryKey, Property } from '@mikro-orm/core';
 import { ExercisePointsInfo, IExercisePointsInfo } from 'shared/model/Gradings';
+import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import { v4 } from 'uuid';
+import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { Student } from './student.entity';
 
 @Embeddable()
 export class SubExercise {
+    @Property()
+    id: string;
+
     @Property()
     exerciseName: string;
 
@@ -18,6 +23,7 @@ export class SubExercise {
         this.exerciseName = params.exerciseName;
         this.bonus = params.bonus;
         this.maxPoints = params.maxPoints;
+        this.id = params.id ?? v4();
     }
 
     /**
@@ -28,6 +34,24 @@ export class SubExercise {
             must: this.bonus ? 0 : this.maxPoints,
             bonus: this.bonus ? this.maxPoints : 0,
         });
+    }
+
+    static fromDTO(dto: SubExerciseDTO): SubExercise {
+        return new SubExercise({
+            id: dto.id,
+            exerciseName: dto.exName,
+            bonus: dto.bonus,
+            maxPoints: dto.maxPoints,
+        });
+    }
+
+    toDTO(): ISubexercise {
+        return {
+            id: this.id,
+            exName: this.exerciseName,
+            bonus: this.bonus,
+            maxPoints: this.maxPoints,
+        };
     }
 }
 
@@ -75,6 +99,26 @@ export class Exercise extends SubExercise {
         );
         return new ExercisePointsInfo(info);
     }
+
+    static fromDTO(dto: ExerciseDTO): Exercise {
+        return new Exercise({
+            id: dto.id,
+            exerciseName: dto.exName,
+            bonus: dto.bonus,
+            maxPoints: dto.maxPoints,
+            subexercises: dto.subexercises?.map((subExDto) => SubExercise.fromDTO(subExDto)) ?? [],
+        });
+    }
+
+    toDTO(): IExercise {
+        return {
+            id: this.id,
+            bonus: this.bonus,
+            exName: this.exerciseName,
+            maxPoints: this.maxPoints,
+            subexercises: this.subexercises.map((subEx) => subEx.toDTO()),
+        };
+    }
 }
 
 export abstract class HasExercises implements HandIn {
@@ -84,7 +128,7 @@ export abstract class HasExercises implements HandIn {
     @Embedded(() => Exercise, { array: true })
     exercises: Exercise[] = [];
 
-    constructor(params: HasExercisesParams) {
+    protected constructor(params: HasExercisesParams) {
         this.exercises = [...params.exercises];
     }
 
@@ -108,7 +152,7 @@ export abstract class RatedEntity extends HasExercises {
     @Property({ type: 'float' })
     percentageNeeded: number;
 
-    constructor(params: RatedEntityParams) {
+    protected constructor(params: RatedEntityParams) {
         super(params);
         this.percentageNeeded = params.percentageNeeded;
     }
@@ -163,6 +207,7 @@ export interface RatedEntityParams extends HasExercisesParams {
 }
 
 interface SubExerciseParams {
+    id?: string;
     exerciseName: string;
     bonus: boolean;
     maxPoints: number;

@@ -1,26 +1,21 @@
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-import { ExerciseDocument, ExerciseModel } from '../../database/models/exercise.model';
-import { SheetDocument, SheetModel } from '../../database/models/sheet.model';
+import { ISheet } from 'shared/model/Sheet';
+import { Exercise } from '../../database/entities/ratedEntity.entity';
+import { Sheet } from '../../database/entities/sheet.entity';
 import { CRUDService } from '../../helpers/CRUDService';
-import { ISheet } from '../../shared/model/Sheet';
 import { SheetDTO } from './sheet.dto';
 
 @Injectable()
-export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument> {
-    constructor(
-        @InjectModel(SheetModel)
-        private readonly sheetModel: ReturnModelType<typeof SheetModel>
-    ) {}
+export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
+    constructor(private readonly entityManager: EntityManager) {}
 
     /**
      * @returns All sheets saved in the database.
      */
-    async findAll(): Promise<SheetDocument[]> {
-        const sheets = await this.sheetModel.find().exec();
-
-        return sheets;
+    async findAll(): Promise<Sheet[]> {
+        return this.getSheetRepository().findAll();
     }
 
     /**
@@ -28,12 +23,12 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
      *
      * @param id ID to search for.
      *
-     * @returns SheetDocument with the given ID.
+     * @returns Sheet with the given ID.
      *
      * @throws `NotFoundException` - If no sheet with the given ID could be found.
      */
-    async findById(id: string): Promise<SheetDocument> {
-        const sheet: SheetDocument | null = await this.sheetModel.findById(id).exec();
+    async findById(id: string): Promise<Sheet> {
+        const sheet = await this.getSheetRepository().findOne({ id });
 
         if (!sheet) {
             throw new NotFoundException(`Sheet with the ID '${id}' could not be found.`);
@@ -61,10 +56,9 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
      * @returns Created sheet.
      */
     async create(dto: SheetDTO): Promise<ISheet> {
-        const sheet = SheetModel.fromDTO(dto);
-        const created = await this.sheetModel.create(sheet);
-
-        return created.toDTO();
+        const sheet = Sheet.fromDTO(dto);
+        await this.entityManager.persistAndFlush(sheet);
+        return sheet.toDTO();
     }
 
     /**
@@ -84,11 +78,10 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
 
         sheet.sheetNo = dto.sheetNo;
         sheet.bonusSheet = dto.bonusSheet;
-        sheet.exercises = dto.exercises.map((ex) => ExerciseModel.fromDTO(ex) as ExerciseDocument);
+        sheet.exercises = dto.exercises.map((ex) => Exercise.fromDTO(ex));
 
-        const updated = await sheet.save();
-
-        return updated.toDTO();
+        await this.entityManager.persistAndFlush(sheet);
+        return sheet.toDTO();
     }
 
     /**
@@ -100,9 +93,12 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, SheetDocument
      *
      * @throws `NotFoundException` - If no sheet with the given ID could be found.
      */
-    async delete(id: string): Promise<SheetDocument> {
+    async delete(id: string): Promise<void> {
         const sheet = await this.findById(id);
+        await this.entityManager.removeAndFlush(sheet);
+    }
 
-        return sheet.remove();
+    private getSheetRepository(): EntityRepository<Sheet> {
+        return this.entityManager.getRepository(Sheet);
     }
 }

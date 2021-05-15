@@ -1,5 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { HasExercises, HasExercisesParams } from './ratedEntity.entity';
+import { ISheet } from 'shared/model/Sheet';
+import { SheetDTO } from '../../module/sheet/sheet.dto';
+import { Exercise, HasExercises, HasExercisesParams } from './ratedEntity.entity';
 
 @Entity()
 export class Sheet extends HasExercises {
@@ -20,6 +22,23 @@ export class Sheet extends HasExercises {
      */
     get sheetNoAsString(): string {
         return this.sheetNo.toString(10).padStart(2, '0');
+    }
+
+    static fromDTO(dto: SheetDTO): Sheet {
+        return new Sheet({
+            sheetNo: dto.sheetNo,
+            bonusSheet: dto.bonusSheet,
+            exercises: dto.exercises.map((exDto) => Exercise.fromDTO(exDto)),
+        });
+    }
+
+    toDTO(): ISheet {
+        return {
+            id: this.id,
+            sheetNo: this.sheetNo,
+            bonusSheet: this.bonusSheet,
+            exercises: this.exercises.map((ex) => ex.toDTO()),
+        };
     }
 }
 
