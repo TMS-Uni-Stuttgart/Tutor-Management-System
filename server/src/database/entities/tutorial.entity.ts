@@ -59,6 +59,10 @@ export class Tutorial {
         this.endTime = params.endTime;
     }
 
+    getStudents(): Student[] {
+        return this.students.getItems();
+    }
+
     toDTO(): ITutorial {
         const dateOptions: ToISOTimeOptions = { suppressMilliseconds: true };
         return {

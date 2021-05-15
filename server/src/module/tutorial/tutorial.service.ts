@@ -10,10 +10,10 @@ import {
 import { DateTime, Interval } from 'luxon';
 import { Role } from 'shared/model/Role';
 import { ITutorial } from 'shared/model/Tutorial';
+import { Student } from '../../database/entities/student.entity';
 import { Substitute } from '../../database/entities/substitute.entity';
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { User } from '../../database/entities/user.entity';
-import { StudentDocument } from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
 import { StudentService } from '../student/student.service';
 import { UserService } from '../user/user.service';
@@ -300,11 +300,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      *
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
-    async getAllStudentsOfTutorial(id: string): Promise<StudentDocument[]> {
-        // Check if the tutorial exists.
-        await this.findById(id);
-
-        return this.studentService.findByCondition({ tutorial: id as any });
+    async getAllStudentsOfTutorial(id: string): Promise<Student[]> {
+        const tutorial = await this.findById(id);
+        return tutorial.getStudents();
     }
 
     /**
