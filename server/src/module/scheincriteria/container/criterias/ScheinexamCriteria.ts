@@ -1,14 +1,14 @@
 import { IsBoolean } from 'class-validator';
-import { ScheinexamDocument } from '../../../../database/models/scheinexam.model';
-import { StudentDocument } from '../../../../database/models/student.model';
-import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaDistributionInformation,
     CriteriaSheetOrExamInformation,
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
+import { Scheinexam } from '../../../../database/entities/scheinexam.entity';
+import { Student } from '../../../../database/entities/student.entity';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -41,7 +41,7 @@ export class ScheinexamCriteria extends Scheincriteria {
             infos
         );
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.passAllExamsIndividually) {
             passed = examsPassed >= exams.length;
@@ -69,7 +69,7 @@ export class ScheinexamCriteria extends Scheincriteria {
             const achieved = { achieved: 0, notAchieved: 0, notPresent: 0 };
 
             exam.exercises.forEach((exercise) => {
-                averages[exercise.exName] = [];
+                averages[exercise.exerciseName] = [];
             });
 
             students.forEach((student) => {
@@ -83,17 +83,17 @@ export class ScheinexamCriteria extends Scheincriteria {
                 const result = exam.getPassedInformation(student);
                 const distributionForThisResult = distribution[result.achieved] ?? {
                     value: 0,
-                    aboveThreshhold: result.achieved / result.total.must >= exam.percentageNeeded,
+                    aboveThreshold: result.achieved / result.total.must >= exam.percentageNeeded,
                 };
 
                 exam.exercises.forEach((exercise) => {
-                    averages[exercise.exName].push(
+                    averages[exercise.exerciseName].push(
                         grading.getExerciseGrading(exercise)?.points ?? 0
                     );
                 });
 
                 distribution[result.achieved] = {
-                    aboveThreshhold: distributionForThisResult.aboveThreshhold,
+                    aboveThreshold: distributionForThisResult.aboveThreshold,
                     value: distributionForThisResult.value + 1,
                 };
 
@@ -109,14 +109,14 @@ export class ScheinexamCriteria extends Scheincriteria {
                 total: achieved.achieved + achieved.notAchieved + achieved.notPresent,
                 averages: exam.exercises.reduce((avgInfo, exercise) => {
                     const total: number = exercise.maxPoints;
-                    const achievedPoints = averages[exercise.exName];
+                    const achievedPoints = averages[exercise.exerciseName];
                     const value: number =
                         achievedPoints.length > 0
                             ? achievedPoints.reduce((sum, current) => sum + current, 0) /
                               achievedPoints.length
                             : 0;
 
-                    return { ...avgInfo, [exercise.exName]: { value, total } };
+                    return { ...avgInfo, [exercise.exerciseName]: { value, total } };
                 }, {}),
                 distribution,
             };
@@ -134,8 +134,8 @@ export class ScheinexamCriteria extends Scheincriteria {
     }
 
     private checkAllExams(
-        exams: ScheinexamDocument[],
-        student: StudentDocument,
+        exams: Scheinexam[],
+        student: Student,
         infos: StatusCheckResponse['infos']
     ): { examsPassed: number; pointsAchieved: number; pointsTotal: number } {
         let pointsAchieved = 0;

@@ -108,6 +108,13 @@ export class Student {
     }
 
     /**
+     * @returns A copy of the array of all attendances of this student.
+     */
+    getAllAttendances(): Attendance[] {
+        return [...this.attendances];
+    }
+
+    /**
      * Saves the given grading for this student.
      *
      * If there is already a saved grading for same hand-in the old one will get replaced.
@@ -161,6 +168,13 @@ export class Student {
      */
     getPresentationPoints(handIn: HandIn): number | undefined {
         return this.presentationPoints.get(handIn.id);
+    }
+
+    /**
+     * @returns A copy of the map containing the presentation points of this student.
+     */
+    getAllPresentationPoints(): Map<string, number> {
+        return new Map(this.presentationPoints);
     }
 
     /**

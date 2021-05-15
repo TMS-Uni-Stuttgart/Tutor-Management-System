@@ -1,10 +1,10 @@
-import { SheetDocument } from '../../../../database/models/sheet.model';
-import { StudentDocument } from '../../../../database/models/student.model';
 import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
+import { Sheet } from '../../../../database/entities/sheet.entity';
+import { Student } from '../../../../database/entities/student.entity';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -22,7 +22,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
         const infos: StatusCheckResponse['infos'] = {};
         const { pointsAchieved, pointsTotal } = this.checkAllSheets(sheets, student, infos);
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.percentage) {
             passed = pointsAchieved / pointsTotal >= this.valueNeeded;
@@ -44,11 +44,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkAllSheets(
-        sheets: SheetDocument[],
-        student: StudentDocument,
-        infos: StatusCheckResponse['infos']
-    ) {
+    private checkAllSheets(sheets: Sheet[], student: Student, infos: StatusCheckResponse['infos']) {
         let pointsAchieved = 0;
         let pointsTotal = 0;
 

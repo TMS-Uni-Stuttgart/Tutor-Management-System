@@ -1,9 +1,6 @@
 import { Transform } from 'class-transformer';
+import { ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
 import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
-import {
-    ScheincriteriaIdentifier,
-    ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -27,7 +24,7 @@ export class PresentationCriteria extends Scheincriteria {
     checkCriteriaStatus({ student }: CriteriaPayload): StatusCheckResponse {
         let achieved = 0;
 
-        for (const value of student.presentationPoints.values()) {
+        for (const value of student.getAllPresentationPoints().values()) {
             achieved += value;
         }
 

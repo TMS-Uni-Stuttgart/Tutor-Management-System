@@ -1,12 +1,12 @@
 import { IsBoolean } from 'class-validator';
-import { ShortTestDocument } from '../../../../database/models/shortTest.model';
-import { StudentDocument } from '../../../../database/models/student.model';
-import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
+import { ShortTest } from '../../../../database/entities/shorttest.entity';
+import { Student } from '../../../../database/entities/student.entity';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -17,8 +17,8 @@ import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
 
 interface CheckShortTestsParams {
-    student: StudentDocument;
-    shortTests: ShortTestDocument[];
+    student: Student;
+    shortTests: ShortTest[];
 }
 
 interface CheckShortTestsReturn {

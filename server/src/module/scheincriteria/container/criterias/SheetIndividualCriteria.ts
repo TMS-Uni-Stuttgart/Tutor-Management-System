@@ -1,12 +1,12 @@
 import { IsBoolean } from 'class-validator';
-import { SheetDocument } from '../../../../database/models/sheet.model';
-import { StudentDocument } from '../../../../database/models/student.model';
-import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
+import { Sheet } from '../../../../database/entities/sheet.entity';
+import { Student } from '../../../../database/entities/student.entity';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -44,7 +44,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         );
         const sheetsPassed = this.checkAllSheets(sheets, student, infos);
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.percentage) {
             passed = sheetsPassed / totalSheetCount >= this.valueNeeded;
@@ -67,8 +67,8 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     }
 
     private checkAllSheets(
-        sheets: SheetDocument[],
-        student: StudentDocument,
+        sheets: Sheet[],
+        student: Student,
         infos: StatusCheckResponse['infos']
     ): number {
         let sheetsPassed = 0;

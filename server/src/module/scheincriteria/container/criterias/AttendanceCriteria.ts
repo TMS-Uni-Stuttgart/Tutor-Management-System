@@ -1,8 +1,5 @@
-import { AttendanceState } from '../../../../shared/model/Attendance';
-import {
-    ScheinCriteriaUnit,
-    ScheincriteriaIdentifier,
-} from '../../../../shared/model/ScheinCriteria';
+import { AttendanceState } from 'shared/model/Attendance';
+import { ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -20,7 +17,7 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
         let total = 0;
         let visitedOrExcused = 0;
 
-        student.attendances.forEach(({ state }) => {
+        student.getAllAttendances().forEach(({ state }) => {
             total += 1;
 
             if (state === AttendanceState.PRESENT || state === AttendanceState.EXCUSED) {

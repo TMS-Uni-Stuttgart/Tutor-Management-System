@@ -66,7 +66,7 @@ export interface ScheinCriteriaAdditionalStatus {
 
 export enum PassedState {
     PASSED = 'PASSED',
-    NOT_PASSED = 'NOTPASSED',
+    NOT_PASSED = 'NOT_PASSED',
     IGNORE = 'IGNORE',
 }
 
@@ -88,7 +88,7 @@ export interface CriteriaAchievedInformation {
 export interface CriteriaDistributionInformation {
     [key: string]: {
         value: number;
-        aboveThreshhold: boolean;
+        aboveThreshold: boolean;
     };
 }
 
