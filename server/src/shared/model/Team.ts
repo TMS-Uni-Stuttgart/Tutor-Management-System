@@ -17,3 +17,8 @@ export interface ITeam extends HasId {
 export interface ITeamDTO {
     students: string[];
 }
+
+export interface ITeamInEntity {
+    id: string;
+    teamNo: number;
+}

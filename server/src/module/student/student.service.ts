@@ -1,9 +1,10 @@
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
 import { FilterQuery } from 'mongoose';
-import { InjectModel } from 'nestjs-typegoose';
 import { IAttendance } from 'shared/model/Attendance';
 import { IStudent } from 'shared/model/Student';
+import { Student } from '../../database/entities/student.entity';
 import { AttendanceModel } from '../../database/models/attendance.model';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { TeamDocument } from '../../database/models/team.model';
@@ -25,15 +26,14 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     private readonly logger = new Logger(StudentService.name);
 
     constructor(
+        private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
         @Inject(forwardRef(() => TeamService))
         private readonly teamService: TeamService,
         private readonly sheetService: SheetService,
         @Inject(forwardRef(() => GradingService))
-        private readonly gradingService: GradingService,
-        @InjectModel(StudentModel)
-        private readonly studentModel: ReturnModelType<typeof StudentModel>
+        private readonly gradingService: GradingService
     ) {}
 
     /**
@@ -47,6 +47,10 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
 
         this.logger.log(`Time to fetch all students: ${timeB - timeA}ms`);
         return allStudents;
+    }
+
+    async findMany(studentIds: string[]): Promise<Student[]> {
+        return this.getStudentRepository().find({ id: { $in: studentIds } });
     }
 
     /**
@@ -155,7 +159,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      *
      * @throws `NotFoundException` - If no student with the given ID could be found.
      */
-    async delete(id: string): Promise<StudentDocument> {
+    async delete(id: string): Promise<void> {
         const student = await this.findById(id);
 
         return student.remove();
@@ -234,6 +238,10 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
 
         student.cakeCount = dto.cakeCount;
         await student.save();
+    }
+
+    private getStudentRepository(): EntityRepository<Student> {
+        return this.entityManager.getRepository(Student);
     }
 
     private async getTeamFromDTO(

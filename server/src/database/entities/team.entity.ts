@@ -1,4 +1,5 @@
 import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { ITeam, ITeamInEntity } from 'shared/model/Team';
 import { v4 } from 'uuid';
 import { Grading } from './grading.entity';
 import { HandIn } from './ratedEntity.entity';
@@ -54,6 +55,19 @@ export class Team {
         }
 
         return gradings;
+    }
+
+    toDTO(): ITeam {
+        return {
+            id: this.id,
+            teamNo: this.teamNo,
+            tutorial: this.tutorial.id,
+            students: this.students.getItems().map((student) => student.toStudentInTeam()),
+        };
+    }
+
+    toInEntity(): ITeamInEntity {
+        return { id: this.id, teamNo: this.teamNo };
     }
 }
 

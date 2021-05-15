@@ -9,7 +9,10 @@ import {
     Property,
 } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
-import { StudentStatus } from 'shared/model/Student';
+import { IAttendance } from 'shared/model/Attendance';
+import { IGrading } from 'shared/model/Gradings';
+import { IStudent, StudentStatus } from 'shared/model/Student';
+import { IStudentInTeam } from 'shared/model/Team';
 import { v4 } from 'uuid';
 import { EncryptedEnumType } from '../types/encryption/EncryptedEnumType';
 import { EncryptedIntType } from '../types/encryption/EncryptedNumberType';
@@ -51,7 +54,7 @@ export class Student {
     cakeCount: number = 0;
 
     @ManyToOne()
-    tutorial?: Tutorial;
+    tutorial: Tutorial;
 
     @ManyToOne()
     team?: Team;
@@ -71,12 +74,13 @@ export class Student {
         this.lastname = params.lastname;
         this.matriculationNo = params.matriculationNo;
         this.status = params.status;
+        this.tutorial = params.tutorial;
     }
 
     /**
      * Saves the given attendance in the student.
      *
-     * The attendance will be saved for it's date. If there is already an attendance saved for that date it will be overriden.
+     * The attendance will be saved for it's date. If there is already an attendance saved for that date it will be overridden.
      *
      * This function marks the corresponding path as modified.
      *
@@ -177,6 +181,42 @@ export class Student {
 
         return -1;
     }
+
+    toDTO(): IStudent {
+        return {
+            ...this.toStudentInTeam(),
+            tutorial: this.tutorial?.toInEntity(),
+        };
+    }
+
+    toStudentInTeam(): IStudentInTeam {
+        const attendances: Map<string, IAttendance> = new Map();
+        const gradings: Map<string, IGrading> = new Map();
+
+        for (const attendance of this.attendances) {
+            attendances.set(attendance.getDateAsKey(), attendance.toDTO());
+        }
+
+        for (const grading of this.gradings) {
+            gradings.set(grading.entityId, grading.toDTO());
+        }
+
+        return {
+            id: this.id,
+            firstname: this.firstname,
+            lastname: this.lastname,
+            iliasName: this.iliasName,
+            matriculationNo: this.matriculationNo,
+            team: this.team?.toInEntity(),
+            status: this.status,
+            courseOfStudies: this.courseOfStudies,
+            attendances: [...attendances],
+            cakeCount: this.cakeCount,
+            email: this.email,
+            gradings: [...gradings],
+            presentationPoints: [...this.presentationPoints],
+        };
+    }
 }
 
 interface StudentParams {
@@ -184,4 +224,5 @@ interface StudentParams {
     lastname: string;
     matriculationNo: string;
     status: StudentStatus;
+    tutorial: Tutorial;
 }

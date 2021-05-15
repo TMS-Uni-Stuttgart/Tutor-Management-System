@@ -1,6 +1,6 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
-import { AttendanceState } from 'shared/model/Attendance';
+import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import { EncryptedEnumType } from '../types/encryption/EncryptedEnumType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { LuxonDateType } from '../types/LuxonDateType';
@@ -48,5 +48,16 @@ export class Attendance {
      */
     isOnDay(date: DateTime): boolean {
         return this.date.startOf('day').equals(date.startOf('day'));
+    }
+
+    /**
+     * @returns The date of this attendance as a key for a map.
+     */
+    getDateAsKey(): string {
+        return this.date.toISODate();
+    }
+
+    toDTO(): IAttendance {
+        return { date: this.date.toISODate(), note: this.note, state: this.state };
     }
 }

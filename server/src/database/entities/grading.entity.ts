@@ -8,6 +8,7 @@ import {
     PrimaryKey,
     Property,
 } from '@mikro-orm/core';
+import { IExerciseGrading, IGrading } from 'shared/model/Gradings';
 import { v4 } from 'uuid';
 import { EncryptedFloatType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
@@ -19,6 +20,9 @@ import { Student } from './student.entity';
 
 @Embeddable()
 export class ExerciseGrading {
+    @Property()
+    exerciseId: string;
+
     @Property({ type: EncryptedFloatType })
     points: number;
 
@@ -32,8 +36,18 @@ export class ExerciseGrading {
     @Property({ type: EncryptedFloatType })
     additionalPoints?: number;
 
-    constructor(points: number) {
+    constructor(exerciseId: string, points: number) {
+        this.exerciseId = exerciseId;
         this.points = points;
+    }
+
+    toDTO(): IExerciseGrading {
+        return {
+            comment: this.comment,
+            points: this.points,
+            additionalPoints: this.additionalPoints,
+            subExercisePoints: [...this.subExercisePoints],
+        };
     }
 }
 
@@ -105,12 +119,32 @@ export class Grading {
         throw new Error('Neither the sheet nor the exam nor the shortTest field is set.');
     }
 
+    get belongsToTeam(): boolean {
+        return this.students.length > 1;
+    }
+
     /**
      * @param student Student to check
      * @returns `True` if this grading belongs to the given student.
      */
     belongsToStudent(student: Student): boolean {
         return this.students.getItems().findIndex((s) => s.id === student.id) !== -1;
+    }
+
+    toDTO(): IGrading {
+        const exerciseGradings: Map<string, IExerciseGrading> = new Map();
+        for (const exGrading of this.exerciseGrading) {
+            exerciseGradings.set(exGrading.exerciseId, exGrading.toDTO());
+        }
+
+        return {
+            id: this.id,
+            points: this.points,
+            additionalPoints: this.additionalPoints,
+            comment: this.comment,
+            belongsToTeam: this.belongsToTeam,
+            exerciseGradings: [...exerciseGradings],
+        };
     }
 
     private assertEntitiesAreAValidSet() {
