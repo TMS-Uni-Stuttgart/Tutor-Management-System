@@ -69,6 +69,17 @@ export class Team {
     toInEntity(): ITeamInEntity {
         return { id: this.id, teamNo: this.teamNo };
     }
+
+    getTeamName(): string {
+        return Team.generateTeamName(this.students.getItems());
+    }
+
+    static generateTeamName(students: Student[]): string {
+        return students
+            .map((s) => s.lastname)
+            .sort()
+            .join('');
+    }
 }
 
 interface TeamParams {
