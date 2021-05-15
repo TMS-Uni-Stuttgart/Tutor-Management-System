@@ -9,10 +9,9 @@ import {
     NotFoundException,
     OnApplicationBootstrap,
 } from '@nestjs/common';
-import { DateTime } from 'luxon';
 import { NamedElement } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
-import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'shared/model/User';
+import { ILoggedInUser, IUser } from 'shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { User } from '../../database/entities/user.entity';
@@ -151,7 +150,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
     /**
      * Updates the user with the given information
      *
-     * If neccessary this functions updates all related tutorials and saves them afterwards. Related tutorials can be:
+     * If necessary this functions updates all related tutorials and saves them afterwards. Related tutorials can be:
      * - Tutorials of which the user _was_ the tutor.
      * - Tutorials of which the user _will be_ the tutor.
      * - Tutorials of which the user _was_ a corrector.
@@ -208,7 +207,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
     }
 
     /**
-     * Sets the password of the given user to the given one. This will remove the `temporaryPassword` from the uesr.
+     * Sets the password of the given user to the given one. This will remove the `temporaryPassword` from the user.
      *
      * If one wants to set the temporary password aswell one should use the `setTemporaryPassword()` function.
      *
@@ -261,7 +260,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @throws `NotFoundException` - If no user with the given ID could be found.
      */
     async getLoggedInUserInformation(id: string): Promise<ILoggedInUser> {
-        const allTutorials = await this.tutorialService.findAll();
+        const user = await this.findById(id);
         const {
             id: userId,
             firstname,
@@ -270,39 +269,14 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
             temporaryPassword,
             tutorials,
             tutorialsToCorrect,
-        } = (await this.findById(id)).toDTO();
-
-        const substituteTutorials: Map<string, ILoggedInUserSubstituteTutorial> = new Map();
-
-        allTutorials.forEach((tutorial) => {
-            tutorial.getAllSubstitutes().forEach((substituteId, dateKey) => {
-                if (substituteId !== userId) {
-                    return;
-                }
-
-                const date = DateTime.fromISO(dateKey).toISODate();
-                const substInfo: ILoggedInUserSubstituteTutorial = substituteTutorials.get(
-                    tutorial.id
-                ) ?? {
-                    ...tutorial.toInEntity(),
-                    dates: [],
-                };
-
-                if (!date) {
-                    throw new Error(`Date '${dateKey}' could not be parsed to an ISODate.`);
-                }
-
-                substInfo.dates.push(date);
-                substituteTutorials.set(tutorial.id, substInfo);
-            });
-        });
+        } = user.toDTO();
 
         return {
             id: userId,
             firstname,
             lastname,
             roles,
-            substituteTutorials: Array.of(...substituteTutorials.values()),
+            substituteTutorials: user.getSubstituteInformation(),
             hasTemporaryPassword: !!temporaryPassword,
             tutorials,
             tutorialsToCorrect,
@@ -413,9 +387,12 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @returns Tutorials matching the given IDs.
      */
     private async getAllTutorials(ids: string[]): Promise<Tutorial[]> {
-        return Promise.all(ids.map((id) => this.tutorialService.findById(id)));
+        return this.tutorialService.findMultiple(ids);
     }
 
+    /**
+     * @returns UserRepository
+     */
     private getUserRepository(): EntityRepository<User> {
         return this.entityManager.getRepository(User);
     }

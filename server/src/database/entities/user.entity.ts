@@ -84,6 +84,41 @@ export class User {
         };
     }
 
+    toInEntity(): UserInEntity {
+        return {
+            id: this.id,
+            firstname: this.firstname,
+            lastname: this.lastname,
+        };
+    }
+
+    getSubstituteInformation(): ILoggedInUserSubstituteTutorial[] {
+        const groupedSubstituteInformation = this.getSubstitutesGroupedByTutorial();
+
+        const substituteTutorials: ILoggedInUserSubstituteTutorial[] = [];
+        for (const infos of groupedSubstituteInformation.values()) {
+            const dates: DateTime[] = infos.map((info) => info.date);
+            const tutorial: Tutorial = infos[0].tutorialToSubstitute;
+
+            substituteTutorials.push({
+                ...tutorial.toInEntity(),
+                dates: dates.map((date) => date.toISODate()),
+            });
+        }
+        return substituteTutorials;
+    }
+
+    private getSubstitutesGroupedByTutorial(): Map<string, Substitute[]> {
+        const groupedSubstituteInformation: Map<string, Substitute[]> = new Map();
+        this.tutorialsToSubstitute.getItems().forEach((substitute) => {
+            const tutorialId = substitute.tutorialToSubstitute.id;
+            const information: Substitute[] = groupedSubstituteInformation.get(tutorialId) ?? [];
+            information.push(substitute);
+            groupedSubstituteInformation.set(tutorialId, information);
+        });
+        return groupedSubstituteInformation;
+    }
+
     /**
      * Makes sure that the password is saved in a hashed form.
      *
