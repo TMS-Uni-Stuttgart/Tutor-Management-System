@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ScheinexamDocument } from '../../../database/models/scheinexam.model';
-import { StudentDocument } from '../../../database/models/student.model';
-import { StudentStatus } from '../../../shared/model/Student';
+import { StudentStatus } from 'shared/model/Student';
+import { Scheinexam } from '../../../database/entities/scheinexam.entity';
+import { Student } from '../../../database/entities/student.entity';
 import { ScheinexamService } from '../../scheinexam/scheinexam.service';
 import { StudentService } from '../../student/student.service';
 import { TemplateService } from '../../template/template.service';
@@ -14,8 +14,8 @@ interface PDFGeneratorOptions {
 }
 
 interface GetResultsParams {
-    exam: ScheinexamDocument;
-    students: StudentDocument[];
+    exam: Scheinexam;
+    students: Student[];
 }
 
 interface ExamResultsByStudents {

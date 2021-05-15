@@ -1,7 +1,7 @@
+import { Student } from '../../../database/entities/student.entity';
 import { PDFGenerator } from './PDFGenerator.core';
-import { StudentDocument } from '../../../database/models/student.model';
 
-interface ShortendMatriculationInfo {
+interface ShortenedMatriculationInfo {
     studentId: string;
     shortenedNo: string;
 }
@@ -10,16 +10,14 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
     /**
      * Returns the shortened number for all students together with the ID of the student to which the shortened matriculation number belongs to.
      *
-     * Those shortened numbers are still enough to identify a student. However, this is only true if one only consideres the given students. If one extends that array without re-running this function the identifying feature may get lost.
+     * Those shortened numbers are still enough to identify a student. However, this is only true if one only considers the given students. If one extends that array without re-running this function the identifying feature may get lost.
      *
      * @param students All students to get the shortened number from.
      *
      * @returns The shortened but still identifying matriculation numbers of all given students.
      */
-    protected getShortenedMatriculationNumbers(
-        students: StudentDocument[]
-    ): ShortendMatriculationInfo[] {
-        const result: ShortendMatriculationInfo[] = [];
+    protected getShortenedMatriculationNumbers(students: Student[]): ShortenedMatriculationInfo[] {
+        const result: ShortenedMatriculationInfo[] = [];
         const matriculationNos: { id: string; reversedNumber: string }[] = [];
 
         for (const student of students) {
@@ -70,7 +68,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      *
      * @param first First string
      * @param second Second string
-     * @returns The first position in which both string differ. If they are completly equal the length of the first string is returned.
+     * @returns The first position in which both string differ. If they are completely equal the length of the first string is returned.
      */
     private getFirstDifferentPosition(first: string, second: string): number {
         for (let i = 0; i < first.length; i++) {

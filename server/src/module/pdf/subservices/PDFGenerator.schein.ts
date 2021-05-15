@@ -26,9 +26,7 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
      *
      * @returns Buffer of a PDF containing the list with the schein status of all the given students.
      */
-    public async generatePDF({
-        enableShortMatriculationNo: enableShortMatriculatinNo,
-    }: GeneratorOptions): Promise<Buffer> {
+    public async generatePDF({ enableShortMatriculationNo }: GeneratorOptions): Promise<Buffer> {
         const [allStudents, summaries] = await Promise.all([
             this.studentService.findAll(),
             this.scheincriteriaService.getResultsOfAllStudents(),
@@ -44,7 +42,7 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
                 ? PassedState.PASSED
                 : PassedState.NOT_PASSED;
 
-            if (enableShortMatriculatinNo) {
+            if (enableShortMatriculationNo) {
                 statuses.push({ matriculationNo: shortenedNo, state });
             } else {
                 const matriculationNo = students.find((s) => s.id === studentId)?.matriculationNo;

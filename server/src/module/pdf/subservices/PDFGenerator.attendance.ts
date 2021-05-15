@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { getNameOfEntity, sortByName } from '../../../shared/util/helpers';
+import { getNameOfEntity, sortByName } from 'shared/util/helpers';
 import { TemplateService } from '../../template/template.service';
 import { TutorialService } from '../../tutorial/tutorial.service';
 import { PDFGenerator } from './PDFGenerator.core';
@@ -38,12 +38,15 @@ export class AttendancePDFGenerator extends PDFGenerator<GeneratorOptions> {
             );
         }
 
-        const { tutor, students, slot: tutorialSlot } = tutorial;
+        const { tutor, slot: tutorialSlot } = tutorial;
         const tutorName = getNameOfEntity(tutor);
         const template = this.templateService.getAttendanceTemplate();
         const content = template({
             date,
-            students: students.sort(sortByName).map((s) => ({ name: getNameOfEntity(s) })),
+            students: tutorial
+                .getStudents()
+                .sort(sortByName)
+                .map((s) => ({ name: getNameOfEntity(s) })),
             tutorName,
             tutorialSlot,
         });

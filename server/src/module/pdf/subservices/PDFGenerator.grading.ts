@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import JSZip from 'jszip';
-import { SheetDocument } from '../../../database/models/sheet.model';
+import { Sheet } from '../../../database/entities/sheet.entity';
 import { MarkdownService } from '../../markdown/markdown.service';
 import {
     GenerateAllTeamsGradingParams,
@@ -17,7 +17,7 @@ interface ZipData {
 }
 
 interface ConvertZipParams {
-    sheet: SheetDocument;
+    sheet: Sheet;
     teamData: SingleTeamGradings;
 }
 
