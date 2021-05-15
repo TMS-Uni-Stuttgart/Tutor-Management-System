@@ -2,6 +2,7 @@ import { Embeddable, Embedded, PrimaryKey, Property } from '@mikro-orm/core';
 import { ExercisePointsInfo, IExercisePointsInfo } from 'shared/model/Gradings';
 import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import { v4 } from 'uuid';
+import { HasExercisesDTO, RatedEntityDTO } from '../../module/scheinexam/scheinexam.dto';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
 import { Student } from './student.entity';
 
@@ -145,6 +146,10 @@ export abstract class HasExercises implements HandIn {
         );
         return new ExercisePointsInfo(info);
     }
+
+    updateFromDTO(dto: HasExercisesDTO): void {
+        this.exercises = dto.exercises.map((exDto) => Exercise.fromDTO(exDto));
+    }
 }
 
 export abstract class RatedEntity extends HasExercises {
@@ -190,6 +195,11 @@ export abstract class RatedEntity extends HasExercises {
             achieved,
             total,
         };
+    }
+
+    updateFromDTO(dto: RatedEntityDTO): void {
+        super.updateFromDTO(dto);
+        this.percentageNeeded = dto.percentageNeeded;
     }
 }
 

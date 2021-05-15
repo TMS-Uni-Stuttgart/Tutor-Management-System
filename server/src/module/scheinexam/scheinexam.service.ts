@@ -1,26 +1,20 @@
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { IScheinExam } from 'shared/model/Scheinexam';
+import { Scheinexam } from '../../database/entities/scheinexam.entity';
 import { CRUDService } from '../../helpers/CRUDService';
-import { IScheinExam } from '../../shared/model/Scheinexam';
 import { ScheinexamDTO } from './scheinexam.dto';
-import { ScheinexamDocument, ScheinexamModel } from '../../database/models/scheinexam.model';
-import { InjectModel } from 'nestjs-typegoose';
-import { ReturnModelType } from '@typegoose/typegoose';
 
 @Injectable()
-export class ScheinexamService
-    implements CRUDService<IScheinExam, ScheinexamDTO, ScheinexamDocument> {
-    constructor(
-        @InjectModel(ScheinexamModel)
-        private readonly scheinexamModel: ReturnModelType<typeof ScheinexamModel>
-    ) {}
+export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO, Scheinexam> {
+    constructor(private readonly entityManager: EntityManager) {}
 
     /**
      * @returns All scheinexams saved in the database.
      */
-    async findAll(): Promise<ScheinexamDocument[]> {
-        const scheinexams = await this.scheinexamModel.find().exec();
-
-        return scheinexams;
+    async findAll(): Promise<Scheinexam[]> {
+        return this.getScheinexamRepository().findAll();
     }
 
     /**
@@ -32,11 +26,11 @@ export class ScheinexamService
      *
      * @throws `NotFoundException` - If no scheinexam with the given ID could be found.
      */
-    async findById(id: string): Promise<ScheinexamDocument> {
-        const scheinexam = await this.scheinexamModel.findById(id).exec();
+    async findById(id: string): Promise<Scheinexam> {
+        const scheinexam = await this.getScheinexamRepository().findOne({ id });
 
         if (!scheinexam) {
-            throw new NotFoundException(`Scheinexam with the ID ${id} oculd not be found.`);
+            throw new NotFoundException(`Scheinexam with the ID ${id} could not be found.`);
         }
 
         return scheinexam;
@@ -50,10 +44,9 @@ export class ScheinexamService
      * @returns Created scheinexam.
      */
     async create(dto: ScheinexamDTO): Promise<IScheinExam> {
-        const scheinexam = ScheinexamModel.fromDTO(dto);
-        const created = await this.scheinexamModel.create(scheinexam);
-
-        return created.toDTO();
+        const scheinexam = Scheinexam.fromDTO(dto);
+        await this.entityManager.persistAndFlush(scheinexam);
+        return scheinexam.toDTO();
     }
 
     /**
@@ -71,10 +64,8 @@ export class ScheinexamService
     async update(id: string, dto: ScheinexamDTO): Promise<IScheinExam> {
         const scheinexam = await this.findById(id);
         scheinexam.updateFromDTO(dto);
-
-        const updated = await scheinexam.save();
-
-        return updated.toDTO();
+        await this.entityManager.persistAndFlush(scheinexam);
+        return scheinexam.toDTO();
     }
 
     /**
@@ -86,9 +77,12 @@ export class ScheinexamService
      *
      * @throws `NotFoundException` - If no scheinexam with the given ID could be found.
      */
-    async delete(id: string): Promise<ScheinexamDocument> {
+    async delete(id: string): Promise<void> {
         const scheinexam = await this.findById(id);
+        await this.entityManager.removeAndFlush(scheinexam);
+    }
 
-        return scheinexam.remove();
+    private getScheinexamRepository(): EntityRepository<Scheinexam> {
+        return this.entityManager.getRepository(Scheinexam);
     }
 }
