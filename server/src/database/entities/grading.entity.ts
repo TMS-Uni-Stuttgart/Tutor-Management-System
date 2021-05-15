@@ -13,6 +13,7 @@ import { v4 } from 'uuid';
 import { EncryptedFloatType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { MapType } from '../types/MapType';
+import { Exercise } from './ratedEntity.entity';
 import { Scheinexam } from './scheinexam.entity';
 import { Sheet } from './sheet.entity';
 import { ShortTest } from './shorttest.entity';
@@ -63,7 +64,7 @@ export class Grading {
     comment?: string;
 
     @Embedded(() => ExerciseGrading, { array: true })
-    exerciseGrading: ExerciseGrading[] = [];
+    exerciseGradings: ExerciseGrading[] = [];
 
     @ManyToOne()
     sheet?: Sheet;
@@ -93,7 +94,7 @@ export class Grading {
     get points(): number {
         const additional = this.additionalPoints ?? 0;
 
-        return additional + this.exerciseGrading.reduce((sum, grading) => sum + grading.points, 0);
+        return additional + this.exerciseGradings.reduce((sum, grading) => sum + grading.points, 0);
     }
 
     /**
@@ -131,9 +132,13 @@ export class Grading {
         return this.students.getItems().findIndex((s) => s.id === student.id) !== -1;
     }
 
+    getExerciseGrading(exercise: Exercise): ExerciseGrading | undefined {
+        return this.exerciseGradings.find((exGrading) => exGrading.exerciseId === exercise.id);
+    }
+
     toDTO(): IGrading {
         const exerciseGradings: Map<string, IExerciseGrading> = new Map();
-        for (const exGrading of this.exerciseGrading) {
+        for (const exGrading of this.exerciseGradings) {
             exerciseGradings.set(exGrading.exerciseId, exGrading.toDTO());
         }
 
