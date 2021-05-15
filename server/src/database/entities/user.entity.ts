@@ -11,11 +11,14 @@ import {
     Property,
 } from '@mikro-orm/core';
 import bcrypt from 'bcryptjs';
+import { DateTime } from 'luxon';
 import { Role } from 'shared/model/Role';
-import { IUser } from 'shared/model/User';
+import { UserInEntity } from 'shared/model/Tutorial';
+import { ILoggedInUserSubstituteTutorial, IUser } from 'shared/model/User';
 import { v4 } from 'uuid';
 import { EncryptedEnumArrayType } from '../types/encryption/EncryptedEnumArrayType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
+import { Substitute } from './substitute.entity';
 import { Tutorial } from './tutorial.entity';
 
 @Entity()
@@ -49,6 +52,9 @@ export class User {
 
     @ManyToMany(() => Tutorial, 'correctors', { owner: true })
     tutorialsToCorrect = new Collection<Tutorial>(this);
+
+    @OneToMany(() => Substitute, (substitute) => substitute.substituteTutor)
+    tutorialsToSubstitute = new Collection<Substitute>(this);
 
     constructor({ firstname, lastname, roles, username, password, email }: UserParams) {
         this.firstname = firstname;

@@ -1,8 +1,9 @@
-import { Collection, Entity, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { v4 } from 'uuid';
 import { Grading } from './grading.entity';
 import { HandIn } from './ratedEntity.entity';
 import { Student } from './student.entity';
+import { Tutorial } from './tutorial.entity';
 
 @Entity()
 export class Team {
@@ -26,8 +27,12 @@ export class Team {
     @OneToMany(() => Student, (student) => student.team)
     students = new Collection<Student>(this);
 
-    constructor(teamNo: number) {
+    @ManyToOne()
+    tutorial: Tutorial;
+
+    constructor({ teamNo, tutorial }: TeamParams) {
         this.teamNo = teamNo;
+        this.tutorial = tutorial;
     }
 
     /**
@@ -50,4 +55,9 @@ export class Team {
 
         return gradings;
     }
+}
+
+interface TeamParams {
+    teamNo: number;
+    tutorial: Tutorial;
 }
