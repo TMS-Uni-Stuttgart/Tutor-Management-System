@@ -43,6 +43,10 @@ export class Team {
         return Team.generateTeamname(this.students.getItems());
     }
 
+    getStudents(): Student[] {
+        return this.students.getItems();
+    }
+
     getGradings(handIn: HandIn): Grading[] {
         const gradings: Grading[] = [];
 

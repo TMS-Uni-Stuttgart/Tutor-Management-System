@@ -1,12 +1,11 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { SubExerciseDocument } from '../../database/models/exercise.model';
-import { ExerciseGrading, Grading } from '../../database/models/grading.model';
-import { HasExercisesDocument } from '../../database/models/ratedEntity.model';
-import { SheetDocument } from '../../database/models/sheet.model';
-import { TeamDocument } from '../../database/models/team.model';
-import { ExercisePointsInfo } from '../../shared/model/Gradings';
-import { IMarkdownToHTMLPayload, ITeamMarkdownData } from '../../shared/model/Markdown';
-import { ITeamId } from '../../shared/model/Team';
+import { ExercisePointsInfo } from 'shared/model/Gradings';
+import { IMarkdownToHTMLPayload, ITeamMarkdownData } from 'shared/model/Markdown';
+import { ITeamId } from 'shared/model/Team';
+import { ExerciseGrading, Grading } from '../../database/entities/grading.entity';
+import { HasExercises, SubExercise } from '../../database/entities/ratedEntity.entity';
+import { Sheet } from '../../database/entities/sheet.entity';
+import { Team } from '../../database/entities/team.entity';
 
 export class MarkdownHTMLDTO implements IMarkdownToHTMLPayload {
     @IsString()
@@ -43,19 +42,19 @@ export interface SheetPointInfo {
 }
 
 export interface GeneratingParams {
-    entity: HasExercisesDocument;
+    entity: HasExercises;
     grading: Grading;
     nameOfEntity: string;
 }
 
 export interface GenerateFromTeamParams {
-    team: TeamDocument;
-    sheet: SheetDocument;
+    team: Team;
+    sheet: Sheet;
     ignoreInvalidTeams: boolean;
 }
 
 export interface GenerateSubExTableParams {
-    subexercises: SubExerciseDocument[];
+    subexercises: SubExercise[];
     gradingForExercise: ExerciseGrading;
 }
 

@@ -142,7 +142,7 @@ export class TeamService {
     async setGrading(teamId: ITeamId, dto: GradingDTO): Promise<void> {
         const team = await this.findById(teamId);
 
-        await this.gradingService.setGradingOfMultipleStudents(team.students.getItems(), dto);
+        await this.gradingService.setGradingOfMultipleStudents(team.getStudents(), dto);
     }
 
     /**

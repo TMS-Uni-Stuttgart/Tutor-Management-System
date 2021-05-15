@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import hljs from 'highlight.js';
 import MarkdownIt from 'markdown-it';
-import { HasExercisesDocument } from '../../database/models/ratedEntity.model';
-import { TeamModel } from '../../database/models/team.model';
-import { convertExercisePointInfoToString } from '../../shared/model/Gradings';
-import { IStudentMarkdownData, ITeamMarkdownData } from '../../shared/model/Markdown';
-import { getNameOfEntity } from '../../shared/util/helpers';
+import { convertExercisePointInfoToString } from 'shared/model/Gradings';
+import { IStudentMarkdownData, ITeamMarkdownData } from 'shared/model/Markdown';
+import { getNameOfEntity } from 'shared/util/helpers';
+import { HasExercises } from '../../database/entities/ratedEntity.entity';
+import { Team } from '../../database/entities/team.entity';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
@@ -203,10 +203,10 @@ export class MarkdownService {
             }
 
             gradings.forEach((grading) => {
-                const studentsOfTeam = team.students.filter((stud) =>
-                    grading.belongsToStudent(stud)
-                );
-                const teamName = TeamModel.generateTeamname(studentsOfTeam);
+                const studentsOfTeam = team
+                    .getStudents()
+                    .filter((stud) => grading.belongsToStudent(stud));
+                const teamName = Team.generateTeamname(studentsOfTeam);
                 const nameOfEntity = grading.belongsToTeam
                     ? `Team ${teamName}`
                     : `Student/in ${teamName}`;
@@ -267,7 +267,7 @@ export class MarkdownService {
 
             pointInfo.achieved += achieved;
 
-            exerciseMarkdown += `## Aufgabe ${exercise.exName} [${achieved} / ${exMaxPoints}]\n\n`;
+            exerciseMarkdown += `## Aufgabe ${exercise.exerciseName} [${achieved} / ${exMaxPoints}]\n\n`;
             if (!!subExTable) {
                 exerciseMarkdown += `${subExTable}\n\n`;
             }
@@ -313,10 +313,10 @@ export class MarkdownService {
         gradingForExercise,
     }: GenerateSubExTableParams): SubExData[] {
         return subexercises.reduce<SubExData[]>((data, subEx) => {
-            const achieved = gradingForExercise.getGradingForSubexercise(subEx);
+            const achieved = gradingForExercise.getGradingForSubExercise(subEx);
 
             data.push({
-                name: subEx.exName,
+                name: subEx.exerciseName,
                 achieved: achieved ?? 0,
                 total: subEx.pointInfo,
             });
@@ -336,7 +336,7 @@ export class MarkdownService {
      *
      * @throws `BadRequestException` - If there is no sheet, scheinexam or short test with the given ID.
      */
-    private async getExercisesEntityWithId(id: string): Promise<HasExercisesDocument> {
+    private async getExercisesEntityWithId(id: string): Promise<HasExercises> {
         const [sheet, scheinexam, shortTest] = await Promise.allSettled([
             this.sheetService.findById(id),
             this.scheinexamService.findById(id),

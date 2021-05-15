@@ -13,7 +13,7 @@ import { v4 } from 'uuid';
 import { EncryptedFloatType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { MapType } from '../types/MapType';
-import { Exercise } from './ratedEntity.entity';
+import { Exercise, SubExercise } from './ratedEntity.entity';
 import { Scheinexam } from './scheinexam.entity';
 import { Sheet } from './sheet.entity';
 import { ShortTest } from './shorttest.entity';
@@ -49,6 +49,10 @@ export class ExerciseGrading {
             additionalPoints: this.additionalPoints,
             subExercisePoints: [...this.subExercisePoints],
         };
+    }
+
+    getGradingForSubExercise(subEx: SubExercise): number | undefined {
+        return this.subExercisePoints.get(subEx.id);
     }
 }
 
