@@ -59,7 +59,7 @@ export class Student {
     @ManyToOne()
     team?: Team;
 
-    @ManyToMany(() => Grading, 'students', { owner: true })
+    @ManyToMany(() => Grading, 'students', { owner: true, eager: true })
     gradings = new Collection<Grading>(this);
 
     // TODO: Encrypt this map?!

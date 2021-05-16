@@ -25,7 +25,7 @@ export class Team {
     @Property()
     teamNo: number;
 
-    @OneToMany(() => Student, (student) => student.team)
+    @OneToMany(() => Student, (student) => student.team, { eager: true })
     students = new Collection<Student>(this);
 
     @ManyToOne()

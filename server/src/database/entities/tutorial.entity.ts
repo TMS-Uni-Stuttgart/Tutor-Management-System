@@ -38,18 +38,18 @@ export class Tutorial {
     @ManyToOne()
     tutor?: User;
 
-    @OneToMany(() => Student, (student) => student.tutorial)
+    @OneToMany(() => Student, (student) => student.tutorial, { eager: true })
     students = new Collection<Student>(this);
 
-    @ManyToMany(() => User, 'tutorialsToCorrect')
+    @ManyToMany(() => User, 'tutorialsToCorrect', { eager: true })
     correctors = new Collection<User>(this);
 
-    @OneToMany(() => Team, (team) => team.tutorial)
+    @OneToMany(() => Team, (team) => team.tutorial, { eager: true })
     teams = new Collection<Team>(this);
 
     // TODO: Substitutes!
     // Relation Tutorial-User: n:1 with `date` property.
-    @OneToMany(() => Substitute, (substitute) => substitute.tutorialToSubstitute)
+    @OneToMany(() => Substitute, (substitute) => substitute.tutorialToSubstitute, { eager: true })
     substitutes = new Collection<Substitute>(this);
 
     constructor(params: TutorialParams) {
