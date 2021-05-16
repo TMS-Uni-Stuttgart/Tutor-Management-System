@@ -1,7 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './database/database.module';
-import { ModelsModule } from './database/models/models.module';
 import { SqlDatabaseModule } from './database/sql-database.module';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 import { ExcelModule } from './module/excel/excel.module';
@@ -22,9 +20,7 @@ import { UserModule } from './module/user/user.module';
 
 @Module({
     imports: [
-        DatabaseModule.forRootAsync(),
         SqlDatabaseModule,
-        ModelsModule.init(),
         AuthModule,
         TutorialModule,
         UserModule,
