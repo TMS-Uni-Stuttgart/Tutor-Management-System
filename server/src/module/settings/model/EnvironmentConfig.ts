@@ -1,20 +1,20 @@
-import { IsString } from 'class-validator';
 import { Expose } from 'class-transformer';
+import { IsString } from 'class-validator';
 
 export const ENV_VARIABLE_NAMES = {
-    mongoDbUser: 'TMS_MONGODB_USER',
-    mongoDbPassword: 'TMS_MONGODB_PW',
+    dbUser: 'TMS_SQL_DB_USER',
+    dbPassword: 'TMS_SQL_DB_PW',
     secret: 'TMS_SECRET',
 };
 
 export class EnvironmentConfig {
     @IsString()
-    @Expose({ name: ENV_VARIABLE_NAMES.mongoDbUser })
-    readonly mongoDbUser!: string;
+    @Expose({ name: ENV_VARIABLE_NAMES.dbUser })
+    readonly dbUser!: string;
 
     @IsString()
-    @Expose({ name: ENV_VARIABLE_NAMES.mongoDbPassword })
-    readonly mongoDbPassword!: string;
+    @Expose({ name: ENV_VARIABLE_NAMES.dbPassword })
+    readonly dbPassword!: string;
 
     @IsString()
     @Expose({ name: ENV_VARIABLE_NAMES.secret })

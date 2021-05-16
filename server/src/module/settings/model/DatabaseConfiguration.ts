@@ -32,5 +32,4 @@ interface ConnectionOptions {
     host: string;
     port: number;
     dbName: string;
-    // TODO: Load user & password from env-variable (just rename the existing ones for mongoDB).
 }

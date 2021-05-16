@@ -10,7 +10,7 @@ import {
     DatabaseConfiguration,
     DatabaseConfigurationValidationGroup,
 } from './model/DatabaseConfiguration';
-import { EnvironmentConfig, ENV_VARIABLE_NAMES } from './model/EnvironmentConfig';
+import { ENV_VARIABLE_NAMES, EnvironmentConfig } from './model/EnvironmentConfig';
 
 export class StaticSettings {
     private static service: StaticSettings = new StaticSettings();
@@ -146,8 +146,8 @@ export class StaticSettings {
             secret: this.envConfig.secret,
             config: {
                 ...configFromFile.config,
-                user: this.envConfig.mongoDbUser,
-                pass: this.envConfig.mongoDbPassword,
+                user: this.envConfig.dbUser,
+                pass: this.envConfig.dbPassword,
             },
         });
 
