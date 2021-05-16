@@ -4,13 +4,10 @@ import { ClientSettingsDTO } from '../../module/settings/settings.dto';
 import { EncryptedIntType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 
-@Embeddable()
 export class MailAuthSetting {
-    @Property({ type: EncryptedStringType })
-    user: string;
+    readonly user: string;
 
-    @Property({ type: EncryptedStringType })
-    password: string;
+    readonly password: string;
 
     constructor(params: MailAuthParams) {
         this.user = params.user;
@@ -21,26 +18,35 @@ export class MailAuthSetting {
 @Embeddable()
 export class MailSetting {
     @Property({ type: EncryptedStringType })
-    host: string;
+    readonly host: string;
 
     @Property({ type: EncryptedIntType })
-    port: number;
+    readonly port: number;
 
     @Property({ type: EncryptedStringType })
-    from: string;
+    readonly from: string;
 
     @Property({ type: EncryptedStringType })
-    subject: string;
+    readonly subject: string;
 
-    @Embedded()
-    auth: MailAuthSetting;
+    // TODO: Try use nested embeddables with v5.
+    @Property({ type: EncryptedStringType })
+    private readonly user: string;
+
+    @Property({ type: EncryptedStringType })
+    private readonly password: string;
+
+    get auth(): MailAuthSetting {
+        return new MailAuthSetting({ user: this.user, password: this.password });
+    }
 
     constructor(params: MailSettingsParams) {
         this.host = params.host;
         this.port = params.port;
         this.from = params.from;
         this.subject = params.subject;
-        this.auth = new MailAuthSetting(params.authOptions);
+        this.user = params.authOptions.user;
+        this.password = params.authOptions.password;
     }
 
     toDTO(): IMailingSettings {
@@ -76,7 +82,7 @@ export class Setting {
     @Property()
     tutorialGradingFilename!: string;
 
-    @Embedded()
+    @Embedded(() => MailSetting, { nullable: true, object: true })
     mailSettings?: MailSetting;
 
     private constructor(dto?: ClientSettingsDTO) {

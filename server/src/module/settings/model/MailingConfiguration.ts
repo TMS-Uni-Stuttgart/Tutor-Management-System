@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested } from 'class-validator';
+import { IMailingAuthConfiguration, IMailingSettings } from 'shared/model/Settings';
 import { IsValidMailSender } from '../../../helpers/validators/nodemailer.validator';
-import { IMailingAuthConfiguration, IMailingSettings } from '../../../shared/model/Settings';
 
 export class MailingAuthConfiguration implements IMailingAuthConfiguration {
     @IsString()
