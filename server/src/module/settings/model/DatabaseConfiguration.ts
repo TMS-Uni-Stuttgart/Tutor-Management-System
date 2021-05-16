@@ -1,5 +1,4 @@
 import { IsNumber, IsObject, IsOptional, IsString, Min } from 'class-validator';
-import { ConnectionOptions } from 'mongoose';
 
 export enum DatabaseConfigurationValidationGroup {
     ALL = 'all',
@@ -25,5 +24,13 @@ export class DatabaseConfiguration {
 
     @IsOptional({ always: true })
     @IsObject({ always: true })
-    readonly config?: Omit<ConnectionOptions, 'auth'>;
+    readonly config?: ConnectionOptions;
+}
+
+// TODO: Make class so it can be validated.
+interface ConnectionOptions {
+    host: string;
+    port: number;
+    dbName: string;
+    // TODO: Load user & password from env-variable (just rename the existing ones for mongoDB).
 }
