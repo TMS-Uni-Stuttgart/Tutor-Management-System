@@ -12,7 +12,6 @@ export class EncryptionEngine {
     }
 
     encrypt(clearText: string): string {
-        return clearText;
         const buffer = Buffer.from(clearText, 'utf8');
         const iv = randomBytes(this.ivLength);
 
@@ -24,7 +23,6 @@ export class EncryptionEngine {
     }
 
     decrypt(encrypted: string): string {
-        return encrypted;
         const buffer = Buffer.from(encrypted, 'base64');
         const iv = buffer.slice(0, this.ivLength);
 
