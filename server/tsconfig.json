@@ -18,5 +18,5 @@
     "lib": ["es2020"],
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts", "**/jest.setup.ts"]
+  "exclude": ["node_modules", "dist", "temp", "test", "**/*spec.ts", "**/jest.setup.ts"]
 }
