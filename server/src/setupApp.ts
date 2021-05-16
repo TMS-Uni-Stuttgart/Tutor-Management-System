@@ -2,9 +2,7 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import bodyParser from 'body-parser';
-import ConnectMongo from 'connect-mongo';
 import session from 'express-session';
-import { getConnectionToken } from 'nestjs-typegoose';
 import passport from 'passport';
 import { AppModule } from './app.module';
 import { NotFoundExceptionFilter } from './filter/not-found-exception.filter';
@@ -19,29 +17,24 @@ import { SettingsService } from './module/settings/settings.service';
  * @param app The application itself
  */
 function initSecurityMiddleware(app: INestApplication) {
-    const loggerContext = 'Init security';
-    Logger.log('Setting up security middleware...', loggerContext);
+    const logger = new Logger('Init security');
+    logger.log('Setting up security middleware...');
 
     const settings = app.get(SettingsService);
-    const connection = app.get(getConnectionToken());
+    // const connectionSQL = app.get(MikroORM).em.getConnection();
 
     const secret = settings.getDatabaseConfiguration().secret;
     const timeoutSetting = settings.getSessionTimeout();
 
-    const MongoStore = ConnectMongo(session);
-
-    Logger.log(`Setting timeout to: ${timeoutSetting} minutes`, loggerContext);
+    logger.log(`Setting timeout to: ${timeoutSetting} minutes`);
 
     app.use(
         session({
             secret,
-            store: new MongoStore({
-                secret,
-                mongooseConnection: connection,
-                ttl: timeoutSetting * 60,
-            }),
+            // TODO: Add a custom store using Mikro-ORM (there is no actual usable library out there).
+            // store: ,
             resave: false,
-            // Is used to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
+            // Is used to extend the expires date on every request. This means, maxAge is relative to the time of the last request of a user.
             rolling: true,
             saveUninitialized: true,
             cookie: {
@@ -54,7 +47,7 @@ function initSecurityMiddleware(app: INestApplication) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    Logger.log('Security middleware setup complete.', loggerContext);
+    logger.log('Security middleware setup complete.');
 }
 
 /**
@@ -65,6 +58,7 @@ function initSecurityMiddleware(app: INestApplication) {
  * If the server is __not__ started in a development environment (ie production) this endpoint is __not__ available and this function does nothing.
  *
  * @param app The application itself
+ * @param apiPrefix Configured prefix of the api paths.
  */
 function initSwagger(app: INestApplication, apiPrefix: string) {
     if (!isDevelopment()) {
