@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { LuxonDateType } from '../types/LuxonDateType';
 import { Tutorial } from './tutorial.entity';
@@ -9,12 +9,10 @@ export class Substitute {
     @ManyToOne()
     substituteTutor: User;
 
-    @PrimaryKey()
-    @ManyToOne()
+    @ManyToOne({ primary: true })
     tutorialToSubstitute: Tutorial;
 
-    @PrimaryKey()
-    @Property({ type: LuxonDateType })
+    @Property({ type: LuxonDateType, primary: true })
     date: DateTime;
 
     constructor(params: SubstituteParams) {
