@@ -1,6 +1,7 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'crypto';
 import { StaticSettings } from '../module/settings/settings.static';
 
+// FIXME: Re-enable actual encryption!
 export class EncryptionEngine {
     private readonly algorithm = 'aes-256-cbc';
     private readonly ivLength = 16;
@@ -11,6 +12,7 @@ export class EncryptionEngine {
     }
 
     encrypt(clearText: string): string {
+        return clearText;
         const buffer = Buffer.from(clearText, 'utf8');
         const iv = randomBytes(this.ivLength);
 
@@ -22,6 +24,7 @@ export class EncryptionEngine {
     }
 
     decrypt(encrypted: string): string {
+        return encrypted;
         const buffer = Buffer.from(encrypted, 'base64');
         const iv = buffer.slice(0, this.ivLength);
 
