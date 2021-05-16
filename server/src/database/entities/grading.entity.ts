@@ -10,10 +10,11 @@ import {
 } from '@mikro-orm/core';
 import { IExerciseGrading, IGrading } from 'shared/model/Gradings';
 import { v4 } from 'uuid';
+import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { EncryptedFloatType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { MapType } from '../types/MapType';
-import { Exercise, SubExercise } from './ratedEntity.entity';
+import { Exercise, HandIn, SubExercise } from './ratedEntity.entity';
 import { Scheinexam } from './scheinexam.entity';
 import { Sheet } from './sheet.entity';
 import { ShortTest } from './shorttest.entity';
@@ -42,6 +43,17 @@ export class ExerciseGrading {
         this.points = points;
     }
 
+    getGradingForSubExercise(subEx: SubExercise): number | undefined {
+        return this.subExercisePoints.get(subEx.id);
+    }
+
+    updateFromDTO(dto: ExerciseGradingDTO): void {
+        this.points = dto.points ?? 0;
+        this.additionalPoints = dto.additionalPoints;
+        this.comment = dto.comment;
+        this.subExercisePoints = new Map(dto.subExercisePoints ?? []);
+    }
+
     toDTO(): IExerciseGrading {
         return {
             comment: this.comment,
@@ -51,8 +63,10 @@ export class ExerciseGrading {
         };
     }
 
-    getGradingForSubExercise(subEx: SubExercise): number | undefined {
-        return this.subExercisePoints.get(subEx.id);
+    static fromDTO(exerciseId: string, dto: ExerciseGradingDTO): ExerciseGrading {
+        const exGrading = new ExerciseGrading(exerciseId, dto.points ?? 0);
+        exGrading.updateFromDTO(dto);
+        return exGrading;
     }
 }
 
@@ -85,10 +99,8 @@ export class Grading {
     /**
      * Ensures that exactly one of the following properties is set: `sheet`, `exam`, `shortTest`.
      */
-    constructor({ sheet, exam, shortTest }: GradingParams) {
-        this.sheet = sheet;
-        this.exam = exam;
-        this.shortTest = shortTest;
+    constructor({ handIn }: GradingParams) {
+        this.setHandIn(handIn);
         this.assertEntitiesAreAValidSet();
     }
 
@@ -128,6 +140,19 @@ export class Grading {
         return this.students.length > 1;
     }
 
+    updateFromDTO({ dto, handIn }: UpdateParams): void {
+        this.setHandIn(handIn);
+        this.assertEntitiesAreAValidSet();
+
+        this.comment = dto.comment;
+        this.additionalPoints = dto.additionalPoints ?? 0;
+        this.exerciseGradings = [];
+
+        for (const [exerciseId, exerciseGradingDTO] of dto.exerciseGradings) {
+            this.exerciseGradings.push(ExerciseGrading.fromDTO(exerciseId, exerciseGradingDTO));
+        }
+    }
+
     /**
      * @param student Student to check
      * @returns `True` if this grading belongs to the given student.
@@ -156,6 +181,20 @@ export class Grading {
         };
     }
 
+    private setHandIn(handIn: HandIn): void {
+        this.sheet = undefined;
+        this.exam = undefined;
+        this.shortTest = undefined;
+
+        if (handIn instanceof Sheet) {
+            this.sheet = handIn;
+        } else if (handIn instanceof Scheinexam) {
+            this.exam = handIn;
+        } else if (handIn instanceof ShortTest) {
+            this.shortTest = handIn;
+        }
+    }
+
     private assertEntitiesAreAValidSet() {
         const ids = [this.sheet, this.exam, this.shortTest].filter(Boolean);
 
@@ -170,7 +209,10 @@ export class Grading {
 }
 
 interface GradingParams {
-    sheet?: Sheet;
-    exam?: Scheinexam;
-    shortTest?: ShortTest;
+    handIn: HandIn;
+}
+
+interface UpdateParams {
+    dto: GradingDTO;
+    handIn: HandIn;
 }
