@@ -35,8 +35,6 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      */
     async onApplicationBootstrap(): Promise<void> {
         const userRepository = this.getUserRepository();
-        // TODO: Can you find users with admin role? Just check for those maybe?
-        // Or make this configurable: Check specifically for admins or for users in general.
         const areUsersPresent = (await userRepository.findAll()).length > 0;
 
         if (!areUsersPresent) {
@@ -202,7 +200,6 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         await this.assertUserIsDeletable(user);
 
         // TODO: Does cascading work properly or do we need to adjust the tutorials of the user?
-
         await this.entityManager.removeAndFlush(user);
     }
 

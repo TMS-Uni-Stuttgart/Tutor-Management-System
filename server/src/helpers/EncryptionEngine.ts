@@ -1,7 +1,6 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'crypto';
 import { StaticSettings } from '../module/settings/settings.static';
 
-// FIXME: Re-enable actual encryption!
 export class EncryptionEngine {
     private readonly algorithm = 'aes-256-cbc';
     private readonly ivLength = 16;

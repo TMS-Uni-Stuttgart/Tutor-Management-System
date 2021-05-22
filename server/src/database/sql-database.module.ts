@@ -15,7 +15,6 @@ import { StaticSettings } from '../module/settings/settings.static';
             autoLoadEntities: true,
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
-            // TODO: Make overridable in tests (sqlite, because it supports in-memory stuff?),
             type: 'mysql',
             // TODO: Make everything below adjustable.
             host: '127.0.0.1',

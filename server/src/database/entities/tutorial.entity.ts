@@ -47,8 +47,6 @@ export class Tutorial {
     @OneToMany(() => Team, (team) => team.tutorial, { eager: true })
     teams = new Collection<Team>(this);
 
-    // TODO: Substitutes!
-    // Relation Tutorial-User: n:1 with `date` property.
     @OneToMany(() => Substitute, (substitute) => substitute.tutorialToSubstitute, { eager: true })
     substitutes = new Collection<Substitute>(this);
 

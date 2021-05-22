@@ -11,7 +11,6 @@ export class ScheincriteriaEntity {
     @Property()
     name: string;
 
-    // TODO: How to handle this one? -- JSON???
     @Property({ type: 'json' })
     criteria: Scheincriteria;
 
