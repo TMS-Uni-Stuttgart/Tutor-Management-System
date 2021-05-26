@@ -7,6 +7,8 @@ import passport from 'passport';
 import { AppModule } from './app.module';
 import { NotFoundExceptionFilter } from './filter/not-found-exception.filter';
 import { isDevelopment } from './helpers/isDevelopment';
+import { MikroOrmSessionStore } from './helpers/mikro-orm-session-store/MikroOrmSessionStore';
+import { SessionService } from './module/session/session.service';
 import { SettingsService } from './module/settings/settings.service';
 
 /**
@@ -21,24 +23,26 @@ function initSecurityMiddleware(app: INestApplication) {
     logger.log('Setting up security middleware...');
 
     const settings = app.get(SettingsService);
-    // const connectionSQL = app.get(MikroORM).em.getConnection();
 
     const secret = settings.getDatabaseConfiguration().secret;
     const timeoutSetting = settings.getSessionTimeout();
+
+    const sessionService = app.get(SessionService);
+    const sessionStore = new MikroOrmSessionStore(sessionService);
 
     logger.log(`Setting timeout to: ${timeoutSetting} minutes`);
 
     app.use(
         session({
             secret,
-            // TODO: Add a custom store using Mikro-ORM (there is no actual usable library out there).
-            // store: ,
+            store: sessionStore,
             resave: false,
             // Is used to extend the expires date on every request. This means, maxAge is relative to the time of the last request of a user.
             rolling: true,
             saveUninitialized: true,
             cookie: {
                 httpOnly: true,
+                secure: false, // TODO: Make true for production.
                 maxAge: timeoutSetting * 60 * 1000,
             },
         })

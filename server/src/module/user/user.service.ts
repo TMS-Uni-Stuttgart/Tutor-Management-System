@@ -364,7 +364,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      */
     private async getUserWithUsername(username: string): Promise<User> {
         const user = await this.getUserRepository().findOne({
-            username: new EncryptionEngine().encrypt(username),
+            username,
         });
 
         if (!user) {
