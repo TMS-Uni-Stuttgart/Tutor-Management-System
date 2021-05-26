@@ -35,7 +35,7 @@ export class User {
     @Enum({ type: EncryptedEnumArrayType })
     roles: Role[];
 
-    @Property()
+    @Property({ type: EncryptedStringType })
     username: string;
 
     @Property({ type: EncryptedStringType })

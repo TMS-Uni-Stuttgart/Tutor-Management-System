@@ -16,7 +16,6 @@ import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { User } from '../../database/entities/user.entity';
 import { CRUDService } from '../../helpers/CRUDService';
-import { EncryptionEngine } from '../../helpers/EncryptionEngine';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
@@ -328,15 +327,14 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
     }
 
     /**
-     * Checks if there is already a user with the given username saved in the database.
+     * Checks if there is already a user with the given username saved in the database. If a `user` is provided that user is ignored during the check.
      *
      * @param username Username to check
+     * @param user (optional) User object which is allowed to have that username.
      * @returns Is there already a user with that username?
      */
     private async doesUserWithUsernameExist(username: string, user?: User): Promise<boolean> {
-        const usersWithUsername: User[] = await this.getUserRepository().find({
-            username: new EncryptionEngine().encrypt(username),
-        });
+        const usersWithUsername: User[] = await this.getAllUsersWithUsername(username);
 
         if (!user) {
             return usersWithUsername.length > 0;
@@ -363,15 +361,26 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @throws `NotFoundException` - If there is no user with that username.
      */
     private async getUserWithUsername(username: string): Promise<User> {
-        const user = await this.getUserRepository().findOne({
-            username,
-        });
+        const usersWithUserName = await this.getAllUsersWithUsername(username);
+        const user = usersWithUserName[0];
 
         if (!user) {
             throw new NotFoundException(`User with username "${username}" was not found`);
         }
 
         return user;
+    }
+
+    /**
+     *
+     * @param username Username to get users for.
+     * @returns All users with that username. Array is empty if there are no users with that username.
+     *
+     * @private
+     */
+    private async getAllUsersWithUsername(username: string): Promise<User[]> {
+        const allUsers = await this.getUserRepository().findAll();
+        return allUsers.filter((u) => u.username === username);
     }
 
     /**
