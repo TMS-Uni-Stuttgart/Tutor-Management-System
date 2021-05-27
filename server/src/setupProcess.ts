@@ -7,6 +7,8 @@ export function setupProcess(): void {
 
         if (err instanceof StartUpException) {
             logger.error(err.message);
+            logger.error('Exiting process...');
+            process.exit(1);
         } else if (err instanceof HttpException) {
             logger.error(err.message);
         } else {
