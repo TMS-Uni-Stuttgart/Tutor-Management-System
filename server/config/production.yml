@@ -9,14 +9,12 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:
-    databaseURL: 'mongodb://mongo:27017/tms'
+    host: localhost
+    port: 3306
+    databaseName: tms-poc-stuff
     maxRetries: 2
     reconnectTimeout: 10000
-    config:
-        authSource: 'admin'
-        authMechanism: 'SCRAM-SHA-1'
 
-# Set specific settings to a default value. These settings can also be edited through the client. More information can be found in the documentation.
 defaultSettings:
     canTutorExcuseStudents: true
     defaultTeamSize: 3

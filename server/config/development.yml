@@ -9,12 +9,11 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:
-    databaseURL: 'mongodb://localhost:27017/tms-new-grading'
+    host: localhost
+    port: 3306
+    databaseName: tms-poc-stuff
     maxRetries: 2
     reconnectTimeout: 10000
-    config:
-        authSource: 'admin'
-        authMechanism: 'SCRAM-SHA-1'
 
 defaultSettings:
     canTutorExcuseStudents: true

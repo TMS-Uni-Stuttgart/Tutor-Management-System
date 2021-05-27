@@ -7,7 +7,13 @@ export enum DatabaseConfigurationValidationGroup {
 
 export class DatabaseConfiguration {
     @IsString({ always: true })
-    readonly databaseURL!: string;
+    readonly host!: string;
+
+    @Min(0, { always: true })
+    readonly port!: number;
+
+    @IsString({ always: true })
+    readonly databaseName!: string;
 
     @IsOptional({ always: true })
     @IsNumber({}, { always: true })
@@ -22,14 +28,14 @@ export class DatabaseConfiguration {
     @IsString({ groups: [DatabaseConfigurationValidationGroup.ALL] })
     readonly secret!: string;
 
-    @IsOptional({ always: true })
     @IsObject({ always: true })
-    readonly config?: ConnectionOptions;
+    readonly auth!: { user: string; pass: string };
 }
 
-// TODO: Make class so it can be validated.
-interface ConnectionOptions {
-    host: string;
-    port: number;
-    dbName: string;
+export interface DatabaseConnectionOptions {
+    readonly host: string;
+    readonly port: number;
+    readonly dbName: string;
+    readonly user: string;
+    readonly password: string;
 }

@@ -16,12 +16,7 @@ import { StaticSettings } from '../module/settings/settings.static';
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
             type: 'mysql',
-            // TODO: Make everything below adjustable.
-            host: '127.0.0.1',
-            port: 3306,
-            user: 'root',
-            password: 'some-password',
-            dbName: 'tms-poc-stuff',
+            ...StaticSettings.getService().getDatabaseConnectionInformation(),
         }),
     ],
 })
