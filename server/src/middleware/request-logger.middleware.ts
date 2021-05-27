@@ -6,7 +6,7 @@ export class RequestLoggerMiddleware implements NestMiddleware {
     use(req: Request, _: unknown, next: () => void): void {
         const user: string = req.user?._id ?? 'Not identified user';
 
-        Logger.debug(`Request: ${user} -> ${req.path}@${req.method}`);
+        Logger.debug(`${user} -> ${req.path}@${req.method}`, 'Request');
         next();
     }
 }
