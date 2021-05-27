@@ -16,6 +16,7 @@ import { Role } from 'shared/model/Role';
 import { UserInEntity } from 'shared/model/Tutorial';
 import { ILoggedInUserSubstituteTutorial, IUser } from 'shared/model/User';
 import { v4 } from 'uuid';
+import { EncryptionEngine } from '../../helpers/EncryptionEngine';
 import { EncryptedEnumArrayType } from '../types/encryption/EncryptedEnumArrayType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { Substitute } from './substitute.entity';
@@ -131,7 +132,9 @@ export class User {
     @BeforeCreate()
     @BeforeUpdate()
     private hashPassword(args: EventArgs<User>): void {
-        const isSamePassword = this.password === args.changeSet?.originalEntity?.password;
+        const prevPassword = args.changeSet?.originalEntity?.password;
+        const engine = new EncryptionEngine();
+        const isSamePassword = !!prevPassword && this.password === engine.decrypt(prevPassword);
         if (!isSamePassword) {
             const salt = bcrypt.genSaltSync(10);
             this.password = bcrypt.hashSync(this.password, salt);

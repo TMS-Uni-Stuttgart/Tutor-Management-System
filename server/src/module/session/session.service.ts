@@ -13,13 +13,13 @@ export class SessionService implements ISessionService {
     constructor(private readonly entityManager: EntityManager) {}
 
     async getSession(sid: string): Promise<SessionData | null> {
-        this.logger.log(`GET session for ID ${sid}...`);
+        this.logger.log(`GET session for ID ${sid}`);
         const session = await this.entityManager.findOne(SessionEntity, { sessionId: sid });
         return session?.sessionData ?? null;
     }
 
     async setSession(sid: string, sessionData: SessionData): Promise<void> {
-        this.logger.log(`SET session for ID ${sid} with data:`);
+        this.logger.log(`SET session for ID ${sid}`);
         const session = new SessionEntity(sid, sessionData);
         await this.entityManager.persistAndFlush(session);
     }
