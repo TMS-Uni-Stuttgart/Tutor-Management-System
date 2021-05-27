@@ -10,11 +10,9 @@ export function setupProcess(): void {
         } else if (err instanceof HttpException) {
             logger.error(err.message);
         } else {
-            throw err;
+            logger.error('Unknown error:');
+            logger.error(err);
         }
-
-        logger.error('Ending process');
-        process.exit(1);
     }
 
     process.on('unhandledRejection', handleError);
