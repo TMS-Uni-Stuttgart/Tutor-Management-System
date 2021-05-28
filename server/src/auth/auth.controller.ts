@@ -10,9 +10,9 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ILoggedInUser } from 'shared/model/User';
 import { LoginGuard } from '../guards/login.guard';
 import { UserService } from '../module/user/user.service';
-import { ILoggedInUser } from '../shared/model/User';
 
 @Controller('auth')
 export class AuthController {

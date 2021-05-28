@@ -15,15 +15,23 @@ export class MikroOrmSessionStore extends session.Store {
     set(sid: string, session: SessionData, callback?: (err?: any) => void): void {
         this.service
             .setSession(sid, session)
-            .then(() => callback?.(null))
-            .catch((err) => callback?.(err));
+            .then(() => {
+                callback?.();
+            })
+            .catch((err) => {
+                callback?.(err);
+            });
     }
 
     destroy(sid: string, callback?: (err?: any) => void): void {
         this.service
             .destroySession(sid)
-            .then(() => callback?.(undefined))
-            .catch((err) => callback?.(err));
+            .then(() => {
+                callback?.(undefined);
+            })
+            .catch((err) => {
+                callback?.(err);
+            });
     }
 }
 
