@@ -72,7 +72,7 @@ export class Tutorial {
             endTime: this.endTime.toISOTime(dateOptions) ?? 'DATE_NOT_PARSEBALE',
             students: this.students.getItems().map((student) => student.id),
             correctors: this.correctors.getItems().map((corrector) => corrector.toInEntity()),
-            substitutes: [], // TODO: After implementing substitutes: Add them to DTO
+            substitutes: this.getSubstitutesForDTO(),
             teams: this.teams.getItems().map((team) => team.id),
         };
     }
@@ -84,6 +84,12 @@ export class Tutorial {
             weekday: this.dates[0].weekday,
             time: Interval.fromDateTimes(this.startTime, this.endTime).toISO(),
         };
+    }
+
+    private getSubstitutesForDTO(): [string, string][] {
+        return this.substitutes
+            .getItems()
+            .map(({ date, substituteTutor }) => [date.toISODate(), substituteTutor.id]);
     }
 }
 

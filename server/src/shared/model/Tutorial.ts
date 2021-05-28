@@ -24,6 +24,7 @@ export interface ITutorial extends HasId {
     students: string[];
     teams: string[];
     correctors: UserInEntity[];
+    // TODO: Change to {substTutorId: string, date: string}.
     substitutes: [string, string][];
 }
 
