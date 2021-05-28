@@ -15,9 +15,9 @@ import { IStudent, StudentStatus } from 'shared/model/Student';
 import { IStudentInTeam } from 'shared/model/Team';
 import { v4 } from 'uuid';
 import { EncryptedEnumType } from '../types/encryption/EncryptedEnumType';
+import { EncryptedMapType } from '../types/encryption/EncryptedMapType';
 import { EncryptedIntType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
-import { MapType } from '../types/MapType';
 import { Attendance } from './attendance.entity';
 import { Grading } from './grading.entity';
 import { HandIn } from './ratedEntity.entity';
@@ -62,8 +62,7 @@ export class Student {
     @ManyToMany(() => Grading, 'students', { owner: true, eager: true })
     gradings = new Collection<Grading>(this);
 
-    // TODO: Encrypt this map?!
-    @Property({ type: MapType })
+    @Property({ type: EncryptedMapType })
     private presentationPoints: Map<string, number> = new Map();
 
     @Embedded(() => Attendance, { array: true })

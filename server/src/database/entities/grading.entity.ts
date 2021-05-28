@@ -11,9 +11,9 @@ import {
 import { IExerciseGrading, IGrading } from 'shared/model/Gradings';
 import { v4 } from 'uuid';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
+import { EncryptedMapType } from '../types/encryption/EncryptedMapType';
 import { EncryptedFloatType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
-import { MapType } from '../types/MapType';
 import { Exercise, HandIn, SubExercise } from './ratedEntity.entity';
 import { Scheinexam } from './scheinexam.entity';
 import { Sheet } from './sheet.entity';
@@ -28,8 +28,7 @@ export class ExerciseGrading {
     @Property({ type: EncryptedFloatType })
     points: number;
 
-    // TODO: Encrypt this map?
-    @Property({ type: MapType })
+    @Property({ type: EncryptedMapType })
     subExercisePoints: Map<string, number> = new Map();
 
     @Property({ type: EncryptedStringType })
