@@ -11,9 +11,6 @@ import { StaticSettings } from './settings.static';
 export class SettingsService extends StaticSettings implements OnApplicationBootstrap {
     constructor(private readonly entityManager: EntityManager) {
         super();
-
-        // Overwrite the logger context from the parent class.
-        this.logger.setContext(SettingsService.name);
     }
 
     /**
@@ -60,15 +57,22 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
 
         if (!settings) {
             this.logger.log(
-                'No settings document provided. Creating new default settings document...'
+                'No settings document provided. Creating new default settings document...',
+                SettingsService.name
             );
 
             try {
                 const defaults = this.generateDefaultSettings();
-                this.logger.log(`Default settings used: ${JSON.stringify(defaults)}`);
+                this.logger.log(
+                    `Default settings used: ${JSON.stringify(defaults)}`,
+                    SettingsService.name
+                );
 
                 await this.entityManager.persistAndFlush(defaults);
-                this.logger.log('Default settings document successfully created.');
+                this.logger.log(
+                    'Default settings document successfully created.',
+                    SettingsService.name
+                );
             } catch (err) {
                 throw new StartUpException('Could not create the default settings document.');
             }

@@ -19,7 +19,6 @@ export class MikroOrmSessionStore extends session.Store {
                 callback?.();
             })
             .catch((err) => {
-                console.log('Error setting the session.');
                 callback?.(err);
             });
     }

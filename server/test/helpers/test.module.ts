@@ -14,25 +14,48 @@ import {
 
 @Module({})
 export class TestDatabaseModule extends SqlDatabaseModule {
-    async reset(): Promise<void> {
-        console.log('Calling reset!!');
+    private readonly ENTITY_LISTS: any[][] = [
+        MOCKED_TUTORIALS,
+        MOCKED_USERS,
+        MOCKED_STUDENTS,
+        MOCKED_TEAMS,
+        MOCKED_SHEETS,
+        MOCKED_SCHEINEXAMS,
+        MOCKED_SHORT_TESTS,
+        MOCKED_SCHEINCRITERIAS,
+        MOCKED_SETTINGS_DOCUMENT,
+    ];
 
+    async reset(): Promise<void> {
         const generator = this.orm.getSchemaGenerator();
         await generator.ensureDatabase();
         await generator.dropSchema();
         await generator.createSchema();
 
-        const em = this.orm.em;
-        em.persist(MOCKED_TUTORIALS);
-        em.persist(MOCKED_USERS);
-        em.persist(MOCKED_STUDENTS);
-        em.persist(MOCKED_TEAMS);
-        em.persist(MOCKED_SHEETS);
-        em.persist(MOCKED_SCHEINEXAMS);
-        em.persist(MOCKED_SHORT_TESTS);
-        em.persist(MOCKED_SCHEINCRITERIAS);
-        em.persist(MOCKED_SETTINGS_DOCUMENT);
+        await this.clearDatabase();
+        await this.populateDatabase();
+    }
 
-        await em.flush();
+    private async clearDatabase() {
+        // TODO: Check if this clears entities added through tests from the EntityManager aswell.
+        const em = this.orm.em.fork();
+        await em.begin();
+
+        for (const entities of this.ENTITY_LISTS) {
+            em.remove(entities);
+        }
+
+        await em.commit();
+    }
+
+    private async populateDatabase() {
+        const em = this.orm.em.fork(true, true);
+        await em.begin();
+
+        for (const entities of this.ENTITY_LISTS) {
+            em.persist(entities);
+        }
+
+        await em.commit();
     }
 }

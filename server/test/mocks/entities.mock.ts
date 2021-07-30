@@ -291,6 +291,7 @@ MOCKED_STUDENTS[1].cakeCount = 2;
 
 MOCKED_STUDENTS[2].iliasName = 'RonWeasley';
 MOCKED_STUDENTS[2].courseOfStudies = 'Computer science B. Sc.';
+MOCKED_STUDENTS[2].email = 'ron@weasley-family.mail';
 
 MOCKED_STUDENTS[3].iliasName = 'DracoMalfoy';
 MOCKED_STUDENTS[3].courseOfStudies = 'Computer science B. Sc.';

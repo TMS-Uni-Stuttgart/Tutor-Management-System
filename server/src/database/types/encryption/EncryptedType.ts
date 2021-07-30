@@ -7,7 +7,7 @@ export abstract class EncryptedType<T> extends Type<T | undefined, string | unde
         platform: Platform,
         fromQuery?: boolean
     ): string | undefined {
-        if (!value) {
+        if (value == undefined) {
             return undefined;
         }
 
@@ -16,7 +16,7 @@ export abstract class EncryptedType<T> extends Type<T | undefined, string | unde
     }
 
     convertToJSValue(value: string | undefined, platform: Platform): T | undefined {
-        if (!value) {
+        if (value == undefined) {
             return undefined;
         }
 

@@ -12,11 +12,9 @@ import { StaticSettings } from '../module/settings/settings.static';
         MikroOrmModule.forRoot({
             metadataProvider: TsMorphMetadataProvider,
             baseDir: process.cwd(),
-            autoLoadEntities: true,
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
             type: 'mysql',
-            debug: true,
             ...StaticSettings.getService().getDatabaseConnectionInformation(),
         }),
     ],

@@ -26,7 +26,8 @@ export class Tutorial {
     @Property()
     slot: string;
 
-    @Property({ type: new LuxonDateType({ array: true }) })
+    // @Property({ type: new LuxonDateType({ array: true }) })
+    @Property({ type: LuxonDateType })
     dates: DateTime[];
 
     @Property({ type: LuxonTimeType })

@@ -18,7 +18,7 @@ export abstract class LuxonType extends Type<DateTime | DateTime[] | undefined, 
     protected abstract getSingleColumnType(prop: EntityProperty, platform: Platform): string;
 
     getColumnType(prop: EntityProperty, platform: Platform): string {
-        return this.options.array
+        return this.options.array || prop.array
             ? platform.getArrayDeclarationSQL()
             : this.getSingleColumnType(prop, platform);
     }
@@ -42,7 +42,7 @@ export abstract class LuxonType extends Type<DateTime | DateTime[] | undefined, 
     }
 
     private convertArrayToDatabaseValue(dates: (DateTime | string)[], platform: Platform): string {
-        if (!this.options.array) {
+        if (!Array.isArray(dates)) {
             throw ValidationError.invalidType(this.getClass(), dates, 'JS');
         }
 
