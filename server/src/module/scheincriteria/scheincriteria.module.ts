@@ -43,7 +43,7 @@ export class ScheincriteriaModule implements OnModuleInit {
      *
      * This way it can be accessed later as a blue print. The actual saved data in the criterias passed to this do _not_ matter. They only serve as 'blueprints'.
      *
-     * @param criteria Criteria to register to the `ScheincriteriaContainer`.
+     * @param criteriaClass Criteria to register to the `ScheincriteriaContainer`.
      */
     private registerCriteria(criteriaClass: ScheincriteriaClass) {
         const logContext = ScheincriteriaModule.name;

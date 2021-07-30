@@ -251,7 +251,7 @@ export class StaticSettings {
             tabs += '\t';
         }
 
-        let message = `The following validation error(s) occured for the "${property}" property:`;
+        let message = `The following validation error(s) occurred for the "${property}" property:`;
 
         if (!!children && children.length > 0) {
             for (const childError of children) {

@@ -1,32 +1,22 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import bcrypt from 'bcryptjs';
-import { generateObjectId, sanitizeObject } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
-import { MockedModel } from '../../../test/helpers/testdocument';
-import { TUTORIAL_DOCUMENTS, USER_DOCUMENTS } from '../../../test/mocks/documents.mock';
-import { UserModel } from '../../database/models/user.model';
-import { NamedElement } from '../../shared/model/Common';
-import { Role } from '../../shared/model/Role';
-import { ILoggedInUser, IUser } from '../../shared/model/User';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
-import { SheetService } from '../sheet/sheet.service';
-import { ShortTestService } from '../short-test/short-test.service';
-import { GradingService } from '../student/grading.service';
-import { StudentService } from '../student/student.service';
-import { TeamService } from '../team/team.service';
+import { NamedElement } from 'shared/model/Common';
+import { Role } from 'shared/model/Role';
+import { ILoggedInUser, IUser } from 'shared/model/User';
+import { TestSuite } from '../../../test/helpers/TestSuite';
+import { User } from '../../database/entities/user.entity';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
 
 interface AssertUserParam {
-    expected: MockedModel<UserModel>;
-    actual: IUser;
+    expected: User;
+    actual: User;
 }
 
 interface AssertUserListParam {
-    expected: MockedModel<UserModel>[];
-    actual: IUser[];
+    expected: User[];
+    actual: User[];
 }
 
 interface AssertUserDTOParams {
@@ -40,7 +30,7 @@ interface AssertGeneratedUsersParams {
 }
 
 interface AssertLoggedInUserParams {
-    expected: MockedModel<UserModel>;
+    expected: User;
     actual: ILoggedInUser;
 }
 
@@ -54,21 +44,23 @@ interface AssertLoggedInUserParams {
  * @param params Must contain an expected TestDocument and the actual User object.
  */
 function assertUser({ expected, actual }: AssertUserParam) {
-    const { _id, password, tutorials, tutorialsToCorrect, ...expectedUser } = sanitizeObject(
-        expected
-    );
+    const { id, password, tutorials, tutorialsToCorrect, ...expectedUser } = expected;
     const {
         id: actualId,
         tutorials: actualTutorials,
         tutorialsToCorrect: actualTutorialsToCorrect,
         ...actualUser
-    } = sanitizeObject(actual);
+    } = actual;
 
     expect(actualId).toBeDefined();
     expect(actualUser).toEqual(expectedUser);
 
-    expect(actualTutorials.map((t) => t.id)).toEqual(tutorials.map((t) => t._id));
-    expect(actualTutorialsToCorrect.map((t) => t.id)).toEqual(tutorialsToCorrect.map((t) => t._id));
+    expect(actualTutorials.getItems().map((t) => t.id)).toEqual(
+        tutorials.getItems().map((t) => t.id)
+    );
+    expect(actualTutorialsToCorrect.getItems().map((t) => t.id)).toEqual(
+        tutorialsToCorrect.getItems().map((t) => t.id)
+    );
 }
 
 /**
@@ -94,7 +86,7 @@ function assertUserList({ expected, actual }: AssertUserListParam) {
 /**
  * Checks if the given User and the given UserDTO are equal.
  *
- * Equalitiy is defined as:
+ * Equality is defined as:
  * - The IDs of the tutorials are the same.
  * - The IDS of the tutorials to correct are the same.
  * - If `expected` has a `password` field the `temporaryPassword` field of the `actual` user must match the `password` field.
@@ -110,7 +102,7 @@ function assertUserDTO({ expected, actual }: AssertUserDTOParams) {
         tutorials: actualTutorials,
         tutorialsToCorrect: actualToCorrect,
         ...restActual
-    } = sanitizeObject(actual);
+    } = actual;
 
     expect(id).toBeDefined();
 
@@ -143,73 +135,43 @@ function assertGeneratedUsers({ expected, actual }: AssertGeneratedUsersParams) 
 
         expect(idx).not.toBe(-1);
         assertUserDTO({ expected: dto, actual: user });
-        // expect(user.temporaryPassword).toEqual(password);
     }
 }
 
 function assertLoggedInUser({ expected, actual }: AssertLoggedInUserParams) {
     const {
-        _id,
+        id,
         firstname,
         lastname,
         roles,
         temporaryPassword,
         tutorials,
         tutorialsToCorrect,
-    } = sanitizeObject(expected);
+    } = expected;
 
-    expect(actual.id).toBe(_id);
+    expect(actual.id).toBe(id);
     expect(actual.firstname).toBe(firstname);
     expect(actual.lastname).toBe(lastname);
     expect(actual.roles).toEqual(roles);
     expect(actual.hasTemporaryPassword).toBe(!!temporaryPassword);
 
-    expect(actual.tutorials.map((t) => t.id)).toEqual(tutorials.map((t) => t.id));
-    expect(actual.tutorialsToCorrect.map((t) => t.id)).toEqual(tutorialsToCorrect.map((t) => t.id));
+    expect(actual.tutorials.map((t) => t.id)).toEqual(tutorials.getItems().map((t) => t.id));
+    expect(actual.tutorialsToCorrect.map((t) => t.id)).toEqual(
+        tutorialsToCorrect.getItems().map((t) => t.id)
+    );
 
     // TODO: Test substituteTutorials!
 }
 
 describe('UserService', () => {
-    let testModule: TestingModule;
-    let service: UserService;
-
-    beforeAll(async () => {
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [
-                TutorialService,
-                UserService,
-                StudentService,
-                TeamService,
-                SheetService,
-                ScheinexamService,
-                ShortTestService,
-                GradingService,
-            ],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<UserService>(UserService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    const suite = new TestSuite(UserService);
 
     it('find all users', async () => {
-        const allUsers = await service.findAll();
+        const allUsers = await suite.service.findAll();
 
         assertUserList({
             expected: USER_DOCUMENTS,
-            actual: sanitizeObject(allUsers.map((user) => user.toDTO())),
+            actual: allUsers,
         });
     });
 
@@ -225,7 +187,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        const createdUser: IUser = await service.create(userToCreate);
+        const createdUser: IUser = await suite.service.create(userToCreate);
         const { password, ...expected } = userToCreate;
 
         assertUserDTO({ expected, actual: createdUser });
@@ -242,7 +204,7 @@ describe('UserService', () => {
             tutorials: [TUTORIAL_DOCUMENTS[1]._id],
             tutorialsToCorrect: [],
         };
-        const createdUser: IUser = await service.create(userToCreate);
+        const createdUser: IUser = await suite.service.create(userToCreate);
         const { password, ...expected } = userToCreate;
 
         assertUserDTO({ expected, actual: createdUser });
@@ -260,7 +222,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        const createdUser: IUser = await service.create(userToCreate);
+        const createdUser: IUser = await suite.service.create(userToCreate);
         const { password, ...expected } = userToCreate;
 
         assertUserDTO({ expected, actual: createdUser });
@@ -278,7 +240,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(userToCreate)).rejects.toThrow(BadRequestException);
     });
 
     it('create user with ONE tutorial to correct', async () => {
@@ -293,7 +255,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
         };
 
-        const createdUser: IUser = await service.create(userToCreate);
+        const createdUser: IUser = await suite.service.create(userToCreate);
         const { password, ...expected } = userToCreate;
 
         assertUserDTO({ expected, actual: createdUser });
@@ -311,7 +273,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
         };
 
-        const createdUser: IUser = await service.create(userToCreate);
+        const createdUser: IUser = await suite.service.create(userToCreate);
         const { password, ...expected } = userToCreate;
 
         assertUserDTO({ expected, actual: createdUser });
@@ -329,7 +291,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(userToCreate)).rejects.toThrow(BadRequestException);
     });
 
     it('fail on creating non-corrector with tutorials to correct', async () => {
@@ -344,7 +306,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
         };
 
-        await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(userToCreate)).rejects.toThrow(BadRequestException);
     });
 
     it('fail on creating a user with already existing username', async () => {
@@ -359,7 +321,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        await expect(service.create(userToCreate)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(userToCreate)).rejects.toThrow(BadRequestException);
     });
 
     it('create multiple users without tutorials', async () => {
@@ -386,7 +348,7 @@ describe('UserService', () => {
             },
         ];
 
-        const created = await service.createMany(usersToCreate);
+        const created = await suite.service.createMany(usersToCreate);
 
         assertGeneratedUsers({ expected: usersToCreate, actual: created });
     });
@@ -415,7 +377,7 @@ describe('UserService', () => {
             },
         ];
 
-        const created = await service.createMany(usersToCreate);
+        const created = await suite.service.createMany(usersToCreate);
 
         assertGeneratedUsers({ expected: usersToCreate, actual: created });
     });
@@ -444,7 +406,7 @@ describe('UserService', () => {
             },
         ];
 
-        const created = await service.createMany(usersToCreate);
+        const created = await suite.service.createMany(usersToCreate);
 
         assertGeneratedUsers({ expected: usersToCreate, actual: created });
     });
@@ -473,7 +435,7 @@ describe('UserService', () => {
             },
         ];
 
-        const created = await service.createMany(usersToCreate);
+        const created = await suite.service.createMany(usersToCreate);
 
         assertGeneratedUsers({ expected: usersToCreate, actual: created });
     });
@@ -502,15 +464,15 @@ describe('UserService', () => {
             },
         ];
 
-        const userCountBefore = (await service.findAll()).length;
-        await expect(service.createMany(usersToCreate)).rejects.toThrow(
+        const userCountBefore = (await suite.service.findAll()).length;
+        await expect(suite.service.createMany(usersToCreate)).rejects.toThrow(
             new BadRequestException([
                 "[Potter, Harry]: A user with tutorials needs to have the 'TUTOR' role",
             ])
         );
 
         // No user should have effectively been created.
-        const userCountAfter = (await service.findAll()).length;
+        const userCountAfter = (await suite.service.findAll()).length;
         expect(userCountAfter).toBe(userCountBefore);
     });
 
@@ -538,29 +500,29 @@ describe('UserService', () => {
             },
         ];
 
-        const userCountBefore = (await service.findAll()).length;
-        await expect(service.createMany(usersToCreate)).rejects.toThrow(
+        const userCountBefore = (await suite.service.findAll()).length;
+        await expect(suite.service.createMany(usersToCreate)).rejects.toThrow(
             new BadRequestException([
                 "[Granger, Hermine]: A user with tutorials to correct needs to have the 'CORRECTOR' role",
             ])
         );
 
         // No user should have effectively been created.
-        const userCountAfter = (await service.findAll()).length;
+        const userCountAfter = (await suite.service.findAll()).length;
         expect(userCountAfter).toBe(userCountBefore);
     });
 
     it('get a user with a specific ID', async () => {
         const expected = USER_DOCUMENTS[0];
-        const user = await service.findById(expected._id);
+        const user = await suite.service.findById(expected._id);
 
         assertUser({ expected, actual: user.toDTO() });
     });
 
     it('fail on searching a non-existing user', async () => {
-        const nonExistingId = generateObjectId();
-
-        await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById('non-existing-user')).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('update an existing user with basic information', async () => {
@@ -584,8 +546,8 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        const oldUser = await service.create(userToCreate);
-        const updatedUser = await service.update(oldUser.id, updateDTO);
+        const oldUser = await suite.service.create(userToCreate);
+        const updatedUser = await suite.service.update(oldUser.id, updateDTO);
 
         expect(updatedUser.id).toEqual(oldUser.id);
         assertUserDTO({ expected: updateDTO, actual: updatedUser });
@@ -607,8 +569,8 @@ describe('UserService', () => {
             password: 'herminesPassword',
         };
 
-        const oldUser = await service.create(userToCreate);
-        const updatedUser = await service.update(oldUser.id, updateDTO);
+        const oldUser = await suite.service.create(userToCreate);
+        const updatedUser = await suite.service.update(oldUser.id, updateDTO);
 
         expect(updatedUser.id).toEqual(oldUser.id);
         assertUserDTO({ expected: updateDTO, actual: updatedUser });
@@ -630,8 +592,8 @@ describe('UserService', () => {
             password: 'herminesPassword',
         };
 
-        const oldUser = await service.create(userToCreate);
-        const updatedUser = await service.update(oldUser.id, updateDTO);
+        const oldUser = await suite.service.create(userToCreate);
+        const updatedUser = await suite.service.update(oldUser.id, updateDTO);
 
         expect(updatedUser.id).toEqual(oldUser.id);
         assertUserDTO({ expected: updateDTO, actual: updatedUser });
@@ -653,8 +615,10 @@ describe('UserService', () => {
             password: 'herminesPassword',
         };
 
-        const oldUser = await service.create(userToCreate);
-        await expect(service.update(oldUser.id, updateDTO)).rejects.toThrow(BadRequestException);
+        const oldUser = await suite.service.create(userToCreate);
+        await expect(suite.service.update(oldUser.id, updateDTO)).rejects.toThrow(
+            BadRequestException
+        );
     });
 
     it('fail on updating non existing user', async () => {
@@ -668,7 +632,7 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        await expect(service.update(generateObjectId(), updateDTO)).rejects.toThrow(
+        await expect(suite.service.update('non-existing-id', updateDTO)).rejects.toThrow(
             NotFoundException
         );
     });
@@ -680,7 +644,7 @@ describe('UserService', () => {
             email: 'granger@hogwarts.com',
             username: 'grangehe',
             roles: [Role.TUTOR],
-            tutorials: [generateObjectId(), TUTORIAL_DOCUMENTS[0]._id],
+            tutorials: ['non-existing-tutorial', TUTORIAL_DOCUMENTS[0]._id],
             tutorialsToCorrect: [],
         };
         const userToCreate: CreateUserDTO = {
@@ -689,8 +653,10 @@ describe('UserService', () => {
             password: 'herminesPassword',
         };
 
-        const oldUser = await service.create(userToCreate);
-        await expect(service.update(oldUser.id, updateDTO)).rejects.toThrow(NotFoundException);
+        const oldUser = await suite.service.create(userToCreate);
+        await expect(suite.service.update(oldUser.id, updateDTO)).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('fail on updating user with non existing tutorial to correct', async () => {
@@ -709,8 +675,10 @@ describe('UserService', () => {
             password: 'herminesPassword',
         };
 
-        const oldUser = await service.create(userToCreate);
-        await expect(service.update(oldUser.id, updateDTO)).rejects.toThrow(NotFoundException);
+        const oldUser = await suite.service.create(userToCreate);
+        await expect(suite.service.update(oldUser.id, updateDTO)).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('fail on changing the role of last admin', async () => {
@@ -725,7 +693,7 @@ describe('UserService', () => {
             tutorials: lastAdminUser.tutorials.map((t) => t.id),
         };
 
-        await expect(service.update(lastAdminUser._id, updateDTO)).rejects.toThrow(
+        await expect(suite.service.update(lastAdminUser._id, updateDTO)).rejects.toThrow(
             BadRequestException
         );
     });
@@ -742,11 +710,11 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        const user = await service.create(dto);
-        const deletedUser = await service.delete(user.id);
+        const user = await suite.service.create(dto);
+        const deletedUser = await suite.service.delete(user.id);
 
         expect(deletedUser.id).toEqual(user.id);
-        await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(user.id)).rejects.toThrow(NotFoundException);
     });
 
     it('delete a user with tutorials', async () => {
@@ -762,14 +730,14 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        const user = await service.create(dto);
-        const deletedUser = await service.delete(user.id);
+        const user = await suite.service.create(dto);
+        const deletedUser = await suite.service.delete(user.id);
 
         const tutorialService = testModule.get<TutorialService>(TutorialService);
         const updatedTutorial = await tutorialService.findById(tutorial._id);
 
         expect(deletedUser.id).toEqual(user.id);
-        await expect(service.findById(user.id)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(user.id)).rejects.toThrow(NotFoundException);
 
         expect(updatedTutorial.tutor).toBeUndefined();
     });
@@ -777,8 +745,8 @@ describe('UserService', () => {
     it('fail on deleting last admin', async () => {
         const adminUser = USER_DOCUMENTS[0];
 
-        await expect(service.delete(adminUser._id)).rejects.toThrow(BadRequestException);
-        await expect(service.findById(adminUser._id)).resolves.toBeDefined();
+        await expect(suite.service.delete(adminUser._id)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.findById(adminUser._id)).resolves.toBeDefined();
     });
 
     it('update the password of a user', async () => {
@@ -794,9 +762,9 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        const user = await service.create(dto);
-        const updatedUser = await service.setPassword(user.id, newPassword);
-        const userCredentials = await service.findWithUsername(user.username);
+        const user = await suite.service.create(dto);
+        const updatedUser = await suite.service.setPassword(user.id, newPassword);
+        const userCredentials = await suite.service.findWithUsername(user.username);
 
         expect(updatedUser.temporaryPassword).toBeUndefined();
         expect(() => bcrypt.compareSync(newPassword, userCredentials.password)).toBeTruthy();
@@ -815,9 +783,9 @@ describe('UserService', () => {
             tutorialsToCorrect: [],
         };
 
-        const user = await service.create(dto);
-        const updatedUser = await service.setTemporaryPassword(user.id, newPassword);
-        const userCredentials = await service.findWithUsername(user.username);
+        const user = await suite.service.create(dto);
+        const updatedUser = await suite.service.setTemporaryPassword(user.id, newPassword);
+        const userCredentials = await suite.service.findWithUsername(user.username);
 
         expect(updatedUser.temporaryPassword).toEqual(newPassword);
         expect(() => bcrypt.compareSync(newPassword, userCredentials.password)).toBeTruthy();
@@ -841,13 +809,13 @@ describe('UserService', () => {
                 lastname: 'Weasley',
             },
         ];
-        const namesOfTutors: NamedElement[] = await service.getNamesOfAllTutors();
+        const namesOfTutors: NamedElement[] = await suite.service.getNamesOfAllTutors();
         expect(namesOfTutors).toEqual(expected);
     });
 
     it('get user information on log in', async () => {
         const expected = USER_DOCUMENTS[2];
-        const userInformation = await service.getLoggedInUserInformation(expected._id);
+        const userInformation = await suite.service.getLoggedInUserInformation(expected._id);
 
         assertLoggedInUser({ expected, actual: userInformation });
     });

@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ISchemaGenerator } from '@mikro-orm/core/typings';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
-import { Logger, Module, OnModuleInit } from '@nestjs/common';
+import { Logger, Module, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { StartUpException } from '../exceptions/StartUpException';
 import { wait } from '../helpers/wait';
 import { StaticSettings } from '../module/settings/settings.static';
@@ -16,21 +16,28 @@ import { StaticSettings } from '../module/settings/settings.static';
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
             type: 'mysql',
+            debug: true,
             ...StaticSettings.getService().getDatabaseConnectionInformation(),
         }),
     ],
 })
-export class SqlDatabaseModule implements OnModuleInit {
+export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
     private readonly logger = new Logger(SqlDatabaseModule.name);
     private readonly databaseConfig = StaticSettings.getService().getDatabaseConfiguration();
 
-    constructor(private readonly orm: MikroORM) {}
+    constructor(protected readonly orm: MikroORM) {}
 
     async onModuleInit(): Promise<void> {
         const generator = this.orm.getSchemaGenerator();
 
         await this.ensureDatabaseConnection(generator);
         await this.updateSchema(generator);
+    }
+
+    async onApplicationShutdown(): Promise<void> {
+        if (await this.orm.isConnected()) {
+            await this.orm.close();
+        }
     }
 
     private async ensureDatabaseConnection(generator: ISchemaGenerator): Promise<void> {

@@ -1,9 +1,9 @@
 import { Embeddable, Embedded, PrimaryKey, Property } from '@mikro-orm/core';
-import { ExercisePointsInfo, IExercisePointsInfo } from 'shared/model/Gradings';
-import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import { v4 } from 'uuid';
 import { HasExercisesDTO, RatedEntityDTO } from '../../module/scheinexam/scheinexam.dto';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
+import { ExercisePointsInfo, IExercisePointsInfo } from '../../shared/model/Gradings';
+import { IExercise, ISubexercise } from '../../shared/model/HasExercises';
 import { Student } from './student.entity';
 
 @Embeddable()

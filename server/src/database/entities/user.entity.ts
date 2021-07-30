@@ -57,13 +57,22 @@ export class User {
     @OneToMany(() => Substitute, (substitute) => substitute.substituteTutor, { eager: true })
     tutorialsToSubstitute = new Collection<Substitute>(this);
 
-    constructor({ firstname, lastname, roles, username, password, email }: UserParams) {
+    constructor({
+        firstname,
+        lastname,
+        roles,
+        username,
+        password,
+        email,
+        temporaryPassword,
+    }: UserParams) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.roles = roles;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.temporaryPassword = temporaryPassword;
     }
 
     toDTO(): IUser {
@@ -149,4 +158,5 @@ interface UserParams {
     username: string;
     password: string;
     email: string;
+    temporaryPassword?: string;
 }

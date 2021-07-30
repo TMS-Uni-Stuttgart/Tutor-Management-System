@@ -37,7 +37,7 @@ export abstract class Scheincriteria {
     /**
      * Generates a Scheincriteria from the given dto.
      *
-     * The returned criteria will be an instance of the class which was saved as blueprint with the given `identifier`. The given `data` will be validated against said class before creating an instancen of it.
+     * The returned criteria will be an instance of the class which was saved as blueprint with the given `identifier`. The given `data` will be validated against said class before creating an instance of it.
      *
      * @param dto DTO containing the information for the criteria.
      *

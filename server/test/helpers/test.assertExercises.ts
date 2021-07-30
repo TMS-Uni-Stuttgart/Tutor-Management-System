@@ -1,14 +1,14 @@
+import { IExercise, ISubexercise } from 'shared/model/HasExercises';
+import { Exercise, SubExercise } from '../../src/database/entities/ratedEntity.entity';
 import { ExerciseDTO, SubExerciseDTO } from '../../src/module/sheet/sheet.dto';
-import { IExercise, ISubexercise } from '../../src/shared/model/HasExercises';
-import { MockedExerciseModel, MockedSubExerciseModel } from '../mocks/documents.mock';
 
 interface AssertSubExerciseParams {
-    expected: MockedSubExerciseModel;
+    expected: SubExercise;
     actual: ISubexercise;
 }
 
 interface AssertExerciseParams {
-    expected: MockedExerciseModel;
+    expected: Exercise;
     actual: IExercise;
 }
 
@@ -30,10 +30,9 @@ interface AssertSubExerciseDTOParams {
  * @param params Must contain an expected SubExercise and an actual SubExercise.
  */
 function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
-    const { _id, pointInfo, ...restExpected } = expected;
-    const { id, ...restActual } = actual;
+    const { pointInfo, ...restExpected } = expected;
+    const { ...restActual } = actual;
 
-    expect(id).toEqual(_id);
     expect(restActual).toEqual(restExpected);
 }
 
@@ -47,10 +46,10 @@ function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
  * @param params Must contain an expected ExerciseDocument and an actual Exercise.
  */
 export function assertExercise({ expected, actual }: AssertExerciseParams): void {
-    const { subexercises, ...restExpected } = expected;
+    const { subexercises, pointInfo, ...restExpected } = expected;
     const { subexercises: actualSubexercises, ...restActual } = actual;
 
-    assertSubExercise({ expected: restExpected, actual: restActual });
+    expect(restActual).toEqual(restExpected);
 
     if (!subexercises) {
         expect(actualSubexercises).toHaveLength(0);

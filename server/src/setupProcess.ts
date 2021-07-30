@@ -12,7 +12,7 @@ export function setupProcess(): void {
         } else if (err instanceof HttpException) {
             logger.error(err.message);
         } else {
-            logger.error('Unknown error.');
+            logger.error('Unknown error:');
             logger.error(err);
         }
     }

@@ -9,12 +9,12 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:
-    host: localhost
-    port: 3306
-    databaseName: tms-poc-stuff
-    maxRetries: 2
-    reconnectTimeout: 10000
+  host: localhost
+  port: 3306
+  databaseName: tms-dev-db
+  maxRetries: 2
+  reconnectTimeout: 10000
 
 defaultSettings:
-    canTutorExcuseStudents: true
-    defaultTeamSize: 3
+  canTutorExcuseStudents: true
+  defaultTeamSize: 3

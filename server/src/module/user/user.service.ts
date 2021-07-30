@@ -1,4 +1,4 @@
-import { EntityRepository } from '@mikro-orm/core';
+import { Collection, EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
 import {
     BadRequestException,
@@ -320,8 +320,11 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         ]);
         const userEntity: User = new User({ ...dto, username, password });
         userEntity.temporaryPassword = password;
-        userEntity.tutorials.set(tutorials);
-        userEntity.tutorialsToCorrect.set(tutorialsToCorrect);
+        userEntity.tutorials.add(...tutorials);
+        userEntity.tutorialsToCorrect = new Collection<Tutorial, unknown>(
+            userEntity,
+            tutorialsToCorrect
+        );
 
         return userEntity;
     }
