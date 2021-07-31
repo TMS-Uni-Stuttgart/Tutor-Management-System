@@ -3,7 +3,9 @@ import bcrypt from 'bcryptjs';
 import { NamedElement } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
 import { ILoggedInUser, IUser } from 'shared/model/User';
+import { sortListById } from '../../../test/helpers/test.helpers';
 import { TestSuite } from '../../../test/helpers/TestSuite';
+import { MOCKED_TUTORIALS, MOCKED_USERS } from '../../../test/mocks/entities.mock';
 import { User } from '../../database/entities/user.entity';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
@@ -38,21 +40,21 @@ interface AssertLoggedInUserParams {
  * Checks if the given user representations are considered equal.
  *
  * Equality is defined as:
- * - The actual `id` matches the expected `_id`.
+ * - The actual `id` matches the expected `id`.
  * - The rest of `expected` (__excluding `password`__) matches the rest of `actual`.
  *
  * @param params Must contain an expected TestDocument and the actual User object.
  */
 function assertUser({ expected, actual }: AssertUserParam) {
-    const { id, password, tutorials, tutorialsToCorrect, ...expectedUser } = expected;
+    const { id, tutorials, tutorialsToCorrect, tutorialsToSubstitute, ...expectedUser } = expected;
     const {
         id: actualId,
         tutorials: actualTutorials,
         tutorialsToCorrect: actualTutorialsToCorrect,
+        tutorialsToSubstitute: actualTutorialsToSubstitute,
         ...actualUser
     } = actual;
 
-    expect(actualId).toBeDefined();
     expect(actualUser).toEqual(expectedUser);
 
     expect(actualTutorials.getItems().map((t) => t.id)).toEqual(
@@ -61,6 +63,8 @@ function assertUser({ expected, actual }: AssertUserParam) {
     expect(actualTutorialsToCorrect.getItems().map((t) => t.id)).toEqual(
         tutorialsToCorrect.getItems().map((t) => t.id)
     );
+
+    // TODO: Check tutorials the user is a substitute in.
 }
 
 /**
@@ -75,10 +79,13 @@ function assertUser({ expected, actual }: AssertUserParam) {
 function assertUserList({ expected, actual }: AssertUserListParam) {
     expect(actual.length).toBe(expected.length);
 
+    const expectedList = sortListById(expected);
+    const actualList = sortListById(actual);
+
     for (let i = 0; i < actual.length; i++) {
         assertUser({
-            expected: expected[i],
-            actual: actual[i],
+            expected: expectedList[i],
+            actual: actualList[i],
         });
     }
 }
@@ -170,9 +177,16 @@ describe('UserService', () => {
         const allUsers = await suite.service.findAll();
 
         assertUserList({
-            expected: USER_DOCUMENTS,
+            expected: MOCKED_USERS,
             actual: allUsers,
         });
+    });
+
+    it('find user with one tutorial', async () => {
+        const userWithTutorial = MOCKED_USERS[2];
+        const fetchedUser = await suite.service.findById(userWithTutorial.id);
+
+        assertUser({ expected: userWithTutorial, actual: fetchedUser });
     });
 
     it('create user without tutorials', async () => {
@@ -201,7 +215,7 @@ describe('UserService', () => {
             username: 'grangehe',
             password: 'herminesPassword',
             roles: [Role.TUTOR],
-            tutorials: [TUTORIAL_DOCUMENTS[1]._id],
+            tutorials: [MOCKED_TUTORIALS[1].id],
             tutorialsToCorrect: [],
         };
         const createdUser: IUser = await suite.service.create(userToCreate);
@@ -218,7 +232,7 @@ describe('UserService', () => {
             username: 'grangehe',
             password: 'herminesPassword',
             roles: [Role.TUTOR],
-            tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorials: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
             tutorialsToCorrect: [],
         };
 
@@ -252,7 +266,7 @@ describe('UserService', () => {
             password: 'herminesPassword',
             roles: [Role.CORRECTOR],
             tutorials: [],
-            tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
+            tutorialsToCorrect: [MOCKED_TUTORIALS[0].id],
         };
 
         const createdUser: IUser = await suite.service.create(userToCreate);
@@ -270,7 +284,7 @@ describe('UserService', () => {
             password: 'herminesPassword',
             roles: [Role.CORRECTOR],
             tutorials: [],
-            tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorialsToCorrect: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
         };
 
         const createdUser: IUser = await suite.service.create(userToCreate);
@@ -287,7 +301,7 @@ describe('UserService', () => {
             username: 'grangehe',
             password: 'herminesPassword',
             roles: [Role.ADMIN],
-            tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorials: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
             tutorialsToCorrect: [],
         };
 
@@ -303,7 +317,7 @@ describe('UserService', () => {
             password: 'herminesPassword',
             roles: [Role.EMPLOYEE],
             tutorials: [],
-            tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorialsToCorrect: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
         };
 
         await expect(suite.service.create(userToCreate)).rejects.toThrow(BadRequestException);
@@ -362,7 +376,7 @@ describe('UserService', () => {
                 username: 'usernameOfHarry',
                 password: 'harrysPassword',
                 roles: [Role.TUTOR],
-                tutorials: [TUTORIAL_DOCUMENTS[0]._id],
+                tutorials: [MOCKED_TUTORIALS[0].id],
                 tutorialsToCorrect: [],
             },
             {
@@ -372,7 +386,7 @@ describe('UserService', () => {
                 username: 'grangehe',
                 password: 'grangersPassword',
                 roles: [Role.TUTOR],
-                tutorials: [TUTORIAL_DOCUMENTS[1]._id],
+                tutorials: [MOCKED_TUTORIALS[1].id],
                 tutorialsToCorrect: [],
             },
         ];
@@ -392,7 +406,7 @@ describe('UserService', () => {
                 password: 'harrysPassword',
                 roles: [Role.CORRECTOR],
                 tutorials: [],
-                tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
+                tutorialsToCorrect: [MOCKED_TUTORIALS[0].id],
             },
             {
                 firstname: 'Granger',
@@ -402,7 +416,7 @@ describe('UserService', () => {
                 password: 'grangersPassword',
                 roles: [Role.CORRECTOR],
                 tutorials: [],
-                tutorialsToCorrect: [TUTORIAL_DOCUMENTS[1]._id],
+                tutorialsToCorrect: [MOCKED_TUTORIALS[1].id],
             },
         ];
 
@@ -420,7 +434,7 @@ describe('UserService', () => {
                 username: 'usernameOfHarry',
                 password: 'harrysPassword',
                 roles: [Role.TUTOR],
-                tutorials: [TUTORIAL_DOCUMENTS[0]._id],
+                tutorials: [MOCKED_TUTORIALS[0].id],
                 tutorialsToCorrect: [],
             },
             {
@@ -430,8 +444,8 @@ describe('UserService', () => {
                 username: 'grangehe',
                 password: 'grangersPassword',
                 roles: [Role.TUTOR, Role.CORRECTOR],
-                tutorials: [TUTORIAL_DOCUMENTS[1]._id],
-                tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
+                tutorials: [MOCKED_TUTORIALS[1].id],
+                tutorialsToCorrect: [MOCKED_TUTORIALS[0].id],
             },
         ];
 
@@ -449,7 +463,7 @@ describe('UserService', () => {
                 username: 'usernameOfHarry',
                 password: 'harrysPassword',
                 roles: [Role.CORRECTOR],
-                tutorials: [TUTORIAL_DOCUMENTS[0]._id],
+                tutorials: [MOCKED_TUTORIALS[0].id],
                 tutorialsToCorrect: [],
             },
             {
@@ -459,7 +473,7 @@ describe('UserService', () => {
                 username: 'grangehe',
                 password: 'grangersPassword',
                 roles: [Role.TUTOR],
-                tutorials: [TUTORIAL_DOCUMENTS[1]._id],
+                tutorials: [MOCKED_TUTORIALS[1].id],
                 tutorialsToCorrect: [],
             },
         ];
@@ -486,7 +500,7 @@ describe('UserService', () => {
                 password: 'harrysPassword',
                 roles: [Role.CORRECTOR],
                 tutorials: [],
-                tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id],
+                tutorialsToCorrect: [MOCKED_TUTORIALS[0].id],
             },
             {
                 firstname: 'Hermine',
@@ -496,7 +510,7 @@ describe('UserService', () => {
                 password: 'grangersPassword',
                 roles: [Role.TUTOR],
                 tutorials: [],
-                tutorialsToCorrect: [TUTORIAL_DOCUMENTS[1]._id],
+                tutorialsToCorrect: [MOCKED_TUTORIALS[1].id],
             },
         ];
 
@@ -513,10 +527,10 @@ describe('UserService', () => {
     });
 
     it('get a user with a specific ID', async () => {
-        const expected = USER_DOCUMENTS[0];
-        const user = await suite.service.findById(expected._id);
+        const expected = MOCKED_USERS[0];
+        const user = await suite.service.findById(expected.id);
 
-        assertUser({ expected, actual: user.toDTO() });
+        assertUser({ expected, actual: user });
     });
 
     it('fail on searching a non-existing user', async () => {
@@ -561,11 +575,11 @@ describe('UserService', () => {
             username: 'grangehe',
             roles: [Role.TUTOR],
             tutorialsToCorrect: [],
-            tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[2]._id],
+            tutorials: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[2].id],
         };
         const userToCreate: CreateUserDTO = {
             ...updateDTO,
-            tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorials: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
             password: 'herminesPassword',
         };
 
@@ -584,11 +598,11 @@ describe('UserService', () => {
             username: 'grangehe',
             roles: [Role.CORRECTOR],
             tutorials: [],
-            tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[2]._id],
+            tutorialsToCorrect: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[2].id],
         };
         const userToCreate: CreateUserDTO = {
             ...updateDTO,
-            tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorialsToCorrect: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
             password: 'herminesPassword',
         };
 
@@ -644,12 +658,12 @@ describe('UserService', () => {
             email: 'granger@hogwarts.com',
             username: 'grangehe',
             roles: [Role.TUTOR],
-            tutorials: ['non-existing-tutorial', TUTORIAL_DOCUMENTS[0]._id],
+            tutorials: ['non-existing-tutorial', MOCKED_TUTORIALS[0].id],
             tutorialsToCorrect: [],
         };
         const userToCreate: CreateUserDTO = {
             ...updateDTO,
-            tutorials: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorials: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
             password: 'herminesPassword',
         };
 
@@ -667,11 +681,11 @@ describe('UserService', () => {
             username: 'grangehe',
             roles: [Role.CORRECTOR],
             tutorials: [],
-            tutorialsToCorrect: [generateObjectId(), TUTORIAL_DOCUMENTS[0]._id],
+            tutorialsToCorrect: ['non-existing-id', MOCKED_TUTORIALS[0].id],
         };
         const userToCreate: CreateUserDTO = {
             ...updateDTO,
-            tutorialsToCorrect: [TUTORIAL_DOCUMENTS[0]._id, TUTORIAL_DOCUMENTS[1]._id],
+            tutorialsToCorrect: [MOCKED_TUTORIALS[0].id, MOCKED_TUTORIALS[1].id],
             password: 'herminesPassword',
         };
 
@@ -682,18 +696,18 @@ describe('UserService', () => {
     });
 
     it('fail on changing the role of last admin', async () => {
-        const lastAdminUser = USER_DOCUMENTS[0];
+        const lastAdminUser = MOCKED_USERS[0];
         const updateDTO: UserDTO = {
             roles: [Role.TUTOR], // Remove / Replace admin role
             firstname: lastAdminUser.firstname,
             lastname: lastAdminUser.lastname,
             username: lastAdminUser.username,
             email: lastAdminUser.email,
-            tutorialsToCorrect: lastAdminUser.tutorialsToCorrect.map((t) => t.id),
-            tutorials: lastAdminUser.tutorials.map((t) => t.id),
+            tutorialsToCorrect: lastAdminUser.tutorialsToCorrect.getItems().map((t) => t.id),
+            tutorials: lastAdminUser.tutorials.getItems().map((t) => t.id),
         };
 
-        await expect(suite.service.update(lastAdminUser._id, updateDTO)).rejects.toThrow(
+        await expect(suite.service.update(lastAdminUser.id, updateDTO)).rejects.toThrow(
             BadRequestException
         );
     });
@@ -711,14 +725,13 @@ describe('UserService', () => {
         };
 
         const user = await suite.service.create(dto);
-        const deletedUser = await suite.service.delete(user.id);
+        await suite.service.delete(user.id);
 
-        expect(deletedUser.id).toEqual(user.id);
         await expect(suite.service.findById(user.id)).rejects.toThrow(NotFoundException);
     });
 
     it('delete a user with tutorials', async () => {
-        const tutorial = TUTORIAL_DOCUMENTS[0];
+        const tutorial = MOCKED_TUTORIALS[0];
         const dto: CreateUserDTO = {
             firstname: 'Hermine',
             lastname: 'Granger',
@@ -726,27 +739,26 @@ describe('UserService', () => {
             username: 'grangehe',
             password: 'herminesPassword',
             roles: [Role.TUTOR],
-            tutorials: [tutorial._id],
+            tutorials: [tutorial.id],
             tutorialsToCorrect: [],
         };
 
         const user = await suite.service.create(dto);
-        const deletedUser = await suite.service.delete(user.id);
+        await suite.service.delete(user.id);
 
-        const tutorialService = testModule.get<TutorialService>(TutorialService);
-        const updatedTutorial = await tutorialService.findById(tutorial._id);
+        const tutorialService = suite.getService(TutorialService);
+        const updatedTutorial = await tutorialService.findById(tutorial.id);
 
-        expect(deletedUser.id).toEqual(user.id);
         await expect(suite.service.findById(user.id)).rejects.toThrow(NotFoundException);
 
         expect(updatedTutorial.tutor).toBeUndefined();
     });
 
     it('fail on deleting last admin', async () => {
-        const adminUser = USER_DOCUMENTS[0];
+        const adminUser = MOCKED_USERS[0];
 
-        await expect(suite.service.delete(adminUser._id)).rejects.toThrow(BadRequestException);
-        await expect(suite.service.findById(adminUser._id)).resolves.toBeDefined();
+        await expect(suite.service.delete(adminUser.id)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.findById(adminUser.id)).resolves.toBeDefined();
     });
 
     it('update the password of a user', async () => {
@@ -814,8 +826,8 @@ describe('UserService', () => {
     });
 
     it('get user information on log in', async () => {
-        const expected = USER_DOCUMENTS[2];
-        const userInformation = await suite.service.getLoggedInUserInformation(expected._id);
+        const expected = MOCKED_USERS[2];
+        const userInformation = await suite.service.getLoggedInUserInformation(expected.id);
 
         assertLoggedInUser({ expected, actual: userInformation });
     });

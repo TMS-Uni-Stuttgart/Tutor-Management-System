@@ -15,6 +15,7 @@ import { StaticSettings } from '../module/settings/settings.static';
             entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
             entitiesTs: ['./src/database/entities'],
             type: 'mysql',
+            debug: false,
             ...StaticSettings.getService().getDatabaseConnectionInformation(),
         }),
     ],

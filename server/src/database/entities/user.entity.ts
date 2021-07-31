@@ -51,7 +51,7 @@ export class User {
     @OneToMany(() => Tutorial, (tutorial) => tutorial.tutor, { eager: true })
     tutorials = new Collection<Tutorial>(this);
 
-    @ManyToMany(() => Tutorial, 'correctors', { owner: true, eager: true })
+    @ManyToMany(() => Tutorial, (tutorial) => tutorial.correctors, { owner: true, eager: true })
     tutorialsToCorrect = new Collection<Tutorial>(this);
 
     @OneToMany(() => Substitute, (substitute) => substitute.substituteTutor, { eager: true })

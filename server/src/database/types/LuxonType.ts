@@ -18,7 +18,7 @@ export abstract class LuxonType extends Type<DateTime | DateTime[] | undefined, 
     protected abstract getSingleColumnType(prop: EntityProperty, platform: Platform): string;
 
     getColumnType(prop: EntityProperty, platform: Platform): string {
-        return this.options.array || prop.array
+        return this.options.array
             ? platform.getArrayDeclarationSQL()
             : this.getSingleColumnType(prop, platform);
     }
@@ -50,9 +50,13 @@ export abstract class LuxonType extends Type<DateTime | DateTime[] | undefined, 
         return platform.marshallArray(parsedDates);
     }
 
-    private convertSingleToDatabaseValue(value: DateTime | string | undefined): string {
-        if (!value || typeof value === 'string') {
-            return value ?? '';
+    private convertSingleToDatabaseValue(value: DateTime | string | undefined | any): string {
+        if (value == undefined) {
+            return '';
+        }
+
+        if (typeof value === 'string') {
+            return value;
         }
 
         if (value instanceof DateTime) {
@@ -63,14 +67,18 @@ export abstract class LuxonType extends Type<DateTime | DateTime[] | undefined, 
     }
 
     private convertToSingleValue(
-        value: DateTime | DateTime[] | string | undefined
+        value: DateTime | DateTime[] | Date | string | undefined
     ): DateTime | undefined {
+        if (!value && this.options.nullable) {
+            return undefined;
+        }
+
         if (value instanceof DateTime) {
             return value;
         }
 
-        if (!value && this.options.nullable) {
-            return undefined;
+        if (value instanceof Date) {
+            return DateTime.fromJSDate(value);
         }
 
         if (typeof value === 'string') {

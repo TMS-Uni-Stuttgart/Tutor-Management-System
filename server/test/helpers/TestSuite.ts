@@ -1,3 +1,4 @@
+import { Type } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClassType } from '../../src/helpers/ClassConstructor';
 import { ScheinexamService } from '../../src/module/scheinexam/scheinexam.service';
@@ -34,6 +35,25 @@ export class TestSuite<S> {
     }
 
     /**
+     * Returns an instance of the given class associated with an injectable service.
+     *
+     * **Important**: Only call this getter _inside_ any jest test function (like `it()`) because the required {@link TestingModule} is only defined inside the test sequences.
+     *
+     * @param serviceClass Class of the injectable service to get the instance of.
+     *
+     * @returns Instance of the requested service.
+     * @throws `Error` - If the {@link TestingModule} of the suite is not properly initialized (see above).
+     */
+    getService<T>(serviceClass: Type<T>): T {
+        if (!this.testModule) {
+            throw new Error(
+                'The TestingModule of this suite is not initialized. getService() must be called inside a jest test function (like "it").'
+            );
+        }
+        return this.testModule.get(serviceClass);
+    }
+
+    /**
      *
      * @param serviceClass Class of the service associated with this test suite.
      */
@@ -60,6 +80,8 @@ export class TestSuite<S> {
                     GradingService,
                 ],
             }).compile();
+
+            await this.testModule.get(TestDatabaseModule).reset();
         });
 
         afterAll(async () => {
@@ -67,7 +89,7 @@ export class TestSuite<S> {
         });
 
         beforeEach(async () => {
-            await this.testModule?.get<TestDatabaseModule>(TestDatabaseModule).reset();
+            // await this.testModule?.get<TestDatabaseModule>(TestDatabaseModule).reset();
             this._service = this.testModule?.get<S>(this.serviceClass);
         });
 

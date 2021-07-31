@@ -16,3 +16,16 @@ export class LuxonDateType extends LuxonType {
         return 'date';
     }
 }
+
+/**
+ * Helper type because inside the tests instantiated types are not loaded properly...
+ */
+export class LuxonDateArrayType extends LuxonDateType {
+    protected getClass(): Constructor<any> {
+        return LuxonDateArrayType;
+    }
+
+    constructor() {
+        super({ array: true });
+    }
+}

@@ -1,2 +1,2 @@
-// Timeout gets increased so the mongodb-memory-server has enough time to download the mongod binaries if required.
+// Timeout gets increased so the entry of items into the DB does not "crash" the test.
 jest.setTimeout(120 * 1000);

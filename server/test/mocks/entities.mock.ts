@@ -1,4 +1,3 @@
-import { Collection } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria';
@@ -76,7 +75,7 @@ export const MOCKED_USERS: User[] = [
         roles: [Role.TUTOR, Role.CORRECTOR],
     }),
     new User({
-        firstname: 'FRED',
+        firstname: 'Fred',
         lastname: 'Weasley',
         email: 'weasley_fred@hogwarts.com',
         username: 'weaslefd',
@@ -273,10 +272,16 @@ export const MOCKED_SCHEINCRITERIAS: ScheincriteriaEntity[] = [
 export const MOCKED_SETTINGS_DOCUMENT: Setting[] = [Setting.fromDTO()];
 
 // Adjust entities to include all necessary information
-MOCKED_USERS[3].tutorialsToCorrect = new Collection<Tutorial, unknown>(
-    MOCKED_USERS[3],
-    MOCKED_TUTORIALS
-);
+// MOCKED_USERS[3].tutorialsToCorrect = new Collection<Tutorial, unknown>(MOCKED_USERS[3], [
+//     MOCKED_TUTORIALS[0],
+//     MOCKED_TUTORIALS[2],
+// ]);
+// MOCKED_TUTORIALS[0].correctors = new Collection<User, unknown>(MOCKED_TUTORIALS[0], [
+//     MOCKED_USERS[3],
+// ]);
+// MOCKED_TUTORIALS[2].correctors = new Collection<User, unknown>(MOCKED_TUTORIALS[0], [
+//     MOCKED_USERS[3],
+// ]);
 
 MOCKED_TUTORIALS[1].tutor = MOCKED_USERS[2];
 

@@ -11,7 +11,7 @@ import { DateTime, Interval, ToISOTimeOptions } from 'luxon';
 import { ITutorialInEntity } from 'shared/model/Common';
 import { ITutorial } from 'shared/model/Tutorial';
 import { v4 } from 'uuid';
-import { LuxonDateType } from '../types/LuxonDateType';
+import { LuxonDateArrayType } from '../types/LuxonDateType';
 import { LuxonTimeType } from '../types/LuxonTimeType';
 import { Student } from './student.entity';
 import { Substitute } from './substitute.entity';
@@ -26,8 +26,7 @@ export class Tutorial {
     @Property()
     slot: string;
 
-    // @Property({ type: new LuxonDateType({ array: true }) })
-    @Property({ type: LuxonDateType })
+    @Property({ type: LuxonDateArrayType })
     dates: DateTime[];
 
     @Property({ type: LuxonTimeType })
@@ -42,7 +41,7 @@ export class Tutorial {
     @OneToMany(() => Student, (student) => student.tutorial, { eager: true })
     students = new Collection<Student>(this);
 
-    @ManyToMany(() => User, 'tutorialsToCorrect', { eager: true })
+    @ManyToMany(() => User, (user) => user.tutorialsToCorrect, { eager: true })
     correctors = new Collection<User>(this);
 
     @OneToMany(() => Team, (team) => team.tutorial, { eager: true })
