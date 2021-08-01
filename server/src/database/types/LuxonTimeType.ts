@@ -8,11 +8,11 @@ export class LuxonTimeType extends LuxonType {
     }
 
     protected convertDateTimeToString(value: DateTime): string {
-        // Do not include the timezone offsets because the MySQL will basically subtract the offset twice...
-        return value.toISO({ suppressMilliseconds: true, includeOffset: false });
+        return value.toISO({ suppressMilliseconds: true, includeOffset: true });
     }
 
     getSingleColumnType(_prop: EntityProperty, _platform: Platform): string {
-        return 'datetime';
+        // Because MySQL somehow f**** up timezones provided in ISO strings we just save the plain ISO string in the database to preserve timezone information.
+        return 'varchar(25)';
     }
 }
