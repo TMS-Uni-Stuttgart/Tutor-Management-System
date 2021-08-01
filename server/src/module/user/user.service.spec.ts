@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { NamedElement } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
 import { ILoggedInUser, IUser } from 'shared/model/User';
-import { sortListById } from '../../../test/helpers/test.helpers';
+import { getAllUsersWithRole, sortListById } from '../../../test/helpers/test.helpers';
 import { TestSuite } from '../../../test/helpers/TestSuite';
 import { MOCKED_TUTORIALS, MOCKED_USERS } from '../../../test/mocks/entities.mock';
 import { User } from '../../database/entities/user.entity';
@@ -831,23 +831,14 @@ describe('UserService', () => {
 
     it('get the name of all tutors', async () => {
         // TODO: This does not work because the ids are hard-coded...
-        const expected: NamedElement[] = [
-            {
-                id: '5e501290468622e257c2db16',
-                firstname: 'Harry',
-                lastname: 'Potter',
-            },
-            {
-                id: '5e5013711922d1957bcf0c30',
-                firstname: 'Ron',
-                lastname: 'Weasley',
-            },
-            {
-                id: '5e503ac11015dc73652731a6',
-                firstname: 'Ginny',
-                lastname: 'Weasley',
-            },
-        ];
+        const expected: NamedElement[] = getAllUsersWithRole(Role.TUTOR).map(
+            ({ id, firstname, lastname }) => ({
+                id,
+                firstname,
+                lastname,
+            })
+        );
+
         const namesOfTutors: NamedElement[] = await suite.service.getNamesOfAllTutors();
         expect(sortListById(namesOfTutors)).toEqual(sortListById(expected));
     });
