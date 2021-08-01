@@ -1,4 +1,6 @@
-import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { EntityManager, LoadStrategy, MikroORM } from '@mikro-orm/core';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { Module } from '@nestjs/common';
 import { AttendanceCriteria } from '../../src/module/scheincriteria/container/criterias/AttendanceCriteria';
 import { PresentationCriteria } from '../../src/module/scheincriteria/container/criterias/PresentationCriteria';
@@ -8,9 +10,23 @@ import { SheetTotalCriteria } from '../../src/module/scheincriteria/container/cr
 import { ShortTestCriteria } from '../../src/module/scheincriteria/container/criterias/ShortTestCriteria';
 import { ScheincriteriaContainer } from '../../src/module/scheincriteria/container/scheincriteria.container';
 import { ScheincriteriaConstructor } from '../../src/module/scheincriteria/scheincriteria.module';
+import { StaticSettings } from '../../src/module/settings/settings.static';
 import { ENTITY_LISTS, populateMockLists } from '../mocks/entities.mock';
 
-@Module({})
+@Module({
+    imports: [
+        MikroOrmModule.forRoot({
+            metadataProvider: TsMorphMetadataProvider,
+            baseDir: process.cwd(),
+            entities: ['./dist/database/entities'],
+            entitiesTs: ['./src/database/entities'],
+            type: 'mysql',
+            debug: false,
+            loadStrategy: LoadStrategy.JOINED,
+            ...StaticSettings.getService().getDatabaseConnectionInformation(),
+        }),
+    ],
+})
 export class TestDatabaseModule {
     constructor(private readonly orm: MikroORM) {
         this.initCriteriaContainer();
@@ -22,16 +38,25 @@ export class TestDatabaseModule {
         await generator.dropSchema();
         await generator.createSchema();
 
-        await this.generateMocks(this.orm.em.fork());
         await this.populateDatabase();
     }
 
     async reset(): Promise<void> {
-        // TODO: How to reset the DB between tests?
+        const dbName = StaticSettings.getService().getDatabaseConnectionInformation().dbName;
+        const connection = this.orm.em.getConnection();
+        const allTables = await connection.execute(`SHOW TABLES FROM \`${dbName}\``);
+        const tableNames = allTables.map((row: Record<string, string>) => Object.values(row)[0]);
+
+        for (const table of tableNames) {
+            await connection.execute(`DELETE FROM ${table}`);
+        }
+
+        await this.populateDatabase();
     }
 
     private async populateDatabase() {
         const em = this.orm.em.fork();
+        await this.generateMocks(em);
 
         for (const entities of ENTITY_LISTS) {
             em.persist(entities);

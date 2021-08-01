@@ -776,7 +776,8 @@ describe('UserService', () => {
 
         await expect(suite.service.findById(user.id)).rejects.toThrow(NotFoundException);
 
-        expect(updatedTutorial.tutor).toBeUndefined();
+        // Use toBeFalsy() here to check if the tutor undefined OR null.
+        expect(updatedTutorial.tutor).toBeFalsy();
     });
 
     it('fail on deleting last admin', async () => {

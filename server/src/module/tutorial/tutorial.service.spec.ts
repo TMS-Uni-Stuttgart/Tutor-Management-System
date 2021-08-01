@@ -3,7 +3,11 @@ import { plainToClass } from 'class-transformer';
 import { DateTime, Interval, ToISOTimeOptions } from 'luxon';
 import { Role } from 'shared/model/Role';
 import { ITutorial, ITutorialGenerationDTO, UserInEntity } from 'shared/model/Tutorial';
-import { getAllUsersWithRole, getUserWithRole } from '../../../test/helpers/test.helpers';
+import {
+    getAllUsersWithRole,
+    getUserWithRole,
+    sortListById,
+} from '../../../test/helpers/test.helpers';
 import { TestSuite } from '../../../test/helpers/TestSuite';
 import { MOCKED_TUTORIALS } from '../../../test/mocks/entities.mock';
 import { createDatesForTutorialAsStrings } from '../../../test/mocks/mock.helpers';
@@ -50,13 +54,20 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
     expect(actual.tutor?.firstname).toEqual(tutor?.firstname);
     expect(actual.tutor?.lastname).toEqual(tutor?.lastname);
 
-    expect(actual.students).toEqual(students.getItems().map((s) => s.id));
-    expect(actual.correctors).toEqual(
-        correctors.getItems().map((c) => ({
-            id: c.id,
-            firstname: c.firstname,
-            lastname: c.lastname,
-        }))
+    expect(actual.students.sort()).toEqual(
+        students
+            .getItems()
+            .map((s) => s.id)
+            .sort()
+    );
+    expect(actual.correctors.sort()).toEqual(
+        sortListById(
+            correctors.getItems().map((c) => ({
+                id: c.id,
+                firstname: c.firstname,
+                lastname: c.lastname,
+            }))
+        )
     );
 
     const options: ToISOTimeOptions = {
@@ -73,10 +84,13 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
 function assertTutorialList({ expected, actual }: AssertTutorialListParams) {
     expect(actual.length).toBe(expected.length);
 
+    const expectedList = sortListById(expected);
+    const actualList = sortListById(actual);
+
     for (let i = 0; i < actual.length; i++) {
         assertTutorial({
-            expected: expected[i],
-            actual: actual[i],
+            expected: expectedList[i],
+            actual: actualList[i],
         });
     }
 }
@@ -615,8 +629,11 @@ describe('TutorialService', () => {
 
         const students = await suite.service.getAllStudentsOfTutorial(tutorialWithStudents.id);
 
-        expect(students.map((s) => s.id)).toEqual(
-            tutorialWithStudents.students.getItems().map((s) => s.id)
+        expect(students.map((s) => s.id).sort()).toEqual(
+            tutorialWithStudents.students
+                .getItems()
+                .map((s) => s.id)
+                .sort()
         );
     });
 
