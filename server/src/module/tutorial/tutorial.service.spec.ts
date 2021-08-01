@@ -256,6 +256,8 @@ describe('TutorialService', () => {
         });
     });
 
+    it.todo('find MULTIPLE tutorials but NOT all');
+
     it('fail on finding non existing tutorial (by ID)', async () => {
         const nonExistingId = 'non-existing-id';
 
