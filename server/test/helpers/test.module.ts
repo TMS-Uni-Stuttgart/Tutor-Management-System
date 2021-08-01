@@ -1,61 +1,60 @@
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { Module } from '@nestjs/common';
-import { SqlDatabaseModule } from '../../src/database/sql-database.module';
-import {
-    MOCKED_SCHEINCRITERIAS,
-    MOCKED_SCHEINEXAMS,
-    MOCKED_SETTINGS_DOCUMENT,
-    MOCKED_SHEETS,
-    MOCKED_SHORT_TESTS,
-    MOCKED_STUDENTS,
-    MOCKED_TEAMS,
-    MOCKED_TUTORIALS,
-    MOCKED_USERS,
-} from '../mocks/entities.mock';
+import { AttendanceCriteria } from '../../src/module/scheincriteria/container/criterias/AttendanceCriteria';
+import { PresentationCriteria } from '../../src/module/scheincriteria/container/criterias/PresentationCriteria';
+import { ScheinexamCriteria } from '../../src/module/scheincriteria/container/criterias/ScheinexamCriteria';
+import { SheetIndividualCriteria } from '../../src/module/scheincriteria/container/criterias/SheetIndividualCriteria';
+import { SheetTotalCriteria } from '../../src/module/scheincriteria/container/criterias/SheetTotalCriteria';
+import { ShortTestCriteria } from '../../src/module/scheincriteria/container/criterias/ShortTestCriteria';
+import { ScheincriteriaContainer } from '../../src/module/scheincriteria/container/scheincriteria.container';
+import { ScheincriteriaConstructor } from '../../src/module/scheincriteria/scheincriteria.module';
+import { ENTITY_LISTS, populateMockLists } from '../mocks/entities.mock';
 
 @Module({})
-export class TestDatabaseModule extends SqlDatabaseModule {
-    private readonly ENTITY_LISTS: any[][] = [
-        MOCKED_TUTORIALS,
-        MOCKED_USERS,
-        MOCKED_STUDENTS,
-        MOCKED_TEAMS,
-        MOCKED_SHEETS,
-        MOCKED_SCHEINEXAMS,
-        MOCKED_SHORT_TESTS,
-        MOCKED_SCHEINCRITERIAS,
-        MOCKED_SETTINGS_DOCUMENT,
-    ];
+export class TestDatabaseModule {
+    constructor(private readonly orm: MikroORM) {
+        this.initCriteriaContainer();
+    }
 
-    async reset(): Promise<void> {
+    async init(): Promise<void> {
         const generator = this.orm.getSchemaGenerator();
         await generator.ensureDatabase();
         await generator.dropSchema();
         await generator.createSchema();
 
-        await this.clearDatabase();
+        await this.generateMocks(this.orm.em.fork());
         await this.populateDatabase();
     }
 
-    private async clearDatabase() {
-        // TODO: Check if this clears entities added through tests from the EntityManager aswell.
-        const em = this.orm.em.fork();
-        await em.begin();
-
-        for (const entities of this.ENTITY_LISTS) {
-            em.remove(entities);
-        }
-
-        await em.commit();
+    async reset(): Promise<void> {
+        // TODO: How to reset the DB between tests?
     }
 
     private async populateDatabase() {
-        const em = this.orm.em.fork(true, true);
-        await em.begin();
+        const em = this.orm.em.fork();
 
-        for (const entities of this.ENTITY_LISTS) {
+        for (const entities of ENTITY_LISTS) {
             em.persist(entities);
         }
 
-        await em.commit();
+        await em.flush();
+    }
+
+    private initCriteriaContainer() {
+        const container = ScheincriteriaContainer.getContainer();
+        const criterias: ScheincriteriaConstructor[] = [
+            AttendanceCriteria,
+            PresentationCriteria,
+            SheetIndividualCriteria,
+            SheetTotalCriteria,
+            ScheinexamCriteria,
+            ShortTestCriteria,
+        ];
+
+        criterias.forEach((criteria) => container.registerBluePrint(criteria));
+    }
+
+    private async generateMocks(em: EntityManager) {
+        await populateMockLists(em);
     }
 }

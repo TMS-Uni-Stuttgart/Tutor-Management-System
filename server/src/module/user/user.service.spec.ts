@@ -57,11 +57,27 @@ function assertUser({ expected, actual }: AssertUserParam) {
 
     expect(actualUser).toEqual(expectedUser);
 
-    expect(actualTutorials.getItems().map((t) => t.id)).toEqual(
-        tutorials.getItems().map((t) => t.id)
+    expect(
+        actualTutorials
+            .getItems()
+            .map((t) => t.id)
+            .sort()
+    ).toEqual(
+        tutorials
+            .getItems()
+            .map((t) => t.id)
+            .sort()
     );
-    expect(actualTutorialsToCorrect.getItems().map((t) => t.id)).toEqual(
-        tutorialsToCorrect.getItems().map((t) => t.id)
+    expect(
+        actualTutorialsToCorrect
+            .getItems()
+            .map((t) => t.id)
+            .sort()
+    ).toEqual(
+        tutorialsToCorrect
+            .getItems()
+            .map((t) => t.id)
+            .sort()
     );
 
     // TODO: Check tutorials the user is a substitute in.
@@ -113,8 +129,10 @@ function assertUserDTO({ expected, actual }: AssertUserDTOParams) {
 
     expect(id).toBeDefined();
 
-    expect(actualTutorials.map((tutorial) => tutorial.id)).toEqual(tutorials);
-    expect(actualToCorrect.map((tutorial) => tutorial.id)).toEqual(tutorialsToCorrect);
+    expect(actualTutorials.map((tutorial) => tutorial.id).sort()).toEqual(tutorials.sort());
+    expect(actualToCorrect.map((tutorial) => tutorial.id).sort()).toEqual(
+        tutorialsToCorrect.sort()
+    );
 
     if (!!password) {
         expect(temporaryPassword).toEqual(password);
@@ -187,6 +205,13 @@ describe('UserService', () => {
         const fetchedUser = await suite.service.findById(userWithTutorial.id);
 
         assertUser({ expected: userWithTutorial, actual: fetchedUser });
+    });
+
+    it('find user with tutorials to correct', async () => {
+        const userWithTutorialsToCorrect = MOCKED_USERS[3];
+        const fetchedUser = await suite.service.findById(userWithTutorialsToCorrect.id);
+
+        assertUser({ expected: userWithTutorialsToCorrect, actual: fetchedUser });
     });
 
     it('create user without tutorials', async () => {
@@ -804,6 +829,7 @@ describe('UserService', () => {
     });
 
     it('get the name of all tutors', async () => {
+        // TODO: This does not work because the ids are hard-coded...
         const expected: NamedElement[] = [
             {
                 id: '5e501290468622e257c2db16',
@@ -822,7 +848,7 @@ describe('UserService', () => {
             },
         ];
         const namesOfTutors: NamedElement[] = await suite.service.getNamesOfAllTutors();
-        expect(namesOfTutors).toEqual(expected);
+        expect(sortListById(namesOfTutors)).toEqual(sortListById(expected));
     });
 
     it('get user information on log in', async () => {

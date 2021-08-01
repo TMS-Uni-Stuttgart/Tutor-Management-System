@@ -1,7 +1,11 @@
+import { LoadStrategy } from '@mikro-orm/core';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { Type } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClassType } from '../../src/helpers/ClassConstructor';
 import { ScheinexamService } from '../../src/module/scheinexam/scheinexam.service';
+import { StaticSettings } from '../../src/module/settings/settings.static';
 import { SheetService } from '../../src/module/sheet/sheet.service';
 import { ShortTestService } from '../../src/module/short-test/short-test.service';
 import { GradingService } from '../../src/module/student/grading.service';
@@ -68,7 +72,19 @@ export class TestSuite<S> {
     private configTestSuite(): void {
         beforeAll(async () => {
             this.testModule = await Test.createTestingModule({
-                imports: [TestDatabaseModule],
+                imports: [
+                    MikroOrmModule.forRoot({
+                        metadataProvider: TsMorphMetadataProvider,
+                        baseDir: process.cwd(),
+                        entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
+                        entitiesTs: ['./src/database/entities'],
+                        type: 'mysql',
+                        debug: false,
+                        loadStrategy: LoadStrategy.JOINED,
+                        ...StaticSettings.getService().getDatabaseConnectionInformation(),
+                    }),
+                    TestDatabaseModule,
+                ],
                 providers: [
                     TutorialService,
                     UserService,
@@ -81,7 +97,7 @@ export class TestSuite<S> {
                 ],
             }).compile();
 
-            await this.testModule.get(TestDatabaseModule).reset();
+            await this.testModule.get(TestDatabaseModule).init();
         });
 
         afterAll(async () => {
@@ -89,7 +105,7 @@ export class TestSuite<S> {
         });
 
         beforeEach(async () => {
-            // await this.testModule?.get<TestDatabaseModule>(TestDatabaseModule).reset();
+            await this.testModule?.get<TestDatabaseModule>(TestDatabaseModule).reset();
             this._service = this.testModule?.get<S>(this.serviceClass);
         });
 

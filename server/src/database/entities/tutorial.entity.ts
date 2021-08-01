@@ -41,7 +41,7 @@ export class Tutorial {
     @OneToMany(() => Student, (student) => student.tutorial, { eager: true })
     students = new Collection<Student>(this);
 
-    @ManyToMany(() => User, (user) => user.tutorialsToCorrect, { eager: true })
+    @ManyToMany({ entity: () => User, mappedBy: 'tutorialsToCorrect', eager: true })
     correctors = new Collection<User>(this);
 
     @OneToMany(() => Team, (team) => team.tutorial, { eager: true })

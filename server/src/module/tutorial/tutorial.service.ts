@@ -72,7 +72,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
     async findById(id: string): Promise<Tutorial> {
-        const tutorial = await this.getTutorialRepository().findOne({ id });
+        const tutorial = await this.getTutorialRepository().findOne({ id }, ['tutor']);
 
         if (!tutorial) {
             throw new NotFoundException(`Tutorial with the ID ${id} could not be found.`);

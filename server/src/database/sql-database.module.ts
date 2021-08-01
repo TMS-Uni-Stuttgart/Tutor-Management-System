@@ -1,4 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
+import { LoadStrategy, MikroORM } from '@mikro-orm/core';
 import { ISchemaGenerator } from '@mikro-orm/core/typings';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
@@ -16,6 +16,7 @@ import { StaticSettings } from '../module/settings/settings.static';
             entitiesTs: ['./src/database/entities'],
             type: 'mysql',
             debug: false,
+            loadStrategy: LoadStrategy.JOINED,
             ...StaticSettings.getService().getDatabaseConnectionInformation(),
         }),
     ],
@@ -24,7 +25,7 @@ export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
     private readonly logger = new Logger(SqlDatabaseModule.name);
     private readonly databaseConfig = StaticSettings.getService().getDatabaseConfiguration();
 
-    constructor(protected readonly orm: MikroORM) {}
+    constructor(private readonly orm: MikroORM) {}
 
     async onModuleInit(): Promise<void> {
         const generator = this.orm.getSchemaGenerator();
