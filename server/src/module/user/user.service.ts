@@ -198,7 +198,10 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         const user = await this.findById(id);
         await this.assertUserIsDeletable(user);
 
-        // TODO: Does cascading work properly or do we need to adjust the tutorials of the user?
+        user.tutorials.removeAll();
+        user.tutorialsToCorrect.removeAll();
+        user.tutorialsToSubstitute.removeAll();
+
         await this.entityManager.removeAndFlush(user);
     }
 
