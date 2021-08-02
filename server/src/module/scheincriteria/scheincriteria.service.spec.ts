@@ -1,20 +1,9 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
-import {
-    MockedScheincriteriaModel,
-    SCHEINCRITERIA_DOCUMENTS,
-} from '../../../test/mocks/documents.mock';
-import { IScheinCriteria, ScheincriteriaIdentifier } from '../../shared/model/ScheinCriteria';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
-import { SheetService } from '../sheet/sheet.service';
-import { ShortTestService } from '../short-test/short-test.service';
-import { GradingService } from '../student/grading.service';
-import { StudentService } from '../student/student.service';
-import { TeamService } from '../team/team.service';
-import { TutorialService } from '../tutorial/tutorial.service';
-import { UserService } from '../user/user.service';
+import { IScheinCriteria, ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria';
+import { sortListById } from '../../../test/helpers/test.helpers';
+import { TestSuite } from '../../../test/helpers/TestSuite';
+import { MOCKED_SCHEINCRITERIAS } from '../../../test/mocks/entities.mock';
+import { ScheincriteriaEntity } from '../../database/entities/scheincriteria.entity';
 import { AttendanceCriteria } from './container/criterias/AttendanceCriteria';
 import { PresentationCriteria } from './container/criterias/PresentationCriteria';
 import { ScheinexamCriteria } from './container/criterias/ScheinexamCriteria';
@@ -27,12 +16,12 @@ import { ScheincriteriaConstructor } from './scheincriteria.module';
 import { ScheincriteriaService } from './scheincriteria.service';
 
 interface AssertScheincriteriaParams {
-    expected: MockedScheincriteriaModel;
+    expected: ScheincriteriaEntity;
     actual: IScheinCriteria;
 }
 
 interface AssertScheincriteriaListParams {
-    expected: MockedScheincriteriaModel[];
+    expected: ScheincriteriaEntity[];
     actual: IScheinCriteria[];
 }
 
@@ -51,13 +40,18 @@ interface AssertScheincriteriaDTOParams {
  */
 function assertScheincriteria({ expected, actual }: AssertScheincriteriaParams) {
     const {
-        _id,
+        id,
         name,
         criteria: { identifier, ...data },
     } = expected;
-    const { id, identifier: actualIdentifier, data: actualData, name: actualName } = actual;
+    const {
+        id: actualId,
+        identifier: actualIdentifier,
+        data: actualData,
+        name: actualName,
+    } = actual;
 
-    expect(id).toEqual(_id);
+    expect(actualId).toEqual(id);
     expect(actualName).toEqual(name);
     expect(actualIdentifier).toEqual(identifier);
     expect(actualData).toEqual(data);
@@ -74,8 +68,11 @@ function assertScheincriteria({ expected, actual }: AssertScheincriteriaParams) 
 function assertScheincriteriaList({ expected, actual }: AssertScheincriteriaListParams) {
     expect(actual.length).toBe(expected.length);
 
+    const expectedList = sortListById(expected);
+    const actualList = sortListById(actual);
+
     for (let i = 0; i < actual.length; i++) {
-        assertScheincriteria({ expected: expected[i], actual: actual[i] });
+        assertScheincriteria({ expected: expectedList[i], actual: actualList[i] });
     }
 }
 
@@ -114,62 +111,32 @@ function registerCriteria(criteriaClass: ScheincriteriaClass) {
 }
 
 describe('ScheincriteriaService', () => {
-    let testModule: TestingModule;
-    let service: ScheincriteriaService;
+    const suite = new TestSuite(ScheincriteriaService, [ScheincriteriaService]);
 
-    beforeAll(async () => {
+    beforeAll(() => {
         registerAllCriterias();
-
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [
-                ScheincriteriaService,
-                StudentService,
-                SheetService,
-                ScheinexamService,
-                TutorialService,
-                TeamService,
-                UserService,
-                ShortTestService,
-                GradingService,
-            ],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<ScheincriteriaService>(ScheincriteriaService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
     });
 
     it('get all criterias', async () => {
-        const criterias = await service.findAll();
+        const criterias = await suite.service.findAll();
 
         assertScheincriteriaList({
-            expected: SCHEINCRITERIA_DOCUMENTS,
+            expected: MOCKED_SCHEINCRITERIAS,
             actual: criterias.map((criteria) => criteria.toDTO()),
         });
     });
 
     it('find criteria by id', async () => {
-        const expected = SCHEINCRITERIA_DOCUMENTS[0];
-        const actual = await service.findById(expected._id);
+        const expected = MOCKED_SCHEINCRITERIAS[0];
+        const actual = await suite.service.findById(expected.id);
 
         assertScheincriteria({ expected, actual: actual.toDTO() });
     });
 
     it('fail on finding a non-existing criteria', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.findById(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(nonExisting)).rejects.toThrow(NotFoundException);
     });
 
     it('create attendance criteria', async () => {
@@ -182,7 +149,7 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const criteria = await service.create(dto);
+        const criteria = await suite.service.create(dto);
 
         assertScheincriteriaDTO({ expected: dto, actual: criteria });
     });
@@ -196,7 +163,7 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const criteria = await service.create(dto);
+        const criteria = await suite.service.create(dto);
 
         assertScheincriteriaDTO({ expected: dto, actual: criteria });
     });
@@ -211,7 +178,7 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const criteria = await service.create(dto);
+        const criteria = await suite.service.create(dto);
 
         assertScheincriteriaDTO({ expected: dto, actual: criteria });
     });
@@ -228,7 +195,7 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const criteria = await service.create(dto);
+        const criteria = await suite.service.create(dto);
 
         assertScheincriteriaDTO({ expected: dto, actual: criteria });
     });
@@ -243,7 +210,7 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const criteria = await service.create(dto);
+        const criteria = await suite.service.create(dto);
 
         assertScheincriteriaDTO({ expected: dto, actual: criteria });
     });
@@ -258,7 +225,7 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(dto)).rejects.toThrow(BadRequestException);
     });
 
     it('fail on creating attendance criteria with additional properties', async () => {
@@ -268,11 +235,11 @@ describe('ScheincriteriaService', () => {
             data: {
                 percentage: true,
                 valueNeeded: 0.5,
-                notInCriteria: 'definitlyNotInCriteria',
+                notInCriteria: 'definitelyNotInCriteria',
             },
         };
 
-        await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(dto)).rejects.toThrow(BadRequestException);
     });
 
     it('fail on creating attendance criteria with missing properties', async () => {
@@ -285,7 +252,7 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(dto)).rejects.toThrow(BadRequestException);
     });
 
     it('update attendance criteria', async () => {
@@ -305,8 +272,8 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const oldCriteria = await service.create(createDTO);
-        const updatedCriteria = await service.update(oldCriteria.id, updateDTO);
+        const oldCriteria = await suite.service.create(createDTO);
+        const updatedCriteria = await suite.service.update(oldCriteria.id, updateDTO);
 
         assertScheincriteriaDTO({
             expected: updateDTO,
@@ -331,8 +298,8 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const oldCriteria = await service.create(createDTO);
-        await expect(service.update(oldCriteria.id, updateDTO)).rejects.toThrow(
+        const oldCriteria = await suite.service.create(createDTO);
+        await expect(suite.service.update(oldCriteria.id, updateDTO)).rejects.toThrow(
             BadRequestException
         );
     });
@@ -344,7 +311,7 @@ describe('ScheincriteriaService', () => {
             data: {
                 percentage: true,
                 valueNeeded: 0.5,
-                notInCriteria: 'definitly not in criteria',
+                notInCriteria: 'definitely not in criteria',
             },
         };
         const createDTO: ScheinCriteriaDTO = {
@@ -355,8 +322,8 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const oldCriteria = await service.create(createDTO);
-        await expect(service.update(oldCriteria.id, updateDTO)).rejects.toThrow(
+        const oldCriteria = await suite.service.create(createDTO);
+        await expect(suite.service.update(oldCriteria.id, updateDTO)).rejects.toThrow(
             BadRequestException
         );
     });
@@ -378,8 +345,8 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const oldCriteria = await service.create(createDTO);
-        await expect(service.update(oldCriteria.id, updateDTO)).rejects.toThrow(
+        const oldCriteria = await suite.service.create(createDTO);
+        await expect(suite.service.update(oldCriteria.id, updateDTO)).rejects.toThrow(
             BadRequestException
         );
     });
@@ -394,8 +361,10 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const nonExisting = generateObjectId();
-        await expect(service.update(nonExisting, updateDTO)).rejects.toThrow(NotFoundException);
+        const nonExisting = 'non-existing-id';
+        await expect(suite.service.update(nonExisting, updateDTO)).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('delete a criteria', async () => {
@@ -407,16 +376,15 @@ describe('ScheincriteriaService', () => {
             },
         };
 
-        const criteria = await service.create(dto);
-        const deletedCriteria = await service.delete(criteria.id);
+        const criteria = await suite.service.create(dto);
+        await suite.service.delete(criteria.id);
 
-        expect(deletedCriteria.id).toEqual(criteria.id);
-        await expect(service.findById(criteria.id)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(criteria.id)).rejects.toThrow(NotFoundException);
     });
 
     it('fail on deleting non-existing criteria', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.delete(nonExisting)).rejects.toThrow(NotFoundException);
     });
 });
