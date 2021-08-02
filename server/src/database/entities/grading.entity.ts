@@ -112,27 +112,31 @@ export class Grading {
         return additional + this.exerciseGradings.reduce((sum, grading) => sum + grading.points, 0);
     }
 
+    get handIn(): HandIn {
+        this.assertEntitiesAreAValidSet();
+
+        if (this.sheet) {
+            return this.sheet;
+        }
+
+        if (this.exam) {
+            return this.exam;
+        }
+
+        if (this.shortTest) {
+            return this.shortTest;
+        }
+
+        throw new Error('Neither the sheet nor the exam nor the shortTest field is set.');
+    }
+
     /**
      * @returns ID of the related hand-in entity.
      *
      * @throws `Error` - If this grading does not have a related hand-in entity.
      */
     get entityId(): string {
-        this.assertEntitiesAreAValidSet();
-
-        if (this.sheet) {
-            return this.sheet.id;
-        }
-
-        if (this.exam) {
-            return this.exam.id;
-        }
-
-        if (this.shortTest) {
-            return this.shortTest.id;
-        }
-
-        throw new Error('Neither the sheet nor the exam nor the shortTest field is set.');
+        return this.handIn.id;
     }
 
     get belongsToTeam(): boolean {

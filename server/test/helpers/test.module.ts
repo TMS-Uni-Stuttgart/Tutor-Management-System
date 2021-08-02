@@ -1,7 +1,6 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { Module } from '@nestjs/common';
+import { loadDatabaseModule } from '../../src/database/sql-database.module';
 import { AttendanceCriteria } from '../../src/module/scheincriteria/container/criterias/AttendanceCriteria';
 import { PresentationCriteria } from '../../src/module/scheincriteria/container/criterias/PresentationCriteria';
 import { ScheinexamCriteria } from '../../src/module/scheincriteria/container/criterias/ScheinexamCriteria';
@@ -14,17 +13,7 @@ import { StaticSettings } from '../../src/module/settings/settings.static';
 import { ENTITY_LISTS, populateMockLists } from '../mocks/entities.mock';
 
 @Module({
-    imports: [
-        MikroOrmModule.forRoot({
-            metadataProvider: TsMorphMetadataProvider,
-            baseDir: process.cwd(),
-            entities: ['./dist/database/entities'],
-            entitiesTs: ['./src/database/entities'],
-            type: 'mysql',
-            debug: true,
-            ...StaticSettings.getService().getDatabaseConnectionInformation(),
-        }),
-    ],
+    imports: [loadDatabaseModule()],
 })
 export class TestDatabaseModule {
     constructor(private readonly orm: MikroORM) {

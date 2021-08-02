@@ -114,6 +114,9 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
             status: dto.status,
             tutorial,
         });
+        student.courseOfStudies = dto.courseOfStudies;
+        student.email = dto.email;
+        student.iliasName = dto.iliasName;
         student.team = team;
 
         await this.entityManager.persistAndFlush(student);

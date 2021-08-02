@@ -2,23 +2,26 @@ import { MikroORM } from '@mikro-orm/core';
 import { ISchemaGenerator } from '@mikro-orm/core/typings';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
-import { Logger, Module, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
+import { DynamicModule, Logger, Module, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { StartUpException } from '../exceptions/StartUpException';
 import { wait } from '../helpers/wait';
 import { StaticSettings } from '../module/settings/settings.static';
 
+export function loadDatabaseModule(): DynamicModule {
+    return MikroOrmModule.forRoot({
+        metadataProvider: TsMorphMetadataProvider,
+        baseDir: process.cwd(),
+        entities: ['./dist/database/entities'],
+        entitiesTs: ['./src/database/entities'],
+        populateAfterFlush: true,
+        type: 'mysql',
+        debug: false,
+        ...StaticSettings.getService().getDatabaseConnectionInformation(),
+    });
+}
+
 @Module({
-    imports: [
-        MikroOrmModule.forRoot({
-            metadataProvider: TsMorphMetadataProvider,
-            baseDir: process.cwd(),
-            entities: ['./dist/database/entities'], // TODO: Is this path the actual path in the build app?
-            entitiesTs: ['./src/database/entities'],
-            type: 'mysql',
-            debug: false,
-            ...StaticSettings.getService().getDatabaseConnectionInformation(),
-        }),
-    ],
+    imports: [loadDatabaseModule()],
 })
 export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
     private readonly logger = new Logger(SqlDatabaseModule.name);

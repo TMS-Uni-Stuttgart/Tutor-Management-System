@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import { AttendanceState } from 'shared/model/Attendance';
 import { IGrading } from 'shared/model/Gradings';
 import { IStudent, StudentStatus } from 'shared/model/Student';
+import { sortListById } from '../../../test/helpers/test.helpers';
 import { TestSuite } from '../../../test/helpers/TestSuite';
 import {
     MOCKED_SHEETS,
@@ -10,8 +11,9 @@ import {
     MOCKED_TEAMS,
     MOCKED_TUTORIALS,
 } from '../../../test/mocks/entities.mock';
-import { ExerciseGrading, Grading } from '../../database/entities/grading.entity';
+import { Grading } from '../../database/entities/grading.entity';
 import { HandIn } from '../../database/entities/ratedEntity.entity';
+import { Sheet } from '../../database/entities/sheet.entity';
 import { Student } from '../../database/entities/student.entity';
 import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
@@ -43,9 +45,56 @@ interface AssertStudentDTOParams {
 }
 
 interface AssertGradingParams {
+    expected: Grading;
+    actual: IGrading | undefined;
+}
+
+interface AssertGradingFromDTOParams {
     expected: GradingDTO;
     actual: IGrading | undefined;
     handIn: HandIn;
+}
+
+function assertStudentBasics({ expected, actual }: AssertStudentParams) {
+    expect(actual.firstname).toEqual(expected.firstname);
+    expect(actual.lastname).toEqual(expected.lastname);
+    expect(actual.matriculationNo).toEqual(expected.matriculationNo);
+    expect(actual.status).toEqual(expected.status);
+    expect(actual.iliasName).toEqual(expected.iliasName);
+    expect(actual.email).toEqual(expected.email);
+    expect(actual.courseOfStudies).toEqual(expected.courseOfStudies);
+    expect(actual.cakeCount).toEqual(expected.cakeCount);
+}
+
+function assertStudentAttendances({ expected, actual }: AssertStudentParams) {
+    const attendances = expected.getAllAttendances();
+    const actualAttendances = new Map(actual.attendances);
+
+    for (const attendance of attendances) {
+        const actualAttendance = actualAttendances.get(attendance.getDateAsKey());
+
+        expect(actualAttendance).toBeDefined();
+        expect(actualAttendance?.state).toEqual(attendance.state);
+        expect(attendance.isOnDay(DateTime.fromISO(actualAttendance?.date ?? '')));
+        expect(actualAttendance?.note).toEqual(attendance.note);
+    }
+}
+
+function assertStudentPresentationPoints({ expected, actual }: AssertStudentParams) {
+    const presentationPoints = expected.getAllPresentationPoints();
+    const actualPresentationPoints = new Map(actual.presentationPoints);
+
+    expect(actualPresentationPoints).toEqual(presentationPoints);
+}
+
+function assertStudentGradings({ expected, actual }: AssertStudentParams) {
+    const gradings = expected.gradings.getItems();
+    const actualGradings = new Map(actual.gradings);
+
+    for (const grading of gradings) {
+        const handIn = grading.handIn;
+        assertGrading({ expected: grading, actual: actualGradings.get(handIn.id) });
+    }
 }
 
 /**
@@ -61,18 +110,11 @@ interface AssertGradingParams {
  */
 function assertStudent({ expected, actual }: AssertStudentParams) {
     const { id, tutorial, team } = expected;
-    const {
-        id: actualId,
-        attendances: actualAttendances,
-        gradings: actualGradings,
-        tutorial: actualTutorial,
-        presentationPoints: actualPresentationPoints,
-        team: actualTeam,
-    } = actual;
-    const attendances = expected.getAllAttendances();
-    const presentationPoints = expected.getAllPresentationPoints();
+    const { id: actualId, tutorial: actualTutorial, team: actualTeam } = actual;
 
     expect(actualId).toEqual(id);
+
+    assertStudentBasics({ expected, actual });
 
     expect(actualTutorial.id).toEqual(tutorial.id);
     expect(actualTutorial.slot).toEqual(tutorial.slot);
@@ -80,17 +122,9 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
     expect(actualTeam?.id).toEqual(team?.id);
     expect(actualTeam?.teamNo).toEqual(team?.teamNo);
 
-    expect(new Map(actualAttendances)).toEqual(attendances);
-    expect(new Map(actualPresentationPoints)).toEqual(presentationPoints);
-
-    expect(actual.firstname).toEqual(expected.firstname);
-    expect(actual.lastname).toEqual(expected.lastname);
-    expect(actual.matriculationNo).toEqual(expected.matriculationNo);
-    expect(actual.status).toEqual(expected.status);
-    expect(actual.iliasName).toEqual(expected.iliasName);
-    expect(actual.email).toEqual(expected.email);
-    expect(actual.courseOfStudies).toEqual(expected.courseOfStudies);
-    expect(actual.cakeCount).toEqual(expected.cakeCount);
+    assertStudentAttendances({ expected, actual });
+    assertStudentPresentationPoints({ expected, actual });
+    assertStudentGradings({ expected, actual });
 }
 
 /**
@@ -105,8 +139,11 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
 function assertStudentList({ expected, actual }: AssertStudentListParams) {
     expect(actual.length).toBe(expected.length);
 
+    const expectedList = sortListById(expected);
+    const actualList = sortListById(actual);
+
     for (let i = 0; i < actual.length; i++) {
-        assertStudent({ expected: expected[i], actual: actual[i] });
+        assertStudent({ expected: expectedList[i], actual: actualList[i] });
     }
 }
 
@@ -153,31 +190,69 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
     }
 }
 
-export function assertGrading({ expected, actual, handIn }: AssertGradingParams): void {
+export function assertGrading({ expected, actual }: AssertGradingParams): void {
     expect(actual).toBeDefined();
 
     if (!actual) {
         return;
     }
 
-    const expectedGrading = new Grading({ handIn });
-    expectedGrading.updateFromDTO({ dto: expected, handIn });
-    const expectedSum = expectedGrading.points;
+    const expectedSum = expected.points;
 
     expect(actual.points).toBe(expectedSum);
 
     expect(actual.exerciseGradings.length).toBe(expected.exerciseGradings.length);
 
     for (let i = 0; i < expected.exerciseGradings.length; i++) {
-        const [expectedKey, expectedEx] = expected.exerciseGradings[i];
+        const exerciseGrading = expected.exerciseGradings[i];
         const [actualKey, actualEx] = actual.exerciseGradings[i];
-        const expectedDoc = ExerciseGrading.fromDTO(expectedKey, expectedEx);
 
-        expect(actualKey).toEqual(expectedKey);
-        expect(actualEx.points).toEqual(expectedDoc.points);
-        expect(actualEx.comment).toEqual(expectedEx.comment);
-        expect(actualEx.additionalPoints).toEqual(expectedEx.additionalPoints);
+        expect(actualKey).toEqual(exerciseGrading.exerciseId);
+        expect(actualEx.points).toEqual(exerciseGrading.points);
+        expect(actualEx.comment).toEqual(exerciseGrading.comment);
+        expect(actualEx.additionalPoints).toEqual(exerciseGrading.additionalPoints);
     }
+}
+
+function assertGradingFromDTO({ expected, actual, handIn }: AssertGradingFromDTOParams) {
+    const expectedGrading = new Grading({ handIn });
+    expectedGrading.updateFromDTO({ dto: expected, handIn });
+
+    assertGrading({ expected: expectedGrading, actual });
+}
+
+async function createDummySheet(sheetService: SheetService): Promise<Sheet> {
+    const sheetDTO: SheetDTO = {
+        sheetNo: 42,
+        bonusSheet: false,
+        exercises: [
+            {
+                exName: '1',
+                maxPoints: 10,
+                bonus: false,
+            },
+            {
+                exName: '2',
+                bonus: false,
+                maxPoints: 0,
+                subexercises: [
+                    {
+                        exName: '(a)',
+                        maxPoints: 5,
+                        bonus: false,
+                    },
+                    {
+                        exName: '(b)',
+                        maxPoints: 7,
+                        bonus: false,
+                    },
+                ],
+            },
+        ],
+    };
+
+    const sheetId = (await sheetService.create(sheetDTO)).id;
+    return sheetService.findById(sheetId);
 }
 
 describe('StudentService', () => {
@@ -504,39 +579,8 @@ describe('StudentService', () => {
     });
 
     it('set a grading of a sheet of a student', async () => {
-        const sheetService = suite.getService(SheetService);
         const student = MOCKED_STUDENTS[0];
-        const sheetDTO: SheetDTO = {
-            sheetNo: 42,
-            bonusSheet: false,
-            exercises: [
-                {
-                    exName: '1',
-                    maxPoints: 10,
-                    bonus: false,
-                },
-                {
-                    exName: '2',
-                    bonus: false,
-                    maxPoints: 0,
-                    subexercises: [
-                        {
-                            exName: '(a)',
-                            maxPoints: 5,
-                            bonus: false,
-                        },
-                        {
-                            exName: '(b)',
-                            maxPoints: 7,
-                            bonus: false,
-                        },
-                    ],
-                },
-            ],
-        };
-
-        const sheetId = (await sheetService.create(sheetDTO)).id;
-        const sheet = await sheetService.findById(sheetId);
+        const sheet = await createDummySheet(suite.getService(SheetService));
         const gradingDTO: GradingDTO = {
             sheetId: sheet.id,
             createNewGrading: true,
@@ -570,43 +614,12 @@ describe('StudentService', () => {
         const updatedStudent = (await suite.service.findById(student.id)).toDTO();
         const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
 
-        assertGrading({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
+        assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
     });
 
     it('set a grading of a sheet with one points prop of 0 of a student', async () => {
-        const sheetService = suite.getService(SheetService);
         const student = MOCKED_STUDENTS[0];
-        const sheetDTO: SheetDTO = {
-            sheetNo: 42,
-            bonusSheet: false,
-            exercises: [
-                {
-                    exName: '1',
-                    maxPoints: 10,
-                    bonus: false,
-                },
-                {
-                    exName: '2',
-                    bonus: false,
-                    maxPoints: 0,
-                    subexercises: [
-                        {
-                            exName: '(a)',
-                            maxPoints: 5,
-                            bonus: false,
-                        },
-                        {
-                            exName: '(b)',
-                            maxPoints: 7,
-                            bonus: false,
-                        },
-                    ],
-                },
-            ],
-        };
-
-        const sheetId = (await sheetService.create(sheetDTO)).id;
-        const sheet = await sheetService.findById(sheetId);
+        const sheet = await createDummySheet(suite.getService(SheetService));
         const gradingDTO: GradingDTO = {
             sheetId: sheet.id,
             createNewGrading: true,
@@ -640,7 +653,7 @@ describe('StudentService', () => {
         const updatedStudent = (await suite.service.findById(student.id)).toDTO();
         const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
 
-        assertGrading({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
+        assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
     });
 
     it('set a grading of an exam of a student', async () => {
@@ -685,7 +698,7 @@ describe('StudentService', () => {
                 [
                     scheinexam.exercises[0].id,
                     {
-                        comment: 'Comment for exercise 1',
+                        comment: 'Comment for scheinexam exercise 1',
                         additionalPoints: 0,
                         points: 8,
                     },
@@ -693,7 +706,7 @@ describe('StudentService', () => {
                 [
                     scheinexam.exercises[1].id,
                     {
-                        comment: 'Comment for exercise 2',
+                        comment: 'Comment for scheinexam exercise 2',
                         additionalPoints: 0,
                         subExercisePoints: [
                             [scheinexam.exercises[1].subexercises[0].id, 4],
@@ -712,7 +725,7 @@ describe('StudentService', () => {
         const [, actualGrading] =
             updatedStudent.gradings.find(([key]) => key === scheinexam.id) ?? [];
 
-        assertGrading({ expected: gradingDTO, actual: actualGrading, handIn: scheinexam });
+        assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: scheinexam });
     });
 
     it('change cakecount of a student', async () => {
