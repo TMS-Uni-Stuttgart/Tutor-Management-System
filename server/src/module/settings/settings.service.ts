@@ -34,7 +34,8 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
         const settings = await this.getSettingsEntity();
 
         settings.updateFromDTO(dto);
-        await this.entityManager.persistAndFlush(settings);
+
+        await this.getSettingRepository().persistAndFlush(settings);
     }
 
     /**

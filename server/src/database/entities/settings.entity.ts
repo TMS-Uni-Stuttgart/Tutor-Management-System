@@ -107,10 +107,7 @@ export class Setting {
             dto?.tutorialGradingFilename ?? 'Tutorial_#{tutorialSlot}_Ex#{sheetNo}';
 
         const mailSettingParams = this.generateMailingParamsFromDTO(dto);
-
-        if (mailSettingParams) {
-            this.mailSettings = new MailSetting(mailSettingParams);
-        }
+        this.mailSettings = mailSettingParams ? new MailSetting(mailSettingParams) : undefined;
     }
 
     private generateMailingParamsFromDTO(dto?: ClientSettingsDTO): MailSettingsParams | undefined {
