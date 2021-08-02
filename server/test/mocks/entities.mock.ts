@@ -180,7 +180,7 @@ export async function populateMockLists(em: EntityManager): Promise<void> {
                     id: v4(),
                     exerciseName: 'Exercise 2',
                     bonus: false,
-                    maxPoints: 20,
+                    maxPoints: 27,
                     subexercises: [
                         new SubExercise({
                             id: v4(),

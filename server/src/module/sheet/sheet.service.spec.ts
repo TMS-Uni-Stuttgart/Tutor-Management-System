@@ -1,20 +1,19 @@
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { ISheet } from 'shared/model/Sheet';
 import { assertExercise, assertExerciseDTOs } from '../../../test/helpers/test.assertExercises';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
-import { MockedSheetModel, SHEET_DOCUMENTS } from '../../../test/mocks/documents.mock';
-import { ISheet } from '../../shared/model/Sheet';
+import { TestSuite } from '../../../test/helpers/TestSuite';
+import { MOCKED_SHEETS } from '../../../test/mocks/entities.mock';
+import { Sheet } from '../../database/entities/sheet.entity';
 import { SheetDTO } from './sheet.dto';
 import { SheetService } from './sheet.service';
 
 interface AssertSheetParams {
-    expected: MockedSheetModel;
+    expected: Sheet;
     actual: ISheet;
 }
 
 interface AssertSheetListParams {
-    expected: MockedSheetModel[];
+    expected: Sheet[];
     actual: ISheet[];
 }
 
@@ -34,10 +33,10 @@ interface AssertSheetDTOParams {
  * @param params Must contain an actual and an expected Sheet.
  */
 function assertSheet({ expected, actual }: AssertSheetParams) {
-    const { _id, exercises, totalPoints, sheetNoAsString, ...restExpected } = expected;
-    const { exercises: actualExercises, id, ...restActual } = actual;
+    const { id, exercises, totalPoints, sheetNoAsString, ...restExpected } = expected;
+    const { exercises: actualExercises, id: actualId, ...restActual } = actual;
 
-    expect(id).toEqual(_id);
+    expect(actualId).toEqual(id);
     expect(restActual).toEqual(restExpected);
 
     expect(totalPoints.total).toEqual(exercises.reduce((sum, ex) => sum + ex.maxPoints, 0));
@@ -87,55 +86,33 @@ function assertSheetDTO({ expected, actual }: AssertSheetDTOParams) {
 }
 
 describe('SheetService', () => {
-    let testModule: TestingModule;
-    let service: SheetService;
-
-    beforeAll(async () => {
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [SheetService],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<SheetService>(SheetService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    const suite = new TestSuite(SheetService);
 
     it('find all sheets', async () => {
-        const sheets = await service.findAll();
+        const sheets = await suite.service.findAll();
 
         assertSheetList({
-            expected: SHEET_DOCUMENTS,
+            expected: MOCKED_SHEETS,
             actual: sheets.map((sheet) => sheet.toDTO()),
         });
     });
 
     it('find sheet by ID', async () => {
-        const expected = SHEET_DOCUMENTS[0];
-        const sheet = await service.findById(expected._id);
+        const expected = MOCKED_SHEETS[0];
+        const sheet = await suite.service.findById(expected.id);
 
         assertSheet({ expected, actual: sheet.toDTO() });
     });
 
     it('fail on finding a non-existing sheet', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.findById(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(nonExisting)).rejects.toThrow(NotFoundException);
     });
 
     it('create a new sheet', async () => {
         const dto = getDTO();
-        const created = await service.create(dto);
+        const created = await suite.service.create(dto);
 
         assertSheetDTO({ expected: dto, actual: created });
     });
@@ -148,8 +125,8 @@ describe('SheetService', () => {
             bonusSheet: true,
         };
 
-        const oldSheet = await service.create(createDTO);
-        const updated = await service.update(oldSheet.id, updateDTO);
+        const oldSheet = await suite.service.create(createDTO);
+        const updated = await suite.service.update(oldSheet.id, updateDTO);
 
         assertSheetDTO({ expected: updateDTO, actual: updated });
     });
@@ -167,8 +144,8 @@ describe('SheetService', () => {
             ],
         };
 
-        const oldSheet = await service.create(createDTO);
-        const updated = await service.update(oldSheet.id, updateDTO);
+        const oldSheet = await suite.service.create(createDTO);
+        const updated = await suite.service.update(oldSheet.id, updateDTO);
 
         assertSheetDTO({ expected: updateDTO, actual: updated });
     });
@@ -211,33 +188,32 @@ describe('SheetService', () => {
             ],
         };
 
-        const oldSheet = await service.create(createDTO);
-        const updated = await service.update(oldSheet.id, updateDTO);
+        const oldSheet = await suite.service.create(createDTO);
+        const updated = await suite.service.update(oldSheet.id, updateDTO);
 
         assertSheetDTO({ expected: updateDTO, actual: updated });
     });
 
     it('fail on updating a non-existing sheet', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
         const dto = getDTO();
 
-        await expect(service.update(nonExisting, dto)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.update(nonExisting, dto)).rejects.toThrow(NotFoundException);
     });
 
     it('delete a sheet', async () => {
         const dto = getDTO();
 
-        const sheet = await service.create(dto);
-        const deletedSheet = await service.delete(sheet.id);
+        const sheet = await suite.service.create(dto);
+        await suite.service.delete(sheet.id);
 
-        expect(deletedSheet.id).toEqual(sheet.id);
-        await expect(service.findById(sheet.id)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(sheet.id)).rejects.toThrow(NotFoundException);
     });
 
     it('fail on deleting a non-existing sheet', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.delete(nonExisting)).rejects.toThrow(NotFoundException);
     });
 });
 
