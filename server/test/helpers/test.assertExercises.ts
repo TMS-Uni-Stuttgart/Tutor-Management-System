@@ -30,10 +30,11 @@ interface AssertSubExerciseDTOParams {
  * @param params Must contain an expected SubExercise and an actual SubExercise.
  */
 function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
-    const { pointInfo, ...restExpected } = expected;
-    const { ...restActual } = actual;
+    const { pointInfo, exerciseName, ...restExpected } = expected;
+    const { exName, ...restActual } = actual;
 
     expect(restActual).toEqual(restExpected);
+    expect(exName).toEqual(exerciseName);
 }
 
 /**
@@ -46,9 +47,10 @@ function assertSubExercise({ expected, actual }: AssertSubExerciseParams) {
  * @param params Must contain an expected ExerciseDocument and an actual Exercise.
  */
 export function assertExercise({ expected, actual }: AssertExerciseParams): void {
-    const { subexercises, pointInfo, ...restExpected } = expected;
-    const { subexercises: actualSubexercises, ...restActual } = actual;
+    const { subexercises, pointInfo, exerciseName, ...restExpected } = expected;
+    const { subexercises: actualSubexercises, exName, ...restActual } = actual;
 
+    expect(exName).toEqual(exerciseName);
     expect(restActual).toEqual(restExpected);
 
     if (!subexercises) {

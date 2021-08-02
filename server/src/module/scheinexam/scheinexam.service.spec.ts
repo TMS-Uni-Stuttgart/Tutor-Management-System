@@ -1,20 +1,20 @@
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { IScheinExam } from 'shared/model/Scheinexam';
 import { assertExercise, assertExerciseDTOs } from '../../../test/helpers/test.assertExercises';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
-import { MockedScheinexamModel, SCHEINEXAM_DOCUMENTS } from '../../../test/mocks/documents.mock';
-import { IScheinExam } from '../../shared/model/Scheinexam';
+import { sortListById } from '../../../test/helpers/test.helpers';
+import { TestSuite } from '../../../test/helpers/TestSuite';
+import { MOCKED_SCHEINEXAMS } from '../../../test/mocks/entities.mock';
+import { Scheinexam } from '../../database/entities/scheinexam.entity';
 import { ScheinexamDTO } from './scheinexam.dto';
 import { ScheinexamService } from './scheinexam.service';
 
 interface AssertScheinexamParams {
-    expected: MockedScheinexamModel;
+    expected: Scheinexam;
     actual: IScheinExam;
 }
 
 interface AssertScheinexamListParams {
-    expected: MockedScheinexamModel[];
+    expected: Scheinexam[];
     actual: IScheinExam[];
 }
 
@@ -34,10 +34,10 @@ interface AssertScheinexamDTOParams {
  * @param params Must contain an actual and an expected Scheinexam.
  */
 function assertScheinexam({ expected, actual }: AssertScheinexamParams) {
-    const { _id, exercises, date, totalPoints, ...restExpected } = expected;
-    const { exercises: actualExercises, date: actualDate, id, ...restActual } = actual;
+    const { id, exercises, date, totalPoints, ...restExpected } = expected;
+    const { exercises: actualExercises, date: actualDate, id: actualId, ...restActual } = actual;
 
-    expect(id).toEqual(_id);
+    expect(actualId).toEqual(id);
     expect(restActual).toEqual(restExpected);
     expect(actualDate).toEqual(date.toISODate());
 
@@ -59,8 +59,11 @@ function assertScheinexam({ expected, actual }: AssertScheinexamParams) {
 function assertScheinexamList({ expected, actual }: AssertScheinexamListParams) {
     expect(actual.length).toEqual(expected.length);
 
+    const expectedList = sortListById(expected);
+    const actualList = sortListById(actual);
+
     for (let i = 0; i < actual.length; i++) {
-        assertScheinexam({ expected: expected[i], actual: actual[i] });
+        assertScheinexam({ expected: expectedList[i], actual: actualList[i] });
     }
 }
 
@@ -85,55 +88,33 @@ function assertScheinexamDTO({ expected, actual }: AssertScheinexamDTOParams) {
 }
 
 describe('ScheinexamService', () => {
-    let testModule: TestingModule;
-    let service: ScheinexamService;
-
-    beforeAll(async () => {
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [ScheinexamService],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<ScheinexamService>(ScheinexamService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    const suite = new TestSuite(ScheinexamService);
 
     it('find all scheinexam', async () => {
-        const scheinexams = await service.findAll();
+        const scheinexams = await suite.service.findAll();
 
         assertScheinexamList({
-            expected: SCHEINEXAM_DOCUMENTS,
+            expected: MOCKED_SCHEINEXAMS,
             actual: scheinexams.map((exam) => exam.toDTO()),
         });
     });
 
     it('find scheinexam by ID', async () => {
-        const expected = SCHEINEXAM_DOCUMENTS[0];
-        const scheinexam = await service.findById(expected._id);
+        const expected = MOCKED_SCHEINEXAMS[0];
+        const scheinexam = await suite.service.findById(expected.id);
 
         assertScheinexam({ expected, actual: scheinexam.toDTO() });
     });
 
     it('fail on finding a non-existing scheinexam', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.findById(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(nonExisting)).rejects.toThrow(NotFoundException);
     });
 
     it('create a new scheinexam', async () => {
         const dto = getDTO();
-        const created = await service.create(dto);
+        const created = await suite.service.create(dto);
 
         assertScheinexamDTO({ expected: dto, actual: created });
     });
@@ -147,8 +128,8 @@ describe('ScheinexamService', () => {
             date: '2020-02-01',
         };
 
-        const oldScheinexam = await service.create(createDTO);
-        const updated = await service.update(oldScheinexam.id, updateDTO);
+        const oldScheinexam = await suite.service.create(createDTO);
+        const updated = await suite.service.update(oldScheinexam.id, updateDTO);
 
         assertScheinexamDTO({ expected: updateDTO, actual: updated });
     });
@@ -166,8 +147,8 @@ describe('ScheinexamService', () => {
             ],
         };
 
-        const oldScheinexam = await service.create(createDTO);
-        const updated = await service.update(oldScheinexam.id, updateDTO);
+        const oldScheinexam = await suite.service.create(createDTO);
+        const updated = await suite.service.update(oldScheinexam.id, updateDTO);
 
         assertScheinexamDTO({ expected: updateDTO, actual: updated });
     });
@@ -210,33 +191,32 @@ describe('ScheinexamService', () => {
             ],
         };
 
-        const oldScheinexam = await service.create(createDTO);
-        const updated = await service.update(oldScheinexam.id, updateDTO);
+        const oldScheinexam = await suite.service.create(createDTO);
+        const updated = await suite.service.update(oldScheinexam.id, updateDTO);
 
         assertScheinexamDTO({ expected: updateDTO, actual: updated });
     });
 
     it('fail on updating a non-existing scheinexam', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
         const dto = getDTO();
 
-        await expect(service.update(nonExisting, dto)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.update(nonExisting, dto)).rejects.toThrow(NotFoundException);
     });
 
     it('delete a scheinexam', async () => {
         const dto = getDTO();
 
-        const scheinexam = await service.create(dto);
-        const deletedScheinexam = await service.delete(scheinexam.id);
+        const scheinexam = await suite.service.create(dto);
+        await suite.service.delete(scheinexam.id);
 
-        expect(deletedScheinexam.id).toEqual(scheinexam.id);
-        await expect(service.findById(scheinexam.id)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(scheinexam.id)).rejects.toThrow(NotFoundException);
     });
 
     it('fail on deleting a non-existing scheinexam', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.delete(nonExisting)).rejects.toThrow(NotFoundException);
     });
 });
 
