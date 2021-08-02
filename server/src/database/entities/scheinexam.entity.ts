@@ -2,7 +2,7 @@ import { Entity, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { IScheinExam } from 'shared/model/Scheinexam';
 import { ScheinexamDTO } from '../../module/scheinexam/scheinexam.dto';
-import { LuxonDateTimeType } from '../types/LuxonDateTimeType';
+import { LuxonDateType } from '../types/LuxonDateType';
 import { Exercise, RatedEntity, RatedEntityParams } from './ratedEntity.entity';
 
 @Entity()
@@ -10,7 +10,7 @@ export class Scheinexam extends RatedEntity {
     @Property()
     scheinExamNo: number;
 
-    @Property({ type: LuxonDateTimeType })
+    @Property({ type: LuxonDateType })
     date: DateTime;
 
     constructor(params: ScheinexamParams) {
@@ -26,6 +26,12 @@ export class Scheinexam extends RatedEntity {
             percentageNeeded: dto.percentageNeeded,
             exercises: dto.exercises.map((exDto) => Exercise.fromDTO(exDto)),
         });
+    }
+
+    updateFromDTO(dto: ScheinexamDTO): void {
+        super.updateFromDTO(dto);
+        this.scheinExamNo = dto.scheinExamNo;
+        this.date = DateTime.fromISO(dto.date);
     }
 
     toDTO(): IScheinExam {

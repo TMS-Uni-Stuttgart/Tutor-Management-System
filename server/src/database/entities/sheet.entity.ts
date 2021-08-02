@@ -32,6 +32,12 @@ export class Sheet extends HasExercises {
         });
     }
 
+    updateFromDTO(dto: SheetDTO): void {
+        super.updateFromDTO(dto);
+        this.sheetNo = dto.sheetNo;
+        this.bonusSheet = dto.bonusSheet;
+    }
+
     toDTO(): ISheet {
         return {
             id: this.id,
