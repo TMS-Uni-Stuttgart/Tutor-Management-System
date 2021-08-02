@@ -125,7 +125,11 @@ export class TeamService {
      */
     async deleteTeamFromTutorial(teamId: ITeamId): Promise<void> {
         const team = await this.findById(teamId);
-        await this.entityManager.removeAndFlush(team);
+        const repo = this.getTeamRepository();
+        team.tutorial.teams.remove(team);
+        team.students.removeAll();
+
+        await repo.removeAndFlush(team);
     }
 
     /**

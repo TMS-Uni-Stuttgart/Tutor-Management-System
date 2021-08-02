@@ -214,7 +214,11 @@ export function assertGrading({ expected, actual }: AssertGradingParams): void {
     }
 }
 
-function assertGradingFromDTO({ expected, actual, handIn }: AssertGradingFromDTOParams) {
+export function assertGradingFromDTO({
+    expected,
+    actual,
+    handIn,
+}: AssertGradingFromDTOParams): void {
     const expectedGrading = new Grading({ handIn });
     expectedGrading.updateFromDTO({ dto: expected, handIn });
 

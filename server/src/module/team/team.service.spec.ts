@@ -1,35 +1,23 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
-import { MockedModel } from '../../../test/helpers/testdocument';
-import {
-    STUDENT_DOCUMENTS,
-    TEAM_DOCUMENTS,
-    TUTORIAL_DOCUMENTS,
-} from '../../../test/mocks/documents.mock';
-import { TeamModel } from '../../database/models/team.model';
-import { ITeam, ITeamId } from '../../shared/model/Team';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
+import { ITeam, ITeamId } from 'shared/model/Team';
+import { sortListById } from '../../../test/helpers/test.helpers';
+import { TestSuite } from '../../../test/helpers/TestSuite';
+import { MOCKED_STUDENTS, MOCKED_TEAMS, MOCKED_TUTORIALS } from '../../../test/mocks/entities.mock';
+import { Team } from '../../database/entities/team.entity';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
-import { ShortTestService } from '../short-test/short-test.service';
-import { GradingService } from '../student/grading.service';
 import { GradingDTO } from '../student/student.dto';
-import { StudentService } from '../student/student.service';
-import { assertGrading } from '../student/student.service.spec';
-import { TutorialService } from '../tutorial/tutorial.service';
-import { UserService } from '../user/user.service';
+import { assertGradingFromDTO } from '../student/student.service.spec';
 import { TeamDTO } from './team.dto';
 import { TeamService } from './team.service';
 
 interface AssertTeamParams {
-    expected: MockedModel<TeamModel>;
+    expected: Team;
     actual: ITeam;
 }
 
 interface AssertTeamListParams {
-    expected: MockedModel<TeamModel>[];
+    expected: Team[];
     actual: ITeam[];
 }
 
@@ -48,17 +36,24 @@ interface AssertTeamDTOParams {
  * @param params Must contain an actual and an expected Team.
  */
 function assertTeam({ expected, actual }: AssertTeamParams) {
-    const { _id, tutorial, students, teamNo } = expected;
-    const { id, tutorial: actualTutorial, students: actualStudents, teamNo: actualTeamNo } = actual;
+    const { id, tutorial, students, teamNo } = expected;
+    const {
+        id: actualId,
+        tutorial: actualTutorial,
+        students: actualStudents,
+        teamNo: actualTeamNo,
+    } = actual;
 
-    expect(id).toEqual(_id);
-    expect(actualTutorial).toEqual(tutorial._id);
+    expect(actualId).toEqual(id);
+    expect(actualTutorial).toEqual(tutorial.id);
     expect(actualTeamNo).toEqual(teamNo);
 
-    expect(actualStudents.map((s) => s.id)).toEqual(students.map((s) => s._id));
+    expect(sortListById(actualStudents).map((s) => s.id)).toEqual(
+        sortListById(students.getItems()).map((s) => s.id)
+    );
 
     actualStudents.forEach((student) => {
-        expect(student.team?.id).toEqual(_id);
+        expect(student.team?.id).toEqual(id);
     });
 }
 
@@ -73,8 +68,11 @@ function assertTeam({ expected, actual }: AssertTeamParams) {
 function assertTeamList({ expected, actual }: AssertTeamListParams) {
     expect(actual.length).toEqual(expected.length);
 
+    const expectedList = sortListById(expected);
+    const actualList = sortListById(actual);
+
     for (let i = 0; i < actual.length; i++) {
-        assertTeam({ expected: expected[i], actual: actual[i] });
+        assertTeam({ expected: expectedList[i], actual: actualList[i] });
     }
 }
 
@@ -92,74 +90,45 @@ function assertTeamDTO({ expected, actual }: AssertTeamDTOParams) {
     const { id, students: actualStudents } = actual;
 
     expect(id).toBeDefined();
-    expect(actualStudents.map((s) => s.id)).toEqual(students);
+    expect(actualStudents.map((s) => s.id).sort()).toEqual(students.sort());
 
     actualStudents.forEach((student) => {
         expect(student.team?.id).toEqual(id);
     });
 }
 
+function getTutorialIdOfAllTeams(): string {
+    return MOCKED_TUTORIALS[0].id;
+}
+
 describe('TeamService', () => {
-    const TUTORIAL_OF_ALL_TEAMS = TUTORIAL_DOCUMENTS[0];
-
-    let testModule: TestingModule;
-    let service: TeamService;
-
-    beforeAll(async () => {
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [
-                TeamService,
-                TutorialService,
-                StudentService,
-                UserService,
-                SheetService,
-                ScheinexamService,
-                ShortTestService,
-                GradingService,
-            ],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<TeamService>(TeamService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    const suite = new TestSuite(TeamService);
 
     it('find all teams in tutorial', async () => {
-        const teams = await service.findAllTeamsInTutorial(TUTORIAL_OF_ALL_TEAMS._id);
+        const teams = await suite.service.findAllTeamsInTutorial(getTutorialIdOfAllTeams());
 
         assertTeamList({
-            expected: TEAM_DOCUMENTS,
+            expected: MOCKED_TEAMS,
             actual: teams.map((team) => team.toDTO()),
         });
     });
 
     it('find specific team', async () => {
-        const expected = TEAM_DOCUMENTS[0];
-        const team = await service.findById({
-            tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
-            teamId: expected._id,
+        const expected = MOCKED_TEAMS[0];
+        const team = await suite.service.findById({
+            tutorialId: getTutorialIdOfAllTeams(),
+            teamId: expected.id,
         });
 
         assertTeam({ expected, actual: team.toDTO() });
     });
 
     it('fail on finding non-existing team', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
         await expect(
-            service.findById({
-                tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+            suite.service.findById({
+                tutorialId: getTutorialIdOfAllTeams(),
                 teamId: nonExisting,
             })
         ).rejects.toThrow(NotFoundException);
@@ -170,64 +139,67 @@ describe('TeamService', () => {
             students: [],
         };
 
-        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
+        const team = await suite.service.createTeamInTutorial(getTutorialIdOfAllTeams(), dto);
 
         assertTeamDTO({ expected: dto, actual: team });
     });
 
     it('create a new team with students', async () => {
         const dto: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[0].id, MOCKED_STUDENTS[1].id],
         };
 
-        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
+        const team = await suite.service.createTeamInTutorial(getTutorialIdOfAllTeams(), dto);
 
         assertTeamDTO({ expected: dto, actual: team });
     });
 
-    it('fail on creating team inside non-exisiting tutorial', async () => {
-        const nonExisting = generateObjectId();
+    it('fail on creating team inside non-existing tutorial', async () => {
+        const nonExisting = 'non-existing-id';
         const dto: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[0].id, MOCKED_STUDENTS[1].id],
         };
 
-        await expect(service.createTeamInTutorial(nonExisting, dto)).rejects.toThrow(
+        await expect(suite.service.createTeamInTutorial(nonExisting, dto)).rejects.toThrow(
             NotFoundException
         );
     });
 
     it('fail on creating team with non-existing student', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
         const dto: TeamDTO = {
-            students: [nonExisting, STUDENT_DOCUMENTS[0]._id],
+            students: [nonExisting, MOCKED_STUDENTS[0].id],
         };
 
-        await expect(service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto)).rejects.toThrow(
-            NotFoundException
-        );
+        await expect(
+            suite.service.createTeamInTutorial(getTutorialIdOfAllTeams(), dto)
+        ).rejects.toThrow(NotFoundException);
     });
 
     it('fail on creating team with students which are in different tutorials', async () => {
         const dto: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[3]._id],
+            students: [MOCKED_STUDENTS[0].id, MOCKED_STUDENTS[3].id],
         };
 
-        await expect(service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto)).rejects.toThrow(
-            BadRequestException
-        );
+        await expect(
+            suite.service.createTeamInTutorial(getTutorialIdOfAllTeams(), dto)
+        ).rejects.toThrow(BadRequestException);
     });
 
     it('update a team', async () => {
         const updateDTO: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[0].id, MOCKED_STUDENTS[1].id],
         };
         const createDTO: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[2].id, MOCKED_STUDENTS[1].id],
         };
 
-        const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
-        const updated = await service.updateTeamInTutorial(
-            { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: oldTeam.id },
+        const oldTeam = await suite.service.createTeamInTutorial(
+            getTutorialIdOfAllTeams(),
+            createDTO
+        );
+        const updated = await suite.service.updateTeamInTutorial(
+            { tutorialId: getTutorialIdOfAllTeams(), teamId: oldTeam.id },
             updateDTO
         );
 
@@ -236,34 +208,43 @@ describe('TeamService', () => {
 
     it('fail on updating a team inside a non-existing tutorial', async () => {
         const updateDTO: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[0].id, MOCKED_STUDENTS[1].id],
         };
         const createDTO: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[2].id, MOCKED_STUDENTS[1].id],
         };
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
+        const oldTeam = await suite.service.createTeamInTutorial(
+            getTutorialIdOfAllTeams(),
+            createDTO
+        );
 
         await expect(
-            service.updateTeamInTutorial({ tutorialId: nonExisting, teamId: oldTeam.id }, updateDTO)
+            suite.service.updateTeamInTutorial(
+                { tutorialId: nonExisting, teamId: oldTeam.id },
+                updateDTO
+            )
         ).rejects.toThrow(NotFoundException);
     });
 
     it('fail on updating a team with non-existing student', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
         const updateDTO: TeamDTO = {
-            students: [nonExisting, STUDENT_DOCUMENTS[1]._id],
+            students: [nonExisting, MOCKED_STUDENTS[1].id],
         };
         const createDTO: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[2].id, MOCKED_STUDENTS[1].id],
         };
 
-        const oldTeam = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
+        const oldTeam = await suite.service.createTeamInTutorial(
+            getTutorialIdOfAllTeams(),
+            createDTO
+        );
 
         await expect(
-            service.updateTeamInTutorial(
-                { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: oldTeam.id },
+            suite.service.updateTeamInTutorial(
+                { tutorialId: getTutorialIdOfAllTeams(), teamId: oldTeam.id },
                 updateDTO
             )
         ).rejects.toThrow(NotFoundException);
@@ -271,16 +252,16 @@ describe('TeamService', () => {
 
     it('fail on updating a team with students in different tutorials', async () => {
         const updateDTO: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[3]._id],
+            students: [MOCKED_STUDENTS[0].id, MOCKED_STUDENTS[3].id],
         };
         const createDTO: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[2]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[2].id, MOCKED_STUDENTS[1].id],
         };
 
-        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, createDTO);
+        const team = await suite.service.createTeamInTutorial(getTutorialIdOfAllTeams(), createDTO);
         await expect(
-            service.updateTeamInTutorial(
-                { tutorialId: TUTORIAL_OF_ALL_TEAMS._id, teamId: team.id },
+            suite.service.updateTeamInTutorial(
+                { tutorialId: getTutorialIdOfAllTeams(), teamId: team.id },
                 updateDTO
             )
         ).rejects.toThrow(BadRequestException);
@@ -288,44 +269,43 @@ describe('TeamService', () => {
 
     it('delete a team', async () => {
         const dto: TeamDTO = {
-            students: [STUDENT_DOCUMENTS[0]._id, STUDENT_DOCUMENTS[1]._id],
+            students: [MOCKED_STUDENTS[0].id, MOCKED_STUDENTS[1].id],
         };
 
-        const team = await service.createTeamInTutorial(TUTORIAL_OF_ALL_TEAMS._id, dto);
+        const team = await suite.service.createTeamInTutorial(getTutorialIdOfAllTeams(), dto);
         const teamId: ITeamId = {
-            tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+            tutorialId: getTutorialIdOfAllTeams(),
             teamId: team.id,
         };
-        const deletedTeam = await service.deleteTeamFromTutorial(teamId);
+        await suite.service.deleteTeamFromTutorial(teamId);
 
-        expect(deletedTeam.id).toEqual(team.id);
-        await expect(service.findById(teamId)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(teamId)).rejects.toThrow(NotFoundException);
     });
 
     it('fail on deleting a non-existing team', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
         await expect(
-            service.deleteTeamFromTutorial({
-                tutorialId: TUTORIAL_OF_ALL_TEAMS._id,
+            suite.service.deleteTeamFromTutorial({
+                tutorialId: getTutorialIdOfAllTeams(),
                 teamId: nonExisting,
             })
         ).rejects.toThrow(NotFoundException);
     });
 
     it('fail on deleting a team inside non-existing tutorial', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
         await expect(
-            service.deleteTeamFromTutorial({
+            suite.service.deleteTeamFromTutorial({
                 tutorialId: nonExisting,
-                teamId: TEAM_DOCUMENTS[0]._id,
+                teamId: MOCKED_TEAMS[0].id,
             })
         ).rejects.toThrow(NotFoundException);
     });
 
     it('set grading of a complete team (without students have a grading)', async () => {
-        const sheetService = testModule.get<SheetService>(SheetService);
-        const team = TEAM_DOCUMENTS[0];
-        const teamId = { tutorialId: team.tutorial._id, teamId: team._id };
+        const sheetService = suite.getService(SheetService);
+        const team = MOCKED_TEAMS[0];
+        const teamId = { tutorialId: team.tutorial.id, teamId: team.id };
         const sheetDTO: SheetDTO = {
             sheetNo: 42,
             bonusSheet: false,
@@ -355,7 +335,8 @@ describe('TeamService', () => {
             ],
         };
 
-        const sheet = await sheetService.create(sheetDTO);
+        const sheetId = (await sheetService.create(sheetDTO)).id;
+        const sheet = await sheetService.findById(sheetId);
         const gradingDTO: GradingDTO = {
             sheetId: sheet.id,
             createNewGrading: true,
@@ -384,14 +365,14 @@ describe('TeamService', () => {
             comment: 'This is a comment for the grading',
         };
 
-        await service.setGrading(teamId, gradingDTO);
-        const updatedTeam = await service.findById(teamId);
+        await suite.service.setGrading(teamId, gradingDTO);
+        const updatedTeam = await suite.service.findById(teamId);
 
         for (const student of updatedTeam.students) {
             const [, actualGrading] =
                 student.toDTO().gradings.find(([key]) => key === sheet.id) ?? [];
 
-            assertGrading({ expected: gradingDTO, actual: actualGrading });
+            assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
         }
     });
 
