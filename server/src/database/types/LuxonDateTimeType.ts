@@ -12,7 +12,6 @@ export class LuxonDateTimeType extends LuxonType {
     }
 
     getSingleColumnType(_prop: EntityProperty, _platform: Platform): string {
-        // TODO: Can we use the platform in v5?
-        return 'datetime';
+        return 'varchar(25)';
     }
 }
