@@ -94,7 +94,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
     async findWithUsername(usernameToFind: string): Promise<UserCredentialsWithPassword> {
         const { id, username, password, roles } = await this.getUserWithUsername(usernameToFind);
 
-        return { _id: id, username, password, roles };
+        return { id, username, password, roles };
     }
 
     /**

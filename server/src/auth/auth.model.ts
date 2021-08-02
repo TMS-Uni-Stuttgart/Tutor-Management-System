@@ -1,7 +1,7 @@
 import { Role } from 'shared/model/Role';
 
 export interface UserCredentials {
-    readonly _id: string;
+    readonly id: string;
     readonly username: string;
     readonly roles: readonly Role[];
 }
