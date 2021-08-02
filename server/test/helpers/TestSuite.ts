@@ -1,4 +1,4 @@
-import { Type } from '@nestjs/common';
+import { Provider, Type } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClassType } from '../../src/helpers/ClassConstructor';
 import { ScheinexamService } from '../../src/module/scheinexam/scheinexam.service';
@@ -56,8 +56,12 @@ export class TestSuite<S> {
     /**
      *
      * @param serviceClass Class of the service associated with this test suite.
+     * @param additionalProviders Additional providers used inside this TestSuite's TestModule. This should NOT be needed for most tests.
      */
-    constructor(private readonly serviceClass: ClassType<S>) {
+    constructor(
+        private readonly serviceClass: ClassType<S>,
+        private readonly additionalProviders: Provider[] = []
+    ) {
         this.configTestSuite();
     }
 
@@ -78,6 +82,7 @@ export class TestSuite<S> {
                     ScheinexamService,
                     ShortTestService,
                     GradingService,
+                    ...this.additionalProviders,
                 ],
             }).compile();
 
