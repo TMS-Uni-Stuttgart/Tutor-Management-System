@@ -4,9 +4,12 @@ import { ClientSettingsDTO } from '../../module/settings/settings.dto';
 import { EncryptedIntType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 
+@Embeddable()
 export class MailAuthSetting {
+    @Property({ type: EncryptedStringType })
     readonly user: string;
 
+    @Property({ type: EncryptedStringType })
     readonly password: string;
 
     constructor(params: MailAuthParams) {
@@ -29,24 +32,20 @@ export class MailSetting {
     @Property({ type: EncryptedStringType })
     readonly subject: string;
 
-    // TODO: Try use nested embeddables with v5.
-    @Property({ type: EncryptedStringType })
-    private readonly user: string;
-
-    @Property({ type: EncryptedStringType })
-    private readonly password: string;
-
-    get auth(): MailAuthSetting {
-        return new MailAuthSetting({ user: this.user, password: this.password });
-    }
+    // You might ask: "Why do I need a prefix for a column name here? The objects are part of a JSON in a completely different column"
+    // The answer is simple: If you don't provide a prefix the embedded objects of an embeddable are saved as empty objects, because Mikro-ORM somehow (silently) overrides it's own keys pointing to the entries.
+    @Embedded({ entity: () => MailAuthSetting, object: true, prefix: 'a_' })
+    auth: MailAuthSetting;
 
     constructor(params: MailSettingsParams) {
         this.host = params.host;
         this.port = params.port;
         this.from = params.from;
         this.subject = params.subject;
-        this.user = params.authOptions.user;
-        this.password = params.authOptions.password;
+        this.auth = new MailAuthSetting({
+            user: params.authOptions.user,
+            password: params.authOptions.password,
+        });
     }
 
     toDTO(): IMailingSettings {

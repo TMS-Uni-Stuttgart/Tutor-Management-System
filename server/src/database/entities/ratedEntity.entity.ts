@@ -1,9 +1,9 @@
 import { Embeddable, Embedded, PrimaryKey, Property } from '@mikro-orm/core';
+import { ExercisePointsInfo, IExercisePointsInfo } from 'shared/model/Gradings';
+import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import { v4 } from 'uuid';
 import { HasExercisesDTO, RatedEntityDTO } from '../../module/scheinexam/scheinexam.dto';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
-import { ExercisePointsInfo, IExercisePointsInfo } from '../../shared/model/Gradings';
-import { IExercise, ISubexercise } from '../../shared/model/HasExercises';
 import { Student } from './student.entity';
 
 @Embeddable()
@@ -58,7 +58,9 @@ export class SubExercise {
 
 @Embeddable()
 export class Exercise extends SubExercise {
-    @Embedded(() => SubExercise, { array: true })
+    // You might ask: "Why do I need a prefix for a column name here? The objects are part of a JSON in a completely different column"
+    // The answer is simple: If you don't provide a prefix the embedded objects of an embeddable are saved as empty objects, because Mikro-ORM somehow (silently) overrides it's own keys pointing to the entries.
+    @Embedded({ entity: () => SubExercise, array: true, prefix: 'sub_' })
     subexercises: SubExercise[] = [];
 
     constructor(params: ExerciseParams) {
