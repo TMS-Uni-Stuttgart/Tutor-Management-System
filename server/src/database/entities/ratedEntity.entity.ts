@@ -59,7 +59,7 @@ export class SubExercise {
 @Embeddable()
 export class Exercise extends SubExercise {
     // You might ask: "Why do I need a prefix for a column name here? The objects are part of a JSON in a completely different column"
-    // The answer is simple: If you don't provide a prefix the embedded objects of an embeddable are saved as empty objects, because Mikro-ORM somehow (silently) overrides it's own keys pointing to the entries.
+    // The answer is simple: If you don't provide a prefix the embedded objects of an embeddable are saved as empty objects, because Mikro-ORM somehow (silently) overrides it's own keys pointing to the entries...
     @Embedded({ entity: () => SubExercise, array: true, prefix: 'sub_' })
     subexercises: SubExercise[] = [];
 
@@ -118,7 +118,7 @@ export class Exercise extends SubExercise {
             id: this.id,
             bonus: this.bonus,
             exName: this.exerciseName,
-            maxPoints: this.maxPoints,
+            maxPoints: this.totalPoints,
             subexercises: this.subexercises.map((subEx) => subEx.toDTO()),
         };
     }
