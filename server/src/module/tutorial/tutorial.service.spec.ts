@@ -222,6 +222,23 @@ function assertGeneratedTutorials({ expected, actual }: AssertGenerateTutorialsP
     expect(actual.length).toBe(amountToGenerate);
 }
 
+async function checkGeneratedTutorials(
+    service: TutorialService,
+    dto: ITutorialGenerationDTO
+): Promise<void> {
+    const tutorialCountBefore = (await service.findAll()).length;
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+    const tutorialCountAfter = (await service.findAll()).length;
+
+    expect(generatedTutorials.length).toBe(4);
+    expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
+
+    assertGeneratedTutorials({
+        expected: plainToClass(TutorialGenerationDTO, dto),
+        actual: generatedTutorials,
+    });
+}
+
 describe('TutorialService', () => {
     const suite = new TestSuite(TutorialService);
 
@@ -594,11 +611,11 @@ describe('TutorialService', () => {
     });
 
     it('delete a tutorial', async () => {
-        const tutorDoc = getUserWithRole(Role.TUTOR);
+        const tutor = getUserWithRole(Role.TUTOR);
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutorDoc.id,
+            tutorId: tutor.id,
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -676,19 +693,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await suite.service.findAll()).length;
-        const generatedTutorials = await suite.service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await suite.service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('make sure tutorial generation does take all days in the interval into account', async () => {
@@ -751,19 +756,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await suite.service.findAll()).length;
-        const generatedTutorials = await suite.service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await suite.service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('generate multiple tutorials with an excluded interval', async () => {
@@ -795,19 +788,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await suite.service.findAll()).length;
-        const generatedTutorials = await suite.service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await suite.service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('generate multiple tutorials with mixed excluded dates', async () => {
@@ -839,19 +820,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await suite.service.findAll()).length;
-        const generatedTutorials = await suite.service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await suite.service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('do NOT generate a tutorial if no dates are available', async () => {
