@@ -32,9 +32,9 @@ export class MailSetting {
     @Property({ type: EncryptedStringType })
     readonly subject: string;
 
-    // You might ask: "Why do I need a prefix for a column name here? The objects are part of a JSON in a completely different column"
-    // The answer is simple: If you don't provide a prefix the embedded objects of an embeddable are saved as empty objects, because Mikro-ORM somehow (silently) overrides it's own keys pointing to the entries.
-    @Embedded({ entity: () => MailAuthSetting, object: true, prefix: 'a_' })
+    // You might ask: "Why do I need 'prefix: false' here? The objects are part of a JSON in a completely different column"
+    // The answer is simple: If you don't provide a prefix the embedded objects of an embeddable are saved as empty objects, because Mikro-ORM somehow (silently) overrides it's own keys pointing to the entries...
+    @Embedded({ entity: () => MailAuthSetting, object: true, prefix: false })
     auth: MailAuthSetting;
 
     constructor(params: MailSettingsParams) {
