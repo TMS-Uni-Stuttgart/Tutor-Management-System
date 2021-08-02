@@ -392,7 +392,7 @@ describe('UserService', () => {
         assertGeneratedUsers({ expected: usersToCreate, actual: created });
     });
 
-    it('create mutliple users with one tutorial each', async () => {
+    it('create multiple users with one tutorial each', async () => {
         const usersToCreate: CreateUserDTO[] = [
             {
                 firstname: 'Harry',

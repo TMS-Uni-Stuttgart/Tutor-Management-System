@@ -1,4 +1,4 @@
-import { EntityManager, LoadStrategy, MikroORM } from '@mikro-orm/core';
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { Module } from '@nestjs/common';
@@ -21,8 +21,7 @@ import { ENTITY_LISTS, populateMockLists } from '../mocks/entities.mock';
             entities: ['./dist/database/entities'],
             entitiesTs: ['./src/database/entities'],
             type: 'mysql',
-            debug: false,
-            loadStrategy: LoadStrategy.JOINED,
+            debug: true,
             ...StaticSettings.getService().getDatabaseConnectionInformation(),
         }),
     ],

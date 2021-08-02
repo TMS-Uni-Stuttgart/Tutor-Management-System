@@ -84,7 +84,7 @@ export class MarkdownService {
 
         const gradingsMD: TeamMarkdownData[] = [];
 
-        teams.forEach((team) => {
+        for (const team of teams) {
             gradingsMD.push(
                 ...this.generateFromTeam({
                     team,
@@ -92,7 +92,7 @@ export class MarkdownService {
                     ignoreInvalidTeams: true,
                 })
             );
-        });
+        }
 
         return {
             markdownData: gradingsMD.filter((grad) => !grad.invalid),
@@ -189,7 +189,7 @@ export class MarkdownService {
         ignoreInvalidTeams,
     }: GenerateFromTeamParams): TeamMarkdownData[] {
         try {
-            if (team.students.length === 0) {
+            if (team.studentCount === 0) {
                 throw new BadRequestException(`Can not generate markdown for an empty team.`);
             }
 
@@ -206,7 +206,7 @@ export class MarkdownService {
                 const studentsOfTeam = team
                     .getStudents()
                     .filter((stud) => grading.belongsToStudent(stud));
-                const teamName = Team.generateTeamname(studentsOfTeam);
+                const teamName = Team.generateTeamName(studentsOfTeam);
                 const nameOfEntity = grading.belongsToTeam
                     ? `Team ${teamName}`
                     : `Student/in ${teamName}`;

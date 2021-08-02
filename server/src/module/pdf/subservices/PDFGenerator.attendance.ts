@@ -41,12 +41,10 @@ export class AttendancePDFGenerator extends PDFGenerator<GeneratorOptions> {
         const { tutor, slot: tutorialSlot } = tutorial;
         const tutorName = getNameOfEntity(tutor);
         const template = this.templateService.getAttendanceTemplate();
+        const students = tutorial.getStudents();
         const content = template({
             date,
-            students: tutorial
-                .getStudents()
-                .sort(sortByName)
-                .map((s) => ({ name: getNameOfEntity(s) })),
+            students: students.sort(sortByName).map((s) => ({ name: getNameOfEntity(s) })),
             tutorName,
             tutorialSlot,
         });

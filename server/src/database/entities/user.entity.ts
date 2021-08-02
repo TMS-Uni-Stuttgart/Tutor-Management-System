@@ -48,13 +48,13 @@ export class User {
     @Property({ type: EncryptedStringType })
     temporaryPassword?: string;
 
-    @OneToMany(() => Tutorial, (tutorial) => tutorial.tutor, { eager: true })
+    @OneToMany(() => Tutorial, (tutorial) => tutorial.tutor)
     tutorials = new Collection<Tutorial>(this);
 
-    @ManyToMany(() => Tutorial, (tutorial) => tutorial.correctors, { owner: true, eager: true })
+    @ManyToMany(() => Tutorial, (tutorial) => tutorial.correctors, { owner: true })
     tutorialsToCorrect = new Collection<Tutorial>(this);
 
-    @OneToMany(() => Substitute, (substitute) => substitute.substituteTutor, { eager: true })
+    @OneToMany(() => Substitute, (substitute) => substitute.substituteTutor)
     tutorialsToSubstitute = new Collection<Substitute>(this);
 
     constructor({

@@ -58,7 +58,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @returns All users saved in the database.
      */
     async findAll(): Promise<User[]> {
-        return this.getUserRepository().findAll();
+        return this.getUserRepository().findAll({ populate: true });
     }
 
     /**
@@ -71,7 +71,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @throws `NotFoundException` - If there is no user with the given ID.
      */
     async findById(id: string): Promise<User> {
-        const user = await this.getUserRepository().findOne({ id });
+        const user = await this.getUserRepository().findOne({ id }, { populate: true });
 
         if (!user) {
             throw new NotFoundException(`User with the ID '${id}' could not be found.`);
@@ -385,7 +385,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @private
      */
     private async getAllUsersWithUsername(username: string): Promise<User[]> {
-        const allUsers = await this.getUserRepository().findAll();
+        const allUsers = await this.findAll();
         return allUsers.filter((u) => u.username === username);
     }
 

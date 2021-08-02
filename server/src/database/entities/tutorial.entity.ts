@@ -38,17 +38,21 @@ export class Tutorial {
     @ManyToOne()
     tutor?: User;
 
-    @OneToMany(() => Student, (student) => student.tutorial, { eager: true })
+    @OneToMany(() => Student, (student) => student.tutorial)
     students = new Collection<Student>(this);
 
-    @ManyToMany({ entity: () => User, mappedBy: 'tutorialsToCorrect', eager: true })
+    @ManyToMany({ entity: () => User, mappedBy: 'tutorialsToCorrect' })
     correctors = new Collection<User>(this);
 
-    @OneToMany(() => Team, (team) => team.tutorial, { eager: true })
+    @OneToMany(() => Team, (team) => team.tutorial)
     teams = new Collection<Team>(this);
 
-    @OneToMany(() => Substitute, (substitute) => substitute.tutorialToSubstitute, { eager: true })
+    @OneToMany(() => Substitute, (substitute) => substitute.tutorialToSubstitute)
     substitutes = new Collection<Substitute>(this);
+
+    get studentCount(): number {
+        return this.students.length;
+    }
 
     constructor(params: TutorialParams) {
         this.slot = params.slot;

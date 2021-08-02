@@ -39,7 +39,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      */
     async findAll(): Promise<Student[]> {
         const timeA = Date.now();
-        const allStudents = await this.getStudentRepository().findAll();
+        const allStudents = await this.getStudentRepository().findAll({ populate: true });
         const timeB = Date.now();
 
         this.logger.log(`Time to fetch all students: ${timeB - timeA}ms`);
@@ -53,7 +53,10 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      * @throws {@link NotFoundException} - If at least one student could not be found.
      */
     async findMany(ids: string[]): Promise<Student[]> {
-        const students = await this.getStudentRepository().find({ id: { $in: ids } });
+        const students = await this.getStudentRepository().find(
+            { id: { $in: ids } },
+            { populate: true }
+        );
 
         if (students.length !== ids.length) {
             const studentIds = students.map((student) => student.id);
@@ -76,7 +79,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      * @throws `NotFoundException` - If no student with the given ID could be found.
      */
     async findById(id: string): Promise<Student> {
-        const student = await this.getStudentRepository().findOne({ id });
+        const student = await this.getStudentRepository().findOne({ id }, { populate: true });
 
         if (!student) {
             throw new NotFoundException(`Student with the ID ${id} could not be found`);

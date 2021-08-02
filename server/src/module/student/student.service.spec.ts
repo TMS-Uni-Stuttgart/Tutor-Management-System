@@ -1,29 +1,22 @@
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { DateTime } from 'luxon';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
-import { MockedModel } from '../../../test/helpers/testdocument';
+import { AttendanceState } from 'shared/model/Attendance';
+import { IGrading } from 'shared/model/Gradings';
+import { IStudent, StudentStatus } from 'shared/model/Student';
+import { TestSuite } from '../../../test/helpers/TestSuite';
 import {
-    SHEET_DOCUMENTS,
-    STUDENT_DOCUMENTS,
-    TEAM_DOCUMENTS,
-    TUTORIAL_DOCUMENTS,
-} from '../../../test/mocks/documents.mock';
-import { ExerciseGrading, Grading } from '../../database/models/grading.model';
-import { StudentModel } from '../../database/models/student.model';
-import { AttendanceState } from '../../shared/model/Attendance';
-import { IGrading } from '../../shared/model/Gradings';
-import { IStudent, StudentStatus } from '../../shared/model/Student';
+    MOCKED_SHEETS,
+    MOCKED_STUDENTS,
+    MOCKED_TEAMS,
+    MOCKED_TUTORIALS,
+} from '../../../test/mocks/entities.mock';
+import { ExerciseGrading, Grading } from '../../database/entities/grading.entity';
+import { HandIn } from '../../database/entities/ratedEntity.entity';
+import { Student } from '../../database/entities/student.entity';
 import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
 import { SheetService } from '../sheet/sheet.service';
-import { ShortTestService } from '../short-test/short-test.service';
-import { TeamService } from '../team/team.service';
-import { TutorialService } from '../tutorial/tutorial.service';
-import { UserService } from '../user/user.service';
-import { GradingService } from './grading.service';
 import {
     AttendanceDTO,
     CakeCountDTO,
@@ -34,12 +27,12 @@ import {
 import { StudentService } from './student.service';
 
 interface AssertStudentParams {
-    expected: MockedModel<StudentModel>;
+    expected: Student;
     actual: IStudent;
 }
 
 interface AssertStudentListParams {
-    expected: MockedModel<StudentModel>[];
+    expected: Student[];
     actual: IStudent[];
 }
 
@@ -52,21 +45,22 @@ interface AssertStudentDTOParams {
 interface AssertGradingParams {
     expected: GradingDTO;
     actual: IGrading | undefined;
+    handIn: HandIn;
 }
 
 /**
  * Checks if the given student representations are considered equal.
  *
  * Equality is defined as:
- * - The actual `id` matches the expected `_id`.
+ * - The actual `id` matches the expected `id`.
  * - The actual `tutorial` has the correct `id` and `slot`.
  * - After they are converted back to maps the actual representations of the maps are equal to the expected maps.
  * - All other properties of the actual representation match the properties in the expected one.
  *
- * @param params Must contain an expected StudentDocuemt and the actual Student object.
+ * @param params Must contain an expected StudentDocument and the actual Student object.
  */
 function assertStudent({ expected, actual }: AssertStudentParams) {
-    const { _id, attendances, tutorial, presentationPoints, team, ...restExpected } = expected;
+    const { id, tutorial, team } = expected;
     const {
         id: actualId,
         attendances: actualAttendances,
@@ -74,21 +68,29 @@ function assertStudent({ expected, actual }: AssertStudentParams) {
         tutorial: actualTutorial,
         presentationPoints: actualPresentationPoints,
         team: actualTeam,
-        ...restActual
     } = actual;
+    const attendances = expected.getAllAttendances();
+    const presentationPoints = expected.getAllPresentationPoints();
 
-    expect(actualId).toEqual(_id.toString());
+    expect(actualId).toEqual(id);
 
     expect(actualTutorial.id).toEqual(tutorial.id);
     expect(actualTutorial.slot).toEqual(tutorial.slot);
 
-    expect(actualTeam?.id).toEqual(team?._id);
+    expect(actualTeam?.id).toEqual(team?.id);
     expect(actualTeam?.teamNo).toEqual(team?.teamNo);
 
     expect(new Map(actualAttendances)).toEqual(attendances);
-    expect(new Map(presentationPoints)).toEqual(presentationPoints);
+    expect(new Map(actualPresentationPoints)).toEqual(presentationPoints);
 
-    expect(restActual).toEqual(restExpected);
+    expect(actual.firstname).toEqual(expected.firstname);
+    expect(actual.lastname).toEqual(expected.lastname);
+    expect(actual.matriculationNo).toEqual(expected.matriculationNo);
+    expect(actual.status).toEqual(expected.status);
+    expect(actual.iliasName).toEqual(expected.iliasName);
+    expect(actual.email).toEqual(expected.email);
+    expect(actual.courseOfStudies).toEqual(expected.courseOfStudies);
+    expect(actual.cakeCount).toEqual(expected.cakeCount);
 }
 
 /**
@@ -113,7 +115,7 @@ function assertStudentList({ expected, actual }: AssertStudentListParams) {
  *
  * If an old version is provided it's `gradings`, `attendances` and `cakeCount` are being used. Else this function will assert that `gradings` and `attendances` are empty and `cakeCount` is 0.
  *
- * All other properties are just being compared with the follwing two exceptions:
+ * All other properties are just being compared with the following two exceptions:
  * - `id` must only be defined and is not compared to an expected value.
  * - For the `tutorial` only the `id` property gets asserted to match the expected tutorial.
  *
@@ -151,15 +153,16 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
     }
 }
 
-export function assertGrading({ expected, actual }: AssertGradingParams): void {
+export function assertGrading({ expected, actual, handIn }: AssertGradingParams): void {
     expect(actual).toBeDefined();
 
     if (!actual) {
         return;
     }
 
-    const expectedDoc = Grading.fromDTO(expected);
-    const expectedSum = expectedDoc.points;
+    const expectedGrading = new Grading({ handIn });
+    expectedGrading.updateFromDTO({ dto: expected, handIn });
+    const expectedSum = expectedGrading.points;
 
     expect(actual.points).toBe(expectedSum);
 
@@ -168,7 +171,7 @@ export function assertGrading({ expected, actual }: AssertGradingParams): void {
     for (let i = 0; i < expected.exerciseGradings.length; i++) {
         const [expectedKey, expectedEx] = expected.exerciseGradings[i];
         const [actualKey, actualEx] = actual.exerciseGradings[i];
-        const expectedDoc = ExerciseGrading.fromDTO(expectedEx);
+        const expectedDoc = ExerciseGrading.fromDTO(expectedKey, expectedEx);
 
         expect(actualKey).toEqual(expectedKey);
         expect(actualEx.points).toEqual(expectedDoc.points);
@@ -178,89 +181,58 @@ export function assertGrading({ expected, actual }: AssertGradingParams): void {
 }
 
 describe('StudentService', () => {
-    let testModule: TestingModule;
-    let service: StudentService;
-
-    beforeAll(async () => {
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [
-                StudentService,
-                TutorialService,
-                TeamService,
-                UserService,
-                SheetService,
-                ScheinexamService,
-                ShortTestService,
-                GradingService,
-            ],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<StudentService>(StudentService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    const suite = new TestSuite(StudentService);
 
     it('find all students', async () => {
-        const students = await service.findAll();
+        const students = await suite.service.findAll();
 
         assertStudentList({
-            expected: STUDENT_DOCUMENTS,
+            expected: MOCKED_STUDENTS,
             actual: students.map((student) => student.toDTO()),
         });
     });
 
     it('create a student without a team', async () => {
-        const expectedTutorial = TUTORIAL_DOCUMENTS[0];
+        const expectedTutorial = MOCKED_TUTORIALS[0];
 
         const dto: StudentDTO = new StudentDTO({
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: expectedTutorial._id,
+            tutorial: expectedTutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
             team: undefined,
         });
 
-        const created = await service.create(dto);
+        const created = await suite.service.create(dto);
 
         assertStudentDTO({ expected: dto, actual: created });
     });
 
     it('create a student with a team', async () => {
-        const team = TEAM_DOCUMENTS[0];
+        const team = MOCKED_TEAMS[0];
         const dto: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: team.tutorial._id,
+            tutorial: team.tutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
-            team: team._id,
+            team: team.id,
         };
 
-        const student = await service.create(dto);
+        const student = await suite.service.create(dto);
 
         assertStudentDTO({ expected: dto, actual: student });
     });
 
     it('fail on creating a student in non-existing tutorial', async () => {
-        const nonExistingTutorialId = generateObjectId();
+        const nonExistingTutorialId = 'non-existing-id';
 
         const dto: StudentDTO = new StudentDTO({
             firstname: 'Ginny',
@@ -274,30 +246,30 @@ describe('StudentService', () => {
             team: undefined,
         });
 
-        await expect(service.create(dto)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.create(dto)).rejects.toThrow(NotFoundException);
     });
 
-    it('get a student with a specific ID', async () => {
-        const expected = STUDENT_DOCUMENTS[0];
-        const actual = await service.findById(expected._id);
+    it('get a student with a specific id', async () => {
+        const expected = MOCKED_STUDENTS[0];
+        const actual = await suite.service.findById(expected.id);
 
         assertStudent({ expected, actual: actual.toDTO() });
     });
 
     it('fail on getting a non-existing student', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.findById(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(nonExisting)).rejects.toThrow(NotFoundException);
     });
 
     it('update student with basic information', async () => {
-        const expectedTutorial = TUTORIAL_DOCUMENTS[0];
+        const expectedTutorial = MOCKED_TUTORIALS[0];
         const updateDTO: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: expectedTutorial._id,
+            tutorial: expectedTutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
@@ -308,15 +280,15 @@ describe('StudentService', () => {
             lastname: 'Potter',
             iliasName: 'HarryPotter',
             status: StudentStatus.INACTIVE,
-            tutorial: expectedTutorial._id,
+            tutorial: expectedTutorial.id,
             courseOfStudies: 'Data science',
             email: 'potter_harry@hogwarts.com',
             matriculationNo: '5678912',
             team: undefined,
         };
 
-        const oldStudent = await service.create(createDTO);
-        const updatedStudent = await service.update(oldStudent.id, updateDTO);
+        const oldStudent = await suite.service.create(createDTO);
+        const updatedStudent = await suite.service.update(oldStudent.id, updateDTO);
 
         assertStudentDTO({
             expected: updateDTO,
@@ -326,15 +298,15 @@ describe('StudentService', () => {
     });
 
     it('update student with new tutorial', async () => {
-        const expectedTutorial = TUTORIAL_DOCUMENTS[0];
-        const otherTutorial = TUTORIAL_DOCUMENTS[1];
+        const expectedTutorial = MOCKED_TUTORIALS[0];
+        const otherTutorial = MOCKED_TUTORIALS[1];
 
         const updateDTO: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: expectedTutorial._id,
+            tutorial: expectedTutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
@@ -342,11 +314,11 @@ describe('StudentService', () => {
         };
         const createDTO: StudentDTO = {
             ...updateDTO,
-            tutorial: otherTutorial._id,
+            tutorial: otherTutorial.id,
         };
 
-        const oldStudent = await service.create(createDTO);
-        const updatedStudent = await service.update(oldStudent.id, updateDTO);
+        const oldStudent = await suite.service.create(createDTO);
+        const updatedStudent = await suite.service.update(oldStudent.id, updateDTO);
 
         assertStudentDTO({
             expected: updateDTO,
@@ -356,30 +328,30 @@ describe('StudentService', () => {
     });
 
     it('update a student by changing its team', async () => {
-        const prevTeam = TEAM_DOCUMENTS[0];
-        const updatedTeam = TEAM_DOCUMENTS[1];
+        const prevTeam = MOCKED_TEAMS[0];
+        const updatedTeam = MOCKED_TEAMS[1];
 
         // Sanity check
-        expect(prevTeam.tutorial._id).toEqual(updatedTeam.tutorial._id);
+        expect(prevTeam.tutorial.id).toEqual(updatedTeam.tutorial.id);
 
         const updateDTO: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: updatedTeam.tutorial._id,
+            tutorial: updatedTeam.tutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
-            team: updatedTeam._id,
+            team: updatedTeam.id,
         };
         const createDTO: StudentDTO = {
             ...updateDTO,
-            team: prevTeam._id,
+            team: prevTeam.id,
         };
 
-        const oldStudent = await service.create(createDTO);
-        const updatedStudent = await service.update(oldStudent.id, updateDTO);
+        const oldStudent = await suite.service.create(createDTO);
+        const updatedStudent = await suite.service.update(oldStudent.id, updateDTO);
 
         assertStudentDTO({
             expected: updateDTO,
@@ -389,14 +361,14 @@ describe('StudentService', () => {
     });
 
     it('update a student by removing its team', async () => {
-        const prevTeam = TEAM_DOCUMENTS[0];
+        const prevTeam = MOCKED_TEAMS[0];
 
         const updateDTO: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: prevTeam.tutorial._id,
+            tutorial: prevTeam.tutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
@@ -404,11 +376,11 @@ describe('StudentService', () => {
         };
         const createDTO: StudentDTO = {
             ...updateDTO,
-            team: prevTeam._id,
+            team: prevTeam.id,
         };
 
-        const oldStudent = await service.create(createDTO);
-        const updatedStudent = await service.update(oldStudent.id, updateDTO);
+        const oldStudent = await suite.service.create(createDTO);
+        const updatedStudent = await suite.service.update(oldStudent.id, updateDTO);
 
         assertStudentDTO({
             expected: updateDTO,
@@ -418,25 +390,27 @@ describe('StudentService', () => {
     });
 
     it('fail on updating a non-existing student', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
         const updateDTO: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: TUTORIAL_DOCUMENTS[0]._id,
+            tutorial: MOCKED_TUTORIALS[0].id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
             team: undefined,
         };
 
-        await expect(service.update(nonExisting, updateDTO)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.update(nonExisting, updateDTO)).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('fail on updating a student with non-existing tutorial', async () => {
-        const expectedTutorial = TUTORIAL_DOCUMENTS[0];
-        const nonExisting = generateObjectId();
+        const expectedTutorial = MOCKED_TUTORIALS[0];
+        const nonExisting = 'non-existing-id';
 
         const updateDTO: StudentDTO = {
             firstname: 'Ginny',
@@ -451,86 +425,87 @@ describe('StudentService', () => {
         };
         const createDTO: StudentDTO = {
             ...updateDTO,
-            tutorial: expectedTutorial._id,
+            tutorial: expectedTutorial.id,
         };
 
-        const oldStudent = await service.create(createDTO);
+        const oldStudent = await suite.service.create(createDTO);
 
-        await expect(service.update(oldStudent.id, updateDTO)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.update(oldStudent.id, updateDTO)).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('delete a student', async () => {
-        const expectedTutorial = TUTORIAL_DOCUMENTS[0];
+        const expectedTutorial = MOCKED_TUTORIALS[0];
         const dto: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: expectedTutorial._id,
+            tutorial: expectedTutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
             team: undefined,
         };
 
-        const student = await service.create(dto);
-        const deletedStudent = await service.delete(student.id);
+        const student = await suite.service.create(dto);
+        await suite.service.delete(student.id);
 
-        expect(deletedStudent.id).toEqual(student.id);
-        await expect(service.findById(student.id)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.findById(student.id)).rejects.toThrow(NotFoundException);
     });
 
     it('fail on deleting a non-existing student', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.delete(nonExisting)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.delete(nonExisting)).rejects.toThrow(NotFoundException);
     });
 
     it('set the attendance of a student without note', async () => {
-        const student = STUDENT_DOCUMENTS[0];
+        const student = MOCKED_STUDENTS[0];
         const attendance: AttendanceDTO = {
             date: '2020-03-01',
             note: undefined,
             state: AttendanceState.PRESENT,
         };
 
-        await service.setAttendance(student._id, attendance);
-        const updatedStudent = (await service.findById(student._id)).toDTO();
+        await suite.service.setAttendance(student.id, attendance);
+        const updatedStudent = (await suite.service.findById(student.id)).toDTO();
 
         expect(updatedStudent.attendances).toEqual([['2020-03-01', attendance]]);
     });
 
     it('set the attendance of a student with note', async () => {
-        const student = STUDENT_DOCUMENTS[0];
+        const student = MOCKED_STUDENTS[0];
         const attendance: AttendanceDTO = {
             date: '2020-03-01',
             note: 'Some note',
             state: AttendanceState.PRESENT,
         };
 
-        await service.setAttendance(student._id, attendance);
-        const updatedStudent = (await service.findById(student._id)).toDTO();
+        await suite.service.setAttendance(student.id, attendance);
+        const updatedStudent = (await suite.service.findById(student.id)).toDTO();
 
         expect(updatedStudent.attendances).toEqual([['2020-03-01', attendance]]);
     });
 
     it('set the presentation points of a student', async () => {
-        const sheet = SHEET_DOCUMENTS[0];
-        const student = STUDENT_DOCUMENTS[0];
+        const sheet = MOCKED_SHEETS[0];
+        const student = MOCKED_STUDENTS[0];
         const dto: PresentationPointsDTO = {
             points: 6,
-            sheetId: sheet._id,
+            sheetId: sheet.id,
         };
 
-        await service.setPresentationPoints(student._id, dto);
-        const updatedStudent = (await service.findById(student._id)).toDTO();
+        await suite.service.setPresentationPoints(student.id, dto);
+        const updatedStudent = (await suite.service.findById(student.id)).toDTO();
 
-        expect(updatedStudent.presentationPoints).toEqual([[sheet._id, dto.points]]);
+        expect(updatedStudent.presentationPoints).toEqual([[sheet.id, dto.points]]);
     });
 
     it('set a grading of a sheet of a student', async () => {
-        const sheetService = testModule.get<SheetService>(SheetService);
-        const student = STUDENT_DOCUMENTS[0];
+        const sheetService = suite.getService(SheetService);
+        const student = MOCKED_STUDENTS[0];
         const sheetDTO: SheetDTO = {
             sheetNo: 42,
             bonusSheet: false,
@@ -560,7 +535,8 @@ describe('StudentService', () => {
             ],
         };
 
-        const sheet = await sheetService.create(sheetDTO);
+        const sheetId = (await sheetService.create(sheetDTO)).id;
+        const sheet = await sheetService.findById(sheetId);
         const gradingDTO: GradingDTO = {
             sheetId: sheet.id,
             createNewGrading: true,
@@ -589,17 +565,17 @@ describe('StudentService', () => {
             comment: 'This is a comment for the grading',
         };
 
-        await service.setGrading(student._id, gradingDTO);
+        await suite.service.setGrading(student.id, gradingDTO);
 
-        const updatedStudent = (await service.findById(student._id)).toDTO();
+        const updatedStudent = (await suite.service.findById(student.id)).toDTO();
         const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
 
-        assertGrading({ expected: gradingDTO, actual: actualGrading });
+        assertGrading({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
     });
 
     it('set a grading of a sheet with one points prop of 0 of a student', async () => {
-        const sheetService = testModule.get<SheetService>(SheetService);
-        const student = STUDENT_DOCUMENTS[0];
+        const sheetService = suite.getService(SheetService);
+        const student = MOCKED_STUDENTS[0];
         const sheetDTO: SheetDTO = {
             sheetNo: 42,
             bonusSheet: false,
@@ -629,7 +605,8 @@ describe('StudentService', () => {
             ],
         };
 
-        const sheet = await sheetService.create(sheetDTO);
+        const sheetId = (await sheetService.create(sheetDTO)).id;
+        const sheet = await sheetService.findById(sheetId);
         const gradingDTO: GradingDTO = {
             sheetId: sheet.id,
             createNewGrading: true,
@@ -658,17 +635,17 @@ describe('StudentService', () => {
             comment: 'This is a comment for the grading',
         };
 
-        await service.setGrading(student._id, gradingDTO);
+        await suite.service.setGrading(student.id, gradingDTO);
 
-        const updatedStudent = (await service.findById(student._id)).toDTO();
+        const updatedStudent = (await suite.service.findById(student.id)).toDTO();
         const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
 
-        assertGrading({ expected: gradingDTO, actual: actualGrading });
+        assertGrading({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
     });
 
     it('set a grading of an exam of a student', async () => {
-        const scheinexamService = testModule.get<ScheinexamService>(ScheinexamService);
-        const student = STUDENT_DOCUMENTS[0];
+        const scheinexamService = suite.getService(ScheinexamService);
+        const student = MOCKED_STUDENTS[0];
         const scheinexamDTO: ScheinexamDTO = {
             scheinExamNo: 17,
             percentageNeeded: 0.5,
@@ -699,7 +676,8 @@ describe('StudentService', () => {
             ],
         };
 
-        const scheinexam = await scheinexamService.create(scheinexamDTO);
+        const scheinexamId = (await scheinexamService.create(scheinexamDTO)).id;
+        const scheinexam = await scheinexamService.findById(scheinexamId);
         const gradingDTO: GradingDTO = {
             examId: scheinexam.id,
             createNewGrading: true,
@@ -728,23 +706,23 @@ describe('StudentService', () => {
             comment: 'This is a comment for the grading',
         };
 
-        await service.setGrading(student._id, gradingDTO);
+        await suite.service.setGrading(student.id, gradingDTO);
 
-        const updatedStudent = (await service.findById(student._id)).toDTO();
+        const updatedStudent = (await suite.service.findById(student.id)).toDTO();
         const [, actualGrading] =
             updatedStudent.gradings.find(([key]) => key === scheinexam.id) ?? [];
 
-        assertGrading({ expected: gradingDTO, actual: actualGrading });
+        assertGrading({ expected: gradingDTO, actual: actualGrading, handIn: scheinexam });
     });
 
     it('change cakecount of a student', async () => {
-        const expectedTutorial = TUTORIAL_DOCUMENTS[0];
+        const expectedTutorial = MOCKED_TUTORIALS[0];
         const dto: StudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
             status: StudentStatus.ACTIVE,
-            tutorial: expectedTutorial._id,
+            tutorial: expectedTutorial.id,
             courseOfStudies: 'Computer science B. Sc.',
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
@@ -754,10 +732,10 @@ describe('StudentService', () => {
             cakeCount: 5,
         };
 
-        const student = await service.create(dto);
+        const student = await suite.service.create(dto);
 
-        await service.setCakeCount(student.id, cakeCountDTO);
-        const updatedStudent = await service.findById(student.id);
+        await suite.service.setCakeCount(student.id, cakeCountDTO);
+        const updatedStudent = await suite.service.findById(student.id);
 
         expect(updatedStudent.cakeCount).toBe(cakeCountDTO.cakeCount);
     });

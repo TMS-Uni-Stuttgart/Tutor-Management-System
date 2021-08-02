@@ -1,4 +1,4 @@
-import { LoadStrategy, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { ISchemaGenerator } from '@mikro-orm/core/typings';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
@@ -16,7 +16,6 @@ import { StaticSettings } from '../module/settings/settings.static';
             entitiesTs: ['./src/database/entities'],
             type: 'mysql',
             debug: false,
-            loadStrategy: LoadStrategy.JOINED,
             ...StaticSettings.getService().getDatabaseConnectionInformation(),
         }),
     ],

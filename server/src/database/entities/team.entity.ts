@@ -9,10 +9,10 @@ import { Tutorial } from './tutorial.entity';
 @Entity()
 export class Team {
     /**
-     * @param students Students to generate the teamname of.
-     * @returns The properly formatted teamname of the given students.
+     * @param students Students to generate the team name of.
+     * @returns The properly formatted team name of the given students.
      */
-    static generateTeamname(students: Student[]): string {
+    static generateTeamName(students: Student[]): string {
         return students
             .map((s) => s.lastname)
             .sort()
@@ -25,11 +25,15 @@ export class Team {
     @Property()
     teamNo: number;
 
-    @OneToMany(() => Student, (student) => student.team, { eager: true })
+    @OneToMany(() => Student, (student) => student.team)
     students = new Collection<Student>(this);
 
     @ManyToOne()
     tutorial: Tutorial;
+
+    get studentCount(): number {
+        return this.students.length;
+    }
 
     constructor({ teamNo, tutorial }: TeamParams) {
         this.teamNo = teamNo;
@@ -40,7 +44,7 @@ export class Team {
      * @returns Properly formatted name of this team.
      */
     get teamName(): string {
-        return Team.generateTeamname(this.students.getItems());
+        return Team.generateTeamName(this.students.getItems());
     }
 
     getStudents(): Student[] {
@@ -76,13 +80,6 @@ export class Team {
 
     getTeamName(): string {
         return Team.generateTeamName(this.students.getItems());
-    }
-
-    static generateTeamName(students: Student[]): string {
-        return students
-            .map((s) => s.lastname)
-            .sort()
-            .join('');
     }
 }
 

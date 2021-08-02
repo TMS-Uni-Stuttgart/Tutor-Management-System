@@ -38,7 +38,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @returns All tutorials saved in the database.
      */
     async findAll(): Promise<Tutorial[]> {
-        return this.getTutorialRepository().findAll({ populate: ['tutor'] });
+        return this.getTutorialRepository().findAll({ populate: true });
     }
 
     /**
@@ -49,7 +49,10 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws {@link NotFoundException} - If at least one of the tutorials could not be found.
      */
     async findMultiple(ids: string[]): Promise<Tutorial[]> {
-        const tutorials = await this.getTutorialRepository().find({ id: { $in: ids } });
+        const tutorials = await this.getTutorialRepository().find(
+            { id: { $in: ids } },
+            { populate: true }
+        );
 
         if (tutorials.length !== ids.length) {
             const tutorialIds = tutorials.map((tutorial) => tutorial.id);
@@ -72,7 +75,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
     async findById(id: string): Promise<Tutorial> {
-        const tutorial = await this.getTutorialRepository().findOne({ id }, ['tutor']);
+        const tutorial = await this.getTutorialRepository().findOne({ id }, { populate: true });
 
         if (!tutorial) {
             throw new NotFoundException(`Tutorial with the ID ${id} could not be found.`);
@@ -160,7 +163,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     async delete(id: string): Promise<void> {
         const tutorial = await this.findById(id);
 
-        if (tutorial.students.length > 0) {
+        if (tutorial.studentCount > 0) {
             throw new BadRequestException(`A tutorial with students can NOT be deleted.`);
         }
 

@@ -59,14 +59,14 @@ export class Student {
     @ManyToOne()
     team?: Team;
 
-    @ManyToMany(() => Grading, 'students', { owner: true, eager: true })
+    @ManyToMany(() => Grading, 'students', { owner: true })
     gradings = new Collection<Grading>(this);
 
     @Property({ type: EncryptedMapType })
     private presentationPoints: Map<string, number> = new Map();
 
-    @Embedded(() => Attendance, { array: true })
-    private attendances: Attendance[] = [];
+    @Embedded({ entity: () => Attendance, array: true })
+    private readonly attendances: Attendance[] = [];
 
     constructor(params: StudentParams) {
         this.firstname = params.firstname;

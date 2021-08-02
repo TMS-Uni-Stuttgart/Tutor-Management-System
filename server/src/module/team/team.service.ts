@@ -35,7 +35,7 @@ export class TeamService {
      * @returns All teams in the given tutorial.
      */
     async findAllTeamsInTutorial(tutorialId: string): Promise<Team[]> {
-        return this.getTeamRepository().find({ tutorial: tutorialId });
+        return this.getTeamRepository().find({ tutorial: tutorialId }, { populate: true });
     }
 
     /**
@@ -49,7 +49,10 @@ export class TeamService {
      * @throws `NotFoundException` - If no team inside the given tutorial with the given ID could be found.
      */
     async findById({ tutorialId, teamId }: ITeamId): Promise<Team> {
-        const team = await this.getTeamRepository().findOne({ id: teamId, tutorial: tutorialId });
+        const team = await this.getTeamRepository().findOne(
+            { id: teamId, tutorial: tutorialId },
+            { populate: true }
+        );
 
         if (!team) {
             throw new NotFoundException(
