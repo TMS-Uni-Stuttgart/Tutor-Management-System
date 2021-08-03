@@ -6,12 +6,17 @@ import { DynamicModule, Logger, Module, OnApplicationShutdown, OnModuleInit } fr
 import { StartUpException } from '../exceptions/StartUpException';
 import { wait } from '../helpers/wait';
 import { StaticSettings } from '../module/settings/settings.static';
+import { isProduction } from '../helpers/isDevelopment';
+
+function getEntityDirectory(): string {
+    return isProduction() ? './database/entities' : './dist/database/entities';
+}
 
 export function loadDatabaseModule(): DynamicModule {
     return MikroOrmModule.forRoot({
         metadataProvider: TsMorphMetadataProvider,
         baseDir: process.cwd(),
-        entities: ['./dist/database/entities'],
+        entities: [getEntityDirectory()],
         entitiesTs: ['./src/database/entities'],
         populateAfterFlush: true,
         type: 'mysql',
