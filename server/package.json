@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist temp",
-    "build": "nest build --path \"./tsconfig.build.json\"",
+    "build": "pnpm prebuild && nest build --path \"./tsconfig.build.json\"",
     "format": "eslint --fix \"./**/*.ts?(x)\"",
     "lint": "pnpm run eslint:check",
     "eslint:check": "eslint \"./**/*.ts?(x)\"",
