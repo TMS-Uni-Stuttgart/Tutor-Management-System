@@ -15,7 +15,7 @@ async function wait(ms: number): Promise<void> {
 }
 
 async function tryToConnect() {
-    const waitInSeconds: number = 5;
+    const waitInSeconds: number = 10;
 
     for (let i = 1; i < 11; i++) {
         try {
@@ -118,7 +118,7 @@ async function spawnContainer() {
 
     await wait(5000);
 
-    testImage();
+    await testImage();
 }
 
 async function run(): Promise<void> {
@@ -142,7 +142,7 @@ async function run(): Promise<void> {
         }
 
         console.log(chalk.green(`Docker image '${IMAGE_NAME}' successfully build.`));
-        spawnContainer();
+        await spawnContainer();
     });
 }
 

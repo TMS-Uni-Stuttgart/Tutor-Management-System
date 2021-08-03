@@ -9,10 +9,10 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:
-  host: localhost
+  host: tms_sql_db
   port: 3306
   databaseName: tms-docker-test
-  maxRetries: 2
+  maxRetries: 10
   reconnectTimeout: 10000
 
 defaultSettings:
