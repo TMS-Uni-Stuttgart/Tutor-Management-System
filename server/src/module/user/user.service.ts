@@ -44,7 +44,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
                     lastname: 'Admin',
                     roles: [Role.ADMIN],
                     username: 'admin',
-                    password: 'someAdminPassword',
+                    password: 'adminPass',
                     email: 'admin@email.mail',
                 })
             );

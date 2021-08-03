@@ -47,7 +47,7 @@ async function tryPdf() {
     console.log(chalk.blueBright('Logging into the server...'));
 
     try {
-        const axios = await login('admin', 'admin');
+        const axios = await login('admin', 'adminPass');
         console.log(chalk.green('Successfully logged in.'));
 
         console.log(chalk.blueBright('Sending request for PDF...'));
