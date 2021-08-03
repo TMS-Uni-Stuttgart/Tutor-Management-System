@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { StudentDTO } from '../module/student/student.dto';
 import { TutorialService } from '../module/tutorial/tutorial.service';
-import { Role } from '../shared/model/Role';
+import { Role } from 'shared/model/Role';
 import { UseUserFromRequest } from './helpers/UseUserFromRequest';
 
 /**
@@ -26,6 +26,6 @@ export class CreatedInOwnTutorialGuard extends UseUserFromRequest {
         const body: StudentDTO = context.switchToHttp().getRequest<Request>().body;
         const tutorial = await this.tutorialService.findById(body.tutorial);
 
-        return tutorial.tutor?.id === user._id;
+        return tutorial.tutor?.id === user.id;
     }
 }

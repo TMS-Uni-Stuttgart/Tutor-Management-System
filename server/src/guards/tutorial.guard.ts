@@ -49,7 +49,7 @@ export class TutorialGuard extends UseMetadata {
      * @returns Is the given user allowed to access the annotated endpoint?
      */
     protected hasUserAccessToTutorial({ tutorial, user, context }: HasAccessParams): boolean {
-        const userId = user._id;
+        const userId = user.id;
         const allowSubstitutes = this.isAllowedForSubstitutes(context);
         const allowCorrectors = this.isAllowedForCorrectors(context);
 

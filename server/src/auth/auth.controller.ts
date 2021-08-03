@@ -26,7 +26,7 @@ export class AuthController {
             throw new UnauthorizedException();
         }
 
-        return await this.userService.getLoggedInUserInformation(req.user._id);
+        return await this.userService.getLoggedInUserInformation(req.user.id);
     }
 
     @Get('/logout')
