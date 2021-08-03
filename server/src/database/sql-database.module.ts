@@ -36,7 +36,6 @@ export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
 
     async onModuleInit(): Promise<void> {
         const generator = this.orm.getSchemaGenerator();
-
         await this.ensureDatabaseConnection(generator);
         await this.updateSchema(generator);
     }
@@ -62,7 +61,12 @@ export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
         generator: ISchemaGenerator,
         currentTry: number
     ): Promise<void> {
-        this.logger.log(`Establishing connection to the database (try: ${currentTry})...`);
+        const options = this.orm.config.getAll();
+        const dbUrl = `${options.type}://${options.host}:${options.port}`;
+
+        this.logger.log(
+            `Establishing connection to the database '${options.dbName}' at '${dbUrl}' (try: ${currentTry})...`
+        );
         const maxRetries = this.databaseConfig.maxRetries ?? 2;
         const reconnectTimeout = this.databaseConfig.reconnectTimeout ?? 10000;
 
