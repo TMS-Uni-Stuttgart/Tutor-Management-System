@@ -100,30 +100,28 @@ function StudentInfo(): JSX.Element {
       });
   }, [student, enqueueSnackbar]);
 
-  const handleStudentAttendanceChange = (student?: Student) => async (
-    date: DateTime,
-    attendanceState?: AttendanceState
-  ) => {
-    if (!student) {
-      return;
-    }
+  const handleStudentAttendanceChange =
+    (student?: Student) => async (date: DateTime, attendanceState?: AttendanceState) => {
+      if (!student) {
+        return;
+      }
 
-    const attendance: IAttendance | undefined = student.getAttendance(date);
-    const attendanceDTO: IAttendanceDTO = {
-      state: attendanceState,
-      date: date.toISODate() ?? 'DATE_NOTE_PARSEABLE',
-      note: attendance?.note ?? '',
+      const attendance: IAttendance | undefined = student.getAttendance(date);
+      const attendanceDTO: IAttendanceDTO = {
+        state: attendanceState,
+        date: date.toISODate() ?? 'DATE_NOTE_PARSEABLE',
+        note: attendance?.note ?? '',
+      };
+
+      try {
+        await setAttendanceOfStudent(student.id, attendanceDTO);
+        const updatedStudent = await getStudent(student.id);
+
+        setStudent(updatedStudent);
+      } catch {
+        enqueueSnackbar('Anwesenheit konnte nicht gespeichert werden.', { variant: 'error' });
+      }
     };
-
-    try {
-      await setAttendanceOfStudent(student.id, attendanceDTO);
-      const updatedStudent = await getStudent(student.id);
-
-      setStudent(updatedStudent);
-    } catch {
-      enqueueSnackbar('Anwesenheit konnte nicht gespeichert werden.', { variant: 'error' });
-    }
-  };
 
   const handleStudentNoteChange = (student: Student) => async (date: DateTime, note: string) => {
     if (!student) {

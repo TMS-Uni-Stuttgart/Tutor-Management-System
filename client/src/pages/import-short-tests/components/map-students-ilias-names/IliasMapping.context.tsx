@@ -70,10 +70,10 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     params: [],
   });
 
-  const isLoading = useMemo(() => isLoadingStudents || isLoadingShortTest, [
-    isLoadingStudents,
-    isLoadingShortTest,
-  ]);
+  const isLoading = useMemo(
+    () => isLoadingStudents || isLoadingShortTest,
+    [isLoadingStudents, isLoadingShortTest]
+  );
 
   const [iliasNameMapping, setIliasNameMapping] = useState(new Map<string, Student>());
   const [iliasNamesWithoutStudent, setWithoutStudent] = useState<string[]>([]);
@@ -144,9 +144,10 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     [iliasNameMapping]
   );
 
-  const getMapping = useCallback((iliasName: string) => iliasNameMapping.get(iliasName), [
-    iliasNameMapping,
-  ]);
+  const getMapping = useCallback(
+    (iliasName: string) => iliasNameMapping.get(iliasName),
+    [iliasNameMapping]
+  );
 
   const removeMapping = useCallback(
     (iliasName: string) => {

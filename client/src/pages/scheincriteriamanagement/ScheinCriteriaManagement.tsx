@@ -79,34 +79,34 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
     }
   };
 
-  const editCriteria: (criteria: ScheinCriteria) => ScheinCriteriaFormCallback = (
-    criteria
-  ) => async ({ name, identifier, ...values }, { setSubmitting }) => {
-    const dto: IScheinCriteriaDTO = {
-      identifier,
-      name,
-      data: {
-        ...values,
-      },
+  const editCriteria: (criteria: ScheinCriteria) => ScheinCriteriaFormCallback =
+    (criteria) =>
+    async ({ name, identifier, ...values }, { setSubmitting }) => {
+      const dto: IScheinCriteriaDTO = {
+        identifier,
+        name,
+        data: {
+          ...values,
+        },
+      };
+
+      try {
+        const response = await editScheinCriteria(criteria.id, dto);
+
+        setCriterias(criterias.map((crit) => (crit.id === criteria.id ? response : crit)));
+
+        dialog.hide();
+        enqueueSnackbar(`Kriterium "${dto.name}" erfolgreich bearbeitet.`, {
+          variant: 'success',
+        });
+      } catch (reason) {
+        logger.error(reason);
+        enqueueSnackbar(`Kriterium konnte nicht bearbeitet werden.`, {
+          variant: 'error',
+        });
+        setSubmitting(false);
+      }
     };
-
-    try {
-      const response = await editScheinCriteria(criteria.id, dto);
-
-      setCriterias(criterias.map((crit) => (crit.id === criteria.id ? response : crit)));
-
-      dialog.hide();
-      enqueueSnackbar(`Kriterium "${dto.name}" erfolgreich bearbeitet.`, {
-        variant: 'success',
-      });
-    } catch (reason) {
-      logger.error(reason);
-      enqueueSnackbar(`Kriterium konnte nicht bearbeitet werden.`, {
-        variant: 'error',
-      });
-      setSubmitting(false);
-    }
-  };
 
   function handleEditCriteria(criteria: ScheinCriteria) {
     dialog.show({
