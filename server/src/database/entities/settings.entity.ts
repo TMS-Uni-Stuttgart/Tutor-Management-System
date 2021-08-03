@@ -117,7 +117,10 @@ export class Setting {
                   host: mailParams.host,
                   port: mailParams.port,
                   subject: mailParams.subject,
-                  authOptions: { user: mailParams.auth.user, password: mailParams.auth.pass },
+                  authOptions: {
+                      user: mailParams.auth.user,
+                      password: mailParams.auth.pass,
+                  },
               }
             : undefined;
     }

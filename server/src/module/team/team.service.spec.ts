@@ -372,7 +372,11 @@ describe('TeamService', () => {
             const [, actualGrading] =
                 student.toDTO().gradings.find(([key]) => key === sheet.id) ?? [];
 
-            assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
+            assertGradingFromDTO({
+                expected: gradingDTO,
+                actual: actualGrading,
+                handIn: sheet,
+            });
         }
     });
 

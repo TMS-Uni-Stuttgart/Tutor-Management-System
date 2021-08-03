@@ -39,7 +39,9 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      */
     async findAll(): Promise<Student[]> {
         const timeA = Date.now();
-        const allStudents = await this.getStudentRepository().findAll({ populate: true });
+        const allStudents = await this.getStudentRepository().findAll({
+            populate: true,
+        });
         const timeB = Date.now();
 
         this.logger.log(`Time to fetch all students: ${timeB - timeA}ms`);

@@ -81,7 +81,10 @@ export class TeamService {
 
         this.assertAllStudentsInSameTutorial(tutorialId, students);
 
-        const team = new Team({ teamNo: this.getFirstAvailableTeamNo(tutorial), tutorial });
+        const team = new Team({
+            teamNo: this.getFirstAvailableTeamNo(tutorial),
+            tutorial,
+        });
         team.students.set(students);
 
         await this.entityManager.persistAndFlush(team);

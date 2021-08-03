@@ -47,7 +47,8 @@ interface GetRequiredDocsParams {
 
 @Injectable()
 export class ScheincriteriaService
-    implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaEntity> {
+    implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaEntity>
+{
     constructor(
         private readonly entityManager: EntityManager,
         private readonly studentService: StudentService,
@@ -74,7 +75,9 @@ export class ScheincriteriaService
      * @throws `NotFoundException` - If no scheincriteria could be found with the given ID.
      */
     async findById(id: string): Promise<ScheincriteriaEntity> {
-        const criteria = await this.getScheincriteriaRepository().findOne({ id });
+        const criteria = await this.getScheincriteriaRepository().findOne({
+            id,
+        });
 
         if (!criteria) {
             throw new NotFoundException(`No scheincriteria with the ID '${id}' could be found.`);
@@ -95,7 +98,10 @@ export class ScheincriteriaService
      */
     async create(dto: ScheinCriteriaDTO): Promise<IScheinCriteria> {
         const scheincriteria = Scheincriteria.fromDTO(dto);
-        const entity = new ScheincriteriaEntity({ name: dto.name, criteria: scheincriteria });
+        const entity = new ScheincriteriaEntity({
+            name: dto.name,
+            criteria: scheincriteria,
+        });
         await this.entityManager.persistAndFlush(entity);
         return entity.toDTO();
     }

@@ -164,15 +164,8 @@ function assertGeneratedUsers({ expected, actual }: AssertGeneratedUsersParams) 
 }
 
 function assertLoggedInUser({ expected, actual }: AssertLoggedInUserParams) {
-    const {
-        id,
-        firstname,
-        lastname,
-        roles,
-        temporaryPassword,
-        tutorials,
-        tutorialsToCorrect,
-    } = expected;
+    const { id, firstname, lastname, roles, temporaryPassword, tutorials, tutorialsToCorrect } =
+        expected;
 
     expect(actual.id).toBe(id);
     expect(actual.firstname).toBe(firstname);
@@ -211,7 +204,10 @@ describe('UserService', () => {
         const userWithTutorialsToCorrect = MOCKED_USERS[3];
         const fetchedUser = await suite.service.findById(userWithTutorialsToCorrect.id);
 
-        assertUser({ expected: userWithTutorialsToCorrect, actual: fetchedUser });
+        assertUser({
+            expected: userWithTutorialsToCorrect,
+            actual: fetchedUser,
+        });
     });
 
     it('create user without tutorials', async () => {

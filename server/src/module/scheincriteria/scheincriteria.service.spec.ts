@@ -72,7 +72,10 @@ function assertScheincriteriaList({ expected, actual }: AssertScheincriteriaList
     const actualList = sortListById(actual);
 
     for (let i = 0; i < actual.length; i++) {
-        assertScheincriteria({ expected: expectedList[i], actual: actualList[i] });
+        assertScheincriteria({
+            expected: expectedList[i],
+            actual: actualList[i],
+        });
     }
 }
 

@@ -54,7 +54,9 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
      * If there is ONE nothing is done.
      */
     async onApplicationBootstrap(): Promise<void> {
-        const settings = await this.getSettingRepository().findOne({ id: Setting.SETTING_ID });
+        const settings = await this.getSettingRepository().findOne({
+            id: Setting.SETTING_ID,
+        });
 
         if (!settings) {
             this.logger.log(
@@ -89,7 +91,9 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
      * @throws `Error` - If there is not `SettingsDocument` saved in the database.
      */
     private async getSettingsEntity(): Promise<Setting> {
-        const settings = await this.getSettingRepository().findOne({ id: Setting.SETTING_ID });
+        const settings = await this.getSettingRepository().findOne({
+            id: Setting.SETTING_ID,
+        });
 
         if (!settings) {
             throw new Error(

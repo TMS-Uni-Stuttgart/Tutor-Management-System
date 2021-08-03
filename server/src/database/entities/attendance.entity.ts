@@ -59,7 +59,11 @@ export class Attendance {
     }
 
     toDTO(): IAttendance {
-        return { date: this.date.toISODate(), note: this.note, state: this.state };
+        return {
+            date: this.date.toISODate(),
+            note: this.note,
+            state: this.state,
+        };
     }
 
     static fromDTO(dto: AttendanceDTO): Attendance {

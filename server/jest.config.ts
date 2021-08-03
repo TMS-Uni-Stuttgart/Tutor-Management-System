@@ -79,7 +79,9 @@ const config: Config.InitialOptions = {
     moduleFileExtensions: ['js', 'json', 'ts'],
 
     // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
+    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+        prefix: '<rootDir>/',
+    }),
     // moduleNameMapper: {
     //     '/^shared/(.*)$/': '<rootDir>/shared/$1',
     // },

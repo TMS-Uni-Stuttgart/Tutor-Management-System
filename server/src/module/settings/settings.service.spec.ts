@@ -53,7 +53,10 @@ describe('SettingsService', () => {
 
     it('get all settings', async () => {
         const settings = await suite.service.getClientSettings();
-        assertSettings({ actual: settings, expected: MOCKED_SETTINGS_DOCUMENT[0] });
+        assertSettings({
+            actual: settings,
+            expected: MOCKED_SETTINGS_DOCUMENT[0],
+        });
     });
 
     it.each<ClientSettingsDTO>([
@@ -80,7 +83,10 @@ describe('SettingsService', () => {
         await suite.service.setClientSettings(newSetting);
         const settings = await suite.service.getClientSettings();
 
-        const expected = Setting.fromDTO({ ...DEFAULT_SETTINGS, ...newSetting });
+        const expected = Setting.fromDTO({
+            ...DEFAULT_SETTINGS,
+            ...newSetting,
+        });
 
         assertSettings({
             actual: settings,

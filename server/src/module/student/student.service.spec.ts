@@ -93,7 +93,10 @@ function assertStudentGradings({ expected, actual }: AssertStudentParams) {
 
     for (const grading of gradings) {
         const handIn = grading.handIn;
-        assertGrading({ expected: grading, actual: actualGradings.get(handIn.id) });
+        assertGrading({
+            expected: grading,
+            actual: actualGradings.get(handIn.id),
+        });
     }
 }
 
@@ -618,7 +621,11 @@ describe('StudentService', () => {
         const updatedStudent = (await suite.service.findById(student.id)).toDTO();
         const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
 
-        assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
+        assertGradingFromDTO({
+            expected: gradingDTO,
+            actual: actualGrading,
+            handIn: sheet,
+        });
     });
 
     it('set a grading of a sheet with one points prop of 0 of a student', async () => {
@@ -657,7 +664,11 @@ describe('StudentService', () => {
         const updatedStudent = (await suite.service.findById(student.id)).toDTO();
         const [, actualGrading] = updatedStudent.gradings.find(([key]) => key === sheet.id) ?? [];
 
-        assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: sheet });
+        assertGradingFromDTO({
+            expected: gradingDTO,
+            actual: actualGrading,
+            handIn: sheet,
+        });
     });
 
     it('set a grading of an exam of a student', async () => {
@@ -729,7 +740,11 @@ describe('StudentService', () => {
         const [, actualGrading] =
             updatedStudent.gradings.find(([key]) => key === scheinexam.id) ?? [];
 
-        assertGradingFromDTO({ expected: gradingDTO, actual: actualGrading, handIn: scheinexam });
+        assertGradingFromDTO({
+            expected: gradingDTO,
+            actual: actualGrading,
+            handIn: scheinexam,
+        });
     });
 
     it('change cakecount of a student', async () => {

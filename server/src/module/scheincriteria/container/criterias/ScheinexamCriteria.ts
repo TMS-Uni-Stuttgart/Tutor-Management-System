@@ -116,7 +116,10 @@ export class ScheinexamCriteria extends Scheincriteria {
                               achievedPoints.length
                             : 0;
 
-                    return { ...avgInfo, [exercise.exerciseName]: { value, total } };
+                    return {
+                        ...avgInfo,
+                        [exercise.exerciseName]: { value, total },
+                    };
                 }, {}),
                 distribution,
             };

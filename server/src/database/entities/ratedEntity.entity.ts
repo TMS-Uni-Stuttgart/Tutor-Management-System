@@ -142,7 +142,10 @@ export abstract class HasExercises implements HandIn {
         const info: IExercisePointsInfo = this.exercises.reduce(
             (sum, current) => {
                 const ptInfoEx = current.pointInfo;
-                return { must: sum.must + ptInfoEx.must, bonus: sum.bonus + ptInfoEx.bonus };
+                return {
+                    must: sum.must + ptInfoEx.must,
+                    bonus: sum.bonus + ptInfoEx.bonus,
+                };
             },
             { must: 0, bonus: 0 }
         );

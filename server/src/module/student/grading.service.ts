@@ -33,7 +33,12 @@ export class GradingService {
         const em = this.entityManager.fork(false);
         await em.begin();
         try {
-            this.updateGradingOfStudent({ student: student, dto: dto, handIn: handIn, em: em });
+            this.updateGradingOfStudent({
+                student: student,
+                dto: dto,
+                handIn: handIn,
+                em: em,
+            });
             await em.commit();
         } catch (e) {
             await em.rollback();
@@ -54,7 +59,12 @@ export class GradingService {
 
         try {
             for (const student of students) {
-                this.updateGradingOfStudent({ student: student, dto: dto, handIn: handIn, em: em });
+                this.updateGradingOfStudent({
+                    student: student,
+                    dto: dto,
+                    handIn: handIn,
+                    em: em,
+                });
             }
             await em.commit();
         } catch (e) {

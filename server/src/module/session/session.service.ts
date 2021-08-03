@@ -14,7 +14,9 @@ export class SessionService implements ISessionService {
 
     async getSession(sid: string): Promise<SessionData | null> {
         this.logger.log(`GET session for ID ${sid}`);
-        const session = await this.entityManager.findOne(SessionEntity, { sessionId: sid });
+        const session = await this.entityManager.findOne(SessionEntity, {
+            sessionId: sid,
+        });
         return session?.sessionData ?? null;
     }
 

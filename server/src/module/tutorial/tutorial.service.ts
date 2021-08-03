@@ -222,7 +222,11 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
         try {
             if (!dto.tutorId) {
-                await this.removeSubstituteForDates({ tutorial: tutorial, dates: dates, em: em });
+                await this.removeSubstituteForDates({
+                    tutorial: tutorial,
+                    dates: dates,
+                    em: em,
+                });
             } else {
                 await this.addSubstituteForDates({
                     tutorId: dto.tutorId,

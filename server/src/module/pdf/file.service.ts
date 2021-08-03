@@ -139,15 +139,12 @@ export class FileService {
      * Afterwards the `this.filenameTemplate` property is set to the compiled template.
      */
     private async loadFilenameTemplates(): Promise<void> {
-        const {
-            gradingFilename,
-            tutorialGradingFilename,
-        } = await this.settingsService.getClientSettings();
+        const { gradingFilename, tutorialGradingFilename } =
+            await this.settingsService.getClientSettings();
 
         this.gradingFilename = this.parseAndCompileFilenameTemplate(gradingFilename);
-        this.tutorialGradingFilename = this.parseAndCompileFilenameTemplate(
-            tutorialGradingFilename
-        );
+        this.tutorialGradingFilename =
+            this.parseAndCompileFilenameTemplate(tutorialGradingFilename);
     }
 
     /**

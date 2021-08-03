@@ -70,9 +70,8 @@ export class GradingPDFGenerator extends MarkdownPDFGenerator {
         params: GenerateAllTeamsGradingParams
     ): Promise<NodeJS.ReadableStream> {
         const sheet = await this.sheetService.findById(params.sheetId);
-        const {
-            markdownData: markdownForGradings,
-        } = await this.markdownService.getAllTeamsGradings(params);
+        const { markdownData: markdownForGradings } =
+            await this.markdownService.getAllTeamsGradings(params);
         const files: ZipData[] = [];
 
         for (const gradingMD of markdownForGradings) {
