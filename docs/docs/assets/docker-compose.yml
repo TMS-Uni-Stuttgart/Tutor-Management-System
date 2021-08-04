@@ -2,7 +2,7 @@ version: '3.8'
 services:
   mysql:
     # Adjust if you want to use a different mysql version. The TMS is tested only with MySQL 8+.
-    image: mysql:lastest
+    image: mysql:latest
     container_name: tms_sql
     restart: always
     networks:
@@ -10,6 +10,8 @@ services:
     environment:
       MYSQL_USER: ${TMS_DB_USER}
       MYSQL_PASSWORD: ${TMS_DB_PASSWORD}
+      MYSQL_DATABASE: tms-dbe
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     volumes:
       # Replace with the path to the folder in which the db-files should be persisted.
       - <path-to-DB-FOLDER>:/var/lib/mysql
