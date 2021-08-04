@@ -73,6 +73,7 @@ export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
         try {
             await generator.ensureDatabase();
         } catch (err) {
+            this.logger.error(err);
             if (currentTry >= maxRetries) {
                 throw new StartUpException(
                     `Connection to SQL database failed after ${currentTry} tries.`
