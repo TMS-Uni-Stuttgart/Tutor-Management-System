@@ -14,7 +14,7 @@ sidebar_label: Installation
 ### Information about `sudo`
 
 If you need to run docker (and docker-compose) with sudo right you have to prefix all following `docker-compose` and `docker` commands with `sudo`.
-Furthermore keep in mind to add the `-E` flag to the `sudo` command if the docker or docker-compose rely on environment variables so those get passed down, for example:
+Furthermore, keep in mind adding the `-E` flag to the `sudo` command if the docker or docker-compose rely on environment variables so those get passed down, for example:
 
 ```shell
 sudo -E docker-compose up

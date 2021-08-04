@@ -37,19 +37,13 @@ function Home(): JSX.Element {
           <p className='hero__subtitle'>{siteConfig.tagline}</p>
           <div className={styles.buttons}>
             <Link
-              className={clsx(
-                'button button--outline button--secondary button--lg',
-                styles.bigButton
-              )}
+              className={clsx('button button--secondary button--lg', styles.bigButton)}
               to={useBaseUrl('docs/handbook/introduction')}
             >
               Handbook
             </Link>
             <Link
-              className={clsx(
-                'button button--outline button--secondary button--lg',
-                styles.bigButton
-              )}
+              className={clsx('button button--secondary button--lg', styles.bigButton)}
               to={useBaseUrl('docs/setup/installation')}
             >
               Installation

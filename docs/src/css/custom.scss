@@ -17,43 +17,13 @@
     --ifm-code-font-size: 95%;
 
     // Alert stuff
-    --custom-alert-border-width: 16px;
-    --custom-alert-opacity: 0.3;
-    --custom-text-color: #000;
-    --ifm-alert-color: #000;
-
-    /* 
-     * Colors are the only the values of the parameters passed into the rgb (or the first 3 of rgba) function.
-     * The reason is: The color is used to determine a transparent background and non-transparent border color.
-    */
-    --ifm-color-success: 0, 164, 0;
-    --ifm-color-info: 84, 199, 236;
-    --ifm-color-warning: 255, 186, 0;
-    --ifm-color-danger: 250, 56, 62;
-    --custom-color-secondary: 206, 206, 206;
-    --custom-derp: rgb(206, 206, 206);
+    --custom-alert-border-width: 8px;
 }
 
-:root[data-theme='dark'] {
-    --ifm-alert-color: #fff;
-    --custom-text-color: #fff;
-    --custom-alert-opacity: 0.6;
-}
+:root[data-theme='dark'] {}
 
 .alert {
-    background-color: rgba(var(--ifm-alert-background-color), var(--custom-alert-opacity));
-    border: 0 none var(--ifm-alert-border-color);
-    border-left-style: solid;
-    border-left: var(--custom-alert-border-width) solid rgba(var(--ifm-alert-border-color), 1);
-    border-radius: var(--ifm-alert-border-radius);
-    padding: var(--ifm-alert-padding-vertical) var(--ifm-alert-padding-horizontal);
-}
-
-.alert--secondary {
-    --ifm-alert-background-color: var(--custom-color-secondary);
-    --ifm-alert-border-color: var(--custom-color-secondary);
-    --ifm-alert-color: var(--custom-text-color);
-    --ra-admonition-icon-color: var(--ifm-alert-color);
+    border-left-width: var(--custom-alert-border-width);
 }
 
 .markdown img {
