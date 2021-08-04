@@ -23,7 +23,7 @@ The configuration object is of type `ApplicationConfiguration`.
 
 | Option            | Required / Default                         | Description                                                                                                                                                                                                                                                            |
 | ----------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `database`        | **Required**                               | `DatabaseConfiguration` - Configuration of the database. See below for more information.                                                                                                                                                                               |
+| `database`        | **Required**                               | `DatabaseConfiguration` - Configuration of the database. See [below](#databaseconfiguration) for more information.                                                                                                                                                                               |
 | `sessionTimeout`  | _Default: 120_                             | `Number` - The time of inactivity in **minutes** after which the session of the user times out and he/she must log in again.                                                                                                                                           |
 | `prefix`          | _(optional, no default)_                   | `String` - Prefix of the root path the application is hosted on. If the application is hosted on the root path this setting must be omitted. Otherwise it has to be set to the prefix (ie. for the path `https://example.org/foo` this setting has to be set to `foo`) |
 | `handbookUrl`     | _(optional, no default)_                   | `String` - URL to the handbook of the TMS (the sample configuration sets this to the URL of this handbook). You should only have to change this if you want to provide your own version of the handbook.                                                               |
@@ -35,23 +35,29 @@ The following table contains the options available for the database configuratio
 
 | Option        | Required / Default                                             | Description                                                                                                                                                                                                                                                                                                                       |
 | ------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `databaseURL` | **Required**                                                   | `String` - The URL which resolves to the database and the desired collection. Must be a MongoDB URL. _Please note: Databases other than MongoDB might work if they are compatible to mongoose. However they are not tested and officially supported._                                                                             |
-| `maxRetries`  | _Default: 2_                                                   | `Number` - Configures how often the server tries to establish a connection to the database while **starting** the server. If there is no connection after the maximum amount of retries the server is stopped with an error code. _Please note: Any try to connect can take up to 30s._                                           |
-| `config`      | _Default: `{useNewUrlParser: true, useUnifiedTopology: true}`_ | `ConnectionOptions` - The `auth` property will not be respected. To set authentication details one must use the corresponding [environment variables](#environment-variables) Further configuration options provided to the MongoDB connection. For more information see the [mongoose documentation][mongoose-createconnection]. |
+| `host` | **Required** | `String` - The name/address of the host (without port) which hosts the database container/server. |
+| `port` | **Required** | `Number` - The port of the database container/server. |
+| `databaseName` | **Required** | `String` - The name of the database which holds the data of the TMS. If the database does not exists while the server is starting the database gets created. |
+| `maxRetries`  | _Default: 2_                                                   | `Number` - Configures how often the server tries to establish a connection to the database while **starting** the server. If there is no connection after the maximum amount of retries the server is stopped with an error code.                                           |
+| `reconnectTimeout` | _Default: 10000_ | `Number` - The time in _milliseconds_ the server waits before retrying to connect to the database on start. |
 
 ## Environment Variables
 
-All of the following environment variables are **required** unless stated otherwise.
+All the following environment variables are **required** unless stated otherwise.
 
 | Variable           | Description                                                                                                                                                                              |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TMS_MONGODB_USER` | `String` - Username to log into the mongoDB.                                                                                                                                             |
-| `TMS_MONGODB_PW`   | `String` - Password to log into the mongoDB.                                                                                                                                             |
-| `TMS_SECRET`       | `String` - Secret to encrypt sensitive fields in the documents in the DB (ie names of users, ...). This secret should be created like a _secure password_ (no easy to guess words, ...). |
+| `TMS_DB_USER` | `String` - Username to log into the MySQL database.                                                                                                                                             |
+| `TMS_DB_PASSWORD`   | `String` - Password to log into the MySQL database.                                                                                                                                             |
+| `TMS_SECRET`       | `String` - Secret to use to encrypt and decrypt sensitive database entries. This secret should be created like a _secure password_ (no easy to guess words, ...). |
+
+:::warning Keep your secret safe!
+If you lose the secret used to encrypt database entries there is **no** way to recover the data from the database in a decrypted manner.
+:::
 
 ## Pug Templates
 
-The Tutor-Management-System can generate various PDFs. These can be configured using the following templates. The templates must be inside an `templates/` folder inside the `config/` folder. All templates use the [pug template engine][pug] and variables which will get substituted by the corresponding value on PDF generation. Every template section contains a description on it's usage, the variables used inside and an example. Please note that the templates do NOT need a `html`, `body` or `head` because they will be inserted into a body during PDF generation.
+The Tutor-Management-System can generate various PDFs. These can be configured using the following templates. The templates must be inside an `templates/` folder inside the `config/` folder. All templates use the [pug template engine][pug] and variables which will get substituted by the corresponding value on PDF generation. Every template section contains a description on its usage, the variables used inside and an example. Please note that the templates do NOT need a `html`, `body` or `head` because they will be inserted into a body during PDF generation.
 
 :::caution
 Please note that **all template files** must be present at the start of the server.

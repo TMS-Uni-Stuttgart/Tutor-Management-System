@@ -1,17 +1,18 @@
-version: '3.1'
+version: '3.8'
 services:
-  mongo:
-    image: mongo
-    container_name: mongo
+  mysql:
+    # Adjust if you want to use a different mysql version. The TMS is tested only with MySQL 8+.
+    image: mysql:lastest
+    container_name: tms_sql
     restart: always
     networks:
       - tms_db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MYSQL_USER: ${TMS_DB_USER}
+      MYSQL_PASSWORD: ${TMS_DB_PASSWORD}
     volumes:
       # Replace with the path to the folder in which the db-files should be persisted.
-      - <path-to-DB-FOLDER>:/data/db
+      - <path-to-DB-FOLDER>:/var/lib/mysql
 
   tms-server:
     # Adjust the image with the version you want to use. If you do not use 'latest' updating the container will be easier in the future.
@@ -22,13 +23,13 @@ services:
       # This one is needed so puppeteer properly works inside the container (see: https://developers.google.com/web/tools/puppeteer/troubleshooting#tips)
       - SYS_ADMIN
     depends_on:
-      - mongo
+      - mysql
     networks:
       - proxy_network
       - tms_db
     environment:
-      TMS_MONGODB_USER: ${MONGO_USER}
-      TMS_MONGODB_PW: ${MONGO_PASSWORD}
+      TMS_SQL_DB_USER: ${TMS_DB_USER}
+      TMS_SQL_DB_PW: ${TMS_DB_PASSWORD}
       TMS_SECRET: ${TMS_SECRET}
     volumes:
       # Replace with the path to the folder containing the configuration and template files of the TMS.

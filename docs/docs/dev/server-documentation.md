@@ -12,7 +12,7 @@ You can find the documentation of the server API [here](pathname:///server-doc) 
 
 ## Information about the Documentation
 
-This documentation comes with a seperat and auto-generated documentation for the server API.
+This documentation comes with a separate and auto-generated documentation for the server API.
 It uses [compodoc](https://compodoc.app/) to generate the documentation based on the modules, controllers, services, classes, ... present in the server.
 The generator creates corresponding diagrams and uses the JSDoc (if present).
 

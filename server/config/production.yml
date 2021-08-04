@@ -9,7 +9,7 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:
-  host: localhost
+  host: tms_sql
   port: 3306
   databaseName: tms-db
   maxRetries: 2

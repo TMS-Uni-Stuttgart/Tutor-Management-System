@@ -6,13 +6,13 @@ sidebar_label: Nginx
 
 ## Introduction
 
-This section covers how to set up [nginx][nginx] for the Tutor-Management-System (or your server in general). As for the installation itself docker is required because this setup steps through setting up a docker container running nginx. Furthermore the steps assume you use docker-compose to set up the nginx container but you can find the corresponding commands [below](#commands).
+This section covers how to set up [nginx][nginx] for the Tutor-Management-System (or your server in general). As for the installation itself docker is required because this setup steps through setting up a docker container running nginx. Furthermore, the steps assume you use docker-compose to set up the nginx container, but you can find the corresponding commands [below](#commands).
 
 ## Step-by-Step
 
 ### Using one docker-compose file
 
-This sections should be considered a part of the [installation guide][installation-doc].
+These sections should be considered a part of the [installation guide][installation-doc].
 It assumes that you use docker-compose to manage the setup of all required containers.
 However, if you want to use `docker` commands instead you can find a list of those [below](#commands) aswell.
 
@@ -49,21 +49,20 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
 1. **Gather** your SSL certificates and put them in a folder which can be mounted into the docker container. This Step-by-Step guide assumes they are in the `certs/` folder shown above.
 
    :::tip
-   If you do not have an certificates you can use ones from the CA [Let's Encrypt][lets-encrypt].
+   If you do not have a certificate you can use one from the CA [Let's Encrypt][lets-encrypt].
    :::
 
 1. **Open** the `tms.conf` file inside the `sites/sites-available/` folder and make the following adjustment:
 
-   1. **Replace** _all_ `<URL>` occurences with the url (without protocol!) of your server
+   1. **Replace** _all_ `<URL>` occurrences with the url (without protocol!) of your server
       \_For example: Your TMS instance has the URL `https://my-tms-instance.de` you only put `my-tms-instance.de` there.
 
       :::note
-      If the TMS instance should be reachable through several URLs you can put all in there seperated with **spaces**, for example:
+      If the TMS instance should be reachable through several URLs you can put all of them in there seperated with **spaces**, for example:
 
       ```
       server_name www.my-tms-instance.de my-tms-instance.de other-url.com;
       ```
-
       :::
 
    1. **Replace** `<PUBLIC_KEY>` with the _absolute_ path the public key will be _in the container_. For the example docker-compose service and folders this would be
@@ -78,9 +77,9 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
       ssl_certificate_key /etc/nginx/certs/privkey.pem;
       ```
 
-   :::important
-   If you want to use your certificate for other configured sites aswell just move the entries `ssl_certificate` and `ssl_certificate_key` into the `ssl.conf` file found in the `sites/` folder. Remember to `include` the `ssl.conf` file in additional site configurations.
-   :::
+      :::important
+      If you want to use your certificate for other configured sites aswell just move the entries `ssl_certificate` and `ssl_certificate_key` into the `ssl.conf` file found in the `sites/` folder. Remember to `include` the `ssl.conf` file in additional site configurations.
+      :::
 
    1. **Verify** that the URL in the location `/` after `proxy_pass` matches the name of the TMS container followed by the port the server listens on (by default the name is `tms-server` and the port is `8080`).
 
@@ -97,13 +96,13 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
    1. **Create** a symbolic link inside the `sites-enabled/` folder which points to your created `conf`-file
 
       ```shell
-      ln -s ../sites-available/[NAME-OF-FILE] .
+      ln -s ../sites-available/<NAME-OF-FILE> .
       ```
 
 1. **Add** the nginx service to your docker-compose file used during the installation. You can find the service in [this sample docker-compose file](../assets/docker-compose-nginx.yml).
 
    :::caution
-   Make sure that the mounted folders match the ones you want to mount (ie your folders have different names than this Step-by-Step guide assumes).
+   Make sure that the mounted folders match the ones you want to mount (if your folders have different names than this Step-by-Step guide assumes).
    :::
 
 1. **Proceed** with the rest of the [installation guide][installation-doc-step-by-step].
@@ -160,7 +159,7 @@ If you want to use different docker-compose files for nginx and the TMS follow t
    ```
 
    :::warning
-   You have to start the server of the TMS **before** starting nginx. Otherwise nginx will throw an error and stop.
+   You have to start the server of the TMS **before** starting nginx. Otherwise, nginx will throw an error and stop.
    :::
 
 <!-- LINKS -->

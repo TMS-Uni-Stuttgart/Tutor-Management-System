@@ -12,11 +12,11 @@ All projects inside this repository use [TypeScript](https://www.typescriptlang.
 
 This repository contains four projects.
 Due to [pnpm's workspace feature](https://pnpm.js.org/en/workspaces) all dependencies are installed by running `pnpm install` in the root folder.
-The root folder also contains configuration files for ESLint and Prettier aswall as the Dockerfile used to generate the docker image.
+The root folder also contains configuration files for ESLint and Prettier aswell as the Dockerfile used to generate the docker image.
 
 :::info pnpm workspace
 The `pnpm-workspace.yaml` file is empty but it **must be present**.
-Otherwise pnpm would not treat the repository as a project containing workspaces.
+Otherwise, pnpm would not treat the repository as a project containing workspaces.
 :::
 
 ### `client/`
@@ -25,15 +25,15 @@ Contains a [snowpack](https://www.snowpack.dev/) project for the [React](https:/
 It comes preconfigured with Hot Module Reload and a special development server to serve the client during development.
 
 :::info HMR
-While HMR keeps as much state as possible there are some edge cases where React contexts are not reinitilized correctly.
-In such cases just refresh the page completly.
+While HMR keeps as much state as possible there are some edge cases where React contexts are not reinitialized correctly.
+In such cases just refresh the page completely.
 :::
 
 You also find the `snowpack.config.js` file at the root of this folder.
 In this file you can configure snowpack to your needs.
 However, there is a configuration present that works with inter project setup.
 One configuration option you might want to change is the URL to an instance of the TMS server you want to use during development.
-By default the configuration assumes that you run a development server locally.
+By default, the configuration assumes that you run a development server locally.
 To change the TMS server used change the `target` property of the `apiProxy` object:
 
 ```ts
@@ -52,7 +52,7 @@ Inside the client project `src/` folder you can find the following structure:
   If you add a component a good practice would be to put each component in a subfolder.
   This makes it easier to split it up into sub-components itself.
   :::info
-  If you design a component that should only be used by one page put it next to that page (see below).
+  If you design a component that should only be used by one single page put it next to that page (see below).
   :::
 - `hooks/`:
   Contains all hooks that can be used by any component in the app.
@@ -67,8 +67,8 @@ Inside the client project `src/` folder you can find the following structure:
   These classes are all set up to be used with [class-transformer](https://github.com/typestack/class-transformer).
 - `pages/`:
   Contains all components used by the routing logic.
-  These components each represent a "page" of the application and therefore called "pages" in this documenation.
-  Each component has it's own subfolder and can depend on special components.
+  These components each represent a "page" of the application and therefore called "pages" in this documentation.
+  Each component has its own subfolder and can depend on special components.
   If a component is designed to only be used by one page it should be put in a `components/` subfolder of the "page".
 - `routes/`:
   Contains all the logic needed for the routing logic.
@@ -88,7 +88,7 @@ Inside the client project `src/` folder you can find the following structure:
   If you want to represent the route `tutorial/:tutorialId/enterpoints/:sheetId`, where `:sheetId` is an _optional_ parameter, you would create the `path` property as follows:
 
   ```ts
-  path: parts('tutorial', param('tutorialId'), 'enterpoints', param('sheetId', true)),
+  path: parts('tutorial', param('tutorialId'), 'enterpoints', param('sheetId', true))
   ```
 
   :::
@@ -114,7 +114,7 @@ Inside the `server/` folder you find the following subfolders:
 
 - `app/`:
   Contains a mock html-file so the server would not throw an error if one access a non-api route during development directly.
-  Please note that while the production build also contains an `app/` folder this folder is not related to files used in production.
+  Please note that while the production build also contains an `app/` folder this folder is not related to the files used in production.
 
 - `config/`:
   Contains several configuration files and pug templates used by the server.
@@ -123,8 +123,8 @@ Inside the `server/` folder you find the following subfolders:
 
 - `src/`:
   Contains the source code (excluding tests) for the server.
-  The source folder has several supfolders itself.
-  The folders have names with speak for themselfs:
+  The source folder has several subfolders itself.
+  The folders have names with speak for themselves:
 
   - `auth/`: Code related to authentication.
   - `database/`: Contains the data models for the database and the code to connect to a database.
@@ -142,7 +142,7 @@ Inside the `server/` folder you find the following subfolders:
     The modules are organized into subfolders.
     :::info Creating a new module
     To generate a new module run the following command (replace `<name>` with the actual module name).
-    The NestJS CLI will create all neccessary files and adds the module to the `app.module.js` file.
+    The NestJS CLI will create all necessary files and adds the module to the `app.module.js` file.
     ```cmd
     nest g module module/<name>
     ```
@@ -171,7 +171,7 @@ Inside the `server/` folder you find the following subfolders:
 
 Contains the documentation powered by [docusaurus](https://v2.docusaurus.io/).
 To add, update (or delete) pages in the documentation add / update the corresponding markdown file into the `docs/` folder.
-The `src/` folder contains the styling (`css/`), the root React page (`pages/`) and components that can be used inside the markdown documents (`components/`).
+The `src/` folder contains the styling (`css/`), the root React page (`pages/`) and components that can be used inside the Markdown documents (`components/`).
 
 :::note
 Yes, the complete path to markdown files related to the repository's root is `docs/docs/<folder>/<filename>.md`, don't ask...
@@ -230,9 +230,9 @@ Each request follows this basic route:
 First, it runs through the authentication and one or more authorization guards to ensure the user making the request is allowed to do so.
 Second, if the request has a body the body gets parsed and converted to an actual object.
 During this process the body is also validated (if it is invalid an error response is sent and the request handling ends).
-Afterwards the request gets handed to the approriate controller which passed it onto the corresponding service.
+Afterwards the request gets handed to the appropriate controller which passed it onto the corresponding service.
 The service communicates with the database to gather and update the necessary resources.
-Finally a response is send to the client.
+Finally, a response is sent to the client.
 The response could either contain the requested data (or a success message if no data was requested) or it contains an error message if something went wrong.
 
 [build-release-doc]: ./build-release#build-docker-image

@@ -1,31 +1,26 @@
 version: '3.1'
 services:
-  mongo:
-    image: mongo
-    container_name: mongo
-    restart: always
+  mysql:
+    container_name: tms_db
+    image: mysql:latest
     ports:
-      - 27017:27017
-    networks:
-      - tms_db
+      - '3306:3306'
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD: some-password
+    networks:
+      - tms_dev_db
 
-  mongo-express:
-    container_name: mongo_express
-    image: mongo-express
-    depends_on:
-      - mongo
-    restart: always
-    networks:
-      - tms_db
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin
     ports:
-      - 8081:8081
+      - '4242:80'
+    depends_on:
+      - mysql
     environment:
-      # Make sure they match the ones above
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      PMA_HOST: tms_db
+    networks:
+      - tms_dev_db
 
 networks:
-  tms_db:
+  tms_dev_db:
