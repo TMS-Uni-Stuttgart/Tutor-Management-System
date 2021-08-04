@@ -5,7 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 4000",
-    "docs:server": "cd ../server/ && pnpx compodoc -p ./tsconfig.build.json -d ../docs/static/server-doc/ ./src -n 'TMS Server Documentation' --theme material",
+    "docs:server": "cd ../server/ && pnpx @compodoc/compodoc -p ./tsconfig.build.json -d ../docs/static/server-doc/ ./src -n 'TMS Server Documentation' --theme material",
     "prebuild": "pnpm docs:server",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
