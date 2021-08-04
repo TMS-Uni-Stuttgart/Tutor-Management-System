@@ -88,7 +88,7 @@ Inside the client project `src/` folder you can find the following structure:
   If you want to represent the route `tutorial/:tutorialId/enterpoints/:sheetId`, where `:sheetId` is an _optional_ parameter, you would create the `path` property as follows:
 
   ```ts
-  path: parts('tutorial', param('tutorialId'), 'enterpoints', param('sheetId', true))
+  path: parts('tutorial', param('tutorialId'), 'enterpoints', param('sheetId', true));
   ```
 
   :::

@@ -23,7 +23,7 @@ The configuration object is of type `ApplicationConfiguration`.
 
 | Option            | Required / Default                         | Description                                                                                                                                                                                                                                                            |
 | ----------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `database`        | **Required**                               | `DatabaseConfiguration` - Configuration of the database. See [below](#databaseconfiguration) for more information.                                                                                                                                                                               |
+| `database`        | **Required**                               | `DatabaseConfiguration` - Configuration of the database. See [below](#databaseconfiguration) for more information.                                                                                                                                                     |
 | `sessionTimeout`  | _Default: 120_                             | `Number` - The time of inactivity in **minutes** after which the session of the user times out and he/she must log in again.                                                                                                                                           |
 | `prefix`          | _(optional, no default)_                   | `String` - Prefix of the root path the application is hosted on. If the application is hosted on the root path this setting must be omitted. Otherwise it has to be set to the prefix (ie. for the path `https://example.org/foo` this setting has to be set to `foo`) |
 | `handbookUrl`     | _(optional, no default)_                   | `String` - URL to the handbook of the TMS (the sample configuration sets this to the URL of this handbook). You should only have to change this if you want to provide your own version of the handbook.                                                               |
@@ -33,23 +33,23 @@ The configuration object is of type `ApplicationConfiguration`.
 
 The following table contains the options available for the database configuration, a short description and their default value (if they are optional).
 
-| Option        | Required / Default                                             | Description                                                                                                                                                                                                                                                                                                                       |
-| ------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `host` | **Required** | `String` - The name/address of the host (without port) which hosts the database container/server. |
-| `port` | **Required** | `Number` - The port of the database container/server. |
-| `databaseName` | **Required** | `String` - The name of the database which holds the data of the TMS. If the database does not exists while the server is starting the database gets created. |
-| `maxRetries`  | _Default: 2_                                                   | `Number` - Configures how often the server tries to establish a connection to the database while **starting** the server. If there is no connection after the maximum amount of retries the server is stopped with an error code.                                           |
-| `reconnectTimeout` | _Default: 10000_ | `Number` - The time in _milliseconds_ the server waits before retrying to connect to the database on start. |
+| Option             | Required / Default | Description                                                                                                                                                                                                                       |
+| ------------------ | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `host`             | **Required**       | `String` - The name/address of the host (without port) which hosts the database container/server.                                                                                                                                 |
+| `port`             | **Required**       | `Number` - The port of the database container/server.                                                                                                                                                                             |
+| `databaseName`     | **Required**       | `String` - The name of the database which holds the data of the TMS. If the database does not exists while the server is starting the database gets created.                                                                      |
+| `maxRetries`       | _Default: 2_       | `Number` - Configures how often the server tries to establish a connection to the database while **starting** the server. If there is no connection after the maximum amount of retries the server is stopped with an error code. |
+| `reconnectTimeout` | _Default: 10000_   | `Number` - The time in _milliseconds_ the server waits before retrying to connect to the database on start.                                                                                                                       |
 
 ## Environment Variables
 
 All the following environment variables are **required** unless stated otherwise.
 
-| Variable           | Description                                                                                                                                                                              |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TMS_DB_USER` | `String` - Username to log into the MySQL database.                                                                                                                                             |
-| `TMS_DB_PASSWORD`   | `String` - Password to log into the MySQL database.                                                                                                                                             |
-| `TMS_SECRET`       | `String` - Secret to use to encrypt and decrypt sensitive database entries. This secret should be created like a _secure password_ (no easy to guess words, ...). |
+| Variable          | Description                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TMS_DB_USER`     | `String` - Username to log into the MySQL database.                                                                                                               |
+| `TMS_DB_PASSWORD` | `String` - Password to log into the MySQL database.                                                                                                               |
+| `TMS_SECRET`      | `String` - Secret to use to encrypt and decrypt sensitive database entries. This secret should be created like a _secure password_ (no easy to guess words, ...). |
 
 :::warning Keep your secret safe!
 If you lose the secret used to encrypt database entries there is **no** way to recover the data from the database in a decrypted manner.

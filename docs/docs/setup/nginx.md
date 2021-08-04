@@ -63,6 +63,7 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
       ```
       server_name www.my-tms-instance.de my-tms-instance.de other-url.com;
       ```
+
       :::
 
    1. **Replace** `<PUBLIC_KEY>` with the _absolute_ path the public key will be _in the container_. For the example docker-compose service and folders this would be

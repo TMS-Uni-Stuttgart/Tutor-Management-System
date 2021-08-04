@@ -77,7 +77,7 @@ If you are on a machine that requires manually starting the docker engine do so 
    1. **Export** the following environment variables in the terminal:
 
       | Env-Variable      | Purpose                                                                            |
-      | ----------------  | ---------------------------------------------------------------------------------- |
+      | ----------------- | ---------------------------------------------------------------------------------- |
       | `TMS_DB_USER`     | Username used to authenticate on the MySQL database.                               |
       | `TMS_DB_PASSWORD` | Password used to authenticate on the MySQL database.                               |
       | `TMS_SECRET`      | Secret to use to encrypt and decrypt sensitive database entries. **Keep it safe!** |
