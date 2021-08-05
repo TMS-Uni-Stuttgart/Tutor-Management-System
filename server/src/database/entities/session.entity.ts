@@ -8,7 +8,7 @@ export class SessionEntity {
     readonly sessionId: string;
 
     @Property({ type: EncryptedJsonType })
-    readonly sessionData: SessionData;
+    sessionData: SessionData;
 
     constructor(sessionId: string, sessionData: SessionData) {
         this.sessionId = sessionId;

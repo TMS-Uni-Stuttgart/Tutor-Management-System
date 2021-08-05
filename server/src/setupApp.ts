@@ -39,7 +39,7 @@ function initSecurityMiddleware(app: INestApplication) {
             resave: false,
             // Is used to extend the expires date on every request. This means, maxAge is relative to the time of the last request of a user.
             rolling: true,
-            saveUninitialized: true,
+            saveUninitialized: false,
             cookie: {
                 httpOnly: true,
                 secure: false, // TODO: Make true for production.

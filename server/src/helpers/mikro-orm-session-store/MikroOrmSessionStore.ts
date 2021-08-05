@@ -33,6 +33,10 @@ export class MikroOrmSessionStore extends session.Store {
                 callback?.(err);
             });
     }
+
+    touch(sid: string, session: session.SessionData, callback?: () => void): void {
+        this.set(sid, session, callback);
+    }
 }
 
 export interface ISessionService {
