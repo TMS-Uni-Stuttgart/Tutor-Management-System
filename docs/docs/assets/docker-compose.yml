@@ -8,9 +8,15 @@ services:
     networks:
       - tms_db
     environment:
+      # Username of the user used by the TMS to communicate with the database.
       MYSQL_USER: ${TMS_DB_USER}
+      # Password of the user used by the TMS.
       MYSQL_PASSWORD: ${TMS_DB_PASSWORD}
+      # The database used for the TMS. Can be omitted but if it's specified here the configured user (through MYSQL_USER) will automatically get superuser access to the database.
+      # If omitted you have to manually configure the permission yourself.
       MYSQL_DATABASE: tms-dbe
+      # This is needed because the root password must not be empty. The password will be printed to the console the first time the container is created.
+      # However, you can set a different custom root password by using the environment variable MYSQL_ROOT_PASSWORD instead.
       MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     volumes:
       # Replace with the path to the folder in which the db-files should be persisted.
@@ -43,3 +49,7 @@ volumes:
 networks:
   tms_db:
   proxy_network:
+    # Use an external network if nginx is created with a different docker-compose file.
+    # Remove the following lines if all containers are configured in this file.
+    external:
+      name: external_proxy_network
