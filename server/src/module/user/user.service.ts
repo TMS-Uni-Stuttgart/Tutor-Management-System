@@ -40,7 +40,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
             this.logger.log('No admin user found in database. Creating new admin...');
             const user = await userRepository.create(
                 new User({
-                    firstname: 'Test',
+                    firstname: 'Created',
                     lastname: 'Admin',
                     roles: [Role.ADMIN],
                     username: 'admin',
