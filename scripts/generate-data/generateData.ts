@@ -1,19 +1,16 @@
 /* eslint-disable no-console */
 import { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
-import { AttendanceState, IAttendanceDTO } from '../../server/src/shared/model/Attendance';
-import { IExerciseGradingDTO, IGradingDTO } from '../../server/src/shared/model/Gradings';
-import { IExerciseDTO, ISubexercise } from '../../server/src/shared/model/HasExercises';
-import { Role } from '../../server/src/shared/model/Role';
-import {
-    IScheinCriteriaDTO,
-    ScheincriteriaIdentifier,
-} from '../../server/src/shared/model/ScheinCriteria';
-import { ISheet, ISheetDTO } from '../../server/src/shared/model/Sheet';
-import { IShortTest, IShortTestDTO } from '../../server/src/shared/model/ShortTest';
-import { IStudent, IStudentDTO, StudentStatus } from '../../server/src/shared/model/Student';
-import { ITutorial, ITutorialDTO } from '../../server/src/shared/model/Tutorial';
-import { ICreateUserDTO, IUser } from '../../server/src/shared/model/User';
+import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance';
+import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings';
+import { IExerciseDTO, ISubexercise } from 'shared/model/HasExercises';
+import { Role } from 'shared/model/Role';
+import { IScheinCriteriaDTO, ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria';
+import { ISheet, ISheetDTO } from 'shared/model/Sheet';
+import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest';
+import { IStudent, IStudentDTO, StudentStatus } from 'shared/model/Student';
+import { ITutorial, ITutorialDTO } from 'shared/model/Tutorial';
+import { ICreateUserDTO, IUser } from 'shared/model/User';
 import { login } from '../util/login';
 import {
     createScheinCriteria,
@@ -23,6 +20,9 @@ import {
     setAttendanceOfStudent,
     setPointsOfStudent,
 } from './fetch/helpers';
+
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'adminPass';
 
 const STUDENTS_TOTAL = 600;
 const TUTORIALS_TOTAL = 50;
@@ -436,7 +436,7 @@ async function createStudent({
 
 async function run() {
     try {
-        axios = await login('admin', 'admin');
+        axios = await login(ADMIN_USERNAME, ADMIN_PASSWORD);
 
         const tutorials = await createTutorials();
         await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
@@ -460,7 +460,9 @@ async function run() {
     }
 }
 
-run();
+run()
+    .then(() => console.log('Finished generating data.'))
+    .catch((err) => console.log(err));
 
 interface CreateStudentParams {
     no: number;

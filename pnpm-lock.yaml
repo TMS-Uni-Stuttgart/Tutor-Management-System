@@ -205,9 +205,11 @@ importers:
     specifiers:
       axios: ^0.21.1
       ts-node: ^9.1.1
+      tsconfig-paths: ^3.10.1
     devDependencies:
       axios: 0.21.1
       ts-node: 9.1.1
+      tsconfig-paths: 3.10.1
 
   server:
     specifiers:

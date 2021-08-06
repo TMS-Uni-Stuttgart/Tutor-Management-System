@@ -8,11 +8,13 @@
     "eslint:check": "eslint \"./**/*.ts?(x)\"",
     "format": "eslint --fix \"./**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"./**/*.ts?(x)\"",
+    "generateData": "ts-node -r tsconfig-paths/register ./generate-data/generateData.ts",
     "ts:check": "tsc --project . --noEmit",
     "ts:check:watch": "tsc --project . --noEmit -w"
   },
   "devDependencies": {
     "axios": "^0.21.1",
-    "ts-node": "^9.1.1"
+    "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.10.1"
   }
 }

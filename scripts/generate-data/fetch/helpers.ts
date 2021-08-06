@@ -2,12 +2,9 @@ import { AxiosInstance } from 'axios';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { ISheet, ISheetDTO } from 'shared/model/Sheet';
-import {
-    IScheinCriteria,
-    IScheinCriteriaDTO,
-} from '../../../server/src/shared/model/ScheinCriteria';
-import { IShortTest, IShortTestDTO } from '../../../server/src/shared/model/ShortTest';
-import { ICreateUserDTO, IUser } from '../../../server/src/shared/model/User';
+import { IScheinCriteria, IScheinCriteriaDTO } from 'shared/model/ScheinCriteria';
+import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest';
+import { ICreateUserDTO, IUser } from 'shared/model/User';
 
 export async function createSheet(sheetInfo: ISheetDTO, axios: AxiosInstance): Promise<ISheet> {
     const response = await axios.post<ISheet>('sheet', sheetInfo);
