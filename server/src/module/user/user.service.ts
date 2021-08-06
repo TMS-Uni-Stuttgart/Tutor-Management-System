@@ -375,6 +375,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
             throw new NotFoundException(`User with username "${username}" was not found`);
         }
 
+        await this.getUserRepository().populate(user, true);
         return user;
     }
 
@@ -386,7 +387,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @private
      */
     private async getAllUsersWithUsername(username: string): Promise<User[]> {
-        const allUsers = await this.findAll();
+        const allUsers = await this.getUserRepository().findAll({ populate: false });
         return allUsers.filter((u) => u.username === username);
     }
 
