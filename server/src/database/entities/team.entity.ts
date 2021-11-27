@@ -1,8 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { ITeam, ITeamInEntity } from 'shared/model/Team';
 import { v4 } from 'uuid';
-import { Grading } from './grading.entity';
-import { HandIn } from './ratedEntity.entity';
 import { Student } from './student.entity';
 import { Tutorial } from './tutorial.entity';
 
@@ -49,20 +47,6 @@ export class Team {
 
     getStudents(): Student[] {
         return this.students.getItems();
-    }
-
-    getGradings(handIn: HandIn): Grading[] {
-        const gradings: Grading[] = [];
-
-        for (const student of this.students) {
-            const gradingOfStudent = student.getGrading(handIn);
-
-            if (gradingOfStudent && gradings.findIndex((g) => g.belongsToStudent(student)) === -1) {
-                gradings.push(gradingOfStudent);
-            }
-        }
-
-        return gradings;
     }
 
     toDTO(): ITeam {

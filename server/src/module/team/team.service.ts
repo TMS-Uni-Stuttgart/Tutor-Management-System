@@ -12,7 +12,6 @@ import { Student } from '../../database/entities/student.entity';
 import { Team } from '../../database/entities/team.entity';
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { GradingService } from '../student/grading.service';
-import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { TeamDTO } from './team.dto';
@@ -133,26 +132,6 @@ export class TeamService {
         team.students.removeAll();
 
         await repo.removeAndFlush(team);
-    }
-
-    /**
-     * Creates or updates a new grading and adds this grading to all student which don't already have a grading for the sheet in question.
-     *
-     * If the student already has a grading, don't change anything because:
-     *   - A: The student has this _exact_ grading anyways so it will get updated by updating the grading OR
-     *   - B: The student has a _different_ grading which should not be changed by this operation.
-     *
-     * If the grading is not applied to any students in the end it will __NOT__ get saved to the database (to prevent unused documents).
-     *
-     * @param teamId TeamID of the team to which students the grading should be added.
-     * @param dto DTO of the grading.
-     *
-     * @throws `NotFoundException` - If either no team with the given `teamId` or no sheet with the given `dto.sheetId` or no grading with the given `dto.gradingId` (if provided) could be found.
-     */
-    async setGrading(teamId: ITeamId, dto: GradingDTO): Promise<void> {
-        const team = await this.findById(teamId);
-
-        await this.gradingService.setGradingOfMultipleStudents(team.getStudents(), dto);
     }
 
     /**

@@ -9,6 +9,7 @@ import { Tutorial } from '../../database/entities/tutorial.entity';
 import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { ParseCsvDTO } from './excel.dto';
+import { GradingService } from '../student/grading.service';
 
 interface HeaderData {
     name: string;
@@ -55,7 +56,8 @@ export class ExcelService {
 
     constructor(
         private readonly tutorialService: TutorialService,
-        private readonly sheetService: SheetService
+        private readonly sheetService: SheetService,
+        private readonly gradingService: GradingService
     ) {}
 
     /**
@@ -194,7 +196,9 @@ export class ExcelService {
 
             let row = 2;
             for (const student of students) {
-                const grading = student.getGrading(sheet)?.getExerciseGrading(ex);
+                const grading = (
+                    await this.gradingService.findOfStudentAndHandIn(student.id, sheet.id)
+                )?.getExerciseGrading(ex);
 
                 data['firstname'].push({
                     content: student.firstname,

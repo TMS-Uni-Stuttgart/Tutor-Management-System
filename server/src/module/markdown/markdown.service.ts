@@ -23,6 +23,7 @@ import {
     TeamGradings,
     TeamMarkdownData,
 } from './markdown.types';
+import { GradingService } from '../student/grading.service';
 
 @Injectable()
 export class MarkdownService {
@@ -31,7 +32,8 @@ export class MarkdownService {
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
-        private readonly shortTestService: ShortTestService
+        private readonly shortTestService: ShortTestService,
+        private readonly gradingService: GradingService
     ) {}
 
     /**
@@ -86,11 +88,11 @@ export class MarkdownService {
 
         for (const team of teams) {
             gradingsMD.push(
-                ...this.generateFromTeam({
+                ...(await this.generateFromTeam({
                     team,
                     sheet,
                     ignoreInvalidTeams: true,
-                })
+                }))
             );
         }
 
@@ -118,7 +120,7 @@ export class MarkdownService {
         const team = await this.teamService.findById(teamId);
         const sheet = await this.sheetService.findById(sheetId);
 
-        const markdownForTeam = this.generateFromTeam({
+        const markdownForTeam = await this.generateFromTeam({
             team,
             sheet,
             ignoreInvalidTeams: false,
@@ -153,15 +155,16 @@ export class MarkdownService {
      * @throws `BadRequestException` - If the student does not hold a grading for the given sheet.
      */
     async getStudentGrading(studentId: string, sheetId: string): Promise<IStudentMarkdownData> {
-        const student = await this.studentService.findById(studentId);
-        const entity = await this.getExercisesEntityWithId(sheetId);
-        const grading = student.getGrading(entity);
+        const grading = await this.gradingService.findOfStudentAndHandIn(studentId, sheetId);
 
         if (!grading) {
             throw new BadRequestException(
                 `There is no grading available of the given entity and the given student.`
             );
         }
+
+        const student = await this.studentService.findById(studentId);
+        const entity = await this.getExercisesEntityWithId(sheetId);
 
         const markdown = this.generateFromGrading({
             entity,
@@ -183,17 +186,17 @@ export class MarkdownService {
      *
      * @throws `BadRequestException` - If `ignoreInvalidTeams` is false AND either the team has no students or the team has no gradings for the given sheet.
      */
-    private generateFromTeam({
+    private async generateFromTeam({
         team,
         sheet,
         ignoreInvalidTeams,
-    }: GenerateFromTeamParams): TeamMarkdownData[] {
+    }: GenerateFromTeamParams): Promise<TeamMarkdownData[]> {
         try {
             if (team.studentCount === 0) {
                 throw new BadRequestException(`Can not generate markdown for an empty team.`);
             }
 
-            const gradings = team.getGradings(sheet);
+            const gradings = await this.gradingService.findOfTeamAndHandIn(team, sheet);
             const markdownData: TeamMarkdownData[] = [];
 
             if (gradings.length === 0) {
@@ -226,6 +229,7 @@ export class MarkdownService {
 
             return markdownData.sort((a) => (a.belongsToTeam ? -1 : 1));
         } catch (err) {
+            // TODO: Why does this exist?
             if (ignoreInvalidTeams) {
                 return [
                     {

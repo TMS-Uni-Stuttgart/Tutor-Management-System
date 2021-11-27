@@ -23,9 +23,12 @@ import { TutorialService } from '../tutorial/tutorial.service';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
+import { GradingListsForStudents } from '../../helpers/GradingList';
+import { GradingService } from '../student/grading.service';
 
 interface CalculationParams {
     criterias: ScheincriteriaEntity[];
+    gradings: GradingListsForStudents;
     exams: Scheinexam[];
     sheets: Sheet[];
     shortTests: ShortTest[];
@@ -55,7 +58,8 @@ export class ScheincriteriaService
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
         private readonly tutorialService: TutorialService,
-        private readonly shortTestService: ShortTestService
+        private readonly shortTestService: ShortTestService,
+        private readonly gradingService: GradingService
     ) {}
 
     /**
@@ -239,11 +243,15 @@ export class ScheincriteriaService
         params: SingleStudentCalculationParams
     ): ScheincriteriaSummary {
         const { criterias, ...infos } = params;
+        const { gradings, ...rest } = infos;
         const summaries: ScheincriteriaSummary['scheinCriteriaSummary'] = {};
         let passed = true;
 
         for (const { id, name, criteria } of criterias) {
-            const result = criteria.checkCriteriaStatus(infos);
+            const result = criteria.checkCriteriaStatus({
+                gradings: gradings.getGradingListOfStudent(infos.student.id),
+                ...rest,
+            });
             summaries[id] = { id, name, ...result };
 
             passed = passed && result.passed;
@@ -305,8 +313,11 @@ export class ScheincriteriaService
             this.scheinexamService.findAll(),
             this.shortTestService.findAll(),
         ]);
+        const gradings = await this.gradingService.findOfMultipleStudents(
+            students.map((s) => s.id)
+        );
 
-        return { criterias, students, sheets, exams, shortTests };
+        return { criterias, students, sheets, exams, shortTests, gradings };
     }
 
     /**

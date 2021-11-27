@@ -1,16 +1,6 @@
-import {
-    Collection,
-    Embedded,
-    Entity,
-    Enum,
-    ManyToMany,
-    ManyToOne,
-    PrimaryKey,
-    Property,
-} from '@mikro-orm/core';
+import { Embedded, Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { IAttendance } from 'shared/model/Attendance';
-import { IGrading } from 'shared/model/Gradings';
 import { IStudent, StudentStatus } from 'shared/model/Student';
 import { IStudentInTeam } from 'shared/model/Team';
 import { v4 } from 'uuid';
@@ -19,7 +9,6 @@ import { EncryptedMapType } from '../types/encryption/EncryptedMapType';
 import { EncryptedIntType } from '../types/encryption/EncryptedNumberType';
 import { EncryptedStringType } from '../types/encryption/EncryptedStringType';
 import { Attendance } from './attendance.entity';
-import { Grading } from './grading.entity';
 import { HandIn } from './ratedEntity.entity';
 import { Team } from './team.entity';
 import { Tutorial } from './tutorial.entity';
@@ -58,9 +47,6 @@ export class Student {
 
     @ManyToOne()
     team?: Team;
-
-    @ManyToMany(() => Grading, 'students', { owner: true })
-    gradings = new Collection<Grading>(this);
 
     @Property({ type: EncryptedMapType })
     private presentationPoints: Map<string, number> = new Map();
@@ -114,39 +100,6 @@ export class Student {
     }
 
     /**
-     * Saves the given grading for this student.
-     *
-     * If there is already a saved grading for same hand-in the old one will get replaced.
-     *
-     * @param grading Grading so save.
-     */
-    setGrading(grading: Grading): void {
-        const index = this.getIndexOfGradingForSameEntity(grading);
-
-        if (index === -1) {
-            this.gradings.add(grading);
-        } else {
-            this.gradings[index] = grading;
-        }
-    }
-
-    /**
-     * Returns the grading for the given hand-in if one is saved, if not `undefined` is returned.
-     *
-     * @param handIn hand-in to get grading for.
-     *
-     * @returns Grading for the given hand-in or `undefined`
-     */
-    getGrading(handIn: HandIn): Grading | undefined {
-        for (const grading of this.gradings) {
-            if (grading.entityId === handIn.id) {
-                return grading;
-            }
-        }
-        return undefined;
-    }
-
-    /**
      * Saves the given presentation points for the given hand-in.
      *
      * If there are already saved presentation points for the given hand-in the old ones will get overridden.
@@ -176,25 +129,6 @@ export class Student {
         return new Map(this.presentationPoints);
     }
 
-    /**
-     * Searches for a grading for the same entity as the given one.
-     *
-     * Returns the index of the found grading, if there is one. Otherwise `-1` is returned.
-     *
-     * @param grading Grading to check
-     * @returns Index of the grading for the same entity. `-1` if there is no such entity.
-     */
-    private getIndexOfGradingForSameEntity(grading: Grading): number {
-        for (let i = 0; i < this.gradings.length; i++) {
-            const grad = this.gradings[i];
-            if (grad.entityId === grading.entityId) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     toDTO(): IStudent {
         return {
             ...this.toStudentInTeam(),
@@ -204,14 +138,9 @@ export class Student {
 
     toStudentInTeam(): IStudentInTeam {
         const attendances: Map<string, IAttendance> = new Map();
-        const gradings: Map<string, IGrading> = new Map();
 
         for (const attendance of this.attendances) {
             attendances.set(attendance.getDateAsKey(), attendance.toDTO());
-        }
-
-        for (const grading of this.gradings) {
-            gradings.set(grading.entityId, grading.toDTO());
         }
 
         return {
@@ -226,7 +155,6 @@ export class Student {
             attendances: [...attendances],
             cakeCount: this.cakeCount,
             email: this.email,
-            gradings: [...gradings],
             presentationPoints: [...this.presentationPoints],
         };
     }

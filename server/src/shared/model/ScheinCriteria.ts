@@ -82,6 +82,7 @@ export enum ScheinCriteriaUnit {
 export interface CriteriaAchievedInformation {
     achieved: number;
     notAchieved: number;
+
     [other: string]: number;
 }
 

@@ -92,7 +92,7 @@ export class Grading {
     @ManyToOne()
     shortTest?: ShortTest;
 
-    @ManyToMany(() => Student, 'gradings')
+    @ManyToMany(() => Student)
     students = new Collection<Student>(this);
 
     /**

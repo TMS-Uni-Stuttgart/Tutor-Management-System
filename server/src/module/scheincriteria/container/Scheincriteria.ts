@@ -8,9 +8,11 @@ import { ShortTest } from '../../../database/entities/shorttest.entity';
 import { Student } from '../../../database/entities/student.entity';
 import { ScheinCriteriaDTO } from '../scheincriteria.dto';
 import { ScheincriteriaContainer } from './scheincriteria.container';
+import { GradingList } from '../../../helpers/GradingList';
 
 export interface CriteriaPayload {
     student: Student;
+    gradings: GradingList;
     sheets: Sheet[];
     exams: Scheinexam[];
     shortTests: ShortTest[];

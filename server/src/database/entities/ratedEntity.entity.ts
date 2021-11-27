@@ -4,7 +4,7 @@ import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import { v4 } from 'uuid';
 import { HasExercisesDTO, RatedEntityDTO } from '../../module/scheinexam/scheinexam.dto';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
-import { Student } from './student.entity';
+import { GradingList } from '../../helpers/GradingList';
 
 @Embeddable()
 export class SubExercise {
@@ -168,11 +168,11 @@ export abstract class RatedEntity extends HasExercises {
     }
 
     /**
-     * @param student Student to check
+     * @param gradingList List containing all gradings of the given student.
      * @returns `True` if the student passes this rated entity.
      */
-    hasPassed(student: Student): boolean {
-        return this.getPassedInformation(student).passed;
+    hasPassed(gradingList: GradingList): boolean {
+        return this.getPassedInformation(gradingList).passed;
     }
 
     /**
@@ -183,12 +183,12 @@ export abstract class RatedEntity extends HasExercises {
      * - How many points does the student achieve?
      * - How many must-have points has this entity.
      *
-     * @param student Student to get the `PassedInformation` of.
+     * @param gradingList List containing all gradings of the given student.
      * @returns The `PassedInformation` of the given student related to the entity.
      */
-    getPassedInformation(student: Student): PassedInformation {
+    getPassedInformation(gradingList: GradingList): PassedInformation {
         const total = this.totalPoints;
-        const grading = student.getGrading(this);
+        const grading = gradingList.getGradingOfHandIn(this);
 
         if (!grading) {
             return { passed: false, achieved: 0, total };

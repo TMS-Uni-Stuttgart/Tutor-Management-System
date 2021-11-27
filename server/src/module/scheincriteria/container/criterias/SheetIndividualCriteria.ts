@@ -5,7 +5,6 @@ import {
     ScheinCriteriaUnit,
 } from 'shared/model/ScheinCriteria';
 import { Sheet } from '../../../../database/entities/sheet.entity';
-import { Student } from '../../../../database/entities/student.entity';
 import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
@@ -15,6 +14,7 @@ import {
 } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { GradingList } from '../../../../helpers/GradingList';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     @IsNonNegativeNumberValue({ isFloat: true })
@@ -36,13 +36,13 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         this.percentagePerSheet = percentagePerSheet;
     }
 
-    checkCriteriaStatus({ student, sheets }: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({ sheets, gradings }: CriteriaPayload): StatusCheckResponse {
         const infos: StatusCheckResponse['infos'] = {};
         const totalSheetCount = sheets.reduce(
             (count, sheet) => count + (sheet.bonusSheet ? 0 : 1),
             0
         );
-        const sheetsPassed = this.checkAllSheets(sheets, student, infos);
+        const sheetsPassed = this.checkAllSheets(sheets, gradings, infos);
 
         let passed: boolean;
 
@@ -68,12 +68,12 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
 
     private checkAllSheets(
         sheets: Sheet[],
-        student: Student,
+        gradings: GradingList,
         infos: StatusCheckResponse['infos']
     ): number {
         let sheetsPassed = 0;
         for (const sheet of sheets) {
-            const achieved = student.getGrading(sheet)?.points ?? 0;
+            const achieved = gradings.getGradingOfHandIn(sheet)?.points ?? 0;
             const total = sheet.totalPoints.must;
 
             let state = PassedState.NOT_PASSED;

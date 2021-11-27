@@ -16,8 +16,6 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { validateSync, ValidationError } from 'class-validator';
 import { Request as ExpressRequest } from 'express';
 import { DateTime } from 'luxon';
 import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
@@ -26,18 +24,11 @@ import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decor
 import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
-import { AttendanceState, IAttendance } from '../../shared/model/Attendance';
-import { IGradingDTO } from '../../shared/model/Gradings';
-import { Role } from '../../shared/model/Role';
-import { IStudent } from '../../shared/model/Student';
+import { AttendanceState, IAttendance } from 'shared/model/Attendance';
+import { Role } from 'shared/model/Role';
+import { IStudent } from 'shared/model/Student';
 import { SettingsService } from '../settings/settings.service';
-import {
-    AttendanceDTO,
-    CakeCountDTO,
-    GradingDTO,
-    PresentationPointsDTO,
-    StudentDTO,
-} from './student.dto';
+import { AttendanceDTO, CakeCountDTO, PresentationPointsDTO, StudentDTO } from './student.dto';
 import { StudentService } from './student.service';
 
 interface CheckCanExcuseParams {
@@ -67,9 +58,7 @@ export class StudentController {
     @Roles(Role.ADMIN, Role.TUTOR)
     @UsePipes(ValidationPipe)
     async createStudent(@Body() dto: StudentDTO): Promise<IStudent> {
-        const student = await this.studentService.create(dto);
-
-        return student;
+        return await this.studentService.create(dto);
     }
 
     @Get('/:id')
@@ -86,9 +75,7 @@ export class StudentController {
     @UseGuards(StudentGuard)
     @UsePipes(ValidationPipe)
     async updateStudent(@Param('id') id: string, @Body() dto: StudentDTO): Promise<IStudent> {
-        const student = await this.studentService.update(id, dto);
-
-        return student;
+        return await this.studentService.update(id, dto);
     }
 
     @Delete('/:id')
@@ -96,33 +83,6 @@ export class StudentController {
     @UseGuards(StudentGuard)
     async deleteStudent(@Param('id') id: string): Promise<void> {
         await this.studentService.delete(id);
-    }
-
-    @Put('grading')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(StudentGuard)
-    @AllowCorrectors()
-    @UsePipes(ValidationPipe)
-    async updatePointsOfMultipleStudents(@Body() dtos: [string, IGradingDTO][]): Promise<void> {
-        const dtoMap = new Map<string, IGradingDTO>();
-        const notValidDTO: { id: string; errors: ValidationError[] }[] = [];
-
-        for (const [id, dtoData] of dtos) {
-            const dto = plainToClass(GradingDTO, dtoData);
-            const errors = validateSync(dto);
-
-            if (errors.length === 0) {
-                dtoMap.set(id, dto);
-            } else {
-                notValidDTO.push({ id, errors });
-            }
-        }
-
-        if (notValidDTO.length > 0) {
-            throw new BadRequestException(notValidDTO, 'Some DTOs are not valid.');
-        }
-
-        await this.studentService.setGradingOfMultipleStudents(dtoMap);
     }
 
     @Put('/:id/attendance')
@@ -141,9 +101,7 @@ export class StudentController {
             user: request.user,
         });
 
-        const attendance = await this.studentService.setAttendance(id, dto);
-
-        return attendance;
+        return await this.studentService.setAttendance(id, dto);
     }
 
     @Put('/:id/presentation')
@@ -156,15 +114,6 @@ export class StudentController {
         @Body() dto: PresentationPointsDTO
     ): Promise<void> {
         await this.studentService.setPresentationPoints(id, dto);
-    }
-
-    @Put('/:id/grading')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(StudentGuard)
-    @AllowCorrectors()
-    @UsePipes(ValidationPipe)
-    async updatePoints(@Param('id') id: string, @Body() dto: GradingDTO): Promise<void> {
-        await this.studentService.setGrading(id, dto);
     }
 
     @Put('/:id/cakecount')

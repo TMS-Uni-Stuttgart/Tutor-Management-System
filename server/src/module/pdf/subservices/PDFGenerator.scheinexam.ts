@@ -7,6 +7,8 @@ import { StudentService } from '../../student/student.service';
 import { TemplateService } from '../../template/template.service';
 import { PassedState, ScheinexamStatus } from '../../template/template.types';
 import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
+import { GradingListsForStudents } from '../../../helpers/GradingList';
+import { GradingService } from '../../student/grading.service';
 
 interface PDFGeneratorOptions {
     id: string;
@@ -16,6 +18,7 @@ interface PDFGeneratorOptions {
 interface GetResultsParams {
     exam: Scheinexam;
     students: Student[];
+    gradingLists: GradingListsForStudents;
 }
 
 interface ExamResultsByStudents {
@@ -27,7 +30,8 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
     constructor(
         private readonly studentService: StudentService,
         private readonly scheinexamService: ScheinexamService,
-        private readonly templateService: TemplateService
+        private readonly templateService: TemplateService,
+        private readonly gradingService: GradingService
     ) {
         super();
     }
@@ -51,7 +55,10 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
             .filter((student) => !!student.matriculationNo)
             .filter((student) => student.status !== StudentStatus.INACTIVE);
         const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
-        const results = this.getResultsOfAllStudents({ exam, students });
+        const gradingLists = await this.gradingService.findOfMultipleStudents(
+            students.map((s) => s.id)
+        );
+        const results = this.getResultsOfAllStudents({ exam, students, gradingLists });
 
         const statuses: ScheinexamStatus[] = [];
         const template = this.templateService.getScheinexamTemplate();
@@ -82,15 +89,21 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
      *
      * @returns The results of all students mapped by their ID.
      */
-    private getResultsOfAllStudents({ exam, students }: GetResultsParams): ExamResultsByStudents {
+    private getResultsOfAllStudents({
+        exam,
+        students,
+        gradingLists,
+    }: GetResultsParams): ExamResultsByStudents {
         const results: ExamResultsByStudents = {};
 
         students.forEach((student) => {
-            const examGrading = student.getGrading(exam);
+            const examGrading = gradingLists.getGradingForHandIn(student.id, exam);
             const hasAttended = examGrading !== undefined;
 
             if (hasAttended) {
-                results[student.id] = exam.hasPassed(student)
+                results[student.id] = exam.hasPassed(
+                    gradingLists.getGradingListOfStudent(student.id)
+                )
                     ? PassedState.PASSED
                     : PassedState.NOT_PASSED;
             } else {

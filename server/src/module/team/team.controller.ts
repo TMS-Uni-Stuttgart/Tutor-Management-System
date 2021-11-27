@@ -8,7 +8,6 @@ import {
     Param,
     Patch,
     Post,
-    Put,
     UseGuards,
     UsePipes,
     ValidationPipe,
@@ -16,8 +15,7 @@ import {
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
 import { TeamGuard } from '../../guards/team.guard';
-import { ITeam } from '../../shared/model/Team';
-import { GradingDTO } from '../student/student.dto';
+import { ITeam } from 'shared/model/Team';
 import { TeamDTO } from './team.dto';
 import { TeamService } from './team.service';
 
@@ -42,9 +40,7 @@ export class TeamController {
         @Param('id') tutorialId: string,
         @Body() dto: TeamDTO
     ): Promise<ITeam> {
-        const team = await this.teamService.createTeamInTutorial(tutorialId, dto);
-
-        return team;
+        return await this.teamService.createTeamInTutorial(tutorialId, dto);
     }
 
     @Get('/:teamId')
@@ -69,9 +65,7 @@ export class TeamController {
         @Param('teamId') teamId: string,
         @Body() dto: TeamDTO
     ): Promise<ITeam> {
-        const team = await this.teamService.updateTeamInTutorial({ tutorialId, teamId }, dto);
-
-        return team;
+        return await this.teamService.updateTeamInTutorial({ tutorialId, teamId }, dto);
     }
 
     @Delete('/:teamId')
@@ -82,17 +76,5 @@ export class TeamController {
         @Param('teamId') teamId: string
     ): Promise<void> {
         await this.teamService.deleteTeamFromTutorial({ tutorialId, teamId });
-    }
-
-    @Put('/:teamId/grading')
-    @UseGuards(TeamGuard)
-    @AllowCorrectors()
-    @HttpCode(HttpStatus.NO_CONTENT)
-    async setGradingForTeam(
-        @Param('id') tutorialId: string,
-        @Param('teamId') teamId: string,
-        @Body() dto: GradingDTO
-    ): Promise<void> {
-        await this.teamService.setGrading({ tutorialId, teamId }, dto);
     }
 }

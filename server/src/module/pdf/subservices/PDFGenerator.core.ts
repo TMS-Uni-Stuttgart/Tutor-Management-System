@@ -1,3 +1,5 @@
+// noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
+
 import { Logger } from '@nestjs/common';
 import fs from 'fs';
 import puppeteer from 'puppeteer';
@@ -7,6 +9,7 @@ import puppeteer from 'puppeteer';
  */
 export abstract class PDFGenerator<T = Record<string, unknown>> {
     private readonly logger = new Logger(PDFGenerator.name);
+
     /**
      * Generates a PDF from the given options.
      *
@@ -92,7 +95,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     <style>${highlightCSS}</style>
     <style>${this.getCustomCSS()}</style>
     </head>
-    <body class="markdown-body">${body}</body>
+    <body class='markdown-body'>${body}</body>
     </html>
     `;
     }

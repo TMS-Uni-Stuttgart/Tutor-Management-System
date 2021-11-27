@@ -74,7 +74,7 @@ export async function setPointsOfStudent(
     points: IGradingDTO,
     axios: AxiosInstance
 ): Promise<void> {
-    const response = await axios.put(`student/${studentId}/grading`, points);
+    const response = await axios.put(`grading/student/${studentId}`, points);
 
     if (response.status !== 204) {
         return Promise.reject(`Wrong status code (${response.status}).`);

@@ -10,14 +10,7 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { GradingService } from './grading.service';
-import {
-    AttendanceDTO,
-    CakeCountDTO,
-    GradingDTO,
-    PresentationPointsDTO,
-    StudentDTO,
-} from './student.dto';
+import { AttendanceDTO, CakeCountDTO, PresentationPointsDTO, StudentDTO } from './student.dto';
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, Student> {
@@ -29,9 +22,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         private readonly tutorialService: TutorialService,
         @Inject(forwardRef(() => TeamService))
         private readonly teamService: TeamService,
-        private readonly sheetService: SheetService,
-        @Inject(forwardRef(() => GradingService))
-        private readonly gradingService: GradingService
+        private readonly sheetService: SheetService
     ) {}
 
     /**
@@ -188,30 +179,6 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         await this.entityManager.persistAndFlush(student);
 
         return attendance.toDTO();
-    }
-
-    /**
-     * Sets the grading corresponding to the `dto` of the student with the given ID.
-     *
-     * @param id ID of the student to set the grading.
-     * @param dto DTO with the information of the grading.
-     *
-     * @throws `NotFoundException` - If no student with the given id could be found.
-     */
-    async setGrading(id: string, dto: GradingDTO): Promise<void> {
-        const student = await this.findById(id);
-        await this.gradingService.setGradingOfStudent(student, dto);
-    }
-
-    /**
-     * Sets the gradings for multiple students by calling `setGrading` for each entry of the given map.
-     *
-     * @param dtos Map containing the grading DTOs keyed by student ids.
-     */
-    async setGradingOfMultipleStudents(dtos: Map<string, GradingDTO>): Promise<void> {
-        for (const [studentId, dto] of dtos) {
-            await this.setGrading(studentId, dto);
-        }
     }
 
     /**

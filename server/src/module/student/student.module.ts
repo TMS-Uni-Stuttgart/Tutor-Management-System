@@ -7,6 +7,7 @@ import { TutorialModule } from '../tutorial/tutorial.module';
 import { GradingService } from './grading.service';
 import { StudentController } from './student.controller';
 import { StudentService } from './student.service';
+import { GradingController } from './grading.controller';
 
 @Module({
     imports: [
@@ -16,7 +17,7 @@ import { StudentService } from './student.service';
         ScheinexamModule,
         ShortTestModule,
     ],
-    controllers: [StudentController],
+    controllers: [StudentController, GradingController],
     providers: [StudentService, GradingService],
     exports: [StudentService, GradingService],
 })

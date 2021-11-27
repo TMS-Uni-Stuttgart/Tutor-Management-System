@@ -2,20 +2,20 @@ import {
     Body,
     Controller,
     Get,
+    HttpCode,
+    HttpStatus,
     Param,
     Post,
     Res,
     UseGuards,
     UsePipes,
     ValidationPipe,
-    HttpCode,
-    HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
-import { ParseCsvResult } from '../../shared/model/CSV';
+import { ParseCsvResult } from 'shared/model/CSV';
 import { ParseCsvDTO } from './excel.dto';
 import { ExcelService } from './excel.service';
 

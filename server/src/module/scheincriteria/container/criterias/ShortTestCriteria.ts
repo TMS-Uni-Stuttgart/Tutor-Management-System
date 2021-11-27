@@ -5,7 +5,6 @@ import {
     ScheinCriteriaUnit,
 } from 'shared/model/ScheinCriteria';
 import { ShortTest } from '../../../../database/entities/shorttest.entity';
-import { Student } from '../../../../database/entities/student.entity';
 import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
@@ -15,9 +14,10 @@ import {
 } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { GradingList } from '../../../../helpers/GradingList';
 
 interface CheckShortTestsParams {
-    student: Student;
+    gradings: GradingList;
     shortTests: ShortTest[];
 }
 
@@ -46,9 +46,9 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
         this.isPercentagePerTest = isPercentagePerTest;
     }
 
-    checkCriteriaStatus({ student, shortTests }: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({ gradings, shortTests }: CriteriaPayload): StatusCheckResponse {
         const { passed: testsPassed, infos } = this.checkShortTests({
-            student,
+            gradings,
             shortTests,
         });
         const totalShortTestCount = shortTests.length;
@@ -70,13 +70,16 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkShortTests({ student, shortTests }: CheckShortTestsParams): CheckShortTestsReturn {
+    private checkShortTests({
+        gradings,
+        shortTests,
+    }: CheckShortTestsParams): CheckShortTestsReturn {
         return shortTests.reduce<CheckShortTestsReturn>(
             (prev, shortTest) => {
-                const achieved = student.getGrading(shortTest)?.points ?? 0;
+                const achieved = gradings.getGradingOfHandIn(shortTest)?.points ?? 0;
                 const total = shortTest.totalPoints.must;
 
-                const state = shortTest.hasPassed(student)
+                const state = shortTest.hasPassed(gradings)
                     ? PassedState.PASSED
                     : PassedState.NOT_PASSED;
 
