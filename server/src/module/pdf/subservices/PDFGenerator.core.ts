@@ -68,7 +68,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
             return buffer;
         } catch (err) {
             if (browser) {
-                browser.close();
+                await browser.close();
             }
 
             Logger.error(JSON.stringify(err, null, 2));
