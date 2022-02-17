@@ -60,7 +60,7 @@ module.exports = {
   packageOptions: {
     polyfillNode: true,
     namedExports: ['class-transformer', 'lodash'],
-    knownEntrypoints: [],
+    knownEntrypoints: ['@material-ui/system'],
   },
   buildOptions: {},
 };

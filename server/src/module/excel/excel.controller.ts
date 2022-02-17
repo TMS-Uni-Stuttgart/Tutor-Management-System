@@ -2,20 +2,20 @@ import {
     Body,
     Controller,
     Get,
+    HttpCode,
+    HttpStatus,
     Param,
     Post,
     Res,
     UseGuards,
     UsePipes,
     ValidationPipe,
-    HttpCode,
-    HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
-import { ParseCsvResult } from '../../shared/model/CSV';
+import { ParseCsvResult } from 'shared/model/CSV';
 import { ParseCsvDTO } from './excel.dto';
 import { ExcelService } from './excel.service';
 
@@ -39,5 +39,15 @@ export class ExcelController {
     @UsePipes(ValidationPipe)
     async parseCSV(@Body() body: ParseCsvDTO): Promise<ParseCsvResult<unknown>> {
         return await this.excelService.parseCSV(body);
+    }
+
+    @Get('/schein-information')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(HasRoleGuard)
+    async getScheinStatusCSV(@Res() res: Response): Promise<void> {
+        const buffer = await this.excelService.generateScheinstatusTable();
+
+        res.contentType('xlsx');
+        res.send(buffer);
     }
 }

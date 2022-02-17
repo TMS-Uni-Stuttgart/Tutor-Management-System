@@ -1,4 +1,4 @@
-import type { ParseConfig, ParseResult } from 'papaparse';
+import type { ParseConfig, ParseError, ParseResult } from 'papaparse';
 
 export interface IParseCsvDTO {
     data: string;
@@ -6,3 +6,5 @@ export interface IParseCsvDTO {
 }
 
 export type ParseCsvResult<T> = ParseResult<T>;
+
+export type CSVParsedError = ParseError;

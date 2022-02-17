@@ -163,3 +163,20 @@ export async function getTutorialXLSX(tutorialId: string): Promise<Blob> {
 
   return Promise.reject(`Wrong response code (${response.status})`);
 }
+
+export async function getScheinStatusXLSX(): Promise<Blob> {
+  const response = await axios.get(`/excel/schein-information`, {
+    responseType: 'arraybuffer',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
+
+  if (response.status === 200) {
+    return new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+  }
+
+  return Promise.reject(`Wrong response code (${response.status})`);
+}
