@@ -4,6 +4,7 @@ import { StudentService } from '../../student/student.service';
 import { TemplateService } from '../../template/template.service';
 import { PassedState, Scheinstatus } from '../../template/template.types';
 import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
+import { StudentStatus } from 'shared/model/Student';
 
 interface GeneratorOptions {
     enableShortMatriculationNo: boolean;
@@ -40,9 +41,14 @@ export class ScheinResultsPDFGenerator extends PDFWithStudentsGenerator<Generato
         const template = this.templateService.getScheinstatusTemplate();
 
         shortenedMatriculationNumbers.forEach(({ shortenedNo, studentId }) => {
-            const state: PassedState = summaries[studentId].passed
-                ? PassedState.PASSED
-                : PassedState.NOT_PASSED;
+            const summary = summaries[studentId];
+            let state: PassedState;
+
+            if (summary.student.status === StudentStatus.NO_SCHEIN_REQUIRED) {
+                state = PassedState.ALREADY_HAS_SCHEIN;
+            } else {
+                state = summaries[studentId].passed ? PassedState.PASSED : PassedState.NOT_PASSED;
+            }
 
             if (enableShortMatriculatinNo) {
                 statuses.push({ matriculationNo: shortenedNo, state });
