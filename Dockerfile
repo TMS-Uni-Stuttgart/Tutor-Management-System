@@ -3,7 +3,7 @@
 # Build frontend & backend
 #
 # =============================================
-FROM node:14-alpine as build
+FROM node:16-alpine as build
 
 COPY client/ tms/client/
 COPY server/ tms/server/
@@ -40,7 +40,7 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont \
     terminus-font \
-    nodejs-current \
+    nodejs \
     npm
 
 RUN npm install -g pnpm
@@ -52,7 +52,7 @@ COPY pnpm-lock.yaml tms/
 COPY pnpm-workspace.yaml tms/
 COPY server/package.json /tms/server
 
-# Tell Puppeteer to skip installing Chrome. We'll be using the installed package. 
+# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Tell the PDFService where to find the Chrome executable.
