@@ -1,9 +1,9 @@
 import { ProviderContext } from 'notistack';
-import type { ParseError } from 'papaparse';
 import { getParsedCSV } from '../../../hooks/fetching/CSV';
 import { UseSnackbarWithList } from '../../snackbar-with-list/useSnackbarWithList';
 import { NextStepInformation } from '../../stepper-with-buttons/context/StepperContext';
 import { CSVContext, ParsedCSVDataRow } from '../ImportCSV.types';
+import { CSVParsedError } from 'shared/model/CSV';
 
 interface SubmitParams {
   csv: string;
@@ -34,7 +34,7 @@ export default async function submitCSV({
 
     if (response.errors.length > 0) {
       let textBeforeList: string;
-      let errors: ParseError[];
+      let errors: CSVParsedError[];
 
       if (response.errors.length > 10) {
         textBeforeList = `Es sind ${response.errors.length} Fehler aufgetreten. Es werden nur die ersten 10 angezeigt.`;

@@ -10,7 +10,7 @@ import { SheetDocument } from '../../database/models/sheet.model';
 import { ShortTestDocument } from '../../database/models/shortTest.model';
 import { StudentDocument } from '../../database/models/student.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { FormDataResponse } from '../../shared/model/FormTypes';
+import { FormDataResponse } from 'shared/model/FormTypes';
 import {
     CriteriaInformation,
     IScheinCriteria,
@@ -65,9 +65,7 @@ export class ScheincriteriaService
      * @returns All scheincriterias saved in the database.
      */
     async findAll(): Promise<ScheincriteriaDocument[]> {
-        const criterias = await this.scheincriteriaModel.find().exec();
-
-        return criterias;
+        return await this.scheincriteriaModel.find().exec();
     }
 
     /**
@@ -199,7 +197,7 @@ export class ScheincriteriaService
             studentId,
         });
 
-        return this.calculateResultOfSingleStudent({
+        return ScheincriteriaService.calculateResultOfSingleStudent({
             ...params,
             student: students[0],
         });
@@ -243,7 +241,7 @@ export class ScheincriteriaService
      *
      * @returns Calculation result of all given criterias for the given student.
      */
-    private calculateResultOfSingleStudent(
+    private static calculateResultOfSingleStudent(
         params: SingleStudentCalculationParams
     ): ScheincriteriaSummary {
         const { criterias, ...infos } = params;
@@ -278,12 +276,10 @@ export class ScheincriteriaService
         const summaries: ScheincriteriaSummaryByStudents = {};
 
         students.forEach((student) => {
-            const result = this.calculateResultOfSingleStudent({
+            summaries[student.id] = ScheincriteriaService.calculateResultOfSingleStudent({
                 ...infos,
                 student,
             });
-
-            summaries[student.id] = result;
         });
 
         return summaries;

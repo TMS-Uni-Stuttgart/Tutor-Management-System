@@ -6,7 +6,11 @@ import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SubmitButton from '../../components/loading/SubmitButton';
 import SplitButton from '../../components/SplitButton';
 import { useDialog } from '../../hooks/dialog-service/DialogService';
-import { getClearScheinStatusPDF, getScheinStatusPDF } from '../../hooks/fetching/Files';
+import {
+  getClearScheinStatusPDF,
+  getScheinStatusPDF,
+  getScheinStatusXLSX,
+} from '../../hooks/fetching/Files';
 import { Student } from '../../model/Student';
 import { saveBlob } from '../../util/helperFunctions';
 import TutorialChangeForm from './student-list/components/TutorialChangeForm';
@@ -27,7 +31,7 @@ function AdminStudentManagement(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const dialog = useDialog();
 
-  const [isCreatingCSVFile, setCreatingCSVFile] = useState(false);
+  const [isCreatingXlsxFile, setCreatingXlsxFile] = useState(false);
   const [isCreatingScheinStatus, setCreatingScheinStatus] = useState(false);
 
   const {
@@ -92,8 +96,19 @@ function AdminStudentManagement(): JSX.Element {
   }, [enqueueSnackbar]);
 
   const generateCSVFile = useCallback(async () => {
-    // TODO: Move this to the server.
-    enqueueSnackbar('CSV-Export wird aktuell nicht unterstützt', { variant: 'error' });
+    setCreatingXlsxFile(true);
+
+    try {
+      const blob = await getScheinStatusXLSX();
+
+      saveBlob(blob, 'Scheinübersichtsliste.xlsx');
+    } catch {
+      enqueueSnackbar('Scheinübersichtsliste konnte nicht erstellt werden', {
+        variant: 'error',
+      });
+    } finally {
+      setCreatingXlsxFile(false);
+    }
   }, [enqueueSnackbar]);
 
   return isLoading ? (
@@ -135,11 +150,10 @@ function AdminStudentManagement(): JSX.Element {
             color='primary'
             className={classes.printButton}
             onClick={generateCSVFile}
-            isSubmitting={isCreatingCSVFile}
-            disabled
-            // disabled={students.length === 0}
+            isSubmitting={isCreatingXlsxFile}
+            disabled={students.length === 0}
           >
-            CSV Datei
+            XLSX Datei
           </SubmitButton>
         </>
       }

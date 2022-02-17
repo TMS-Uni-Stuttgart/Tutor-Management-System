@@ -7,7 +7,7 @@ table
           font-family: "Courier New", Courier, monospace;
           line-height: 200%;
         }
-    
+
     thead
         tr
             th Matrikelnummer
@@ -19,5 +19,7 @@ table
                 td #{status.matriculationNo}
                 if status.state === "passed"
                     td Bestanden
+                else if status.state === "alreadyHasSchein"
+                    td Hat Schein bereits
                 else
                     td Nicht bestanden

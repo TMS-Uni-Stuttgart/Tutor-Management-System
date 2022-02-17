@@ -4,6 +4,7 @@ export enum PassedState {
     PASSED = 'passed',
     NOT_PASSED = 'notPassed',
     NOT_ATTENDED = 'notAttended',
+    ALREADY_HAS_SCHEIN = 'alreadyHasSchein',
 }
 
 export interface Scheinstatus {

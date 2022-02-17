@@ -4,11 +4,15 @@ import { parse } from 'papaparse';
 import { SheetDocument } from '../../database/models/sheet.model';
 import { StudentDocument } from '../../database/models/student.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
-import { AttendanceState } from '../../shared/model/Attendance';
-import { ParseCsvResult } from '../../shared/model/CSV';
+import { AttendanceState } from 'shared/model/Attendance';
+import { ParseCsvResult } from 'shared/model/CSV';
 import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { ParseCsvDTO } from './excel.dto';
+import { StudentService } from '../student/student.service';
+import { ScheincriteriaService } from '../scheincriteria/scheincriteria.service';
+import { PassedState } from '../template/template.types';
+import { StudentStatus } from 'shared/model/Student';
 
 interface HeaderData {
     name: string;
@@ -49,13 +53,17 @@ type MemberKeys =
     | 'courseOfStudies'
     | 'email';
 
+type ScheinstatusKeys = 'firstname' | 'lastname' | 'status' | 'matriculationNo' | 'tutorial';
+
 @Injectable()
 export class ExcelService {
     private readonly logger = new Logger(ExcelService.name);
 
     constructor(
         private readonly tutorialService: TutorialService,
-        private readonly sheetService: SheetService
+        private readonly sheetService: SheetService,
+        private readonly studentService: StudentService,
+        private readonly scheinCriteriaService: ScheincriteriaService
     ) {}
 
     /**
@@ -97,6 +105,57 @@ export class ExcelService {
         const { data, options } = dto;
 
         return parse(data, options);
+    }
+
+    /**
+     * Generates a XLSX file containing the information about the current schein status for each student.
+     *
+     * @returns Buffer containing the XLSX.
+     */
+    async generateScheinstatusTable(): Promise<Buffer> {
+        const summaries = await this.scheinCriteriaService.getResultsOfAllStudents();
+        const workbook = new xl.Workbook();
+        const sheet = workbook.addWorksheet('Schein statuses');
+
+        const headers: HeaderDataCollection<ScheinstatusKeys> = {
+            lastname: { name: 'Lastname', column: 1 },
+            firstname: { name: 'Firstname', column: 2 },
+            status: { name: 'Status', column: 3 },
+            matriculationNo: { name: 'Matriculation No', column: 4 },
+            tutorial: { name: 'Tutorial', column: 5 },
+        };
+        const cells: CellDataCollection<ScheinstatusKeys> = {
+            lastname: [],
+            firstname: [],
+            status: [],
+            matriculationNo: [],
+            tutorial: [],
+        };
+
+        let row = 2;
+        for (const summary of Object.values(summaries)) {
+            const { student, passed } = summary;
+            const { firstname, lastname, matriculationNo, tutorial } = student;
+
+            let state: PassedState;
+
+            if (student.status === StudentStatus.NO_SCHEIN_REQUIRED) {
+                state = PassedState.ALREADY_HAS_SCHEIN;
+            } else {
+                state = passed ? PassedState.PASSED : PassedState.NOT_PASSED;
+            }
+
+            cells['lastname'].push({ content: lastname, row });
+            cells['firstname'].push({ content: firstname, row });
+            cells['matriculationNo'].push({ content: matriculationNo || 'N/A', row });
+            cells['tutorial'].push({ content: tutorial.slot, row });
+            cells['status'].push({ content: state.toString(), row });
+
+            row++;
+        }
+
+        this.fillSheet(sheet, headers, cells);
+        return workbook.writeToBuffer();
     }
 
     private createMemberWorksheet(workbook: Workbook, students: StudentDocument[]) {
