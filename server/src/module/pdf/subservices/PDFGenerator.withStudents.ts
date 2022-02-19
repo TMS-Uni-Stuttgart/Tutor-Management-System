@@ -1,5 +1,6 @@
 import { PDFGenerator } from './PDFGenerator.core';
 import { IStudent } from 'shared/model/Student';
+import { StudentDocument } from '../../../database/models/student.model';
 
 interface ShortendMatriculationInfo {
     studentId: string;
@@ -10,13 +11,15 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
     /**
      * Returns the shortened number for all students together with the ID of the student to which the shortened matriculation number belongs to.
      *
-     * Those shortened numbers are still enough to identify a student. However, this is only true if one only consideres the given students. If one extends that array without re-running this function the identifying feature may get lost.
+     * Those shortened numbers are still enough to identify a student. However, this is only true if one only considers the given students. If one extends that array without re-running this function the identifying feature may get lost.
      *
      * @param students All students to get the shortened number from.
      *
      * @returns The shortened but still identifying matriculation numbers of all given students.
      */
-    protected getShortenedMatriculationNumbers(students: IStudent[]): ShortendMatriculationInfo[] {
+    protected getShortenedMatriculationNumbers(
+        students: (StudentDocument | IStudent)[]
+    ): ShortendMatriculationInfo[] {
         const result: ShortendMatriculationInfo[] = [];
         const matriculationNos: { id: string; reversedNumber: string }[] = [];
 
