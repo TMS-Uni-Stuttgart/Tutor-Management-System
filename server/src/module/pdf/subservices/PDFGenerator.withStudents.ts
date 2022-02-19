@@ -1,4 +1,5 @@
 import { PDFGenerator } from './PDFGenerator.core';
+import { IStudent } from 'shared/model/Student';
 import { StudentDocument } from '../../../database/models/student.model';
 
 interface ShortendMatriculationInfo {
@@ -10,14 +11,14 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
     /**
      * Returns the shortened number for all students together with the ID of the student to which the shortened matriculation number belongs to.
      *
-     * Those shortened numbers are still enough to identify a student. However, this is only true if one only consideres the given students. If one extends that array without re-running this function the identifying feature may get lost.
+     * Those shortened numbers are still enough to identify a student. However, this is only true if one only considers the given students. If one extends that array without re-running this function the identifying feature may get lost.
      *
      * @param students All students to get the shortened number from.
      *
      * @returns The shortened but still identifying matriculation numbers of all given students.
      */
     protected getShortenedMatriculationNumbers(
-        students: StudentDocument[]
+        students: (StudentDocument | IStudent)[]
     ): ShortendMatriculationInfo[] {
         const result: ShortendMatriculationInfo[] = [];
         const matriculationNos: { id: string; reversedNumber: string }[] = [];
@@ -26,7 +27,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
             if (student.matriculationNo) {
                 matriculationNos.push({
                     id: student.id,
-                    reversedNumber: this.reverseString(student.matriculationNo),
+                    reversedNumber: PDFWithStudentsGenerator.reverseString(student.matriculationNo),
                 });
             }
         }
@@ -39,7 +40,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
 
             if (idx !== 0) {
                 const prev = matriculationNos[idx - 1];
-                positionPrev = this.getFirstDifferentPosition(
+                positionPrev = PDFWithStudentsGenerator.getFirstDifferentPosition(
                     current.reversedNumber,
                     prev.reversedNumber
                 );
@@ -47,14 +48,16 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
 
             if (idx !== matriculationNos.length - 1) {
                 const next = matriculationNos[idx + 1];
-                positionNext = this.getFirstDifferentPosition(
+                positionNext = PDFWithStudentsGenerator.getFirstDifferentPosition(
                     current.reversedNumber,
                     next.reversedNumber
                 );
             }
 
             const position: number = Math.max(positionPrev, positionNext);
-            const substring = this.reverseString(current.reversedNumber.substr(0, position + 1));
+            const substring = PDFWithStudentsGenerator.reverseString(
+                current.reversedNumber.substr(0, position + 1)
+            );
 
             result.push({
                 studentId: current.id,
@@ -72,7 +75,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      * @param second Second string
      * @returns The first position in which both string differ. If they are completly equal the length of the first string is returned.
      */
-    private getFirstDifferentPosition(first: string, second: string): number {
+    private static getFirstDifferentPosition(first: string, second: string): number {
         for (let i = 0; i < first.length; i++) {
             if (first.charAt(i) !== second.charAt(i)) {
                 return i;
@@ -86,7 +89,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      * @param string String to reverse
      * @returns The reversed string.
      */
-    private reverseString(string: string): string {
+    private static reverseString(string: string): string {
         return string.split('').reverse().join('');
     }
 }
