@@ -10,7 +10,8 @@ import {
     DatabaseConfiguration,
     DatabaseConfigurationValidationGroup,
 } from './model/DatabaseConfiguration';
-import { EnvironmentConfig, ENV_VARIABLE_NAMES } from './model/EnvironmentConfig';
+import { ENV_VARIABLE_NAMES, EnvironmentConfig } from './model/EnvironmentConfig';
+import { PuppeteerConfiguration } from './model/PuppeteerConfiguration';
 
 export class StaticSettings {
     private static service: StaticSettings = new StaticSettings();
@@ -27,7 +28,7 @@ export class StaticSettings {
     constructor() {
         this.config = this.loadConfigFile();
 
-        this.envConfig = this.loadEnvironmentVariables();
+        this.envConfig = StaticSettings.loadEnvironmentVariables();
         this.databaseConfig = this.loadDatabaseConfig();
     }
 
@@ -45,7 +46,7 @@ export class StaticSettings {
     /**
      * Returns the encryption secret for the database.
      *
-     * @returns Encrytion secret.
+     * @returns Encryption secret.
      */
     getDatabaseSecret(): string {
         return this.databaseConfig.secret;
@@ -56,6 +57,13 @@ export class StaticSettings {
      */
     getDatabaseConfiguration(): DatabaseConfiguration {
         return this.databaseConfig;
+    }
+
+    /**
+     *  @returns Configuration for the puppeteer instance. Can be `undefined`.
+     */
+    getPuppeteerConfiguration(): PuppeteerConfiguration | undefined {
+        return this.config.puppeteer;
     }
 
     /**
@@ -166,12 +174,12 @@ export class StaticSettings {
      * @returns Valid configuration extracted from the environment variables.
      * @throws `StartUpException` - If not all required environment variables were provided.
      */
-    private loadEnvironmentVariables(): EnvironmentConfig {
+    private static loadEnvironmentVariables(): EnvironmentConfig {
         const envConfig = plainToClass(EnvironmentConfig, process.env, {
             excludeExtraneousValues: true,
         });
 
-        this.assertEnvNoErrors(validateSync(envConfig));
+        StaticSettings.assertEnvNoErrors(validateSync(envConfig));
 
         return envConfig;
     }
@@ -182,7 +190,7 @@ export class StaticSettings {
      * @param errors Array containing validation errors from class-validator (or empty).
      * @throws `StartUpException` - If `errors` is not empty.
      */
-    private assertEnvNoErrors(errors: ValidationError[]) {
+    private static assertEnvNoErrors(errors: ValidationError[]) {
         if (errors.length === 0) {
             return;
         }

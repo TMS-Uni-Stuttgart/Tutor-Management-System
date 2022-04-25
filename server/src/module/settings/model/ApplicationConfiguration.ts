@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString, IsUrl, Min, ValidateNested } from 'class-validator';
 import { ClientSettingsDTO } from '../settings.dto';
 import { DatabaseConfiguration } from './DatabaseConfiguration';
+import { PuppeteerConfiguration } from './PuppeteerConfiguration';
 
 export class ApplicationConfiguration {
     @IsOptional()
@@ -25,4 +26,9 @@ export class ApplicationConfiguration {
     @Type(() => ClientSettingsDTO)
     @ValidateNested()
     readonly defaultSettings: ClientSettingsDTO | undefined;
+
+    @IsOptional()
+    @Type(() => PuppeteerConfiguration)
+    @ValidateNested()
+    readonly puppeteer: PuppeteerConfiguration | undefined;
 }

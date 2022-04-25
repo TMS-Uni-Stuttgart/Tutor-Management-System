@@ -3,7 +3,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { SettingsDocument, SettingsModel } from '../../database/models/settings.model';
 import { StartUpException } from '../../exceptions/StartUpException';
-import { IClientSettings, IMailingSettings } from '../../shared/model/Settings';
+import { IClientSettings, IMailingSettings } from 'shared/model/Settings';
 import { ClientSettingsDTO } from './settings.dto';
 import { StaticSettings } from './settings.static';
 

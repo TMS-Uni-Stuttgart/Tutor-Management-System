@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import fs from 'fs';
 import puppeteer from 'puppeteer';
+import { StaticSettings } from '../../settings/settings.static';
 
 /**
  * @param T Type of the options passed to `generatePDF`.
@@ -17,7 +18,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     public abstract generatePDF(options: T): Promise<Buffer>;
 
     /**
-     * Generates a PDF from the given body. The body gets put in a HTML wrapper first.
+     * Generates a PDF from the given body. The body gets put in an HTML wrapper first.
      *
      * @param body Body content to be put in the PDF as HTML body.
      *
@@ -34,6 +35,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
             browser = await puppeteer.launch({
                 args: ['--disable-dev-shm-usage'],
                 executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
+                timeout: StaticSettings.getService().getPuppeteerConfiguration()?.timeout,
             });
 
             this.logger.debug('Browser started.');
@@ -90,9 +92,9 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     <head>
     <style>${githubCSS}</style>
     <style>${highlightCSS}</style>
-    <style>${this.getCustomCSS()}</style>
+    <style>${PDFGenerator.getCustomCSS()}</style>
     </head>
-    <body class="markdown-body">${body}</body>
+    <body class='markdown-body'>${body}</body>
     </html>
     `;
     }
@@ -126,7 +128,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     /**
      * @returns Some small customizations to the GitHub markdown CSS.
      */
-    private getCustomCSS(): string {
+    private static getCustomCSS(): string {
         return '.markdown-body table { display: table; width: 100%; }';
     }
 }
