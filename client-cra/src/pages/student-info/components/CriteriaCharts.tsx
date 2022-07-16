@@ -13,29 +13,35 @@ function CriteriaCharts({ scheinStatus, ...props }: Props): JSX.Element {
 
   return (
     <>
-      {Object.values(scheinStatus.scheinCriteriaSummary).map((summary) => (
-        <Grid {...props} item key={summary.id}>
-          <ChartPaper
-            title={summary.name}
-            chartType='PieChart'
-            data={[
-              ['Status', 'Anzahl'],
-              ['Erfüllt', summary.achieved],
-              ['Nicht erfüllt', summary.total - summary.achieved],
-            ]}
-            options={{
-              slices: {
-                0: { color: theme.palette.green.dark },
-                1: { color: theme.palette.red.dark },
-              },
-              legend: {
-                position: 'labeled',
-              },
-              pieSliceText: 'value',
-            }}
-          />
-        </Grid>
-      ))}
+      {Object.values(scheinStatus.scheinCriteriaSummary).map((summary) => {
+        const achieved = summary.achieved;
+        const notAchieved =
+          summary.total >= summary.achieved ? summary.total - summary.achieved : 0;
+
+        return (
+          <Grid {...props} item key={summary.id}>
+            <ChartPaper
+              title={summary.name}
+              chartType='PieChart'
+              data={[
+                ['Status', 'Anzahl'],
+                ['Erfüllt', achieved],
+                ['Nicht erfüllt', notAchieved],
+              ]}
+              options={{
+                slices: {
+                  0: { color: theme.palette.green.dark },
+                  1: { color: theme.palette.red.dark },
+                },
+                legend: {
+                  position: 'labeled',
+                },
+                pieSliceText: 'value',
+              }}
+            />
+          </Grid>
+        );
+      })}
     </>
   );
 }
