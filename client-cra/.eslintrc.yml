@@ -1,0 +1,10 @@
+---
+extends:
+  - 'react-app'
+
+rules:
+  'react/display-name': 'off'
+  'react/jsx-no-duplicate-props':
+    - 'warn'
+    - ignoreCase: false
+  'react/prop-types': [ 0 ]

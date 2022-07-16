@@ -31,7 +31,9 @@ export class AuthController {
 
     @Get('/logout')
     logout(@Req() req: Request, @Res() res: Response): void {
-        req.logout();
+        req.logout(() => {
+            return;
+        });
         res.clearCookie('connect.sid').send('Successfully logged out.');
     }
 }

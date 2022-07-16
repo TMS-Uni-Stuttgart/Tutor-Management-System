@@ -44,7 +44,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         );
         const sheetsPassed = this.checkAllSheets(sheets, student, infos);
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.percentage) {
             passed = sheetsPassed / totalSheetCount >= this.valueNeeded;
