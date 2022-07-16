@@ -6,7 +6,7 @@ import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -59,6 +59,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
             passed,
             infos,
             unit: ScheinCriteriaUnit.SHEET,
+            chartType: 'PieChart',
         };
     }
 

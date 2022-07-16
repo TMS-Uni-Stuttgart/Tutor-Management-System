@@ -1,9 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
-import {
-    ScheincriteriaIdentifier,
-    ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+import { ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -38,6 +35,7 @@ export class PresentationCriteria extends Scheincriteria {
             passed: achieved >= this.presentationsNeeded,
             unit: ScheinCriteriaUnit.PRESENTATION,
             infos: {},
+            chartType: 'ColumnChart',
         };
     }
 

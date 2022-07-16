@@ -8,7 +8,7 @@ import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -41,7 +41,7 @@ export class ScheinexamCriteria extends Scheincriteria {
             infos
         );
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.passAllExamsIndividually) {
             passed = examsPassed >= exams.length;
@@ -56,6 +56,7 @@ export class ScheinexamCriteria extends Scheincriteria {
             unit: ScheinCriteriaUnit.EXAM,
             passed,
             infos,
+            chartType: 'PieChart',
         };
     }
 
