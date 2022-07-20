@@ -53,7 +53,13 @@ type MemberKeys =
     | 'courseOfStudies'
     | 'email';
 
-type ScheinstatusKeys = 'firstname' | 'lastname' | 'status' | 'matriculationNo' | 'tutorial';
+type ScheinstatusKeys =
+    | 'firstname'
+    | 'lastname'
+    | 'status'
+    | 'matriculationNo'
+    | 'tutorial'
+    | 'email';
 
 @Injectable()
 export class ExcelService {
@@ -123,6 +129,7 @@ export class ExcelService {
             status: { name: 'Status', column: 3 },
             matriculationNo: { name: 'Matriculation No', column: 4 },
             tutorial: { name: 'Tutorial', column: 5 },
+            email: { name: 'E-Mail', column: 6 },
         };
         const cells: CellDataCollection<ScheinstatusKeys> = {
             lastname: [],
@@ -130,12 +137,13 @@ export class ExcelService {
             status: [],
             matriculationNo: [],
             tutorial: [],
+            email: [],
         };
 
         let row = 2;
         for (const summary of Object.values(summaries)) {
             const { student, passed } = summary;
-            const { firstname, lastname, matriculationNo, tutorial } = student;
+            const { firstname, lastname, matriculationNo, tutorial, email } = student;
 
             let state: PassedState;
 
@@ -150,6 +158,7 @@ export class ExcelService {
             cells['matriculationNo'].push({ content: matriculationNo || 'N/A', row });
             cells['tutorial'].push({ content: tutorial.slot, row });
             cells['status'].push({ content: state.toString(), row });
+            cells['email'].push({ content: email ?? 'N/A', row });
 
             row++;
         }
