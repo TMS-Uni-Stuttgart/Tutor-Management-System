@@ -68,6 +68,21 @@ export class StudentInTeam implements Modify<IStudentInTeam, Modified> {
   }
 
   /**
+   * Returns all dates used for attendances of this student.
+   *
+   * @returns All dates used for attendances.
+   */
+  getDatesOfAttendances(): DateTime[] {
+    const dates: DateTime[] = [];
+
+    for (let date in this.attendances.keys()) {
+      dates.push(DateTime.fromISO(date));
+    }
+
+    return dates;
+  }
+
+  /**
    * Returns the grading of the given sheet if the student has one. If not `undefined` is returned.
    *
    * @param sheet Sheet or the sheet ID to get the grading for.
