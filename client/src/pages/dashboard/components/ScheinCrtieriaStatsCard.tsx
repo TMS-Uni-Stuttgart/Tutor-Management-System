@@ -63,11 +63,7 @@ function ScheinCriteriaStatsCard({
     let hasInfo: boolean = false;
 
     filterSummaries(critId).forEach((status) => {
-      if (Object.values(status.infos).length > 0) {
-        hasInfo = true;
-      } else {
-        hasInfo = false;
-      }
+      hasInfo = Object.values(status.infos).length > 0;
     });
 
     return hasInfo;
@@ -85,7 +81,7 @@ function ScheinCriteriaStatsCard({
     return filterSummaries(critId)[0].name;
   }
 
-  function getAdditionlaStatusTicks(critId: string) {
+  function getAdditionalStatusTicks(critId: string) {
     const elements: number[] = [];
     filterSummaries(critId).forEach((item) => {
       Object.values(item.infos).forEach((info) => {
@@ -108,8 +104,7 @@ function ScheinCriteriaStatsCard({
     });
 
     const data: [string, number][] = Object.entries(counts);
-    const headedData = [['Total', 'Studierende'], ...data];
-    return headedData;
+    return [['Total', 'Studierende'], ...data];
   }
 
   function getAdditionalStatusStats(critId: string) {
@@ -122,8 +117,7 @@ function ScheinCriteriaStatsCard({
         counts.push([element, achieved]);
       });
     });
-    const headedData = [['Element', 'Punkte'], ...counts];
-    return headedData;
+    return [['Element', 'Punkte'], ...counts];
   }
 
   return (
@@ -154,7 +148,7 @@ function ScheinCriteriaStatsCard({
                       hAxis: {
                         ...fontStyle,
                         title: `${t('UNIT_LABEL_' + getUnit(critId) + '_plural')}`,
-                        ticks: getAdditionlaStatusTicks(critId),
+                        ticks: getAdditionalStatusTicks(critId),
                       },
                       vAxis: {
                         ...fontStyle,

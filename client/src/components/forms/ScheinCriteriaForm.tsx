@@ -19,6 +19,7 @@ const validationSchema = Yup.object().shape({
 interface ScheinCriteriaFormState {
   name: string;
   identifier: string;
+
   [fieldKey: string]: any;
 }
 

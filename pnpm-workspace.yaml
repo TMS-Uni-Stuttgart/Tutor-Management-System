@@ -1,5 +1,5 @@
 packages:
-  - "client-cra"
+  - "client"
   - "server"
   - "scripts"
   - "docs"
