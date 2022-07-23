@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const CracoAlias = require('craco-alias');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const path = require('path');
 const fs = require('fs');
@@ -49,7 +48,7 @@ module.exports = {
         (plugin) => plugin.constructor.name !== 'ModuleScopePlugin'
       );
 
-      config.output.publicPath = isEnvProduction ? '/#{ROUTE_PREFIX}' : '/';
+      config.output.publicPath = isEnvProduction ? '${ROUTE_PREFIX}' : '/';
 
       return config;
     },
