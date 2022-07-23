@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
       overflowY: 'auto',
     },
     label: {
-      fontWeight: theme.typography.fontWeightRegular,
+      fontWeight: 'normal',
       fontFamily: theme.typography.fontFamily,
       margin: 0,
     },

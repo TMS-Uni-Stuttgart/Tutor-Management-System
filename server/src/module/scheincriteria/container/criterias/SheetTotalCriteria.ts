@@ -4,7 +4,7 @@ import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -20,9 +20,13 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
 
     checkCriteriaStatus({ student, sheets }: CriteriaPayload): StatusCheckResponse {
         const infos: StatusCheckResponse['infos'] = {};
-        const { pointsAchieved, pointsTotal } = this.checkAllSheets(sheets, student, infos);
+        const { pointsAchieved, pointsTotal } = SheetTotalCriteria.checkAllSheets(
+            sheets,
+            student,
+            infos
+        );
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.percentage) {
             passed = pointsAchieved / pointsTotal >= this.valueNeeded;
@@ -35,8 +39,9 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
             achieved: pointsAchieved,
             total: pointsTotal,
             passed,
-            unit: ScheinCriteriaUnit.POINT,
             infos,
+            unit: ScheinCriteriaUnit.POINT,
+            chartType: 'PieChart',
         };
     }
 
@@ -44,7 +49,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkAllSheets(
+    private static checkAllSheets(
         sheets: SheetDocument[],
         student: StudentDocument,
         infos: StatusCheckResponse['infos']

@@ -165,7 +165,7 @@ function StudentInfo(): JSX.Element {
       </Box>
 
       <Placeholder
-        placeholderText='Kein Studierender verfügbar.'
+        placeholderText='Kein/e Studierende/r verfügbar.'
         showPlaceholder={false}
         loading={!student || !tutorialOfStudent}
       >

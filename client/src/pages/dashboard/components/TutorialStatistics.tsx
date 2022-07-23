@@ -61,4 +61,5 @@ function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
     </>
   );
 }
+
 export default TutorialStatistics;

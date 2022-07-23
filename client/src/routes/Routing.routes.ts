@@ -8,8 +8,8 @@ import {
   Cogs as SettingsIcon,
   Comment as PresentationIcon,
   File as SheetIcon,
+  HumanMaleBoard as TutorialIcon,
   ScriptText as ScheincriteriaIcon,
-  Teach as TutorialIcon,
   TextBox as ScheinexamPointsIcon,
   ViewDashboard as DashboardIcon,
 } from 'mdi-material-ui';

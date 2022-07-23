@@ -26,10 +26,10 @@ import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decor
 import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
-import { AttendanceState, IAttendance } from '../../shared/model/Attendance';
-import { IGradingDTO } from '../../shared/model/Gradings';
-import { Role } from '../../shared/model/Role';
-import { IStudent } from '../../shared/model/Student';
+import { AttendanceState, IAttendance } from 'shared/model/Attendance';
+import { IGradingDTO } from 'shared/model/Gradings';
+import { Role } from 'shared/model/Role';
+import { IStudent } from 'shared/model/Student';
 import { SettingsService } from '../settings/settings.service';
 import {
     AttendanceDTO,
@@ -67,9 +67,7 @@ export class StudentController {
     @Roles(Role.ADMIN, Role.TUTOR)
     @UsePipes(ValidationPipe)
     async createStudent(@Body() dto: StudentDTO): Promise<IStudent> {
-        const student = await this.studentService.create(dto);
-
-        return student;
+        return await this.studentService.create(dto);
     }
 
     @Get('/:id')
@@ -86,9 +84,7 @@ export class StudentController {
     @UseGuards(StudentGuard)
     @UsePipes(ValidationPipe)
     async updateStudent(@Param('id') id: string, @Body() dto: StudentDTO): Promise<IStudent> {
-        const student = await this.studentService.update(id, dto);
-
-        return student;
+        return await this.studentService.update(id, dto);
     }
 
     @Delete('/:id')
@@ -141,9 +137,7 @@ export class StudentController {
             user: request.user,
         });
 
-        const attendance = await this.studentService.setAttendance(id, dto);
-
-        return attendance;
+        return await this.studentService.setAttendance(id, dto);
     }
 
     @Put('/:id/presentation')

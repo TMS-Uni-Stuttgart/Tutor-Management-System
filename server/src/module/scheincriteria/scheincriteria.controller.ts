@@ -16,14 +16,14 @@ import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
-import { FormDataResponse } from '../../shared/model/FormTypes';
-import { Role } from '../../shared/model/Role';
+import { FormDataResponse } from 'shared/model/FormTypes';
+import { Role } from 'shared/model/Role';
 import {
     CriteriaInformation,
     IScheinCriteria,
     ScheinCriteriaSummary,
     ScheincriteriaSummaryByStudents,
-} from '../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaService } from './scheincriteria.service';
 
@@ -45,9 +45,7 @@ export class ScheincriteriaController {
     @Roles(Role.ADMIN, Role.EMPLOYEE)
     @UsePipes(ValidationPipe)
     async createCriteria(@Body() dto: ScheinCriteriaDTO): Promise<IScheinCriteria> {
-        const scheincriteria = await this.scheincriteriaService.create(dto);
-
-        return scheincriteria;
+        return await this.scheincriteriaService.create(dto);
     }
 
     @Patch('/:id')
@@ -58,9 +56,7 @@ export class ScheincriteriaController {
         @Param('id') id: string,
         @Body() dto: ScheinCriteriaDTO
     ): Promise<IScheinCriteria> {
-        const scheincritera = await this.scheincriteriaService.update(id, dto);
-
-        return scheincritera;
+        return await this.scheincriteriaService.update(id, dto);
     }
 
     @Delete('/:id')
@@ -74,42 +70,32 @@ export class ScheincriteriaController {
     @Get('/:id/info')
     @UseGuards(HasRoleGuard)
     async getInformation(@Param('id') id: string): Promise<CriteriaInformation> {
-        const information = await this.scheincriteriaService.getInfoAboutCriteria(id);
-
-        return information;
+        return await this.scheincriteriaService.getInfoAboutCriteria(id);
     }
 
     @Get('/form')
     @UseGuards(HasRoleGuard)
     @Roles(Role.ADMIN, Role.EMPLOYEE)
     async getFormData(): Promise<FormDataResponse> {
-        const formData = await this.scheincriteriaService.getFormData();
-
-        return formData;
+        return await this.scheincriteriaService.getFormData();
     }
 
     @Get('/student')
     @UseGuards(HasRoleGuard)
     @Roles(Role.ADMIN, Role.EMPLOYEE)
     async getResultsOfAllStudents(): Promise<ScheincriteriaSummaryByStudents> {
-        const summary = await this.scheincriteriaService.getResultsOfAllStudents();
-
-        return summary;
+        return await this.scheincriteriaService.getResultsOfAllStudents();
     }
 
     @Get('/student/:id')
     @UseGuards(StudentGuard)
     async getResultOfStudent(@Param('id') id: string): Promise<ScheinCriteriaSummary> {
-        const summary = await this.scheincriteriaService.getResultOfStudent(id);
-
-        return summary;
+        return await this.scheincriteriaService.getResultOfStudent(id);
     }
 
     @Get('/tutorial/:id')
     @UseGuards(TutorialGuard)
     async getResultsOfTutorial(@Param('id') id: string): Promise<ScheincriteriaSummaryByStudents> {
-        const summary = await this.scheincriteriaService.getResultsOfTutorial(id);
-
-        return summary;
+        return await this.scheincriteriaService.getResultsOfTutorial(id);
     }
 }

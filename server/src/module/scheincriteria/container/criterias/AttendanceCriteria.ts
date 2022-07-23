@@ -1,8 +1,5 @@
-import { AttendanceState } from '../../../../shared/model/Attendance';
-import {
-    ScheinCriteriaUnit,
-    ScheincriteriaIdentifier,
-} from '../../../../shared/model/ScheinCriteria';
+import { AttendanceState } from 'shared/model/Attendance';
+import { ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -39,6 +36,7 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
             passed,
             unit: ScheinCriteriaUnit.DATE,
             infos: {},
+            chartType: 'PieChart',
         };
     }
 

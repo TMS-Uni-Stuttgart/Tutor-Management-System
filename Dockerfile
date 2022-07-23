@@ -28,7 +28,7 @@ RUN pnpm install && pnpm build
 # Create the image which runs the server
 #
 # =============================================
-FROM alpine:3
+FROM alpine:3 as production
 
 # Installs latest Chromium package, NodeJS and pnpm.
 RUN apk add --no-cache \

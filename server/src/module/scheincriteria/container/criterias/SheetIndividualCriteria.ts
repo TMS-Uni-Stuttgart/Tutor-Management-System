@@ -6,7 +6,7 @@ import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -44,7 +44,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         );
         const sheetsPassed = this.checkAllSheets(sheets, student, infos);
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.percentage) {
             passed = sheetsPassed / totalSheetCount >= this.valueNeeded;
@@ -59,6 +59,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
             passed,
             infos,
             unit: ScheinCriteriaUnit.SHEET,
+            chartType: 'PieChart',
         };
     }
 
