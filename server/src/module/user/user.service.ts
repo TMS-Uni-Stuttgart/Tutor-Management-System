@@ -63,7 +63,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
     }
 
     /**
-     * Searches for a user with the given ID and returns it's document if possible.
+     * Searches for a user with the given ID and returns its document if possible.
      *
      * @param id ID to search for.
      *
@@ -130,7 +130,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
                 created.push(createdUser);
                 em.persist(createdUser);
             } catch (err) {
-                const message = err.message || 'Unknown error.';
+                const message: string = err instanceof Error ? err.message : 'Unknown error';
                 errors.push(`[${user.lastname}, ${user.firstname}]: ${message}`);
             }
         }
