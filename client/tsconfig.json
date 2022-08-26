@@ -1,25 +1,28 @@
 {
-  "include": ["src"],
+  "extends": "./tsconfig.extends.json",
   "compilerOptions": {
-    "module": "esnext",
-    "target": "esnext",
-    "moduleResolution": "node",
-    "jsx": "react",
-    "baseUrl": "src",
-    /* paths - If you configure Snowpack import aliases, add them here. */
-    "paths": {
-      "shared/*": ["../../server/src/shared/*"]
-    },
-    /* noEmit - Snowpack builds (emits) files, not tsc. */
-    "noEmit": true,
-    /* Additional Options */
-    "strict": true,
+    "target": "es6",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "importsNotUsedAsValues": "remove",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  }
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "noImplicitAny": true,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src"
+  ]
 }

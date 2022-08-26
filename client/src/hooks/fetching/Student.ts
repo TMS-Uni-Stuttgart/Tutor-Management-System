@@ -70,7 +70,7 @@ export async function setAttendanceOfStudent(
 
 export async function setPointsOfMultipleStudents(points: Map<string, IGradingDTO>): Promise<void> {
   // Timeout = 0 to prevent the request from timeouting.
-  const response = await axios.put('grading/multiple', [...points], { timeout: 0 });
+  const response = await axios.put('student/grading', [...points], { timeout: 0 });
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong status code (${response.status}).`);
@@ -78,7 +78,7 @@ export async function setPointsOfMultipleStudents(points: Map<string, IGradingDT
 }
 
 export async function setPointsOfStudent(studentId: string, points: IGradingDTO): Promise<void> {
-  const response = await axios.put(`grading/student/${studentId}`, points);
+  const response = await axios.put(`student/${studentId}/grading`, points);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong status code (${response.status}).`);
@@ -100,7 +100,7 @@ export async function setExamPointsOfStudent(
   studentId: string,
   points: IGradingDTO
 ): Promise<void> {
-  const response = await axios.put(`grading/student/${studentId}`, points);
+  const response = await axios.put(`student/${studentId}/grading`, points);
 
   if (response.status !== 204) {
     return Promise.reject(`Wrong response code (${response.status}).`);

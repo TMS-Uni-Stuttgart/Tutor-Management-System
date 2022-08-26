@@ -1,6 +1,6 @@
 import React from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Typography, Table, TableBody, TableRow, Box, BoxProps } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Box, BoxProps, Table, TableBody, TableRow, Typography } from '@material-ui/core';
 import { TableProps } from '@material-ui/core/Table';
 import clsx from 'clsx';
 

@@ -1,5 +1,5 @@
 import { TableCell, Typography } from '@material-ui/core';
-import { PdfBox as PDFGenerationIcon } from 'mdi-material-ui';
+import { FilePdfBox as PDFGenerationIcon } from 'mdi-material-ui';
 import React from 'react';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';

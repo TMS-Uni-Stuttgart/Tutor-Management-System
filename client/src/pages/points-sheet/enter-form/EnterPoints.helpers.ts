@@ -75,8 +75,10 @@ export function convertFormStateToGradingDTO({
   shortTestId,
   prevGrading,
 }: ConvertToGradingDTOParams): IGradingDTO {
-  const exerciseGradings: Map<string, IExerciseGradingDTO> =
-    convertFormStateToExerciseGradingDTOMap(values);
+  const exerciseGradings: Map<
+    string,
+    IExerciseGradingDTO
+  > = convertFormStateToExerciseGradingDTOMap(values);
   const additionalPoints = values.additionalPoints ? Number.parseFloat(values.additionalPoints) : 0;
 
   return {

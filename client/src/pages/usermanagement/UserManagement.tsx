@@ -155,39 +155,38 @@ function UserManagement(): JSX.Element {
   );
 
   const handleEditUserSubmit: (user: IUser) => UserFormSubmitCallback = useCallback(
-    (user) =>
-      async (formState, { setSubmitting, setFieldError }) => {
-        try {
-          const { password } = formState;
-          const userInformation: IUserDTO = convertFormStateToUserDTO(
-            formState,
-            users.filter((u) => u.id !== user.id)
-          );
+    (user) => async (formState, { setSubmitting, setFieldError }) => {
+      try {
+        const { password } = formState;
+        const userInformation: IUserDTO = convertFormStateToUserDTO(
+          formState,
+          users.filter((u) => u.id !== user.id)
+        );
 
-          const updatedUser = await editUser(user.id, userInformation);
+        const updatedUser = await editUser(user.id, userInformation);
 
-          if (!!password) {
-            await setTemporaryPassword(user.id, { password });
-          }
-
-          await updateData();
-
-          enqueueSnackbar(
-            `${getNameOfEntity(updatedUser, {
-              firstNameFirst: true,
-            })} wurde erfolgreich gespeichert.`,
-            { variant: 'success' }
-          );
-          dialog.hide();
-        } catch (e) {
-          if (e instanceof UsernameAlreadyTakenError) {
-            setFieldError('username', 'Nutzername bereits vergeben.');
-          }
-
-          enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
-          setSubmitting(false);
+        if (!!password) {
+          await setTemporaryPassword(user.id, { password });
         }
-      },
+
+        await updateData();
+
+        enqueueSnackbar(
+          `${getNameOfEntity(updatedUser, {
+            firstNameFirst: true,
+          })} wurde erfolgreich gespeichert.`,
+          { variant: 'success' }
+        );
+        dialog.hide();
+      } catch (e) {
+        if (e instanceof UsernameAlreadyTakenError) {
+          setFieldError('username', 'Nutzername bereits vergeben.');
+        }
+
+        enqueueSnackbar(`Nutzer konnte nicht gespeichert werden.`, { variant: 'error' });
+        setSubmitting(false);
+      }
+    },
     [dialog, enqueueSnackbar, updateData, users]
   );
 

@@ -48,10 +48,11 @@ function getAllRelatedRoutes(): TutorialRelatedDrawerRoute[] {
   return [...Object.values(TUTORIAL_ROUTES)] as any;
 }
 
-function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams): {
-  placeholderText: string;
-  showPlaceholder: boolean;
-} {
+function getPlaceholderData({
+  error,
+  tutorial,
+  pathname,
+}: PlaceholderDataParams): { placeholderText: string; showPlaceholder: boolean } {
   const isRootPath = pathname === '/';
   let placeholderText = '';
 

@@ -31,10 +31,11 @@ const weekdaysToShow: { [date: string]: string } = {
   saturday: 'Samstag',
 };
 
-function getTabsForAllWeekdays({ errors, errorClass, selectedTab }: GetTabsForAllWeekdaysParams): {
-  tabs: JSX.Element[];
-  panels: JSX.Element[];
-} {
+function getTabsForAllWeekdays({
+  errors,
+  errorClass,
+  selectedTab,
+}: GetTabsForAllWeekdaysParams): { tabs: JSX.Element[]; panels: JSX.Element[] } {
   const tabs: JSX.Element[] = [];
   const panels: JSX.Element[] = [];
 

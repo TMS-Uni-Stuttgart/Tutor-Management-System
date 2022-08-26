@@ -7,6 +7,7 @@ export interface Modifiers {
   altKey?: boolean;
   ctrlKey?: boolean;
   metaKey?: boolean;
+
   [modifier: string]: boolean | undefined;
 }
 

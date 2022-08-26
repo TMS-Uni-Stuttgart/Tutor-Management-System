@@ -70,8 +70,13 @@ function TutorialManagementContent(): JSX.Element {
   const { enqueueSnackbar } = useCustomSnackbar();
   const logger = useLogger('TutorialManagement');
 
-  const { tutorials, tutors, correctors, isLoading, fetchTutorials } =
-    useTutorialManagementContext();
+  const {
+    tutorials,
+    tutors,
+    correctors,
+    isLoading,
+    fetchTutorials,
+  } = useTutorialManagementContext();
 
   const handleCreateTutorial: TutorialFormSubmitCallback = useCallback(
     async (values, { setSubmitting, resetForm, setFieldError }) => {
@@ -98,18 +103,17 @@ function TutorialManagementContent(): JSX.Element {
   );
 
   const handleEditTutorialSubmit: (tutorial: HasId) => TutorialFormSubmitCallback = useCallback(
-    (tutorial) =>
-      async (values, { setSubmitting }) => {
-        try {
-          await editTutorial(tutorial.id, generateCreateTutorialDTO(values));
-          await fetchTutorials();
-          enqueueSnackbar('Tutorium erfolgreich geändert.', { variant: 'success' });
-          dialog.hide();
-        } catch {
-          enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
-          setSubmitting(false);
-        }
-      },
+    (tutorial) => async (values, { setSubmitting }) => {
+      try {
+        await editTutorial(tutorial.id, generateCreateTutorialDTO(values));
+        await fetchTutorials();
+        enqueueSnackbar('Tutorium erfolgreich geändert.', { variant: 'success' });
+        dialog.hide();
+      } catch {
+        enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
+        setSubmitting(false);
+      }
+    },
     [enqueueSnackbar, fetchTutorials, dialog]
   );
 

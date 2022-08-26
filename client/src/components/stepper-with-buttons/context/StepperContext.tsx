@@ -51,8 +51,9 @@ export const StepperContext = React.createContext<StepperContextValue>({
  * @param cb Callback used for the next button if provided.
  */
 export function useStepper(cb?: NextStepCallback): Omit<StepperContextValue, 'getNextCallback'> {
-  const { getNextCallback, setNextCallback, removeNextCallback, ...context } =
-    useContext(StepperContext);
+  const { getNextCallback, setNextCallback, removeNextCallback, ...context } = useContext(
+    StepperContext
+  );
 
   useEffect(() => {
     if (cb) {

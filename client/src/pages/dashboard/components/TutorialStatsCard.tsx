@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     tableTitle: {
-      fontWeight: theme.typography.fontWeightMedium,
+      fontWeight: 'bolder',
     },
   })
 );

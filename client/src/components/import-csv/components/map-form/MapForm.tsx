@@ -28,10 +28,10 @@ interface Props {
 }
 
 function MapForm({ headers, metadata, formikRef, onSubmit }: Props): JSX.Element {
-  const initialValues: MapFormValues = useMemo(
-    () => generateInitialValues(metadata, headers),
-    [metadata, headers]
-  );
+  const initialValues: MapFormValues = useMemo(() => generateInitialValues(metadata, headers), [
+    metadata,
+    headers,
+  ]);
   const staticDataByBoxes: StaticBoxGroup[] = useMemo(() => groupStaticData(metadata), [metadata]);
   const dynamicData: DynamicBoxData[] = useMemo(() => getDynamicData(metadata), [metadata]);
   const sortedHeaders = useMemo(() => [...headers].sort((a, b) => a.localeCompare(b)), [headers]);

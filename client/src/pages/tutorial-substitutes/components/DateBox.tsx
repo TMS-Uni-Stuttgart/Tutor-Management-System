@@ -57,8 +57,13 @@ function filterDates(
 
 function DateBox(): JSX.Element {
   const classes = useStyles();
-  const { tutorial, selectedDate, isSubstituteChanged, setSelectedDate, getSelectedSubstitute } =
-    useSubstituteManagementContext();
+  const {
+    tutorial,
+    selectedDate,
+    isSubstituteChanged,
+    setSelectedDate,
+    getSelectedSubstitute,
+  } = useSubstituteManagementContext();
 
   const [filterOption, setFilterOption] = useState<FilterOption>(
     () => FilterOption.ONLY_FUTURE_DATES

@@ -68,10 +68,9 @@ function getDefaultInterval(): Interval {
   return Interval.fromDateTimes(DateTime.local(), DateTime.local().plus({ days: 1 }));
 }
 
-function getFormatForMode(mode: SelectIntervalMode): {
-  display: DateTimeFormatOptions;
-  mask: string;
-} {
+function getFormatForMode(
+  mode: SelectIntervalMode
+): { display: DateTimeFormatOptions; mask: string } {
   switch (mode) {
     case SelectIntervalMode.DATE:
       return {

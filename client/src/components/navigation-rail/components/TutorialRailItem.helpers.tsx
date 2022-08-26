@@ -1,7 +1,7 @@
 import {
   AccountConvert as SubstituteTutorialIcon,
   CheckboxMarkedCircleOutline as TutorialToCorrectIcon,
-  Teach as TutorialIcon,
+  HumanMaleBoard as TutorialIcon,
 } from 'mdi-material-ui';
 import { Role } from 'shared/model/Role';
 import { LoggedInUser } from '../../../model/LoggedInUser';

@@ -15,7 +15,7 @@ import {
   Account as StudentIcon,
   AccountMultiple as TeamIcon,
   FileFind as PdfPreviewIcon,
-  PdfBox as PdfIcon,
+  FilePdfBox as PdfIcon,
 } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';

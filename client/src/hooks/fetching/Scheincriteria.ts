@@ -1,9 +1,9 @@
 import {
   CriteriaInformation,
-  IScheinCriteriaDTO,
   IScheinCriteria,
-  ScheincriteriaSummaryByStudents,
+  IScheinCriteriaDTO,
   ScheinCriteriaSummary,
+  ScheincriteriaSummaryByStudents,
 } from 'shared/model/ScheinCriteria';
 import { FormDataResponse } from '../../components/generatedForm/types/FieldData';
 import axios from './Axios';
