@@ -24,7 +24,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
             if (student.matriculationNo) {
                 matriculationNos.push({
                     id: student.id,
-                    reversedNumber: this.reverseString(student.matriculationNo),
+                    reversedNumber: PDFWithStudentsGenerator.reverseString(student.matriculationNo),
                 });
             }
         }
@@ -37,22 +37,24 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
 
             if (idx !== 0) {
                 const prev = matriculationNos[idx - 1];
-                positionPrev = this.getFirstDifferentPosition(
+                positionPrev = PDFWithStudentsGenerator.getFirstDifferentPosition(
                     current.reversedNumber,
-                    prev.reversedNumber
+                    prev.reversedNumber,
                 );
             }
 
             if (idx !== matriculationNos.length - 1) {
                 const next = matriculationNos[idx + 1];
-                positionNext = this.getFirstDifferentPosition(
+                positionNext = PDFWithStudentsGenerator.getFirstDifferentPosition(
                     current.reversedNumber,
-                    next.reversedNumber
+                    next.reversedNumber,
                 );
             }
 
             const position: number = Math.max(positionPrev, positionNext);
-            const substring = this.reverseString(current.reversedNumber.substr(0, position + 1));
+            const substring = PDFWithStudentsGenerator.reverseString(
+                current.reversedNumber.substr(0, position + 1),
+            );
 
             result.push({
                 studentId: current.id,
@@ -70,7 +72,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      * @param second Second string
      * @returns The first position in which both string differ. If they are completely equal the length of the first string is returned.
      */
-    private getFirstDifferentPosition(first: string, second: string): number {
+    private static getFirstDifferentPosition(first: string, second: string): number {
         for (let i = 0; i < first.length; i++) {
             if (first.charAt(i) !== second.charAt(i)) {
                 return i;
@@ -84,7 +86,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      * @param string String to reverse
      * @returns The reversed string.
      */
-    private reverseString(string: string): string {
+    private static reverseString(string: string): string {
         return string.split('').reverse().join('');
     }
 }

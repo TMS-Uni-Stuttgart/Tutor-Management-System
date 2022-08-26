@@ -7,7 +7,10 @@ indent_size = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[{*.yml, *.json}]
+[*.{json, yml, yaml}]
+indent_size = 2
+
+[*.config.js]
 indent_size = 2
 
 [*.md]

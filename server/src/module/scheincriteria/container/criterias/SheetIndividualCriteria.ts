@@ -1,9 +1,5 @@
 import { IsBoolean } from 'class-validator';
-import {
-    PassedState,
-    ScheincriteriaIdentifier,
-    ScheinCriteriaUnit,
-} from 'shared/model/ScheinCriteria';
+import { PassedState, ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
 import { Sheet } from '../../../../database/entities/sheet.entity';
 import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
@@ -59,6 +55,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
             passed,
             infos,
             unit: ScheinCriteriaUnit.SHEET,
+            chartType: 'PieChart',
         };
     }
 

@@ -81,5 +81,23 @@
     "ts-jest": "^27.0.4",
     "ts-loader": "^9.2.4",
     "tsconfig-paths": "^3.10.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "testRunner": "jest-circus/runner",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./jest.setup.ts"
+    ]
   }
 }

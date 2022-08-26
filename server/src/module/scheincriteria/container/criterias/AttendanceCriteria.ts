@@ -36,6 +36,7 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
             passed,
             unit: ScheinCriteriaUnit.DATE,
             infos: {},
+            chartType: 'PieChart',
         };
     }
 

@@ -35,6 +35,7 @@ export class PresentationCriteria extends Scheincriteria {
             passed: achieved >= this.presentationsNeeded,
             unit: ScheinCriteriaUnit.PRESENTATION,
             infos: {},
+            chartType: 'ColumnChart',
         };
     }
 

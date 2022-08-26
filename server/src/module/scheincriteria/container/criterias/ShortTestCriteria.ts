@@ -1,20 +1,16 @@
-import { IsBoolean } from 'class-validator';
-import {
-    PassedState,
-    ScheincriteriaIdentifier,
-    ScheinCriteriaUnit,
-} from 'shared/model/ScheinCriteria';
-import { ShortTest } from '../../../../database/entities/shorttest.entity';
-import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
+import {IsBoolean} from 'class-validator';
+import {PassedState, ScheincriteriaIdentifier, ScheinCriteriaUnit,} from 'shared/model/ScheinCriteria';
+import {ShortTest} from '../../../../database/entities/shorttest.entity';
+import {IsNonNegativeNumberValue} from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
     InformationPayload,
     StatusCheckResponse,
 } from '../Scheincriteria';
-import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
-import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
-import { GradingList } from '../../../../helpers/GradingList';
+import {ScheincriteriaPossiblePercentage} from '../scheincriteria.decorators';
+import {PossiblePercentageCriteria} from './PossiblePercentageCriteria';
+import {GradingList} from '../../../../helpers/GradingList';
 
 interface CheckShortTestsParams {
     gradings: GradingList;
@@ -63,6 +59,7 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
             passed,
             infos,
             unit: ScheinCriteriaUnit.SHORT_TEST,
+            chartType: 'PieChart',
         };
     }
 

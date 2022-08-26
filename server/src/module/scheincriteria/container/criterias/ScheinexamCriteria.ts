@@ -1,9 +1,5 @@
 import { IsBoolean } from 'class-validator';
-import {
-    PassedState,
-    ScheincriteriaIdentifier,
-    ScheinCriteriaUnit,
-} from 'shared/model/ScheinCriteria';
+import { PassedState, ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
 import { Scheinexam } from '../../../../database/entities/scheinexam.entity';
 import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
@@ -54,6 +50,7 @@ export class ScheinexamCriteria extends Scheincriteria {
             unit: ScheinCriteriaUnit.EXAM,
             passed,
             infos,
+            chartType: 'PieChart',
         };
     }
 

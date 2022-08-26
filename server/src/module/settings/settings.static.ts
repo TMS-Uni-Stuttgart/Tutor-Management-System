@@ -28,7 +28,7 @@ export class StaticSettings {
     constructor() {
         this.config = this.loadConfigFile();
 
-        this.envConfig = this.loadEnvironmentVariables();
+        this.envConfig = StaticSettings.loadEnvironmentVariables();
         this.databaseConfig = this.loadDatabaseConfig();
     }
 
@@ -180,12 +180,12 @@ export class StaticSettings {
      * @returns Valid configuration extracted from the environment variables.
      * @throws `StartUpException` - If not all required environment variables were provided.
      */
-    private loadEnvironmentVariables(): EnvironmentConfig {
+    private static loadEnvironmentVariables(): EnvironmentConfig {
         const envConfig = plainToClass(EnvironmentConfig, process.env, {
             excludeExtraneousValues: true,
         });
 
-        this.assertEnvNoErrors(validateSync(envConfig));
+        StaticSettings.assertEnvNoErrors(validateSync(envConfig));
 
         return envConfig;
     }
@@ -196,7 +196,7 @@ export class StaticSettings {
      * @param errors Array containing validation errors from class-validator (or empty).
      * @throws `StartUpException` - If `errors` is not empty.
      */
-    private assertEnvNoErrors(errors: ValidationError[]) {
+    private static assertEnvNoErrors(errors: ValidationError[]) {
         if (errors.length === 0) {
             return;
         }

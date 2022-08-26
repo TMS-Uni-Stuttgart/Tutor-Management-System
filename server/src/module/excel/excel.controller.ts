@@ -40,4 +40,14 @@ export class ExcelController {
     async parseCSV(@Body() body: ParseCsvDTO): Promise<ParseCsvResult<unknown>> {
         return await this.excelService.parseCSV(body);
     }
+
+    @Get('/schein-information')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(HasRoleGuard)
+    async getScheinStatusCSV(@Res() res: Response): Promise<void> {
+        const buffer = await this.excelService.generateScheinstatusTable();
+
+        res.contentType('xlsx');
+        res.send(buffer);
+    }
 }

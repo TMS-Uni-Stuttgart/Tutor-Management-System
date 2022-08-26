@@ -46,10 +46,11 @@ A student has to attend his/her tutorial for a specified amount of times. This c
 
 ![Form for the attendance criteria](./assets/criteria_forms/attendance_criteria.png)
 
-1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
+1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is
+   considered an absolute value.
 
    :::caution
-   If the field already has a value in checking this box might lead to you having to adjust the value (ie "5" -> "500%").
+   If the field already has a value checking this box might lead to you having to adjust the value (ie "5" -> "500%").
    :::
 
 1. **Amount**: The amount of times a student has to be present. It's an absolute value by default, you can change it by checking the "Is Percentage" checkbox (1).
@@ -60,21 +61,25 @@ The student needs to pass a certain number of homeworks. Each homework is consid
 
 ![Form for the single sheets criteria](./assets/criteria_forms/sheet_single_criteria.png)
 
-1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
+1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is
+   considered an absolute value.
 
    :::caution
-   If the field already has a value in checking this box might lead to you having to adjust the value (ie "5" -> "500%").
+   If the field already has a value checking this box might lead to you having to adjust the value (ie "5" -> "500%").
    :::
 
-1. **Amount**: The amount of homeworks a student has to be pass. It's an absolute value by default, you can change it by checking the "Is Percentage" checkbox (1).
+1. **Amount**: The amount of homeworks a student has to be pass. It's an absolute value by default, you can change it by
+   checking the "Is Percentage" checkbox (1).
 
-1. **Is Percentage Per Sheet**: If checked the number in the "Amount" (4) field is considered a percentage. If not the number is considered an absolute value.
+1. **Is Percentage Per Sheet**: If checked the number in the "Amount" (4) field is considered a percentage. If not the
+   number is considered an absolute value.
 
    :::caution
-   If the field already has a value in checking this box might lead to you having to adjust the value (ie "5" -> "500%").
+   If the field already has a value checking this box might lead to you having to adjust the value (ie "5" -> "500%").
    :::
 
-1. **Amount Per Sheet**: The amount of points a student has to score on each sheet to pass it. It's an absolute value by default, you can change it by checking the "Is Percentage" checkbox (3).
+1. **Amount Per Sheet**: The amount of points a student has to score on each sheet to pass it. It's an absolute value by
+   default, you can change it by checking the "Is Percentage" checkbox (3).
 
 ### Sheets (total)
 
@@ -82,13 +87,15 @@ The student needs to score a certain amount of points in all homeworks together.
 
 ![Form for the total sheets criteria](./assets/criteria_forms/sheet_total_criteria.png)
 
-1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
+1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is
+   considered an absolute value.
 
    :::caution
-   If the field already has a value in checking this box might lead to you having to adjust the value (ie "5" -> "500%").
+   If the field already has a value checking this box might lead to you having to adjust the value (ie "5" -> "500%").
    :::
 
-1. **Amount**: The amount of points a student has to be score in total. It's an absolute value by default, you can change it by checking the "Is Percentage" checkbox (1).
+1. **Amount**: The amount of points a student has to be score in total. It's an absolute value by default, you can
+   change it by checking the "Is Percentage" checkbox (1).
 
 ### Scheinexam
 
@@ -114,21 +121,25 @@ The student has to pass a certain number of short tests. Each short test is cons
 
 ![Form for the short test criteria](./assets/criteria_forms/short_test_criteria.png)
 
-1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is considered an absolute value.
+1. **Is Percentage**: If checked the number in the "Amount" (2) field is considered a percentage. If not the number is
+   considered an absolute value.
 
    :::caution
-   If the field already has a value in checking this box might lead to you having to adjust the value (ie "5" -> "500%").
+   If the field already has a value checking this box might lead to you having to adjust the value (ie "5" -> "500%").
    :::
 
-1. **Amount**: The amount of short tests a student has to be pass. It's an absolute value by default, you can change it by checking the "Is Percentage" checkbox (1).
+1. **Amount**: The amount of short tests a student has to be pass. It's an absolute value by default, you can change it
+   by checking the "Is Percentage" checkbox (1).
 
-1. **Is Percentage Per Sheet**: If checked the number in the "Amount" (4) field is considered a percentage. If not the number is considered an absolute value.
+1. **Is Percentage Per Sheet**: If checked the number in the "Amount" (4) field is considered a percentage. If not the
+   number is considered an absolute value.
 
    :::caution
-   If the field already has a value in checking this box might lead to you having to adjust the value (ie "5" -> "500%").
+   If the field already has a value checking this box might lead to you having to adjust the value (ie "5" -> "500%").
    :::
 
-1. **Amount Per Sheet**: The amount of points a student has to score on each short test to pass it. It's an absolute value by default, you can change it by checking the "Is Percentage" checkbox (3).
+1. **Amount Per Sheet**: The amount of points a student has to score on each short test to pass it. It's an absolute
+   value by default, you can change it by checking the "Is Percentage" checkbox (3).
 
 ### Presentations
 

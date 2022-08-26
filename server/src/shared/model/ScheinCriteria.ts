@@ -54,6 +54,8 @@ export interface ScheinCriteriaStatus {
     total: number;
     unit: ScheinCriteriaUnit;
     infos: { [index: string]: ScheinCriteriaAdditionalStatus };
+
+    chartType: 'PieChart' | 'ColumnChart';
 }
 
 export interface ScheinCriteriaAdditionalStatus {
