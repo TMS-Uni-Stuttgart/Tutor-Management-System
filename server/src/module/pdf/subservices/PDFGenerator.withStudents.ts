@@ -1,5 +1,5 @@
-import { Student } from '../../../database/entities/student.entity';
 import { PDFGenerator } from './PDFGenerator.core';
+import { IStudent } from 'shared/model/Student';
 
 interface ShortenedMatriculationInfo {
     studentId: string;
@@ -16,7 +16,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      *
      * @returns The shortened but still identifying matriculation numbers of all given students.
      */
-    protected getShortenedMatriculationNumbers(students: Student[]): ShortenedMatriculationInfo[] {
+    protected getShortenedMatriculationNumbers(students: IStudent[]): ShortenedMatriculationInfo[] {
         const result: ShortenedMatriculationInfo[] = [];
         const matriculationNos: { id: string; reversedNumber: string }[] = [];
 
@@ -39,7 +39,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
                 const prev = matriculationNos[idx - 1];
                 positionPrev = PDFWithStudentsGenerator.getFirstDifferentPosition(
                     current.reversedNumber,
-                    prev.reversedNumber,
+                    prev.reversedNumber
                 );
             }
 
@@ -47,13 +47,13 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
                 const next = matriculationNos[idx + 1];
                 positionNext = PDFWithStudentsGenerator.getFirstDifferentPosition(
                     current.reversedNumber,
-                    next.reversedNumber,
+                    next.reversedNumber
                 );
             }
 
             const position: number = Math.max(positionPrev, positionNext);
             const substring = PDFWithStudentsGenerator.reverseString(
-                current.reversedNumber.substr(0, position + 1),
+                current.reversedNumber.substr(0, position + 1)
             );
 
             result.push({
