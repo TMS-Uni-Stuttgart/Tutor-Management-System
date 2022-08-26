@@ -6,8 +6,8 @@ import { AttendanceModel } from '../../database/models/attendance.model';
 import { StudentDocument, StudentModel } from '../../database/models/student.model';
 import { TeamDocument } from '../../database/models/team.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { IAttendance } from '../../shared/model/Attendance';
-import { IStudent } from '../../shared/model/Student';
+import { IAttendance } from 'shared/model/Attendance';
+import { IStudent } from 'shared/model/Student';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
@@ -50,14 +50,12 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     }
 
     /**
-     * @param conditions mongoosea uery to filter the documents.
+     * @param conditions mongoose query to filter the documents.
      *
      * @returns All StudentDocuments which meet the given query.
      */
     async findByCondition(conditions: FilterQuery<StudentModel>): Promise<StudentDocument[]> {
-        const students = (await this.studentModel.find(conditions).exec()) as StudentDocument[];
-
-        return students;
+        return (await this.studentModel.find(conditions).exec()) as StudentDocument[];
     }
 
     /**

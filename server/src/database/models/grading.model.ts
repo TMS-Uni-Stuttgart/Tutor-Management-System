@@ -1,10 +1,10 @@
 import { BadRequestException, Logger } from '@nestjs/common';
+import { IExerciseGrading, IGrading } from 'shared/model/Gradings';
 import { isDocument } from '@typegoose/typegoose';
 import { plainToClass, Transform, Type } from 'class-transformer';
 import { Types } from 'mongoose';
 import { ClassType } from '../../helpers/ClassConstructor';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
-import { IExerciseGrading, IGrading } from '../../shared/model/Gradings';
 import { ExerciseDocument, SubExerciseDocument } from './exercise.model';
 import { StudentDocument } from './student.model';
 
@@ -180,7 +180,7 @@ export class Grading {
     }
 
     constructor() {
-        this.id = Types.ObjectId().toHexString();
+        this.id = new Types.ObjectId().toHexString();
         this.students = [];
         this.exerciseGradings = new SerializableMap();
     }

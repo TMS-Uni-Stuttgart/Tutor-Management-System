@@ -1,5 +1,5 @@
 import { IsNumber, IsObject, IsOptional, IsString, Min } from 'class-validator';
-import { ConnectionOptions } from 'mongoose';
+import { ConnectOptions } from 'mongoose';
 
 export enum DatabaseConfigurationValidationGroup {
     ALL = 'all',
@@ -19,5 +19,5 @@ export class DatabaseConfiguration {
 
     @IsOptional({ always: true })
     @IsObject({ always: true })
-    readonly config?: Omit<ConnectionOptions, 'auth'>;
+    readonly config?: ConnectOptions;
 }

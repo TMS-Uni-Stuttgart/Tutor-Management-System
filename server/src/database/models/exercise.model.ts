@@ -1,8 +1,8 @@
+import { ExercisePointsInfo, IExercisePointsInfo } from 'shared/model/Gradings';
+import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import { DocumentType, mongoose, prop } from '@typegoose/typegoose';
 import { generateObjectId } from '../../helpers/generateObjectId';
 import { ExerciseDTO, SubExerciseDTO } from '../../module/sheet/sheet.dto';
-import { ExercisePointsInfo, IExercisePointsInfo } from '../../shared/model/Gradings';
-import { IExercise, ISubexercise } from '../../shared/model/HasExercises';
 
 export interface HandInDocument {
     id?: string;
@@ -25,7 +25,7 @@ export class SubExerciseModel {
         const { id, ...rest } = fields;
 
         Object.assign(this, rest);
-        this._id = mongoose.Types.ObjectId(id ?? generateObjectId());
+        this._id = new mongoose.Types.ObjectId(id ?? generateObjectId());
     }
 
     @prop()
@@ -72,7 +72,7 @@ export class ExerciseModel {
         this._maxPoints = fields.maxPoints;
         this.subexercises = (fields.subexercises as SubExerciseDocument[]) ?? [];
 
-        this._id = mongoose.Types.ObjectId(fields.id ?? generateObjectId());
+        this._id = new mongoose.Types.ObjectId(fields.id ?? generateObjectId());
     }
 
     @prop()

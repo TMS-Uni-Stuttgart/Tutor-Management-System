@@ -12,9 +12,9 @@ import {
 } from '../../../test/mocks/documents.mock';
 import { ExerciseGrading, Grading } from '../../database/models/grading.model';
 import { StudentModel } from '../../database/models/student.model';
-import { AttendanceState } from '../../shared/model/Attendance';
-import { IGrading } from '../../shared/model/Gradings';
-import { IStudent, StudentStatus } from '../../shared/model/Student';
+import { AttendanceState } from 'shared/model/Attendance';
+import { IGrading } from 'shared/model/Gradings';
+import { IStudent, StudentStatus } from 'shared/model/Student';
 import { ScheinexamDTO } from '../scheinexam/scheinexam.dto';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetDTO } from '../sheet/sheet.dto';
@@ -183,7 +183,7 @@ describe('StudentService', () => {
 
     beforeAll(async () => {
         testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
+            imports: [await TestModule.forRootAsync()],
             providers: [
                 StudentService,
                 TutorialService,
@@ -503,7 +503,7 @@ describe('StudentService', () => {
     it('set the attendance of a student with note', async () => {
         const student = STUDENT_DOCUMENTS[0];
         const attendance: AttendanceDTO = {
-            date: '2020-03-01',
+            date: '2020-03-02',
             note: 'Some note',
             state: AttendanceState.PRESENT,
         };

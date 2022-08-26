@@ -46,17 +46,13 @@ export class DatabaseModule {
                         DatabaseModule.name
                     );
 
-                    const connection = await mongoose.createConnection(databaseConfig.databaseURL, {
-                        useNewUrlParser: true,
-                        useUnifiedTopology: true,
-                        useCreateIndex: true,
-                        poolSize: 10,
+                    await mongoose.createConnection(databaseConfig.databaseURL, {
                         ...databaseConfig.config,
                     });
 
                     Logger.log('Connection to MongoDB database established.', DatabaseModule.name);
 
-                    return resolve(connection);
+                    return resolve(mongoose.connection);
                 } catch {
                     tryToConnect(++prevTries);
                 }

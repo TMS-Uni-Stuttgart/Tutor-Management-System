@@ -115,7 +115,7 @@ export class StudentModel {
     /**
      * Saves the given attendance in the student.
      *
-     * The attendance will be saved for it's date. If there is already an attendance saved for that date it will be overriden.
+     * The attendance will be saved for it's date. If there is already an attendance saved for that date it will be overridden.
      *
      * This function marks the corresponding path as modified.
      *
@@ -144,7 +144,7 @@ export class StudentModel {
      *
      * This function marks the corresponding path as modified.
      *
-     * @param sheet Sheet to save grading for.
+     * @param handIn Hand-in to save grading for.
      * @param grading Grading so save.
      */
     setGrading(this: StudentDocument, handIn: HandInDocument, grading: Grading): void {

@@ -12,8 +12,8 @@ import { StudentDocument } from '../../database/models/student.model';
 import { TutorialDocument, TutorialModel } from '../../database/models/tutorial.model';
 import { UserDocument } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { Role } from '../../shared/model/Role';
-import { ITutorial } from '../../shared/model/Tutorial';
+import { Role } from 'shared/model/Role';
+import { ITutorial } from 'shared/model/Tutorial';
 import { StudentService } from '../student/student.service';
 import { UserService } from '../user/user.service';
 import {

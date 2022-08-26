@@ -2,7 +2,6 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import bodyParser from 'body-parser';
-import ConnectMongo from 'connect-mongo';
 import session from 'express-session';
 import { getConnectionToken } from 'nestjs-typegoose';
 import passport from 'passport';
@@ -10,6 +9,7 @@ import { AppModule } from './app.module';
 import { NotFoundExceptionFilter } from './filter/not-found-exception.filter';
 import { isDevelopment } from './helpers/isDevelopment';
 import { SettingsService } from './module/settings/settings.service';
+import MongoStore from 'connect-mongo';
 
 /**
  * Sets up the security middleware.
@@ -28,20 +28,20 @@ function initSecurityMiddleware(app: INestApplication) {
     const secret = settings.getDatabaseConfiguration().secret;
     const timeoutSetting = settings.getSessionTimeout();
 
-    const MongoStore = ConnectMongo(session);
+    const mongoStore = MongoStore.create({
+        client: connection,
+        ttl: timeoutSetting * 60,
+        crypto: { secret },
+    });
 
     Logger.log(`Setting timeout to: ${timeoutSetting} minutes`, loggerContext);
 
     app.use(
         session({
             secret,
-            store: new MongoStore({
-                secret,
-                mongooseConnection: connection,
-                ttl: timeoutSetting * 60,
-            }),
+            store: mongoStore,
             resave: false,
-            // Is used to extend the expries date on every request. This means, maxAge is relative to the time of the last request of a user.
+            // Is used to extend the expires date on every request. This means, maxAge is relative to the time of the last request of a user.
             rolling: true,
             saveUninitialized: true,
             cookie: {

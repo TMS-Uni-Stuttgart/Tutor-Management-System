@@ -50,7 +50,8 @@ interface GetRequiredDocsParams {
 
 @Injectable()
 export class ScheincriteriaService
-    implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaDocument> {
+    implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaDocument>
+{
     constructor(
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,

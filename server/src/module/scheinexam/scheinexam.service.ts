@@ -8,7 +8,8 @@ import { ReturnModelType } from '@typegoose/typegoose';
 
 @Injectable()
 export class ScheinexamService
-    implements CRUDService<IScheinExam, ScheinexamDTO, ScheinexamDocument> {
+    implements CRUDService<IScheinExam, ScheinexamDTO, ScheinexamDocument>
+{
     constructor(
         @InjectModel(ScheinexamModel)
         private readonly scheinexamModel: ReturnModelType<typeof ScheinexamModel>
