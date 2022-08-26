@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { ConsoleLogger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import fs from 'fs';
@@ -6,10 +6,7 @@ import path from 'path';
 import YAML from 'yaml';
 import { StartUpException } from '../../exceptions/StartUpException';
 import { ApplicationConfiguration } from './model/ApplicationConfiguration';
-import {
-    DatabaseConfiguration,
-    DatabaseConfigurationValidationGroup,
-} from './model/DatabaseConfiguration';
+import { DatabaseConfiguration, DatabaseConfigurationValidationGroup } from './model/DatabaseConfiguration';
 import { ENV_VARIABLE_NAMES, EnvironmentConfig } from './model/EnvironmentConfig';
 import { PuppeteerConfiguration } from './model/PuppeteerConfiguration';
 
@@ -23,7 +20,7 @@ export class StaticSettings {
     private readonly databaseConfig: DatabaseConfiguration;
     private readonly envConfig: EnvironmentConfig;
 
-    protected readonly logger = new Logger(StaticSettings.name);
+    protected readonly logger = new ConsoleLogger(StaticSettings.name);
 
     constructor() {
         this.config = this.loadConfigFile();

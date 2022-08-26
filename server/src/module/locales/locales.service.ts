@@ -53,7 +53,14 @@ export class LocalesService {
 
             fs.writeFileSync(pathToFile, JSON.stringify(missingKeys, null, 2));
         } catch (err) {
-            this.logger.error('Could not save the missing language keys to a file:', err.stack);
+            let stack: String;
+            if (err instanceof Error) {
+                stack = err.stack ?? 'Unknown stack';
+            } else {
+                stack = 'Unknown stack';
+            }
+
+            this.logger.error('Could not save the missing language keys to a file:', stack);
             throw new BadRequestException('Could not save the missing language keys to a file');
         }
     }

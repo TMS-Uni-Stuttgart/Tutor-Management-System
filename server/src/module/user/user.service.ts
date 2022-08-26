@@ -10,13 +10,13 @@ import {
 import { ReturnModelType } from '@typegoose/typegoose';
 import { DateTime } from 'luxon';
 import { InjectModel } from 'nestjs-typegoose';
-import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/shared/model/User';
+import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'shared/model/User';
+import { NamedElement } from 'shared/model/Common';
+import { Role } from 'shared/model/Role';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
 import { TutorialDocument } from '../../database/models/tutorial.model';
 import { UserDocument, UserModel } from '../../database/models/user.model';
 import { CRUDService } from '../../helpers/CRUDService';
-import { NamedElement } from '../../shared/model/Common';
-import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
@@ -60,13 +60,11 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      * @returns All users saved in the database.
      */
     async findAll(): Promise<UserDocument[]> {
-        const users = (await this.userModel.find().exec()) as UserDocument[];
-
-        return users;
+        return (await this.userModel.find().exec()) as UserDocument[];
     }
 
     /**
-     * Searches for a user with the given ID and returns it's document if possible.
+     * Searches for a user with the given ID and returns its document if possible.
      *
      * @param id ID to search for.
      *
@@ -128,8 +126,13 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
             try {
                 const doc = await this.createUser(user);
                 created.push(doc);
-            } catch (err) {
-                const message = err.message || 'Unknown error.';
+            } catch (err: unknown) {
+                let message: String;
+                if (err instanceof Error) {
+                    message = err.message;
+                } else {
+                    message = 'Unknown error';
+                }
                 errors.push(`[${user.lastname}, ${user.firstname}]: ${message}`);
             }
         }
@@ -145,7 +148,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     /**
      * Updates the user with the given information
      *
-     * If neccessary this functions updates all related tutorials and saves them afterwards. Related tutorials can be:
+     * If necessary this functions updates all related tutorials and saves them afterwards. Related tutorials can be:
      * - Tutorials of which the user _was_ the tutor.
      * - Tutorials of which the user _will be_ the tutor.
      * - Tutorials of which the user _was_ a corrector.
@@ -446,6 +449,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      * Checks if there is already a user with the given username saved in the database.
      *
      * @param username Username to check
+     * @param user (Optional) This user is allowed to have the given username.
      * @returns Is there already a user with that username?
      */
     private async doesUserWithUsernameExist(
