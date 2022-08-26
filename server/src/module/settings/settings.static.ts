@@ -6,7 +6,10 @@ import path from 'path';
 import YAML from 'yaml';
 import { StartUpException } from '../../exceptions/StartUpException';
 import { ApplicationConfiguration } from './model/ApplicationConfiguration';
-import { DatabaseConfiguration, DatabaseConfigurationValidationGroup } from './model/DatabaseConfiguration';
+import {
+    DatabaseConfiguration,
+    DatabaseConfigurationValidationGroup,
+} from './model/DatabaseConfiguration';
 import { ENV_VARIABLE_NAMES, EnvironmentConfig } from './model/EnvironmentConfig';
 import { PuppeteerConfiguration } from './model/PuppeteerConfiguration';
 
@@ -236,6 +239,7 @@ export class StaticSettings {
      */
     private getStringForError(error: ValidationError, depth: number = 1): string {
         const { property, children, constraints } = error;
+        const actualChildren = children ?? [];
         let tabs: string = '';
 
         for (let i = 0; i < depth; i++) {
@@ -244,8 +248,8 @@ export class StaticSettings {
 
         let message = `The following validation error(s) occured for the "${property}" property:`;
 
-        if (children.length > 0) {
-            for (const childError of children) {
+        if (actualChildren.length > 0) {
+            for (const childError of actualChildren) {
                 message += '\n' + tabs + this.getStringForError(childError, depth + 1);
             }
         } else {
