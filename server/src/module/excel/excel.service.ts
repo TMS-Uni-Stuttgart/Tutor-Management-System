@@ -10,7 +10,7 @@ import { Tutorial } from '../../database/entities/tutorial.entity';
 import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { ParseCsvDTO } from './excel.dto';
-import { GradingService } from '../student/grading.service';
+import { GradingService, StudentAndGradings } from '../student/grading.service';
 import { StudentService } from '../student/student.service';
 import { ScheincriteriaService } from '../scheincriteria/scheincriteria.service';
 import { PassedState } from '../template/template.types';
@@ -86,6 +86,9 @@ export class ExcelService {
     async generateTutorialBackup(tutorialId: string): Promise<Buffer> {
         const tutorial = await this.tutorialService.findById(tutorialId);
         const sheets = await this.sheetService.findAll();
+        const studentsAndGradings = await this.gradingService.findAllGradingsOfMultipleStudents(
+            tutorial.getStudents()
+        );
         const workbook = new xl.Workbook();
 
         sheets.sort((a, b) => a.sheetNo - b.sheetNo);
@@ -94,7 +97,7 @@ export class ExcelService {
         this.createAttendanceWorksheet(workbook, tutorial, tutorial.getStudents());
 
         for (const sheet of sheets) {
-            await this.createWorksheetForExerciseSheet(workbook, sheet, tutorial.getStudents());
+            await this.createWorksheetForExerciseSheet(workbook, sheet, studentsAndGradings);
         }
 
         return workbook.writeToBuffer();
@@ -212,7 +215,7 @@ export class ExcelService {
     private async createWorksheetForExerciseSheet(
         workbook: Workbook,
         sheet: Sheet,
-        students: Student[]
+        studentAndGradings: StudentAndGradings[]
     ) {
         const worksheet = workbook.addWorksheet(`Übungsblatt ${sheet.sheetNo}`);
         const headers: HeaderDataCollection<any> = {
@@ -245,10 +248,8 @@ export class ExcelService {
             column++;
 
             let row = 2;
-            for (const student of students) {
-                const grading = (
-                    await this.gradingService.findOfStudentAndHandIn(student.id, sheet.id)
-                )?.getExerciseGrading(ex);
+            for (const { student, gradingsOfStudent } of studentAndGradings) {
+                const grading = gradingsOfStudent.getGradingOfHandIn(sheet)?.getExerciseGrading(ex);
 
                 data['firstname'].push({
                     content: student.firstname,

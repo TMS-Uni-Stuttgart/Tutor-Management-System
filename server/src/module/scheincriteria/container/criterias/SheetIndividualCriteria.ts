@@ -1,5 +1,9 @@
 import { IsBoolean } from 'class-validator';
-import { PassedState, ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
+import {
+    PassedState,
+    ScheincriteriaIdentifier,
+    ScheinCriteriaUnit,
+} from 'shared/model/ScheinCriteria';
 import { Sheet } from '../../../../database/entities/sheet.entity';
 import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
@@ -32,13 +36,17 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         this.percentagePerSheet = percentagePerSheet;
     }
 
-    checkCriteriaStatus({ sheets, gradings }: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({
+        student,
+        sheets,
+        gradingsOfStudent,
+    }: CriteriaPayload): StatusCheckResponse {
         const infos: StatusCheckResponse['infos'] = {};
         const totalSheetCount = sheets.reduce(
             (count, sheet) => count + (sheet.bonusSheet ? 0 : 1),
             0
         );
-        const sheetsPassed = this.checkAllSheets(sheets, gradings, infos);
+        const sheetsPassed = this.checkAllSheets({ sheets, infos, gradings: gradingsOfStudent });
 
         let passed: boolean;
 
@@ -63,11 +71,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkAllSheets(
-        sheets: Sheet[],
-        gradings: GradingList,
-        infos: StatusCheckResponse['infos']
-    ): number {
+    private checkAllSheets({ sheets, gradings, infos }: CheckAllSheetsParams): number {
         let sheetsPassed = 0;
         for (const sheet of sheets) {
             const achieved = gradings.getGradingOfHandIn(sheet)?.points ?? 0;
@@ -100,4 +104,10 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
 
         return sheetsPassed;
     }
+}
+
+interface CheckAllSheetsParams {
+    sheets: Sheet[];
+    gradings: GradingList;
+    infos: StatusCheckResponse['infos'];
 }

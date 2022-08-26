@@ -1,18 +1,24 @@
-import {IsBoolean} from 'class-validator';
-import {PassedState, ScheincriteriaIdentifier, ScheinCriteriaUnit,} from 'shared/model/ScheinCriteria';
-import {ShortTest} from '../../../../database/entities/shorttest.entity';
-import {IsNonNegativeNumberValue} from '../../../../helpers/validators/nonNegativeNumberValue.validator';
+import { IsBoolean } from 'class-validator';
+import {
+    PassedState,
+    ScheincriteriaIdentifier,
+    ScheinCriteriaUnit,
+} from 'shared/model/ScheinCriteria';
+import { ShortTest } from '../../../../database/entities/shorttest.entity';
+import { Student } from '../../../../database/entities/student.entity';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
     InformationPayload,
     StatusCheckResponse,
 } from '../Scheincriteria';
-import {ScheincriteriaPossiblePercentage} from '../scheincriteria.decorators';
-import {PossiblePercentageCriteria} from './PossiblePercentageCriteria';
-import {GradingList} from '../../../../helpers/GradingList';
+import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
+import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { GradingList } from '../../../../helpers/GradingList';
 
 interface CheckShortTestsParams {
+    student: Student;
     gradings: GradingList;
     shortTests: ShortTest[];
 }
@@ -42,10 +48,15 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
         this.isPercentagePerTest = isPercentagePerTest;
     }
 
-    checkCriteriaStatus({ gradings, shortTests }: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({
+        student,
+        shortTests,
+        gradingsOfStudent,
+    }: CriteriaPayload): StatusCheckResponse {
         const { passed: testsPassed, infos } = this.checkShortTests({
-            gradings,
+            student,
             shortTests,
+            gradings: gradingsOfStudent,
         });
         const totalShortTestCount = shortTests.length;
         const passed: boolean = this.percentage
@@ -68,15 +79,17 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
     }
 
     private checkShortTests({
-        gradings,
+        student,
         shortTests,
+        gradings,
     }: CheckShortTestsParams): CheckShortTestsReturn {
         return shortTests.reduce<CheckShortTestsReturn>(
             (prev, shortTest) => {
-                const achieved = gradings.getGradingOfHandIn(shortTest)?.points ?? 0;
+                const grading = gradings.getGradingOfHandIn(shortTest);
+                const achieved = grading?.points ?? 0;
                 const total = shortTest.totalPoints.must;
 
-                const state = shortTest.hasPassed(gradings)
+                const state = shortTest.hasPassed(student, gradings)
                     ? PassedState.PASSED
                     : PassedState.NOT_PASSED;
 

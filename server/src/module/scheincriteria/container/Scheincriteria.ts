@@ -12,7 +12,7 @@ import { GradingList } from '../../../helpers/GradingList';
 
 export interface CriteriaPayload {
     student: Student;
-    gradings: GradingList;
+    gradingsOfStudent: GradingList;
     sheets: Sheet[];
     exams: Scheinexam[];
     shortTests: ShortTest[];

@@ -155,7 +155,9 @@ export class MarkdownService {
      * @throws `BadRequestException` - If the student does not hold a grading for the given sheet.
      */
     async getStudentGrading(studentId: string, sheetId: string): Promise<IStudentMarkdownData> {
-        const grading = await this.gradingService.findOfStudentAndHandIn(studentId, sheetId);
+        const student = await this.studentService.findById(studentId);
+        const handIn = await this.getExercisesEntityWithId(sheetId);
+        const grading = await this.gradingService.findHandInGradingOfStudent(student, handIn);
 
         if (!grading) {
             throw new BadRequestException(
@@ -163,11 +165,8 @@ export class MarkdownService {
             );
         }
 
-        const student = await this.studentService.findById(studentId);
-        const entity = await this.getExercisesEntityWithId(sheetId);
-
         const markdown = this.generateFromGrading({
-            entity,
+            entity: handIn,
             grading,
             nameOfEntity: getNameOfEntity(student),
         });
@@ -196,7 +195,7 @@ export class MarkdownService {
                 throw new BadRequestException(`Can not generate markdown for an empty team.`);
             }
 
-            const gradings = await this.gradingService.findOfTeamAndHandIn(team, sheet);
+            const gradings = await this.gradingService.findAllHandInGradingsOfTeam(team, sheet);
             const markdownData: TeamMarkdownData[] = [];
 
             if (gradings.length === 0) {

@@ -23,23 +23,21 @@ import { TutorialService } from '../tutorial/tutorial.service';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
-import { GradingListsForStudents } from '../../helpers/GradingList';
-import { GradingService } from '../student/grading.service';
+import { GradingService, StudentAndGradings } from '../student/grading.service';
 
 interface CalculationParams {
     criterias: ScheincriteriaEntity[];
-    gradings: GradingListsForStudents;
     exams: Scheinexam[];
     sheets: Sheet[];
     shortTests: ShortTest[];
 }
 
 interface SingleStudentCalculationParams extends CalculationParams {
-    student: Student;
+    studentInfo: StudentAndGradings;
 }
 
 interface MultipleStudentsCalculationParams extends CalculationParams {
-    students: Student[];
+    studentInfos: StudentAndGradings[];
 }
 
 interface GetRequiredDocsParams {
@@ -154,7 +152,7 @@ export class ScheincriteriaService
      * @throws `NotFoundException` - If no criteria with the given ID could be found.
      */
     async getInfoAboutCriteria(criteriaId: string): Promise<CriteriaInformation> {
-        const { criterias, ...params } = await this.getRequiredEntities({
+        const { criterias, studentInfos, ...handIns } = await this.getRequiredEntities({
             criteriaId,
         });
 
@@ -162,10 +160,11 @@ export class ScheincriteriaService
         const criteria: Scheincriteria = Scheincriteria.fromDTO(criteriaEntity.toDTO());
 
         const [criteriaInfo, summaries] = await Promise.all([
-            criteria.getInformation(params),
+            criteria.getInformation({ ...handIns, students: studentInfos.map((s) => s.student) }),
             this.calculateResultOfMultipleStudents({
                 criterias,
-                ...params,
+                studentInfos,
+                ...handIns,
             }),
         ]);
 
@@ -191,13 +190,13 @@ export class ScheincriteriaService
      * @throws `NotFoundException` - If no student with the given ID could be found.
      */
     async getResultOfStudent(studentId: string): Promise<ScheincriteriaSummary> {
-        const { students, ...params } = await this.getRequiredEntities({
+        const { studentInfos, ...params } = await this.getRequiredEntities({
             studentId,
         });
 
         return this.calculateResultOfSingleStudent({
             ...params,
-            student: students[0],
+            studentInfo: studentInfos[0],
         });
     }
 
@@ -242,15 +241,16 @@ export class ScheincriteriaService
     private calculateResultOfSingleStudent(
         params: SingleStudentCalculationParams
     ): ScheincriteriaSummary {
-        const { criterias, ...infos } = params;
-        const { gradings, ...rest } = infos;
         const summaries: ScheincriteriaSummary['scheinCriteriaSummary'] = {};
         let passed = true;
 
-        for (const { id, name, criteria } of criterias) {
+        for (const { id, name, criteria } of params.criterias) {
             const result = criteria.checkCriteriaStatus({
-                gradings: gradings.getGradingListOfStudent(infos.student.id),
-                ...rest,
+                student: params.studentInfo.student,
+                gradingsOfStudent: params.studentInfo.gradingsOfStudent,
+                sheets: params.sheets,
+                exams: params.exams,
+                shortTests: params.shortTests,
             });
             summaries[id] = { id, name, ...result };
 
@@ -258,7 +258,7 @@ export class ScheincriteriaService
         }
 
         return {
-            student: params.student.toDTO(),
+            student: params.studentInfo.student.toDTO(),
             passed,
             scheinCriteriaSummary: summaries,
         };
@@ -274,13 +274,13 @@ export class ScheincriteriaService
     private calculateResultOfMultipleStudents(
         params: MultipleStudentsCalculationParams
     ): ScheincriteriaSummaryByStudents {
-        const { students, ...infos } = params;
+        const { studentInfos, ...infos } = params;
         const summaries: ScheincriteriaSummaryByStudents = {};
 
-        students.forEach((student) => {
-            summaries[student.id] = this.calculateResultOfSingleStudent({
+        studentInfos.forEach((info) => {
+            summaries[info.student.id] = this.calculateResultOfSingleStudent({
                 ...infos,
-                student,
+                studentInfo: info,
             });
         });
 
@@ -306,18 +306,15 @@ export class ScheincriteriaService
         params: GetRequiredDocsParams = {}
     ): Promise<MultipleStudentsCalculationParams> {
         const { criteriaId, studentId, tutorialId } = params;
-        const [criterias, students, sheets, exams, shortTests] = await Promise.all([
+        const [criterias, studentInfos, sheets, exams, shortTests] = await Promise.all([
             criteriaId ? [await this.findById(criteriaId)] : this.findAll(),
             this.getStudentEntities({ studentId, tutorialId }),
             this.sheetService.findAll(),
             this.scheinexamService.findAll(),
             this.shortTestService.findAll(),
         ]);
-        const gradings = await this.gradingService.findOfMultipleStudents(
-            students.map((s) => s.id)
-        );
 
-        return { criterias, students, sheets, exams, shortTests, gradings };
+        return { criterias, studentInfos, sheets, exams, shortTests };
     }
 
     /**
@@ -333,18 +330,19 @@ export class ScheincriteriaService
      */
     private async getStudentEntities(
         params: Pick<GetRequiredDocsParams, 'studentId' | 'tutorialId'>
-    ): Promise<Student[]> {
+    ): Promise<StudentAndGradings[]> {
         const { studentId, tutorialId } = params;
+        let students: Student[];
 
         if (tutorialId) {
-            return this.tutorialService.getAllStudentsOfTutorial(tutorialId);
+            students = await this.tutorialService.getAllStudentsOfTutorial(tutorialId);
+        } else if (studentId) {
+            students = [await this.studentService.findById(studentId)];
+        } else {
+            students = await this.studentService.findAll();
         }
 
-        if (studentId) {
-            return [await this.studentService.findById(studentId)];
-        }
-
-        return this.studentService.findAll();
+        return this.gradingService.findAllGradingsOfMultipleStudents(students);
     }
 
     private getScheincriteriaRepository(): EntityRepository<ScheincriteriaEntity> {

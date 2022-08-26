@@ -1,5 +1,7 @@
+import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Grading } from '../../database/entities/grading.entity';
 import { HandIn } from '../../database/entities/ratedEntity.entity';
 import { Student } from '../../database/entities/student.entity';
@@ -7,8 +9,7 @@ import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
 import { GradingDTO } from './student.dto';
-import { EntityRepository } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
+import { StudentService } from './student.service';
 import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { Team } from '../../database/entities/team.entity';
 
@@ -18,6 +19,8 @@ export class GradingService {
         @InjectRepository(Grading)
         private readonly gradingRepository: EntityRepository<Grading>,
         private readonly entityManager: EntityManager,
+        @Inject(forwardRef(() => StudentService))
+        private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
         private readonly shortTestService: ShortTestService
@@ -48,10 +51,7 @@ export class GradingService {
         handInId: string
     ): Promise<Grading | undefined> {
         const grading = await this.gradingRepository.findOne(
-            {
-                students: { $contains: [studentId] },
-                $or: [{ sheet: handInId }, { shortTest: handInId }, { exam: handInId }],
-            },
+            { students: { $contains: [studentId] }, handInId: handInId },
             // TODO: Do we need the populate here?
             { populate: true }
         );
@@ -130,25 +130,55 @@ export class GradingService {
         }
     }
 
-    /**
-     * Updates the grading of a single student.
-     *
-     * The updated grading is just added to the given {@link EntityManager} but **NOT** written to the database.
-     *
-     * @param student Student to update the grading for.
-     * @param dto DTO holding the information about the new grading.
-     * @param handIn {@link HandIn} that belongs to the new grading.
-     * @param em {@link EntityManager} responsible for managing the transaction.
-     * @private
-     */
+    async findAllGradingsOfStudent(student: Student): Promise<Grading[]> {
+        return this.getGradingRepository().find(
+            { students: { $contains: [student.id] } },
+            { populate: true }
+        );
+    }
+
+    async findHandInGradingOfStudent(student: Student, handIn: HandIn): Promise<Grading | null> {
+        return this.getGradingRepository().findOne(
+            {
+                students: { $contains: [student.id] },
+                handInId: handIn.id,
+            },
+            { populate: true }
+        );
+    }
+
+    async findAllGradingsOfMultipleStudents(students: Student[]): Promise<StudentAndGradings[]> {
+        const gradingsOfStudents: StudentAndGradings[] = [];
+        for (const student of students) {
+            const gradings = await this.findAllGradingsOfStudent(student);
+            gradingsOfStudents.push({
+                student,
+                gradingsOfStudent: new GradingList(gradings),
+            });
+        }
+        return gradingsOfStudents;
+    }
+
+    async findAllHandInGradingsOfTeam(team: Team, handIn: HandIn): Promise<Grading[]> {
+        const studentIds = team.getStudents().map((s) => s.id);
+        return this.getGradingRepository().find({
+            handInId: handIn.id,
+            students: { $contains: studentIds },
+        });
+    }
+
+    private getGradingRepository(): EntityRepository<Grading> {
+        return this.entityManager.getRepository(Grading);
+    }
+
     private async updateGradingOfStudent({
         student,
         dto,
         handIn,
         em,
     }: UpdateGradingParams): Promise<void> {
-        const oldGrading = (await this.findOfStudent(student.id)).getGradingOfHandIn(handIn);
-        const newGrading =
+        const oldGrading: Grading | null = await this.findHandInGradingOfStudent(student, handIn);
+        const newGrading: Grading =
             !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
 
         newGrading.updateFromDTO({ dto, handIn });
@@ -159,6 +189,7 @@ export class GradingService {
         if (!!oldGrading && oldGrading.students.length === 0) {
             em.remove(oldGrading);
         }
+
         em.persist(newGrading);
     }
 
@@ -205,4 +236,9 @@ interface UpdateGradingParams {
     dto: GradingDTO;
     handIn: HandIn;
     em: EntityManager;
+}
+
+export interface StudentAndGradings {
+    student: Student;
+    gradingsOfStudent: GradingList;
 }

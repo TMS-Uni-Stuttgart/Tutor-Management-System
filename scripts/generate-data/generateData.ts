@@ -419,6 +419,7 @@ async function createStudent({
         }
     } catch (err) {
         console.error(err);
+        throw err;
     }
 
     try {
@@ -429,6 +430,7 @@ async function createStudent({
         }
     } catch (err) {
         console.error(err);
+        throw err;
     }
 
     return student;

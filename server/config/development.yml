@@ -11,7 +11,7 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 database:
   host: localhost
   port: 3306
-  databaseName: tms-dev-db
+  databaseName: tms-big-db
   maxRetries: 2
   reconnectTimeout: 10000
 

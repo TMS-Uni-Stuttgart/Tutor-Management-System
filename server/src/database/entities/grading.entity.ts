@@ -83,16 +83,19 @@ export class Grading {
     @Embedded(() => ExerciseGrading, { array: true })
     exerciseGradings: ExerciseGrading[] = [];
 
-    @ManyToOne()
-    sheet?: Sheet;
+    @ManyToOne(() => Sheet)
+    private sheet?: Sheet;
 
-    @ManyToOne()
-    exam?: Scheinexam;
+    @ManyToOne(() => Scheinexam)
+    private exam?: Scheinexam;
 
-    @ManyToOne()
-    shortTest?: ShortTest;
+    @ManyToOne(() => ShortTest)
+    private shortTest?: ShortTest;
 
-    @ManyToMany(() => Student)
+    @Property({ nullable: false })
+    private handInId?: string;
+
+    @ManyToMany({ entity: () => Student, owner: true })
     students = new Collection<Student>(this);
 
     /**
@@ -185,6 +188,7 @@ export class Grading {
     }
 
     private setHandIn(handIn: HandIn): void {
+        this.handInId = undefined;
         this.sheet = undefined;
         this.exam = undefined;
         this.shortTest = undefined;
@@ -196,6 +200,8 @@ export class Grading {
         } else if (handIn instanceof ShortTest) {
             this.shortTest = handIn;
         }
+
+        this.handInId = this.handIn.id;
     }
 
     private assertEntitiesAreAValidSet() {

@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { StudentStatus } from 'shared/model/Student';
 import { Scheinexam } from '../../../database/entities/scheinexam.entity';
-import { Student } from '../../../database/entities/student.entity';
 import { ScheinexamService } from '../../scheinexam/scheinexam.service';
 import { StudentService } from '../../student/student.service';
 import { TemplateService } from '../../template/template.service';
 import { PassedState, ScheinexamStatus } from '../../template/template.types';
 import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
-import { GradingListsForStudents } from '../../../helpers/GradingList';
-import { GradingService } from '../../student/grading.service';
+import { GradingService, StudentAndGradings } from '../../student/grading.service';
 
 interface PDFGeneratorOptions {
     id: string;
@@ -17,8 +15,7 @@ interface PDFGeneratorOptions {
 
 interface GetResultsParams {
     exam: Scheinexam;
-    students: Student[];
-    gradingLists: GradingListsForStudents;
+    studentsAndGradings: StudentAndGradings[];
 }
 
 interface ExamResultsByStudents {
@@ -54,11 +51,11 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
         const students = allStudents
             .filter((student) => !!student.matriculationNo)
             .filter((student) => student.status !== StudentStatus.INACTIVE);
-        const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
-        const gradingLists = await this.gradingService.findOfMultipleStudents(
-            students.map((s) => s.id)
+        const studentsAndGradings = await this.gradingService.findAllGradingsOfMultipleStudents(
+            students
         );
-        const results = this.getResultsOfAllStudents({ exam, students, gradingLists });
+        const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
+        const results = this.getResultsOfAllStudents({ exam, studentsAndGradings });
 
         const statuses: ScheinexamStatus[] = [];
         const template = this.templateService.getScheinexamTemplate();
@@ -91,19 +88,16 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
      */
     private getResultsOfAllStudents({
         exam,
-        students,
-        gradingLists,
+        studentsAndGradings,
     }: GetResultsParams): ExamResultsByStudents {
         const results: ExamResultsByStudents = {};
 
-        students.forEach((student) => {
-            const examGrading = gradingLists.getGradingForHandIn(student.id, exam);
+        studentsAndGradings.forEach(({ student, gradingsOfStudent }) => {
+            const examGrading = gradingsOfStudent.getGradingOfHandIn(exam);
             const hasAttended = examGrading !== undefined;
 
             if (hasAttended) {
-                results[student.id] = exam.hasPassed(
-                    gradingLists.getGradingListOfStudent(student.id)
-                )
+                results[student.id] = exam.hasPassed(student, gradingsOfStudent)
                     ? PassedState.PASSED
                     : PassedState.NOT_PASSED;
             } else {

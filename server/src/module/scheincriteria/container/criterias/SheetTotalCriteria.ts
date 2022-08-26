@@ -1,22 +1,34 @@
-import {PassedState, ScheincriteriaIdentifier, ScheinCriteriaUnit,} from 'shared/model/ScheinCriteria';
-import {Sheet} from '../../../../database/entities/sheet.entity';
+import {
+    PassedState,
+    ScheincriteriaIdentifier,
+    ScheinCriteriaUnit,
+} from 'shared/model/ScheinCriteria';
+import { Sheet } from '../../../../database/entities/sheet.entity';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
     InformationPayload,
     StatusCheckResponse,
 } from '../Scheincriteria';
-import {PossiblePercentageCriteria} from './PossiblePercentageCriteria';
-import {GradingList} from '../../../../helpers/GradingList';
+import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { GradingList } from '../../../../helpers/GradingList';
 
 export class SheetTotalCriteria extends PossiblePercentageCriteria {
     constructor(percentage: boolean, valueNeeded: number) {
         super(ScheincriteriaIdentifier.SHEET_TOTAL, percentage, valueNeeded);
     }
 
-    checkCriteriaStatus({gradings, sheets}: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({
+        student,
+        sheets,
+        gradingsOfStudent,
+    }: CriteriaPayload): StatusCheckResponse {
         const infos: StatusCheckResponse['infos'] = {};
-        const {pointsAchieved, pointsTotal} = this.checkAllSheets(sheets, gradings, infos);
+        const { pointsAchieved, pointsTotal } = this.checkAllSheets({
+            sheets,
+            infos,
+            gradings: gradingsOfStudent,
+        });
 
         let passed: boolean;
 
@@ -41,11 +53,7 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkAllSheets(
-        sheets: Sheet[],
-        gradings: GradingList,
-        infos: StatusCheckResponse['infos']
-    ) {
+    private checkAllSheets({ sheets, infos, gradings }: CheckAllSheetsParams) {
         let pointsAchieved = 0;
         let pointsTotal = 0;
 
@@ -69,4 +77,10 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
 
         return { pointsAchieved, pointsTotal };
     }
+}
+
+interface CheckAllSheetsParams {
+    sheets: Sheet[];
+    infos: StatusCheckResponse['infos'];
+    gradings: GradingList;
 }
