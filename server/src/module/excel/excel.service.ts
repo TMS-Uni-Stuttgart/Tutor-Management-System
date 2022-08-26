@@ -3,6 +3,7 @@ import xl, { Workbook, Worksheet } from 'excel4node';
 import { parse } from 'papaparse';
 import { AttendanceState } from 'shared/model/Attendance';
 import { ParseCsvResult } from 'shared/model/CSV';
+import { StudentStatus } from 'shared/model/Student';
 import { Sheet } from '../../database/entities/sheet.entity';
 import { Student } from '../../database/entities/student.entity';
 import { Tutorial } from '../../database/entities/tutorial.entity';
@@ -10,6 +11,9 @@ import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { ParseCsvDTO } from './excel.dto';
 import { GradingService } from '../student/grading.service';
+import { StudentService } from '../student/student.service';
+import { ScheincriteriaService } from '../scheincriteria/scheincriteria.service';
+import { PassedState } from '../template/template.types';
 
 interface HeaderData {
     name: string;
@@ -50,6 +54,14 @@ type MemberKeys =
     | 'courseOfStudies'
     | 'email';
 
+type ScheinstatusKeys =
+    | 'firstname'
+    | 'lastname'
+    | 'status'
+    | 'matriculationNo'
+    | 'tutorial'
+    | 'email';
+
 @Injectable()
 export class ExcelService {
     private readonly logger = new Logger(ExcelService.name);
@@ -57,6 +69,8 @@ export class ExcelService {
     constructor(
         private readonly tutorialService: TutorialService,
         private readonly sheetService: SheetService,
+        private readonly studentService: StudentService,
+        private readonly scheincriteriaService: ScheincriteriaService,
         private readonly gradingService: GradingService
     ) {}
 
@@ -89,7 +103,7 @@ export class ExcelService {
     /**
      * Parses the given CSV string with the given options.
      *
-     * Internally the papaparser is used to parse the string. If parsing fails the results papaparser result is still returned but it will be in it's errornous state.
+     * Internally the papaparser is used to parse the string. If parsing fails the results papaparser result is still returned, but it will be in it's errornous state.
      *
      * @param dto DTO with the CSV string to parse and the options to use.
      *
@@ -101,33 +115,69 @@ export class ExcelService {
         return parse(data, options);
     }
 
+    /**
+     * Generates a XLSX file containing the information about the current schein status for each student.
+     *
+     * @returns Buffer containing the XLSX.
+     */
+    async generateScheinstatusTable(): Promise<Buffer> {
+        const summaries = await this.scheincriteriaService.getResultsOfAllStudents();
+        const workbook = new xl.Workbook();
+        const sheet = workbook.addWorksheet('Schein statuses');
+
+        const headers: HeaderDataCollection<ScheinstatusKeys> = {
+            lastname: { name: 'Lastname', column: 1 },
+            firstname: { name: 'Firstname', column: 2 },
+            status: { name: 'Status', column: 3 },
+            matriculationNo: { name: 'Matriculation No', column: 4 },
+            tutorial: { name: 'Tutorial', column: 5 },
+            email: { name: 'E-Mail', column: 6 },
+        };
+        const cells: CellDataCollection<ScheinstatusKeys> = {
+            lastname: [],
+            firstname: [],
+            status: [],
+            matriculationNo: [],
+            tutorial: [],
+            email: [],
+        };
+
+        let row = 2;
+        for (const summary of Object.values(summaries)) {
+            const { student, passed } = summary;
+            const { firstname, lastname, matriculationNo, tutorial, email } = student;
+
+            let state: PassedState;
+
+            if (student.status === StudentStatus.NO_SCHEIN_REQUIRED) {
+                state = PassedState.ALREADY_HAS_SCHEIN;
+            } else {
+                state = passed ? PassedState.PASSED : PassedState.NOT_PASSED;
+            }
+
+            cells['lastname'].push({ content: lastname, row });
+            cells['firstname'].push({ content: firstname, row });
+            cells['matriculationNo'].push({ content: matriculationNo || 'N/A', row });
+            cells['tutorial'].push({ content: tutorial.slot, row });
+            cells['status'].push({ content: state.toString(), row });
+            cells['email'].push({ content: email ?? 'N/A', row });
+
+            row++;
+        }
+
+        this.fillSheet(sheet, headers, cells);
+        return workbook.writeToBuffer();
+    }
+
     private createMemberWorksheet(workbook: Workbook, students: Student[]) {
         const overviewSheet = workbook.addWorksheet('Teilnehmer');
         const headers: HeaderDataCollection<MemberKeys> = {
-            firstname: {
-                name: 'Vorname',
-                column: 1,
-            },
-            lastname: {
-                name: 'Nachname',
-                column: 2,
-            },
-            status: {
-                name: 'Status',
-                column: 3,
-            },
-            matriculationNo: {
-                name: 'Matrklnr.',
-                column: 4,
-            },
-            courseOfStudies: {
-                name: 'Studiengang',
-                column: 5,
-            },
-            email: {
-                name: 'E-Mail',
-                column: 6,
-            },
+            firstname: { name: 'Vorname', column: 1 },
+            lastname: { name: 'Nachname', column: 2 },
+            status: { name: 'Status', column: 3 },
+            matriculationNo: { name: 'Matrklnr.', column: 4 },
+            courseOfStudies: { name: 'Studiengang', column: 5 },
+            email: { name: 'E-Mail', column: 6 },
         };
         const cellData: CellDataCollection<MemberKeys> = {
             firstname: [],
