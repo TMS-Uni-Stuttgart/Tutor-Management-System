@@ -1,5 +1,6 @@
 import { PDFGenerator } from './PDFGenerator.core';
 import { IStudent } from 'shared/model/Student';
+import { Student } from '../../../database/entities/student.entity';
 
 interface ShortenedMatriculationInfo {
     studentId: string;
@@ -16,7 +17,9 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      *
      * @returns The shortened but still identifying matriculation numbers of all given students.
      */
-    protected getShortenedMatriculationNumbers(students: IStudent[]): ShortenedMatriculationInfo[] {
+    protected getShortenedMatriculationNumbers(
+        students: (Student | IStudent)[]
+    ): ShortenedMatriculationInfo[] {
         const result: ShortenedMatriculationInfo[] = [];
         const matriculationNos: { id: string; reversedNumber: string }[] = [];
 

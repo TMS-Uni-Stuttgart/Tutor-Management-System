@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { LocalsObject } from 'pug';
 
 export enum PassedState {
     PASSED = 'passed',
@@ -43,4 +44,4 @@ export interface ScheinstatusAttributes {
     statuses: Scheinstatus[];
 }
 
-export type Template<T> = (params: T) => string;
+export type Template<T extends LocalsObject> = (params: T) => string;

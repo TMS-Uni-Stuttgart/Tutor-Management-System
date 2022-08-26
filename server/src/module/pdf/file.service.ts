@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import pug from 'pug';
+import pug, { LocalsObject } from 'pug';
 import { ITeamId } from 'shared/model/Team';
 import { Sheet } from '../../database/entities/sheet.entity';
 import { SettingsService } from '../settings/settings.service';
@@ -154,7 +154,7 @@ export class FileService {
      *
      * @returns Compiled pug-template.
      */
-    private parseAndCompileFilenameTemplate<T>(template: string): Template<T> {
+    private parseAndCompileFilenameTemplate<T extends LocalsObject>(template: string): Template<T> {
         let parsedTemplate: string;
         if (template.startsWith('|')) {
             parsedTemplate = template;
