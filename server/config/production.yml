@@ -18,3 +18,8 @@ database:
 defaultSettings:
   canTutorExcuseStudents: true
   defaultTeamSize: 3
+
+# Settings used for the puppeteer instance
+puppeteer:
+  # Timeout in ms
+  timeout: 30000

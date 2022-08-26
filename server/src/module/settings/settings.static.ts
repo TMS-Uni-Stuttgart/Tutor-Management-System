@@ -12,6 +12,7 @@ import {
     DatabaseConnectionOptions,
 } from './model/DatabaseConfiguration';
 import { ENV_VARIABLE_NAMES, EnvironmentConfig } from './model/EnvironmentConfig';
+import { PuppeteerConfiguration } from './model/PuppeteerConfiguration';
 
 export class StaticSettings {
     private static service: StaticSettings = new StaticSettings();
@@ -70,6 +71,13 @@ export class StaticSettings {
             user: this.databaseConfig.auth.user,
             password: this.databaseConfig.auth.pass,
         };
+    }
+
+    /**
+     *  @returns Configuration for the puppeteer instance. Can be `undefined`.
+     */
+    getPuppeteerConfiguration(): PuppeteerConfiguration | undefined {
+        return this.config.puppeteer;
     }
 
     /**
