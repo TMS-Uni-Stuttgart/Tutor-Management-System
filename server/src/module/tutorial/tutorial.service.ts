@@ -217,7 +217,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     private async setTutorialSubstitute(tutorial: Tutorial, dto: SubstituteDTO): Promise<void> {
         const dates = dto.dates.map((date) => DateTime.fromISO(date));
-        const em = this.entityManager.fork(false);
+        const em = this.entityManager.fork({ clear: false });
         await em.begin();
 
         try {

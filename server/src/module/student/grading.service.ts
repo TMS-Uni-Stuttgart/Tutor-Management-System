@@ -53,7 +53,7 @@ export class GradingService {
                 $or: [{ sheet: handInId }, { shortTest: handInId }, { exam: handInId }],
             },
             // TODO: Do we need the populate here?
-            true
+            { populate: true }
         );
 
         return grading ?? undefined;
@@ -115,7 +115,7 @@ export class GradingService {
      * @throws `BadRequestException` - If an error occurs during the setting process of _any_ student this exception is thrown.
      */
     async setOfMultipleStudents(dtos: Map<Student, GradingDTO>): Promise<void> {
-        const em = this.entityManager.fork(false);
+        const em = this.entityManager.fork({ clear: false });
         await em.begin();
 
         try {

@@ -119,7 +119,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @returns Created users.
      */
     async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
-        const em = this.entityManager.fork(false);
+        const em = this.entityManager.fork({ clear: false });
         await em.begin();
         const errors: string[] = [];
         const created: User[] = [];

@@ -88,13 +88,17 @@ export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
     }
 
     private async updateSchema(generator: ISchemaGenerator): Promise<void> {
-        const updateDump = await generator.getUpdateSchemaSQL(true, true);
+        const updateDump = await generator.getUpdateSchemaSQL({
+            wrap: true,
+            safe: false,
+            dropTables: true,
+        });
 
         // TODO: Is there a better indicator when we should update the schema?
         //       Or make a DB dump and use it as a backup.
         if (updateDump.includes('create table') || updateDump.includes('alter table')) {
             this.logger.log('Updating SQL schema...');
-            await generator.updateSchema(true, true);
+            await generator.updateSchema({ wrap: true, safe: false, dropTables: true });
             this.logger.log('SQL schema successfully updated.');
         } else {
             this.logger.log('SQL schema is up-to-date. No update required.');
