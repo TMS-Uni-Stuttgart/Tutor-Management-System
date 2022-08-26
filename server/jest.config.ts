@@ -2,13 +2,13 @@
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/en/configuration.html
  */
-import { Config } from '@jest/types';
-import { pathsToModuleNameMapper } from 'ts-jest/utils';
+import type { Config } from 'jest';
+import { pathsToModuleNameMapper } from 'ts-jest';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { compilerOptions } = require('./tsconfig');
 
-const config: Config.InitialOptions = {
+const config: Config = {
     // All imported modules in your tests should be mocked automatically
     // automock: false,
 
