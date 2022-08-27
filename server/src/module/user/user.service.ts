@@ -124,13 +124,12 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         const em = this.entityManager.fork({ clear: false });
         await em.begin();
         const errors: string[] = [];
-        const created: User[] = [];
+        const toCreate: User[] = [];
 
         for (const user of users) {
             try {
                 const createdUser = await this.createUser(user);
-                created.push(createdUser);
-                em.persist(createdUser);
+                toCreate.push(createdUser);
             } catch (err) {
                 const message: string = err instanceof Error ? err.message : 'Unknown error';
                 errors.push(`[${user.lastname}, ${user.firstname}]: ${message}`);
@@ -138,13 +137,16 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         }
 
         if (errors.length === 0) {
+            toCreate.forEach((user) => {
+                em.persist(user);
+            });
             await em.commit();
         } else {
             await em.rollback();
             throw new BadRequestException(errors);
         }
 
-        return created.map((user) => user.toDTO());
+        return toCreate.map((user) => user.toDTO());
     }
 
     /**
