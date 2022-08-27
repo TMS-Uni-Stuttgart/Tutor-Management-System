@@ -33,11 +33,7 @@ export class GradingService {
      * @returns All gradings that this student has.
      */
     async findOfStudent(studentId: string): Promise<GradingList> {
-        const gradings = await this.repository.find(
-            { students: { $contains: [studentId] } },
-            // TODO: Do we need the populate here?
-            { populate: true }
-        );
+        const gradings = await this.repository.find({ students: studentId }, { populate: true });
         return new GradingList(gradings);
     }
 
@@ -52,8 +48,7 @@ export class GradingService {
         handInId: string
     ): Promise<Grading | undefined> {
         const grading = await this.repository.findOne(
-            { students: { $contains: [studentId] }, handInId: handInId },
-            // TODO: Do we need the populate here?
+            { students: studentId, handInId: handInId },
             { populate: true }
         );
 
@@ -135,16 +130,6 @@ export class GradingService {
         return this.repository.find({ students: { $contains: [student.id] } }, { populate: true });
     }
 
-    async findHandInGradingOfStudent(student: Student, handIn: HandIn): Promise<Grading | null> {
-        return this.repository.findOne(
-            {
-                students: { $contains: [student.id] },
-                handInId: handIn.id,
-            },
-            { populate: true }
-        );
-    }
-
     async findAllGradingsOfMultipleStudents(students: Student[]): Promise<StudentAndGradings[]> {
         const gradingsOfStudents: StudentAndGradings[] = [];
         for (const student of students) {
@@ -171,7 +156,10 @@ export class GradingService {
         handIn,
         em,
     }: UpdateGradingParams): Promise<void> {
-        const oldGrading: Grading | null = await this.findHandInGradingOfStudent(student, handIn);
+        const oldGrading: Grading | undefined = await this.findOfStudentAndHandIn(
+            student.id,
+            handIn.id
+        );
         const newGrading: Grading =
             !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
 
