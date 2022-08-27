@@ -6,6 +6,7 @@ import { MOCKED_STUDENTS, MOCKED_TEAMS, MOCKED_TUTORIALS } from '../../../test/m
 import { Team } from '../../database/entities/team.entity';
 import { TeamDTO } from './team.dto';
 import { TeamService } from './team.service';
+import { TeamModule } from './team.module';
 
 interface AssertTeamParams {
     expected: Team;
@@ -98,7 +99,7 @@ function getTutorialIdOfAllTeams(): string {
 }
 
 describe('TeamService', () => {
-    const suite = new TestSuite(TeamService);
+    const suite = new TestSuite(TeamService, TeamModule);
 
     it('find all teams in tutorial', async () => {
         const teams = await suite.service.findAllTeamsInTutorial(getTutorialIdOfAllTeams());

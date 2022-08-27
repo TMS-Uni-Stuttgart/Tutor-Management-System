@@ -1,15 +1,8 @@
-import { Provider, Type } from '@nestjs/common';
+import { Type } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClassType } from '../../src/helpers/ClassConstructor';
-import { ScheinexamService } from '../../src/module/scheinexam/scheinexam.service';
-import { SheetService } from '../../src/module/sheet/sheet.service';
-import { ShortTestService } from '../../src/module/short-test/short-test.service';
-import { GradingService } from '../../src/module/student/grading.service';
-import { StudentService } from '../../src/module/student/student.service';
-import { TeamService } from '../../src/module/team/team.service';
-import { TutorialService } from '../../src/module/tutorial/tutorial.service';
-import { UserService } from '../../src/module/user/user.service';
 import { TestDatabaseModule } from './test.module';
+import { SettingsModule } from '../../src/module/settings/settings.module';
 
 /**
  * Test suite with helper methods for a specific service.
@@ -56,11 +49,11 @@ export class TestSuite<S> {
     /**
      *
      * @param serviceClass Class of the service associated with this test suite.
-     * @param additionalProviders Additional providers used inside this TestSuite's TestModule. This should NOT be needed for most tests.
+     * @param moduleOfService Module the serviceClass resides in.
      */
     constructor(
         private readonly serviceClass: ClassType<S>,
-        private readonly additionalProviders: Provider[] = []
+        private readonly moduleOfService: ClassType<unknown>
     ) {
         this.configTestSuite();
     }
@@ -72,18 +65,8 @@ export class TestSuite<S> {
     private configTestSuite(): void {
         beforeAll(async () => {
             this.testModule = await Test.createTestingModule({
-                imports: [TestDatabaseModule],
-                providers: [
-                    TutorialService,
-                    UserService,
-                    StudentService,
-                    TeamService,
-                    SheetService,
-                    ScheinexamService,
-                    ShortTestService,
-                    GradingService,
-                    ...this.additionalProviders,
-                ],
+                // Import SettingsModule here because it's a global module in the app.
+                imports: [TestDatabaseModule, SettingsModule, this.moduleOfService],
             }).compile();
 
             await this.testModule.get(TestDatabaseModule).init();

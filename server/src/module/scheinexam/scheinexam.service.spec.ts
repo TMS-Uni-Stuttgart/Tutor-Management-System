@@ -7,6 +7,7 @@ import { MOCKED_SCHEINEXAMS } from '../../../test/mocks/entities.mock';
 import { Scheinexam } from '../../database/entities/scheinexam.entity';
 import { ScheinexamDTO } from './scheinexam.dto';
 import { ScheinexamService } from './scheinexam.service';
+import { ScheinexamModule } from './scheinexam.module';
 
 interface AssertScheinexamParams {
     expected: Scheinexam;
@@ -88,7 +89,7 @@ function assertScheinexamDTO({ expected, actual }: AssertScheinexamDTOParams) {
 }
 
 describe('ScheinexamService', () => {
-    const suite = new TestSuite(ScheinexamService);
+    const suite = new TestSuite(ScheinexamService, ScheinexamModule);
 
     it('find all scheinexam', async () => {
         const scheinexams = await suite.service.findAll();

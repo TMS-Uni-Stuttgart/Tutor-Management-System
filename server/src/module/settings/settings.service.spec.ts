@@ -4,6 +4,7 @@ import { MOCKED_SETTINGS_DOCUMENT } from '../../../test/mocks/entities.mock';
 import { Setting } from '../../database/entities/settings.entity';
 import { ClientSettingsDTO } from './settings.dto';
 import { SettingsService } from './settings.service';
+import { SettingsModule } from './settings.module';
 
 interface AssertSettingsParams {
     expected: Setting;
@@ -49,7 +50,7 @@ const SOME_MAILING_SETTINGS: ClientSettingsDTO['mailingConfig'] = {
 };
 
 describe('SettingsService', () => {
-    const suite = new TestSuite(SettingsService, [SettingsService]);
+    const suite = new TestSuite(SettingsService, SettingsModule);
 
     it('get all settings', async () => {
         const settings = await suite.service.getClientSettings();

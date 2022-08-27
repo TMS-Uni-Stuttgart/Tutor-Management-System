@@ -11,6 +11,7 @@ import { SheetDTO } from '../sheet/sheet.dto';
 import { Grading } from '../../database/entities/grading.entity';
 import { HandIn } from '../../database/entities/ratedEntity.entity';
 import { Student } from '../../database/entities/student.entity';
+import { StudentModule } from './student.module';
 
 interface AssertGradingParams {
     expected: Grading;
@@ -89,7 +90,7 @@ function assertGradingFromDTO({ expected, actual, handIn }: AssertGradingFromDTO
 }
 
 describe('GradingService', () => {
-    const suite = new TestSuite(GradingService);
+    const suite = new TestSuite(GradingService, StudentModule);
 
     it('set a grading of a sheet of a student', async () => {
         const student = MOCKED_STUDENTS[0];

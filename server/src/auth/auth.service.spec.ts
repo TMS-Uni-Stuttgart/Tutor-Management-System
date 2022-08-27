@@ -3,9 +3,10 @@ import { Role } from 'shared/model/Role';
 import { TestSuite } from '../../test/helpers/TestSuite';
 import { MOCKED_USERS } from '../../test/mocks/entities.mock';
 import { AuthService } from './auth.service';
+import { AuthModule } from './auth.module';
 
 describe('AuthService', () => {
-    const suite = new TestSuite(AuthService, [AuthService]);
+    const suite = new TestSuite(AuthService, AuthModule);
 
     it('fail on non-existing username', async () => {
         await expect(

@@ -1,7 +1,7 @@
 import { TestSuite } from '../../../test/helpers/TestSuite';
-import { SettingsService } from '../settings/settings.service';
 import { TemplateService } from './template.service';
+import { TemplateModule } from './template.module';
 
 describe('TemplateService', () => {
-    new TestSuite(TemplateService, [SettingsService, TemplateService]);
+    new TestSuite(TemplateService, TemplateModule);
 });

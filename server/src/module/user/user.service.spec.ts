@@ -10,6 +10,7 @@ import { User } from '../../database/entities/user.entity';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
+import { UserModule } from './user.module';
 
 interface AssertUserParam {
     expected: User;
@@ -182,7 +183,7 @@ function assertLoggedInUser({ expected, actual }: AssertLoggedInUserParams) {
 }
 
 describe('UserService', () => {
-    const suite = new TestSuite(UserService);
+    const suite = new TestSuite(UserService, UserModule);
 
     it('find all users', async () => {
         const allUsers = await suite.service.findAll();

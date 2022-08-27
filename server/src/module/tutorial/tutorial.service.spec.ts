@@ -14,6 +14,7 @@ import { createDatesForTutorialAsStrings } from '../../../test/mocks/mock.helper
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { ExcludedTutorialDate, TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
+import { TutorialModule } from './tutorial.module';
 
 interface AssertTutorialParams {
     expected: Tutorial;
@@ -240,7 +241,7 @@ async function checkGeneratedTutorials(
 }
 
 describe('TutorialService', () => {
-    const suite = new TestSuite(TutorialService);
+    const suite = new TestSuite(TutorialService, TutorialModule);
 
     it('find all tutorials', async () => {
         const allTutorials = await suite.service.findAll();

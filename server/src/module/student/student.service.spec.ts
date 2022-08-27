@@ -152,7 +152,7 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
 }
 
 describe('StudentService', () => {
-    const suite = new TestSuite(StudentService);
+    const suite = new TestSuite(StudentService, StudentService);
 
     it('find all students', async () => {
         const students = await suite.service.findAll();

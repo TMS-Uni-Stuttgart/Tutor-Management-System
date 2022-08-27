@@ -12,7 +12,7 @@ import { SheetTotalCriteria } from './container/criterias/SheetTotalCriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheincriteriaClass } from './container/scheincriteria.form';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
-import { ScheincriteriaConstructor } from './scheincriteria.module';
+import { ScheincriteriaConstructor, ScheincriteriaModule } from './scheincriteria.module';
 import { ScheincriteriaService } from './scheincriteria.service';
 
 interface AssertScheincriteriaParams {
@@ -114,7 +114,7 @@ function registerCriteria(criteriaClass: ScheincriteriaClass) {
 }
 
 describe('ScheincriteriaService', () => {
-    const suite = new TestSuite(ScheincriteriaService, [ScheincriteriaService]);
+    const suite = new TestSuite(ScheincriteriaService, ScheincriteriaModule);
 
     beforeAll(() => {
         registerAllCriterias();

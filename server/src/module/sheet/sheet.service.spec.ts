@@ -6,6 +6,7 @@ import { MOCKED_SHEETS } from '../../../test/mocks/entities.mock';
 import { Sheet } from '../../database/entities/sheet.entity';
 import { SheetDTO } from './sheet.dto';
 import { SheetService } from './sheet.service';
+import { SheetModule } from './sheet.module';
 
 interface AssertSheetParams {
     expected: Sheet;
@@ -86,7 +87,7 @@ function assertSheetDTO({ expected, actual }: AssertSheetDTOParams) {
 }
 
 describe('SheetService', () => {
-    const suite = new TestSuite(SheetService);
+    const suite = new TestSuite(SheetService, SheetModule);
 
     it('find all sheets', async () => {
         const sheets = await suite.service.findAll();
