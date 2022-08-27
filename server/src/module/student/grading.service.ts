@@ -1,6 +1,5 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Grading } from '../../database/entities/grading.entity';
 import { HandIn } from '../../database/entities/ratedEntity.entity';
@@ -12,19 +11,21 @@ import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
 import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { Team } from '../../database/entities/team.entity';
-import { GradingRepository } from '../../database/repositories/GradingRepository';
 
 @Injectable()
 export class GradingService {
+    private readonly repository: EntityRepository<Grading>;
+
     constructor(
-        private readonly gradingRepository: GradingRepository,
-        private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
-        private readonly shortTestService: ShortTestService
-    ) {}
+        private readonly shortTestService: ShortTestService,
+        private readonly entityManager: EntityManager
+    ) {
+        this.repository = entityManager.fork().getRepository(Grading);
+    }
 
     /**
      * @param studentId ID of the student to get the gradings for.
@@ -32,7 +33,7 @@ export class GradingService {
      * @returns All gradings that this student has.
      */
     async findOfStudent(studentId: string): Promise<GradingList> {
-        const gradings = await this.gradingRepository.find(
+        const gradings = await this.repository.find(
             { students: { $contains: [studentId] } },
             // TODO: Do we need the populate here?
             { populate: true }
@@ -50,7 +51,7 @@ export class GradingService {
         studentId: string,
         handInId: string
     ): Promise<Grading | undefined> {
-        const grading = await this.gradingRepository.findOne(
+        const grading = await this.repository.findOne(
             { students: { $contains: [studentId] }, handInId: handInId },
             // TODO: Do we need the populate here?
             { populate: true }
@@ -131,14 +132,11 @@ export class GradingService {
     }
 
     async findAllGradingsOfStudent(student: Student): Promise<Grading[]> {
-        return this.getGradingRepository().find(
-            { students: { $contains: [student.id] } },
-            { populate: true }
-        );
+        return this.repository.find({ students: { $contains: [student.id] } }, { populate: true });
     }
 
     async findHandInGradingOfStudent(student: Student, handIn: HandIn): Promise<Grading | null> {
-        return this.getGradingRepository().findOne(
+        return this.repository.findOne(
             {
                 students: { $contains: [student.id] },
                 handInId: handIn.id,
@@ -161,14 +159,10 @@ export class GradingService {
 
     async findAllHandInGradingsOfTeam(team: Team, handIn: HandIn): Promise<Grading[]> {
         const studentIds = team.getStudents().map((s) => s.id);
-        return this.getGradingRepository().find({
+        return this.repository.find({
             handInId: handIn.id,
             students: { $contains: studentIds },
         });
-    }
-
-    private getGradingRepository(): EntityRepository<Grading> {
-        return this.entityManager.getRepository(Grading);
     }
 
     private async updateGradingOfStudent({

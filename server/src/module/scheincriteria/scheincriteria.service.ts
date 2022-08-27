@@ -50,21 +50,25 @@ interface GetRequiredDocsParams {
 export class ScheincriteriaService
     implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaEntity>
 {
+    private readonly repository: EntityRepository<ScheincriteriaEntity>;
+
     constructor(
-        private readonly entityManager: EntityManager,
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
         private readonly tutorialService: TutorialService,
         private readonly shortTestService: ShortTestService,
-        private readonly gradingService: GradingService
-    ) {}
+        private readonly gradingService: GradingService,
+        entityManager: EntityManager
+    ) {
+        this.repository = entityManager.fork().getRepository(ScheincriteriaEntity);
+    }
 
     /**
      * @returns All scheincriterias saved in the database.
      */
     async findAll(): Promise<ScheincriteriaEntity[]> {
-        return this.getScheincriteriaRepository().findAll();
+        return this.repository.findAll();
     }
 
     /**
@@ -77,7 +81,7 @@ export class ScheincriteriaService
      * @throws `NotFoundException` - If no scheincriteria could be found with the given ID.
      */
     async findById(id: string): Promise<ScheincriteriaEntity> {
-        const criteria = await this.getScheincriteriaRepository().findOne({
+        const criteria = await this.repository.findOne({
             id,
         });
 
@@ -104,7 +108,7 @@ export class ScheincriteriaService
             name: dto.name,
             criteria: scheincriteria,
         });
-        await this.entityManager.persistAndFlush(entity);
+        await this.repository.persistAndFlush(entity);
         return entity.toDTO();
     }
 
@@ -124,7 +128,7 @@ export class ScheincriteriaService
 
         scheincriteria.criteria = Scheincriteria.fromDTO(dto);
         scheincriteria.name = dto.name;
-        await this.entityManager.persistAndFlush(scheincriteria);
+        await this.repository.persistAndFlush(scheincriteria);
         return scheincriteria.toDTO();
     }
 
@@ -139,7 +143,7 @@ export class ScheincriteriaService
      */
     async delete(id: string): Promise<void> {
         const criteria = await this.findById(id);
-        await this.entityManager.removeAndFlush(criteria);
+        await this.repository.removeAndFlush(criteria);
     }
 
     /**
@@ -343,9 +347,5 @@ export class ScheincriteriaService
         }
 
         return this.gradingService.findAllGradingsOfMultipleStudents(students);
-    }
-
-    private getScheincriteriaRepository(): EntityRepository<ScheincriteriaEntity> {
-        return this.entityManager.getRepository(ScheincriteriaEntity);
     }
 }

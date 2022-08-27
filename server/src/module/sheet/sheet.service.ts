@@ -9,13 +9,17 @@ import { SheetDTO } from './sheet.dto';
 
 @Injectable()
 export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
-    constructor(private readonly entityManager: EntityManager) {}
+    private readonly repository: EntityRepository<Sheet>;
+
+    constructor(entityManager: EntityManager) {
+        this.repository = entityManager.fork().getRepository(Sheet);
+    }
 
     /**
      * @returns All sheets saved in the database.
      */
     async findAll(): Promise<Sheet[]> {
-        return this.getSheetRepository().findAll();
+        return this.repository.findAll();
     }
 
     /**
@@ -28,7 +32,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
      * @throws `NotFoundException` - If no sheet with the given ID could be found.
      */
     async findById(id: string): Promise<Sheet> {
-        const sheet = await this.getSheetRepository().findOne({ id });
+        const sheet = await this.repository.findOne({ id });
 
         if (!sheet) {
             throw new NotFoundException(`Sheet with the ID '${id}' could not be found.`);
@@ -57,7 +61,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
      */
     async create(dto: SheetDTO): Promise<ISheet> {
         const sheet = Sheet.fromDTO(dto);
-        await this.entityManager.persistAndFlush(sheet);
+        await this.repository.persistAndFlush(sheet);
         return sheet.toDTO();
     }
 
@@ -80,7 +84,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
         sheet.bonusSheet = dto.bonusSheet;
         sheet.exercises = dto.exercises.map((ex) => Exercise.fromDTO(ex));
 
-        await this.entityManager.persistAndFlush(sheet);
+        await this.repository.persistAndFlush(sheet);
         return sheet.toDTO();
     }
 
@@ -95,10 +99,6 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
      */
     async delete(id: string): Promise<void> {
         const sheet = await this.findById(id);
-        await this.entityManager.removeAndFlush(sheet);
-    }
-
-    private getSheetRepository(): EntityRepository<Sheet> {
-        return this.entityManager.getRepository(Sheet);
+        await this.repository.removeAndFlush(sheet);
     }
 }

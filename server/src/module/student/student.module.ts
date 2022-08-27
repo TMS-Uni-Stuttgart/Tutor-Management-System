@@ -8,7 +8,6 @@ import { GradingService } from './grading.service';
 import { StudentController } from './student.controller';
 import { StudentService } from './student.service';
 import { GradingController } from './grading.controller';
-import { GradingRepository } from '../../database/repositories/GradingRepository';
 
 @Module({
     imports: [
@@ -19,7 +18,7 @@ import { GradingRepository } from '../../database/repositories/GradingRepository
         ShortTestModule,
     ],
     controllers: [StudentController, GradingController],
-    providers: [StudentService, GradingService, GradingRepository],
+    providers: [StudentService, GradingService],
     exports: [StudentService, GradingService],
 })
 export class StudentModule {}

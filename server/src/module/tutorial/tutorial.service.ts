@@ -26,19 +26,23 @@ import {
 
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tutorial> {
+    private readonly repository: EntityRepository<Tutorial>;
+
     constructor(
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
         private readonly entityManager: EntityManager
-    ) {}
+    ) {
+        this.repository = entityManager.fork().getRepository(Tutorial);
+    }
 
     /**
      * @returns All tutorials saved in the database.
      */
     async findAll(): Promise<Tutorial[]> {
-        return this.getTutorialRepository().findAll({ populate: true });
+        return this.repository.findAll({ populate: true });
     }
 
     /**
@@ -49,10 +53,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws {@link NotFoundException} - If at least one of the tutorials could not be found.
      */
     async findMultiple(ids: string[]): Promise<Tutorial[]> {
-        const tutorials = await this.getTutorialRepository().find(
-            { id: { $in: ids } },
-            { populate: true }
-        );
+        const tutorials = await this.repository.find({ id: { $in: ids } }, { populate: true });
 
         if (tutorials.length !== ids.length) {
             const tutorialIds = tutorials.map((tutorial) => tutorial.id);
@@ -75,7 +76,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
     async findById(id: string): Promise<Tutorial> {
-        const tutorial = await this.getTutorialRepository().findOne({ id }, { populate: true });
+        const tutorial = await this.repository.findOne({ id }, { populate: true });
 
         if (!tutorial) {
             throw new NotFoundException(`Tutorial with the ID ${id} could not be found.`);
@@ -144,7 +145,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         tutorial.tutor = tutor;
         tutorial.correctors.set(correctors);
 
-        await this.getTutorialRepository().persistAndFlush(tutorial);
+        await this.repository.persistAndFlush(tutorial);
         return tutorial.toDTO();
     }
 
@@ -167,7 +168,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
             throw new BadRequestException(`A tutorial with students can NOT be deleted.`);
         }
 
-        const em = this.entityManager;
+        const em = this.entityManager.fork({ clear: false });
         await em.begin();
         try {
             tutorial.teams.getItems().map((team) => em.remove(team));
@@ -381,7 +382,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         const tutorial = new Tutorial({ slot, dates, startTime, endTime });
         tutorial.tutor = tutor;
         tutorial.correctors.set(correctors);
-        await this.getTutorialRepository().persistAndFlush(tutorial);
+        await this.repository.persistAndFlush(tutorial);
 
         return tutorial;
     }
@@ -440,14 +441,6 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         return dateArray;
     }
 
-    /**
-     * @returns TutorialRepository
-     * @private
-     */
-    private getTutorialRepository(): EntityRepository<Tutorial> {
-        return this.entityManager.getRepository(Tutorial);
-    }
-
     private assertTutorHasTutorRole(tutor?: User) {
         if (tutor && !tutor.roles.includes(Role.TUTOR)) {
             throw new BadRequestException('The tutor of a tutorial needs to have the TUTOR role.');
@@ -465,7 +458,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     }
 
     private async assertTutorialSlot(slot: string) {
-        const tutorialWithSameSlot = await this.getTutorialRepository().findOne({ slot });
+        const tutorialWithSameSlot = await this.repository.findOne({ slot });
 
         if (!!tutorialWithSameSlot) {
             throw new BadRequestException(`A tutorial with the slot '${slot} already exists.`);

@@ -9,8 +9,11 @@ import { StaticSettings } from './settings.static';
 
 @Injectable()
 export class SettingsService extends StaticSettings implements OnApplicationBootstrap {
-    constructor(private readonly entityManager: EntityManager) {
+    private readonly repository: EntityRepository<Setting>;
+
+    constructor(entityManager: EntityManager) {
         super();
+        this.repository = entityManager.fork().getRepository(Setting);
     }
 
     /**
@@ -35,7 +38,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
 
         settings.updateFromDTO(dto);
 
-        await this.getSettingRepository().persistAndFlush(settings);
+        await this.repository.persistAndFlush(settings);
     }
 
     /**
@@ -54,7 +57,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
      * If there is ONE nothing is done.
      */
     async onApplicationBootstrap(): Promise<void> {
-        const settings = await this.getSettingRepository().findOne({
+        const settings = await this.repository.findOne({
             id: Setting.SETTING_ID,
         });
 
@@ -71,7 +74,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
                     SettingsService.name
                 );
 
-                await this.entityManager.persistAndFlush(defaults);
+                await this.repository.persistAndFlush(defaults);
                 this.logger.log(
                     'Default settings document successfully created.',
                     SettingsService.name
@@ -91,7 +94,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
      * @throws `Error` - If there is not `SettingsDocument` saved in the database.
      */
     private async getSettingsEntity(): Promise<Setting> {
-        const settings = await this.getSettingRepository().findOne({
+        const settings = await this.repository.findOne({
             id: Setting.SETTING_ID,
         });
 
@@ -112,9 +115,5 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
     private generateDefaultSettings(): Setting {
         const defaultsFromConfig = this.config.defaultSettings;
         return Setting.fromDTO(defaultsFromConfig);
-    }
-
-    private getSettingRepository(): EntityRepository<Setting> {
-        return this.entityManager.getRepository(Setting);
     }
 }

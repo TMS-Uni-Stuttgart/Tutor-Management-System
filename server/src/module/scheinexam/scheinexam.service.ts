@@ -8,13 +8,17 @@ import { ScheinexamDTO } from './scheinexam.dto';
 
 @Injectable()
 export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO, Scheinexam> {
-    constructor(private readonly entityManager: EntityManager) {}
+    private readonly repository: EntityRepository<Scheinexam>;
+
+    constructor(entityManager: EntityManager) {
+        this.repository = entityManager.fork().getRepository(Scheinexam);
+    }
 
     /**
      * @returns All scheinexams saved in the database.
      */
     async findAll(): Promise<Scheinexam[]> {
-        return this.getScheinexamRepository().findAll();
+        return this.repository.findAll();
     }
 
     /**
@@ -27,7 +31,7 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
      * @throws `NotFoundException` - If no scheinexam with the given ID could be found.
      */
     async findById(id: string): Promise<Scheinexam> {
-        const scheinexam = await this.getScheinexamRepository().findOne({ id });
+        const scheinexam = await this.repository.findOne({ id });
 
         if (!scheinexam) {
             throw new NotFoundException(`Scheinexam with the ID ${id} could not be found.`);
@@ -45,7 +49,7 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
      */
     async create(dto: ScheinexamDTO): Promise<IScheinExam> {
         const scheinexam = Scheinexam.fromDTO(dto);
-        await this.entityManager.persistAndFlush(scheinexam);
+        await this.repository.persistAndFlush(scheinexam);
         return scheinexam.toDTO();
     }
 
@@ -64,7 +68,7 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
     async update(id: string, dto: ScheinexamDTO): Promise<IScheinExam> {
         const scheinexam = await this.findById(id);
         scheinexam.updateFromDTO(dto);
-        await this.entityManager.persistAndFlush(scheinexam);
+        await this.repository.persistAndFlush(scheinexam);
         return scheinexam.toDTO();
     }
 
@@ -79,10 +83,6 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
      */
     async delete(id: string): Promise<void> {
         const scheinexam = await this.findById(id);
-        await this.entityManager.removeAndFlush(scheinexam);
-    }
-
-    private getScheinexamRepository(): EntityRepository<Scheinexam> {
-        return this.entityManager.getRepository(Scheinexam);
+        await this.repository.removeAndFlush(scheinexam);
     }
 }

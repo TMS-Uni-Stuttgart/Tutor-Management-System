@@ -15,22 +15,25 @@ import { AttendanceDTO, CakeCountDTO, PresentationPointsDTO, StudentDTO } from '
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, Student> {
     private readonly logger = new Logger(StudentService.name);
+    private readonly repository: EntityRepository<Student>;
 
     constructor(
-        private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
         @Inject(forwardRef(() => TeamService))
         private readonly teamService: TeamService,
-        private readonly sheetService: SheetService
-    ) {}
+        private readonly sheetService: SheetService,
+        entityManager: EntityManager
+    ) {
+        this.repository = entityManager.fork().getRepository(Student);
+    }
 
     /**
      * @returns All students saved in the database.
      */
     async findAll(): Promise<Student[]> {
         const timeA = Date.now();
-        const allStudents = await this.getStudentRepository().findAll({
+        const allStudents = await this.repository.findAll({
             populate: true,
         });
         const timeB = Date.now();
@@ -46,10 +49,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      * @throws {@link NotFoundException} - If at least one student could not be found.
      */
     async findMany(ids: string[]): Promise<Student[]> {
-        const students = await this.getStudentRepository().find(
-            { id: { $in: ids } },
-            { populate: true }
-        );
+        const students = await this.repository.find({ id: { $in: ids } }, { populate: true });
 
         if (students.length !== ids.length) {
             const studentIds = students.map((student) => student.id);
@@ -72,7 +72,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      * @throws `NotFoundException` - If no student with the given ID could be found.
      */
     async findById(id: string): Promise<Student> {
-        const student = await this.getStudentRepository().findOne({ id }, { populate: true });
+        const student = await this.repository.findOne({ id }, { populate: true });
 
         if (!student) {
             throw new NotFoundException(`Student with the ID ${id} could not be found`);
@@ -112,7 +112,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         student.iliasName = dto.iliasName;
         student.team = team;
 
-        await this.entityManager.persistAndFlush(student);
+        await this.repository.persistAndFlush(student);
         return student.toDTO();
     }
 
@@ -143,7 +143,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         student.email = dto.email;
         student.matriculationNo = dto.matriculationNo;
 
-        await this.entityManager.persistAndFlush(student);
+        await this.repository.persistAndFlush(student);
         return student.toDTO();
     }
 
@@ -158,7 +158,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
      */
     async delete(id: string): Promise<void> {
         const student = await this.findById(id);
-        await this.entityManager.removeAndFlush(student);
+        await this.repository.removeAndFlush(student);
     }
 
     /**
@@ -176,7 +176,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         const attendance = Attendance.fromDTO(dto);
 
         student.setAttendance(attendance);
-        await this.entityManager.persistAndFlush(student);
+        await this.repository.persistAndFlush(student);
 
         return attendance.toDTO();
     }
@@ -194,7 +194,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         const sheet = await this.sheetService.findById(dto.sheetId);
 
         student.setPresentationPoints(sheet, dto.points);
-        await this.entityManager.persistAndFlush(student);
+        await this.repository.persistAndFlush(student);
     }
 
     /**
@@ -208,11 +208,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     async setCakeCount(id: string, dto: CakeCountDTO): Promise<void> {
         const student = await this.findById(id);
         student.cakeCount = dto.cakeCount;
-        await this.entityManager.persistAndFlush(student);
-    }
-
-    private getStudentRepository(): EntityRepository<Student> {
-        return this.entityManager.getRepository(Student);
+        await this.repository.persistAndFlush(student);
     }
 
     private async getTeamFromDTO(dto: StudentDTO, student: Student): Promise<Team | undefined> {

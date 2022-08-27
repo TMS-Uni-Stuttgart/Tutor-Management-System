@@ -13,6 +13,7 @@ import {
 import { Student } from '../../database/entities/student.entity';
 import { AttendanceDTO, CakeCountDTO, PresentationPointsDTO, StudentDTO } from './student.dto';
 import { StudentService } from './student.service';
+import { StudentModule } from './student.module';
 
 interface AssertStudentParams {
     expected: Student;
@@ -152,7 +153,7 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
 }
 
 describe('StudentService', () => {
-    const suite = new TestSuite(StudentService, StudentService);
+    const suite = new TestSuite(StudentService, StudentModule);
 
     it('find all students', async () => {
         const students = await suite.service.findAll();

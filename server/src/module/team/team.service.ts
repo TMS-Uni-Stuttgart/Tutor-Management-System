@@ -18,15 +18,19 @@ import { TeamDTO } from './team.dto';
 
 @Injectable()
 export class TeamService {
+    private readonly repository: EntityRepository<Team>;
+
     constructor(
-        private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
         @Inject(forwardRef(() => GradingService))
-        private readonly gradingService: GradingService
-    ) {}
+        private readonly gradingService: GradingService,
+        entityManager: EntityManager
+    ) {
+        this.repository = entityManager.fork().getRepository(Team);
+    }
 
     /**
      * @param tutorialId Tutorial ID to get teams for
@@ -34,7 +38,7 @@ export class TeamService {
      * @returns All teams in the given tutorial.
      */
     async findAllTeamsInTutorial(tutorialId: string): Promise<Team[]> {
-        return this.getTeamRepository().find({ tutorial: tutorialId }, { populate: true });
+        return this.repository.find({ tutorial: tutorialId }, { populate: true });
     }
 
     /**
@@ -48,7 +52,7 @@ export class TeamService {
      * @throws `NotFoundException` - If no team inside the given tutorial with the given ID could be found.
      */
     async findById({ tutorialId, teamId }: ITeamId): Promise<Team> {
-        const team = await this.getTeamRepository().findOne(
+        const team = await this.repository.findOne(
             { id: teamId, tutorial: tutorialId },
             { populate: true }
         );
@@ -86,7 +90,7 @@ export class TeamService {
         });
         team.students.set(students);
 
-        await this.entityManager.persistAndFlush(team);
+        await this.repository.persistAndFlush(team);
         return team.toDTO();
     }
 
@@ -111,7 +115,7 @@ export class TeamService {
         this.assertAllStudentsInSameTutorial(teamId.tutorialId, newStudentsOfTeam);
 
         team.students.set(newStudentsOfTeam);
-        await this.entityManager.persistAndFlush(team);
+        await this.repository.persistAndFlush(team);
 
         return team.toDTO();
     }
@@ -127,7 +131,7 @@ export class TeamService {
      */
     async deleteTeamFromTutorial(teamId: ITeamId): Promise<void> {
         const team = await this.findById(teamId);
-        const repo = this.getTeamRepository();
+        const repo = this.repository;
         team.tutorial.teams.remove(team);
         team.students.removeAll();
 
@@ -160,10 +164,6 @@ export class TeamService {
         }
 
         return tutorial.teams.length + 1;
-    }
-
-    private getTeamRepository(): EntityRepository<Team> {
-        return this.entityManager.getRepository(Team);
     }
 
     /**
