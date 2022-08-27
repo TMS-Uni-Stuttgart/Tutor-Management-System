@@ -3,6 +3,7 @@ import {
     Embeddable,
     Embedded,
     Entity,
+    EntityRepositoryType,
     ManyToMany,
     ManyToOne,
     PrimaryKey,
@@ -19,6 +20,7 @@ import { Scheinexam } from './scheinexam.entity';
 import { Sheet } from './sheet.entity';
 import { ShortTest } from './shorttest.entity';
 import { Student } from './student.entity';
+import { GradingRepository } from '../repositories/GradingRepository';
 
 @Embeddable()
 export class ExerciseGrading {
@@ -69,7 +71,7 @@ export class ExerciseGrading {
     }
 }
 
-@Entity()
+@Entity({ customRepository: () => GradingRepository })
 export class Grading {
     @PrimaryKey()
     id = v4();

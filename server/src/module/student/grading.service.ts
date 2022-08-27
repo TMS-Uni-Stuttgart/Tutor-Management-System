@@ -12,12 +12,12 @@ import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
 import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { Team } from '../../database/entities/team.entity';
+import { GradingRepository } from '../../database/repositories/GradingRepository';
 
 @Injectable()
 export class GradingService {
     constructor(
-        @InjectRepository(Grading)
-        private readonly gradingRepository: EntityRepository<Grading>,
+        private readonly gradingRepository: GradingRepository,
         private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
