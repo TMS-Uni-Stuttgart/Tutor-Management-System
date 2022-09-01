@@ -80,44 +80,43 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
         variant: 'success',
       });
     } catch (reason) {
-      logger.error(reason);
+      logger.error(`${reason}`);
       enqueueSnackbar('Blatt konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback = (sheet) => async (
-    { sheetNo, exercises, bonusSheet },
-    { setSubmitting }
-  ) => {
-    const sheetDTO: ISheetDTO = {
-      sheetNo: Number.parseInt(sheetNo),
-      exercises: convertFormExercisesToDTOs(exercises),
-      bonusSheet,
+  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback =
+    (sheet) =>
+    async ({ sheetNo, exercises, bonusSheet }, { setSubmitting }) => {
+      const sheetDTO: ISheetDTO = {
+        sheetNo: Number.parseInt(sheetNo),
+        exercises: convertFormExercisesToDTOs(exercises),
+        bonusSheet,
+      };
+
+      try {
+        const response = await editSheetRequest(sheet.id, sheetDTO);
+
+        setSheets(
+          sheets.map((s) => {
+            if (s.id === sheet.id) {
+              return response;
+            }
+
+            return s;
+          })
+        );
+
+        enqueueSnackbar('Blatt wurde erfolgreich gespeichert.', { variant: 'success' });
+        dialog.hide();
+      } catch (reason) {
+        logger.error(`${reason}`);
+        enqueueSnackbar('Blatt konnte nicht gespeichert werden.', { variant: 'error' });
+        setSubmitting(false);
+      }
     };
-
-    try {
-      const response = await editSheetRequest(sheet.id, sheetDTO);
-
-      setSheets(
-        sheets.map((s) => {
-          if (s.id === sheet.id) {
-            return response;
-          }
-
-          return s;
-        })
-      );
-
-      enqueueSnackbar('Blatt wurde erfolgreich gespeichert.', { variant: 'success' });
-      dialog.hide();
-    } catch (reason) {
-      logger.error(reason);
-      enqueueSnackbar('Blatt konnt nicht gespeichert werden.', { variant: 'error' });
-      setSubmitting(false);
-    }
-  };
 
   function handleEditSheet(sheet: Sheet) {
     dialog.show({

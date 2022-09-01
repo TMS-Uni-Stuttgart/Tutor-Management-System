@@ -79,7 +79,7 @@ function ShortTestManagement(): JSX.Element {
           variant: 'success',
         });
       } catch (error) {
-        logger.error(error);
+        logger.error(`${error}`);
         enqueueSnackbar('Erstellen des Kurztests fehlgeschlagen.', { variant: 'error' });
       } finally {
         setSubmitting(false);
@@ -105,7 +105,7 @@ function ShortTestManagement(): JSX.Element {
           });
           dialog.hide();
         } catch (error) {
-          logger.error(error);
+          logger.error(`${error}`);
           enqueueSnackbar('Speichern des Kurztests fehlgeschlagen.', {
             variant: 'error',
           });
@@ -139,7 +139,7 @@ function ShortTestManagement(): JSX.Element {
             variant: 'success',
           });
         } catch (error) {
-          logger.error(error);
+          logger.error(`${error}`);
           enqueueSnackbar(`${shortTest.toDisplayString()} konnte nicht gelöscht werden.`, {
             variant: 'error',
           });

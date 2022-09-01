@@ -92,7 +92,7 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
       resetForm({ values: getInitialExamFormState(undefined, [...exams, exam]) });
       enqueueSnackbar('Scheinklausur erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
-      logger.error(reason);
+      logger.error(`${reason}`);
       enqueueSnackbar('Erstellen der Scheinklausur fehlgeschlagen.', { variant: 'error' });
     } finally {
       setSubmitting(false);
@@ -108,22 +108,21 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
     setGeneratingResults(false);
   };
 
-  const editExam: (exam: Scheinexam) => ScheinExamFormSubmitCallback = (exam) => async (
-    values,
-    { setSubmitting }
-  ) => {
-    try {
-      const updatedExam = await editScheinExam(exam.id, generateScheinExamDTO(values));
+  const editExam: (exam: Scheinexam) => ScheinExamFormSubmitCallback =
+    (exam) =>
+    async (values, { setSubmitting }) => {
+      try {
+        const updatedExam = await editScheinExam(exam.id, generateScheinExamDTO(values));
 
-      setExams(exams.map((e) => (e.id === exam.id ? updatedExam : e)));
-      enqueueSnackbar('Scheinklausur erfolgreich bearbeitet.', { variant: 'success' });
-      dialog.hide();
-    } catch (reason) {
-      logger.error(reason);
-      enqueueSnackbar('Bearbeiten der Scheinklausur fehlgeschlagen.', { variant: 'error' });
-      setSubmitting(false);
-    }
-  };
+        setExams(exams.map((e) => (e.id === exam.id ? updatedExam : e)));
+        enqueueSnackbar('Scheinklausur erfolgreich bearbeitet.', { variant: 'success' });
+        dialog.hide();
+      } catch (reason) {
+        logger.error(`${reason}`);
+        enqueueSnackbar('Bearbeiten der Scheinklausur fehlgeschlagen.', { variant: 'error' });
+        setSubmitting(false);
+      }
+    };
 
   const deleteExam: (exam: Scheinexam) => void = async (exam) => {
     try {

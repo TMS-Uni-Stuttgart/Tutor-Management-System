@@ -164,7 +164,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
       } catch (err) {
         enqueueSnackbarWithList({
           title: 'Kurztestergebnisse konnten nicht importiert werden',
-          textBeforeList: err.message ?? 'NO_ERR_MESSAGE',
+          textBeforeList: err instanceof Error ? err.message : 'NO_ERR_MESSAGE',
           items: [],
           variant: 'error',
           persist: false,
