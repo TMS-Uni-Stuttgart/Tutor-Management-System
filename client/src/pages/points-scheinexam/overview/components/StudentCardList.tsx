@@ -21,7 +21,7 @@ function StudentCardList({ students, gradings, exam, getPathTo }: Props): JSX.El
     >
       <CardList>
         {students.map((student) => {
-          const grading = gradings.getGradingOfStudent(student.id);
+          const grading = gradings.getOfStudent(student.id);
 
           return (
             <StudentCard

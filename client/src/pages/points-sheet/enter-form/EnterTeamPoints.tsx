@@ -12,6 +12,8 @@ import { ROUTES } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
+import { GradingList } from '../../../model/GradingList';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 
 interface RouteParams {
   tutorialId?: string;
@@ -27,6 +29,7 @@ function EnterTeamPoints(): JSX.Element {
 
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team>();
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
 
   useEffect(() => {
     if (!tutorialId) {
@@ -38,7 +41,16 @@ function EnterTeamPoints(): JSX.Element {
         setTeams(response);
       })
       .catch(() => setError('Teams konnten nicht abgerufen werden.'));
-  }, [tutorialId, setError]);
+
+    if (!!sheetId) {
+      getGradingsOfTutorial(sheetId, tutorialId)
+        .then((response) => setGradings(response))
+        .catch(() => {
+          setError('Bewertungen konnten nicht abgerufen werden.');
+          setGradings(new GradingList([]));
+        });
+    }
+  }, [tutorialId, sheetId, setError]);
 
   useEffect(() => {
     if (!teamId) {
@@ -67,7 +79,7 @@ function EnterTeamPoints(): JSX.Element {
       return;
     }
 
-    const prevGrading = selectedTeam.getGrading(sheetId);
+    const prevGrading = gradings.getOfTeam(selectedTeam);
     const updateDTO = convertFormStateToGradingDTO({
       values,
       sheetId,
@@ -111,6 +123,7 @@ function EnterTeamPoints(): JSX.Element {
       tutorialId={tutorialId}
       sheetId={sheetId}
       entity={selectedTeam}
+      grading={selectedTeam === undefined ? undefined : gradings.getOfTeam(selectedTeam)}
       onSubmit={handleSubmit}
       allEntities={teams}
       entitySelectProps={{

@@ -15,18 +15,18 @@ export class GradingList {
         });
     }
 
-    getGradingOfStudent(studentId: string): Grading | undefined {
+    getOfStudent(studentId: string): Grading | undefined {
         return this.gradings.get(studentId);
     }
 
-    getAllGradingsOfTeam(team: Team): Grading[] {
+    getAllOfTeam(team: Team): Grading[] {
         return team.students
-            .map((student) => this.getGradingOfStudent(student.id))
+            .map((student) => this.getOfStudent(student.id))
             .filter<Grading>(this.isGrading);
     }
 
-    getGradingOfTeam(team: Team): Grading | undefined {
-        const gradings = this.getAllGradingsOfTeam(team);
+    getOfTeam(team: Team): Grading | undefined {
+        const gradings = this.getAllOfTeam(team);
 
         if (gradings.length === 0) {
             return undefined;

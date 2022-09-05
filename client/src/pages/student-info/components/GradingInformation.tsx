@@ -71,28 +71,28 @@ function GradingInformation({
   const [studentMarkdown, setStudentMarkdown] = useState<string>();
   const [isLoading, setLoading] = useState(false);
 
-    useEffect(() => {
-      setStudentMarkdown(undefined);
+  useEffect(() => {
+    setStudentMarkdown(undefined);
 
-      if (!selectedEntity) {
+    if (!selectedEntity) {
+      setGradingOfSelected(undefined);
+      return;
+    }
+
+    setLoading(true);
+    handleSelectionChange(selectedEntity.id, student.id, disableCommentDisplay ?? false)
+      .then(([grading, markdownComment]) => {
+        setGradingOfSelected(grading);
+        setStudentMarkdown(markdownComment);
+      })
+      .catch(() => {
         setGradingOfSelected(undefined);
-        return;
-      }
-
-      setLoading(true);
-      handleSelectionChange(selectedEntity.id, student.id, disableCommentDisplay ?? false)
-        .then(([grading, markdownComment]) => {
-          setGradingOfSelected(grading);
-          setStudentMarkdown(markdownComment);
-        })
-        .catch(() => {
-          setGradingOfSelected(undefined);
-          setStudentMarkdown('');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }, [selectedEntity, student, disableCommentDisplay]);
+        setStudentMarkdown('');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [selectedEntity, student, disableCommentDisplay]);
 
   const handleSheetSelectionChange: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
@@ -156,23 +156,23 @@ function GradingInformation({
 }
 
 async function handleSelectionChange(
-    handInId: string,
-    studentId: string,
-    disableCommentDisplay: boolean
+  handInId: string,
+  studentId: string,
+  disableCommentDisplay: boolean
 ): Promise<[Grading | undefined, string]> {
-    const grading = await g,etGradingOfStudent(handInId, studentId);
-    let markdownComment: string;
-    if (!disableCommentDisplay) {
-        try {
-            markdownComment = await getStudentCorrectionCommentMarkdown(handInId, studentId);
-        } catch {
-            markdownComment = '';
-        }
-    } else {
-        markdownComment = '';
+  const grading = await getGradingOfStudent(handInId, studentId);
+  let markdownComment: string;
+  if (!disableCommentDisplay) {
+    try {
+      markdownComment = await getStudentCorrectionCommentMarkdown(handInId, studentId);
+    } catch {
+      markdownComment = '';
     }
+  } else {
+    markdownComment = '';
+  }
 
-    return [grading, markdownComment];
+  return [grading, markdownComment];
 }
 
 export default GradingInformation;

@@ -37,3 +37,13 @@ export async function getGradingsOfTutorial(
 
     return Promise.reject(`Wrong response code (${response.status}).`);
 }
+
+export async function getGradingsOfHandIn(handInId: string): Promise<GradingList> {
+    const response = await axios.get<GradingResponseData[]>(`/grading/handIn/${handInId}`);
+
+    if (response.status === 200) {
+        return new GradingList(response.data);
+    }
+
+    return Promise.reject(`Wrong response code (${response.status}).`);
+}

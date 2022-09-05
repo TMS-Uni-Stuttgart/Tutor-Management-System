@@ -11,7 +11,6 @@ import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 import { Exercise } from '../../../../model/Exercise';
 import { Sheet } from '../../../../model/Sheet';
-import { HasGradings } from '../../../../typings/types';
 import { getPointsFromState as getAchievedPointsFromState } from '../EnterPoints.helpers';
 import {
   generateInitialValues,
@@ -19,6 +18,7 @@ import {
   PointsFormSubmitCallback,
 } from './EnterPointsForm.helpers';
 import ExerciseBox from './ExerciseBox';
+import { Grading } from '../../../../model/Grading';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,28 +57,28 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
-  entity: HasGradings;
+  grading: Grading | undefined;
   sheet: Sheet;
   exercise: Exercise;
   onSubmit: PointsFormSubmitCallback;
 }
 
-type FormProps = Omit<Props, 'entity' | 'onSubmit'>;
+type FormProps = Omit<Props, 'entity' | 'grading' | 'onSubmit'>;
 
-function EnterPointsForm({ entity, ...props }: Props): JSX.Element {
+function EnterPointsForm({ grading, ...props }: Props): JSX.Element {
   const { sheet, onSubmit } = props;
 
   const [initialValues, setInitialValues] = useState<PointsFormState>(
-    generateInitialValues({ entity, sheet })
+    generateInitialValues({ grading, sheet })
   );
 
   useEffect(() => {
-    const values = generateInitialValues({ entity, sheet });
+    const values = generateInitialValues({ grading, sheet });
     setInitialValues(values);
-  }, [entity, sheet]);
+  }, [grading, sheet]);
 
   return (
-    <Formik key={entity.id} initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
+    <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
       <EnterPointsFormInner {...props} />
     </Formik>
   );

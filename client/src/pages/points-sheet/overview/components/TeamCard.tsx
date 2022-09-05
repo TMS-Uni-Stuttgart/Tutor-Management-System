@@ -65,8 +65,8 @@ function TeamCard({
   const dialog = useDialog();
 
   const { teamGrading, onlyIndividualEntriesAllowed } = useMemo(() => {
-    const teamGradings = gradings.getAllGradingsOfTeam(team);
-    const teamGrading = gradings.getGradingOfTeam(team);
+    const teamGradings = gradings.getAllOfTeam(team);
+    const teamGrading = gradings.getOfTeam(team);
 
     const onlyIndividualEntriesAllowed: boolean = !teamGrading && teamGradings.length !== 0;
 
@@ -79,7 +79,7 @@ function TeamCard({
       : 'Keine Studierende in diesem Team.';
 
   const { placeholderText, pdfDisabled } = useMemo(() => {
-    const gradingCount = gradings.getAllGradingsOfTeam(team).length;
+    const gradingCount = gradings.getAllOfTeam(team).length;
     const placeholderText =
       gradingCount === 0
         ? 'Keine Bewertung für das Team vorhanden.'

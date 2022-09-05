@@ -18,6 +18,8 @@ import { convertFormStateToGradingDTO } from '../../points-sheet/enter-form/Ente
 import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,
 } from './components/ScheinexamPointsForm';
+import { GradingList } from '../../../model/GradingList';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -54,6 +56,7 @@ function EnterScheinexamPoints(): JSX.Element {
   const [exam, setExam] = useState<Scheinexam>();
   const [student, setStudent] = useState<Student>();
   const [allStudents, setAllStudents] = useState<Student[]>([]);
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
 
   useEffect(() => {
     getScheinexam(examId)
@@ -63,7 +66,14 @@ function EnterScheinexamPoints(): JSX.Element {
       .catch(() => {
         setError('Scheinklausur konnte nicht abgerufen werden.');
       });
-  }, [examId, setError]);
+
+    getGradingsOfTutorial(examId, tutorialId)
+      .then((response) => setGradings(response))
+      .catch(() => {
+        setError('Bewertungen konnten nicht abgerufen werden.');
+        setGradings(new GradingList([]));
+      });
+  }, [examId, tutorialId, setError]);
 
   useEffect(() => {
     getStudent(studentId)
@@ -100,7 +110,7 @@ function EnterScheinexamPoints(): JSX.Element {
       return;
     }
 
-    const prevGrading = student.getGrading(examId);
+    const prevGrading = gradings.getOfStudent(student.id);
     const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
       examId,
@@ -177,6 +187,7 @@ function EnterScheinexamPoints(): JSX.Element {
             className={classes.form}
             exam={exam}
             student={student}
+            grading={gradings.getOfStudent(student.id)}
             onSubmit={handleSubmit}
           />
         )}
