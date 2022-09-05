@@ -29,6 +29,24 @@ export class GradingService {
     }
 
     /**
+     * @param handInId ID of the hand-in to find the gradings for.
+     *
+     * @returns All gradings which belong to the hand-in with the given handInId.
+     */
+    async findOfHandIn(handInId: string): Promise<GradingResponseData[]> {
+        const gradings = await this.repository.find({ handInId: handInId }, { populate: true });
+        const data: GradingResponseData[] = [];
+
+        gradings.forEach((grading) => {
+            grading.students.getItems().forEach((student) => {
+                data.push({ studentId: student.id, gradingData: grading.toDTO() });
+            });
+        });
+
+        return data;
+    }
+
+    /**
      * @param studentId ID of the student to get the gradings for.
      *
      * @returns All gradings that this student has.

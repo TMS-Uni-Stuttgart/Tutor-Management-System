@@ -93,7 +93,7 @@ export class Grading {
     private shortTest?: ShortTest;
 
     @Property({ nullable: false })
-    private handInId?: string;
+    handInId?: string;
 
     @ManyToMany({ entity: () => Student, owner: true })
     students = new Collection<Student>(this);

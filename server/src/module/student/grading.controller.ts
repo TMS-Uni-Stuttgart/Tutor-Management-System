@@ -24,6 +24,9 @@ import { Student } from '../../database/entities/student.entity';
 import { TeamGuard } from '../../guards/team.guard';
 import { TeamService } from '../team/team.service';
 import { TutorialGuard } from '../../guards/tutorial.guard';
+import { HasRoleGuard } from '../../guards/has-role.guard';
+import { Roles } from '../../guards/decorators/roles.decorator';
+import { Role } from 'shared/model/Role';
 
 @Controller('grading')
 export class GradingController {
@@ -32,6 +35,15 @@ export class GradingController {
         private readonly studentService: StudentService,
         private readonly teamService: TeamService
     ) {}
+
+    @Get('/handIn/:handInId')
+    @UseGuards(HasRoleGuard)
+    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    async getAllGradingsOfHandIn(
+        @Param('handInId') handInId: string
+    ): Promise<GradingResponseData[]> {
+        return this.gradingService.findOfHandIn(handInId);
+    }
 
     @Get('/handIn/:handInId/student/:studentId')
     @UseGuards(StudentGuard)
