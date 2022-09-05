@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Get,
     HttpCode,
     HttpStatus,
     Param,
@@ -16,12 +17,13 @@ import { StudentService } from './student.service';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { StudentGuard } from '../../guards/student.guard';
 import { IDField } from '../../guards/decorators/idField.decorator';
-import { IGradingDTO } from 'shared/model/Gradings';
+import { GradingResponseData, IGradingDTO } from 'shared/model/Gradings';
 import { validateSync, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { Student } from '../../database/entities/student.entity';
 import { TeamGuard } from '../../guards/team.guard';
 import { TeamService } from '../team/team.service';
+import { TutorialGuard } from '../../guards/tutorial.guard';
 
 @Controller('grading')
 export class GradingController {
@@ -30,6 +32,30 @@ export class GradingController {
         private readonly studentService: StudentService,
         private readonly teamService: TeamService
     ) {}
+
+    @Get('/handIn/:handInId/student/:studentId')
+    @UseGuards(StudentGuard)
+    @AllowCorrectors()
+    @IDField('studentId')
+    async getGradingOfSingleStudent(
+        @Param('handInId') handInId: string,
+        @Param('studentId') studentId: string
+    ): Promise<GradingResponseData> {
+        const grading = await this.gradingService.findOfStudentAndHandIn(studentId, handInId);
+
+        return { gradingData: grading?.toDTO(), studentId: studentId };
+    }
+
+    @Get('/handIn/:handInId/tutorial/:tutorialId')
+    @UseGuards(TutorialGuard)
+    @AllowCorrectors()
+    @IDField('studentId')
+    async getGradingsOfTutorial(
+        @Param('handInId') handInId: string,
+        @Param('tutorialId') tutorialId: string
+    ): Promise<GradingResponseData[]> {
+        return this.gradingService.findOfTutorialAndHandIn(tutorialId, handInId);
+    }
 
     @Put('/student/:studentId')
     @HttpCode(HttpStatus.NO_CONTENT)

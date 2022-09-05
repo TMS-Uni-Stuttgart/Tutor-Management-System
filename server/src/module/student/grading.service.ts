@@ -11,6 +11,7 @@ import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
 import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { Team } from '../../database/entities/team.entity';
+import { GradingResponseData } from 'shared/model/Gradings';
 
 @Injectable()
 export class GradingService {
@@ -70,6 +71,27 @@ export class GradingService {
             gradingLists.addGradingList(studentId, await this.findOfStudent(studentId));
         }
         return gradingLists;
+    }
+
+    /**
+     * @param tutorialId ID of the tutorial to get the gradings for.
+     * @param handInId ID of the hand-in to get the grading for.
+     *
+     * @returns The gradings of the students with the given IDs.
+     */
+    async findOfTutorialAndHandIn(
+        tutorialId: string,
+        handInId: string
+    ): Promise<GradingResponseData[]> {
+        const students = await this.studentService.findOfTutorial(tutorialId);
+        const gradings = students.map<Promise<GradingResponseData>>(async (s) => {
+            return {
+                studentId: s.id,
+                gradingData: (await this.findOfStudentAndHandIn(s.id, handInId))?.toDTO(),
+            };
+        });
+
+        return await Promise.all(gradings);
     }
 
     /**
