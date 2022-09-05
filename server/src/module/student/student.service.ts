@@ -82,6 +82,20 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
     }
 
     /**
+     * Returns all students of the tutorial with the given ID.
+     *
+     * @param tutorialId ID of the tutorial to get the students of.
+     *
+     * @returns All students in this tutorial.
+     *
+     * @throws `NotFoundException` - If no tutorial with the given ID could be found.
+     */
+    async findOfTutorial(tutorialId: string): Promise<Student[]> {
+        const tutorial = await this.tutorialService.findById(tutorialId);
+        return tutorial.getStudents();
+    }
+
+    /**
      * Creates a student from the given DTO and returns the created student.
      *
      * @param dto DTO with the information for the student to create.

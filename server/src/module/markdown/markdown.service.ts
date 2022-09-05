@@ -157,7 +157,7 @@ export class MarkdownService {
     async getStudentGrading(studentId: string, sheetId: string): Promise<IStudentMarkdownData> {
         const student = await this.studentService.findById(studentId);
         const handIn = await this.getExercisesEntityWithId(sheetId);
-        const grading = await this.gradingService.findHandInGradingOfStudent(student, handIn);
+        const grading = await this.gradingService.findOfStudentAndHandIn(student.id, handIn.id);
 
         if (!grading) {
             throw new BadRequestException(

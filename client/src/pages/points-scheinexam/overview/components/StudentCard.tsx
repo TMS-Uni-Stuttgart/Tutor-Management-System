@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import { Scheinexam } from '../../../../model/Scheinexam';
 import { Student } from '../../../../model/Student';
+import { Grading } from '../../../../model/Grading';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -18,10 +19,11 @@ const useStyles = makeStyles(() =>
 interface Props {
   student: Student;
   exam: Scheinexam;
+  grading: Grading | undefined;
   pathTo: string;
 }
 
-function StudentCard({ student, exam, pathTo }: Props): JSX.Element {
+function StudentCard({ student, exam, grading, pathTo }: Props): JSX.Element {
   const classes = useStyles();
 
   return (
@@ -33,7 +35,7 @@ function StudentCard({ student, exam, pathTo }: Props): JSX.Element {
       />
 
       <CardContent>
-        <PointsTable grading={student.getGrading(exam)} sheet={exam} />
+        <PointsTable grading={grading} sheet={exam} />
       </CardContent>
 
       <CardActions className={classes.actions}>
