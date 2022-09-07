@@ -80,7 +80,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     [isLoadingStudents, isLoadingShortTest]
   );
 
-  const [il, iasNameMapping, setIliasNameMapping] = useState(new Map<string, Student>());
+  const [iliasNameMapping, setIliasNameMapping] = useState(new Map<string, Student>());
   const [iliasNamesWithoutStudent, setWithoutStudent] = useState<string[]>([]);
   const [studentsWithoutResult, setStudentsWithoutResult] = useState<Student[]>([]);
   const [studentsMappedFromCSV, setStudentsMappedFromCSV] = useState<Student[]>([]);
@@ -139,7 +139,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
       setStudentsWithoutResult(studentsWithoutResult);
       setWorking(false);
     }
-  }, [csvData.rows, isLoading, students, mappedColumns.iliasName]);
+  }, [csvData.rows, isLoading, students, mappedColumns.iliasName, shortTestId]);
 
   const addMapping = useCallback(
     (iliasName, student) => {
