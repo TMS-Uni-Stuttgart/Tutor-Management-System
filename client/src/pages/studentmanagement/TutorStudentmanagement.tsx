@@ -20,15 +20,8 @@ function TutorStudentmanagement(): JSX.Element {
     isEditorOpen: false,
   });
 
-  const {
-    students,
-    teams,
-    summaries,
-    isLoading,
-    createStudent,
-    editStudent,
-    deleteStudent,
-  } = useStudentsForStudentList({ tutorialId });
+  const { students, teams, summaries, isLoading, createStudent, editStudent, deleteStudent } =
+    useStudentsForStudentList({ tutorialId });
 
   const handleCreateSubmit: StudentFormSubmitCallback = useCallback(
     async (values, helpers) => {

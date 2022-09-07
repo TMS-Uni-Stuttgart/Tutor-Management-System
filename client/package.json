@@ -1,5 +1,5 @@
 {
-  "name": "client-cra",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "main": "src/index.tsx",
@@ -11,6 +11,7 @@
     "format": "eslint --fix \"src/**/*.ts?(x)\"",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
+    "prettier:format": "prettier --write --loglevel warn \"./**/*.ts?(x)\"",
     "ts:check": "tsc --project . --noEmit",
     "ts:check:watch": "tsc --project . --noEmit -w",
     "eject": "react-scripts eject"

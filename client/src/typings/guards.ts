@@ -9,12 +9,12 @@
  * @returns Has the given object the given property?
  */
 export function hasOwnProperty<X extends unknown, Y extends string>(
-  obj: X,
-  prop: Y
+    obj: X,
+    prop: Y
 ): obj is X & Record<Y, unknown> {
-  if (typeof obj !== 'object' || !(obj instanceof Object)) {
-    return false;
-  }
+    if (typeof obj !== 'object') {
+        return false;
+    }
 
-  return obj.hasOwnProperty(prop);
+    return obj.hasOwnProperty(prop);
 }

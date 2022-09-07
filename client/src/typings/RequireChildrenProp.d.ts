@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
 
 export interface RequireChildrenProp {
-  children: ReactNode;
+    children: ReactNode;
 }

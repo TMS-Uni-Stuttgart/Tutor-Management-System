@@ -33,7 +33,7 @@ export interface AddSlotFormData {
 const validationSchema = Yup.object().shape<AddSlotFormData>({
   count: Yup.number().min(1, 'Anzahl muss größer als 0 sein.').required('Benötigt'),
   interval: Yup.object<Interval>()
-    .test('is-interval', 'Ist kein Luxon Interval', (obj) => obj instanceof Interval && obj.isValid)
+    .test('is-interval', 'Ist kein Luxon Interval', (obj) => obj.isValid)
     .required('Benötigt'),
 });
 
@@ -48,21 +48,14 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
     () => ({ interval: getDefaultInterval(), count: 1 }),
     []
   );
-  const {
-    values,
-    errors,
-    touched,
-    setFieldValue,
-    getFieldProps,
-    isValid,
-    submitForm,
-  } = useFormik<AddSlotFormData>({
-    initialValues,
-    onSubmit: ({ count, interval }) => {
-      onAccept({ count, interval });
-    },
-    validationSchema,
-  });
+  const { values, errors, touched, setFieldValue, getFieldProps, isValid, submitForm } =
+    useFormik<AddSlotFormData>({
+      initialValues,
+      onSubmit: ({ count, interval }) => {
+        onAccept({ count, interval });
+      },
+      validationSchema,
+    });
 
   const handleAccept = () => {
     submitForm();

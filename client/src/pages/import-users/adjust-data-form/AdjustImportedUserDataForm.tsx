@@ -62,24 +62,22 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
   const history = useHistory();
 
   useEffect(() => {
-    setNextCallback(
-      async (): Promise<NextStepInformation> => {
-        const errors = await validateForm();
+    setNextCallback(async (): Promise<NextStepInformation> => {
+      const errors = await validateForm();
 
-        if (Object.entries(errors).length > 0) {
-          enqueueSnackbar('Nutzerdaten sind ungültig.', { variant: 'error' });
-          return { goToNext: false, error: true };
-        }
-
-        const isSuccess: any = await submitForm();
-
-        if (!!isSuccess) {
-          return { goToNext: true };
-        } else {
-          return { goToNext: false, error: true };
-        }
+      if (Object.entries(errors).length > 0) {
+        enqueueSnackbar('Nutzerdaten sind ungültig.', { variant: 'error' });
+        return { goToNext: false, error: true };
       }
-    );
+
+      const isSuccess: any = await submitForm();
+
+      if (!!isSuccess) {
+        return { goToNext: true };
+      } else {
+        return { goToNext: false, error: true };
+      }
+    });
 
     return () => removeNextCallback();
   }, [
