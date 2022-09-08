@@ -33,7 +33,7 @@ export interface AddSlotFormData {
 const validationSchema = Yup.object().shape<AddSlotFormData>({
   count: Yup.number().min(1, 'Anzahl muss größer als 0 sein.').required('Benötigt'),
   interval: Yup.object<Interval>()
-    .test('is-interval', 'Ist kein Luxon Interval', (obj) => obj.isValid)
+    .test('is-interval', 'Ist kein Luxon Interval', (obj) => !!obj && obj.isValid)
     .required('Benötigt'),
 });
 

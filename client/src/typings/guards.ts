@@ -12,6 +12,10 @@ export function hasOwnProperty<X extends unknown, Y extends string>(
     obj: X,
     prop: Y
 ): obj is X & Record<Y, unknown> {
+    if (obj === undefined || obj === null) {
+        return false;
+    }
+
     if (typeof obj !== 'object') {
         return false;
     }
