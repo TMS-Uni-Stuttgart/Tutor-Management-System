@@ -61,7 +61,7 @@ export class GradingController {
     @Get('/handIn/:handInId/tutorial/:tutorialId')
     @UseGuards(TutorialGuard)
     @AllowCorrectors()
-    @IDField('studentId')
+    @IDField('tutorialId')
     async getGradingsOfTutorial(
         @Param('handInId') handInId: string,
         @Param('tutorialId') tutorialId: string
