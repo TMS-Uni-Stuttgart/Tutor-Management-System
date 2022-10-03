@@ -105,7 +105,7 @@ function PointsOverview(): JSX.Element {
     } else {
       setGradings(new GradingList([]));
     }
-  }, [tutorialId, setError]);
+  }, [tutorialId, currentSheet, setError]);
 
   async function handlePdfPreviewClicked(team: Team) {
     if (!currentSheet || !tutorialId) {
