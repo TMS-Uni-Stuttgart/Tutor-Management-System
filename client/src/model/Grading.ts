@@ -25,7 +25,7 @@ export class ExerciseGrading implements Modify<IExerciseGrading, ExerciseModifie
     get totalPoints(): number {
         const addPoints = this.additionalPoints ?? 0;
 
-        if (!this.subExercisePoints) {
+        if (!this.subExercisePoints || this.subExercisePoints.size === 0) {
             return this.points + addPoints;
         }
 
