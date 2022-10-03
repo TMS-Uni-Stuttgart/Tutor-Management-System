@@ -30,7 +30,7 @@ export abstract class EncryptedType<T> extends Type<T | undefined, string | unde
     }
 
     /**
-     * Converts the value to it's string representation.
+     * Converts the value to its string representation.
      *
      * This is called before the value is encrypted.
      *
