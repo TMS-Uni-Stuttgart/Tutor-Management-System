@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { IStudentDTO, StudentStatus } from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
@@ -15,6 +15,11 @@ import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useFetchState } from '../../../hooks/useFetchState';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
+import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
+import {
+    getScheinCriteriaSummariesOfAllStudentsOfTutorial,
+    getScheinCriteriaSummaryOfAllStudents,
+} from '../../../hooks/fetching/Scheincriteria';
 
 export enum StudentSortOption {
     ALPHABETICAL = 'Alphabetisch',
@@ -55,13 +60,11 @@ async function createTeamIfNeccessary(
 export function useStudentsForStudentList({
     tutorialId,
 }: UseStudentsForStudentListParams): UseStudentsForStudentList {
-    const [students, setStudents] = useState<Student[]>([]);
     const { enqueueSnackbar } = useSnackbar();
 
-    useFetchState({
+    const [students, , , fetchStudents] = useFetchState({
         fetchFunction: async () => {
-            const students = await getAllStudents();
-            setStudents(students);
+            return tutorialId === undefined ? getAllStudents() : getStudentsOfTutorial(tutorialId);
         },
         immediate: true,
         params: [],
@@ -69,16 +72,9 @@ export function useStudentsForStudentList({
 
     const [summaries = {}, isLoadingSummaries] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
-            return {};
-            // const fetchedSummaries = await (tutorialId
-            //   ? getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
-            //   : getScheinCriteriaSummaryOfAllStudents());
-            //
-            // setStudents(
-            //   Object.values(fetchedSummaries).map(({ student }) => plainToClass(Student, student))
-            // );
-            //
-            // return fetchedSummaries;
+            return tutorialId
+                ? getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
+                : getScheinCriteriaSummaryOfAllStudents();
         },
         immediate: true,
         params: [tutorialId ?? ''],
@@ -96,8 +92,8 @@ export function useStudentsForStudentList({
                 dto.team = teamId !== '' ? teamId : undefined;
                 const student = await fetchCreateStudent(dto);
                 await fetchTeams(tutorialId ?? '');
+                await fetchStudents();
 
-                setStudents([...students, student].sort(sortByName));
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich erstellt.`, {
                     variant: 'success',
                 });
@@ -105,7 +101,7 @@ export function useStudentsForStudentList({
                 enqueueSnackbar('Studierende/r konnte nicht erstellt werden', { variant: 'error' });
             }
         },
-        [students, enqueueSnackbar, fetchTeams, tutorialId]
+        [enqueueSnackbar, fetchTeams, fetchStudents, tutorialId]
     );
 
     const editStudent = useCallback(
@@ -121,20 +117,10 @@ export function useStudentsForStudentList({
                     team: teamId,
                 };
 
-                const response = await fetchEditStudent(studentId, studentDTO);
+                await fetchEditStudent(studentId, studentDTO);
                 await fetchTeams(tutorialId ?? '');
+                await fetchStudents();
 
-                setStudents(
-                    students
-                        .map((stud) => {
-                            if (stud.id === studentId) {
-                                return response;
-                            }
-
-                            return stud;
-                        })
-                        .sort(sortByName)
-                );
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gespeichert.`, {
                     variant: 'success',
                 });
@@ -144,15 +130,15 @@ export function useStudentsForStudentList({
                 });
             }
         },
-        [students, tutorialId, fetchTeams, enqueueSnackbar]
+        [tutorialId, fetchTeams, fetchStudents, enqueueSnackbar]
     );
 
     const deleteStudent = useCallback(
         async (student: Student) => {
             try {
                 await fetchDeleteStudent(student.id);
+                await fetchStudents();
 
-                setStudents(students.filter((s) => s.id !== student.id));
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gelöscht.`, {
                     variant: 'success',
                 });
@@ -162,7 +148,7 @@ export function useStudentsForStudentList({
                 });
             }
         },
-        [students, enqueueSnackbar]
+        [fetchStudents, enqueueSnackbar]
     );
 
     const changeTutorialOfStudent = useCallback(
@@ -183,7 +169,7 @@ export function useStudentsForStudentList({
     );
 
     return {
-        students,
+        students: students ?? [],
         teams,
         summaries,
         isLoading: isLoadingSummaries,
