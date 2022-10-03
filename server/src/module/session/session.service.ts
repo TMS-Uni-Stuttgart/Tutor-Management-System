@@ -32,7 +32,7 @@ export class SessionService implements ISessionService {
 
     async destroySession(sid: string): Promise<void> {
         this.logger.log(`DESTROY session with ID ${sid}`);
-        const session = await this.getSession(sid);
+        const session = await this.findSession(sid);
         if (!!session) {
             await this.repository.removeAndFlush(session);
         }
