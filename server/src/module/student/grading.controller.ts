@@ -128,12 +128,7 @@ export class GradingController {
         @Body() dto: GradingDTO
     ): Promise<void> {
         const team = await this.teamService.findById({ tutorialId, teamId });
-        const dtoMap = new Map<Student, GradingDTO>();
 
-        for (const student of team.students) {
-            dtoMap.set(student, dto);
-        }
-
-        await this.gradingService.setOfMultipleStudents(dtoMap);
+        await this.gradingService.setOfTeam(team, dto);
     }
 }

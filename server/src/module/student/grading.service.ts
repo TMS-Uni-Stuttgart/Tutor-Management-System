@@ -113,23 +113,6 @@ export class GradingService {
     }
 
     /**
-     * Finds and returns the gradings for the given team and hand-in.
-     *
-     * If there are no grading matching both, team and hand-in, an empty array is returned.
-     *
-     * @param team Team to get the gradings for.
-     * @param handIn Hand-in to get the gradings of.
-     *
-     * @returns Gradings for the given team and hand-in as described above.
-     */
-    async findOfTeamAndHandIn(team: Team, handIn: HandIn): Promise<Grading[]> {
-        const gradingList = await this.findOfMultipleStudents(team.getStudents().map((s) => s.id));
-        const gradings = gradingList.getAllGradingsForHandIn(handIn);
-
-        return gradings.filter((g) => g.belongsToTeam);
-    }
-
-    /**
      * Sets the grading of the given student.
      *
      * If the DTO indicates an update the corresponding grading will be updated.
@@ -160,6 +143,47 @@ export class GradingService {
                 await this.updateGradingOfStudent({ student, dto, em, handIn });
             }
             await em.commit();
+        } catch (e) {
+            await em.rollback();
+            throw new BadRequestException(e);
+        }
+    }
+
+    /**
+     * Sets the grading of all students of the given team to the one from the DTO.
+     *
+     * @param team Team which students should get the new grading.
+     * @param dto DTO of the new grading.
+     *
+     * @throws `BadRequestException` - If the students of the team have different gradings.
+     */
+    async setOfTeam(team: Team, dto: GradingDTO): Promise<void> {
+        const em = this.entityManager.fork({ clear: false });
+        await em.begin();
+
+        try {
+            const handIn = await this.getHandInFromDTO(dto);
+            const students = team.getStudents();
+            if (students.length > 0) {
+                const oldGrading = await this.findOfStudentAndHandIn(students[0].id, handIn.id);
+                if (oldGrading?.belongsToTeam === false) {
+                    // noinspection ExceptionCaughtLocallyJS
+                    throw new BadRequestException('Students have different gradings.');
+                }
+                const newGrading =
+                    !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
+
+                newGrading.updateFromDTO({ dto, handIn });
+                oldGrading?.students.remove(...students);
+                newGrading.students.add(...students);
+
+                if (!!oldGrading && oldGrading.students.length === 0) {
+                    em.remove(oldGrading);
+                }
+
+                em.persist(newGrading);
+                em.commit();
+            }
         } catch (e) {
             await em.rollback();
             throw new BadRequestException(e);
