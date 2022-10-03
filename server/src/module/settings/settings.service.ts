@@ -63,7 +63,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
 
         if (!settings) {
             this.logger.log(
-                'No settings document provided. Creating new default settings document...',
+                'No settings were provided. Creating new default settings...',
                 SettingsService.name
             );
 
@@ -75,12 +75,9 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
                 );
 
                 await this.repository.persistAndFlush(defaults);
-                this.logger.log(
-                    'Default settings document successfully created.',
-                    SettingsService.name
-                );
+                this.logger.log('Default settings successfully created.', SettingsService.name);
             } catch (err) {
-                throw new StartUpException('Could not create the default settings document.');
+                throw new StartUpException('Could not create the default settings.');
             }
         }
     }
