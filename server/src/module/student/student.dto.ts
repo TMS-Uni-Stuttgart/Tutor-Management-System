@@ -4,7 +4,7 @@ import {
     IsBoolean,
     IsEmail,
     IsEnum,
-    IsMongoId,
+    IsUUID,
     IsNotEmpty,
     IsNumber,
     IsOptional,
@@ -13,13 +13,9 @@ import {
 } from 'class-validator';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
-import { AttendanceState, IAttendanceDTO } from '../../shared/model/Attendance';
-import {
-    IExerciseGradingDTO,
-    IGradingDTO,
-    IPresentationPointsDTO,
-} from '../../shared/model/Gradings';
-import { ICakeCountDTO, IStudentDTO, StudentStatus } from '../../shared/model/Student';
+import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance';
+import { IExerciseGradingDTO, IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
+import { ICakeCountDTO, IStudentDTO, StudentStatus } from 'shared/model/Student';
 
 export class StudentDTO implements IStudentDTO {
     @IsNotEmpty()
@@ -56,7 +52,7 @@ export class StudentDTO implements IStudentDTO {
 
     @ApiProperty({ type: String })
     @IsOptional()
-    @IsMongoId()
+    @IsUUID()
     team?: string;
 
     constructor(fields: IStudentDTO) {
