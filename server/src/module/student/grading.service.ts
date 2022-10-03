@@ -167,7 +167,7 @@ export class GradingService {
     }
 
     async findAllGradingsOfStudent(student: Student): Promise<Grading[]> {
-        return this.repository.find({ students: { $contains: [student.id] } }, { populate: true });
+        return this.repository.find({ students: student.id }, { populate: true });
     }
 
     async findAllGradingsOfMultipleStudents(students: Student[]): Promise<StudentAndGradings[]> {
