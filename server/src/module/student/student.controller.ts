@@ -126,11 +126,11 @@ export class StudentController {
     }
 
     /**
-     * Checks if the given user is allowed to proceed with the request to change the attendance state in regards to the application settings.
+     * Checks if the given user is allowed to proceed with the request to change the attendance state with regard to the application settings.
      *
      * __Important__: This does __NOT__ check if the user is allowed in general (ie correct role, is tutor, ...). Those checks must still be performed by the corresponding route guard!
      *
-     * This checks if all of the following conditions are met. If so an exception is thrown:
+     * This checks if all the following conditions are met. If so an exception is thrown:
      * - The application settings disallow non-admins to excuse a student.
      * - The user making the request is __not__ an admin.
      * - The DTO would change the attendance state of a student to `excused`.
