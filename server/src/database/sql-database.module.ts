@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ISchemaGenerator } from '@mikro-orm/core/typings';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { DynamicModule, Logger, Module, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { StartUpException } from '../exceptions/StartUpException';
@@ -12,7 +12,7 @@ function getEntityDirectory(): string {
     return isProduction() ? './database/entities' : './dist/database/entities';
 }
 
-export function loadDatabaseModule(): DynamicModule {
+export function loadDatabaseModule(additionalOptions: MikroOrmModuleSyncOptions = {}): DynamicModule {
     return MikroOrmModule.forRoot({
         metadataProvider: TsMorphMetadataProvider,
         baseDir: process.cwd(),
@@ -22,6 +22,7 @@ export function loadDatabaseModule(): DynamicModule {
         type: 'mysql',
         debug: false,
         ...StaticSettings.getService().getDatabaseConnectionInformation(),
+        ...additionalOptions,
     });
 }
 

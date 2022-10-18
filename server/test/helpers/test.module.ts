@@ -13,7 +13,7 @@ import { StaticSettings } from '../../src/module/settings/settings.static';
 import { ENTITY_LISTS, populateMockLists } from '../mocks/entities.mock';
 
 @Module({
-    imports: [loadDatabaseModule()],
+    imports: [loadDatabaseModule({ allowGlobalContext: true })],
 })
 export class TestDatabaseModule {
     constructor(private readonly orm: MikroORM) {
