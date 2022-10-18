@@ -9,8 +9,8 @@ import { StudentController } from './student.controller';
 import { StudentService } from './student.service';
 import { GradingController } from './grading.controller';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Grading } from 'database/entities/grading.entity';
-import { Student } from 'database/entities/student.entity';
+import { Grading } from '../../database/entities/grading.entity';
+import { Student } from '../../database/entities/student.entity';
 
 @Module({
     imports: [

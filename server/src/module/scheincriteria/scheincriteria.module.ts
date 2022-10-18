@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
-import { ScheincriteriaEntity } from 'database/entities/scheincriteria.entity';
+import { ScheincriteriaEntity } from '../../database/entities/scheincriteria.entity';
 import { ScheinexamModule } from '../scheinexam/scheinexam.module';
 import { SheetModule } from '../sheet/sheet.module';
 import { ShortTestModule } from '../short-test/short-test.module';

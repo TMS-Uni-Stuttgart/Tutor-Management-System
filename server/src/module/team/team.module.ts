@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { forwardRef, Module } from '@nestjs/common';
-import { Team } from 'database/entities/team.entity';
+import { Team } from '../../database/entities/team.entity';
 import { StudentModule } from '../student/student.module';
 import { TutorialModule } from '../tutorial/tutorial.module';
 import { TeamController } from './team.controller';

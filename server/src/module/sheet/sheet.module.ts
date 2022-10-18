@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { Sheet } from 'database/entities/sheet.entity';
+import { Sheet } from '../../database/entities/sheet.entity';
 import { SheetController } from './sheet.controller';
 import { SheetService } from './sheet.service';
 

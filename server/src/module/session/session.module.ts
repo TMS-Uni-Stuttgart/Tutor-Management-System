@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { SessionEntity } from 'database/entities/session.entity';
+import { SessionEntity } from '../../database/entities/session.entity';
 import { SessionService } from './session.service';
 
 @Module({
