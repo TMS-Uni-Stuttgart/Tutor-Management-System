@@ -1,5 +1,6 @@
-import { Collection, EntityRepository } from '@mikro-orm/core';
+import { Collection, EntityRepository, MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import {
     BadRequestException,
     forwardRef,
@@ -7,7 +8,7 @@ import {
     Injectable,
     Logger,
     NotFoundException,
-    OnApplicationBootstrap,
+    OnApplicationBootstrap
 } from '@nestjs/common';
 import { NamedElement } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
@@ -22,19 +23,20 @@ import { CreateUserDTO, UserDTO } from './user.dto';
 @Injectable()
 export class UserService implements OnApplicationBootstrap, CRUDService<IUser, UserDTO, User> {
     private readonly logger = new Logger(UserService.name);
-    private readonly repository: EntityRepository<User>;
 
     constructor(
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
-        private readonly entityManager: EntityManager
-    ) {
-        this.repository = entityManager.fork().getRepository(User);
-    }
+        private readonly entityManager: EntityManager,
+        private readonly orm: MikroORM,
+        @InjectRepository(User)
+        private readonly repository: EntityRepository<User>
+    ) { }
 
     /**
      * Creates a new administrator on application start if there are no users present in the DB.
      */
+    @UseRequestContext()
     async onApplicationBootstrap(): Promise<void> {
         const areUsersPresent = (await this.repository.findAll()).length > 0;
 

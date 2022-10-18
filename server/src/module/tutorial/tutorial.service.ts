@@ -1,5 +1,6 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import {
     BadRequestException,
     forwardRef,
@@ -26,17 +27,16 @@ import {
 
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tutorial> {
-    private readonly repository: EntityRepository<Tutorial>;
 
     constructor(
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
-        private readonly entityManager: EntityManager
-    ) {
-        this.repository = entityManager.fork().getRepository(Tutorial);
-    }
+        private readonly entityManager: EntityManager,
+        @InjectRepository(Tutorial)
+        private readonly repository: EntityRepository<Tutorial>
+    ) { }
 
     /**
      * @returns All tutorials saved in the database.

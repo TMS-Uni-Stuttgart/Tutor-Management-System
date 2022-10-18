@@ -12,10 +12,10 @@ import { StudentService } from './student.service';
 import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { Team } from '../../database/entities/team.entity';
 import { GradingResponseData } from 'shared/model/Gradings';
+import { InjectRepository } from '@mikro-orm/nestjs';
 
 @Injectable()
 export class GradingService {
-    private readonly repository: EntityRepository<Grading>;
 
     constructor(
         @Inject(forwardRef(() => StudentService))
@@ -23,10 +23,10 @@ export class GradingService {
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
         private readonly shortTestService: ShortTestService,
-        private readonly entityManager: EntityManager
-    ) {
-        this.repository = entityManager.fork().getRepository(Grading);
-    }
+        private readonly entityManager: EntityManager,
+        @InjectRepository(Grading)
+        private readonly repository: EntityRepository<Grading>
+    ) { }
 
     /**
      * @param handInId ID of the hand-in to find the gradings for.

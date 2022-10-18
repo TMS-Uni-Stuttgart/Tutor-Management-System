@@ -1,5 +1,5 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IAttendance } from 'shared/model/Attendance';
 import { IStudent } from 'shared/model/Student';
@@ -15,7 +15,6 @@ import { AttendanceDTO, CakeCountDTO, PresentationPointsDTO, StudentDTO } from '
 @Injectable()
 export class StudentService implements CRUDService<IStudent, StudentDTO, Student> {
     private readonly logger = new Logger(StudentService.name);
-    private readonly repository: EntityRepository<Student>;
 
     constructor(
         @Inject(forwardRef(() => TutorialService))
@@ -23,10 +22,9 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         @Inject(forwardRef(() => TeamService))
         private readonly teamService: TeamService,
         private readonly sheetService: SheetService,
-        entityManager: EntityManager
-    ) {
-        this.repository = entityManager.fork().getRepository(Student);
-    }
+        @InjectRepository(Student)
+        private readonly repository: EntityRepository<Student>
+    ) { }
 
     /**
      * @returns All students saved in the database.
