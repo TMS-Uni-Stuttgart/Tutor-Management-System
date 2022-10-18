@@ -27,7 +27,6 @@ import {
 
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tutorial> {
-
     constructor(
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
@@ -187,7 +186,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     async setSubstitute(id: string, dto: SubstituteDTO): Promise<void> {
         const tutorial = await this.findById(id);
-        await this.setTutorialSubstitute(tutorial, dto);
+        await this.setTutorialSubstitutes(tutorial, [dto]);
     }
 
     /**
@@ -200,59 +199,50 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     async setMultipleSubstitutes(id: string, dtos: SubstituteDTO[]): Promise<void> {
         const tutorial = await this.findById(id);
 
-        for (const dto of dtos) {
-            await this.setTutorialSubstitute(tutorial, dto);
-        }
+        await this.setTutorialSubstitutes(tutorial, dtos);
     }
 
     /**
-     * Sets the substitute according to the given data.
+     * Sets the substitutes according to the given data.
      *
      * If the DTO does not contain a `tutorId` field (ie it is `undefined`) the substitutes of the given dates will be removed. If there is already a substitute for a given date in the DTO the previous substitute gets overridden.
      *
      * @param tutorial Tutorial to set the substitute for.
-     * @param dto DTO containing the information of the substitutes.
+     * @param dtos DTOs containing the information of the substitutes.
      *
      * @throws `BadRequestException` - If the tutorial of the given `id` parameter could not be found.
      * @throws `BadRequestException` - If the `tutorId` field contains a user ID which can not be found or which does not belong to a tutor.
      */
-    private async setTutorialSubstitute(tutorial: Tutorial, dto: SubstituteDTO): Promise<void> {
-        const dates = dto.dates.map((date) => DateTime.fromISO(date));
-        const em = this.entityManager.fork({ clear: false });
-        await em.begin();
-
-        try {
-            if (!dto.tutorId) {
-                await this.removeSubstituteForDates({
-                    tutorial: tutorial,
-                    dates: dates,
-                    em: em,
-                });
-            } else {
-                await this.addSubstituteForDates({
-                    tutorId: dto.tutorId,
-                    tutorial: tutorial,
-                    dates: dates,
-                    em: em,
-                });
-            }
-
-            await em.commit();
-        } catch (e) {
-            await em.rollback();
-            throw new BadRequestException(e);
-        }
+    private async setTutorialSubstitutes(tutorial: Tutorial, dtos: SubstituteDTO[]): Promise<void> {
+        await Promise.all(
+            dtos.map(async (dto) => {
+                const dates = dto.dates.map((date) => DateTime.fromISO(date));
+                if (!dto.tutorId) {
+                    await this.removeSubstituteForDates({
+                        tutorial: tutorial,
+                        dates: dates,
+                    });
+                } else {
+                    await this.addSubstituteForDates({
+                        tutorId: dto.tutorId,
+                        tutorial: tutorial,
+                        dates: dates,
+                    });
+                }
+            })
+        );
+        await this.entityManager.flush();
     }
 
     /**
      * Adds the tutor with the given id as substitute of the tutorial to the given dates.
+     * If a substitute for the given tutial and date
      *
-     * The updates are persisted in the given {@link EntityManager} but not flushed or committed. Therefore they must be committed manually.
+     * The updates are persisted in the {@link entityManager} but not flushed or committed. Therefore they must be committed manually.
      *
      * @param tutorId ID of the substitute tutor.
      * @param tutorial Tutorial to substitute.
      * @param dates Dates to substitute.
-     * @param em {@link EntityManager} to use.
      *
      * @throws {@link NotFoundException} - If no tutor with the given `tutorId` could be found.
      * @private
@@ -261,42 +251,60 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         tutorId,
         tutorial,
         dates,
-        em,
     }: AddSubstituteForDatesParams): Promise<void> {
         const tutor = await this.userService.findById(tutorId);
         this.assertTutorHasTutorRole(tutor);
 
-        dates.forEach((date) =>
-            em.persist(
-                new Substitute({
-                    tutorialToSubstitute: tutorial,
-                    substituteTutor: tutor,
-                    date,
-                })
-            )
-        );
+        const existingSubstitutes = await this.getSubstitutesForDates(tutorial, dates);
+        dates.forEach((date) => {
+            const existingSubstitute = existingSubstitutes.find((substitute) => +substitute.date === +date);
+            if (existingSubstitute) {
+                existingSubstitute.substituteTutor = tutor;
+                this.entityManager.persist(existingSubstitute);
+            } else {
+                this.entityManager.persist(
+                    new Substitute({
+                        tutorialToSubstitute: tutorial,
+                        substituteTutor: tutor,
+                        date,
+                    })
+                );
+            }
+        });
     }
 
     /**
      * Removes all substitute from the tutorial at the given dates.
      *
-     * The changes are persisted in the given {@link EntityManager} but not flushed or committed. Therefore they must be committed manually.
+     * The changes are persisted in the {@link entityManager} but not flushed or committed. Therefore they must be committed manually.
      *
      * @param tutorial Tutorial to remove the substitutes.
      * @param dates Dates to remove the substitutes.
-     * @param em {@link EntityManager} to use.
      * @private
      */
     private async removeSubstituteForDates({
         tutorial,
         dates,
-        em,
     }: RemoveSubstituteForDatesParams): Promise<void> {
-        const substituteForGivenDates = em.find(Substitute, {
+        const substituteForGivenDates = await this.getSubstitutesForDates(tutorial, dates);
+        this.entityManager.remove(substituteForGivenDates);
+    }
+
+    /**
+     * Gets substitutes for a tutorial and the given dates
+     *
+     * @param tutorial Tutorial substitutes must be associated with.
+     * @param dates Dates substitutes must take place at.
+     * @returns the found substitutes
+     */
+    private async getSubstitutesForDates(
+        tutorial: Tutorial,
+        dates: DateTime[]
+    ): Promise<Substitute[]> {
+        return this.entityManager.find(Substitute, {
             tutorialToSubstitute: tutorial,
             date: { $in: dates },
         });
-        em.remove(substituteForGivenDates);
     }
 
     /**
@@ -487,11 +495,9 @@ interface AddSubstituteForDatesParams {
     tutorId: string;
     tutorial: Tutorial;
     dates: DateTime[];
-    em: EntityManager;
 }
 
 interface RemoveSubstituteForDatesParams {
     tutorial: Tutorial;
     dates: DateTime[];
-    em: EntityManager;
 }
