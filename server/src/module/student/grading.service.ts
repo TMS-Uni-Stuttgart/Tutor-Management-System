@@ -75,6 +75,24 @@ export class GradingService {
     }
 
     /**
+     * @param studentIds IDs of the students to get the grading for.
+     * @param handInId ID of the hand-in to get the grading of.
+     *
+     * @returns Gradings which matche the parameters.
+     */
+    async findOfStudentsAndHandIn(
+        studentIds: string[],
+        handInId: string
+    ): Promise<Grading[]> {
+        const gradings = await this.repository.find(
+            { students: studentIds, handInId: handInId },
+            { populate: true }
+        );
+
+        return gradings;
+    }
+
+    /**
      * @param studentIds IDs of all students to get the gradings for.
      *
      * @returns The gradings of the students with the given IDs.
@@ -165,11 +183,12 @@ export class GradingService {
             const handIn = await this.getHandInFromDTO(dto);
             const students = team.getStudents();
             if (students.length > 0) {
-                const oldGrading = await this.findOfStudentAndHandIn(students[0].id, handIn.id);
-                if (oldGrading?.belongsToTeam === false) {
+                const oldGradings = await this.findOfStudentsAndHandIn(students.map((student) => student.id), handIn.id);
+                if (oldGradings.length > 1) {
                     // noinspection ExceptionCaughtLocallyJS
                     throw new BadRequestException('Students have different gradings.');
                 }
+                const oldGrading = oldGradings[0]
                 const newGrading =
                     !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
 
