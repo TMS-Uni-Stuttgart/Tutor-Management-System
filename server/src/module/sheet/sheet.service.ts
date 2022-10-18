@@ -9,11 +9,10 @@ import { SheetDTO } from './sheet.dto';
 
 @Injectable()
 export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
-
     constructor(
         @InjectRepository(Sheet)
         private readonly repository: EntityRepository<Sheet>
-    ) { }
+    ) {}
 
     /**
      * @returns All sheets saved in the database.

@@ -8,7 +8,7 @@ import {
     Injectable,
     Logger,
     NotFoundException,
-    OnApplicationBootstrap
+    OnApplicationBootstrap,
 } from '@nestjs/common';
 import { NamedElement } from 'shared/model/Common';
 import { Role } from 'shared/model/Role';
@@ -31,7 +31,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         private readonly orm: MikroORM,
         @InjectRepository(User)
         private readonly repository: EntityRepository<User>
-    ) { }
+    ) {}
 
     /**
      * Creates a new administrator on application start if there are no users present in the DB.

@@ -19,7 +19,7 @@ import { Student } from '../../database/entities/student.entity';
         SheetModule,
         ScheinexamModule,
         ShortTestModule,
-        MikroOrmModule.forFeature([Grading, Student])
+        MikroOrmModule.forFeature([Grading, Student]),
     ],
     controllers: [StudentController, GradingController],
     providers: [StudentService, GradingService],

@@ -1,5 +1,4 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
     BadRequestException,
@@ -19,7 +18,6 @@ import { TeamDTO } from './team.dto';
 
 @Injectable()
 export class TeamService {
-
     constructor(
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
@@ -29,7 +27,7 @@ export class TeamService {
         private readonly gradingService: GradingService,
         @InjectRepository(Team)
         private readonly repository: EntityRepository<Team>
-    ) { }
+    ) {}
 
     /**
      * @param tutorialId Tutorial ID to get teams for

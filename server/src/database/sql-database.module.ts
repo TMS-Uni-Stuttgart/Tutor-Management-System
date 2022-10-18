@@ -12,7 +12,9 @@ function getEntityDirectory(): string {
     return isProduction() ? './database/entities' : './dist/database/entities';
 }
 
-export function loadDatabaseModule(additionalOptions: MikroOrmModuleSyncOptions = {}): DynamicModule {
+export function loadDatabaseModule(
+    additionalOptions: MikroOrmModuleSyncOptions = {}
+): DynamicModule {
     return MikroOrmModule.forRoot({
         metadataProvider: TsMorphMetadataProvider,
         baseDir: process.cwd(),

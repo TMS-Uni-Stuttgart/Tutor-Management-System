@@ -1,4 +1,4 @@
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { TemplateService } from './template.service';
 
@@ -7,7 +7,10 @@ import { TemplateService } from './template.service';
     exports: [TemplateService],
 })
 export class TemplateModule implements OnApplicationBootstrap {
-    constructor(private readonly templateService: TemplateService, private readonly orm: MikroORM) {}
+    constructor(
+        private readonly templateService: TemplateService,
+        private readonly orm: MikroORM
+    ) {}
 
     onApplicationBootstrap(): void {
         this.templateService.checkAllTemplatesPresent();

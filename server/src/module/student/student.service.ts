@@ -24,7 +24,7 @@ export class StudentService implements CRUDService<IStudent, StudentDTO, Student
         private readonly sheetService: SheetService,
         @InjectRepository(Student)
         private readonly repository: EntityRepository<Student>
-    ) { }
+    ) {}
 
     /**
      * @returns All students saved in the database.

@@ -15,7 +15,7 @@ export class SessionService implements ISessionService {
         private readonly orm: MikroORM,
         @InjectRepository(SessionEntity)
         private readonly repository: EntityRepository<SessionEntity>
-    ) { }
+    ) {}
 
     @UseRequestContext()
     async setSession(sid: string, sessionData: SessionData): Promise<void> {

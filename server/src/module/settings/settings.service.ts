@@ -9,13 +9,12 @@ import { StaticSettings } from './settings.static';
 
 @Injectable()
 export class SettingsService extends StaticSettings implements OnApplicationBootstrap {
-
     constructor(
         private readonly orm: MikroORM,
         @InjectRepository(Setting)
-        private readonly repository: EntityRepository<Setting> 
-    ) { 
-        super()
+        private readonly repository: EntityRepository<Setting>
+    ) {
+        super();
     }
 
     /**

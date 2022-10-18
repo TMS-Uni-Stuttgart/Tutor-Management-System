@@ -8,11 +8,10 @@ import { ScheinexamDTO } from './scheinexam.dto';
 
 @Injectable()
 export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO, Scheinexam> {
-
     constructor(
         @InjectRepository(Scheinexam)
         private readonly repository: EntityRepository<Scheinexam>
-    ) { }
+    ) {}
 
     /**
      * @returns All scheinexams saved in the database.

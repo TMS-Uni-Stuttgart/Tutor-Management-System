@@ -7,7 +7,11 @@ import { TutorialController } from './tutorial.controller';
 import { TutorialService } from './tutorial.service';
 
 @Module({
-    imports: [forwardRef(() => UserModule), forwardRef(() => StudentModule), MikroOrmModule.forFeature([Tutorial])],
+    imports: [
+        forwardRef(() => UserModule),
+        forwardRef(() => StudentModule),
+        MikroOrmModule.forFeature([Tutorial]),
+    ],
     providers: [TutorialService],
     controllers: [TutorialController],
     exports: [TutorialService],

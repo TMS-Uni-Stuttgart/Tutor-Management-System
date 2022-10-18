@@ -8,11 +8,10 @@ import { ShortTestDTO } from '../scheinexam/scheinexam.dto';
 
 @Injectable()
 export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, ShortTest> {
-
     constructor(
         @InjectRepository(ShortTest)
         private readonly repository: EntityRepository<ShortTest>
-    ) { }
+    ) {}
 
     async findAll(): Promise<ShortTest[]> {
         return this.repository.findAll();

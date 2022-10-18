@@ -35,7 +35,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         private readonly entityManager: EntityManager,
         @InjectRepository(Tutorial)
         private readonly repository: EntityRepository<Tutorial>
-    ) { }
+    ) {}
 
     /**
      * @returns All tutorials saved in the database.
@@ -257,7 +257,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
         const existingSubstitutes = await this.getSubstitutesForDates(tutorial, dates);
         dates.forEach((date) => {
-            const existingSubstitute = existingSubstitutes.find((substitute) => +substitute.date === +date);
+            const existingSubstitute = existingSubstitutes.find(
+                (substitute) => +substitute.date === +date
+            );
             if (existingSubstitute) {
                 existingSubstitute.substituteTutor = tutor;
                 this.entityManager.persist(existingSubstitute);

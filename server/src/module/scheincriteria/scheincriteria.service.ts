@@ -50,7 +50,6 @@ interface GetRequiredDocsParams {
 export class ScheincriteriaService
     implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaEntity>
 {
-
     constructor(
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
@@ -60,7 +59,7 @@ export class ScheincriteriaService
         private readonly gradingService: GradingService,
         @InjectRepository(ScheincriteriaEntity)
         private readonly repository: EntityRepository<ScheincriteriaEntity>
-    ) { }
+    ) {}
 
     /**
      * @returns All scheincriterias saved in the database.

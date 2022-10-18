@@ -16,7 +16,6 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 
 @Injectable()
 export class GradingService {
-
     constructor(
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
@@ -26,7 +25,7 @@ export class GradingService {
         private readonly entityManager: EntityManager,
         @InjectRepository(Grading)
         private readonly repository: EntityRepository<Grading>
-    ) { }
+    ) {}
 
     /**
      * @param handInId ID of the hand-in to find the gradings for.
@@ -165,13 +164,17 @@ export class GradingService {
             const handIn = await this.getHandInFromDTO(dto);
             const students = team.getStudents();
             if (students.length > 0) {
-                const oldGradings = await Promise.all(students.map((student) => this.findOfStudentAndHandIn(student.id, handIn.id)));
-                const oldGradingIds = new Set(oldGradings.map((grading) => grading?.id).filter((gradingId) => gradingId));
+                const oldGradings = await Promise.all(
+                    students.map((student) => this.findOfStudentAndHandIn(student.id, handIn.id))
+                );
+                const oldGradingIds = new Set(
+                    oldGradings.map((grading) => grading?.id).filter((gradingId) => gradingId)
+                );
                 if (oldGradingIds.size > 1) {
                     // noinspection ExceptionCaughtLocallyJS
                     throw new BadRequestException('Students have different gradings.');
                 }
-                const oldGrading = oldGradings[0]
+                const oldGrading = oldGradings[0];
                 const newGrading =
                     !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
 
