@@ -167,16 +167,10 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
             throw new BadRequestException(`A tutorial with students can NOT be deleted.`);
         }
 
-        const em = this.entityManager.fork({ clear: false });
-        await em.begin();
-        try {
-            tutorial.teams.getItems().map((team) => em.remove(team));
-            em.remove(tutorial);
-            await em.commit();
-        } catch (e) {
-            await em.rollback();
-            throw new BadRequestException(e);
-        }
+        this.entityManager.remove(tutorial.teams.getItems());
+        this.entityManager.remove(tutorial.substitutes.getItems())
+
+        await this.repository.removeAndFlush(tutorial);
     }
 
     /**

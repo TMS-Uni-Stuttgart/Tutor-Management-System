@@ -123,8 +123,6 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @returns Created users.
      */
     async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
-        const em = this.entityManager.fork({ clear: false });
-        await em.begin();
         const errors: string[] = [];
         const toCreate: User[] = [];
 
@@ -139,12 +137,8 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         }
 
         if (errors.length === 0) {
-            toCreate.forEach((user) => {
-                em.persist(user);
-            });
-            await em.commit();
+            await this.repository.persistAndFlush(toCreate)
         } else {
-            await em.rollback();
             throw new BadRequestException(errors);
         }
 
