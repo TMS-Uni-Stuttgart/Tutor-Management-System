@@ -137,7 +137,7 @@ export class GradingService {
             const handIn = await this.getHandInFromDTO(dto);
             await this.updateGradingOfStudent({ student, dto, handIn });
         }
-        await this.entityManager.flush()
+        await this.entityManager.flush();
     }
 
     /**

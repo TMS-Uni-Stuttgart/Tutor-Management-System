@@ -168,7 +168,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         }
 
         this.entityManager.remove(tutorial.teams.getItems());
-        this.entityManager.remove(tutorial.substitutes.getItems())
+        this.entityManager.remove(tutorial.substitutes.getItems());
 
         await this.repository.removeAndFlush(tutorial);
     }

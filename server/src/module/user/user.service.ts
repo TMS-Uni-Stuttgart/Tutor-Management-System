@@ -137,7 +137,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         }
 
         if (errors.length === 0) {
-            await this.repository.persistAndFlush(toCreate)
+            await this.repository.persistAndFlush(toCreate);
         } else {
             throw new BadRequestException(errors);
         }
