@@ -31,6 +31,12 @@ export class TestDatabaseModule {
     }
 
     async reset(): Promise<void> {
+        this.entityManager.clear();
+        return this.resetInContext();
+    }
+
+    @UseRequestContext()
+    private async resetInContext(): Promise<void> {
         const dbName = StaticSettings.getService().getDatabaseConnectionInformation().dbName;
         const connection = this.orm.em.getConnection();
         const allTables = await connection.execute(`SHOW TABLES FROM \`${dbName}\``);
@@ -68,6 +74,6 @@ export class TestDatabaseModule {
     }
 
     private async generateMocks() {
-        await populateMockLists(this.entityManager);
+        await populateMockLists();
     }
 }

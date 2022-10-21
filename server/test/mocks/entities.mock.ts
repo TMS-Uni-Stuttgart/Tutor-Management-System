@@ -1,4 +1,3 @@
-import { EntityManager } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria';
@@ -51,7 +50,7 @@ function clearArray(array: any[]): void {
     array.splice(0, array.length);
 }
 
-export async function populateMockLists(em: EntityManager): Promise<void> {
+export async function populateMockLists(): Promise<void> {
     clearArray(MOCKED_USERS);
     MOCKED_USERS.push(
         new User({
@@ -322,16 +321,10 @@ export async function populateMockLists(em: EntityManager): Promise<void> {
     clearArray(MOCKED_SETTINGS_DOCUMENT);
     MOCKED_SETTINGS_DOCUMENT.push(Setting.fromDTO());
 
-    await adjustMocksWithAdditionalInformation(em);
+    await adjustMocksWithAdditionalInformation();
 }
 
-async function adjustMocksWithAdditionalInformation(em: EntityManager): Promise<void> {
-    for (const entities of ENTITY_LISTS) {
-        em.persist(entities);
-    }
-
-    await em.flush();
-
+async function adjustMocksWithAdditionalInformation(): Promise<void> {
     MOCKED_USERS[3].tutorialsToCorrect.add(MOCKED_TUTORIALS[0], MOCKED_TUTORIALS[2]);
 
     MOCKED_TUTORIALS[1].tutor = MOCKED_USERS[2];
