@@ -12,21 +12,20 @@ import { StudentService } from './student.service';
 import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { Team } from '../../database/entities/team.entity';
 import { GradingResponseData } from 'shared/model/Gradings';
+import { InjectRepository } from '@mikro-orm/nestjs';
 
 @Injectable()
 export class GradingService {
-    private readonly repository: EntityRepository<Grading>;
-
     constructor(
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
         private readonly shortTestService: ShortTestService,
-        private readonly entityManager: EntityManager
-    ) {
-        this.repository = entityManager.fork().getRepository(Grading);
-    }
+        private readonly entityManager: EntityManager,
+        @InjectRepository(Grading)
+        private readonly repository: EntityRepository<Grading>
+    ) {}
 
     /**
      * @param handInId ID of the hand-in to find the gradings for.
@@ -134,19 +133,11 @@ export class GradingService {
      * @throws `BadRequestException` - If an error occurs during the setting process of _any_ student this exception is thrown.
      */
     async setOfMultipleStudents(dtos: Map<Student, GradingDTO>): Promise<void> {
-        const em = this.entityManager.fork({ clear: false });
-        await em.begin();
-
-        try {
-            for (const [student, dto] of dtos) {
-                const handIn = await this.getHandInFromDTO(dto);
-                await this.updateGradingOfStudent({ student, dto, em, handIn });
-            }
-            await em.commit();
-        } catch (e) {
-            await em.rollback();
-            throw new BadRequestException(e);
+        for (const [student, dto] of dtos) {
+            const handIn = await this.getHandInFromDTO(dto);
+            await this.updateGradingOfStudent({ student, dto, handIn });
         }
+        await this.entityManager.flush();
     }
 
     /**
@@ -158,35 +149,31 @@ export class GradingService {
      * @throws `BadRequestException` - If the students of the team have different gradings.
      */
     async setOfTeam(team: Team, dto: GradingDTO): Promise<void> {
-        const em = this.entityManager.fork({ clear: false });
-        await em.begin();
-
-        try {
-            const handIn = await this.getHandInFromDTO(dto);
-            const students = team.getStudents();
-            if (students.length > 0) {
-                const oldGrading = await this.findOfStudentAndHandIn(students[0].id, handIn.id);
-                if (oldGrading?.belongsToTeam === false) {
-                    // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestException('Students have different gradings.');
-                }
-                const newGrading =
-                    !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
-
-                newGrading.updateFromDTO({ dto, handIn });
-                oldGrading?.students.remove(...students);
-                newGrading.students.add(...students);
-
-                if (!!oldGrading && oldGrading.students.length === 0) {
-                    em.remove(oldGrading);
-                }
-
-                em.persist(newGrading);
-                em.commit();
+        const handIn = await this.getHandInFromDTO(dto);
+        const students = team.getStudents();
+        if (students.length > 0) {
+            const oldGradings = await Promise.all(
+                students.map((student) => this.findOfStudentAndHandIn(student.id, handIn.id))
+            );
+            const oldGradingIds = new Set(
+                oldGradings.map((grading) => grading?.id).filter((gradingId) => gradingId)
+            );
+            if (oldGradingIds.size > 1) {
+                throw new BadRequestException('Students have different gradings.');
             }
-        } catch (e) {
-            await em.rollback();
-            throw new BadRequestException(e);
+            const oldGrading = oldGradings[0];
+            const newGrading =
+                !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
+
+            newGrading.updateFromDTO({ dto, handIn });
+            oldGrading?.students.remove(...students);
+            newGrading.students.add(...students);
+
+            if (!!oldGrading && oldGrading.students.length === 0) {
+                this.repository.remove(oldGrading);
+            }
+
+            await this.repository.persistAndFlush(newGrading);
         }
     }
 
@@ -218,7 +205,6 @@ export class GradingService {
         student,
         dto,
         handIn,
-        em,
     }: UpdateGradingParams): Promise<void> {
         const oldGrading: Grading | undefined = await this.findOfStudentAndHandIn(
             student.id,
@@ -233,10 +219,10 @@ export class GradingService {
         newGrading.students.add(student);
 
         if (!!oldGrading && oldGrading.students.length === 0) {
-            em.remove(oldGrading);
+            this.repository.remove(oldGrading);
         }
 
-        em.persist(newGrading);
+        this.repository.persist(newGrading);
     }
 
     /**
@@ -281,7 +267,6 @@ interface UpdateGradingParams {
     student: Student;
     dto: GradingDTO;
     handIn: HandIn;
-    em: EntityManager;
 }
 
 export interface StudentAndGradings {

@@ -1,4 +1,6 @@
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
+import { ScheincriteriaEntity } from '../../database/entities/scheincriteria.entity';
 import { ScheinexamModule } from '../scheinexam/scheinexam.module';
 import { SheetModule } from '../sheet/sheet.module';
 import { ShortTestModule } from '../short-test/short-test.module';
@@ -19,7 +21,14 @@ import { ScheincriteriaService } from './scheincriteria.service';
 export type ScheincriteriaConstructor = new (...args: any[]) => Scheincriteria;
 
 @Module({
-    imports: [StudentModule, SheetModule, ScheinexamModule, TutorialModule, ShortTestModule],
+    imports: [
+        StudentModule,
+        SheetModule,
+        ScheinexamModule,
+        TutorialModule,
+        ShortTestModule,
+        MikroOrmModule.forFeature([ScheincriteriaEntity]),
+    ],
     providers: [ScheincriteriaService],
     controllers: [ScheincriteriaController],
     exports: [ScheincriteriaService],

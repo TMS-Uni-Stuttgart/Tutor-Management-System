@@ -1,5 +1,5 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { IShortTest } from 'shared/model/ShortTest';
 import { ShortTest } from '../../database/entities/shorttest.entity';
@@ -8,11 +8,10 @@ import { ShortTestDTO } from '../scheinexam/scheinexam.dto';
 
 @Injectable()
 export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, ShortTest> {
-    private readonly repository: EntityRepository<ShortTest>;
-
-    constructor(entityManager: EntityManager) {
-        this.repository = entityManager.fork().getRepository(ShortTest);
-    }
+    constructor(
+        @InjectRepository(ShortTest)
+        private readonly repository: EntityRepository<ShortTest>
+    ) {}
 
     async findAll(): Promise<ShortTest[]> {
         return this.repository.findAll();

@@ -1,4 +1,4 @@
-import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { EntityManager, MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Module } from '@nestjs/common';
 import { loadDatabaseModule } from '../../src/database/sql-database.module';
 import { AttendanceCriteria } from '../../src/module/scheincriteria/container/criterias/AttendanceCriteria';
@@ -13,13 +13,14 @@ import { StaticSettings } from '../../src/module/settings/settings.static';
 import { ENTITY_LISTS, populateMockLists } from '../mocks/entities.mock';
 
 @Module({
-    imports: [loadDatabaseModule()],
+    imports: [loadDatabaseModule({ allowGlobalContext: true })],
 })
 export class TestDatabaseModule {
-    constructor(private readonly orm: MikroORM) {
+    constructor(private readonly orm: MikroORM, private readonly entityManager: EntityManager) {
         this.initCriteriaContainer();
     }
 
+    @UseRequestContext()
     async init(): Promise<void> {
         const generator = this.orm.getSchemaGenerator();
         await generator.ensureDatabase();
@@ -30,6 +31,12 @@ export class TestDatabaseModule {
     }
 
     async reset(): Promise<void> {
+        this.entityManager.clear();
+        return this.resetInContext();
+    }
+
+    @UseRequestContext()
+    private async resetInContext(): Promise<void> {
         const dbName = StaticSettings.getService().getDatabaseConnectionInformation().dbName;
         const connection = this.orm.em.getConnection();
         const allTables = await connection.execute(`SHOW TABLES FROM \`${dbName}\``);
@@ -43,14 +50,13 @@ export class TestDatabaseModule {
     }
 
     private async populateDatabase() {
-        const em = this.orm.em.fork();
-        await this.generateMocks(em);
+        await this.generateMocks();
 
         for (const entities of ENTITY_LISTS) {
-            em.persist(entities);
+            this.entityManager.persist(entities);
         }
 
-        await em.flush();
+        await this.entityManager.flush();
     }
 
     private initCriteriaContainer() {
@@ -67,7 +73,7 @@ export class TestDatabaseModule {
         criterias.forEach((criteria) => container.registerBluePrint(criteria));
     }
 
-    private async generateMocks(em: EntityManager) {
-        await populateMockLists(em);
+    private async generateMocks() {
+        await populateMockLists();
     }
 }

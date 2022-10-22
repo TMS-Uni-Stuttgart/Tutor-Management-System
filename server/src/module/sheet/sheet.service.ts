@@ -1,5 +1,5 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ISheet } from 'shared/model/Sheet';
 import { Exercise } from '../../database/entities/ratedEntity.entity';
@@ -9,11 +9,10 @@ import { SheetDTO } from './sheet.dto';
 
 @Injectable()
 export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
-    private readonly repository: EntityRepository<Sheet>;
-
-    constructor(entityManager: EntityManager) {
-        this.repository = entityManager.fork().getRepository(Sheet);
-    }
+    constructor(
+        @InjectRepository(Sheet)
+        private readonly repository: EntityRepository<Sheet>
+    ) {}
 
     /**
      * @returns All sheets saved in the database.

@@ -1,5 +1,5 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { IScheinExam } from 'shared/model/Scheinexam';
 import { Scheinexam } from '../../database/entities/scheinexam.entity';
@@ -8,11 +8,10 @@ import { ScheinexamDTO } from './scheinexam.dto';
 
 @Injectable()
 export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO, Scheinexam> {
-    private readonly repository: EntityRepository<Scheinexam>;
-
-    constructor(entityManager: EntityManager) {
-        this.repository = entityManager.fork().getRepository(Scheinexam);
-    }
+    constructor(
+        @InjectRepository(Scheinexam)
+        private readonly repository: EntityRepository<Scheinexam>
+    ) {}
 
     /**
      * @returns All scheinexams saved in the database.

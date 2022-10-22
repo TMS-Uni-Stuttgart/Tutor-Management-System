@@ -1,5 +1,5 @@
-import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
+import { EntityRepository, MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { IClientSettings, IMailingSettings } from 'shared/model/Settings';
 import { Setting } from '../../database/entities/settings.entity';
@@ -9,11 +9,12 @@ import { StaticSettings } from './settings.static';
 
 @Injectable()
 export class SettingsService extends StaticSettings implements OnApplicationBootstrap {
-    private readonly repository: EntityRepository<Setting>;
-
-    constructor(entityManager: EntityManager) {
+    constructor(
+        private readonly orm: MikroORM,
+        @InjectRepository(Setting)
+        private readonly repository: EntityRepository<Setting>
+    ) {
         super();
-        this.repository = entityManager.fork().getRepository(Setting);
     }
 
     /**
@@ -56,6 +57,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
      *
      * If there is ONE nothing is done.
      */
+    @UseRequestContext()
     async onApplicationBootstrap(): Promise<void> {
         const settings = await this.repository.findOne({
             id: Setting.SETTING_ID,

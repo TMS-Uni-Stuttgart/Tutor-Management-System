@@ -1,5 +1,4 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mysql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FormDataResponse } from 'shared/model/FormTypes';
 import {
@@ -24,6 +23,7 @@ import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { GradingService, StudentAndGradings } from '../student/grading.service';
+import { InjectRepository } from '@mikro-orm/nestjs';
 
 interface CalculationParams {
     criterias: ScheincriteriaEntity[];
@@ -50,8 +50,6 @@ interface GetRequiredDocsParams {
 export class ScheincriteriaService
     implements CRUDService<IScheinCriteria, ScheinCriteriaDTO, ScheincriteriaEntity>
 {
-    private readonly repository: EntityRepository<ScheincriteriaEntity>;
-
     constructor(
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
@@ -59,10 +57,9 @@ export class ScheincriteriaService
         private readonly tutorialService: TutorialService,
         private readonly shortTestService: ShortTestService,
         private readonly gradingService: GradingService,
-        entityManager: EntityManager
-    ) {
-        this.repository = entityManager.fork().getRepository(ScheincriteriaEntity);
-    }
+        @InjectRepository(ScheincriteriaEntity)
+        private readonly repository: EntityRepository<ScheincriteriaEntity>
+    ) {}
 
     /**
      * @returns All scheincriterias saved in the database.
