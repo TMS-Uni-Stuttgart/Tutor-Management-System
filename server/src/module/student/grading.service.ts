@@ -1,12 +1,18 @@
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
-import { HandInDocument } from '../../database/models/exercise.model';
-import { Grading } from '../../database/models/grading.model';
-import { StudentDocument } from '../../database/models/student.model';
+import { Grading } from '../../database/entities/grading.entity';
+import { HandIn } from '../../database/entities/ratedEntity.entity';
+import { Student } from '../../database/entities/student.entity';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
-import { GradingDTO } from '../student/student.dto';
+import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
+import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
+import { Team } from '../../database/entities/team.entity';
+import { GradingResponseData } from 'shared/model/Gradings';
+import { InjectRepository } from '@mikro-orm/nestjs';
 
 @Injectable()
 export class GradingService {
@@ -15,89 +21,208 @@ export class GradingService {
         private readonly studentService: StudentService,
         private readonly sheetService: SheetService,
         private readonly scheinexamService: ScheinexamService,
-        private readonly shortTestService: ShortTestService
+        private readonly shortTestService: ShortTestService,
+        private readonly entityManager: EntityManager,
+        @InjectRepository(Grading)
+        private readonly repository: EntityRepository<Grading>
     ) {}
+
+    /**
+     * @param handInId ID of the hand-in to find the gradings for.
+     *
+     * @returns All gradings which belong to the hand-in with the given handInId.
+     */
+    async findOfHandIn(handInId: string): Promise<GradingResponseData[]> {
+        const gradings = await this.repository.find({ handInId: handInId }, { populate: true });
+        const data: GradingResponseData[] = [];
+
+        gradings.forEach((grading) => {
+            grading.students.getItems().forEach((student) => {
+                data.push({ studentId: student.id, gradingData: grading.toDTO() });
+            });
+        });
+
+        return data;
+    }
+
+    /**
+     * @param studentId ID of the student to get the gradings for.
+     *
+     * @returns All gradings that this student has.
+     */
+    async findOfStudent(studentId: string): Promise<GradingList> {
+        const gradings = await this.repository.find({ students: studentId }, { populate: true });
+        return new GradingList(gradings);
+    }
+
+    /**
+     * @param studentId ID of the student to get the grading for.
+     * @param handInId ID of the hand-in to get the grading of.
+     *
+     * @returns Grading which matches the parameters. If there is no such grading `undefined` is returned instead.
+     */
+    async findOfStudentAndHandIn(
+        studentId: string,
+        handInId: string
+    ): Promise<Grading | undefined> {
+        const grading = await this.repository.findOne(
+            { students: studentId, handInId: handInId },
+            { populate: true }
+        );
+
+        return grading ?? undefined;
+    }
+
+    /**
+     * @param studentIds IDs of all students to get the gradings for.
+     *
+     * @returns The gradings of the students with the given IDs.
+     */
+    async findOfMultipleStudents(studentIds: string[]): Promise<GradingListsForStudents> {
+        // const gradings = await this.gradingRepository.find({
+        //     students: { $contains: studentIds },
+        // });
+        // TODO: Can one use the "groupBy" option here instead of the code below to improve performance?
+        const gradingLists = new GradingListsForStudents();
+        for (const studentId of studentIds) {
+            gradingLists.addGradingList(studentId, await this.findOfStudent(studentId));
+        }
+        return gradingLists;
+    }
+
+    /**
+     * @param tutorialId ID of the tutorial to get the gradings for.
+     * @param handInId ID of the hand-in to get the grading for.
+     *
+     * @returns The gradings of the students with the given IDs.
+     */
+    async findOfTutorialAndHandIn(
+        tutorialId: string,
+        handInId: string
+    ): Promise<GradingResponseData[]> {
+        const students = await this.studentService.findOfTutorial(tutorialId);
+        const gradings = students.map<Promise<GradingResponseData>>(async (s) => {
+            return {
+                studentId: s.id,
+                gradingData: (await this.findOfStudentAndHandIn(s.id, handInId))?.toDTO(),
+            };
+        });
+
+        return await Promise.all(gradings);
+    }
 
     /**
      * Sets the grading of the given student.
      *
-     * If the DTO indicates an update the corresponding grading will be updated. All related GradingDocument in other students get updated aswell. For more information see {@link GradingService#assignGradingToStudent}.
+     * If the DTO indicates an update the corresponding grading will be updated.
      *
      * @param student Student to set the grading for.
      * @param dto DTO which resembles the grading.
+     *
+     * @see setOfMultipleStudents
      */
-    async setGradingOfStudent(student: StudentDocument, dto: GradingDTO): Promise<void> {
-        const handIn: HandInDocument = await this.getHandInFromDTO(dto);
-        const oldGrading: Grading | undefined = student.getGrading(handIn);
-        let newGrading: Grading;
-
-        if (!oldGrading || dto.createNewGrading) {
-            newGrading = Grading.fromDTO(dto);
-        } else {
-            oldGrading.updateFromDTO(dto);
-            newGrading = oldGrading;
-        }
-
-        await this.assignGradingToStudent(handIn, student, newGrading, dto.createNewGrading);
+    async setOfStudent(student: Student, dto: GradingDTO): Promise<void> {
+        return this.setOfMultipleStudents(new Map([[student, dto]]));
     }
 
     /**
      * Sets the grading of the given students to the one from the DTO.
      *
-     * @param students Students to set the grading.
-     * @param dto DTO which resembles the grading.
+     * @param dtos Maps each student to the DTO of the grading which belongs to it.
+     *
+     * @throws `BadRequestException` - If an error occurs during the setting process of _any_ student this exception is thrown.
      */
-    async setGradingOfMultipleStudents(
-        students: StudentDocument[],
-        dto: GradingDTO
-    ): Promise<void> {
-        const handIn: HandInDocument = await this.getHandInFromDTO(dto);
-        const gradingFromDTO = Grading.fromDTO(dto);
-
-        for (const student of students) {
-            gradingFromDTO.addStudent(student);
+    async setOfMultipleStudents(dtos: Map<Student, GradingDTO>): Promise<void> {
+        for (const [student, dto] of dtos) {
+            const handIn = await this.getHandInFromDTO(dto);
+            await this.updateGradingOfStudent({ student, dto, handIn });
         }
-
-        for (const student of students) {
-            // TODO: Add special cases.
-            student.setGrading(handIn, gradingFromDTO);
-        }
-
-        await Promise.all(students.map((s) => s.save()));
+        await this.entityManager.flush();
     }
 
-    private async assignGradingToStudent(
-        handIn: HandInDocument,
-        student: StudentDocument,
-        grading: Grading,
-        createNewGrading: boolean
-    ): Promise<void> {
-        const oldGrading = student.getGrading(handIn);
-
-        if (oldGrading) {
-            oldGrading.removeStudent(student);
-            const otherStudents = await this.getStudentsOfGrading(oldGrading);
-
-            if (createNewGrading) {
-                for (const otherStudent of otherStudents) {
-                    const gradingOfOtherStudent = otherStudent.getGrading(handIn);
-
-                    if (gradingOfOtherStudent) {
-                        gradingOfOtherStudent.removeStudent(student);
-                        otherStudent.setGrading(handIn, gradingOfOtherStudent);
-                        await otherStudent.save();
-                    }
-                }
-            } else {
-                for (const otherStudent of otherStudents) {
-                    otherStudent.setGrading(handIn, grading);
-                    await otherStudent.save();
-                }
+    /**
+     * Sets the grading of all students of the given team to the one from the DTO.
+     *
+     * @param team Team which students should get the new grading.
+     * @param dto DTO of the new grading.
+     *
+     * @throws `BadRequestException` - If the students of the team have different gradings.
+     */
+    async setOfTeam(team: Team, dto: GradingDTO): Promise<void> {
+        const handIn = await this.getHandInFromDTO(dto);
+        const students = team.getStudents();
+        if (students.length > 0) {
+            const oldGradings = await Promise.all(
+                students.map((student) => this.findOfStudentAndHandIn(student.id, handIn.id))
+            );
+            const oldGradingIds = new Set(
+                oldGradings.map((grading) => grading?.id).filter((gradingId) => gradingId)
+            );
+            if (oldGradingIds.size > 1) {
+                throw new BadRequestException('Students have different gradings.');
             }
+            const oldGrading = oldGradings[0];
+            const newGrading =
+                !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
+
+            newGrading.updateFromDTO({ dto, handIn });
+            oldGrading?.students.remove(...students);
+            newGrading.students.add(...students);
+
+            if (!!oldGrading && oldGrading.students.length === 0) {
+                this.repository.remove(oldGrading);
+            }
+
+            await this.repository.persistAndFlush(newGrading);
+        }
+    }
+
+    async findAllGradingsOfStudent(student: Student): Promise<Grading[]> {
+        return this.repository.find({ students: student.id }, { populate: true });
+    }
+
+    async findAllGradingsOfMultipleStudents(students: Student[]): Promise<StudentAndGradings[]> {
+        const gradingsOfStudents: StudentAndGradings[] = [];
+        for (const student of students) {
+            const gradings = await this.findAllGradingsOfStudent(student);
+            gradingsOfStudents.push({
+                student,
+                gradingsOfStudent: new GradingList(gradings),
+            });
+        }
+        return gradingsOfStudents;
+    }
+
+    async findAllHandInGradingsOfTeam(team: Team, handIn: HandIn): Promise<Grading[]> {
+        const studentIds = team.getStudents().map((s) => s.id);
+        return this.repository.find({
+            handInId: handIn.id,
+            students: { $contains: studentIds },
+        });
+    }
+
+    private async updateGradingOfStudent({
+        student,
+        dto,
+        handIn,
+    }: UpdateGradingParams): Promise<void> {
+        const oldGrading: Grading | undefined = await this.findOfStudentAndHandIn(
+            student.id,
+            handIn.id
+        );
+        const newGrading: Grading =
+            !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
+
+        newGrading.updateFromDTO({ dto, handIn });
+
+        oldGrading?.students.remove(student);
+        newGrading.students.add(student);
+
+        if (!!oldGrading && oldGrading.students.length === 0) {
+            this.repository.remove(oldGrading);
         }
 
-        student.setGrading(handIn, grading);
-        await student.save();
+        this.repository.persist(newGrading);
     }
 
     /**
@@ -111,7 +236,7 @@ export class GradingService {
      *
      * @throws `BadRequestException` - If either all fields (`sheetId`, `examId` and `shortTestId`) or none of those fields are set.
      */
-    async getHandInFromDTO(dto: GradingDTO): Promise<HandInDocument> {
+    async getHandInFromDTO(dto: GradingDTO): Promise<HandIn> {
         const { sheetId, examId, shortTestId } = dto;
 
         if (!!sheetId && !!examId && !!shortTestId) {
@@ -136,17 +261,15 @@ export class GradingService {
             'You have to either set the sheetId or the examId or the shortTestId field.'
         );
     }
+}
 
-    /**
-     * Fetches all students of the given grading from the DB.
-     *
-     * @param grading Grading to get students of.
-     *
-     * @returns StudentDocuments of all students attached to the given grading.
-     */
-    private async getStudentsOfGrading(grading: Grading): Promise<StudentDocument[]> {
-        return await this.studentService.findByCondition({
-            _id: { $in: grading.getStudents() },
-        });
-    }
+interface UpdateGradingParams {
+    student: Student;
+    dto: GradingDTO;
+    handIn: HandIn;
+}
+
+export interface StudentAndGradings {
+    student: Student;
+    gradingsOfStudent: GradingList;
 }

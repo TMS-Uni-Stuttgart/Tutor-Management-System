@@ -1,3 +1,6 @@
+import { Collection, EntityRepository, MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import {
     BadRequestException,
     forwardRef,
@@ -5,68 +8,66 @@ import {
     Injectable,
     Logger,
     NotFoundException,
-    OnModuleInit,
+    OnApplicationBootstrap,
 } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { DateTime } from 'luxon';
-import { InjectModel } from 'nestjs-typegoose';
-import { ILoggedInUser, ILoggedInUserSubstituteTutorial, IUser } from 'src/shared/model/User';
+import { NamedElement } from 'shared/model/Common';
+import { Role } from 'shared/model/Role';
+import { ILoggedInUser, IUser } from 'shared/model/User';
 import { UserCredentialsWithPassword } from '../../auth/auth.model';
-import { TutorialDocument } from '../../database/models/tutorial.model';
-import { UserDocument, UserModel } from '../../database/models/user.model';
+import { Tutorial } from '../../database/entities/tutorial.entity';
+import { User } from '../../database/entities/user.entity';
 import { CRUDService } from '../../helpers/CRUDService';
-import { NamedElement } from '../../shared/model/Common';
-import { Role } from '../../shared/model/Role';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
 
 @Injectable()
-export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, UserDocument> {
+export class UserService implements OnApplicationBootstrap, CRUDService<IUser, UserDTO, User> {
+    private readonly logger = new Logger(UserService.name);
+
     constructor(
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
-        @InjectModel(UserModel)
-        private readonly userModel: ReturnModelType<typeof UserModel>
+        private readonly entityManager: EntityManager,
+        private readonly orm: MikroORM,
+        @InjectRepository(User)
+        private readonly repository: EntityRepository<User>
     ) {}
 
     /**
      * Creates a new administrator on application start if there are no users present in the DB.
      */
-    async onModuleInit(): Promise<void> {
-        const users = await this.findAll();
+    @UseRequestContext()
+    async onApplicationBootstrap(): Promise<void> {
+        const areUsersPresent = (await this.repository.findAll()).length > 0;
 
-        if (users.length === 0) {
-            Logger.log(
-                'No user present in the database. Creating a default administrator user...',
-                UserService.name
+        if (!areUsersPresent) {
+            this.logger.log('No admin user found in database. Creating new admin...');
+            const user = await this.repository.create(
+                new User({
+                    firstname: 'Created',
+                    lastname: 'Admin',
+                    roles: [Role.ADMIN],
+                    username: 'admin',
+                    password: 'adminPass',
+                    temporaryPassword: 'adminPass',
+                    email: 'admin@email.mail',
+                })
             );
 
-            await this.create({
-                firstname: 'admin',
-                lastname: 'admin',
-                username: 'admin',
-                password: 'admin',
-                roles: [Role.ADMIN],
-                tutorials: [],
-                tutorialsToCorrect: [],
-                email: '',
-            });
-
-            Logger.log('Default administrator created.', UserService.name);
+            await this.repository.persistAndFlush(user);
+            this.logger.log('Admin user successfully created.');
         }
     }
 
     /**
      * @returns All users saved in the database.
      */
-    async findAll(): Promise<UserDocument[]> {
-        const users = (await this.userModel.find().exec()) as UserDocument[];
-
-        return users;
+    async findAll(): Promise<User[]> {
+        return this.repository.findAll({ populate: true });
     }
 
     /**
-     * Searches for a user with the given ID and returns it's document if possible.
+     * Searches for a user with the given ID and returns its document if possible.
      *
      * @param id ID to search for.
      *
@@ -74,8 +75,8 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      *
      * @throws `NotFoundException` - If there is no user with the given ID.
      */
-    async findById(id: string): Promise<UserDocument> {
-        const user = (await this.userModel.findById(id).exec()) as UserDocument | null;
+    async findById(id: string): Promise<User> {
+        const user = await this.repository.findOne({ id }, { populate: true });
 
         if (!user) {
             throw new NotFoundException(`User with the ID '${id}' could not be found.`);
@@ -98,7 +99,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
     async findWithUsername(usernameToFind: string): Promise<UserCredentialsWithPassword> {
         const { id, username, password, roles } = await this.getUserWithUsername(usernameToFind);
 
-        return { _id: id, username, password, roles };
+        return { id, username, password, roles };
     }
 
     /**
@@ -110,6 +111,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      */
     async create(user: CreateUserDTO): Promise<IUser> {
         const createdUser = await this.createUser(user);
+        await this.repository.persistAndFlush(createdUser);
         return createdUser.toDTO();
     }
 
@@ -121,31 +123,32 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      * @returns Created users.
      */
     async createMany(users: CreateUserDTO[]): Promise<IUser[]> {
-        const created: UserDocument[] = [];
         const errors: string[] = [];
+        const toCreate: User[] = [];
 
         for (const user of users) {
             try {
-                const doc = await this.createUser(user);
-                created.push(doc);
+                const createdUser = await this.createUser(user);
+                toCreate.push(createdUser);
             } catch (err) {
-                const message = err.message || 'Unknown error.';
+                const message: string = err instanceof Error ? err.message : 'Unknown error';
                 errors.push(`[${user.lastname}, ${user.firstname}]: ${message}`);
             }
         }
 
-        if (errors.length > 0) {
-            await Promise.all(created.map((u) => u.remove()));
+        if (errors.length === 0) {
+            await this.repository.persistAndFlush(toCreate);
+        } else {
             throw new BadRequestException(errors);
         }
 
-        return created.map((u) => u.toDTO());
+        return toCreate.map((user) => user.toDTO());
     }
 
     /**
      * Updates the user with the given information
      *
-     * If neccessary this functions updates all related tutorials and saves them afterwards. Related tutorials can be:
+     * If necessary this functions updates all related tutorials and saves them afterwards. Related tutorials can be:
      * - Tutorials of which the user _was_ the tutor.
      * - Tutorials of which the user _will be_ the tutor.
      * - Tutorials of which the user _was_ a corrector.
@@ -161,71 +164,25 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      */
     async update(id: string, dto: UserDTO): Promise<IUser> {
         const user = await this.findById(id);
-        const { tutorials, tutorialsToCorrect } = user;
 
         await this.checkUserDTO(dto, user);
         await this.assertUserIsChangeable(user, dto);
 
-        // Remove user as tutor from all tutorials he/she is not the tutor of anymore.
-        await Promise.all(
-            tutorials
-                .filter((tut) => !dto.tutorials.includes(tut.id))
-                .map((tutorial) => {
-                    tutorial.tutor = undefined;
-                    return tutorial.save();
-                })
-        );
+        const [tutorials, tutorialsToCorrect] = await Promise.all([
+            this.getAllTutorials(dto.tutorials),
+            this.getAllTutorials(dto.tutorialsToCorrect),
+        ]);
 
-        // Add user as tutor to all tutorials he/she is the tutor of.
-        const idsOfTutorialsToAdd: string[] = dto.tutorials.filter(
-            (id) => !tutorials.map((tut) => tut.id).includes(id)
-        );
-        const tutorialsToAdd = await this.getAllTutorials(idsOfTutorialsToAdd);
-
-        await Promise.all(
-            tutorialsToAdd.map((tutorial) => {
-                tutorial.tutor = user;
-                return tutorial.save();
-            })
-        );
-
-        // Remove user from all tutorials to correct he's not the corrector of anymore.
-        await Promise.all(
-            tutorialsToCorrect
-                .filter((tutorial) => !dto.tutorialsToCorrect.includes(tutorial.id))
-                .map((tutorial) => {
-                    tutorial.correctors = [
-                        ...tutorial.correctors.filter((corrector) => corrector.id !== user.id),
-                    ];
-
-                    tutorial.markModified('correctors');
-                    return tutorial.save();
-                })
-        );
-
-        // Add user as corrector to all tutorials he's corrector of, now (old correctors stay).
-        const idsOfTutorialsToCorrect = dto.tutorialsToCorrect.filter(
-            (id) => !tutorialsToCorrect.map((t) => t.id).includes(id)
-        );
-        const additionalToCorrect = await this.getAllTutorials(idsOfTutorialsToCorrect);
-
-        await Promise.all(
-            additionalToCorrect.map((tutorial) => {
-                tutorial.correctors.push(user);
-                return tutorial.save();
-            })
-        );
-
-        // We connot use mongooses's update(...) in an easy manner here because it would require us to set the '__enc_[FIELD]' properties of all encrypted fields to false manually! This is why all relevant field get updated here and 'save()' is used.
         user.firstname = dto.firstname;
         user.lastname = dto.lastname;
         user.username = dto.username;
         user.email = dto.email;
         user.roles = dto.roles;
+        user.tutorials.set(tutorials);
+        user.tutorialsToCorrect.set(tutorialsToCorrect);
 
-        const updatedUser = await user.save();
-
-        return updatedUser.toDTO();
+        await this.repository.persistAndFlush(user);
+        return user.toDTO();
     }
 
     /**
@@ -238,22 +195,19 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      * @throws `NotFoundException` - If there is no user with such an ID.
      * @throws `BadRequestException` - If the deleted user is the last available ADMIN.
      */
-    async delete(id: string): Promise<UserDocument> {
+    async delete(id: string): Promise<void> {
         const user = await this.findById(id);
         await this.assertUserIsDeletable(user);
 
-        await Promise.all(
-            user.tutorials.map((tutorial) => {
-                tutorial.tutor = undefined;
-                return tutorial.save();
-            })
-        );
+        user.tutorials.removeAll();
+        user.tutorialsToCorrect.removeAll();
+        user.tutorialsToSubstitute.removeAll();
 
-        return user.remove();
+        await this.repository.removeAndFlush(user);
     }
 
     /**
-     * Sets the password of the given user to the given one. This will remove the `temporaryPassword` from the uesr.
+     * Sets the password of the given user to the given one. This will remove the `temporaryPassword` from the user.
      *
      * If one wants to set the temporary password aswell one should use the `setTemporaryPassword()` function.
      *
@@ -264,16 +218,14 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      *
      * @throws `NotFoundException` - If no user with the given ID could be found.
      */
-    async setPassword(id: string, password: string): Promise<UserDocument> {
+    async setPassword(id: string, password: string): Promise<User> {
         const user = await this.findById(id);
 
         user.password = password;
         user.temporaryPassword = undefined;
+        await this.repository.persistAndFlush(user);
 
-        const updatedUser = await user.save();
-        updatedUser.decryptFieldsSync();
-
-        return updatedUser;
+        return user;
     }
 
     /**
@@ -284,20 +236,18 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      * @param id ID of the user.
      * @param password (New) password.
      *
-     * @returns Updated UserDocument
+     * @returns Updated User
      *
      * @throws `NotFoundException` - If no user with the given ID could be found.
      */
-    async setTemporaryPassword(id: string, password: string): Promise<UserDocument> {
+    async setTemporaryPassword(id: string, password: string): Promise<User> {
         const user = await this.findById(id);
 
         user.password = password;
         user.temporaryPassword = password;
+        await this.repository.persistAndFlush(user);
 
-        const updatedUser = await user.save();
-        updatedUser.decryptFieldsSync();
-
-        return updatedUser;
+        return user;
     }
 
     /**
@@ -310,7 +260,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      * @throws `NotFoundException` - If no user with the given ID could be found.
      */
     async getLoggedInUserInformation(id: string): Promise<ILoggedInUser> {
-        const allTutorials = await this.tutorialService.findAll();
+        const user = await this.findById(id);
         const {
             id: userId,
             firstname,
@@ -319,39 +269,14 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
             temporaryPassword,
             tutorials,
             tutorialsToCorrect,
-        } = (await this.findById(id)).toDTO();
-
-        const substituteTutorials: Map<string, ILoggedInUserSubstituteTutorial> = new Map();
-
-        allTutorials.forEach((tutorial) => {
-            tutorial.getAllSubstitutes().forEach((substituteId, dateKey) => {
-                if (substituteId !== userId) {
-                    return;
-                }
-
-                const date = DateTime.fromISO(dateKey).toISODate();
-                const substInfo: ILoggedInUserSubstituteTutorial = substituteTutorials.get(
-                    tutorial.id
-                ) ?? {
-                    ...tutorial.toInEntity(),
-                    dates: [],
-                };
-
-                if (!date) {
-                    throw new Error(`Date '${dateKey}' could not be parsed to an ISODate.`);
-                }
-
-                substInfo.dates.push(date);
-                substituteTutorials.set(tutorial.id, substInfo);
-            });
-        });
+        } = user.toDTO();
 
         return {
             id: userId,
             firstname,
             lastname,
             roles,
-            substituteTutorials: Array.of(...substituteTutorials.values()),
+            substituteTutorials: user.getSubstituteInformation(),
             hasTemporaryPassword: !!temporaryPassword,
             tutorials,
             tutorialsToCorrect,
@@ -383,7 +308,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      * @returns Created UserDocument.
      * @throws `BadRequestException` - If the DTO is invalid  a BadRequestException is thrown. More information: See function `checkUserDTO()`.
      */
-    private async createUser(user: CreateUserDTO): Promise<UserDocument> {
+    private async createUser(user: CreateUserDTO): Promise<User> {
         await this.checkUserDTO(user);
         const {
             tutorials: tutorialIds,
@@ -392,69 +317,31 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
             username,
             ...dto
         } = user;
-        const userDocument: UserModel = new UserModel({
-            ...dto,
-            username,
-            password,
-            temporaryPassword: password,
-        });
 
         const [tutorials, tutorialsToCorrect] = await Promise.all([
             this.getAllTutorials(tutorialIds),
             this.getAllTutorials(toCorrectIds),
         ]);
+        const userEntity: User = new User({ ...dto, username, password });
+        userEntity.temporaryPassword = password;
+        userEntity.tutorials.add(...tutorials);
+        userEntity.tutorialsToCorrect = new Collection<Tutorial, unknown>(
+            userEntity,
+            tutorialsToCorrect
+        );
 
-        const result = (await this.userModel.create(userDocument)) as UserDocument;
-
-        await this.updateTutorialsWithUser({
-            tutor: result,
-            tutorials,
-            tutorialsToCorrect,
-        });
-
-        return this.findById(result.id);
+        return userEntity;
     }
 
     /**
-     * Sets the given `tutor` as tutor for all given `tutorials` and as corrector for all given `tutorialsToCorrect`.
-     *
-     * @param tutor Tutor or corrector to set as tutor of the `tutorials` and as corrector of the `tutorialsToCorrect`.
-     * @param tutorials Tutorials to set the given `tutor` as tutor.
-     * @param tutorialsToCorrect Tutorials to set the given `tutor` as corrector.
-     */
-    private async updateTutorialsWithUser({
-        tutor,
-        tutorials,
-        tutorialsToCorrect,
-    }: UpdateTutorialsParams): Promise<void> {
-        await Promise.all(
-            tutorials.map((tutorial) => {
-                tutorial.tutor = tutor;
-                return tutorial.save();
-            })
-        );
-
-        await Promise.all(
-            tutorialsToCorrect.map((tutorial) => {
-                tutorial.correctors.push(tutor);
-                return tutorial.save();
-            })
-        );
-    }
-
-    /**
-     * Checks if there is already a user with the given username saved in the database.
+     * Checks if there is already a user with the given username saved in the database. If a `user` is provided that user is ignored during the check.
      *
      * @param username Username to check
+     * @param user (optional) User object which is allowed to have that username.
      * @returns Is there already a user with that username?
      */
-    private async doesUserWithUsernameExist(
-        username: string,
-        user?: UserDocument
-    ): Promise<boolean> {
-        const usersWithUsername: UserDocument[] = (await this.userModel
-            .find({ username })
-            .exec()) as UserDocument[];
+    private async doesUserWithUsernameExist(username: string, user?: User): Promise<boolean> {
+        const usersWithUsername: User[] = await this.getAllUsersWithUsername(username);
 
         if (!user) {
             return usersWithUsername.length > 0;
@@ -480,23 +367,28 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      *
      * @throws `NotFoundException` - If there is no user with that username.
      */
-    private async getUserWithUsername(username: string): Promise<UserDocument> {
-        const userDoc = await this.userModel
-            .findOne(
-                {
-                    username,
-                },
-                undefined,
-                // Make sure that the query is case insensitive.
-                { collation: { locale: 'en', strength: 2 } }
-            )
-            .exec();
+    private async getUserWithUsername(username: string): Promise<User> {
+        const usersWithUserName = await this.getAllUsersWithUsername(username);
+        const user = usersWithUserName[0];
 
-        if (!userDoc) {
+        if (!user) {
             throw new NotFoundException(`User with username "${username}" was not found`);
         }
 
-        return userDoc as UserDocument;
+        await this.repository.populate(user, true);
+        return user;
+    }
+
+    /**
+     *
+     * @param username Username to get users for.
+     * @returns All users with that username. Array is empty if there are no users with that username.
+     *
+     * @private
+     */
+    private async getAllUsersWithUsername(username: string): Promise<User[]> {
+        const allUsers = await this.repository.findAll({ populate: false });
+        return allUsers.filter((u) => u.username === username);
     }
 
     /**
@@ -508,8 +400,8 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      *
      * @returns Tutorials matching the given IDs.
      */
-    private async getAllTutorials(ids: string[]): Promise<TutorialDocument[]> {
-        return Promise.all(ids.map((id) => this.tutorialService.findById(id)));
+    private async getAllTutorials(ids: string[]): Promise<Tutorial[]> {
+        return this.tutorialService.findMultiple(ids);
     }
 
     /**
@@ -528,7 +420,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      */
     private async checkUserDTO(
         { tutorials, tutorialsToCorrect, username, roles }: UserDTO,
-        user?: UserDocument
+        user?: User
     ) {
         if (await this.doesUserWithUsernameExist(username, user)) {
             throw new BadRequestException(`A user with the username '${username}' already exists.`);
@@ -556,7 +448,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      *
      * @throws `BadRequestException` - If the user is considered _NOT_ updatable.
      */
-    private async assertUserIsChangeable(user: UserDocument, dto: UserDTO) {
+    private async assertUserIsChangeable(user: User, dto: UserDTO) {
         if (user.roles.includes(Role.ADMIN) && !dto.roles.includes(Role.ADMIN)) {
             const allUsers = await this.findAll();
             const adminUsers = allUsers.filter((u) => u.roles.includes(Role.ADMIN));
@@ -577,7 +469,7 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
      *
      * @throws `BadRequestException` - If the user is the last admin.
      */
-    private async assertUserIsDeletable(user: UserDocument) {
+    private async assertUserIsDeletable(user: User) {
         if (user.roles.includes(Role.ADMIN)) {
             const allUsers = await this.findAll();
             const adminUsers = allUsers.filter((u) => u.roles.includes(Role.ADMIN));
@@ -588,10 +480,4 @@ export class UserService implements OnModuleInit, CRUDService<IUser, UserDTO, Us
             }
         }
     }
-}
-
-interface UpdateTutorialsParams {
-    tutor: UserDocument;
-    tutorials: TutorialDocument[];
-    tutorialsToCorrect: TutorialDocument[];
 }

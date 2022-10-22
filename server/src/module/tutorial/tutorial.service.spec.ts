@@ -1,37 +1,28 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
 import { DateTime, Interval, ToISOTimeOptions } from 'luxon';
-import { generateObjectId } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
+import { Role } from 'shared/model/Role';
+import { ITutorial, ITutorialGenerationDTO, UserInEntity } from 'shared/model/Tutorial';
 import {
-    createDatesForTutorialAsStrings,
-    MockedTutorialModel,
-    TUTORIAL_DOCUMENTS,
-} from '../../../test/mocks/documents.mock';
-import {
-    getAllUserDocsWithRole,
-    getUserDocWithRole,
-} from '../../../test/mocks/documents.mock.helpers';
-import { Role } from '../../shared/model/Role';
-import { ITutorial, ITutorialGenerationDTO, UserInEntity } from '../../shared/model/Tutorial';
-import { ScheinexamService } from '../scheinexam/scheinexam.service';
-import { SheetService } from '../sheet/sheet.service';
-import { ShortTestService } from '../short-test/short-test.service';
-import { GradingService } from '../student/grading.service';
-import { StudentService } from '../student/student.service';
-import { TeamService } from '../team/team.service';
-import { UserService } from '../user/user.service';
+    getAllUsersWithRole,
+    getUserWithRole,
+    sortListById,
+} from '../../../test/helpers/test.helpers';
+import { TestSuite } from '../../../test/helpers/TestSuite';
+import { MOCKED_TUTORIALS } from '../../../test/mocks/entities.mock';
+import { createDatesForTutorialAsStrings } from '../../../test/mocks/mock.helpers';
+import { Tutorial } from '../../database/entities/tutorial.entity';
 import { ExcludedTutorialDate, TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
 import { TutorialService } from './tutorial.service';
+import { TutorialModule } from './tutorial.module';
 
 interface AssertTutorialParams {
-    expected: MockedTutorialModel;
+    expected: Tutorial;
     actual: ITutorial;
 }
 
 interface AssertTutorialListParams {
-    expected: MockedTutorialModel[];
+    expected: Tutorial[];
     actual: ITutorial[];
 }
 
@@ -54,23 +45,30 @@ interface AssertGenerateTutorialsParams {
  * @param options Must contain the expected tutorial and the actual one.
  */
 function assertTutorial({ expected, actual }: AssertTutorialParams) {
-    const { _id, dates, startTime, endTime, slot, tutor, students, correctors } = expected;
+    const { id, dates, startTime, endTime, slot, tutor, students, correctors } = expected;
 
     const substitutes: Map<string, UserInEntity> = new Map();
 
-    expect(actual.id).toEqual(_id);
+    expect(actual.id).toEqual(id);
     expect(actual.slot).toEqual(slot);
-    expect(actual.tutor?.id).toEqual(tutor?._id);
+    expect(actual.tutor?.id).toEqual(tutor?.id);
     expect(actual.tutor?.firstname).toEqual(tutor?.firstname);
     expect(actual.tutor?.lastname).toEqual(tutor?.lastname);
 
-    expect(actual.students).toEqual(students.map((s) => s._id));
-    expect(actual.correctors).toEqual(
-        correctors.map((c) => ({
-            id: c.id,
-            firstname: c.firstname,
-            lastname: c.lastname,
-        }))
+    expect(actual.students.sort()).toEqual(
+        students
+            .getItems()
+            .map((s) => s.id)
+            .sort()
+    );
+    expect(actual.correctors.sort()).toEqual(
+        sortListById(
+            correctors.getItems().map((c) => ({
+                id: c.id,
+                firstname: c.firstname,
+                lastname: c.lastname,
+            }))
+        )
     );
 
     const options: ToISOTimeOptions = {
@@ -87,10 +85,13 @@ function assertTutorial({ expected, actual }: AssertTutorialParams) {
 function assertTutorialList({ expected, actual }: AssertTutorialListParams) {
     expect(actual.length).toBe(expected.length);
 
+    const expectedList = sortListById(expected);
+    const actualList = sortListById(actual);
+
     for (let i = 0; i < actual.length; i++) {
         assertTutorial({
-            expected: expected[i],
-            actual: actual[i],
+            expected: expectedList[i],
+            actual: actualList[i],
         });
     }
 }
@@ -98,7 +99,7 @@ function assertTutorialList({ expected, actual }: AssertTutorialListParams) {
 /**
  * Checks if the given Tutorial and the given TutorialDTO are equal.
  *
- * Equalitiy is defined as:
+ * Equality is defined as:
  * - Dates & Times are equal as of luxon's definition of an equal date.
  * - The IDs of the correctors match.
  * - `students`, `teams` and `substitutes` are either empty (if not `oldTutorial` tutorial is provided) or match those in the `oldTutorial` tutorial.
@@ -222,62 +223,63 @@ function assertGeneratedTutorials({ expected, actual }: AssertGenerateTutorialsP
     expect(actual.length).toBe(amountToGenerate);
 }
 
+async function checkGeneratedTutorials(
+    service: TutorialService,
+    dto: ITutorialGenerationDTO
+): Promise<void> {
+    const tutorialCountBefore = (await service.findAll()).length;
+    const generatedTutorials = await service.createMany(plainToClass(TutorialGenerationDTO, dto));
+    const tutorialCountAfter = (await service.findAll()).length;
+
+    expect(generatedTutorials.length).toBe(4);
+    expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
+
+    assertGeneratedTutorials({
+        expected: plainToClass(TutorialGenerationDTO, dto),
+        actual: generatedTutorials,
+    });
+}
+
 describe('TutorialService', () => {
-    let testModule: TestingModule;
-    let service: TutorialService;
-
-    beforeAll(async () => {
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [
-                TutorialService,
-                UserService,
-                StudentService,
-                TeamService,
-                SheetService,
-                ScheinexamService,
-                ShortTestService,
-                GradingService,
-            ],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule?.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<TutorialService>(TutorialService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    const suite = new TestSuite(TutorialService, TutorialModule);
 
     it('find all tutorials', async () => {
-        const allTutorials = await service.findAll();
+        const allTutorials = await suite.service.findAll();
 
         assertTutorialList({
-            expected: TUTORIAL_DOCUMENTS,
+            expected: MOCKED_TUTORIALS,
             actual: allTutorials.map((tutorial) => tutorial.toDTO()),
         });
     });
 
-    it('find a tutorial by id', async () => {
-        const tutorial = await service.findById(TUTORIAL_DOCUMENTS[0]._id);
+    it('find a tutorial WITHOUT tutor by id', async () => {
+        const expectedTutorial = MOCKED_TUTORIALS[0];
+        const tutorial = await suite.service.findById(expectedTutorial.id);
 
         assertTutorial({
-            expected: TUTORIAL_DOCUMENTS[0],
+            expected: expectedTutorial,
             actual: tutorial.toDTO(),
         });
     });
 
-    it('fail on finding non existing tutorial (by ID)', async () => {
-        const nonExistingId = generateObjectId();
+    it('find a tutorial WITH tutor by id', async () => {
+        const expectedTutorial = MOCKED_TUTORIALS[1];
+        const tutorial = await suite.service.findById(expectedTutorial.id);
 
-        await expect(service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
+        expect(tutorial.tutor).toBeDefined();
+
+        assertTutorial({
+            expected: expectedTutorial,
+            actual: tutorial.toDTO(),
+        });
+    });
+
+    it.todo('find MULTIPLE tutorials but NOT all');
+
+    it('fail on finding non existing tutorial (by ID)', async () => {
+        const nonExistingId = 'non-existing-id';
+
+        await expect(suite.service.findById(nonExistingId)).rejects.toThrow(NotFoundException);
     });
 
     it('create a tutorial without a tutor', async () => {
@@ -292,17 +294,17 @@ describe('TutorialService', () => {
             correctorIds: [],
         };
 
-        const tutorial = await service.create(dto);
+        const tutorial = await suite.service.create(dto);
 
         assertTutorialDTO({ expected: dto, actual: tutorial });
     });
 
     it('create a tutorial with a tutor', async () => {
-        const tutorDoc = getUserDocWithRole(Role.TUTOR);
+        const tutor = getUserWithRole(Role.TUTOR);
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutorDoc._id,
+            tutorId: tutor.id,
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -310,13 +312,13 @@ describe('TutorialService', () => {
             correctorIds: [],
         };
 
-        const tutorial = await service.create(dto);
+        const tutorial = await suite.service.create(dto);
 
         assertTutorialDTO({ expected: dto, actual: tutorial });
     });
 
     it('create a tutorial with correctors', async () => {
-        const correctorDocs = getAllUserDocsWithRole(Role.CORRECTOR);
+        const correctors = getAllUsersWithRole(Role.CORRECTOR);
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
@@ -325,39 +327,39 @@ describe('TutorialService', () => {
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             dates: createDatesForTutorialAsStrings(),
-            correctorIds: correctorDocs.map((corrector) => corrector._id),
+            correctorIds: correctors.map((corrector) => corrector.id),
         };
 
-        const tutorial = await service.create(dto);
+        const tutorial = await suite.service.create(dto);
 
         assertTutorialDTO({ expected: dto, actual: tutorial });
     });
 
     it('create a tutorial with tutor and correctors', async () => {
-        const tutorDoc = getUserDocWithRole(Role.TUTOR);
-        const correctorDocs = getAllUserDocsWithRole(Role.CORRECTOR);
+        const tutor = getUserWithRole(Role.TUTOR);
+        const correctors = getAllUsersWithRole(Role.CORRECTOR);
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutorDoc._id,
+            tutorId: tutor.id,
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             dates: createDatesForTutorialAsStrings(),
-            correctorIds: correctorDocs.map((corrector) => corrector._id),
+            correctorIds: correctors.map((corrector) => corrector.id),
         };
 
-        const tutorial = await service.create(dto);
+        const tutorial = await suite.service.create(dto);
 
         assertTutorialDTO({ expected: dto, actual: tutorial });
     });
 
     it('fail on creating a tutorial with a non tutor', async () => {
-        const tutorDoc = getUserDocWithRole(Role.ADMIN);
+        const tutorDoc = getUserWithRole(Role.ADMIN);
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutorDoc._id,
+            tutorId: tutorDoc.id,
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -365,12 +367,12 @@ describe('TutorialService', () => {
             correctorIds: [],
         };
 
-        await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(dto)).rejects.toThrow(BadRequestException);
     });
 
     it('fail on creating a tutorial with a non corrector', async () => {
-        const tutorDoc = getUserDocWithRole(Role.ADMIN);
-        const correctors = getAllUserDocsWithRole(Role.CORRECTOR).map((corrector) => corrector._id);
+        const tutorDoc = getUserWithRole(Role.ADMIN);
+        const correctors = getAllUsersWithRole(Role.CORRECTOR).map((corrector) => corrector.id);
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
@@ -379,14 +381,14 @@ describe('TutorialService', () => {
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             dates: createDatesForTutorialAsStrings(),
-            correctorIds: [...correctors, tutorDoc._id],
+            correctorIds: [...correctors, tutorDoc.id],
         };
 
-        await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(dto)).rejects.toThrow(BadRequestException);
     });
 
     it('fail on creating a tutorial with an already existing slot', async () => {
-        const tutorial = TUTORIAL_DOCUMENTS[0];
+        const tutorial = MOCKED_TUTORIALS[0];
         const dto: TutorialDTO = {
             slot: tutorial.slot,
             tutorId: undefined,
@@ -397,7 +399,7 @@ describe('TutorialService', () => {
             correctorIds: [],
         };
 
-        await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.create(dto)).rejects.toThrow(BadRequestException);
     });
 
     it('update a tutorial without updating the tutor of the correctors', async () => {
@@ -421,8 +423,8 @@ describe('TutorialService', () => {
             dates: createDatesForTutorialAsStrings('2020-02-18'),
         };
 
-        const oldTutorial = await service.create(createDTO);
-        const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+        const oldTutorial = await suite.service.create(createDTO);
+        const updatedTutorial = await suite.service.update(oldTutorial.id, updatedDTO);
 
         assertTutorialDTO({
             expected: updatedDTO,
@@ -432,10 +434,10 @@ describe('TutorialService', () => {
     });
 
     it('update tutor of tutorial', async () => {
-        const tutors = getAllUserDocsWithRole(Role.TUTOR);
+        const tutors = getAllUsersWithRole(Role.TUTOR);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutors[0]._id,
+            tutorId: tutors[0].id,
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -445,11 +447,11 @@ describe('TutorialService', () => {
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
-            tutorId: tutors[1]._id,
+            tutorId: tutors[1].id,
         };
 
-        const oldTutorial = await service.create(createDTO);
-        const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+        const oldTutorial = await suite.service.create(createDTO);
+        const updatedTutorial = await suite.service.update(oldTutorial.id, updatedDTO);
 
         assertTutorialDTO({
             expected: updatedDTO,
@@ -459,7 +461,7 @@ describe('TutorialService', () => {
     });
 
     it('update tutorial to not have a tutor anymore', async () => {
-        const tutor = getUserDocWithRole(Role.TUTOR);
+        const tutor = getUserWithRole(Role.TUTOR);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
             tutorId: undefined,
@@ -472,11 +474,11 @@ describe('TutorialService', () => {
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
-            tutorId: tutor._id,
+            tutorId: tutor.id,
         };
 
-        const oldTutorial = await service.create(createDTO);
-        const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+        const oldTutorial = await suite.service.create(createDTO);
+        const updatedTutorial = await suite.service.update(oldTutorial.id, updatedDTO);
 
         assertTutorialDTO({
             expected: updatedDTO,
@@ -486,7 +488,7 @@ describe('TutorialService', () => {
     });
 
     it('update correctors of tutorial', async () => {
-        const correctors = getAllUserDocsWithRole(Role.CORRECTOR);
+        const correctors = getAllUsersWithRole(Role.CORRECTOR);
 
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
@@ -496,15 +498,15 @@ describe('TutorialService', () => {
             endTime:
                 DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             dates: createDatesForTutorialAsStrings(),
-            correctorIds: [correctors[0]._id],
+            correctorIds: [correctors[0].id],
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
-            correctorIds: [correctors[1]._id],
+            correctorIds: [correctors[1].id],
         };
 
-        const oldTutorial = await service.create(createDTO);
-        const updatedTutorial = await service.update(oldTutorial.id, updatedDTO);
+        const oldTutorial = await suite.service.create(createDTO);
+        const updatedTutorial = await suite.service.update(oldTutorial.id, updatedDTO);
 
         assertTutorialDTO({
             expected: updatedDTO,
@@ -514,7 +516,7 @@ describe('TutorialService', () => {
     });
 
     it('fail on updating with a non-existing tutor', async () => {
-        const nonExistingId = generateObjectId();
+        const nonExistingId = 'non-existing-id';
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
             tutorId: nonExistingId,
@@ -530,13 +532,15 @@ describe('TutorialService', () => {
             tutorId: undefined,
         };
 
-        const oldTutorial = await service.create(createDTO);
+        const oldTutorial = await suite.service.create(createDTO);
 
-        await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('fail on updating with a non-existing corrector', async () => {
-        const nonExistingId = generateObjectId();
+        const nonExistingId = 'non-existing-id';
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
             tutorId: undefined,
@@ -552,16 +556,18 @@ describe('TutorialService', () => {
             correctorIds: [],
         };
 
-        const oldTutorial = await service.create(createDTO);
+        const oldTutorial = await suite.service.create(createDTO);
 
-        await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(NotFoundException);
+        await expect(suite.service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(
+            NotFoundException
+        );
     });
 
     it('fail on updating a tutorial with a non-tutor', async () => {
-        const nonTutor = getUserDocWithRole(Role.ADMIN);
+        const nonTutor = getUserWithRole(Role.ADMIN);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: nonTutor._id,
+            tutorId: nonTutor.id,
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -574,15 +580,15 @@ describe('TutorialService', () => {
             tutorId: undefined,
         };
 
-        const oldTutorial = await service.create(createDTO);
+        const oldTutorial = await suite.service.create(createDTO);
 
-        await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(
+        await expect(suite.service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(
             BadRequestException
         );
     });
 
     it('fail on updating a tutorial with a non-corrector', async () => {
-        const nonCorrector = getUserDocWithRole(Role.ADMIN);
+        const nonCorrector = getUserWithRole(Role.ADMIN);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
             tutorId: undefined,
@@ -591,26 +597,26 @@ describe('TutorialService', () => {
             endTime:
                 DateTime.fromISO('11:15:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             dates: createDatesForTutorialAsStrings(),
-            correctorIds: [nonCorrector._id],
+            correctorIds: [nonCorrector.id],
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
             correctorIds: [],
         };
 
-        const oldTutorial = await service.create(createDTO);
+        const oldTutorial = await suite.service.create(createDTO);
 
-        await expect(service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(
+        await expect(suite.service.update(oldTutorial.id, updatedDTO)).rejects.toThrow(
             BadRequestException
         );
     });
 
     it('delete a tutorial', async () => {
-        const tutorDoc = getUserDocWithRole(Role.TUTOR);
+        const tutor = getUserWithRole(Role.TUTOR);
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutorDoc._id,
+            tutorId: tutor.id,
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -618,37 +624,43 @@ describe('TutorialService', () => {
             correctorIds: [],
         };
 
-        const tutorial = await service.create(dto);
-        const deletedTutorial = await service.delete(tutorial.id);
+        const tutorial = await suite.service.create(dto);
 
-        expect(deletedTutorial.id).toEqual(tutorial.id);
-        await expect(service.findById(tutorial.id)).rejects.toThrow(NotFoundException);
+        await suite.service.delete(tutorial.id);
+        await expect(suite.service.findById(tutorial.id)).rejects.toThrow(NotFoundException);
     });
 
     it('fail on deleting a tutorial with students', async () => {
-        const tutorialWithStudents = TUTORIAL_DOCUMENTS[0];
+        const tutorialWithStudents = MOCKED_TUTORIALS[0];
 
         // Sanity check
         expect(tutorialWithStudents.students.length).not.toBe(0);
 
-        await expect(service.delete(tutorialWithStudents._id)).rejects.toThrow(BadRequestException);
+        await expect(suite.service.delete(tutorialWithStudents.id)).rejects.toThrow(
+            BadRequestException
+        );
     });
 
     it('get all students of a tutorial', async () => {
-        const tutorialWithStudents = TUTORIAL_DOCUMENTS[0];
+        const tutorialWithStudents = MOCKED_TUTORIALS[0];
 
         // Sanity check
         expect(tutorialWithStudents.students.length).not.toBe(0);
 
-        const students = await service.getAllStudentsOfTutorial(tutorialWithStudents._id);
+        const students = await suite.service.getAllStudentsOfTutorial(tutorialWithStudents.id);
 
-        expect(students.map((s) => s.id)).toEqual(tutorialWithStudents.students.map((s) => s._id));
+        expect(students.map((s) => s.id).sort()).toEqual(
+            tutorialWithStudents.students
+                .getItems()
+                .map((s) => s.id)
+                .sort()
+        );
     });
 
     it('fail on getting all student of a non-existing tutorial', async () => {
-        const nonExisting = generateObjectId();
+        const nonExisting = 'non-existing-id';
 
-        await expect(service.getAllStudentsOfTutorial(nonExisting)).rejects.toThrow(
+        await expect(suite.service.getAllStudentsOfTutorial(nonExisting)).rejects.toThrow(
             NotFoundException
         );
     });
@@ -660,7 +672,7 @@ describe('TutorialService', () => {
             excludedDates: [],
             generationDatas: [
                 {
-                    // Generate 2 in the slot Monady, 08:00 - 09:30
+                    // Generate 2 in the slot Monday, 08:00 - 09:30
                     amount: 2,
                     weekday: 1,
                     interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
@@ -682,19 +694,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await service.findAll()).length;
-        const generatedTutorials = await service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('make sure tutorial generation does take all days in the interval into account', async () => {
@@ -704,7 +704,7 @@ describe('TutorialService', () => {
             excludedDates: [],
             generationDatas: [
                 {
-                    // Generate 2 in the slot Monady, 08:00 - 09:30
+                    // Generate 2 in the slot Monday, 08:00 - 09:30
                     amount: 2,
                     weekday: 1,
                     interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
@@ -712,11 +712,11 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await service.findAll()).length;
-        const generatedTutorials = await service.createMany(
+        const tutorialCountBefore = (await suite.service.findAll()).length;
+        const generatedTutorials = await suite.service.createMany(
             plainToClass(TutorialGenerationDTO, dto)
         );
-        const tutorialCountAfter = (await service.findAll()).length;
+        const tutorialCountAfter = (await suite.service.findAll()).length;
 
         expect(generatedTutorials.length).toBe(2);
         expect(tutorialCountAfter).toBe(tutorialCountBefore + 2);
@@ -734,7 +734,8 @@ describe('TutorialService', () => {
             excludedDates: [{ date: '2020-06-01' }, { date: '2020-06-11' }],
             generationDatas: [
                 {
-                    // Generate 2 in the slot Monady, 08:00 - 09:30
+                    // Generate 2 in the slot
+                    // Monday, 08:00 - 09:30
                     amount: 2,
                     weekday: 1,
                     interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
@@ -756,19 +757,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await service.findAll()).length;
-        const generatedTutorials = await service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('generate multiple tutorials with an excluded interval', async () => {
@@ -778,7 +767,7 @@ describe('TutorialService', () => {
             excludedDates: [{ interval: '2020-06-08/2020-06-14' }],
             generationDatas: [
                 {
-                    // Generate 2 in the slot Monady, 08:00 - 09:30
+                    // Generate 2 in the slot Monday, 08:00 - 09:30
                     amount: 2,
                     weekday: 1,
                     interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
@@ -800,19 +789,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await service.findAll()).length;
-        const generatedTutorials = await service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('generate multiple tutorials with mixed excluded dates', async () => {
@@ -822,7 +799,7 @@ describe('TutorialService', () => {
             excludedDates: [{ date: '2020-06-04' }, { interval: '2020-06-08/2020-06-14' }],
             generationDatas: [
                 {
-                    // Generate 2 in the slot Monady, 08:00 - 09:30
+                    // Generate 2 in the slot Monday, 08:00 - 09:30
                     amount: 2,
                     weekday: 1,
                     interval: '2020-05-28T08:00:00Z/2020-05-28T09:30:00Z',
@@ -844,19 +821,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const tutorialCountBefore = (await service.findAll()).length;
-        const generatedTutorials = await service.createMany(
-            plainToClass(TutorialGenerationDTO, dto)
-        );
-        const tutorialCountAfter = (await service.findAll()).length;
-
-        expect(generatedTutorials.length).toBe(4);
-        expect(tutorialCountAfter).toBe(tutorialCountBefore + 4);
-
-        assertGeneratedTutorials({
-            expected: plainToClass(TutorialGenerationDTO, dto),
-            actual: generatedTutorials,
-        });
+        await checkGeneratedTutorials(suite.service, dto);
     });
 
     it('do NOT generate a tutorial if no dates are available', async () => {
@@ -866,7 +831,7 @@ describe('TutorialService', () => {
             excludedDates: [{ date: '2020-06-03' }, { interval: '2020-06-08/2020-06-14' }], // All wednesdays are excluded!
             generationDatas: [
                 {
-                    // Effectivly generate 0 in the slot Wednesday, 15:45 - 17:15
+                    // Effectively generate 0 in the slot Wednesday, 15:45 - 17:15
                     amount: 1,
                     weekday: 3,
                     interval: '2020-05-28T15:45:00Z/2020-05-28T17:00:00Z',
@@ -874,7 +839,7 @@ describe('TutorialService', () => {
                 },
             ],
         };
-        const generatedTutorials = await service.createMany(
+        const generatedTutorials = await suite.service.createMany(
             plainToClass(TutorialGenerationDTO, dto)
         );
 

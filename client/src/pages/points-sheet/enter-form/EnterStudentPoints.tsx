@@ -11,6 +11,8 @@ import { ROUTES } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
+import { GradingList } from '../../../model/GradingList';
 
 interface RouteParams {
   tutorialId?: string;
@@ -27,6 +29,7 @@ function EnterStudentPoints(): JSX.Element {
 
   const [student, setStudent] = useState<Student>();
   const [team, setTeam] = useState<Team>();
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
 
   useEffect(() => {
     if (!studentId) {
@@ -50,7 +53,16 @@ function EnterStudentPoints(): JSX.Element {
         setTeam(response);
       })
       .catch(() => setError('Team konnte nicht abgerufen werden.'));
-  }, [tutorialId, teamId, setError]);
+
+    if (!!sheetId) {
+      getGradingsOfTutorial(sheetId, tutorialId)
+        .then((response) => setGradings(response))
+        .catch(() => {
+          setError('Bewertungen konnten nicht abgerufen werden.');
+          setGradings(new GradingList([]));
+        });
+    }
+  }, [sheetId, tutorialId, teamId, setError]);
 
   if (!tutorialId || !sheetId || !studentId || !teamId) {
     return (
@@ -76,8 +88,8 @@ function EnterStudentPoints(): JSX.Element {
       return;
     }
 
-    const prevGrading = student.getGrading(sheetId);
-    const teamGrading = team?.getGrading(sheetId);
+    const prevGrading = gradings.getOfStudent(student.id);
+    const teamGrading = team === undefined ? undefined : gradings.getOfTeam(team);
 
     const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
@@ -112,6 +124,7 @@ function EnterStudentPoints(): JSX.Element {
       tutorialId={tutorialId}
       sheetId={sheetId}
       entity={student}
+      grading={student === undefined ? undefined : gradings.getOfStudent(student.id)}
       onSubmit={handleSubmit}
       allEntities={allStudents}
       entitySelectProps={{

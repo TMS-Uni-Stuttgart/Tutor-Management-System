@@ -1,32 +1,30 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-import { SettingsDocument, SettingsModel } from '../../database/models/settings.model';
-import { StartUpException } from '../../exceptions/StartUpException';
+import { EntityRepository, MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { IClientSettings, IMailingSettings } from 'shared/model/Settings';
+import { Setting } from '../../database/entities/settings.entity';
+import { StartUpException } from '../../exceptions/StartUpException';
 import { ClientSettingsDTO } from './settings.dto';
 import { StaticSettings } from './settings.static';
 
 @Injectable()
-export class SettingsService extends StaticSettings implements OnModuleInit {
+export class SettingsService extends StaticSettings implements OnApplicationBootstrap {
     constructor(
-        @InjectModel(SettingsModel)
-        private readonly settingsModel: ReturnModelType<typeof SettingsModel>
+        private readonly orm: MikroORM,
+        @InjectRepository(Setting)
+        private readonly repository: EntityRepository<Setting>
     ) {
         super();
-
-        // Overwrite the logger context from the parent class.
-        this.logger.setContext(SettingsService.name);
     }
 
     /**
      * @returns The current settings saved in the DB.
      *
-     * @see getSettingsDocument
+     * @see getSettingsEntity
      */
     async getClientSettings(): Promise<IClientSettings> {
-        const document = await this.getSettingsDocument();
-        return document.toDTO();
+        const settings = await this.getSettingsEntity();
+        return settings.toDTO();
     }
 
     /**
@@ -34,21 +32,22 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
      *
      * If `settings` does not contain a property this setting-property will be untouched (ie the previous value will be used).
      *
-     * @param settings New settings to use.
+     * @param dto New settings to use.
      */
-    async setClientSettings(settings: ClientSettingsDTO): Promise<void> {
-        const document = await this.getSettingsDocument();
+    async setClientSettings(dto: ClientSettingsDTO): Promise<void> {
+        const settings = await this.getSettingsEntity();
 
-        document.assignDTO(settings);
-        await document.save();
+        settings.updateFromDTO(dto);
+
+        await this.repository.persistAndFlush(settings);
     }
 
     /**
      * @returns MailingConfiguration saved in the DB or `undefined` if none are saved.
      */
     async getMailingOptions(): Promise<IMailingSettings | undefined> {
-        const document = await this.getSettingsDocument();
-        return document.mailingConfig?.toDTO();
+        const settings = await this.getSettingsEntity();
+        return settings.mailSettings?.toDTO();
     }
 
     /**
@@ -58,22 +57,29 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
      *
      * If there is ONE nothing is done.
      */
-    async onModuleInit(): Promise<void> {
-        const documents = await this.settingsModel.find();
+    @UseRequestContext()
+    async onApplicationBootstrap(): Promise<void> {
+        const settings = await this.repository.findOne({
+            id: Setting.SETTING_ID,
+        });
 
-        if (documents.length === 0) {
+        if (!settings) {
             this.logger.log(
-                'No settings document provided. Creating new default settings document...'
+                'No settings were provided. Creating new default settings...',
+                SettingsService.name
             );
 
             try {
                 const defaults = this.generateDefaultSettings();
-                this.logger.log(`Default settings used: ${JSON.stringify(defaults)}`);
-                await this.settingsModel.create(defaults);
+                this.logger.log(
+                    `Default settings used: ${JSON.stringify(defaults)}`,
+                    SettingsService.name
+                );
 
-                this.logger.log('Default settings document successfully created.');
+                await this.repository.persistAndFlush(defaults);
+                this.logger.log('Default settings successfully created.', SettingsService.name);
             } catch (err) {
-                throw new StartUpException('Could not create the default settings document.');
+                throw new StartUpException('Could not create the default settings.');
             }
         }
     }
@@ -86,22 +92,18 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
      * @returns `SettingsDocument` if there is one, `undefined` else.
      * @throws `Error` - If there is not `SettingsDocument` saved in the database.
      */
-    private async getSettingsDocument(): Promise<SettingsDocument> {
-        const documents = await this.settingsModel.find();
+    private async getSettingsEntity(): Promise<Setting> {
+        const settings = await this.repository.findOne({
+            id: Setting.SETTING_ID,
+        });
 
-        if (documents.length > 1) {
-            this.logger.warn(
-                'More than one settings document was found. Using the first entry in the database.'
-            );
-        }
-
-        if (!documents[0]) {
+        if (!settings) {
             throw new Error(
                 'No settings document saved in the database. This might be due to a failed initialization.'
             );
         }
 
-        return documents[0];
+        return settings;
     }
 
     /**
@@ -109,8 +111,8 @@ export class SettingsService extends StaticSettings implements OnModuleInit {
      *
      * The defaults can be overwritten by the config file. If they are present in said file those values will be used.
      */
-    private generateDefaultSettings(): SettingsModel {
+    private generateDefaultSettings(): Setting {
         const defaultsFromConfig = this.config.defaultSettings;
-        return new SettingsModel(defaultsFromConfig);
+        return Setting.fromDTO(defaultsFromConfig);
     }
 }

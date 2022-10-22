@@ -1,5 +1,4 @@
 import { IsNumber, IsObject, IsOptional, IsString, Min } from 'class-validator';
-import { ConnectionOptions } from 'mongoose';
 
 export enum DatabaseConfigurationValidationGroup {
     ALL = 'all',
@@ -8,16 +7,35 @@ export enum DatabaseConfigurationValidationGroup {
 
 export class DatabaseConfiguration {
     @IsString({ always: true })
-    readonly databaseURL!: string;
+    readonly host!: string;
 
+    @Min(0, { always: true })
+    readonly port!: number;
+
+    @IsString({ always: true })
+    readonly databaseName!: string;
+
+    @IsOptional({ always: true })
     @IsNumber({}, { always: true })
     @Min(0, { always: true })
-    readonly maxRetries!: number;
+    readonly maxRetries?: number;
+
+    @IsOptional({ always: true })
+    @IsNumber({}, { always: true })
+    @Min(0, { always: true })
+    readonly reconnectTimeout?: number;
 
     @IsString({ groups: [DatabaseConfigurationValidationGroup.ALL] })
     readonly secret!: string;
 
-    @IsOptional({ always: true })
     @IsObject({ always: true })
-    readonly config?: Omit<ConnectionOptions, 'auth'>;
+    readonly auth!: { user: string; pass: string };
+}
+
+export interface DatabaseConnectionOptions {
+    readonly host: string;
+    readonly port: number;
+    readonly dbName: string;
+    readonly user: string;
+    readonly password: string;
 }

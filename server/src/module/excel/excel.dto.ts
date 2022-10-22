@@ -1,6 +1,6 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { ParseConfig } from 'papaparse';
-import { IParseCsvDTO } from '../../shared/model/CSV';
+import { IParseCsvDTO } from 'shared/model/CSV';
 
 export class ParseCsvDTO implements IParseCsvDTO {
     @IsString()

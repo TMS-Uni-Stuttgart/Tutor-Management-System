@@ -1,6 +1,5 @@
 import { Box, BoxProps, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import CustomSelect, { OnChangeHandler } from '../../../components/CustomSelect';
 import LoadingSpinner from '../../../components/loading/LoadingSpinner';
@@ -11,6 +10,7 @@ import { getStudentCorrectionCommentMarkdown } from '../../../hooks/fetching/Mar
 import { HasExercises } from '../../../model/Exercise';
 import { Grading } from '../../../model/Grading';
 import { Student } from '../../../model/Student';
+import { getGradingOfStudent } from '../../../hooks/fetching/Grading';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -66,8 +66,6 @@ function GradingInformation({
 }: Props): JSX.Element {
   const classes = useStyles();
 
-  const { enqueueSnackbar } = useSnackbar();
-
   const [gradingOfSelected, setGradingOfSelected] = useState<Grading>();
   const [selectedEntity, setSelectedEntity] = useState<HasExercises>();
   const [studentMarkdown, setStudentMarkdown] = useState<string>();
@@ -81,22 +79,20 @@ function GradingInformation({
       return;
     }
 
-    setGradingOfSelected(student.getGrading(selectedEntity));
-
-    if (!disableCommentDisplay) {
-      setLoading(true);
-      getStudentCorrectionCommentMarkdown(selectedEntity.id, student.id)
-        .then((response) => {
-          setStudentMarkdown(response);
-        })
-        .catch(() => {
-          setStudentMarkdown('');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [selectedEntity, student, enqueueSnackbar, disableCommentDisplay]);
+    setLoading(true);
+    handleSelectionChange(selectedEntity.id, student.id, disableCommentDisplay ?? false)
+      .then(([grading, markdownComment]) => {
+        setGradingOfSelected(grading);
+        setStudentMarkdown(markdownComment);
+      })
+      .catch(() => {
+        setGradingOfSelected(undefined);
+        setStudentMarkdown('');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [selectedEntity, student, disableCommentDisplay]);
 
   const handleSheetSelectionChange: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
@@ -157,6 +153,26 @@ function GradingInformation({
       </Placeholder>
     </Box>
   );
+}
+
+async function handleSelectionChange(
+  handInId: string,
+  studentId: string,
+  disableCommentDisplay: boolean
+): Promise<[Grading | undefined, string]> {
+  const grading = await getGradingOfStudent(handInId, studentId);
+  let markdownComment: string;
+  if (!disableCommentDisplay) {
+    try {
+      markdownComment = await getStudentCorrectionCommentMarkdown(handInId, studentId);
+    } catch {
+      markdownComment = '';
+    }
+  } else {
+    markdownComment = '';
+  }
+
+  return [grading, markdownComment];
 }
 
 export default GradingInformation;

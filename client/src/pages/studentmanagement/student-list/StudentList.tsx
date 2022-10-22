@@ -48,11 +48,10 @@ function StudentList({
 
   const [filterText, setFilterText] = useState('');
   const [sortOption, setSortOption] = useState<StudentSortOption>(StudentSortOption.ALPHABETICAL);
-  const filteredStudents = useMemo(() => getFilteredStudents(students, filterText, sortOption), [
-    students,
-    filterText,
-    sortOption,
-  ]);
+  const filteredStudents = useMemo(
+    () => getFilteredStudents(students, filterText, sortOption),
+    [students, filterText, sortOption]
+  );
 
   const handleStudentEdit = useCallback(
     (student: Student) => {

@@ -1,5 +1,5 @@
 {
-  "name": "client-cra",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "main": "src/index.tsx",
@@ -11,6 +11,7 @@
     "format": "eslint --fix \"src/**/*.ts?(x)\"",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"src/**/*.ts?(x)\"",
+    "prettier:format": "prettier --write --loglevel warn \"./**/*.ts?(x)\"",
     "ts:check": "tsc --project . --noEmit",
     "ts:check:watch": "tsc --project . --noEmit -w",
     "eject": "react-scripts eject"
@@ -24,7 +25,7 @@
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
     "file-saver": "^2.0.2",
-    "formik": "^2.2.6",
+    "formik": "^2.2.9",
     "highlight.js": "^10.7.2",
     "html-react-parser": "^1.2.1",
     "i18next": "^19.8.3",

@@ -9,6 +9,9 @@ import { Student } from '../../../../model/Student';
 import { RequireChildrenProp } from '../../../../typings/RequireChildrenProp';
 import { throwContextNotInitialized } from '../../../../util/throwFunctions';
 import { ShortTestColumns } from '../ImportShortTests';
+import { GradingList } from '../../../../model/GradingList';
+import { getGradingsOfHandIn } from '../../../../hooks/fetching/Grading';
+import { Logger } from '../../../../util/Logger';
 
 interface ContextValue {
   iliasNameMapping: Map<string, Student>;
@@ -19,6 +22,7 @@ interface ContextValue {
   addMapping: (iliasName: string, student: Student) => void;
   getMapping: (iliasName: string) => Student | undefined;
   removeMapping: (iliasName: string) => void;
+  hasStudentGrading: (student: Student) => boolean;
 
   isLoading: boolean;
   error?: string;
@@ -38,6 +42,7 @@ const IliasMappingContext = React.createContext<ContextValue>({
   addMapping: throwContextNotInitialized('IliasMappingContext'),
   getMapping: throwContextNotInitialized('IliasMappingContext'),
   removeMapping: throwContextNotInitialized('IliasMappingContext'),
+  hasStudentGrading: throwContextNotInitialized('IliasMappingContext'),
 });
 
 interface Props extends RequireChildrenProp {
@@ -70,15 +75,16 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     params: [],
   });
 
-  const isLoading = useMemo(() => isLoadingStudents || isLoadingShortTest, [
-    isLoadingStudents,
-    isLoadingShortTest,
-  ]);
+  const isLoading = useMemo(
+    () => isLoadingStudents || isLoadingShortTest,
+    [isLoadingStudents, isLoadingShortTest]
+  );
 
   const [iliasNameMapping, setIliasNameMapping] = useState(new Map<string, Student>());
   const [iliasNamesWithoutStudent, setWithoutStudent] = useState<string[]>([]);
   const [studentsWithoutResult, setStudentsWithoutResult] = useState<Student[]>([]);
   const [studentsMappedFromCSV, setStudentsMappedFromCSV] = useState<Student[]>([]);
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
   const [isWorking, setWorking] = useState(false);
 
   useEffect(() => {
@@ -89,6 +95,17 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
 
     if (!isLoading && students) {
       setWorking(true);
+
+      if (!!shortTestId) {
+        getGradingsOfHandIn(shortTestId)
+          .then((response) => setGradings(response))
+          .catch(() => {
+            Logger.logger.error(
+              `Could not retrieve gradings for the short test with the ID ${shortTestId}`
+            );
+            setGradings(new GradingList([]));
+          });
+      }
 
       // This must be a string (and not a string array) bc 'iliasName' is defined as 'static' column.
       const iliasName = mappedColumns.iliasName as string;
@@ -122,7 +139,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
       setStudentsWithoutResult(studentsWithoutResult);
       setWorking(false);
     }
-  }, [csvData.rows, isLoading, students, mappedColumns.iliasName]);
+  }, [csvData.rows, isLoading, students, mappedColumns.iliasName, shortTestId]);
 
   const addMapping = useCallback(
     (iliasName, student) => {
@@ -144,9 +161,10 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     [iliasNameMapping]
   );
 
-  const getMapping = useCallback((iliasName: string) => iliasNameMapping.get(iliasName), [
-    iliasNameMapping,
-  ]);
+  const getMapping = useCallback(
+    (iliasName: string) => iliasNameMapping.get(iliasName),
+    [iliasNameMapping]
+  );
 
   const removeMapping = useCallback(
     (iliasName: string) => {
@@ -154,6 +172,11 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
       setIliasNameMapping(new Map(iliasNameMapping));
     },
     [iliasNameMapping]
+  );
+
+  const hasStudentGrading = useCallback(
+    (student: Student) => gradings.getOfStudent(student.id) !== undefined,
+    [gradings]
   );
 
   return (
@@ -174,6 +197,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
         addMapping,
         getMapping,
         removeMapping,
+        hasStudentGrading,
       }}
     >
       {children}

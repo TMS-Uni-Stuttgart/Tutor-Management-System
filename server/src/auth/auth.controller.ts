@@ -10,9 +10,9 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ILoggedInUser } from 'shared/model/User';
 import { LoginGuard } from '../guards/login.guard';
 import { UserService } from '../module/user/user.service';
-import { ILoggedInUser } from '../shared/model/User';
 
 @Controller('auth')
 export class AuthController {
@@ -26,7 +26,7 @@ export class AuthController {
             throw new UnauthorizedException();
         }
 
-        return await this.userService.getLoggedInUserInformation(req.user._id);
+        return await this.userService.getLoggedInUserInformation(req.user.id);
     }
 
     @Get('/logout')

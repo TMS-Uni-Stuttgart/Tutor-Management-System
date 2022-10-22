@@ -36,8 +36,6 @@ const excludedDateSchema = Yup.object<FormExcludedDate>()
   .test('excludedDate', `Not a valid excluded date`, (obj) => {
     if (obj instanceof DateTime) {
       return obj.isValid;
-    } else if (obj instanceof Interval) {
-      return obj.isValid;
     }
 
     return false;
@@ -51,7 +49,7 @@ const singleWeekdaySlotSchema = Yup.object().shape<WeekdayTimeSlot>({
     .required('Benötigt'),
   interval: Yup.object<Interval>()
     .test('is-interval', 'Is not a valid luxon Interval', function (this, obj) {
-      if (!(obj instanceof Interval)) {
+      if (!obj) {
         return this.createError({ message: 'Not a luxon Interval object.' });
       }
 
@@ -107,7 +105,9 @@ const weekdaysSchema = Yup.object<FormState['weekdays']>()
       try {
         areWeekdaysValid.bind(this)(value, `${this.path}.${key}`);
       } catch (validationError) {
-        inner.push(validationError);
+        if (validationError instanceof ValidationError) {
+          inner.push(validationError);
+        }
       }
     }
 
@@ -142,7 +142,7 @@ const prefixesSchema = Yup.object<FormState['prefixes']>()
             path: `${this.path}.${key}`,
           })
         );
-      } else if (typeof value !== 'string') {
+      } else {
         inner.push(
           this.createError({
             message: `Präfix ist kein String.`,

@@ -1,3 +1,5 @@
+// noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
+
 import { Logger } from '@nestjs/common';
 import fs from 'fs';
 import puppeteer from 'puppeteer';
@@ -8,6 +10,7 @@ import { StaticSettings } from '../../settings/settings.static';
  */
 export abstract class PDFGenerator<T = Record<string, unknown>> {
     private readonly logger = new Logger(PDFGenerator.name);
+
     /**
      * Generates a PDF from the given options.
      *
@@ -67,7 +70,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
             return buffer;
         } catch (err) {
             if (browser) {
-                browser.close();
+                await browser.close();
             }
 
             Logger.error(JSON.stringify(err, null, 2));

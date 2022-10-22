@@ -1,12 +1,12 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { SentMessageInfo } from 'nodemailer/lib/smtp-transport';
-import { UserDocument } from '../../database/models/user.model';
+import { FailedMail, MailingStatus } from 'shared/model/Mail';
+import { IMailingSettings } from 'shared/model/Settings';
+import { getNameOfEntity } from 'shared/util/helpers';
+import { User } from '../../database/entities/user.entity';
 import { VALID_EMAIL_REGEX } from '../../helpers/validators/nodemailer.validator';
-import { FailedMail, MailingStatus } from '../../shared/model/Mail';
-import { IMailingSettings } from '../../shared/model/Settings';
-import { getNameOfEntity } from '../../shared/util/helpers';
 import { SettingsService } from '../settings/settings.service';
 import { TemplateService } from '../template/template.service';
 import { UserService } from '../user/user.service';
@@ -16,15 +16,13 @@ class MailingError {
 }
 
 interface SendMailParams {
-    user: UserDocument;
+    user: User;
     transport: Mail;
     options: IMailingSettings;
 }
 
 @Injectable()
 export class MailService {
-    private readonly logger = new Logger(MailService.name);
-
     constructor(
         private readonly userService: UserService,
         private readonly settingsService: SettingsService,
@@ -72,7 +70,7 @@ export class MailService {
     /**
      * Sends a mail with the credentials to the user with the given ID.
      *
-     * The mail is only sent to uthe user if he/she has not already changed their initial password.
+     * The mail is only sent to the user if he/she has not already changed their initial password.
      *
      * @returns Data containing information about the amount of successfully send mails (1) and information on failure.
      */
@@ -177,7 +175,7 @@ export class MailService {
      * @param user User to get the mail text for.
      * @returns The mail template filled with the data of the given user
      */
-    private getTextOfMail(user: UserDocument): string {
+    private getTextOfMail(user: User): string {
         const template = this.templateService.getMailTemplate();
         return template({
             name: getNameOfEntity(user, { firstNameFirst: true }),

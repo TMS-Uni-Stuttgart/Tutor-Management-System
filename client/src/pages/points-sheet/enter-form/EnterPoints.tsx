@@ -9,9 +9,10 @@ import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Sheet } from '../../../model/Sheet';
 import { ROUTES } from '../../../routes/Routing.routes';
-import { HasGradings } from '../../../typings/types';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
+import { HasId } from 'shared/model/Common';
+import { Grading } from '../../../model/Grading';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,27 +44,29 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface EntitySelectProps<T extends HasGradings> {
+interface EntitySelectProps<T extends HasId> {
   label: string;
   emptyPlaceholder: string;
   itemToString: CustomSelectProps<T>['itemToString'];
   onChange?: CustomSelectProps<T>['onChange'];
 }
 
-interface Props<T extends HasGradings> {
+interface Props<T extends HasId> {
   tutorialId: string;
   sheetId: string;
   entity?: T;
+  grading: Grading | undefined;
   onSubmit: PointsFormSubmitCallback;
 
   allEntities: T[];
   entitySelectProps: EntitySelectProps<T>;
 }
 
-function EnterPoints<T extends HasGradings>({
+function EnterPoints<T extends HasId>({
   tutorialId,
   sheetId,
   entity,
+  grading,
   onSubmit,
   allEntities,
   entitySelectProps,
@@ -149,7 +152,7 @@ function EnterPoints<T extends HasGradings>({
         {entity && sheet && selectedExercise && (
           <EnterPointsForm
             key={sheet.id}
-            entity={entity}
+            grading={grading}
             sheet={sheet}
             exercise={selectedExercise}
             className={classes.enterPointsForm}

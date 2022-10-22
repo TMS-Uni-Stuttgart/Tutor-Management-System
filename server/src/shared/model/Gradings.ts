@@ -1,5 +1,10 @@
 import { IExercise, IHasExercises } from './HasExercises';
 
+export interface GradingResponseData {
+    studentId: string;
+    gradingData: IGrading | undefined;
+}
+
 export interface IExerciseGrading {
     points: number;
     comment?: string;

@@ -9,6 +9,7 @@ COPY client/ tms/client/
 COPY server/ tms/server/
 COPY scripts/ tms/scripts/
 
+COPY .npmrc tms/
 COPY package.json tms/
 COPY pnpm-lock.yaml tms/
 COPY pnpm-workspace.yaml tms/
@@ -47,6 +48,7 @@ RUN npm install -g pnpm
 
 COPY --from=build tms/server/dist tms/server
 
+COPY .npmrc tms/
 COPY package.json /tms
 COPY pnpm-lock.yaml tms/
 COPY pnpm-workspace.yaml tms/

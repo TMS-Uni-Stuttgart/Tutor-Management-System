@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import {
     IsArray,
     IsEnum,
-    IsMongoId,
+    IsUUID,
     IsNumber,
     IsOptional,
     IsString,
@@ -19,7 +19,7 @@ import {
     ITutorialGenerationData,
     ITutorialGenerationDTO,
     Weekday,
-} from '../../shared/model/Tutorial';
+} from 'shared/model/Tutorial';
 
 export class TutorialDTO implements ITutorialDTO {
     @IsString()
@@ -46,7 +46,7 @@ export class TutorialDTO implements ITutorialDTO {
 
 export class SubstituteDTO implements ISubstituteDTO {
     @IsOptional()
-    @IsMongoId()
+    @IsUUID()
     tutorId?: string;
 
     @IsArray()

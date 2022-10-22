@@ -24,7 +24,7 @@ The `build-docker-image.ts` script takes in the following parameters but all are
 #### `docker:build`
 
 This will run the `build-docker-image.ts` script.
-One can specify all of the parameters above for this script aswell.
+One can specify all the parameters above for this script aswell.
 If you run `pnpm run docker:build` you can pass in the parameters after a `--`:
 
 ```cmd
@@ -34,7 +34,7 @@ pnpm run docker:build -- <additional params>
 :::info PowerShell on Windows
 The PowerShell on Windows treats the `--` in a special manner: It simply removes it from the command.
 You have to wrap it in `""` (like `"--"`) to use it inside the PowerShell.
-Otherwise pnpm will throw an error.
+Otherwise, pnpm will throw an error.
 :::
 
 #### `docker:build:pre`

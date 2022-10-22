@@ -170,9 +170,10 @@ function hideDialogOutsideContext() {
 function useDialog(): DialogHelpers {
   const createDialogFunction = useContext(DialogContext);
 
-  const hide: DialogHelpers['hide'] = useCallback(() => createDialogFunction(undefined), [
-    createDialogFunction,
-  ]);
+  const hide: DialogHelpers['hide'] = useCallback(
+    () => createDialogFunction(undefined),
+    [createDialogFunction]
+  );
 
   const show: DialogHelpers['show'] = useCallback(
     (dialogOptions: Partial<DialogOptions>) => {

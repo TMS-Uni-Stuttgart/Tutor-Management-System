@@ -10,6 +10,8 @@ import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
 import { ROUTES } from '../../../routes/Routing.routes';
 import StudentCardList from './components/StudentCardList';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
+import { GradingList } from '../../../model/GradingList';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,6 +46,7 @@ function ScheinexamPointsOverview(): JSX.Element {
   const [students, setStudents] = useState<Student[]>([]);
   const [exams, setExams] = useState<Scheinexam[]>([]);
   const [selectedExam, setSelectedExam] = useState<Scheinexam>();
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
 
   useEffect(() => {
     getAllScheinExams()
@@ -61,7 +64,14 @@ function ScheinexamPointsOverview(): JSX.Element {
 
     const newSelected = exams.find((e) => e.id === examId);
     setSelectedExam(newSelected);
-  }, [examId, exams]);
+
+    getGradingsOfTutorial(examId, tutorialId)
+      .then((response) => setGradings(response))
+      .catch(() => {
+        setError('Bewertungen konnten nicht abgerufen werden.');
+        setGradings(new GradingList([]));
+      });
+  }, [tutorialId, examId, exams, setError]);
 
   useEffect(() => {
     getStudentsOfTutorial(tutorialId)
@@ -104,6 +114,7 @@ function ScheinexamPointsOverview(): JSX.Element {
           <StudentCardList
             students={students}
             exam={selectedExam}
+            gradings={gradings}
             getPathTo={(student) =>
               ROUTES.SCHEIN_EXAMS_STUDENT.create({
                 tutorialId,

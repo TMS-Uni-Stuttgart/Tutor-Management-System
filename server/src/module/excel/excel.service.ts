@@ -1,18 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import xl, { Workbook, Worksheet } from 'excel4node';
 import { parse } from 'papaparse';
-import { SheetDocument } from '../../database/models/sheet.model';
-import { StudentDocument } from '../../database/models/student.model';
-import { TutorialDocument } from '../../database/models/tutorial.model';
 import { AttendanceState } from 'shared/model/Attendance';
 import { ParseCsvResult } from 'shared/model/CSV';
+import { StudentStatus } from 'shared/model/Student';
+import { Sheet } from '../../database/entities/sheet.entity';
+import { Student } from '../../database/entities/student.entity';
+import { Tutorial } from '../../database/entities/tutorial.entity';
 import { SheetService } from '../sheet/sheet.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { ParseCsvDTO } from './excel.dto';
+import { GradingService, StudentAndGradings } from '../student/grading.service';
 import { StudentService } from '../student/student.service';
 import { ScheincriteriaService } from '../scheincriteria/scheincriteria.service';
 import { PassedState } from '../template/template.types';
-import { StudentStatus } from 'shared/model/Student';
 
 interface HeaderData {
     name: string;
@@ -69,7 +70,8 @@ export class ExcelService {
         private readonly tutorialService: TutorialService,
         private readonly sheetService: SheetService,
         private readonly studentService: StudentService,
-        private readonly scheinCriteriaService: ScheincriteriaService
+        private readonly scheincriteriaService: ScheincriteriaService,
+        private readonly gradingService: GradingService
     ) {}
 
     /**
@@ -84,15 +86,18 @@ export class ExcelService {
     async generateTutorialBackup(tutorialId: string): Promise<Buffer> {
         const tutorial = await this.tutorialService.findById(tutorialId);
         const sheets = await this.sheetService.findAll();
+        const studentsAndGradings = await this.gradingService.findAllGradingsOfMultipleStudents(
+            tutorial.getStudents()
+        );
         const workbook = new xl.Workbook();
 
         sheets.sort((a, b) => a.sheetNo - b.sheetNo);
 
-        this.createMemberWorksheet(workbook, tutorial.students);
-        this.createAttendanceWorksheet(workbook, tutorial, tutorial.students);
+        this.createMemberWorksheet(workbook, tutorial.getStudents());
+        this.createAttendanceWorksheet(workbook, tutorial, tutorial.getStudents());
 
         for (const sheet of sheets) {
-            await this.createWorksheetForExerciseSheet(workbook, sheet, tutorial.students);
+            await this.createWorksheetForExerciseSheet(workbook, sheet, studentsAndGradings);
         }
 
         return workbook.writeToBuffer();
@@ -101,7 +106,7 @@ export class ExcelService {
     /**
      * Parses the given CSV string with the given options.
      *
-     * Internally the papaparser is used to parse the string. If parsing fails the results papaparser result is still returned but it will be in it's errornous state.
+     * Internally the papaparser is used to parse the string. If parsing fails the results papaparser result is still returned, but it will be in it's errornous state.
      *
      * @param dto DTO with the CSV string to parse and the options to use.
      *
@@ -119,7 +124,7 @@ export class ExcelService {
      * @returns Buffer containing the XLSX.
      */
     async generateScheinstatusTable(): Promise<Buffer> {
-        const summaries = await this.scheinCriteriaService.getResultsOfAllStudents();
+        const summaries = await this.scheincriteriaService.getResultsOfAllStudents();
         const workbook = new xl.Workbook();
         const sheet = workbook.addWorksheet('Schein statuses');
 
@@ -167,33 +172,15 @@ export class ExcelService {
         return workbook.writeToBuffer();
     }
 
-    private createMemberWorksheet(workbook: Workbook, students: StudentDocument[]) {
+    private createMemberWorksheet(workbook: Workbook, students: Student[]) {
         const overviewSheet = workbook.addWorksheet('Teilnehmer');
         const headers: HeaderDataCollection<MemberKeys> = {
-            firstname: {
-                name: 'Vorname',
-                column: 1,
-            },
-            lastname: {
-                name: 'Nachname',
-                column: 2,
-            },
-            status: {
-                name: 'Status',
-                column: 3,
-            },
-            matriculationNo: {
-                name: 'Matrklnr.',
-                column: 4,
-            },
-            courseOfStudies: {
-                name: 'Studiengang',
-                column: 5,
-            },
-            email: {
-                name: 'E-Mail',
-                column: 6,
-            },
+            firstname: { name: 'Vorname', column: 1 },
+            lastname: { name: 'Nachname', column: 2 },
+            status: { name: 'Status', column: 3 },
+            matriculationNo: { name: 'Matrklnr.', column: 4 },
+            courseOfStudies: { name: 'Studiengang', column: 5 },
+            email: { name: 'E-Mail', column: 6 },
         };
         const cellData: CellDataCollection<MemberKeys> = {
             firstname: [],
@@ -227,8 +214,8 @@ export class ExcelService {
 
     private async createWorksheetForExerciseSheet(
         workbook: Workbook,
-        sheet: SheetDocument,
-        students: StudentDocument[]
+        sheet: Sheet,
+        studentAndGradings: StudentAndGradings[]
     ) {
         const worksheet = workbook.addWorksheet(`Übungsblatt ${sheet.sheetNo}`);
         const headers: HeaderDataCollection<any> = {
@@ -254,15 +241,15 @@ export class ExcelService {
         let column = 4;
         for (const ex of sheet.exercises) {
             headers[ex.id] = {
-                name: `Aufgabe ${ex.exName}`,
+                name: `Aufgabe ${ex.exerciseName}`,
                 column,
             };
             data[ex.id] = [];
             column++;
 
             let row = 2;
-            for (const student of students) {
-                const grading = student.getGrading(sheet)?.getExerciseGrading(ex);
+            for (const { student, gradingsOfStudent } of studentAndGradings) {
+                const grading = gradingsOfStudent.getGradingOfHandIn(sheet)?.getExerciseGrading(ex);
 
                 data['firstname'].push({
                     content: student.firstname,
@@ -297,11 +284,7 @@ export class ExcelService {
         this.fillSheet(worksheet, headers, data);
     }
 
-    private createAttendanceWorksheet(
-        workbook: Workbook,
-        tutorial: TutorialDocument,
-        students: StudentDocument[]
-    ) {
+    private createAttendanceWorksheet(workbook: Workbook, tutorial: Tutorial, students: Student[]) {
         const sheet = workbook.addWorksheet('Anwesenheiten');
         const headers: HeaderDataCollection<any> = {
             firstname: {

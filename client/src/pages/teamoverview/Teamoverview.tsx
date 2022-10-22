@@ -96,7 +96,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       resetForm();
       enqueueSnackbar('Team wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
-      logger.error(reason);
+      logger.error(`${reason}`);
     } finally {
       setSubmitting(false);
     }
@@ -139,33 +139,32 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       });
   }
 
-  const handleEditTeamSubmit: (team: Team) => TeamFormSubmitCallback = (team) => async (
-    { students },
-    { setSubmitting }
-  ) => {
-    const teamDTO: ITeamDTO = { students };
+  const handleEditTeamSubmit: (team: Team) => TeamFormSubmitCallback =
+    (team) =>
+    async ({ students }, { setSubmitting }) => {
+      const teamDTO: ITeamDTO = { students };
 
-    try {
-      const response = await editTeam(params.tutorialId, team.id, teamDTO);
+      try {
+        const response = await editTeam(params.tutorialId, team.id, teamDTO);
 
-      setTeams(
-        teams.map((group) => {
-          if (group.id === team.id) {
-            return response;
-          }
+        setTeams(
+          teams.map((group) => {
+            if (group.id === team.id) {
+              return response;
+            }
 
-          return group;
-        })
-      );
+            return group;
+          })
+        );
 
-      enqueueSnackbar('Team wurde erfolgreich gespeichert.', { variant: 'success' });
-      dialog.hide();
-    } catch (reason) {
-      logger.error(reason);
-      enqueueSnackbar('Team konnte nicht gespeichert werden.', { variant: 'error' });
-      setSubmitting(false);
-    }
-  };
+        enqueueSnackbar('Team wurde erfolgreich gespeichert.', { variant: 'success' });
+        dialog.hide();
+      } catch (reason) {
+        logger.error(`${reason}`);
+        enqueueSnackbar('Team konnte nicht gespeichert werden.', { variant: 'error' });
+        setSubmitting(false);
+      }
+    };
 
   function handleEditTeam(team: Team) {
     dialog.show({

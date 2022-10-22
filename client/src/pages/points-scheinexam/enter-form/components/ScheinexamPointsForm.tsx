@@ -22,6 +22,7 @@ import {
   PointsFormState,
 } from '../../../points-sheet/enter-form/components/EnterPointsForm.helpers';
 import { getPointsFromState } from '../../../points-sheet/enter-form/EnterPoints.helpers';
+import { Grading } from '../../../../model/Grading';
 
 export type ScheinexamPointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
@@ -60,21 +61,22 @@ const useStyles = makeStyles((theme) =>
 
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   student: Student;
+  grading: Grading | undefined;
   exam: Scheinexam;
   onSubmit: ScheinexamPointsFormSubmitCallback;
 }
 
-type FormProps = Omit<Props, 'student' | 'onSubmit'>;
+type FormProps = Omit<Props, 'student' | 'grading' | 'onSubmit'>;
 
-function ScheinexamPointsForm({ student, onSubmit, exam, ...props }: Props): JSX.Element {
+function ScheinexamPointsForm({ student, grading, onSubmit, exam, ...props }: Props): JSX.Element {
   const [initialValues, setInitialValues] = useState<PointsFormState>(
-    generateInitialValues({ entity: student, sheet: exam })
+    generateInitialValues({ grading: grading, sheet: exam })
   );
 
   useEffect(() => {
-    const values = generateInitialValues({ entity: student, sheet: exam });
+    const values = generateInitialValues({ grading: grading, sheet: exam });
     setInitialValues(values);
-  }, [student, exam]);
+  }, [student, grading, exam]);
 
   return (
     <Formik key={student.id} initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>

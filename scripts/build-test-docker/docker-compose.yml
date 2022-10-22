@@ -1,37 +1,35 @@
-version: '3.1'
+version: '3.8'
 services:
-    mongo:
-        image: mongo
-        container_name: mongo_test
-        restart: always
-        ports:
-            - 27017:27017
-        networks:
-            - tms_db
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: example
+  sql-db:
+    image: mysql:latest
+    container_name: tms_sql_db
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: test-sql-password
+    networks:
+      - tms_db
 
-    tms-server:
-        image: dudrie/tms-test:0.0.0-pre
-        container_name: tms-test
-        depends_on:
-            - mongo
-        ports:
-            - '8080:8080'
-        networks:
-            - tms_db
-        environment:
-            TMS_MONGODB_USER: root
-            TMS_MONGODB_PW: example
-            TMS_SECRET: keyboard cat
-        cap_add:
-            - SYS_ADMIN
-        volumes:
-            - ./config:/tms/server/config
+  tms-server:
+    image: dudrie/tms-test:0.0.0-pre
+    container_name: tms-test
+    depends_on:
+      - sql-db
+    ports:
+      - '8080:8080'
+    networks:
+      - tms_db
+    environment:
+      TMS_SQL_DB_USER: root
+      TMS_SQL_DB_PW: test-sql-password
+      TMS_SECRET: keyboard cat
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - ./config:/tms/server/config
 
 volumes:
-    db_data:
+  db_data:
 
 networks:
-    tms_db:
+  tms_db:

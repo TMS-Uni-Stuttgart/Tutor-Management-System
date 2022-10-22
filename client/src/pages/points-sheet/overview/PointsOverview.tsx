@@ -10,6 +10,8 @@ import { usePDFs } from '../../../hooks/usePDFs';
 import { Team } from '../../../model/Team';
 import { ROUTES } from '../../../routes/Routing.routes';
 import TeamCardList from './components/TeamCardList';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
+import { GradingList } from '../../../model/GradingList';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,6 +78,7 @@ function PointsOverview(): JSX.Element {
   const { showSinglePdfPreview, generateSinglePdf, generateAllPdfs } = usePDFs();
 
   const [teams, setTeams] = useState<Team[]>([]);
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
   const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.NONE);
 
   useEffect(() => {
@@ -88,11 +91,21 @@ function PointsOverview(): JSX.Element {
     getTeamsOfTutorial(tutorialId)
       .then((teamResponse) => {
         setError(undefined);
-
         setTeams(teamResponse);
       })
       .catch(() => setError('Daten konnten nicht abgerufen werden.'));
-  }, [tutorialId, setError]);
+
+    if (!!currentSheet) {
+      getGradingsOfTutorial(currentSheet.id, tutorialId)
+        .then((response) => setGradings(response))
+        .catch(() => {
+          setError('Bewertungen konnten nicht abgerufen werden.');
+          setGradings(new GradingList([]));
+        });
+    } else {
+      setGradings(new GradingList([]));
+    }
+  }, [tutorialId, currentSheet, setError]);
 
   async function handlePdfPreviewClicked(team: Team) {
     if (!currentSheet || !tutorialId) {
@@ -169,6 +182,7 @@ function PointsOverview(): JSX.Element {
             tutorialId={tutorialId}
             teams={teams}
             sheet={currentSheet}
+            gradings={gradings}
             onPdfPreviewClicked={handlePdfPreviewClicked}
             onGeneratePdfClicked={handleGenerateSinglePdf}
           />

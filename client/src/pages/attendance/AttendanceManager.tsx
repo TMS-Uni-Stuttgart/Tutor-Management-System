@@ -139,11 +139,10 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
 
   const [filterOption, setFilterOption] = useState<FilterOption>(FilterOption.ACTIVE_ONLY);
 
-  const availableDates = useMemo(() => getAvailableDates(tutorial, userData, !tutorialFromProps), [
-    tutorial,
-    userData,
-    tutorialFromProps,
-  ]);
+  const availableDates = useMemo(
+    () => getAvailableDates(tutorial, userData, !tutorialFromProps),
+    [tutorial, userData, tutorialFromProps]
+  );
 
   useEffect(() => {
     if (!!tutorialFromProps) {
@@ -223,7 +222,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       const response = await setAttendanceOfStudent(student.id, attendanceDTO);
       handlePutAttendanceResponse(student, response);
     } catch (reason) {
-      logger.error(reason);
+      logger.error(`${reason}`);
     }
   }
 
@@ -244,7 +243,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
         const response = await setAttendanceOfStudent(student.id, attendanceDTO);
         handlePutAttendanceResponse(student, response);
       } catch (reason) {
-        logger.error(reason);
+        logger.error(`${reason}`);
       }
     };
   }

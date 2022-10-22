@@ -1,12 +1,12 @@
 import { IsBoolean } from 'class-validator';
-import { ShortTestDocument } from '../../../../database/models/shortTest.model';
-import { StudentDocument } from '../../../../database/models/student.model';
-import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
 } from 'shared/model/ScheinCriteria';
+import { ShortTest } from '../../../../database/entities/shorttest.entity';
+import { Student } from '../../../../database/entities/student.entity';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -15,10 +15,12 @@ import {
 } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { GradingList } from '../../../../helpers/GradingList';
 
 interface CheckShortTestsParams {
-    student: StudentDocument;
-    shortTests: ShortTestDocument[];
+    student: Student;
+    gradings: GradingList;
+    shortTests: ShortTest[];
 }
 
 interface CheckShortTestsReturn {
@@ -46,10 +48,15 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
         this.isPercentagePerTest = isPercentagePerTest;
     }
 
-    checkCriteriaStatus({ student, shortTests }: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({
+        student,
+        shortTests,
+        gradingsOfStudent,
+    }: CriteriaPayload): StatusCheckResponse {
         const { passed: testsPassed, infos } = this.checkShortTests({
             student,
             shortTests,
+            gradings: gradingsOfStudent,
         });
         const totalShortTestCount = shortTests.length;
         const passed: boolean = this.percentage
@@ -71,13 +78,18 @@ export class ShortTestCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkShortTests({ student, shortTests }: CheckShortTestsParams): CheckShortTestsReturn {
+    private checkShortTests({
+        student,
+        shortTests,
+        gradings,
+    }: CheckShortTestsParams): CheckShortTestsReturn {
         return shortTests.reduce<CheckShortTestsReturn>(
             (prev, shortTest) => {
-                const achieved = student.getGrading(shortTest)?.points ?? 0;
+                const grading = gradings.getGradingOfHandIn(shortTest);
+                const achieved = grading?.points ?? 0;
                 const total = shortTest.totalPoints.must;
 
-                const state = shortTest.hasPassed(student)
+                const state = shortTest.hasPassed(student, gradings)
                     ? PassedState.PASSED
                     : PassedState.NOT_PASSED;
 

@@ -30,6 +30,7 @@ interface Params {
   shortTest: ShortTest;
   mappedColumns: CSVMappedColumns<ShortTestColumns>;
   getStudentMapping: (iliasName: string) => Student | undefined;
+  hasStudentPrevGrading: (student: Student) => boolean;
 }
 
 function getShortTestGradingForStudent({
@@ -37,6 +38,7 @@ function getShortTestGradingForStudent({
   shortTest,
   mappedColumns,
   getStudentMapping,
+  hasStudentPrevGrading,
 }: Params): { grading: IGradingDTO; student: Student } | undefined {
   const iliasNameColumns = mappedColumns.iliasName;
 
@@ -86,7 +88,7 @@ function getShortTestGradingForStudent({
   const grading: IGradingDTO = {
     shortTestId: shortTest.id,
     exerciseGradings: [...exerciseGradings],
-    createNewGrading: !student.getGrading(shortTest.id),
+    createNewGrading: hasStudentPrevGrading(student),
   };
 
   return { grading, student };
@@ -99,7 +101,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
     csvData,
     mapColumnsHelpers: { mappedColumns },
   } = useImportCSVContext<ShortTestColumns, string>();
-  const { getMapping, shortTest } = useIliasMappingContext();
+  const { getMapping, hasStudentGrading, shortTest } = useIliasMappingContext();
   const [isImporting, setImporting] = useState(false);
   const [value, isLoading] = useFetchState({
     fetchFunction: generateInitialValues,
@@ -149,6 +151,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
             shortTest: generatedShortTest,
             mappedColumns,
             getStudentMapping: getMapping,
+            hasStudentPrevGrading: hasStudentGrading,
           });
 
           if (result) {
@@ -164,7 +167,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
       } catch (err) {
         enqueueSnackbarWithList({
           title: 'Kurztestergebnisse konnten nicht importiert werden',
-          textBeforeList: err.message ?? 'NO_ERR_MESSAGE',
+          textBeforeList: err instanceof Error ? err.message : 'NO_ERR_MESSAGE',
           items: [],
           variant: 'error',
           persist: false,

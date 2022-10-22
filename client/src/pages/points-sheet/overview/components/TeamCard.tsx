@@ -26,6 +26,7 @@ import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
 import { ROUTES } from '../../../../routes/Routing.routes';
+import { GradingList } from '../../../../model/GradingList';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -47,6 +48,7 @@ interface Props {
   tutorialId: string;
   team: Team;
   sheet: Sheet;
+  gradings: GradingList;
   onPdfPreviewClicked: (team: Team) => void;
   onGeneratePdfClicked: (team: Team) => void;
 }
@@ -55,6 +57,7 @@ function TeamCard({
   tutorialId,
   team,
   sheet,
+  gradings,
   onPdfPreviewClicked,
   onGeneratePdfClicked,
 }: Props): JSX.Element {
@@ -62,13 +65,13 @@ function TeamCard({
   const dialog = useDialog();
 
   const { teamGrading, onlyIndividualEntriesAllowed } = useMemo(() => {
-    const teamGradings = team.getAllGradings(sheet);
-    const teamGrading = team.getGrading(sheet);
+    const teamGradings = gradings.getAllOfTeam(team);
+    const teamGrading = gradings.getOfTeam(team);
 
     const onlyIndividualEntriesAllowed: boolean = !teamGrading && teamGradings.length !== 0;
 
     return { teamGrading, onlyIndividualEntriesAllowed };
-  }, [team, sheet]);
+  }, [team, gradings]);
 
   const studentsInTeam: string =
     team.students.length > 0
@@ -76,7 +79,7 @@ function TeamCard({
       : 'Keine Studierende in diesem Team.';
 
   const { placeholderText, pdfDisabled } = useMemo(() => {
-    const gradingCount = team.getAllGradings(sheet).length;
+    const gradingCount = gradings.getAllOfTeam(team).length;
     const placeholderText =
       gradingCount === 0
         ? 'Keine Bewertung für das Team vorhanden.'
@@ -84,7 +87,7 @@ function TeamCard({
     const pdfDisabled = gradingCount === 0;
 
     return { placeholderText, pdfDisabled };
-  }, [team, sheet]);
+  }, [team, gradings]);
 
   const handleEnterStudents = () => {
     dialog.show({

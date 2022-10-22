@@ -5,7 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 4000",
-    "docs:server": "cd ../server/ && pnpx compodoc -p ./tsconfig.build.json -d ../docs/static/server-doc/ ./src -n 'TMS Server Documentation' --theme material",
+    "docs:server": "cd ../server/ && pnpx @compodoc/compodoc -p ./tsconfig.build.json -d ../docs/static/server-doc/ ./src -n 'TMS Server Documentation' --theme material",
     "prebuild": "pnpm docs:server",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
@@ -16,14 +16,15 @@
     "prettier:check": "prettier --check \"**/*.(ts?(x)|md)\""
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-alpha.70",
-    "@docusaurus/preset-classic": "2.0.0-alpha.70",
+    "@docusaurus/core": "2.0.0-beta.4",
+    "@docusaurus/preset-classic": "2.0.0-beta.4",
     "@mdx-js/react": "^1.6.22",
     "clsx": "^1.1.1",
-    "docusaurus-plugin-sass": "^0.1.11",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "sass-loader": "^10.1.1"
+    "docusaurus-plugin-sass": "^0.2.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "sass": "^1.37.5",
+    "sass-loader": "^12.1.0"
   },
   "browserslist": {
     "production": [
@@ -38,10 +39,10 @@
     ]
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^2.0.0-alpha.72",
+    "@docusaurus/module-type-aliases": "^2.0.0-beta.4",
     "@svgr/webpack": "^5.5.0",
     "@tsconfig/docusaurus": "^1.0.2",
-    "@types/react-helmet": "^6.1.0",
+    "@types/react-helmet": "^6.1.2",
     "file-loader": "^6.2.0",
     "url-loader": "^4.1.1"
   }

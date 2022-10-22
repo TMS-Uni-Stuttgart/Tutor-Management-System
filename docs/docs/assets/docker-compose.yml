@@ -1,17 +1,26 @@
-version: '3.1'
+version: '3.8'
 services:
-  mongo:
-    image: mongo
-    container_name: mongo
+  mysql:
+    # Adjust if you want to use a different mysql version. The TMS is tested only with MySQL 8+.
+    image: mysql:latest
+    container_name: tms_sql
     restart: always
     networks:
       - tms_db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      # Username of the user used by the TMS to communicate with the database.
+      MYSQL_USER: ${TMS_DB_USER}
+      # Password of the user used by the TMS.
+      MYSQL_PASSWORD: ${TMS_DB_PASSWORD}
+      # The database used for the TMS. Can be omitted but if it's specified here the configured user (through MYSQL_USER) will automatically get superuser access to the database.
+      # If omitted you have to manually configure the permission yourself.
+      MYSQL_DATABASE: tms-dbe
+      # This is needed because the root password must not be empty. The password will be printed to the console the first time the container is created.
+      # However, you can set a different custom root password by using the environment variable MYSQL_ROOT_PASSWORD instead.
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     volumes:
       # Replace with the path to the folder in which the db-files should be persisted.
-      - <path-to-DB-FOLDER>:/data/db
+      - <path-to-DB-FOLDER>:/var/lib/mysql
 
   tms-server:
     # Adjust the image with the version you want to use. If you do not use 'latest' updating the container will be easier in the future.
@@ -22,13 +31,13 @@ services:
       # This one is needed so puppeteer properly works inside the container (see: https://developers.google.com/web/tools/puppeteer/troubleshooting#tips)
       - SYS_ADMIN
     depends_on:
-      - mongo
+      - mysql
     networks:
       - proxy_network
       - tms_db
     environment:
-      TMS_MONGODB_USER: ${MONGO_USER}
-      TMS_MONGODB_PW: ${MONGO_PASSWORD}
+      TMS_SQL_DB_USER: ${TMS_DB_USER}
+      TMS_SQL_DB_PW: ${TMS_DB_PASSWORD}
       TMS_SECRET: ${TMS_SECRET}
     volumes:
       # Replace with the path to the folder containing the configuration and template files of the TMS.
@@ -40,3 +49,7 @@ volumes:
 networks:
   tms_db:
   proxy_network:
+    # Use an external network if nginx is created with a different docker-compose file.
+    # Remove the following lines if all containers are configured in this file.
+    external:
+      name: external_proxy_network
