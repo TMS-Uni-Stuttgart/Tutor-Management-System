@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  mysql:
+    container_name: tms_db
+    image: mysql:latest
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: some-password
+    networks:
+      - tms_dev_db
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin
+    ports:
+      - '4242:80'
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: tms_db
+    networks:
+      - tms_dev_db
+
+networks:
+  tms_dev_db:
