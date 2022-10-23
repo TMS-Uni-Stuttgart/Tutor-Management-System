@@ -39,10 +39,6 @@ function UploadFileButton({
     async (file: File) => {
       setLoading(true);
 
-      if (!supportedFileTypes.includes(file.type)) {
-        return;
-      }
-
       const content: string = await file.text();
       const cb = onFileSelect(content, file);
 
@@ -50,7 +46,7 @@ function UploadFileButton({
 
       setLoading(false);
     },
-    [supportedFileTypes, onFileSelect]
+    [onFileSelect]
   );
 
   const handleFileUpload = useCallback(
@@ -77,7 +73,7 @@ function UploadFileButton({
     >
       <Box display='flex'>
         <input
-          accept='.csv'
+          accept={supportedFileTypes.join(",")}
           style={{ display: 'none' }}
           id='icon-button-file'
           type='file'

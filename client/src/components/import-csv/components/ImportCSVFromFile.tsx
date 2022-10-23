@@ -1,6 +1,5 @@
 import { Box, Grow, Typography } from '@material-ui/core';
 import { FileCheckOutline as FileSelectedIcon } from 'mdi-material-ui';
-import React from 'react';
 import OutlinedBox from '../../OutlinedBox';
 import UploadFileButton from '../../UploadFileButton';
 
@@ -18,7 +17,7 @@ function ImportCSVFromFile({ fileInfo, onFileInfoChanged }: ImportCSVFromFilePro
   return (
     <>
       <UploadFileButton
-        supportedFileTypes={['application/vnd.ms-excel']}
+        supportedFileTypes={['text/csv']}
         onFileSelect={(content: string, file: File) =>
           onFileInfoChanged({ content, fileName: file.name })
         }
