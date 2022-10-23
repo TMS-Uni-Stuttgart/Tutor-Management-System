@@ -73,7 +73,7 @@ function UploadFileButton({
     >
       <Box display='flex'>
         <input
-          accept={supportedFileTypes.join(",")}
+          accept={supportedFileTypes.join(',')}
           style={{ display: 'none' }}
           id='icon-button-file'
           type='file'
