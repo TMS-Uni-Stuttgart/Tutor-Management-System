@@ -15,7 +15,8 @@ export type StudentColumns =
   | 'team'
   | 'email'
   | 'iliasName'
-  | 'matriculationNo';
+  | 'matriculationNo'
+  | 'courseOfStudies';
 type ColumnGroups = 'studentInformation';
 
 interface Params {
@@ -61,11 +62,17 @@ function ImportStudents(): JSX.Element {
           label: 'Ilias-Name',
           headersToAutoMap: ['Ilias', 'Ilias-Name', 'IliasName'],
           group: 'studentInformation',
-          required: true,
+          required: false,
         },
         matriculationNo: {
           label: 'Matrikelnummer',
           headersToAutoMap: ['Matrikelnummer'],
+          group: 'studentInformation',
+          required: false,
+        },
+        courseOfStudies: {
+          label: 'Studiengang',
+          headersToAutoMap: ['Studiengang'],
           group: 'studentInformation',
           required: false,
         },

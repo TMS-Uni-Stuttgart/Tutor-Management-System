@@ -1,11 +1,15 @@
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
-import React from 'react';
 import { StudentStatus } from 'shared/model/Student';
 import InfoPaper, { InfoPaperProps } from '../../../components/info-paper/InfoPaper';
-import { Student } from '../../../model/Student';
 
 interface Props extends Omit<InfoPaperProps, 'title'> {
-  student: Student;
+  student: {
+    status: StudentStatus;
+    matriculationNo?: string;
+    email?: string;
+    iliasName?: string;
+    courseOfStudies?: string;
+  };
 }
 
 const STATUS_TO_STRING: { [key in StudentStatus]: string } = {
@@ -25,7 +29,7 @@ function StudentDetails({ student, ...props }: Props): JSX.Element {
           </TableRow>
           <TableRow hover>
             <TableCell>Matrikelnummer</TableCell>
-            <TableCell>{student.matriculationNo ?? 'Keine Matrikelnummer'}</TableCell>
+            <TableCell>{student.matriculationNo || 'Keine Matrikelnummer'}</TableCell>
           </TableRow>
           <TableRow hover>
             <TableCell>E-Mail</TableCell>
@@ -34,6 +38,10 @@ function StudentDetails({ student, ...props }: Props): JSX.Element {
           <TableRow hover>
             <TableCell>Iliasname</TableCell>
             <TableCell>{student.iliasName || 'Kein Iliasname'}</TableCell>
+          </TableRow>
+          <TableRow hover>
+            <TableCell>Studiengang</TableCell>
+            <TableCell>{student.courseOfStudies || 'Kein Studiengang'}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

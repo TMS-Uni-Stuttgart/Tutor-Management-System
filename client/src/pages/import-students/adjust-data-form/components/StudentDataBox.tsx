@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
 import OutlinedBox from '../../../../components/OutlinedBox';
 import TableWithPadding from '../../../../components/TableWithPadding';
-import { Tutorial } from '../../../../model/Tutorial';
 import { StudentFormState } from '../AdjustImportedStudentDataForm';
 import StudentDataRow from './StudentDataRow';
 

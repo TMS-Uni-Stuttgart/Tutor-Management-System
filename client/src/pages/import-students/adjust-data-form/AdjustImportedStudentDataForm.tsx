@@ -26,6 +26,7 @@ export interface StudentFormStateValue {
   team?: string;
   iliasName?: string;
   matriculationNo?: string;
+  courseOfStudies?: string;
 }
 
 export interface StudentFormState {
