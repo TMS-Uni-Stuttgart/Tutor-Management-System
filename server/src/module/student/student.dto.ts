@@ -4,14 +4,24 @@ import {
     IsArray,
     IsBoolean,
     IsEmail,
-    IsEnum, IsNotEmpty,
+    IsEnum,
+    IsNotEmpty,
     IsNumber,
     IsOptional,
-    IsString, IsUUID, Min, ValidateNested
+    IsString,
+    IsUUID,
+    Min,
+    ValidateNested,
 } from 'class-validator';
 import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance';
 import { IExerciseGradingDTO, IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
-import { ICakeCountDTO, ICreateStudentDTO, ICreateStudentsDTO, IStudentDTO, StudentStatus } from 'shared/model/Student';
+import {
+    ICakeCountDTO,
+    ICreateStudentDTO,
+    ICreateStudentsDTO,
+    IStudentDTO,
+    StudentStatus,
+} from 'shared/model/Student';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
 
@@ -44,11 +54,9 @@ export abstract class StudentDTO implements IStudentDTO {
     @IsOptional()
     @IsString()
     matriculationNo?: string;
-
 }
 
 export class CreateStudentDTO extends StudentDTO implements ICreateStudentDTO {
-
     @IsNotEmpty()
     tutorial!: string;
 
@@ -56,19 +64,15 @@ export class CreateStudentDTO extends StudentDTO implements ICreateStudentDTO {
     @IsOptional()
     @IsUUID()
     team?: string;
-
 }
 
 export class CreateStudentsEntryDTO extends StudentDTO {
-
     @ApiProperty({ type: String })
     @IsOptional()
     team?: string;
-
 }
 
 export class CreateStudentsDTO implements ICreateStudentsDTO {
-
     @IsNotEmpty()
     tutorial!: string;
 
@@ -76,8 +80,7 @@ export class CreateStudentsDTO implements ICreateStudentsDTO {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CreateStudentsEntryDTO)
-    students!: CreateStudentsEntryDTO[]
-
+    students!: CreateStudentsEntryDTO[];
 }
 
 export class AttendanceDTO implements IAttendanceDTO {

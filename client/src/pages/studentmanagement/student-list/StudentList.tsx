@@ -4,8 +4,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
 import { ICreateStudentDTO } from 'shared/model/Student';
 import StudentForm, {
-    convertFormStateToDTO,
-    StudentFormState
+  convertFormStateToDTO,
+  StudentFormState,
 } from '../../../components/forms/StudentForm';
 import VirtualizedList from '../../../components/virtualized-list/VirtualizedList';
 import { useDialog } from '../../../hooks/dialog-service/DialogService';

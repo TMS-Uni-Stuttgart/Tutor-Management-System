@@ -7,13 +7,13 @@ import { sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
 import {
     getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-    getScheinCriteriaSummaryOfAllStudents
+    getScheinCriteriaSummaryOfAllStudents,
 } from '../../../hooks/fetching/Scheincriteria';
 import {
     createStudent as fetchCreateStudent,
     deleteStudent as fetchDeleteStudent,
     editStudent as fetchEditStudent,
-    getAllStudents
+    getAllStudents,
 } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';

@@ -1,7 +1,12 @@
 import { plainToClass } from 'class-transformer';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
-import { ICakeCountDTO, ICreateStudentDTO, ICreateStudentsDTO, IStudent } from 'shared/model/Student';
+import {
+    ICakeCountDTO,
+    ICreateStudentDTO,
+    ICreateStudentsDTO,
+    IStudent,
+} from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
 import { Student } from '../../model/Student';
 import axios from './Axios';
@@ -41,7 +46,7 @@ export async function createManyStudents(dto: ICreateStudentsDTO): Promise<IStud
     const response = await axios.post<IStudent[]>('student/generate', dto);
 
     if (response.status === 201) {
-        return response.data
+        return response.data;
     }
 
     return Promise.reject(`Wrong response code (${response.status}).`);

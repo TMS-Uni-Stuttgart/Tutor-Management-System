@@ -23,7 +23,9 @@ export class CreatedInOwnTutorialGuard extends UseUserFromRequest {
             return true;
         }
 
-        const body: CreateStudentDTO | CreateStudentsDTO = context.switchToHttp().getRequest<Request>().body;
+        const body: CreateStudentDTO | CreateStudentsDTO = context
+            .switchToHttp()
+            .getRequest<Request>().body;
         const tutorial = await this.tutorialService.findById(body.tutorial);
 
         return tutorial.tutor?.id === user.id;

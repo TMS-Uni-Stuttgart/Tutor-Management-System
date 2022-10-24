@@ -8,7 +8,7 @@ import FormikDebugDisplay from '../../../components/forms/components/FormikDebug
 import { useImportCSVContext } from '../../../components/import-csv/ImportCSV.context';
 import {
   NextStepInformation,
-  useStepper
+  useStepper,
 } from '../../../components/stepper-with-buttons/context/StepperContext';
 import { createManyStudents } from '../../../hooks/fetching/Student';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
@@ -39,8 +39,8 @@ interface Props {
 function convertValuesToDTO(values: StudentFormState, tutorialId: string): ICreateStudentsDTO {
   return {
     tutorial: tutorialId,
-    students: Object.values(values)
-  }
+    students: Object.values(values),
+  };
 }
 
 function AdjustImportedUserDataFormContent(): JSX.Element {

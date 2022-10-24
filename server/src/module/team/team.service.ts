@@ -99,7 +99,7 @@ export class TeamService {
      *
      * @returns Created team.
      */
-     createTeamWithoutStudents(tutorial: Tutorial): Team {
+    createTeamWithoutStudents(tutorial: Tutorial): Team {
         const team = new Team({
             teamNo: this.getFirstAvailableTeamNo(tutorial),
             tutorial,

@@ -11,9 +11,7 @@ import OpenableFormWithFab, { EditorOpenState } from '../../components/OpenableF
 import StudentList from './student-list/StudentList';
 import { useStudentsForStudentList } from './student-list/StudentList.helpers';
 import { Link } from 'react-router-dom';
-import {
-  TableArrowDown as ImportIcon,
-} from 'mdi-material-ui';
+import { TableArrowDown as ImportIcon } from 'mdi-material-ui';
 
 interface Params {
   tutorialId: string;
@@ -53,21 +51,21 @@ function TutorStudentmanagement(): JSX.Element {
       hideDefaultTopBarContent={editorState.isAnimating || editorState.isEditorOpen}
       additionalTopBarItem={
         <>
-        <Button
-                variant='outlined'
-                component={Link}
-                to={ROUTES.IMPORT_STUDENTS.create({ tutorialId })}
-                startIcon={<ImportIcon />}
-                style={{ marginLeft: 8 }}
-              >
-                Importieren
-              </Button>
-        <OpenableFormWithFab
-          title='Neue/n Studierende/n anlegen'
-          onOpenChange={(state) => setEditorState(state)}
-        >
-          <StudentForm teams={teams} otherStudents={students} onSubmit={handleCreateSubmit} />
-        </OpenableFormWithFab>
+          <Button
+            variant='outlined'
+            component={Link}
+            to={ROUTES.IMPORT_STUDENTS.create({ tutorialId })}
+            startIcon={<ImportIcon />}
+            style={{ marginLeft: 8 }}
+          >
+            Importieren
+          </Button>
+          <OpenableFormWithFab
+            title='Neue/n Studierende/n anlegen'
+            onOpenChange={(state) => setEditorState(state)}
+          >
+            <StudentForm teams={teams} otherStudents={students} onSubmit={handleCreateSubmit} />
+          </OpenableFormWithFab>
         </>
       }
     />

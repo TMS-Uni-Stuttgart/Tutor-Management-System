@@ -41,7 +41,7 @@ export interface ICreateStudentDTO extends IStudentDTO {
 
 export interface ICreateStudentsDTO {
     tutorial: string;
-    students: IStudentDTO[]
+    students: IStudentDTO[];
 }
 
 export interface ICakeCountDTO {

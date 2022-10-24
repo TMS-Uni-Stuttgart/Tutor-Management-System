@@ -72,7 +72,10 @@ interface InitialStateParams {
 export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
 type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
 
-export function convertFormStateToDTO(values: StudentFormState, tutorialId: string): ICreateStudentDTO {
+export function convertFormStateToDTO(
+  values: StudentFormState,
+  tutorialId: string
+): ICreateStudentDTO {
   const { firstname, lastname, iliasName, matriculationNo, email, courseOfStudies, team, status } =
     values;
 

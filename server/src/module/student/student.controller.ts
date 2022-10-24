@@ -14,7 +14,7 @@ import {
     Request,
     UseGuards,
     UsePipes,
-    ValidationPipe
+    ValidationPipe,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { DateTime } from 'luxon';
@@ -28,7 +28,13 @@ import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
 import { SettingsService } from '../settings/settings.service';
-import { AttendanceDTO, CakeCountDTO, CreateStudentDTO, CreateStudentsDTO, PresentationPointsDTO } from './student.dto';
+import {
+    AttendanceDTO,
+    CakeCountDTO,
+    CreateStudentDTO,
+    CreateStudentsDTO,
+    PresentationPointsDTO,
+} from './student.dto';
 import { StudentService } from './student.service';
 
 interface CheckCanExcuseParams {

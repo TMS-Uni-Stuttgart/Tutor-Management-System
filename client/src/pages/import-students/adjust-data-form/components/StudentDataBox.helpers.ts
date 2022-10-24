@@ -29,7 +29,7 @@ export function convertCSVDataToFormData(params: ConversionParams): StudentFormS
             status: convertColumnToStatus(data[values.status as string]),
             team: data[values.team as string]?.trim(),
             iliasName: data[values.iliasName as string],
-            matriculationNo: data[values.matriculationNo as string]
+            matriculationNo: data[values.matriculationNo as string],
         };
     });
 

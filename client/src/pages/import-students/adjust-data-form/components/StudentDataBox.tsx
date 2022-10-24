@@ -18,7 +18,7 @@ function StudentDataBox(): JSX.Element {
 
   return (
     <OutlinedBox flex={1}>
-      <Typography>Nutzerdaten festlegen</Typography>
+      <Typography>Studierendendaten festlegen</Typography>
 
       <TableWithPadding
         items={users}

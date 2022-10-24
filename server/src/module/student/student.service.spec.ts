@@ -8,10 +8,15 @@ import {
     MOCKED_SHEETS,
     MOCKED_STUDENTS,
     MOCKED_TEAMS,
-    MOCKED_TUTORIALS
+    MOCKED_TUTORIALS,
 } from '../../../test/mocks/entities.mock';
 import { Student } from '../../database/entities/student.entity';
-import { AttendanceDTO, CakeCountDTO, CreateStudentDTO, PresentationPointsDTO } from './student.dto';
+import {
+    AttendanceDTO,
+    CakeCountDTO,
+    CreateStudentDTO,
+    PresentationPointsDTO,
+} from './student.dto';
 import { StudentModule } from './student.module';
 import { StudentService } from './student.service';
 

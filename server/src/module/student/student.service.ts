@@ -11,7 +11,14 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
 import { TutorialService } from '../tutorial/tutorial.service';
-import { AttendanceDTO, CakeCountDTO, CreateStudentDTO, CreateStudentsDTO, PresentationPointsDTO, StudentDTO } from './student.dto';
+import {
+    AttendanceDTO,
+    CakeCountDTO,
+    CreateStudentDTO,
+    CreateStudentsDTO,
+    PresentationPointsDTO,
+    StudentDTO,
+} from './student.dto';
 
 @Injectable()
 export class StudentService implements CRUDService<IStudent, CreateStudentDTO, Student> {
@@ -108,9 +115,9 @@ export class StudentService implements CRUDService<IStudent, CreateStudentDTO, S
         const tutorial = await this.tutorialService.findById(tutorialId);
         const team = !!teamId
             ? await this.teamService.findById({
-                    tutorialId: tutorial.id,
-                    teamId,
-                })
+                  tutorialId: tutorial.id,
+                  teamId,
+              })
             : undefined;
         const student = await this.createStudent(dto, tutorial, team);
         await this.repository.flush();
@@ -135,9 +142,9 @@ export class StudentService implements CRUDService<IStudent, CreateStudentDTO, S
         const teamLookup = new Map<string | undefined, Team>();
         teamNos.forEach((teamNo) => {
             if (teamNo && /^[0-9]+$/.test(teamNo)) {
-                const team = allTeams.find((it) => it.teamNo === parseInt(teamNo))
+                const team = allTeams.find((it) => it.teamNo === parseInt(teamNo));
                 if (team) {
-                    teamLookup.set(teamNo, team)
+                    teamLookup.set(teamNo, team);
                 }
             }
         });
@@ -147,9 +154,11 @@ export class StudentService implements CRUDService<IStudent, CreateStudentDTO, S
             }
         });
 
-        const students = await Promise.all(dto.students.map((student) => {
-            return this.createStudent(student, tutorial, teamLookup.get(student.team))
-        }));
+        const students = await Promise.all(
+            dto.students.map((student) => {
+                return this.createStudent(student, tutorial, teamLookup.get(student.team));
+            })
+        );
         await this.repository.flush();
         return students.map((student) => student.toDTO());
     }
@@ -179,7 +188,6 @@ export class StudentService implements CRUDService<IStudent, CreateStudentDTO, S
         this.repository.persist(student);
         return student;
     }
-
 
     /**
      * Updates the student with the given ID and the given information.
@@ -276,7 +284,10 @@ export class StudentService implements CRUDService<IStudent, CreateStudentDTO, S
         await this.repository.persistAndFlush(student);
     }
 
-    private async getTeamFromDTO(dto: CreateStudentDTO, student: Student): Promise<Team | undefined> {
+    private async getTeamFromDTO(
+        dto: CreateStudentDTO,
+        student: Student
+    ): Promise<Team | undefined> {
         if (!dto.team) {
             return undefined;
         }

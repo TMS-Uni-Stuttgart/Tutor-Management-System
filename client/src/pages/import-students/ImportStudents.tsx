@@ -83,7 +83,10 @@ function ImportStudents(): JSX.Element {
         steps={[
           { label: 'CSV importieren', component: <ImportCSV /> },
           { label: 'Spalten zuordnen', component: <MapCSVColumns /> },
-          { label: 'Studierende importieren', component: <AdjustImportedStudentDataForm tutorialId={tutorialId} /> },
+          {
+            label: 'Studierende importieren',
+            component: <AdjustImportedStudentDataForm tutorialId={tutorialId} />,
+          },
         ]}
         alternativeLabel={false}
         backButtonLabel='Zurück'

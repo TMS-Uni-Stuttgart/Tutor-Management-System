@@ -1,7 +1,4 @@
-import {
-    createStyles, makeStyles,
-    TableCell
-} from '@material-ui/core';
+import { createStyles, makeStyles, TableCell } from '@material-ui/core';
 import { useField, useFormikContext } from 'formik';
 import PaperTableRow from '../../../../components/PaperTableRow';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
@@ -29,17 +26,12 @@ function StudentDataRow({ name }: StudentDataRowProps): JSX.Element {
   const [, meta, helpers] = useField<StudentFormStateValue>(name);
 
   const { firstname, lastname } = meta.value;
-  const subText = "TODO";
+  const subText = 'TODO';
 
   return (
     <>
-      <PaperTableRow
-        label={`${lastname}, ${firstname}`}
-        subText={subText}
-      >
-        <TableCell>
-          
-        </TableCell>
+      <PaperTableRow label={`${lastname}, ${firstname}`} subText={subText}>
+        <TableCell></TableCell>
       </PaperTableRow>
     </>
   );
