@@ -51,15 +51,17 @@ function TutorStudentmanagement(): JSX.Element {
       hideDefaultTopBarContent={editorState.isAnimating || editorState.isEditorOpen}
       additionalTopBarItem={
         <>
-          <Button
-            variant='outlined'
-            component={Link}
-            to={ROUTES.IMPORT_STUDENTS.create({ tutorialId })}
-            startIcon={<ImportIcon />}
-            style={{ marginLeft: 8 }}
-          >
-            Importieren
-          </Button>
+          {!(editorState.isAnimating || editorState.isEditorOpen) && (
+            <Button
+              variant='outlined'
+              component={Link}
+              to={ROUTES.IMPORT_STUDENTS.create({ tutorialId })}
+              startIcon={<ImportIcon />}
+              style={{ marginLeft: 8 }}
+            >
+              Importieren
+            </Button>
+          )}
           <OpenableFormWithFab
             title='Neue/n Studierende/n anlegen'
             onOpenChange={(state) => setEditorState(state)}
