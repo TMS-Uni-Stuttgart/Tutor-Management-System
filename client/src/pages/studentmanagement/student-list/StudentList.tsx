@@ -2,10 +2,10 @@ import { Box } from '@material-ui/core';
 import { FormikHelpers } from 'formik';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
-import { IStudentDTO } from 'shared/model/Student';
+import { ICreateStudentDTO } from 'shared/model/Student';
 import StudentForm, {
-  convertFormStateToDTO,
-  StudentFormState,
+    convertFormStateToDTO,
+    StudentFormState
 } from '../../../components/forms/StudentForm';
 import VirtualizedList from '../../../components/virtualized-list/VirtualizedList';
 import { useDialog } from '../../../hooks/dialog-service/DialogService';
@@ -21,7 +21,7 @@ interface Props {
   summaries: ScheincriteriaSummaryByStudents;
   onStudentEdit: (
     student: Student,
-    newData: IStudentDTO,
+    newData: ICreateStudentDTO,
     helpers: FormikHelpers<StudentFormState>
   ) => Promise<void>;
   onStudentDelete: (student: Student) => Promise<void>;
@@ -63,7 +63,7 @@ function StudentList({
             otherStudents={students.filter((s) => s.id !== student.id)}
             teams={teams}
             onSubmit={async (values, helpers) => {
-              const newData: IStudentDTO = convertFormStateToDTO(values, student.tutorial.id);
+              const newData: ICreateStudentDTO = convertFormStateToDTO(values, student.tutorial.id);
               await onStudentEdit(student, newData, helpers);
 
               dialog.hide();

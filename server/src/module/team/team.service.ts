@@ -92,6 +92,24 @@ export class TeamService {
     }
 
     /**
+     * Creates a team in the given tutorial without any students.
+     * Does not flush the entityManager.
+     *
+     * @param tutorial Tutorial to create team in.
+     *
+     * @returns Created team.
+     */
+     createTeamWithoutStudents(tutorial: Tutorial): Team {
+        const team = new Team({
+            teamNo: this.getFirstAvailableTeamNo(tutorial),
+            tutorial,
+        });
+
+        this.repository.persist(team);
+        return team;
+    }
+
+    /**
      * Updates the given team in the tutorial with the given information.
      *
      * This function updates all students related to the team in the following way:

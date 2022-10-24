@@ -2,24 +2,24 @@ import _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useCallback } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';
-import { IStudentDTO, StudentStatus } from 'shared/model/Student';
+import { ICreateStudentDTO, StudentStatus } from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
 import { CREATE_NEW_TEAM_VALUE } from '../../../components/forms/StudentForm';
+import {
+    getScheinCriteriaSummariesOfAllStudentsOfTutorial,
+    getScheinCriteriaSummaryOfAllStudents
+} from '../../../hooks/fetching/Scheincriteria';
 import {
     createStudent as fetchCreateStudent,
     deleteStudent as fetchDeleteStudent,
     editStudent as fetchEditStudent,
-    getAllStudents,
+    getAllStudents
 } from '../../../hooks/fetching/Student';
 import { createTeam, getTeamsOfTutorial } from '../../../hooks/fetching/Team';
+import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useFetchState } from '../../../hooks/useFetchState';
 import { Student } from '../../../model/Student';
 import { Team } from '../../../model/Team';
-import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
-import {
-    getScheinCriteriaSummariesOfAllStudentsOfTutorial,
-    getScheinCriteriaSummaryOfAllStudents,
-} from '../../../hooks/fetching/Scheincriteria';
 
 export enum StudentSortOption {
     ALPHABETICAL = 'Alphabetisch',
@@ -31,8 +31,8 @@ interface UseStudentsForStudentList {
     summaries: ScheincriteriaSummaryByStudents;
     teams: Team[] | undefined;
     isLoading: boolean;
-    createStudent: (dto: IStudentDTO) => Promise<void>;
-    editStudent: (student: Student, dto: IStudentDTO) => Promise<void>;
+    createStudent: (dto: ICreateStudentDTO) => Promise<void>;
+    editStudent: (student: Student, dto: ICreateStudentDTO) => Promise<void>;
     deleteStudent: (student: Student) => Promise<void>;
     changeTutorialOfStudent: (student: Student, newTutorialId: string) => Promise<void>;
 }
@@ -86,7 +86,7 @@ export function useStudentsForStudentList({
     });
 
     const createStudent = useCallback(
-        async (dto: IStudentDTO) => {
+        async (dto: ICreateStudentDTO) => {
             try {
                 const teamId = await createTeamIfNeccessary(dto.tutorial, dto.team);
                 dto.team = teamId !== '' ? teamId : undefined;
@@ -105,13 +105,13 @@ export function useStudentsForStudentList({
     );
 
     const editStudent = useCallback(
-        async (student: Student, dto: IStudentDTO) => {
+        async (student: Student, dto: ICreateStudentDTO) => {
             try {
                 const studentId = student.id;
                 const { team, tutorial, ...restOfDto } = dto;
                 const teamId = await createTeamIfNeccessary(tutorial, team);
 
-                const studentDTO: IStudentDTO = {
+                const studentDTO: ICreateStudentDTO = {
                     ...restOfDto,
                     tutorial,
                     team: teamId,
@@ -157,7 +157,7 @@ export function useStudentsForStudentList({
                 return;
             }
 
-            const dto: IStudentDTO = {
+            const dto: ICreateStudentDTO = {
                 ...student,
                 tutorial: newTutorialId,
                 team: undefined, // After the change the student must NOT have a team.

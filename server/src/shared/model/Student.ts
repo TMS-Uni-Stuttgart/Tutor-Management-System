@@ -33,7 +33,15 @@ export interface IStudentDTO {
     matriculationNo?: string;
     status: StudentStatus;
     team?: string;
+}
+
+export interface ICreateStudentDTO extends IStudentDTO {
     tutorial: string;
+}
+
+export interface ICreateStudentsDTO {
+    tutorial: string;
+    students: IStudentDTO[]
 }
 
 export interface ICakeCountDTO {

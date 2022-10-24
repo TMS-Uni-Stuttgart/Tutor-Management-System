@@ -14,21 +14,21 @@ import {
     Request,
     UseGuards,
     UsePipes,
-    ValidationPipe,
+    ValidationPipe
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { DateTime } from 'luxon';
+import { AttendanceState, IAttendance } from 'shared/model/Attendance';
+import { Role } from 'shared/model/Role';
+import { IStudent } from 'shared/model/Student';
 import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
 import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
-import { AttendanceState, IAttendance } from 'shared/model/Attendance';
-import { Role } from 'shared/model/Role';
-import { IStudent } from 'shared/model/Student';
 import { SettingsService } from '../settings/settings.service';
-import { AttendanceDTO, CakeCountDTO, PresentationPointsDTO, StudentDTO } from './student.dto';
+import { AttendanceDTO, CakeCountDTO, CreateStudentDTO, CreateStudentsDTO, PresentationPointsDTO } from './student.dto';
 import { StudentService } from './student.service';
 
 interface CheckCanExcuseParams {
@@ -57,8 +57,16 @@ export class StudentController {
     @UseGuards(HasRoleGuard, CreatedInOwnTutorialGuard)
     @Roles(Role.ADMIN, Role.TUTOR)
     @UsePipes(ValidationPipe)
-    async createStudent(@Body() dto: StudentDTO): Promise<IStudent> {
+    async createStudent(@Body() dto: CreateStudentDTO): Promise<IStudent> {
         return await this.studentService.create(dto);
+    }
+
+    @Post('/generate')
+    @UseGuards(HasRoleGuard, CreatedInOwnTutorialGuard)
+    @Roles(Role.ADMIN, Role.TUTOR)
+    @UsePipes(ValidationPipe)
+    async createManyStudents(@Body() dto: CreateStudentsDTO): Promise<IStudent[]> {
+        return await this.studentService.createMany(dto);
     }
 
     @Get('/:id')
@@ -74,7 +82,7 @@ export class StudentController {
     @Patch('/:id')
     @UseGuards(StudentGuard)
     @UsePipes(ValidationPipe)
-    async updateStudent(@Param('id') id: string, @Body() dto: StudentDTO): Promise<IStudent> {
+    async updateStudent(@Param('id') id: string, @Body() dto: CreateStudentDTO): Promise<IStudent> {
         return await this.studentService.update(id, dto);
     }
 
