@@ -172,7 +172,11 @@ export class StudentService implements CRUDService<IStudent, CreateStudentDTO, S
      *
      * @returns Created student.
      */
-    async createStudent(dto: StudentDTO, tutorial: Tutorial, team?: Team): Promise<Student> {
+    private async createStudent(
+        dto: StudentDTO,
+        tutorial: Tutorial,
+        team?: Team
+    ): Promise<Student> {
         const student = new Student({
             firstname: dto.firstname,
             lastname: dto.lastname,
