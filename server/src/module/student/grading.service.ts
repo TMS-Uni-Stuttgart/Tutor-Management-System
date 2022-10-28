@@ -1,18 +1,18 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { GradingResponseData } from 'shared/model/Gradings';
 import { Grading } from '../../database/entities/grading.entity';
 import { HandIn } from '../../database/entities/ratedEntity.entity';
 import { Student } from '../../database/entities/student.entity';
+import { Team } from '../../database/entities/team.entity';
+import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
 import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
-import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
-import { Team } from '../../database/entities/team.entity';
-import { GradingResponseData } from 'shared/model/Gradings';
-import { InjectRepository } from '@mikro-orm/nestjs';
 
 @Injectable()
 export class GradingService {
@@ -194,11 +194,18 @@ export class GradingService {
     }
 
     async findAllHandInGradingsOfTeam(team: Team, handIn: HandIn): Promise<Grading[]> {
-        const studentIds = team.getStudents().map((s) => s.id);
-        return this.repository.find({
-            handInId: handIn.id,
-            students: { $contains: studentIds },
-        });
+        const gradings = await Promise.all(
+            team.getStudents().map((s) =>
+                this.repository.find(
+                    {
+                        handInId: handIn.id,
+                        students: s,
+                    },
+                    { populate: true }
+                )
+            )
+        );
+        return [...new Set(gradings.flat())];
     }
 
     private async updateGradingOfStudent({
