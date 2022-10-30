@@ -77,7 +77,7 @@ To import students from a CSV file click on the "<IconInText icon={GenerateIcon}
 
    - _Lastname (**required**)_: The lastname of the student.
 
-   - _Status_: The status of the student, one of `ACTIVE`, `INACTIVE`, and `NO_SCHEIN_REQUIRED`. Matches the provided value case-insensitive. If no value is provided, the status is set to `ACTIVE`.
+   - _Status_: The status of the student, one of `ACTIVE`, `INACTIVE`, and `NO_SCHEIN_REQUIRED`. Matches the provided value case-insensitive. If no or an invalid value is provided, the status is set to `ACTIVE`.
 
    - _Team_: An identifier of the team the student is put into. If a number is provided, and a team with that number already exists, the student is put into that team. For all other identifiers, new teams are created. If no value is provided, the student is put into no team.
 
@@ -85,7 +85,7 @@ To import students from a CSV file click on the "<IconInText icon={GenerateIcon}
 
    - _Ilias-Name_: The Ilias name of the student.
 
-   - _Matriculation Number_: The matriculation number of the student.
+   - _Matriculation number_: The matriculation number of the student.
 
    - _Course of studies_: The course of studies of the student.
 
