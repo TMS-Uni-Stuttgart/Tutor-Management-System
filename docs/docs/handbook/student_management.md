@@ -81,7 +81,7 @@ To import students from a CSV file click on the "<IconInText icon={GenerateIcon}
 
    - _Team_: An identifier of the team the student is put into. If a number is provided, and a team with that number already exists, the student is put into that team. For all other identifiers, new teams are created. If no value is provided, the student is put into no team.
 
-   - _E-Mail Address_: A valid e-mail address of the student.
+   - _E-Mail address_: A valid e-mail address of the student.
 
    - _Ilias-Name_: The Ilias name of the student.
 
