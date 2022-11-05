@@ -259,7 +259,7 @@ export class MarkdownService {
             pointInfo.total.must += total.must;
             pointInfo.total.bonus += total.bonus;
 
-            const achieved = gradingForExercise?.points ?? 0;
+            const achieved = gradingForExercise?.totalPoints ?? 0;
             const exMaxPoints = convertExercisePointInfoToString(total);
             const subExTable = gradingForExercise
                 ? this.generateSubExerciseTable({
