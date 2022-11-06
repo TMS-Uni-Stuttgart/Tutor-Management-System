@@ -23,12 +23,12 @@ export function convertCSVDataToFormData(params: ConversionParams): StudentFormS
         const key = rowNr.toString();
         userFormState[key] = {
             rowNr,
-            firstname: data[values.firstname as string] || emptyString,
-            lastname: data[values.lastname as string] || emptyString,
-            email: data[values.email as string] || undefined,
+            firstname: data[values.firstname as string]?.trim() || emptyString,
+            lastname: data[values.lastname as string]?.trim() || emptyString,
+            email: data[values.email as string]?.trim() || undefined,
             status: convertColumnToStatus(data[values.status as string]),
             team: data[values.team as string]?.trim(),
-            iliasName: data[values.iliasName as string] || undefined,
+            iliasName: data[values.iliasName as string]?.trim() || undefined,
             matriculationNo: data[values.matriculationNo as string] || undefined,
             courseOfStudies: data[values.courseOfStudies as string] || undefined,
         };

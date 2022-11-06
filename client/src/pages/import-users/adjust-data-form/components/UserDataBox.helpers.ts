@@ -58,11 +58,11 @@ export function convertCSVDataToFormData(params: ConversionParams): UserFormStat
         const key = rowNr.toString();
         userFormState[key] = {
             rowNr,
-            firstname: data[values.firstname as string] ?? emptyString,
-            lastname: data[values.lastname as string] ?? emptyString,
-            email: data[values.email as string] ?? emptyString,
+            firstname: data[values.firstname as string]?.trim() ?? emptyString,
+            lastname: data[values.lastname as string]?.trim() ?? emptyString,
+            email: data[values.email as string]?.trim() ?? emptyString,
             roles: convertColumnToRoles(data[values.roles as string]),
-            username: data[values.username as string],
+            username: data[values.username as string]?.trim(),
             password: data[values.password as string],
             tutorials: convertColumnToTutorials(tutorials, data[values.tutorials as string]),
             tutorialsToCorrect: convertColumnToTutorials(
