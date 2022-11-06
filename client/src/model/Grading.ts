@@ -72,7 +72,7 @@ export class Grading implements Modify<IGrading, Modified> {
         let sum = this.additionalPoints ?? 0;
 
         for (const [, doc] of this.exerciseGradings) {
-            sum += doc.points;
+            sum += doc.totalPoints;
         }
 
         return sum;
