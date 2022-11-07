@@ -1,7 +1,12 @@
 import { plainToClass } from 'class-transformer';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
-import { ICakeCountDTO, IStudent, IStudentDTO } from 'shared/model/Student';
+import {
+    ICakeCountDTO,
+    ICreateStudentDTO,
+    ICreateStudentsDTO,
+    IStudent,
+} from 'shared/model/Student';
 import { sortByName } from 'shared/util/helpers';
 import { Student } from '../../model/Student';
 import axios from './Axios';
@@ -27,7 +32,7 @@ export async function getStudent(studentId: string): Promise<Student> {
     return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function createStudent(studentInfo: IStudentDTO): Promise<Student> {
+export async function createStudent(studentInfo: ICreateStudentDTO): Promise<Student> {
     const response = await axios.post<IStudent>('student', studentInfo);
 
     if (response.status === 201) {
@@ -37,7 +42,17 @@ export async function createStudent(studentInfo: IStudentDTO): Promise<Student> 
     return Promise.reject(`Wrong response code (${response.status}).`);
 }
 
-export async function editStudent(id: string, studentInfo: IStudentDTO): Promise<Student> {
+export async function createManyStudents(dto: ICreateStudentsDTO): Promise<IStudent[]> {
+    const response = await axios.post<IStudent[]>('student/generate', dto);
+
+    if (response.status === 201) {
+        return response.data;
+    }
+
+    return Promise.reject(`Wrong response code (${response.status}).`);
+}
+
+export async function editStudent(id: string, studentInfo: ICreateStudentDTO): Promise<Student> {
     const response = await axios.patch<IStudent>(`student/${id}`, studentInfo);
 
     if (response.status === 200) {

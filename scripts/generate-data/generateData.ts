@@ -8,7 +8,7 @@ import { Role } from 'shared/model/Role';
 import { IScheinCriteriaDTO, ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria';
 import { ISheet, ISheetDTO } from 'shared/model/Sheet';
 import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest';
-import { IStudent, IStudentDTO, StudentStatus } from 'shared/model/Student';
+import { IStudent, ICreateStudentDTO, StudentStatus } from 'shared/model/Student';
 import { ITutorial, ITutorialDTO } from 'shared/model/Tutorial';
 import { ICreateUserDTO, IUser } from 'shared/model/User';
 import { login } from '../util/login';
@@ -322,7 +322,7 @@ async function createStudent({
     shortTests,
 }: CreateStudentParams): Promise<IStudent> {
     const noLabel = no.toString().padStart(3, '0');
-    const studentDTO: IStudentDTO = {
+    const studentDTO: ICreateStudentDTO = {
         firstname: 'Test',
         lastname: `Student #${noLabel}`,
         iliasName: `ilias${noLabel}`,

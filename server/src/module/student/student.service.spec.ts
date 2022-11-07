@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { AttendanceState } from 'shared/model/Attendance';
-import { IStudent, StudentStatus } from 'shared/model/Student';
+import { ICreateStudentsDTO, IStudent, IStudentDTO, StudentStatus } from 'shared/model/Student';
 import { sortListById } from '../../../test/helpers/test.helpers';
 import { TestSuite } from '../../../test/helpers/TestSuite';
 import {
@@ -11,9 +11,15 @@ import {
     MOCKED_TUTORIALS,
 } from '../../../test/mocks/entities.mock';
 import { Student } from '../../database/entities/student.entity';
-import { AttendanceDTO, CakeCountDTO, PresentationPointsDTO, StudentDTO } from './student.dto';
-import { StudentService } from './student.service';
+import {
+    AttendanceDTO,
+    CakeCountDTO,
+    CreateStudentDTO,
+    CreateStudentsDTO,
+    PresentationPointsDTO,
+} from './student.dto';
 import { StudentModule } from './student.module';
+import { StudentService } from './student.service';
 
 interface AssertStudentParams {
     expected: Student;
@@ -26,9 +32,20 @@ interface AssertStudentListParams {
 }
 
 interface AssertStudentDTOParams {
-    expected: StudentDTO;
+    expected: CreateStudentDTO;
     actual: IStudent;
     oldStudent?: IStudent;
+}
+
+interface AssertGeneratedStudentsParams {
+    expected: CreateStudentsDTO;
+    actual: IStudent[];
+}
+
+interface AssertGenerateStudentDTOParams {
+    expected: IStudentDTO;
+    expectedTutorial: string;
+    actual: IStudent;
 }
 
 function assertStudentBasics({ expected, actual }: AssertStudentParams) {
@@ -152,6 +169,71 @@ function assertStudentDTO({ expected, actual, oldStudent }: AssertStudentDTOPara
     }
 }
 
+/**
+ * Checks if the two given lists match.
+ * Requires that each student has a unique matriculation number to define equivalent students.
+ *
+ * Matching is defined as:
+ * - Both lists have the same length.
+ * - Each DTO has a corresponding student which got created using it's information.
+ *
+ * @param expected List containing the DTO holding the information of the students which should have been created.
+ * @param actual List of actually generated students.
+ */
+function assertGeneratedStudents({ expected, actual }: AssertGeneratedStudentsParams) {
+    expect(actual.length).toBe(expected.students.length);
+
+    for (const { ...dto } of expected.students) {
+        const idx = actual.findIndex((u) => u.matriculationNo === dto.matriculationNo);
+        const user = actual[idx];
+
+        expect(idx).not.toBe(-1);
+        assertGenerateStudentDTO({
+            expected: dto,
+            expectedTutorial: expected.tutorial,
+            actual: user,
+        });
+    }
+}
+
+/**
+ * Compares the given actual student with the expected one.
+ *
+ * This function will assert that `gradings` and `attendances` are empty and `cakeCount` is 0.
+ *
+ * All other properties are just being compared with the following two exceptions:
+ * - `id` must only be defined and is not compared to an expected value.
+ * - For the `tutorial` only the `id` property gets asserted to match the expected tutorial.
+ * - The `team` is not compared.
+ *
+ * @param params Must contain the expected StudentDocument and the actual Student. Can also include the old version of the Student.
+ */
+function assertGenerateStudentDTO({
+    expected,
+    actual,
+    expectedTutorial,
+}: AssertGenerateStudentDTOParams) {
+    const { team, ...restExpected } = expected;
+    const {
+        id,
+        attendances,
+        tutorial: actualTutorial,
+        presentationPoints,
+        cakeCount,
+        team: actualTeam,
+        ...restActual
+    } = actual;
+
+    expect(id).toBeDefined();
+    expect(restActual).toEqual(restExpected);
+
+    expect(actualTutorial.id).toEqual(expectedTutorial);
+
+    expect(attendances).toEqual([]);
+    expect(presentationPoints).toEqual([]);
+    expect(cakeCount).toBe(0);
+}
+
 describe('StudentService', () => {
     const suite = new TestSuite(StudentService, StudentModule);
 
@@ -167,7 +249,7 @@ describe('StudentService', () => {
     it('create a student without a team', async () => {
         const expectedTutorial = MOCKED_TUTORIALS[0];
 
-        const dto: StudentDTO = new StudentDTO({
+        const dto: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -177,7 +259,7 @@ describe('StudentService', () => {
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
             team: undefined,
-        });
+        };
 
         const created = await suite.service.create(dto);
 
@@ -186,7 +268,7 @@ describe('StudentService', () => {
 
     it('create a student with a team', async () => {
         const team = MOCKED_TEAMS[0];
-        const dto: StudentDTO = {
+        const dto: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -206,7 +288,7 @@ describe('StudentService', () => {
     it('fail on creating a student in non-existing tutorial', async () => {
         const nonExistingTutorialId = 'non-existing-id';
 
-        const dto: StudentDTO = new StudentDTO({
+        const dto: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -216,7 +298,7 @@ describe('StudentService', () => {
             email: 'weasley_ginny@hogwarts.com',
             matriculationNo: '4567123',
             team: undefined,
-        });
+        };
 
         await expect(suite.service.create(dto)).rejects.toThrow(NotFoundException);
     });
@@ -236,7 +318,7 @@ describe('StudentService', () => {
 
     it('update student with basic information', async () => {
         const expectedTutorial = MOCKED_TUTORIALS[0];
-        const updateDTO: StudentDTO = {
+        const updateDTO: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -247,7 +329,7 @@ describe('StudentService', () => {
             matriculationNo: '4567123',
             team: undefined,
         };
-        const createDTO: StudentDTO = {
+        const createDTO: CreateStudentDTO = {
             firstname: 'Harry',
             lastname: 'Potter',
             iliasName: 'HarryPotter',
@@ -273,7 +355,7 @@ describe('StudentService', () => {
         const expectedTutorial = MOCKED_TUTORIALS[0];
         const otherTutorial = MOCKED_TUTORIALS[1];
 
-        const updateDTO: StudentDTO = {
+        const updateDTO: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -284,7 +366,7 @@ describe('StudentService', () => {
             matriculationNo: '4567123',
             team: undefined,
         };
-        const createDTO: StudentDTO = {
+        const createDTO: CreateStudentDTO = {
             ...updateDTO,
             tutorial: otherTutorial.id,
         };
@@ -306,7 +388,7 @@ describe('StudentService', () => {
         // Sanity check
         expect(prevTeam.tutorial.id).toEqual(updatedTeam.tutorial.id);
 
-        const updateDTO: StudentDTO = {
+        const updateDTO: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -317,7 +399,7 @@ describe('StudentService', () => {
             matriculationNo: '4567123',
             team: updatedTeam.id,
         };
-        const createDTO: StudentDTO = {
+        const createDTO: CreateStudentDTO = {
             ...updateDTO,
             team: prevTeam.id,
         };
@@ -335,7 +417,7 @@ describe('StudentService', () => {
     it('update a student by removing its team', async () => {
         const prevTeam = MOCKED_TEAMS[0];
 
-        const updateDTO: StudentDTO = {
+        const updateDTO: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -346,7 +428,7 @@ describe('StudentService', () => {
             matriculationNo: '4567123',
             team: undefined,
         };
-        const createDTO: StudentDTO = {
+        const createDTO: CreateStudentDTO = {
             ...updateDTO,
             team: prevTeam.id,
         };
@@ -363,7 +445,7 @@ describe('StudentService', () => {
 
     it('fail on updating a non-existing student', async () => {
         const nonExisting = 'non-existing-id';
-        const updateDTO: StudentDTO = {
+        const updateDTO: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -384,7 +466,7 @@ describe('StudentService', () => {
         const expectedTutorial = MOCKED_TUTORIALS[0];
         const nonExisting = 'non-existing-id';
 
-        const updateDTO: StudentDTO = {
+        const updateDTO: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -395,7 +477,7 @@ describe('StudentService', () => {
             matriculationNo: '4567123',
             team: undefined,
         };
-        const createDTO: StudentDTO = {
+        const createDTO: CreateStudentDTO = {
             ...updateDTO,
             tutorial: expectedTutorial.id,
         };
@@ -409,7 +491,7 @@ describe('StudentService', () => {
 
     it('delete a student', async () => {
         const expectedTutorial = MOCKED_TUTORIALS[0];
-        const dto: StudentDTO = {
+        const dto: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -477,7 +559,7 @@ describe('StudentService', () => {
 
     it('change cakecount of a student', async () => {
         const expectedTutorial = MOCKED_TUTORIALS[0];
-        const dto: StudentDTO = {
+        const dto: CreateStudentDTO = {
             firstname: 'Ginny',
             lastname: 'Weasley',
             iliasName: 'GinnyWeasley',
@@ -498,5 +580,152 @@ describe('StudentService', () => {
         const updatedStudent = await suite.service.findById(student.id);
 
         expect(updatedStudent.cakeCount).toBe(cakeCountDTO.cakeCount);
+    });
+
+    it('create multiple students without team', async () => {
+        const expectedTutorial = MOCKED_TUTORIALS[0];
+        const studentsToCreate: CreateStudentsDTO = {
+            tutorial: expectedTutorial.id,
+            students: [
+                {
+                    firstname: 'Ginny',
+                    lastname: 'Weasley',
+                    iliasName: 'GinnyWeasley',
+                    status: StudentStatus.ACTIVE,
+                    courseOfStudies: 'Computer science B. Sc.',
+                    email: 'weasley_ginny@hogwarts.com',
+                    matriculationNo: '111111',
+                    team: undefined,
+                },
+                {
+                    firstname: 'Harry',
+                    lastname: 'Potter',
+                    iliasName: 'HarryPotter',
+                    status: StudentStatus.INACTIVE,
+                    courseOfStudies: 'Data science',
+                    email: 'potter_harry@hogwarts.com',
+                    matriculationNo: '111112',
+                    team: undefined,
+                },
+            ],
+        };
+
+        const created = await suite.service.createMany(studentsToCreate);
+
+        assertGeneratedStudents({ expected: studentsToCreate, actual: created });
+
+        expect(created[0].team).toBe(undefined);
+        expect(created[1].team).toBe(undefined);
+    });
+
+    it('create multiple students in same new team', async () => {
+        const expectedTutorial = MOCKED_TUTORIALS[0];
+        const studentsToCreate: CreateStudentsDTO = {
+            tutorial: expectedTutorial.id,
+            students: [
+                {
+                    firstname: 'Ginny',
+                    lastname: 'Weasley',
+                    iliasName: 'GinnyWeasley',
+                    status: StudentStatus.ACTIVE,
+                    courseOfStudies: 'Computer science B. Sc.',
+                    email: 'weasley_ginny@hogwarts.com',
+                    matriculationNo: '111111',
+                    team: 'a',
+                },
+                {
+                    firstname: 'Harry',
+                    lastname: 'Potter',
+                    iliasName: 'HarryPotter',
+                    status: StudentStatus.INACTIVE,
+                    courseOfStudies: 'Data science',
+                    email: 'potter_harry@hogwarts.com',
+                    matriculationNo: '111112',
+                    team: 'a',
+                },
+            ],
+        };
+
+        const created = await suite.service.createMany(studentsToCreate);
+
+        assertGeneratedStudents({ expected: studentsToCreate, actual: created });
+
+        expect(created[0].team).toBeDefined();
+        expect(created[0].team?.teamNo).toBe(MOCKED_TEAMS.length + 1);
+        expect(created[0].team?.id).toBe(created[1].team?.id);
+    });
+
+    it('create multiple students in same different new teams', async () => {
+        const expectedTutorial = MOCKED_TUTORIALS[0];
+        const studentsToCreate: CreateStudentsDTO = {
+            tutorial: expectedTutorial.id,
+            students: [
+                {
+                    firstname: 'Ginny',
+                    lastname: 'Weasley',
+                    iliasName: 'GinnyWeasley',
+                    status: StudentStatus.ACTIVE,
+                    courseOfStudies: 'Computer science B. Sc.',
+                    email: 'weasley_ginny@hogwarts.com',
+                    matriculationNo: '111111',
+                    team: 'a',
+                },
+                {
+                    firstname: 'Harry',
+                    lastname: 'Potter',
+                    iliasName: 'HarryPotter',
+                    status: StudentStatus.INACTIVE,
+                    courseOfStudies: 'Data science',
+                    email: 'potter_harry@hogwarts.com',
+                    matriculationNo: '111112',
+                    team: 'b',
+                },
+            ],
+        };
+
+        const created = await suite.service.createMany(studentsToCreate);
+
+        assertGeneratedStudents({ expected: studentsToCreate, actual: created });
+
+        expect(created[0].team).toBeDefined();
+        expect(created[1].team).toBeDefined();
+        expect(created[0].team?.id == created[1].team?.id).toBeFalsy();
+    });
+
+    it('create multiple students in same existing team', async () => {
+        const expectedTutorial = MOCKED_TUTORIALS[0];
+        const expectedTeam = MOCKED_TEAMS[0];
+        const studentsToCreate: CreateStudentsDTO = {
+            tutorial: expectedTutorial.id,
+            students: [
+                {
+                    firstname: 'Ginny',
+                    lastname: 'Weasley',
+                    iliasName: 'GinnyWeasley',
+                    status: StudentStatus.ACTIVE,
+                    courseOfStudies: 'Computer science B. Sc.',
+                    email: 'weasley_ginny@hogwarts.com',
+                    matriculationNo: '111111',
+                    team: expectedTeam.teamNo.toString(),
+                },
+                {
+                    firstname: 'Harry',
+                    lastname: 'Potter',
+                    iliasName: 'HarryPotter',
+                    status: StudentStatus.INACTIVE,
+                    courseOfStudies: 'Data science',
+                    email: 'potter_harry@hogwarts.com',
+                    matriculationNo: '111112',
+                    team: expectedTeam.teamNo.toString(),
+                },
+            ],
+        };
+
+        const created = await suite.service.createMany(studentsToCreate);
+
+        assertGeneratedStudents({ expected: studentsToCreate, actual: created });
+
+        expect(created[0].team?.id).toBe(expectedTeam.id);
+        expect(created[1].team?.id).toBe(expectedTeam.id);
     });
 });

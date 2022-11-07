@@ -13,6 +13,7 @@ import {
     TextBox as ScheinexamPointsIcon,
     ViewDashboard as DashboardIcon,
 } from 'mdi-material-ui';
+import ImportStudents from '../pages/import-students/ImportStudents';
 import { Role } from 'shared/model/Role';
 import AttendanceAdminView from '../pages/attendance/AttendanceAdminView';
 import AttendanceView from '../pages/attendance/AttendanceView';
@@ -152,6 +153,15 @@ export const TUTORIAL_ROUTES = {
         path: parts('tutorial', param('tutorialId'), 'studentoverview'),
         title: 'Studierendenübersicht',
         component: TutorStudentmanagement,
+        icon: StudentIcon,
+        roles: [Role.TUTOR],
+        isTutorialRelated: true,
+        isExact: true,
+    }),
+    IMPORT_STUDENTS: new PrivateRoute({
+        path: parts('tutorial', param('tutorialId'), 'studentoverview', 'generate'),
+        title: 'Importiere Studierende',
+        component: ImportStudents,
         icon: StudentIcon,
         roles: [Role.TUTOR],
         isTutorialRelated: true,
