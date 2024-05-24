@@ -26,7 +26,7 @@ jobs:
           node-version: 14.x
 
       - name: Install pnpm 🏃‍♀️
-        run: npm i -g pnpm
+        run: npm i -g pnpm@latest-7
 
       - name: Install node packages 📦
         run: |

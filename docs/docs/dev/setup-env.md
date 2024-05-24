@@ -21,7 +21,7 @@ To get started you need a few development tools. The following are required to r
 2. Package manager [pnpm](https://pnpm.js.org/en/)
    If you have not already you can install `pnpm` with
    ```cmd
-   npm install -g pnpm
+   npm install -g pnpm@latest-7
    ```
 
 While [Docker](https://docs.docker.com/install/) is not needed it helps you to set up your environment more easily. It's mostly used to spin up a Mongo database on your system in closely to no time. If you don't use Docker you need to provide an alternative MySQL database and to change the configuration in `server/config/development.yml` accordingly.

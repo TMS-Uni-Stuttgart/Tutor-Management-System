@@ -22,7 +22,7 @@ jobs:
           node-version: 14.x
 
       - name: Install pnpm
-        run: npm i -g pnpm
+        run: npm i -g pnpm@latest-7
 
       # Change the version to be the correct one so the version in the image is always the correct one.
       - name: Set new version
