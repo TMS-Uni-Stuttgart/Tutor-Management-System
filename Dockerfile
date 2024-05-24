@@ -21,7 +21,7 @@ WORKDIR /tms/
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV MONGOMS_DISABLE_POSTINSTALL 1
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm@latest-7
 RUN pnpm install && pnpm build
 
 # =============================================
@@ -44,7 +44,7 @@ RUN apk add --no-cache \
     nodejs \
     npm
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm@latest-7
 
 COPY --from=build tms/server/dist tms/server
 
