@@ -27,7 +27,7 @@ jobs:
           mysql database: 'tms-testing-db' # Optional, default value is "test". The specified database which will be created
           mysql root password: 'some-password' # Required if "mysql user" is empty, default is empty. The root superuser password
       - name: Setup Node.js
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: 14.x
       - name: Install pnpm
