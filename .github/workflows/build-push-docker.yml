@@ -45,5 +45,5 @@ jobs:
           push: true
           no-cache: true
           tags: |
-            ghcr.io/TMS-Uni-Stuttgart/tutor-management-system:${{ github.event.release.tag_name }}
-            ghcr.io/TMS-Uni-Stuttgart/tutor-management-system:latest
+            ghcr.io/tms-uni-stuttgart/tutor-management-system:${{ github.event.release.tag_name }}
+            ghcr.io/tms-uni-stuttgart/tutor-management-system:latest
