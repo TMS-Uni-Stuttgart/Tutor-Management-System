@@ -110,8 +110,8 @@ export function getInitialStudentFormState({
   const team: string = student
     ? student.team?.id ?? ''
     : teams
-      ? getNextTeamWithSlot(teams, defaultTeamSize)
-      : '';
+    ? getNextTeamWithSlot(teams, defaultTeamSize)
+    : '';
 
   return {
     lastname: student?.lastname ?? '',
