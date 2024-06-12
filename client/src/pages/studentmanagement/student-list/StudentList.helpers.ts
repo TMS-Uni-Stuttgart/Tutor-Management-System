@@ -63,11 +63,11 @@ export function useStudentsForStudentList({
     const { enqueueSnackbar } = useSnackbar();
 
     const [students, , , fetchStudents] = useFetchState({
-        fetchFunction: async () => {
+        fetchFunction: async (tutorialId: string) => {
             return tutorialId === undefined ? getAllStudents() : getStudentsOfTutorial(tutorialId);
         },
         immediate: true,
-        params: [],
+        params: [tutorialId ?? ''],
     });
 
     const [summaries = {}, isLoadingSummaries] = useFetchState({
@@ -92,7 +92,7 @@ export function useStudentsForStudentList({
                 dto.team = teamId !== '' ? teamId : undefined;
                 const student = await fetchCreateStudent(dto);
                 await fetchTeams(tutorialId ?? '');
-                await fetchStudents();
+                await fetchStudents(tutorialId ?? '');
 
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich erstellt.`, {
                     variant: 'success',
@@ -119,7 +119,7 @@ export function useStudentsForStudentList({
 
                 await fetchEditStudent(studentId, studentDTO);
                 await fetchTeams(tutorialId ?? '');
-                await fetchStudents();
+                await fetchStudents(tutorialId ?? '');
 
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gespeichert.`, {
                     variant: 'success',
@@ -137,7 +137,7 @@ export function useStudentsForStudentList({
         async (student: Student) => {
             try {
                 await fetchDeleteStudent(student.id);
-                await fetchStudents();
+                await fetchStudents(tutorialId ?? '');
 
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gelöscht.`, {
                     variant: 'success',
