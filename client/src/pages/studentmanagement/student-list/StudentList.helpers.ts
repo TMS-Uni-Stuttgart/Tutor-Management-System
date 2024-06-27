@@ -64,7 +64,7 @@ export function useStudentsForStudentList({
 
     const [students, , , fetchStudents] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
-            return tutorialId === undefined ? getAllStudents() : getStudentsOfTutorial(tutorialId);
+            return tutorialId ? getStudentsOfTutorial(tutorialId) : getAllStudents();
         },
         immediate: true,
         params: [tutorialId ?? ''],
