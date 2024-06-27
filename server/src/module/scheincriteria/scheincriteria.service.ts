@@ -1,4 +1,5 @@
 import { EntityRepository } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FormDataResponse } from 'shared/model/FormTypes';
 import {
@@ -8,6 +9,7 @@ import {
     ScheincriteriaSummaryByStudents,
     SingleScheincriteriaSummaryByStudents,
 } from 'shared/model/ScheinCriteria';
+import { StudentStatus } from 'shared/model/Student';
 import { ScheincriteriaEntity } from '../../database/entities/scheincriteria.entity';
 import { Scheinexam } from '../../database/entities/scheinexam.entity';
 import { Sheet } from '../../database/entities/sheet.entity';
@@ -17,13 +19,12 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
+import { GradingService, StudentAndGradings } from '../student/grading.service';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
-import { GradingService, StudentAndGradings } from '../student/grading.service';
-import { InjectRepository } from '@mikro-orm/nestjs';
 
 interface CalculationParams {
     criterias: ScheincriteriaEntity[];
@@ -260,7 +261,8 @@ export class ScheincriteriaService
 
         return {
             student: params.studentInfo.student.toDTO(),
-            passed,
+            passed:
+                passed || params.studentInfo.student.status === StudentStatus.NO_SCHEIN_REQUIRED,
             scheinCriteriaSummary: summaries,
         };
     }
