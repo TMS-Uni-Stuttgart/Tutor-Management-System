@@ -24,12 +24,12 @@ function TutorStudentmanagement(): JSX.Element {
     isEditorOpen: false,
   });
 
-  useEffect(() => {
-    setEditorState({ isAnimating: false, isEditorOpen: false });
-  }, [tutorialId]);
-
   const { students, teams, summaries, isLoading, createStudent, editStudent, deleteStudent } =
     useStudentsForStudentList({ tutorialId });
+
+  useEffect(() => {
+    setEditorState({ isAnimating: false, isEditorOpen: false });
+  }, [students]);
 
   const handleCreateSubmit: StudentFormSubmitCallback = useCallback(
     async (values, helpers) => {
