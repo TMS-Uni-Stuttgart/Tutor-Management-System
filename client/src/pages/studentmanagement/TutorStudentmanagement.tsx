@@ -1,17 +1,17 @@
 import { Button } from '@material-ui/core';
-import React, { useCallback, useState } from 'react';
+import { TableArrowDown as ImportIcon } from 'mdi-material-ui';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { ROUTES } from '../../routes/Routing.routes';
+import { Link } from 'react-router-dom';
 import StudentForm, {
   convertFormStateToDTO,
   StudentFormSubmitCallback,
 } from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import OpenableFormWithFab, { EditorOpenState } from '../../components/OpenableFormWithFab';
+import { ROUTES } from '../../routes/Routing.routes';
 import StudentList from './student-list/StudentList';
 import { useStudentsForStudentList } from './student-list/StudentList.helpers';
-import { Link } from 'react-router-dom';
-import { TableArrowDown as ImportIcon } from 'mdi-material-ui';
 
 interface Params {
   tutorialId: string;
@@ -23,6 +23,10 @@ function TutorStudentmanagement(): JSX.Element {
     isAnimating: false,
     isEditorOpen: false,
   });
+
+  useEffect(() => {
+    setEditorState({ isAnimating: false, isEditorOpen: false });
+  }, [tutorialId]);
 
   const { students, teams, summaries, isLoading, createStudent, editStudent, deleteStudent } =
     useStudentsForStudentList({ tutorialId });
