@@ -324,8 +324,10 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         ]);
         const userEntity: User = new User({ ...dto, username, password });
         userEntity.temporaryPassword = password;
-        userEntity.tutorials.add(...tutorials);
-        userEntity.tutorialsToCorrect = new Collection<Tutorial, unknown>(
+        for (const tutorial of tutorials) {
+            userEntity.tutorials.add(tutorial);
+        }
+        userEntity.tutorialsToCorrect = new Collection<Tutorial, object>(
             userEntity,
             tutorialsToCorrect
         );

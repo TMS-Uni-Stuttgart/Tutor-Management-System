@@ -114,7 +114,7 @@ export class User {
 
             substituteTutorials.push({
                 ...tutorial.toInEntity(),
-                dates: dates.map((date) => date.toISODate()),
+                dates: dates.map((date) => date.toISODate() ?? ''),
             });
         }
         return substituteTutorials;

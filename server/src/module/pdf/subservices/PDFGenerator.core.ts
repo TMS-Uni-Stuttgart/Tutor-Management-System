@@ -2,7 +2,7 @@
 
 import { Logger } from '@nestjs/common';
 import fs from 'fs';
-import puppeteer from 'puppeteer';
+import * as puppeteer from 'puppeteer';
 import { StaticSettings } from '../../settings/settings.static';
 
 /**

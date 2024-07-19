@@ -32,8 +32,8 @@
     "class-transformer": "^0.5.1",
     "github-markdown-css": "^5.6.1",
     "lodash": "^4.17.21",
-    "luxon": "^1.25.0",
-    "markdown-it": "^12.0.4"
+    "luxon": "^3.4.4",
+    "markdown-it": "^14.1.0"
   },
   "devDependencies": {
     "@prettier/plugin-pug": "^3.0.0",
@@ -55,8 +55,8 @@
     "eslint-plugin-react": "^7.34.4",
     "eslint-plugin-react-hooks": "^4.6.2",
     "jest-circus": "^29.7.0",
-    "prettier": "^2.7.1",
+    "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
-    "typescript": "^4.8.2"
+    "typescript": "^5.5.3"
   }
 }

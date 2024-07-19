@@ -166,9 +166,10 @@ export class GradingService {
                 !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
 
             newGrading.updateFromDTO({ dto, handIn });
-            oldGrading?.students.remove(...students);
-            newGrading.students.add(...students);
-
+            for (const student of students) {
+                oldGrading?.students.remove(student);
+                newGrading.students.add(student);
+            }
             if (!!oldGrading && oldGrading.students.length === 0) {
                 this.repository.remove(oldGrading);
             }

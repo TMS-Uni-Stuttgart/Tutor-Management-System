@@ -55,12 +55,12 @@ export class Attendance {
      * @returns The date of this attendance as a key for a map.
      */
     getDateAsKey(): string {
-        return this.date.toISODate();
+        return this.date.toISODate() ?? '';
     }
 
     toDTO(): IAttendance {
         return {
-            date: this.date.toISODate(),
+            date: this.date.toISODate() ?? '',
             note: this.note,
             state: this.state,
         };

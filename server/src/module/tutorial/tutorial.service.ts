@@ -345,8 +345,8 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
                     const created = await this.createTutorial({
                         slot: `${prefix}${nr.toString().padStart(2, '0')}`,
                         dates,
-                        startTime: timeInterval.start,
-                        endTime: timeInterval.end,
+                        startTime: timeInterval.start as DateTime,
+                        endTime: timeInterval.end as DateTime,
                         tutor: undefined,
                         correctors: [],
                     });
@@ -402,6 +402,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     private datesInIntervalGroupedByWeekday(interval: Interval): Map<number, DateTime[]> {
         const datesInInterval: Map<number, DateTime[]> = new Map();
+        if (interval.start === null || interval.end === null) {
+            return datesInInterval;
+        }
         let cursor = interval.start.startOf('day');
 
         while (cursor <= interval.end) {
