@@ -235,7 +235,6 @@ export class StaticSettings {
         }
 
         let message: string = 'Validation for configuration failed. For more details see below:';
-
         for (const error of errors) {
             message += '\n' + this.getStringForError(error);
         }
@@ -325,7 +324,7 @@ export class StaticSettings {
 
             this.assertConfigNoErrors(
                 validateSync(config, {
-                    groups: [DatabaseConfigurationValidationGroup.FILE],
+                    strictGroups: true
                 })
             );
 

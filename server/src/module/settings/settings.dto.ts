@@ -1,9 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
-import { IChangeSettingsDTO } from 'shared/model/Settings';
 import { MailingConfiguration } from './model/MailingConfiguration';
 
-export class ClientSettingsDTO implements IChangeSettingsDTO {
+export class ClientSettingsDTO {
     @IsNumber()
     @Min(1)
     defaultTeamSize!: number;
@@ -12,10 +11,12 @@ export class ClientSettingsDTO implements IChangeSettingsDTO {
     canTutorExcuseStudents!: boolean;
 
     @IsString()
-    gradingFilename!: string;
+    @IsOptional()
+    gradingFilename?: string;
 
     @IsString()
-    tutorialGradingFilename!: string;
+    @IsOptional()
+    tutorialGradingFilename?: string;
 
     @IsOptional()
     @Type(() => MailingConfiguration)
