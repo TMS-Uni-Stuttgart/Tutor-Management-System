@@ -1,4 +1,4 @@
-import { useRouteMatch } from 'react-router';
+import { useMatch } from 'react-router';
 import { RailSubItemProps } from './RailSubItem';
 
 // TODO: Can this function's usages be replaces by "Route.create({})" calls?
@@ -19,5 +19,5 @@ export function useIsCurrentPath(path: string, subItems: RailSubItemProps[] | un
         pathsToCheck.push(...subItems.map((item) => item.subPath));
     }
 
-    return !!useRouteMatch(pathsToCheck);
+    return !!useMatch(pathsToCheck);
 }

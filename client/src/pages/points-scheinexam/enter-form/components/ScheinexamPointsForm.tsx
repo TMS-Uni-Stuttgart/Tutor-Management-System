@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { Prompt } from 'react-router';
+import { unstable_usePrompt } from 'react-router-dom';
 import {
   convertExercisePointInfoToString,
   getPointsOfAllExercises,
@@ -14,6 +14,7 @@ import SubmitButton from '../../../../components/loading/SubmitButton';
 import PointsTextField from '../../../../components/PointsTextField';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
+import { Grading } from '../../../../model/Grading';
 import { Scheinexam } from '../../../../model/Scheinexam';
 import { Student } from '../../../../model/Student';
 import { FormikSubmitCallback } from '../../../../types';
@@ -22,7 +23,6 @@ import {
   PointsFormState,
 } from '../../../points-sheet/enter-form/components/EnterPointsForm.helpers';
 import { getPointsFromState } from '../../../points-sheet/enter-form/EnterPoints.helpers';
-import { Grading } from '../../../../model/Grading';
 
 export type ScheinexamPointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
 
@@ -131,13 +131,13 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
     });
   };
 
+  unstable_usePrompt({
+    message: "Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?",
+    when: dirty,
+  });
+
   return (
     <>
-      <Prompt
-        when={dirty}
-        message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
-      />
-
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
         <Box display='flex' marginBottom={1}>
           <Typography className={classes.unsavedChangesText}>

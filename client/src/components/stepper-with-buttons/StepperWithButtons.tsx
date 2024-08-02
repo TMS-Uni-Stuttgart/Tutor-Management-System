@@ -1,6 +1,6 @@
 import { Box } from '@material-ui/core';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { CustomRoute } from '../../routes/Routing.types';
 import { RouteParams } from '../../routes/typesafe-react-router';
 import { RouteParamBaseArray } from '../../routes/typesafe-react-router/types';
@@ -34,7 +34,7 @@ function StepperWithButtons<Parts extends RouteParamBaseArray>({
   routeAfterLastStep,
   ...props
 }: StepperWithButtonsProps<Parts>): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [activeStep, setInternalActiveStep] = useState(0);
   const [state, setState] = useState<State>({ callback: undefined });
   const [isWaitingOnNextCallback, setWaitingOnNextCallback] = useState(false);
@@ -51,14 +51,14 @@ function StepperWithButtons<Parts extends RouteParamBaseArray>({
         return;
       } else if (nextStep >= steps.length) {
         const { route, params } = routeAfterLastStep;
-        history.push(route.create(params));
+        navigate(route.create(params));
         return;
       }
 
       setInternalActiveStep(nextStep);
       setNextDisabled(false);
     },
-    [steps.length, history, routeAfterLastStep]
+    [steps.length, navigate, routeAfterLastStep]
   );
 
   const nextStep = useCallback(

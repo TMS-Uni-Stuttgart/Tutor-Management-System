@@ -1,8 +1,8 @@
 import {
-  AppBar as MuiAppBar,
   Button,
   ButtonGroup,
   IconButton,
+  AppBar as MuiAppBar,
   PaletteType,
   Popover,
   Theme,
@@ -13,16 +13,16 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
-  BookOpenPageVariant as HandbookIcon,
-  Brightness5 as LightIcon,
   Brightness7 as DarkIcon,
   Download as DownloadIcon,
   Github as GitHubIcon,
+  BookOpenPageVariant as HandbookIcon,
+  Brightness5 as LightIcon,
   Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
-import { useRouteMatch } from 'react-router';
+import { useMatch } from 'react-router';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
@@ -91,7 +91,7 @@ function getTitleFromPath(path: string | undefined): string {
 }
 
 function useTitleFromRoute(): string {
-  const match = useRouteMatch([...TITLE_TEXTS.keys()]);
+  const match = useMatch([...TITLE_TEXTS.keys()]);
   return useMemo(() => getTitleFromPath(match?.path), [match]);
 }
 

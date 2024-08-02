@@ -9,10 +9,10 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React from 'react';
-import { useRouteMatch } from 'react-router';
-import { renderLink } from './renderLink';
+import { useMatch } from 'react-router';
 import { ButtonListItemProps } from './RailItem';
 import { getTargetLink } from './RailItem.helpers';
+import { renderLink } from './renderLink';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,7 +30,7 @@ export interface RailSubItemProps extends ButtonListItemProps {
 
 function RailSubItem({ text, subPath, icon: Icon, ...other }: RailSubItemProps): JSX.Element {
   const classes = useStyles();
-  const isSubPath = useRouteMatch(subPath);
+  const isSubPath = useMatch(subPath);
 
   return (
     <ListItem key={subPath + text} {...other} button component={renderLink(getTargetLink(subPath))}>

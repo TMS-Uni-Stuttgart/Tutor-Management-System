@@ -1,28 +1,29 @@
 import { Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { GradingList } from '../../../model/GradingList';
 import { Student, StudentInTeam } from '../../../model/Student';
 import { Team } from '../../../model/Team';
 import { ROUTES } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
-import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
-import { GradingList } from '../../../model/GradingList';
 
 interface RouteParams {
   tutorialId?: string;
   sheetId?: string;
   teamId?: string;
   studentId?: string;
+  [key: string]: string | undefined;
 }
 
 function EnterStudentPoints(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { tutorialId, sheetId, teamId, studentId } = useParams<RouteParams>();
 
   const { enqueueSnackbar, setError } = useCustomSnackbar();
@@ -80,7 +81,7 @@ function EnterStudentPoints(): JSX.Element {
 
     const studentId: string = event.target.value as string;
 
-    history.push(ROUTES.ENTER_POINTS_STUDENT.create({ tutorialId, sheetId, teamId, studentId }));
+    navigate(ROUTES.ENTER_POINTS_STUDENT.create({ tutorialId, sheetId, teamId, studentId }));
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {

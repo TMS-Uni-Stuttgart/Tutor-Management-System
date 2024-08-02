@@ -1,8 +1,8 @@
 import { Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ITeamDTO } from 'shared/model/Team';
 import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
@@ -35,9 +35,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Params {
   tutorialId: string;
+  [key: string]: string | undefined;
 }
-
-type Props = WithSnackbarProps & RouteComponentProps<Params>;
 
 function updateStudentsArray(
   studentsToUpdate: StudentInTeam[],
@@ -57,8 +56,9 @@ function updateStudentsArray(
   setStudents(updatedStudents);
 }
 
-function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
-  const { params } = match;
+function Teamoverview(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
+  const params = useParams<Params>();
   const classes = useStyles();
   const dialog = useDialog();
   const logger = useLogger('Teamoverview');
@@ -209,4 +209,4 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   );
 }
 
-export default withRouter(withSnackbar(Teamoverview));
+export default Teamoverview;

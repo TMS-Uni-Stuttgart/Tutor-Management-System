@@ -1,8 +1,8 @@
 import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
 import { Sheet } from '../../model/Sheet';
@@ -18,6 +18,7 @@ const useStyles = makeStyles(() =>
 
 interface RouteParams {
   sheetId?: string;
+  [key: string]: string | undefined;
 }
 
 interface GenerateOptions {
@@ -46,7 +47,7 @@ interface UseSheetSelector {
 }
 
 export function useSheetSelector({ generatePath }: SheetSelectorOptions): UseSheetSelector {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { setError } = useErrorSnackbar();
   const { sheetId } = useParams<RouteParams>();
 
@@ -84,7 +85,7 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions): UseShe
     }
 
     const sheetId: string = e.target.value;
-    history.push(generatePath({ sheetId }));
+    navigate(generatePath({ sheetId }));
   }
 
   return {

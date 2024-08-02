@@ -3,13 +3,14 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { Prompt } from 'react-router';
+import { unstable_usePrompt } from 'react-router-dom';
 import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Gradings';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 import { Exercise } from '../../../../model/Exercise';
+import { Grading } from '../../../../model/Grading';
 import { Sheet } from '../../../../model/Sheet';
 import { getPointsFromState as getAchievedPointsFromState } from '../EnterPoints.helpers';
 import {
@@ -18,7 +19,6 @@ import {
   PointsFormSubmitCallback,
 } from './EnterPointsForm.helpers';
 import ExerciseBox from './ExerciseBox';
-import { Grading } from '../../../../model/Grading';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -129,13 +129,14 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
     submitForm();
   });
 
+  unstable_usePrompt({
+    message: "Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?",
+    when: dirty,
+  });
+
+
   return (
     <>
-      <Prompt
-        when={dirty}
-        message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
-      />
-
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
         <div className={classes.textBox}>
           <Typography className={classes.unsavedChangesText}>

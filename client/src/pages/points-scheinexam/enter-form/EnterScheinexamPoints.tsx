@@ -1,16 +1,18 @@
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
 import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { GradingList } from '../../../model/GradingList';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
 import { ROUTES } from '../../../routes/Routing.routes';
@@ -18,8 +20,6 @@ import { convertFormStateToGradingDTO } from '../../points-sheet/enter-form/Ente
 import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,
 } from './components/ScheinexamPointsForm';
-import { GradingList } from '../../../model/GradingList';
-import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -43,12 +43,13 @@ interface RouteParams {
   tutorialId: string;
   examId: string;
   studentId: string;
+  [key: string]: string;
 }
 
 function EnterScheinexamPoints(): JSX.Element {
   const classes = useStyles();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { tutorialId, examId, studentId } = useParams<RouteParams>();
 
   const { enqueueSnackbar, setError, isError } = useCustomSnackbar();
@@ -102,7 +103,7 @@ function EnterScheinexamPoints(): JSX.Element {
 
     const studentId = event.target.value as string;
 
-    history.push(ROUTES.SCHEIN_EXAMS_STUDENT.create({ tutorialId, examId, studentId }));
+    navigate(ROUTES.SCHEIN_EXAMS_STUDENT.create({ tutorialId, examId, studentId }));
   };
 
   const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {

@@ -1,10 +1,10 @@
 import { useFormikContext } from 'formik';
 import { useEffect } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useStepper } from './context/StepperContext';
 
 function HookUpStepperWithFormik(): null {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { submitForm } = useFormikContext<unknown>();
 
   const { setNextCallback, removeNextCallback } = useStepper();
@@ -21,7 +21,7 @@ function HookUpStepperWithFormik(): null {
     });
 
     return () => removeNextCallback();
-  }, [setNextCallback, removeNextCallback, submitForm, history]);
+  }, [setNextCallback, removeNextCallback, submitForm, navigate]);
 
   return null;
 }

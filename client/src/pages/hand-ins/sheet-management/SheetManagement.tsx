@@ -1,7 +1,7 @@
 import { Box } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
-import React, { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
 import { ISheetDTO } from 'shared/model/Sheet';
 import SheetForm, {
   convertFormExercisesToDTOs,
@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
+function SheetManagement(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const dialog = useDialog();
   const logger = useLogger('SheetManagement');
@@ -188,4 +189,4 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   );
 }
 
-export default withSnackbar(SheetManagement);
+export default SheetManagement;

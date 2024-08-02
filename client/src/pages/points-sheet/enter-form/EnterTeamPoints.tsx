@@ -1,28 +1,29 @@
 import { Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import {
   getTeamOfTutorial,
   getTeamsOfTutorial,
   setPointsOfTeam,
 } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { GradingList } from '../../../model/GradingList';
 import { Team } from '../../../model/Team';
 import { ROUTES } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
-import { GradingList } from '../../../model/GradingList';
-import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 
 interface RouteParams {
   tutorialId?: string;
   sheetId?: string;
   teamId?: string;
+  [key: string]: string | undefined;
 }
 
 function EnterTeamPoints(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { tutorialId, sheetId, teamId } = useParams<RouteParams>();
   const { enqueueSnackbar, setError } = useCustomSnackbar();
@@ -71,7 +72,7 @@ function EnterTeamPoints(): JSX.Element {
 
     const teamId: string = event.target.value as string;
 
-    history.push(ROUTES.ENTER_POINTS_TEAM.create({ tutorialId, sheetId, teamId }));
+    navigate(ROUTES.ENTER_POINTS_TEAM.create({ tutorialId, sheetId, teamId }));
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {

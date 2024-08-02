@@ -1,8 +1,8 @@
 import { createStyles, makeStyles, TableCell, Typography } from '@material-ui/core';
 import { FormikErrors, FormikHelpers, isPromise } from 'formik';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useState } from 'react';
-import { Prompt } from 'react-router';
+import { useEffect, useState } from 'react';
+import { unstable_usePrompt } from 'react-router-dom';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import FormikBaseForm from '../../../components/forms/FormikBaseForm';
 import PaperTableRow from '../../../components/PaperTableRow';
@@ -127,8 +127,13 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
       disableSubmitButtonIfClean
       enableDebug
     >
-      {({ dirty }) => (
-        <>
+      {({ dirty }) => {
+        unstable_usePrompt({
+          message: 'Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?',
+          when: dirty,
+        });
+
+        return (
           <div className={classes.tableWrapper}>
             <TableWithPadding
               items={students}
@@ -157,13 +162,8 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
               )}
             />
           </div>
-
-          <Prompt
-            message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
-            when={dirty}
-          />
-        </>
-      )}
+        );
+      }}
     </FormikBaseForm>
   );
 }

@@ -3,8 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Formik, useFormikContext } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import { useSnackbar } from 'notistack';
-import React from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
 import BackButton from '../../components/back-button/BackButton';
 import FormikDatePicker from '../../components/forms/components/FormikDatePicker';
@@ -166,7 +165,7 @@ const initialPrefixes = {
 
 function GenerateTutorials(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate() ?? '',
@@ -194,7 +193,7 @@ function GenerateTutorials(): JSX.Element {
         variant: 'success',
       });
 
-      history.push(ROUTES.MANAGE_TUTORIALS.create({}));
+      navigate(ROUTES.MANAGE_TUTORIALS.create({}));
     } catch (err) {
       enqueueSnackbar('Tutorien konnten nicht generiert werden.', { variant: 'error' });
     }

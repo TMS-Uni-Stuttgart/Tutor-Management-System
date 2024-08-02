@@ -1,11 +1,11 @@
 import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
-  EmailSendOutline as SendIcon,
-  Printer as PrintIcon,
   TableArrowDown as ImportIcon,
+  Printer as PrintIcon,
+  EmailArrowRightOutline as SendIcon,
 } from 'mdi-material-ui';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FailedMail, MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';

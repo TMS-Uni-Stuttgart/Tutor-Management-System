@@ -1,12 +1,12 @@
 import { Box, BoxProps, Paper, Tab, Tabs } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
+  FileDocumentEditOutline as ExerciseSheetIcon,
   FileCertificateOutline as ScheinExamIcon,
   FileClockOutline as ShortTestIcon,
-  FileDocumentEditOutline as ExerciseSheetIcon,
 } from 'mdi-material-ui';
-import React, { useCallback, useMemo } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useCallback, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import TabPanel from '../../components/TabPanel';
 import { ROUTES } from '../../routes/Routing.routes';
 import ScheinExamManagement from './scheinexam-management/ScheinExamManagement';
@@ -24,11 +24,12 @@ const useStyles = makeStyles((theme) =>
 
 interface Params {
   location?: string;
+  [key: string]: string | undefined;
 }
 
 function HandInsPage(): JSX.Element {
   const { location } = useParams<Params>();
-  const history = useHistory();
+  const navigate = useNavigate();
   const classes = useStyles();
 
   const panelProps: BoxProps = useMemo(() => ({ padding: 0, paddingTop: 2, height: '100%' }), []);
@@ -48,9 +49,9 @@ function HandInsPage(): JSX.Element {
 
   const handleChange = useCallback(
     (_, newValue: number) => {
-      history.push(ROUTES.MANAGE_HAND_INS.create({ location: newValue.toString(10) }));
+      navigate(ROUTES.MANAGE_HAND_INS.create({ location: newValue.toString(10) }));
     },
-    [history]
+    [navigate]
   );
 
   return (

@@ -2,7 +2,8 @@ import { Box, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
-import { Prompt, useParams, useRouteMatch } from 'react-router';
+import { useMatch, useParams } from 'react-router';
+import { unstable_usePrompt } from 'react-router-dom';
 import { ISubstituteDTO } from 'shared/model/Tutorial';
 import BackButton from '../../components/back-button/BackButton';
 import DisableBackButton from '../../components/back-button/DisableBackButton.context';
@@ -86,6 +87,11 @@ function SubstituteManagementContent(): JSX.Element {
     [getSelectedSubstitute, tutorial, enqueueSnackbar, resetDirty]
   );
 
+  unstable_usePrompt({
+    message: "Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?",
+    when: dirty,
+  });
+
   return (
     <Box
       flex={1}
@@ -100,11 +106,6 @@ function SubstituteManagementContent(): JSX.Element {
     >
       <Box display='flex' alignItems='center'>
         <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
-
-        <Prompt
-          when={dirty}
-          message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
-        />
       </Box>
 
       <DateBox />
@@ -137,7 +138,7 @@ function SubstituteManagementContent(): JSX.Element {
 
 function SubstituteManagement(): JSX.Element {
   const { tutorialId } = useParams<Params>();
-  const { path } = useRouteMatch();
+  const { path } = useMatch();
   const isAdminVersion = ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template === path;
 
   return (

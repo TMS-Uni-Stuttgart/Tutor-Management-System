@@ -1,15 +1,15 @@
 import { Box, Button, Divider, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { ChevronLeft as BackIcon } from 'mdi-material-ui';
-import React, { useCallback, useMemo, useState } from 'react';
-import { MemoryRouter, useHistory, useLocation } from 'react-router-dom';
+import { useCallback, useMemo, useState } from 'react';
+import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
 import Placeholder from '../../components/Placeholder';
 import { useTutorialFromPath } from '../../hooks/useTutorialFromPath';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES, TUTORIAL_ROUTES } from '../../routes/Routing.routes';
 import { TutorialRelatedDrawerRoute } from '../../routes/Routing.types';
-import Routes from './components/Routes';
+import TutorialRoutes from './components/TutorialRoutes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -72,7 +72,7 @@ function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams
 function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JSX.Element {
   const classes = useStyles();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const [value, setValue] = useState('');
 
@@ -98,7 +98,7 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
       setValue('');
     } else {
       setValue(subRoutePath);
-      history.push(subRoute.create({ tutorialId: tutorial.id }));
+      navigate(subRoute.create({ tutorialId: tutorial.id }));
     }
   };
 
@@ -140,7 +140,7 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
           showPlaceholder={showPlaceholder}
           loading={isLoading}
         >
-          <Routes routes={routes} />
+          <TutorialRoutes routes={routes} />
         </Placeholder>
       </Box>
     </Box>
@@ -148,13 +148,13 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
 }
 
 function TutorialInternalsManagement(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { tutorial, isLoading, error } = useTutorialFromPath();
 
   const routes: TutorialRelatedDrawerRoute[] = useMemo(() => getAllRelatedRoutes(), []);
   const handleBackClick = useCallback(() => {
-    history.push({ pathname: ROUTES.MANAGE_TUTORIALS.create({}) });
-  }, [history]);
+    navigate({ pathname: ROUTES.MANAGE_TUTORIALS.create({}) });
+  }, [navigate]);
 
   return (
     <MemoryRouter>

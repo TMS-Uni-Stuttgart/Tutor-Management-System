@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
-import { Route, Switch } from 'react-router';
+import { useMemo } from 'react';
+import { Route, Routes } from 'react-router';
 import { TutorialRelatedDrawerRoute } from '../../../routes/Routing.types';
 
-interface RoutesProps {
+interface TutorialRoutesProps {
   routes: TutorialRelatedDrawerRoute[];
 }
 
-function Routes({ routes }: RoutesProps): JSX.Element {
+function TutorialRoutes({ routes }: TutorialRoutesProps): JSX.Element {
   const routesToRender = useMemo(
     () =>
       routes.map((route) => (
@@ -20,7 +20,7 @@ function Routes({ routes }: RoutesProps): JSX.Element {
     [routes]
   );
 
-  return <Switch>{routesToRender}</Switch>;
+  return <Routes>{routesToRender}</Routes>;
 }
 
-export default Routes;
+export default TutorialRoutes;

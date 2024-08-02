@@ -1,17 +1,17 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getAllScheinExams } from '../../../hooks/fetching/ScheinExam';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
+import { GradingList } from '../../../model/GradingList';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
 import { ROUTES } from '../../../routes/Routing.routes';
 import StudentCardList from './components/StudentCardList';
-import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
-import { GradingList } from '../../../model/GradingList';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,12 +33,13 @@ const useStyles = makeStyles((theme: Theme) =>
 interface RouteParams {
   tutorialId: string;
   examId?: string;
+  [key: string]: string | undefined;
 }
 
 function ScheinexamPointsOverview(): JSX.Element {
   const classes = useStyles();
 
-  const history = useHistory();
+  const navigate   = useNavigate();
   const { tutorialId, examId } = useParams<RouteParams>();
 
   const { setError } = useErrorSnackbar();
@@ -87,7 +88,7 @@ function ScheinexamPointsOverview(): JSX.Element {
     }
 
     const examId: string = e.target.value;
-    history.push(ROUTES.SCHEIN_EXAMS_OVERVIEW.create({ tutorialId, examId }));
+    navigate(ROUTES.SCHEIN_EXAMS_OVERVIEW.create({ tutorialId, examId }));
   };
 
   return (

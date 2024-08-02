@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router';
+import { Navigate, Route, RouteComponentProps, RouteProps } from 'react-router';
 import { useLogin } from '../hooks/LoginService';
 import { ROUTES } from '../routes/Routing.routes';
 
@@ -15,7 +15,7 @@ function PrivateRoute(props: PrivateRouteProps): JSX.Element {
   function render(innerProps: RouteComponentProps) {
     if (!isLoggedIn()) {
       return (
-        <Redirect to={{ pathname: ROUTES.LOGIN.create({}) }} from={innerProps.location.pathname} />
+        <Navigate to={{ pathname: ROUTES.LOGIN.create({}) }} from={innerProps.location.pathname} replace/>
       );
     }
 

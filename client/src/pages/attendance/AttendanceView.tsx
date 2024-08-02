@@ -1,17 +1,13 @@
-import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useParams } from 'react-router';
 import AttendanceManager from './AttendanceManager';
 
 interface Params {
   tutorialId: string;
+  [key: string]: string | undefined;
 }
 
-type Props = RouteComponentProps<Params>;
-
-function AttendanceView({ match }: Props): JSX.Element {
-  const {
-    params: { tutorialId },
-  } = match;
+function AttendanceView(): JSX.Element {
+  const { tutorialId } = useParams<Params>();
 
   return <AttendanceManager tutorial={tutorialId} />;
 }
