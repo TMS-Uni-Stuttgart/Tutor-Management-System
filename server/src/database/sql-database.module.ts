@@ -1,12 +1,14 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ISchemaGenerator } from '@mikro-orm/core/typings';
+import { MySqlDriver } from '@mikro-orm/mysql';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { DynamicModule, Logger, Module, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { StartUpException } from '../exceptions/StartUpException';
+
+import { isProduction } from '../helpers/isDevelopment';
 import { wait } from '../helpers/wait';
 import { StaticSettings } from '../module/settings/settings.static';
-import { isProduction } from '../helpers/isDevelopment';
 
 function getEntityDirectory(): string {
     return isProduction() ? './database/entities' : './dist/database/entities';
@@ -21,7 +23,7 @@ export function loadDatabaseModule(
         entities: [getEntityDirectory()],
         entitiesTs: ['./src/database/entities'],
         populateAfterFlush: true,
-        type: 'mysql',
+        driver: MySqlDriver,
         debug: false,
         ...StaticSettings.getService().getDatabaseConnectionInformation(),
         ...additionalOptions,
@@ -65,7 +67,8 @@ export class SqlDatabaseModule implements OnModuleInit, OnApplicationShutdown {
         currentTry: number
     ): Promise<void> {
         const options = this.orm.config.getAll();
-        const dbUrl = `${options.type}://${options.host}:${options.port}`;
+        const dbType = options.driver?.constructor.name === 'MySqlDriver' ? 'mysql' : 'unknown';
+        const dbUrl = `${dbType}://${options.host}:${options.port}`;
 
         this.logger.log(
             `Establishing connection to the database '${options.dbName}' at '${dbUrl}' (try: ${currentTry})...`
