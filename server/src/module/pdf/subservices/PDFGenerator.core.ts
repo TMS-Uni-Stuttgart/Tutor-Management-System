@@ -49,7 +49,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
             await page.setContent(html, { waitUntil: 'domcontentloaded' });
             this.logger.debug('Page content loaded');
 
-            const buffer = await page.pdf({
+            const uInt8Array = await page.pdf({
                 format: 'A4',
                 margin: {
                     top: '1cm',
@@ -67,7 +67,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
 
             this.logger.debug('Browser closed');
 
-            return buffer;
+            return Buffer.from(uInt8Array);
         } catch (err) {
             if (browser) {
                 await browser.close();
