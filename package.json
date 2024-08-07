@@ -36,6 +36,9 @@
     "markdown-it": "^14.1.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.1.1",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.8.0",
     "@prettier/plugin-pug": "^3.0.0",
     "@types/copyfiles": "^2.4.4",
     "@types/lodash": "^4.17.7",
