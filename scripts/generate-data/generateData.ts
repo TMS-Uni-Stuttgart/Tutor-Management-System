@@ -8,7 +8,7 @@ import { Role } from 'shared/model/Role';
 import { IScheinCriteriaDTO, ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria';
 import { ISheet, ISheetDTO } from 'shared/model/Sheet';
 import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest';
-import { IStudent, ICreateStudentDTO, StudentStatus } from 'shared/model/Student';
+import { ICreateStudentDTO, IStudent, StudentStatus } from 'shared/model/Student';
 import { ITutorial, ITutorialDTO } from 'shared/model/Tutorial';
 import { ICreateUserDTO, IUser } from 'shared/model/User';
 import { login } from '../util/login';
@@ -457,7 +457,7 @@ async function run() {
 
         await createStudents({ tutorials, sheets, shortTests });
     } catch (err) {
-        console.log(`[ERROR] -- ${err.message}`);
+        console.log(`[ERROR] -- ${(err as Error).message}`);
         process.exit(1);
     }
 }
