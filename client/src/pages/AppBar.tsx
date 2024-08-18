@@ -22,7 +22,7 @@ import {
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
-import { useMatch } from 'react-router';
+import { useLocation } from 'react-router';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
@@ -91,8 +91,14 @@ function getTitleFromPath(path: string | undefined): string {
 }
 
 function useTitleFromRoute(): string {
-  const match = useMatch([...TITLE_TEXTS.keys()]);
-  return useMemo(() => getTitleFromPath(match?.path), [match]);
+  const location = useLocation();
+  const path = location.pathname;
+
+  const match = useMemo(() => {
+    return [...TITLE_TEXTS.keys()].find(key => path.startsWith(key));
+  }, [path]);
+
+  return useMemo(() => getTitleFromPath(match), [match]);
 }
 
 function AppBar({ onMenuButtonClicked }: Props): JSX.Element {

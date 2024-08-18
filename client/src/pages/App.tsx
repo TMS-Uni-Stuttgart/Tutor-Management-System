@@ -53,10 +53,14 @@ function getRouteElementForRoute(route: CustomRoute<PathPart<any, any>[]>): JSX.
 
   if (route.isPrivate) {
     return (
-      <PrivateRoute key={path} path={path} component={route.component} exact={route.isExact} />
+      <Route
+        key={path}
+        path={path}
+        element={<PrivateRoute element={<route.component />} />}
+      />
     );
   } else {
-    return <Route key={path} path={path} component={route.component} exact={route.isExact} />;
+    return <Route key={path} path={path} element={<route.component />} />;
   }
 }
 
@@ -86,11 +90,7 @@ function App(): JSX.Element {
             <Routes>
               {routes}
 
-              <Route
-                exact
-                path={'/'}
-                render={() => <Navigate to={ROOT_REDIRECT_PATH.create({})} replace/>}
-              />
+              <Route path='/' element={<Navigate to={ROOT_REDIRECT_PATH.create({})} replace />} />
             </Routes>
           </div>
         </div>

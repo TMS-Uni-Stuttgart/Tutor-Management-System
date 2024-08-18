@@ -12,4 +12,4 @@ function AttendanceView(): JSX.Element {
   return <AttendanceManager tutorial={tutorialId} />;
 }
 
-export default withRouter(AttendanceView);
+export default AttendanceView;
