@@ -1,12 +1,14 @@
-import { IconButton } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { DatePicker, DatePickerProps } from '@material-ui/pickers';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-import { OutterCalendarProps } from '@material-ui/pickers/views/Calendar/Calendar';
+import { IconButton } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { DatePicker, DatePickerProps } from '@mui/x-date-pickers';
+import { MaterialUiPickersDate } from '@mui/x-date-pickers/typings/date';
+import { OutterCalendarProps } from '@mui/x-date-pickers/views/Calendar/Calendar';
 import clsx from 'clsx';
 import { ArrayHelpers, FieldArray, FieldProps, useField } from 'formik';
 import { DateTime } from 'luxon';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DateList, { DateInList } from './DateList';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -160,6 +162,7 @@ function FormikMultipleDatesPicker({
               arrayHelpers.insert(0, getDateString(date));
             }
           }}
+          size='large'
         >
           <p className={labelClassName}> {date.toFormat('dd')} </p>
         </IconButton>

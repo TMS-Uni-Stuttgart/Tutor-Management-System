@@ -10,12 +10,7 @@ function TutorialRoutes({ routes }: TutorialRoutesProps): JSX.Element {
   const routesToRender = useMemo(
     () =>
       routes.map((route) => (
-        <Route
-          key={route.template}
-          path={route.template}
-          component={route.component}
-          exact={route.isExact}
-        />
+        <Route key={route.template} path={route.template} element={<route.component />} />
       )),
     [routes]
   );

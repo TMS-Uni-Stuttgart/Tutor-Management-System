@@ -1,5 +1,6 @@
-import { Paper, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Paper, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React, { ComponentType, HTMLProps } from 'react';
 import { FixedSizeList } from 'react-window';

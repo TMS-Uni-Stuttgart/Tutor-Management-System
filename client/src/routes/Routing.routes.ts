@@ -1,19 +1,18 @@
 import {
+    AccountMultipleCheck as AttendancesIcon,
+    ViewDashboard as DashboardIcon,
+    Book as EnterPointsIcon,
+    Comment as PresentationIcon,
+    ScriptText as ScheincriteriaIcon,
+    TextBox as ScheinexamPointsIcon,
+    Cogs as SettingsIcon,
+    File as SheetIcon,
     Account as StudentIcon,
     AccountConvert as SubstituteIcon,
     AccountMultiple as TeamIcon,
-    AccountMultipleCheck as AttendancesIcon,
-    BadgeAccount as UserIcon,
-    Book as EnterPointsIcon,
-    Cogs as SettingsIcon,
-    Comment as PresentationIcon,
-    File as SheetIcon,
     HumanMaleBoard as TutorialIcon,
-    ScriptText as ScheincriteriaIcon,
-    TextBox as ScheinexamPointsIcon,
-    ViewDashboard as DashboardIcon,
+    BadgeAccount as UserIcon,
 } from 'mdi-material-ui';
-import ImportStudents from '../pages/import-students/ImportStudents';
 import { Role } from 'shared/model/Role';
 import AttendanceAdminView from '../pages/attendance/AttendanceAdminView';
 import AttendanceView from '../pages/attendance/AttendanceView';
@@ -22,6 +21,7 @@ import Dashboard from '../pages/dashboard/Dashboard';
 import GenerateTutorials from '../pages/generate-tutorials/GenerateTutorials';
 import HandInsPage from '../pages/hand-ins/HandInsPage';
 import ImportShortTests from '../pages/import-short-tests/components/ImportShortTests';
+import ImportStudents from '../pages/import-students/ImportStudents';
 import ImportUsers from '../pages/import-users/ImportUsers';
 import Login from '../pages/Login';
 import EnterScheinexamPoints from '../pages/points-scheinexam/enter-form/EnterScheinexamPoints';
@@ -244,7 +244,7 @@ const MANAGEMENT_ROUTES = {
         roles: [Role.ADMIN, Role.EMPLOYEE],
     }),
     MANAGE_TUTORIAL_INTERNALS: new PrivateRoute({
-        path: parts('admin', 'tutorialmanagement', 'manage', param('tutorialId')),
+        path: parts('admin', 'tutorialmanagement', 'manage', param('tutorialId'), '*'),
         title: 'Tutorienverwaltung',
         component: TutorialInternalsManagement,
         icon: TutorialIcon,

@@ -1,6 +1,6 @@
-import { KeyboardDatePicker, KeyboardDatePickerProps } from '@material-ui/pickers';
+import { TextField, TextFieldProps } from '@mui/material';
+import { DatePicker, DatePickerProps } from '@mui/x-date-pickers';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
-import React from 'react';
 
 const DATE_FORMAT: DateTimeFormatOptions = {
   weekday: 'short',
@@ -9,22 +9,21 @@ const DATE_FORMAT: DateTimeFormatOptions = {
   year: 'numeric',
 };
 
-export type CustomDatePickerProps = KeyboardDatePickerProps;
+export type CustomDatePickerProps = DatePickerProps<DateTime>;
 
 function CustomDatePicker(props: CustomDatePickerProps): JSX.Element {
-  const labelFunc = (date: DateTime | null, invalidLabel: string) => {
-    const label = date?.toLocaleString(DATE_FORMAT);
-
-    return !!label ? label : invalidLabel;
-  };
-
   return (
-    <KeyboardDatePicker
-      variant='inline'
+    <DatePicker
       format='dd.MM.yyyy'
-      labelFunc={labelFunc}
-      fullWidth
-      inputVariant='outlined'
+      slots={{
+        textField: TextField, // Specify TextField as the component to use
+      }}
+      slotProps={{
+        textField: {
+          variant: 'outlined',
+          fullWidth: true,
+        } as TextFieldProps, // Pass any specific props you want to TextField
+      }}
       {...props}
     />
   );

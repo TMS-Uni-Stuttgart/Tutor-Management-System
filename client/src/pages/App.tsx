@@ -1,5 +1,6 @@
-import { CssBaseline, Theme } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { CssBaseline, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useMemo, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import NavigationRail from '../components/navigation-rail/NavigationRail';

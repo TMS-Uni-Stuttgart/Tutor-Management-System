@@ -1,4 +1,4 @@
-import { Divider } from '@material-ui/core';
+import { Divider } from '@mui/material';
 import React from 'react';
 
 function GridDivider(): JSX.Element {

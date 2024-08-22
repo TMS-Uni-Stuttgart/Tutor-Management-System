@@ -1,5 +1,6 @@
-import { Box, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Formik, useFormikContext } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -109,8 +110,8 @@ function GenerateTutorialsContent(): JSX.Element {
         display='grid'
         gridTemplateColumns='minmax(255px, 340px) minmax(0, 1fr)'
         gridTemplateRows='32px repeat(2, 60px) 1fr'
-        gridRowGap={16}
-        gridColumnGap={16}
+        rowGap={16}
+        columnGap={16}
         height='100%'
       >
         <Box display='flex'>

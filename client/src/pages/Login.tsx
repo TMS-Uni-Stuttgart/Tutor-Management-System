@@ -1,5 +1,6 @@
-import { List, ListItem, ListItemText, Paper, Theme, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { List, ListItem, ListItemText, Paper, Theme, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Information as InfoIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';

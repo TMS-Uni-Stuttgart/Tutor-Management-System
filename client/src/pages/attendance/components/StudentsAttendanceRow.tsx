@@ -1,7 +1,8 @@
-import { TableCell } from '@material-ui/core';
-import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
+import { TableCell } from '@mui/material';
+import { Theme, useTheme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React from 'react';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import AttendanceControls from '../../../components/attendance-controls/AttendanceControls';
 import { NoteFormCallback } from '../../../components/attendance-controls/components/AttendanceNotePopper';

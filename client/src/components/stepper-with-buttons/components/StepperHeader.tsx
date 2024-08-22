@@ -1,14 +1,6 @@
-import {
-  Box,
-  Button,
-  createStyles,
-  makeStyles,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  StepperProps,
-} from '@material-ui/core';
+import { Box, Button, Paper, Step, StepLabel, Stepper, StepperProps } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 import BackButton from '../../back-button/BackButton';

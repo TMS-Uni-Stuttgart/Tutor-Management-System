@@ -1,5 +1,6 @@
-import { Box, BoxProps, Paper, Tab, Tabs } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, BoxProps, Paper, Tab, Tabs } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   FileDocumentEditOutline as ExerciseSheetIcon,
   FileCertificateOutline as ScheinExamIcon,

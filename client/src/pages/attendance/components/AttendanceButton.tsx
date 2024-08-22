@@ -1,8 +1,8 @@
-import { Button, ButtonProps } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
+import { Button, ButtonProps } from '@mui/material';
+import { CreateCSSProperties, Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React from 'react';
 import { AttendanceState } from 'shared/model/Attendance';
 
 export function getAttendanceColor(state: AttendanceState, theme: Theme): string {

@@ -1,5 +1,6 @@
-import { Box, BoxProps, Button, IconButton, Paper, Tooltip } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, BoxProps, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useField } from 'formik';
 import { Plus as AddIcon, SortAscending as SortIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
@@ -121,9 +122,9 @@ function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {
         <Tooltip title='Nach Startzeit sortieren (aufsteigend)'>
           <IconButton
             onClick={handleSortClicked}
-            className={classes.sortButton}
             // disabled={value.length === 0}
-          >
+            className={classes.sortButton}
+            size="large">
             <SortIcon />
           </IconButton>
         </Tooltip>

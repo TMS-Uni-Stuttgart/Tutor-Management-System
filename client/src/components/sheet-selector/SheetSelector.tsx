@@ -1,5 +1,6 @@
-import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { SelectInputProps } from '@mui/material/Select/SelectInput';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';

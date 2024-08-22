@@ -1,5 +1,6 @@
-import { IconButton, Paper, PaperProps } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { IconButton, Paper, PaperProps } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useField } from 'formik';
 import { Interval } from 'luxon';
 import { Delete as DeleteIcon } from 'mdi-material-ui';
@@ -56,7 +57,10 @@ function FormikWeekdaySlot({ name, onDelete, ...props }: Props): JSX.Element {
         className={classes.weekdayCountField}
       />
 
-      <IconButton className={classes.weekdayEntryDeleteButton} onClick={onDelete}>
+      <IconButton
+        className={classes.weekdayEntryDeleteButton}
+        onClick={onDelete}
+        size="large">
         <DeleteIcon />
       </IconButton>
     </Paper>

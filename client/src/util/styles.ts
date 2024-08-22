@@ -1,7 +1,7 @@
-import { createTheme as createMuiTheme, PaletteType, Theme } from '@material-ui/core';
-import ORANGE from '@material-ui/core/colors/orange';
-import { PaletteOptions } from '@material-ui/core/styles/createPalette';
-import { CSSProperties } from '@material-ui/styles';
+import { createTheme as createMuiTheme, PaletteMode, Theme } from '@mui/material';
+import ORANGE from '@mui/material/colors/orange';
+import { PaletteOptions } from '@mui/material/styles/createPalette';
+import { CSSProperties } from '@mui/styles';
 
 interface ChartStyle {
     backgroundColor: string;
@@ -18,7 +18,7 @@ interface ChartStyle {
     };
 }
 
-declare module '@material-ui/core/styles/createPalette' {
+declare module '@mui/material/styles/createPalette' {
     interface TypeBackground {
         default: string;
         paper: string;
@@ -38,7 +38,7 @@ declare module '@material-ui/core/styles/createPalette' {
     }
 }
 
-declare module '@material-ui/core/styles/createMixins' {
+declare module '@mui/material/styles/createMixins' {
     interface Mixins {
         scrollbar: (width: number) => CSSProperties;
         chart: (theme: Theme) => ChartStyle;
@@ -46,17 +46,17 @@ declare module '@material-ui/core/styles/createMixins' {
 }
 
 interface ScrollbarCSSOptions {
-    type: PaletteType;
+    mode: PaletteMode;
     width: number;
 }
 
-function generateScrollbarCSS({ type, width }: ScrollbarCSSOptions): CSSProperties {
+function generateScrollbarCSS({ mode, width }: ScrollbarCSSOptions): CSSProperties {
     return {
         '&::-webkit-scrollbar': {
             width,
         },
         '&::-webkit-scrollbar-track': {
-            background: type === 'light' ? '#fff' : '#424242',
+            background: mode === 'light' ? '#fff' : '#424242',
         },
         '&::-webkit-scrollbar-thumb': {
             background: '#888',
@@ -88,11 +88,11 @@ function generateChartStyle(theme: Theme): ChartStyle {
     };
 }
 
-export function createTheme(type: PaletteType): Theme {
+export function createTheme(mode: PaletteMode): Theme {
     const palette: PaletteOptions = {
-        type,
+        mode,
         primary: {
-            main: type === 'light' ? '#004191' : '#00a5fe',
+            main: mode === 'light' ? '#004191' : '#00a5fe',
         },
         secondary: {
             main: '#00beff',
@@ -101,15 +101,15 @@ export function createTheme(type: PaletteType): Theme {
             appBar: '#004191',
         },
         red:
-            type === 'light'
+            mode === 'light'
                 ? { light: '#ef9a9a', main: '#ef5350', dark: '#e53935' }
                 : { light: '#ff988f', main: '#ff6561', dark: '#c63037' },
         green:
-            type === 'light'
+            mode === 'light'
                 ? { light: '#a5d6a7', main: '#66bb6a', dark: '#43a047' }
                 : { light: '#aeffae', main: '#7ae07e', dark: '#46ad50' },
         orange:
-            type === 'light'
+            mode === 'light'
                 ? { light: '#ff9d3f', main: '#ef6c00', dark: '#b53d00' }
                 : { light: '#ffbf45', main: '#ff8e00', dark: '#c55f00' },
         warning: {
@@ -123,28 +123,36 @@ export function createTheme(type: PaletteType): Theme {
         palette,
         mixins: {
             scrollbar: (width) => ({
-                ...generateScrollbarCSS({ type, width }),
+                ...generateScrollbarCSS({ mode, width }),
             }),
             chart: generateChartStyle,
         },
-        props: {
+        components: {
             MuiButton: {
-                variant: 'outlined',
+                defaultProps: {
+                    variant: 'outlined',
+                },
             },
             MuiTextField: {
-                variant: 'outlined',
+                defaultProps: {
+                    variant: 'outlined',
+                },
             },
-        },
-        overrides: {
             MuiChip: {
-                root: { borderRadius: 8 },
+                styleOverrides: {
+                    root: {
+                        borderRadius: 8,
+                    },
+                },
             },
             MuiOutlinedInput: {
-                root: {
-                    '&$disabled': {
+                styleOverrides: {
+                    root: {
                         '&$disabled': {
-                            '& > fieldset': {
-                                borderStyle: 'dotted',
+                            '&$disabled': {
+                                '& > fieldset': {
+                                    borderStyle: 'dotted',
+                                },
                             },
                         },
                     },

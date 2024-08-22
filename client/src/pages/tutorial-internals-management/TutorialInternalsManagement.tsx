@@ -1,8 +1,9 @@
-import { Box, Button, Divider, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Divider, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ChevronLeft as BackIcon } from 'mdi-material-ui';
 import { useCallback, useMemo, useState } from 'react';
-import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
 import Placeholder from '../../components/Placeholder';
 import { useTutorialFromPath } from '../../hooks/useTutorialFromPath';
@@ -157,15 +158,13 @@ function TutorialInternalsManagement(): JSX.Element {
   }, [navigate]);
 
   return (
-    <MemoryRouter>
-      <Content
-        routes={routes}
-        onBackClick={handleBackClick}
-        tutorial={tutorial}
-        isLoading={isLoading}
-        error={error}
-      />
-    </MemoryRouter>
+    <Content
+      routes={routes}
+      onBackClick={handleBackClick}
+      tutorial={tutorial}
+      isLoading={isLoading}
+      error={error}
+    />
   );
 }
 

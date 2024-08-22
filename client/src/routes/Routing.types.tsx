@@ -1,4 +1,4 @@
-import { SvgIconProps } from '@material-ui/core';
+import { SvgIconProps } from '@mui/material';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -174,7 +174,9 @@ export class CustomRoute<Parts extends RouteParamBaseArray> extends Route<Parts>
    */
   renderLink(params: RouteParams<Parts>) {
     const to: string = this.create(params);
-    return React.forwardRef<Link, any>((props, ref) => <Link innerRef={ref} to={to} {...props} />);
+    return React.forwardRef<typeof Link, any>((props, ref) => (
+      <Link ref={ref} to={to} {...props} />
+    ));
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { Formik, useFormikContext } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useEffect, useMemo } from 'react';

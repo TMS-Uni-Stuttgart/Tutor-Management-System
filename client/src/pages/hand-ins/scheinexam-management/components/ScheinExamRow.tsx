@@ -1,4 +1,4 @@
-import { TableCell, Typography } from '@material-ui/core';
+import { TableCell, Typography } from '@mui/material';
 import { FilePdfBox as PDFGenerationIcon } from 'mdi-material-ui';
 import React from 'react';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';

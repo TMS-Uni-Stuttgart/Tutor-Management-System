@@ -1,4 +1,4 @@
-import { Box, Tab, TabProps, Tabs, TabsProps } from '@material-ui/core';
+import { Box, Tab, TabProps, Tabs, TabsProps } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import { ITeamMarkdownData } from 'shared/model/Markdown';
 import TabPanel from '../TabPanel';

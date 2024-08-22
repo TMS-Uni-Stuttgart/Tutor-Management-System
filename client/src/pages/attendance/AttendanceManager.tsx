@@ -1,9 +1,11 @@
-import { Typography } from '@material-ui/core';
-import GREEN from '@material-ui/core/colors/green';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Typography } from '@mui/material';
+import GREEN from '@mui/material/colors/green';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { StudentStatus } from 'shared/model/Student';
 import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';

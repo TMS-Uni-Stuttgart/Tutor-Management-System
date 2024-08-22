@@ -10,8 +10,9 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   Brightness7 as DarkIcon,
   Download as DownloadIcon,
@@ -122,7 +123,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
   });
 
   function handleThemeChangeClicked() {
-    const newType: PaletteType = theme.palette.type === 'light' ? 'dark' : 'light';
+    const newType: PaletteType = theme.palette.mode === 'light' ? 'dark' : 'light';
     changeTheme(newType);
   }
 
@@ -155,7 +156,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           onClick={onMenuButtonClicked}
           aria-label='Menu'
           style={{ visibility: userIsLoggedIn ? 'visible' : 'hidden' }}
-        >
+          size="large">
           <MenuIcon />
         </IconButton>
 
@@ -229,8 +230,11 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
         )}
 
         <Tooltip title='Zwischen hellem & dunklem Design wechseln.'>
-          <IconButton onClick={handleThemeChangeClicked} className={classes.iconButton}>
-            {theme.palette.type === 'light' ? <LightIcon /> : <DarkIcon />}
+          <IconButton
+            onClick={handleThemeChangeClicked}
+            className={classes.iconButton}
+            size="large">
+            {theme.palette.mode === 'light' ? <LightIcon /> : <DarkIcon />}
           </IconButton>
         </Tooltip>
 
@@ -241,7 +245,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
               href={handbookUrl ?? ''}
               target='_blank'
               rel='noopener noreferrer'
-            >
+              size="large">
               <HandbookIcon />
             </IconButton>
           </Tooltip>
@@ -253,7 +257,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
             href='https://github.com/Dudrie/Tutor-Management-System/issues'
             target='_blank'
             rel='noopener noreferrer'
-          >
+            size="large">
             <GitHubIcon fontSize='default' />
           </IconButton>
         </Tooltip>

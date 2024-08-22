@@ -1,6 +1,6 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { Formik, FormikProps } from 'formik';
-import React, { RefObject, useCallback, useMemo } from 'react';
+import { RefObject, useCallback, useMemo } from 'react';
 import { FormikSubmitCallback } from '../../../../types';
 import { IsItemDisabledFunction } from '../../../CustomSelect';
 import FormikDebugDisplay from '../../../forms/components/FormikDebugDisplay';
@@ -60,14 +60,9 @@ function MapForm({ headers, metadata, formikRef, onSubmit }: Props): JSX.Element
   );
 
   return (
-    <Formik
-      innerRef={formikRef}
-      onSubmit={onSubmit}
-      initialValues={initialValues}
-      enableReinitialize
-    >
+    <Formik ref={formikRef} onSubmit={onSubmit} initialValues={initialValues} enableReinitialize>
       {({ values, setFieldValue }) => (
-        <Box display='grid' gridTemplateColumns='1fr' gridRowGap={16} marginTop={2}>
+        <Box display='grid' gridTemplateColumns='1fr' rowGap={16} marginTop={2}>
           {staticDataByBoxes.map((data) => (
             <MapBox key={data.key} title={data.title}>
               <Box
@@ -75,8 +70,8 @@ function MapForm({ headers, metadata, formikRef, onSubmit }: Props): JSX.Element
                 gridColumn='1fr'
                 gridAutoRows='auto'
                 gridAutoFlow='row'
-                gridRowGap={28}
-                gridColumnGap={8}
+                rowGap={28}
+                columnGap={8}
               >
                 {data.boxData.map(({ key, label, required, helperText }) => (
                   <FormikSelect

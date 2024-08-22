@@ -1,5 +1,6 @@
-import { Box, BoxProps, Button, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, BoxProps, Button, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useField } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import React, { useState } from 'react';
@@ -108,8 +109,8 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
         display='grid'
         gridTemplateColumns='1fr'
         gridTemplateRows='max-content'
-        gridRowGap={8}
-        gridColumnGap={8}
+        rowGap={8}
+        columnGap={8}
         maxHeight='max-content'
       >
         {value.map((val, idx) => (

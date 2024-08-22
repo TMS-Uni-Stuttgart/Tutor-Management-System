@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, TableCell, Typography } from '@material-ui/core';
+import { TableCell, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormikErrors, FormikHelpers, isPromise } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';

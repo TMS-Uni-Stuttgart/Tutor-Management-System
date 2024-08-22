@@ -1,16 +1,16 @@
 import {
-  createStyles,
   ListItem,
   ListItemIcon,
   ListItemProps,
   ListItemText,
-  makeStyles,
   Paper,
   Popper,
   SvgIconProps,
   Theme,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { ChevronRight } from 'mdi-material-ui';
 import React, { MouseEventHandler, useState } from 'react';

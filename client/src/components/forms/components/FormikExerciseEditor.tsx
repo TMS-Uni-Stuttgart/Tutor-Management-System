@@ -1,5 +1,7 @@
-import { Box, Button, IconButton, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { FieldArray, FieldArrayRenderProps, useField } from 'formik';
 import {
@@ -252,7 +254,7 @@ function FormikExerciseEditor({
               <IconButton
                 className={classes.deleteButton}
                 onClick={handleExerciseDelete(idx, arrayHelpers)}
-              >
+                size="large">
                 <MinusIcon />
               </IconButton>
 
@@ -271,7 +273,7 @@ function FormikExerciseEditor({
                       <IconButton
                         className={classes.deleteButton}
                         onClick={handleDeleteSubexercise(idx, subIdx, arrayHelpers)}
-                      >
+                        size="large">
                         <MinusIcon />
                       </IconButton>
                     </div>

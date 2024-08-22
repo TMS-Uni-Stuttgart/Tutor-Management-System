@@ -1,5 +1,7 @@
-import { TableCell, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { TableCell, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { InformationOutline as InfoIcon } from 'mdi-material-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

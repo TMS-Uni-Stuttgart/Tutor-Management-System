@@ -1,8 +1,8 @@
-import { IconButton, ListItemIcon, ListItemText, MenuItem, Tooltip } from '@material-ui/core';
-import { ListItemTextProps } from '@material-ui/core/ListItemText';
-import Menu, { MenuProps } from '@material-ui/core/Menu';
-import { MenuItemProps } from '@material-ui/core/MenuItem';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
+import { IconButton, ListItemIcon, ListItemText, MenuItem, Tooltip } from '@mui/material';
+import { ListItemTextProps } from '@mui/material/ListItemText';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import { MenuItemProps } from '@mui/material/MenuItem';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 import { DotsVertical as MoreVertIcon } from 'mdi-material-ui';
 import React, { ComponentType, MouseEventHandler, useState } from 'react';
 
@@ -62,40 +62,38 @@ function generateListItem({
 function ListItemMenu({ items, stopClickPropagation, ...other }: ListItemMenuProps): JSX.Element {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | undefined>(undefined);
 
-  return (
-    <>
-      <IconButton
-        onClick={(e) => {
-          if (stopClickPropagation) {
-            e.stopPropagation();
-          }
+  return <>
+    <IconButton
+      onClick={(e) => {
+        if (stopClickPropagation) {
+          e.stopPropagation();
+        }
 
-          setMenuAnchor(e.currentTarget as HTMLElement);
-        }}
-      >
-        <MoreVertIcon />
-      </IconButton>
+        setMenuAnchor(e.currentTarget as HTMLElement);
+      }}
+      size="large">
+      <MoreVertIcon />
+    </IconButton>
 
-      <Menu
-        {...other}
-        open={menuAnchor !== undefined}
-        anchorEl={menuAnchor}
-        onClose={() => setMenuAnchor(undefined)}
-        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        getContentAnchorEl={undefined}
-        onClick={(e) => {
-          if (stopClickPropagation) {
-            e.stopPropagation();
-          }
+    <Menu
+      {...other}
+      open={menuAnchor !== undefined}
+      anchorEl={menuAnchor}
+      onClose={() => setMenuAnchor(undefined)}
+      anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      getContentAnchorEl={undefined}
+      onClick={(e) => {
+        if (stopClickPropagation) {
+          e.stopPropagation();
+        }
 
-          setMenuAnchor(undefined);
-        }}
-      >
-        {items.map((item) => generateListItem(item))}
-      </Menu>
-    </>
-  );
+        setMenuAnchor(undefined);
+      }}
+    >
+      {items.map((item) => generateListItem(item))}
+    </Menu>
+  </>;
 }
 
 export default ListItemMenu;

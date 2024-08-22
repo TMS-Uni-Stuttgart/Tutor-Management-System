@@ -1,8 +1,10 @@
-import { Button, PropTypes, TextField } from '@material-ui/core';
-import { ButtonBaseProps } from '@material-ui/core/ButtonBase';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { TextFieldProps } from '@material-ui/core/TextField';
-import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
+import { Button, PropTypes, TextField } from '@mui/material';
+import { ButtonBaseProps } from '@mui/material/ButtonBase';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { TextFieldProps } from '@mui/material/TextField';
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import { ErrorMessage, Field, FieldProps } from 'formik';
 import React from 'react';
 import { SvgIconComponent } from '../../../typings/SvgIconComponent';

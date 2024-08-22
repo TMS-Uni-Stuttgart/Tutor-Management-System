@@ -1,6 +1,8 @@
-import { IconButton } from '@material-ui/core';
-import { IconButtonProps } from '@material-ui/core/IconButton';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { IconButton } from '@mui/material';
+import { IconButtonProps } from '@mui/material/IconButton';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { ChevronUp as OpenIcon } from 'mdi-material-ui';
 import React from 'react';
@@ -28,7 +30,7 @@ function CollapseButton({ isCollapsed, ...rest }: Props): JSX.Element {
   const classes = useStyles();
 
   return (
-    <IconButton {...rest}>
+    <IconButton {...rest} size="large">
       <OpenIcon className={clsx(classes.collpaseIcon, !isCollapsed && classes.collapseIconOpen)} />
     </IconButton>
   );

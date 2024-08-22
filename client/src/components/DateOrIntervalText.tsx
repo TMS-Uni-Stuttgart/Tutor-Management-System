@@ -1,4 +1,4 @@
-import { Typography, TypographyProps } from '@material-ui/core';
+import { Typography, TypographyProps } from '@mui/material';
 import { DateTime, DateTimeFormatOptions, Interval } from 'luxon';
 import React from 'react';
 

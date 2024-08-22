@@ -1,4 +1,4 @@
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { FormikErrors } from 'formik';
 import _ from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -183,7 +183,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
   );
 
   return (
-    <Box display='grid' gridRowGap={32} width='100%' gridTemplateRows='auto 1fr'>
+    <Box display='grid' rowGap={32} width='100%' gridTemplateRows='auto 1fr'>
       <Box display='grid' gridTemplateColumns='1fr auto'>
         <Typography variant='h4'>Importierten Kurztest anpassen</Typography>
         <InformationButton

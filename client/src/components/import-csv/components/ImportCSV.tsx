@@ -1,6 +1,7 @@
-import { Box, TextField, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { Box, TextField, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { FileTableOutline as FileImportIcon, Text as TextImportIcon } from 'mdi-material-ui';
 import React, { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
@@ -71,8 +72,8 @@ function ImportCSV({ infoLabel, infoContent }: Props): JSX.Element {
   return (
     <Box
       display='grid'
-      gridRowGap={16}
-      gridColumnGap={8}
+      rowGap={16}
+      columnGap={8}
       gridTemplateRows='max-content 1fr'
       gridTemplateColumns='1fr max-content'
       width='100%'
@@ -81,7 +82,7 @@ function ImportCSV({ infoLabel, infoContent }: Props): JSX.Element {
       <Box
         gridArea='1 / 1'
         display='grid'
-        gridGap={8}
+        gap={8}
         gridAutoFlow='row'
         gridAutoColumns='max-content'
         justifyItems='flex-start'
@@ -102,7 +103,7 @@ function ImportCSV({ infoLabel, infoContent }: Props): JSX.Element {
         gridAutoFlow='column'
         gridAutoColumns='auto'
         alignItems='flex-start'
-        gridColumnGap={8}
+        columnGap={8}
       >
         <ToggleButtonGroup exclusive value={mode} onChange={handleModeChange}>
           <ToggleButton value={ImportMode.FILE}>

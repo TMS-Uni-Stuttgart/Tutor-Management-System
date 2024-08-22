@@ -9,10 +9,11 @@ import {
   MenuItem,
   Select,
   Theme,
-} from '@material-ui/core';
-import { FormControlProps } from '@material-ui/core/FormControl';
-import { SelectProps } from '@material-ui/core/Select';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import { FormControlProps } from '@mui/material/FormControl';
+import { SelectProps } from '@mui/material/Select';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLogger } from '../util/Logger';
@@ -66,7 +67,10 @@ export interface CustomSelectProps<T>
 export type OnChangeHandler = CustomSelectProps<unknown>['onChange'];
 
 class EmptyItem {
-  constructor(readonly id: string, readonly name: string) {}
+  constructor(
+    readonly id: string,
+    readonly name: string
+  ) {}
 }
 
 function renderValue<T>(
@@ -182,7 +186,6 @@ function CustomSelect<T>({
         name={name}
         onChange={onChange}
         variant='outlined'
-        labelWidth={labelWidth}
         multiple={multiple}
         renderValue={
           multiple
@@ -198,7 +201,10 @@ function CustomSelect<T>({
                 }
 
                 const selectedItem: T | undefined = itemCache.current.get(value);
-                return selectedItem === undefined ? '' : itemToString(selectedItem);
+                if (!selectedItem) return '';
+
+                const label = itemToString(selectedItem);
+                return typeof label === 'string' ? label : label.primary;
               }
         }
         classes={{
@@ -229,7 +235,7 @@ function CustomSelect<T>({
                 }
               : {
                   primary: itemString.primary,
-                  secondary: isDisabled ? reason ?? itemString.secondary : itemString.secondary,
+                  secondary: isDisabled ? (reason ?? itemString.secondary) : itemString.secondary,
                 };
 
           return (

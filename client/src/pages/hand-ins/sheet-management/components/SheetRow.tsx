@@ -1,4 +1,4 @@
-import { TableCell, Typography } from '@material-ui/core';
+import { TableCell, Typography } from '@mui/material';
 import React from 'react';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';

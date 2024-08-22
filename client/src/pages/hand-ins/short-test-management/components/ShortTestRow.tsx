@@ -1,4 +1,4 @@
-import { TableCell, Typography } from '@material-ui/core';
+import { TableCell, Typography } from '@mui/material';
 import { FileImportOutline as ImportIcon } from 'mdi-material-ui';
 import { useNavigate } from 'react-router';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';

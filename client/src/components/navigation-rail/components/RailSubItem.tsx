@@ -1,12 +1,6 @@
-import {
-  createStyles,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  SvgIconProps,
-  Theme,
-} from '@material-ui/core';
+import { ListItem, ListItemIcon, ListItemText, SvgIconProps, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 import { useMatch } from 'react-router';

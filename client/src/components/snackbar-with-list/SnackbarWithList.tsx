@@ -9,9 +9,11 @@ import {
   ListItemText,
   Paper,
   Typography,
-} from '@material-ui/core';
-import { SnackbarContentProps } from '@material-ui/core/SnackbarContent';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+} from '@mui/material';
+import { SnackbarContentProps } from '@mui/material/SnackbarContent';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { ChevronDown as ExpandMoreIcon, Close as CloseIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
@@ -130,11 +132,11 @@ function Component(
             aria-label='Show more'
             className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
             onClick={handleExpandClick}
-          >
+            size="large">
             <ExpandMoreIcon />
           </IconButton>
 
-          <IconButton className={classes.expand} onClick={handleDismiss}>
+          <IconButton className={classes.expand} onClick={handleDismiss} size="large">
             <CloseIcon />
           </IconButton>
         </Box>

@@ -1,5 +1,6 @@
-import { Box, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
 import { useMatch, useParams } from 'react-router';
@@ -27,6 +28,7 @@ const useStyles = makeStyles((theme) =>
 
 interface Params {
   tutorialId: string;
+  [key: string]: string | undefined;
 }
 
 function SubstituteManagementContent(): JSX.Element {
@@ -88,7 +90,7 @@ function SubstituteManagementContent(): JSX.Element {
   );
 
   unstable_usePrompt({
-    message: "Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?",
+    message: 'Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?',
     when: dirty,
   });
 
@@ -98,8 +100,8 @@ function SubstituteManagementContent(): JSX.Element {
       display='grid'
       gridTemplateColumns='minmax(300px, 340px) minmax(0, 1fr)'
       gridTemplateRows='fit-content(80px) 1fr fit-content(80px)'
-      gridRowGap={16}
-      gridColumnGap={16}
+      rowGap={16}
+      columnGap={16}
       height='100%'
       component='form'
       onSubmit={handleSubmit}
@@ -110,7 +112,7 @@ function SubstituteManagementContent(): JSX.Element {
 
       <DateBox />
 
-      <Box display='grid' gridRowGap={8}>
+      <Box display='grid' rowGap={8}>
         <Typography color='error' style={{ display: dirty ? undefined : 'none' }}>
           Es gibt ungespeicherte Änderungen.
         </Typography>
@@ -138,8 +140,10 @@ function SubstituteManagementContent(): JSX.Element {
 
 function SubstituteManagement(): JSX.Element {
   const { tutorialId } = useParams<Params>();
-  const { path } = useMatch();
-  const isAdminVersion = ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template === path;
+  const match = useMatch(ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template);
+  const isAdminVersion = match
+    ? ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template === match.pattern.path
+    : false;
 
   return (
     <DisableBackButton isBackDisabled={!isAdminVersion}>

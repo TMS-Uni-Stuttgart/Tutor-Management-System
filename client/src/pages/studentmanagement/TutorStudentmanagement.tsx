@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { TableArrowDown as ImportIcon } from 'mdi-material-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';

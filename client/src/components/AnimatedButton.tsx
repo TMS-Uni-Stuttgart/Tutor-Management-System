@@ -1,5 +1,7 @@
-import { Button, ButtonProps } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Button, ButtonProps } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -68,9 +70,9 @@ function AnimatedButton({
       classes={{
         ...buttonClasses,
         endIcon: classes.icon,
-        label: classes.buttonLabel,
       }}
     >
+      {classes.buttonLabel}
       <span className={classes.text}>{label}</span>
     </Button>
   );

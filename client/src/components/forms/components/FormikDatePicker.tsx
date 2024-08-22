@@ -1,5 +1,5 @@
 import { Field, FieldProps } from 'formik';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import CustomDatePicker, { CustomDatePickerProps } from '../../date-picker/DatePicker';
 
 interface Props {

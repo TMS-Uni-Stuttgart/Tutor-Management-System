@@ -5,11 +5,13 @@ import {
   TableRow,
   Tooltip,
   Typography,
-} from '@material-ui/core';
-import { AvatarProps } from '@material-ui/core/Avatar';
-import Paper, { PaperProps } from '@material-ui/core/Paper';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { TypographyProps } from '@material-ui/core/Typography';
+} from '@mui/material';
+import { AvatarProps } from '@mui/material/Avatar';
+import Paper, { PaperProps } from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { TypographyProps } from '@mui/material/Typography';
 import clsx from 'clsx';
 import React from 'react';
 import { SvgIconComponent } from '../typings/SvgIconComponent';

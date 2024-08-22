@@ -1,5 +1,7 @@
-import { Box, ButtonBase, Typography } from '@material-ui/core';
-import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
+import { Box, ButtonBase, Typography } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 import { NamedElement } from 'shared/model/Common';
@@ -14,15 +16,15 @@ const useStyles = makeStyles((theme) =>
       ...theme.mixins.scrollbar(8),
     },
     tutorRowBackground: {
-      borderColor: fade(theme.palette.text.primary, 0.23),
+      borderColor: alpha(theme.palette.text.primary, 0.23),
       cursor: 'pointer',
       '&:hover': {
-        background: fade(theme.palette.text.primary, theme.palette.action.hoverOpacity),
+        background: alpha(theme.palette.text.primary, theme.palette.action.hoverOpacity),
       },
     },
     selectedTutor: {
       color: theme.palette.orange.main,
-      borderColor: fade(theme.palette.orange.main, 0.5),
+      borderColor: alpha(theme.palette.orange.main, 0.5),
       cursor: 'default',
     },
   })
@@ -41,7 +43,7 @@ function ListOfTutors({ tutorsToShow, onSelect, selectedSubstitute }: Props): JS
     <Box
       display='grid'
       gridTemplateColumns='1fr'
-      gridRowGap={8}
+      rowGap={8}
       alignItems='center'
       className={classes.scrollableBox}
     >

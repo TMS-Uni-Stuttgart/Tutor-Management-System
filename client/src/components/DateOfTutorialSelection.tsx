@@ -1,4 +1,4 @@
-import { FormControlProps } from '@material-ui/core/FormControl';
+import { FormControlProps } from '@mui/material/FormControl';
 import { DateTime } from 'luxon';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import CustomSelect from './CustomSelect';
