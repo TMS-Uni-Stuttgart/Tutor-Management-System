@@ -75,7 +75,7 @@ function SplitButton({ options, initiallySelected, variant, color, ...props }: P
     setOpen((prevOpen) => !prevOpen);
   };
 
-  const handleClose = (event: React.MouseEvent<Document, MouseEvent>) => {
+  const handleClose = (event: MouseEvent | TouchEvent) => {
     if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return;
     }

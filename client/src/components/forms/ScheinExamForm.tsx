@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import * as Yup from 'yup';
 import { Scheinexam } from '../../model/Scheinexam';
 import { FormikSubmitCallback } from '../../types';
@@ -21,7 +21,7 @@ export interface ScheinExamFormState {
 
 export type ScheinExamFormSubmitCallback = FormikSubmitCallback<ScheinExamFormState>;
 
-const validationSchema = Yup.object().shape<ScheinExamFormState>({
+const validationSchema = Yup.object().shape({
   scheinExamNo: Yup.string().required('Benötigt'),
   percentageNeeded: Yup.number().required('Benötigt'),
   date: Yup.string().required('Benötigt'),

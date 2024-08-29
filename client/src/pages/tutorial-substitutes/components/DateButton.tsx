@@ -5,10 +5,9 @@ import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import {
   AccountEditOutline as EditIcon,
-  AccountOutline as SubstituteIcon,
   ChevronRight as RightArrowIcon,
+  AccountOutline as SubstituteIcon,
 } from 'mdi-material-ui';
-import React from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
 import DateOrIntervalText from '../../../components/DateOrIntervalText';
@@ -49,7 +48,7 @@ function DateButton({
   return (
     <Button
       variant='outlined'
-      color={isSelected ? 'primary' : 'default'}
+      color={isSelected ? 'primary' : 'inherit'}
       className={classes.dateButton}
       classes={{ endIcon: classes.dateButtonIcon }}
       endIcon={

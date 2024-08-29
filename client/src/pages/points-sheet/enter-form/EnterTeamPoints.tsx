@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { SelectChangeEvent, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
@@ -65,7 +65,7 @@ function EnterTeamPoints(): JSX.Element {
     }
   }, [teams, teamId]);
 
-  const handleTeamChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleTeamChange = (event: SelectChangeEvent<unknown>, child: React.ReactNode) => {
     if (!tutorialId || !sheetId) {
       return;
     }

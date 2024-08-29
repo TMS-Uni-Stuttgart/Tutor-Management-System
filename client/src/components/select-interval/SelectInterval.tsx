@@ -90,7 +90,7 @@ function getFormatForMode(mode: SelectIntervalMode): {
 function getComponentForMode(
   mode: SelectIntervalMode,
   isKeyboardDisabled: boolean
-): React.FC<DatePickerProps> | React.FC<TimePickerProps> {
+): React.FC<DatePickerProps<DateTime>> | React.FC<TimePickerProps<DateTime>> {
   switch (mode) {
     case SelectIntervalMode.DATE:
       return DatePicker;
@@ -211,37 +211,38 @@ function SelectInterval({
         <Component
           label='Von'
           value={lastValid.start}
-          inputFormat={format.mask}
+          format={format.mask}
           ampm={false}
           onChange={handleStartChanged}
-          renderInput={(props) => (
-            <TextField
-              {...props}
-              fullWidth
-              variant='outlined'
-              InputProps={{ className: classes.startPicker }}
-              onBlur={() => setTouched({ ...touched, start: true })}
-              error={displayError}
-            />
-          )}
+          slots={{
+            textField: TextField,
+          }}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              variant: 'outlined',
+              InputProps: { className: classes.startPicker },
+              onBlur: () => setTouched({ ...touched, start: true }),
+              error: displayError,
+            },
+          }}
         />
         <Component
           label='Bis'
           value={lastValid.end}
-          inputFormat={format.mask}
+          format={format.mask}
           ampm={false}
           minDate={lastValid.start?.plus({ days: 1 })}
           onChange={handleEndChanged}
-          renderInput={(props) => (
-            <TextField
-              {...props}
-              fullWidth
-              variant='outlined'
-              InputProps={{ className: classes.endPicker }}
-              onBlur={() => setTouched({ ...touched, end: true })}
-              error={displayError}
-            />
-          )}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              variant: 'outlined',
+              InputProps: { className: classes.startPicker },
+              onBlur: () => setTouched({ ...touched, start: true }),
+              error: displayError,
+            },
+          }}
         />
       </Box>
 

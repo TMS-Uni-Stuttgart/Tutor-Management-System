@@ -4,7 +4,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import { MenuItemProps } from '@mui/material/MenuItem';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { DotsVertical as MoreVertIcon } from 'mdi-material-ui';
-import React, { ComponentType, MouseEventHandler, useState } from 'react';
+import { ComponentType, MouseEventHandler, useState } from 'react';
 
 type UsedProps =
   | 'open'
@@ -41,7 +41,7 @@ function generateListItem({
 }: ListItem): JSX.Element {
   // The href is added through a spreaded object due to the MenuItem typing not being aware of the href property existing on the ButtonBase.
   const menuItem = (
-    <MenuItem button key={primary} onClick={onClick} disabled={disabled}>
+    <MenuItem key={primary} onClick={onClick} disabled={disabled}>
       <ListItemIcon>
         <Icon {...iconProps} />
       </ListItemIcon>
@@ -62,38 +62,40 @@ function generateListItem({
 function ListItemMenu({ items, stopClickPropagation, ...other }: ListItemMenuProps): JSX.Element {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | undefined>(undefined);
 
-  return <>
-    <IconButton
-      onClick={(e) => {
-        if (stopClickPropagation) {
-          e.stopPropagation();
-        }
+  return (
+    <>
+      <IconButton
+        onClick={(e) => {
+          if (stopClickPropagation) {
+            e.stopPropagation();
+          }
 
-        setMenuAnchor(e.currentTarget as HTMLElement);
-      }}
-      size="large">
-      <MoreVertIcon />
-    </IconButton>
+          setMenuAnchor(e.currentTarget as HTMLElement);
+        }}
+        size='large'
+      >
+        <MoreVertIcon />
+      </IconButton>
 
-    <Menu
-      {...other}
-      open={menuAnchor !== undefined}
-      anchorEl={menuAnchor}
-      onClose={() => setMenuAnchor(undefined)}
-      anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      getContentAnchorEl={undefined}
-      onClick={(e) => {
-        if (stopClickPropagation) {
-          e.stopPropagation();
-        }
+      <Menu
+        {...other}
+        open={menuAnchor !== undefined}
+        anchorEl={menuAnchor}
+        onClose={() => setMenuAnchor(undefined)}
+        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClick={(e) => {
+          if (stopClickPropagation) {
+            e.stopPropagation();
+          }
 
-        setMenuAnchor(undefined);
-      }}
-    >
-      {items.map((item) => generateListItem(item))}
-    </Menu>
-  </>;
+          setMenuAnchor(undefined);
+        }}
+      >
+        {items.map((item) => generateListItem(item))}
+      </Menu>
+    </>
+  );
 }
 
 export default ListItemMenu;

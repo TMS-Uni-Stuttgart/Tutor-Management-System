@@ -1,20 +1,20 @@
-import { CircularProgress, Typography } from '@mui/material';
+import { CircularProgress, SelectChangeEvent, Typography } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
+import { HasId } from 'shared/model/Common';
 import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getSheet } from '../../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
+import { Grading } from '../../../model/Grading';
 import { Sheet } from '../../../model/Sheet';
 import { ROUTES } from '../../../routes/Routing.routes';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
-import { HasId } from 'shared/model/Common';
-import { Grading } from '../../../model/Grading';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -93,7 +93,7 @@ function EnterPoints<T extends HasId>({
       .catch(() => setError('Übungsblatt konnte nicht abgerufen werden.'));
   }, [sheetId, setError]);
 
-  const handleExerciseChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleExerciseChange = (event: SelectChangeEvent<unknown>, child: React.ReactNode) => {
     if (!sheet) {
       return;
     }

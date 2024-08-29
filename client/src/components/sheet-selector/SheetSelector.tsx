@@ -1,8 +1,9 @@
+import { SelectChangeEvent } from '@mui/material/Select';
 import { SelectInputProps } from '@mui/material/Select/SelectInput';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
@@ -80,12 +81,12 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions): UseShe
     }
   }, [sheets, sheetId, currentSheet]);
 
-  function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
-    if (typeof e.target.value !== 'string') {
+  function onSheetSelection(event: SelectChangeEvent<unknown>, child: React.ReactNode) {
+    if (typeof event.target.value !== 'string') {
       return;
     }
 
-    const sheetId: string = e.target.value;
+    const sheetId: string = event.target.value;
     navigate(generatePath({ sheetId }));
   }
 

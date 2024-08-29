@@ -1,19 +1,19 @@
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import SubmitButton from '../../../components/loading/SubmitButton';
 import Placeholder from '../../../components/Placeholder';
 import { useSheetSelector } from '../../../components/sheet-selector/SheetSelector';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getTeamsOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { usePDFs } from '../../../hooks/usePDFs';
+import { GradingList } from '../../../model/GradingList';
 import { Team } from '../../../model/Team';
 import { ROUTES } from '../../../routes/Routing.routes';
 import TeamCardList from './components/TeamCardList';
-import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
-import { GradingList } from '../../../model/GradingList';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface RouteParams {
   sheetId?: string;
   tutorialId?: string;
+  [key: string]: string | undefined;
 }
 
 enum LoadingState {
@@ -164,7 +165,7 @@ function PointsOverview(): JSX.Element {
         <SubmitButton
           isSubmitting={loadingState !== LoadingState.NONE}
           variant='outlined'
-          color='default'
+          color='inherit'
           className={classes.createPdfsButton}
           onClick={handleGeneratingAllPDFs}
           disabled={!currentSheet}

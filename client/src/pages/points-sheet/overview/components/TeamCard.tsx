@@ -13,10 +13,10 @@ import {
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import {
+  FilePdfBox as PdfIcon,
+  FileFind as PdfPreviewIcon,
   Account as StudentIcon,
   AccountMultiple as TeamIcon,
-  FileFind as PdfPreviewIcon,
-  FilePdfBox as PdfIcon,
 } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -24,10 +24,10 @@ import EntityListItemMenu from '../../../../components/list-item-menu/EntityList
 import PointsTable from '../../../../components/points-table/PointsTable';
 import SplitButton from '../../../../components/SplitButton';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
+import { GradingList } from '../../../../model/GradingList';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
 import { ROUTES } from '../../../../routes/Routing.routes';
-import { GradingList } from '../../../../model/GradingList';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -171,7 +171,7 @@ function TeamCard({
         <SplitButton
           variant='outlined'
           initiallySelected={onlyIndividualEntriesAllowed ? 1 : 0}
-          color='default'
+          color='inherit'
           options={[
             {
               label: 'Punkte eintragen',
