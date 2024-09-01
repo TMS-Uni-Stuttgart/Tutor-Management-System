@@ -91,7 +91,7 @@ function FormikMarkdownTextfield({
         icon={<PreviewIcon />}
         className={classes.button}
         onClick={() => setPreview(!isPreview)}
-        color={isPreview ? 'secondary' : 'default'}
+        color={isPreview ? 'secondary' : 'primary'}
         disabled={!value && !isPreview}
       />
 

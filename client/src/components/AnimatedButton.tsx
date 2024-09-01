@@ -60,7 +60,6 @@ function AnimatedButton({
   ...props
 }: Props): JSX.Element {
   const classes = useStyles();
-
   return (
     <Button
       variant='outlined'
@@ -70,9 +69,9 @@ function AnimatedButton({
       classes={{
         ...buttonClasses,
         endIcon: classes.icon,
+        root: classes.buttonLabel
       }}
     >
-      {classes.buttonLabel}
       <span className={classes.text}>{label}</span>
     </Button>
   );

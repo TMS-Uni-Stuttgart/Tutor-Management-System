@@ -3,7 +3,7 @@ import {
   ButtonGroup,
   IconButton,
   AppBar as MuiAppBar,
-  PaletteType,
+  PaletteMode,
   Popover,
   Theme,
   Toolbar,
@@ -124,7 +124,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
   });
 
   function handleThemeChangeClicked() {
-    const newType: PaletteType = theme.palette.mode === 'light' ? 'dark' : 'light';
+    const newType: PaletteMode = theme.palette.mode === 'light' ? 'dark' : 'light';
     changeTheme(newType);
   }
 
@@ -193,7 +193,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
                 <ButtonGroup
                   className={classes.popoverRoot}
                   orientation='vertical'
-                  color='default'
+                  color='inherit'
                   variant='text'
                 >
                   {[...userData.tutorials, ...userData.tutorialsToCorrect].map((tutorial) => (
@@ -259,7 +259,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
             target='_blank'
             rel='noopener noreferrer'
             size="large">
-            <GitHubIcon fontSize='default' />
+            <GitHubIcon fontSize='inherit' />
           </IconButton>
         </Tooltip>
       </Toolbar>

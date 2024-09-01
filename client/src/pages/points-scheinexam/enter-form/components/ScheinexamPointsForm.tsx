@@ -132,10 +132,10 @@ function ScheinexamPointsFormInner({ exam, className, ...props }: FormProps): JS
     });
   };
 
-  unstable_usePrompt({
-    message: "Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?",
-    when: dirty,
-  });
+  // unstable_usePrompt({
+  //   message: "Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?",
+  //   when: dirty,
+  // });
 
   return (
     <>

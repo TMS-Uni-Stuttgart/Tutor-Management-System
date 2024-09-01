@@ -89,10 +89,10 @@ function SubstituteManagementContent(): JSX.Element {
     [getSelectedSubstitute, tutorial, enqueueSnackbar, resetDirty]
   );
 
-  unstable_usePrompt({
-    message: 'Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?',
-    when: dirty,
-  });
+  // unstable_usePrompt({
+  //   message: 'Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?',
+  //   when: dirty,
+  // });
 
   return (
     <Box
