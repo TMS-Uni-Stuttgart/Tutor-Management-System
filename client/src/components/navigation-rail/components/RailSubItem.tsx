@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface RailSubItemProps extends ButtonListItemProps {
   subPath: string;
+  subPathTemplate: string;
   icon: React.ComponentType<SvgIconProps>;
   text: string;
 }

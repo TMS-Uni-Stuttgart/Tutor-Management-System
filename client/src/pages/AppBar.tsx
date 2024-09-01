@@ -34,6 +34,7 @@ import { TutorialInEntity } from '../model/LoggedInUser';
 import { Tutorial } from '../model/Tutorial';
 import { ROUTES } from '../routes/Routing.routes';
 import { saveBlob } from '../util/helperFunctions';
+import { matchPath } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -96,7 +97,7 @@ function useTitleFromRoute(): string {
   const path = location.pathname;
 
   const match = useMemo(() => {
-    return [...TITLE_TEXTS.keys()].find(key => path.startsWith(key));
+    return [...TITLE_TEXTS.keys()].find(key => matchPath(key, path) != null);
   }, [path]);
 
   return useMemo(() => getTitleFromPath(match), [match]);

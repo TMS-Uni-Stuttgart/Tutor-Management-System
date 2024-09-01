@@ -113,6 +113,7 @@ function NavigationRail({
           <RailItem
             key={route.template}
             path={route.create({})}
+            pathTemplate={route.template}
             text={route.title}
             icon={route.icon}
           />
@@ -140,6 +141,7 @@ function NavigationRail({
               <RailItem
                 key={route.template}
                 path={route.create({})}
+                pathTemplate={route.template}
                 text={route.title}
                 icon={route.icon}
               />

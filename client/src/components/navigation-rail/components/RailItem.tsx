@@ -45,6 +45,7 @@ export type ButtonListItemProps = ListItemProps<'div', { button?: true }>;
 
 interface RailItemProps extends ButtonListItemProps {
   path: string;
+  pathTemplate: string;
   icon: React.ComponentType<SvgIconProps> | null;
   text: string;
   subItems?: RailSubItemProps[];
@@ -82,6 +83,7 @@ function RootItem({
 
 function RailItem({
   path,
+  pathTemplate,
   icon: Icon,
   text,
   subItems,
@@ -89,7 +91,7 @@ function RailItem({
   ...other
 }: RailItemProps): JSX.Element {
   const classes = useStyles();
-  const isCurrentPath = useIsCurrentPath(path, subItems);
+  const isCurrentPath = useIsCurrentPath(pathTemplate, subItems);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement>();
 
   const hasSubItems = subItems && subItems.length > 0;

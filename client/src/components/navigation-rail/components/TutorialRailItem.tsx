@@ -21,6 +21,7 @@ function TutorialRailItem({ route, userData }: Props): JSX.Element | null {
       <RailItem
         key={route.template}
         path={subItems[0].subPath}
+        pathTemplate={subItems[0].subPathTemplate}
         text={route.title}
         icon={route.icon}
       />
@@ -33,6 +34,7 @@ function TutorialRailItem({ route, userData }: Props): JSX.Element | null {
     <RailItem
       key={route.template}
       path={route.create({ tutorialId: tutorial.id })}
+      pathTemplate={route.template}
       text={route.title}
       icon={route.icon}
       subItems={getSubItems(route, userData)}
