@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import { AttendanceDTO } from '../../module/student/student.dto';
@@ -14,7 +14,7 @@ export class Attendance {
     @Property({ type: EncryptedStringType })
     note?: string;
 
-    @Enum({ type: EncryptedEnumType })
+    @Property({ type: EncryptedEnumType })
     state?: AttendanceState;
 
     /**

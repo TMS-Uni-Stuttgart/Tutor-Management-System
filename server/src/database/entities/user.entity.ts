@@ -3,7 +3,6 @@ import {
     BeforeUpdate,
     Collection,
     Entity,
-    Enum,
     EventArgs,
     ManyToMany,
     OneToMany,
@@ -33,7 +32,7 @@ export class User {
     @Property({ type: EncryptedStringType })
     lastname: string;
 
-    @Enum({ type: EncryptedEnumArrayType })
+    @Property({ type: EncryptedEnumArrayType })
     roles: Role[];
 
     @Property({ type: EncryptedStringType })
