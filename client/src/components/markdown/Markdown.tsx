@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     background: {
       padding: theme.spacing(1),
+      backgroundColor: theme.palette.background.paper,
       color: theme.palette.text.primary,
       '& table tr': {
         backgroundColor: 'transparent',
