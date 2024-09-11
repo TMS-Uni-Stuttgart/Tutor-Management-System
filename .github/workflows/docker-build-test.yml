@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2.1.5
         with:
-          check-latest: true
+            node-version: '20.x'
 
       - name: Enable Corepack
         run: corepack enable
