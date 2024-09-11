@@ -15,7 +15,7 @@ import { SelectProps } from '@mui/material/Select';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useLogger } from '../util/Logger';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -130,6 +130,7 @@ function CustomSelect<T>({
   ...other
 }: CustomSelectProps<T>): JSX.Element {
   const logger = useLogger('CustomSelect');
+
   if (multiple && !isItemSelected) {
     logger.warn(
       `You have set the Select '${name}' to allow multiple selections but you have not passed an isItemSelected function via props. Therefore Checkboxes won't be shown for the items.`
@@ -145,18 +146,12 @@ function CustomSelect<T>({
   const classes = useStyles();
   const inputLabel = useRef<HTMLLabelElement>(null);
   const itemCache = useRef<Map<string, T>>(new Map());
-  const [labelWidth, setLabelWidth] = useState(0);
 
   const NONE_ITEM = useMemo(() => new EmptyItem('NONE', 'NONE_NAME'), []);
   const items: (T | EmptyItem)[] = useMemo(
     () => (!!nameOfNoneItem ? [NONE_ITEM, ...itemsFromProps] : itemsFromProps),
     [NONE_ITEM, itemsFromProps, nameOfNoneItem]
   );
-
-  useEffect(() => {
-    const label = inputLabel.current;
-    setLabelWidth(label ? label.offsetWidth : 0);
-  }, []);
 
   useEffect(() => {
     logger.debug(`Rebuilding item cache of select ${name}`);
@@ -181,11 +176,11 @@ function CustomSelect<T>({
             ? (props: any) => <CircularProgress {...props} size={24} />
             : undefined
         }
-        defaultValue={''}
+        defaultValue=''
         {...other}
         name={name}
         onChange={onChange}
-        variant='outlined'
+        label={label}
         multiple={multiple}
         renderValue={
           multiple
@@ -215,7 +210,7 @@ function CustomSelect<T>({
         {items.map((item) => {
           if (item instanceof EmptyItem) {
             return (
-              <MenuItem key={NONE_ITEM.id} value={''}>
+              <MenuItem key={NONE_ITEM.id} value=''>
                 <i>{nameOfNoneItem}</i>
               </MenuItem>
             );
