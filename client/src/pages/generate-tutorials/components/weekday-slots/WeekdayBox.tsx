@@ -3,7 +3,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useField } from 'formik';
 import { Plus as AddIcon, SortAscending as SortIcon } from 'mdi-material-ui';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import AddSlotForm, { AddSlotFormData } from './AddSlotForm';
@@ -124,7 +124,8 @@ function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {
             onClick={handleSortClicked}
             // disabled={value.length === 0}
             className={classes.sortButton}
-            size="large">
+            size='large'
+          >
             <SortIcon />
           </IconButton>
         </Tooltip>

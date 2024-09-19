@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-
 function generateScheinExamDTO(values: ScheinExamFormState): IScheinexamDTO {
   const date = DateTime.fromISO(values.date);
 

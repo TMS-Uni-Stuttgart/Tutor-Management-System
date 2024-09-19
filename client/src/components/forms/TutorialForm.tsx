@@ -1,9 +1,8 @@
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { DateTime } from 'luxon';
-import React from 'react';
 import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
@@ -149,9 +148,9 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
   return {
     slot: tutorial.slot,
     tutor: tutorial.tutor ? tutorial.tutor.id : '',
-    startDate: sortedDates[0] ? sortedDates[0].toISODate() ?? '' : startDate,
+    startDate: sortedDates[0] ? (sortedDates[0].toISODate() ?? '') : startDate,
     endDate: sortedDates[sortedDates.length - 1]
-      ? sortedDates[sortedDates.length - 1].toISODate() ?? ''
+      ? (sortedDates[sortedDates.length - 1].toISODate() ?? '')
       : endDate,
     startTime: tutorial.startTime.toISO() ?? '',
     endTime: tutorial.endTime.toISO() ?? '',

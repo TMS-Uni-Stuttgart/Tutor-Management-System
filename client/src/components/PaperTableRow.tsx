@@ -1,17 +1,10 @@
-import {
-  Avatar,
-  TableCell,
-  TableCellProps,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Avatar, TableCell, TableCellProps, TableRow, Tooltip, Typography } from '@mui/material';
 import { AvatarProps } from '@mui/material/Avatar';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import { Theme } from '@mui/material/styles';
+import { TypographyProps } from '@mui/material/Typography';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { TypographyProps } from '@mui/material/Typography';
 import clsx from 'clsx';
 import React from 'react';
 import { SvgIconComponent } from '../typings/SvgIconComponent';

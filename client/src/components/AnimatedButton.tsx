@@ -69,7 +69,7 @@ function AnimatedButton({
       classes={{
         ...buttonClasses,
         endIcon: classes.icon,
-        root: classes.buttonLabel
+        root: classes.buttonLabel,
       }}
     >
       <span className={classes.text}>{label}</span>

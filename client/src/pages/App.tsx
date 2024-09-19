@@ -54,11 +54,7 @@ function getRouteElementForRoute(route: CustomRoute<PathPart<any, any>[]>): JSX.
 
   if (route.isPrivate) {
     return (
-      <Route
-        key={path}
-        path={path}
-        element={<PrivateRoute element={<route.component />} />}
-      />
+      <Route key={path} path={path} element={<PrivateRoute element={<route.component />} />} />
     );
   } else {
     return <Route key={path} path={path} element={<route.component />} />;

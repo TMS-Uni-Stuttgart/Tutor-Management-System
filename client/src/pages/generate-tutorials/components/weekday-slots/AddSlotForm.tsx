@@ -3,7 +3,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useFormik } from 'formik';
 import { DateTime, Interval } from 'luxon';
-import { Check as AcceptIcon, Close as AbortIcon } from 'mdi-material-ui';
+import { Close as AbortIcon, Check as AcceptIcon } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
 import * as Yup from 'yup';
 import SelectInterval, {
@@ -98,11 +98,11 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
           helperText={!!touched.count && errors.count}
         />
 
-        <IconButton onClick={handleAccept} disabled={!isValid} size="large">
+        <IconButton onClick={handleAccept} disabled={!isValid} size='large'>
           <AcceptIcon />
         </IconButton>
 
-        <IconButton onClick={onAbort} size="large">
+        <IconButton onClick={onAbort} size='large'>
           <AbortIcon />
         </IconButton>
       </Box>

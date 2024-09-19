@@ -14,9 +14,9 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { ChevronRight } from 'mdi-material-ui';
 import React, { MouseEventHandler, useState } from 'react';
-import { renderLink } from './renderLink';
 import { getTargetLink, useIsCurrentPath } from './RailItem.helpers';
 import RailSubItem, { RailSubItemProps } from './RailSubItem';
+import { renderLink } from './renderLink';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -154,9 +154,7 @@ function RailItem({
         className={classes.popper}
       >
         <Paper className={classes.popperPaper}>
-          {subItems?.map((props) => (
-            <RailSubItem key={props.subPath} {...props} />
-          ))}
+          {subItems?.map((props) => <RailSubItem key={props.subPath} {...props} />)}
         </Paper>
       </Popper>
     </RootItem>

@@ -1,17 +1,9 @@
-import {
-  Divider,
-  Drawer,
-  DrawerProps,
-  Link,
-  List,
-  ListSubheader,
-  Typography,
-} from '@mui/material';
+import { Divider, Drawer, DrawerProps, Link, List, ListSubheader, Typography } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OpenInNew as ExternalLinkIcon } from 'mdi-material-ui';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getVersionOfApp } from '../../hooks/fetching/Information';
 import { useLogin } from '../../hooks/LoginService';
 import RailItem from './components/RailItem';

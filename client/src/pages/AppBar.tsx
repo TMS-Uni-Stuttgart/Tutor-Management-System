@@ -23,7 +23,7 @@ import {
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
-import { useLocation } from 'react-router';
+import { matchPath, useLocation } from 'react-router';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
@@ -34,7 +34,6 @@ import { TutorialInEntity } from '../model/LoggedInUser';
 import { Tutorial } from '../model/Tutorial';
 import { ROUTES } from '../routes/Routing.routes';
 import { saveBlob } from '../util/helperFunctions';
-import { matchPath } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -97,7 +96,7 @@ function useTitleFromRoute(): string {
   const path = location.pathname;
 
   const match = useMemo(() => {
-    return [...TITLE_TEXTS.keys()].find(key => matchPath(key, path) != null);
+    return [...TITLE_TEXTS.keys()].find((key) => matchPath(key, path) != null);
   }, [path]);
 
   return useMemo(() => getTitleFromPath(match), [match]);
@@ -157,7 +156,8 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           onClick={onMenuButtonClicked}
           aria-label='Menu'
           style={{ visibility: userIsLoggedIn ? 'visible' : 'hidden' }}
-          size="large">
+          size='large'
+        >
           <MenuIcon />
         </IconButton>
 
@@ -234,7 +234,8 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           <IconButton
             onClick={handleThemeChangeClicked}
             className={classes.iconButton}
-            size="large">
+            size='large'
+          >
             {theme.palette.mode === 'light' ? <LightIcon /> : <DarkIcon />}
           </IconButton>
         </Tooltip>
@@ -246,7 +247,8 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
               href={handbookUrl ?? ''}
               target='_blank'
               rel='noopener noreferrer'
-              size="large">
+              size='large'
+            >
               <HandbookIcon />
             </IconButton>
           </Tooltip>
@@ -258,7 +260,8 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
             href='https://github.com/Dudrie/Tutor-Management-System/issues'
             target='_blank'
             rel='noopener noreferrer'
-            size="large">
+            size='large'
+          >
             <GitHubIcon fontSize='inherit' />
           </IconButton>
         </Tooltip>

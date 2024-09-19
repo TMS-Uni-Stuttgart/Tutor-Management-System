@@ -9,7 +9,6 @@ import {
   PlusBox as PlusIcon,
   TimelinePlusOutline as PlusSubIcon,
 } from 'mdi-material-ui';
-import React from 'react';
 import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
@@ -254,7 +253,8 @@ function FormikExerciseEditor({
               <IconButton
                 className={classes.deleteButton}
                 onClick={handleExerciseDelete(idx, arrayHelpers)}
-                size="large">
+                size='large'
+              >
                 <MinusIcon />
               </IconButton>
 
@@ -273,7 +273,8 @@ function FormikExerciseEditor({
                       <IconButton
                         className={classes.deleteButton}
                         onClick={handleDeleteSubexercise(idx, subIdx, arrayHelpers)}
-                        size="large">
+                        size='large'
+                      >
                         <MinusIcon />
                       </IconButton>
                     </div>

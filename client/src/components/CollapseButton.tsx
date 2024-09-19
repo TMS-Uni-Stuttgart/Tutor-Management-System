@@ -5,7 +5,6 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { ChevronUp as OpenIcon } from 'mdi-material-ui';
-import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,7 +29,7 @@ function CollapseButton({ isCollapsed, ...rest }: Props): JSX.Element {
   const classes = useStyles();
 
   return (
-    <IconButton {...rest} size="large">
+    <IconButton {...rest} size='large'>
       <OpenIcon className={clsx(classes.collpaseIcon, !isCollapsed && classes.collapseIconOpen)} />
     </IconButton>
   );

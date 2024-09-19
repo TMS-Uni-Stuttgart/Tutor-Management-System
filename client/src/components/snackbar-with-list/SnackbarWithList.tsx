@@ -15,7 +15,7 @@ import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import { ChevronDown as ExpandMoreIcon, Close as CloseIcon } from 'mdi-material-ui';
+import { Close as CloseIcon, ChevronDown as ExpandMoreIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
@@ -132,11 +132,12 @@ function Component(
             aria-label='Show more'
             className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
             onClick={handleExpandClick}
-            size="large">
+            size='large'
+          >
             <ExpandMoreIcon />
           </IconButton>
 
-          <IconButton className={classes.expand} onClick={handleDismiss} size="large">
+          <IconButton className={classes.expand} onClick={handleDismiss} size='large'>
             <CloseIcon />
           </IconButton>
         </Box>

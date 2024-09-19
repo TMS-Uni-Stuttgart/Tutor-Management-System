@@ -4,7 +4,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useField } from 'formik';
 import { Interval } from 'luxon';
 import { Delete as DeleteIcon } from 'mdi-material-ui';
-import React from 'react';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
 import SelectInterval, {
   SelectIntervalMode,
@@ -57,10 +56,7 @@ function FormikWeekdaySlot({ name, onDelete, ...props }: Props): JSX.Element {
         className={classes.weekdayCountField}
       />
 
-      <IconButton
-        className={classes.weekdayEntryDeleteButton}
-        onClick={onDelete}
-        size="large">
+      <IconButton className={classes.weekdayEntryDeleteButton} onClick={onDelete} size='large'>
         <DeleteIcon />
       </IconButton>
     </Paper>
