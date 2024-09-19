@@ -39,7 +39,8 @@ function SelectedSubstituteBar({ substitute, onRemoveClicked }: Props): JSX.Elem
           <IconButton
             onClick={onRemoveClicked}
             className={classes.removeSubstituteButton}
-            size="large">
+            size='large'
+          >
             <RemoveIcon />
           </IconButton>
         </Tooltip>

@@ -41,7 +41,7 @@ interface RouteParams {
 function ScheinexamPointsOverview(): JSX.Element {
   const classes = useStyles();
 
-  const navigate   = useNavigate();
+  const navigate = useNavigate();
   const { tutorialId, examId } = useParams<RouteParams>();
 
   const { setError } = useErrorSnackbar();

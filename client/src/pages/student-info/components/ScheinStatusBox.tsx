@@ -3,7 +3,6 @@ import { useTheme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React from 'react';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 
 const useStyles = makeStyles((theme) =>
@@ -34,7 +33,7 @@ function ScheinStatusBox({ scheinStatus, ...props }: Props): JSX.Element {
       alignItems='center'
       textAlign='center'
       border={1}
-      borderRadius="4px"
+      borderRadius='4px'
       borderColor={
         scheinStatus
           ? scheinStatus.passed
