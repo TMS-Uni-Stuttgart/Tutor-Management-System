@@ -34,7 +34,7 @@ export const validationSchema = Yup.object().shape({
 
                             const regexMail =
                                 /[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*/;
-                            const regexName = /([\p{L}\p{N}",*-]|[^\S\r\n])+/;
+                            const regexName = /([\p{L}\p{N}",*-]|[^\S\r\n])+/u;
                             const regex = new RegExp(
                                 `^(${regexMail.source})|(${regexName.source} <${regexMail.source}>)$`,
                                 'u'

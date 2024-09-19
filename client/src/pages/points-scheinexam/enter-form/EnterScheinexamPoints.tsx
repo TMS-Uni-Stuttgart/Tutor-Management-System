@@ -1,7 +1,7 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, SelectChangeEvent, Typography } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { getNameOfEntity } from 'shared/util/helpers';
@@ -61,6 +61,14 @@ function EnterScheinexamPoints(): JSX.Element {
   const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
 
   useEffect(() => {
+    if (!examId) {
+      setExam(undefined);
+      return;
+    }
+    if (!tutorialId) {
+      setStudent(undefined);
+      return;
+    }
     getScheinexam(examId)
       .then((response) => {
         setExam(response);
@@ -78,6 +86,10 @@ function EnterScheinexamPoints(): JSX.Element {
   }, [examId, tutorialId, setError]);
 
   useEffect(() => {
+    if (!studentId) {
+      setStudent(undefined);
+      return;
+    }
     getStudent(studentId)
       .then((response) => {
         setStudent(response);
@@ -88,6 +100,9 @@ function EnterScheinexamPoints(): JSX.Element {
   }, [studentId, setError]);
 
   useEffect(() => {
+    if (!tutorialId) {
+      return;
+    }
     getStudentsOfTutorial(tutorialId)
       .then((response) => {
         setAllStudents(response);
@@ -97,8 +112,8 @@ function EnterScheinexamPoints(): JSX.Element {
       });
   }, [tutorialId]);
 
-  const handleStudentChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    if (!(typeof event.target.value === 'string')) {
+  const handleStudentChange = (event: SelectChangeEvent<unknown>) => {
+    if (!(typeof event.target.value === 'string') || !examId || !tutorialId) {
       return;
     }
 
@@ -108,7 +123,7 @@ function EnterScheinexamPoints(): JSX.Element {
   };
 
   const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {
-    if (!student) {
+    if (!student || !studentId) {
       return;
     }
 
@@ -150,7 +165,10 @@ function EnterScheinexamPoints(): JSX.Element {
     <Box display='flex' flexDirection='column' flex={1}>
       <Box display='flex' marginBottom={3}>
         <BackButton
-          to={ROUTES.SCHEIN_EXAMS_OVERVIEW.create({ tutorialId, examId })}
+          to={ROUTES.SCHEIN_EXAMS_OVERVIEW.create({
+            tutorialId: tutorialId ?? '',
+            examId: examId ?? '',
+          })}
           className={classes.backButton}
         />
 

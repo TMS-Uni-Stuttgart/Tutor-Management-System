@@ -19,6 +19,9 @@ export function compareTutorials(a: TutorialInEntity, b: TutorialInEntity): numb
     }
 
     if (!a.time.equals(b.time)) {
+        if (a.time.start === null || b.time.start === null) {
+            throw new Error('Start time cannot be null');
+        }
         return a.time.start > b.time.start ? 1 : -1;
     }
 

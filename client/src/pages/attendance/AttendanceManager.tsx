@@ -1,11 +1,11 @@
-import { Typography } from '@mui/material';
+import { SelectChangeEvent, Typography } from '@mui/material';
 import GREEN from '@mui/material/colors/green';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { StudentStatus } from 'shared/model/Student';
 import { NoteFormCallback } from '../../components/attendance-controls/components/AttendanceNotePopper';
@@ -178,7 +178,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     }
   }, [fetchedStudents, filterOption, tutorial]);
 
-  function handleTutoriumSelectionChanged(e: ChangeEvent<{ name?: string; value: unknown }>) {
+  function handleTutoriumSelectionChanged(e: SelectChangeEvent<unknown>) {
     if (typeof e.target.value !== 'string') {
       return;
     }
@@ -250,7 +250,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     };
   }
 
-  function handleFilteroptionChange(e: ChangeEvent<{ name?: string; value: unknown }>) {
+  function handleFilteroptionChange(e: SelectChangeEvent<unknown>) {
     if (typeof e.target.value !== 'string') {
       return;
     }

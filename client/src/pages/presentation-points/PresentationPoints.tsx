@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IPresentationPointsDTO } from 'shared/model/Gradings';
 import Placeholder from '../../components/Placeholder';
@@ -14,6 +14,7 @@ import PresentationList from './components/PresentationList';
 interface RouteParams {
   sheetId?: string;
   tutorialId?: string;
+  [key: string]: string | undefined;
 }
 
 function PresentationPoints(): JSX.Element {

@@ -72,13 +72,15 @@ function Teamoverview(): JSX.Element {
     setIsLoading(true);
 
     (async function () {
-      const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorial(params.tutorialId),
-        getTeamsOfTutorial(params.tutorialId),
-      ]);
+      if (params.tutorialId) {
+        const [studentsResponse, teams] = await Promise.all([
+          getStudentsOfTutorial(params.tutorialId),
+          getTeamsOfTutorial(params.tutorialId),
+        ]);
 
-      setStudents(studentsResponse);
-      setTeams(teams);
+        setStudents(studentsResponse);
+        setTeams(teams);
+      }
       setIsLoading(false);
     })();
   }, [params.tutorialId]);
@@ -88,7 +90,9 @@ function Teamoverview(): JSX.Element {
     { setSubmitting, resetForm }
   ) => {
     const teamDTO: ITeamDTO = { students: studentsFromForm };
-
+    if (!params.tutorialId) {
+      return;
+    }
     try {
       const response = await createTeam(params.tutorialId, teamDTO);
 
@@ -124,6 +128,9 @@ function Teamoverview(): JSX.Element {
   }
 
   function handleDeleteTeamSubmit(team: Team) {
+    if (!params.tutorialId) {
+      return;
+    }
     deleteTeam(params.tutorialId, team.id)
       .then(async () => {
         setTeams(teams.filter((u) => u.id !== team.id));
@@ -144,6 +151,9 @@ function Teamoverview(): JSX.Element {
     (team) =>
     async ({ students }, { setSubmitting }) => {
       const teamDTO: ITeamDTO = { students };
+      if (!params.tutorialId) {
+        return;
+      }
 
       try {
         const response = await editTeam(params.tutorialId, team.id, teamDTO);

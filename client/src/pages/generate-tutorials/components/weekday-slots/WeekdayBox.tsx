@@ -45,7 +45,7 @@ interface Props extends BoxProps {
 
 function sortSlots(intervals: WeekdayTimeSlot[]): WeekdayTimeSlot[] {
   return [...intervals].sort((a, b) => {
-    if (!a.interval.isValid || !b.interval.isValid) {
+    if (!a.interval.isValid || !b.interval.isValid || !a.interval.start || !b.interval.start) {
       return -1;
     }
 

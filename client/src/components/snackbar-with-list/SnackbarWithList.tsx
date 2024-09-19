@@ -10,7 +10,6 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-import { SnackbarContentProps } from '@mui/material/SnackbarContent';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -100,7 +99,7 @@ export interface SnackbarWithListProps {
 
 function Component(
   { title, textBeforeList, items, id, isOpen, variant }: SnackbarWithListProps,
-  ref: React.Ref<SnackbarContentProps>
+  ref: React.Ref<HTMLDivElement> // Change this to HTMLDivElement
 ): JSX.Element {
   const [isExpanded, setExpanded] = useState(!!isOpen);
   const { closeSnackbar } = useSnackbar();
@@ -130,8 +129,8 @@ function Component(
         <Box display='flex'>
           <IconButton
             aria-label='Show more'
-            className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
             onClick={handleExpandClick}
+            className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
             size='large'
           >
             <ExpandMoreIcon />
@@ -159,6 +158,6 @@ function Component(
   );
 }
 
-const SnackbarWithList = React.forwardRef<SnackbarContentProps, SnackbarWithListProps>(Component);
+const SnackbarWithList = React.forwardRef<HTMLDivElement, SnackbarWithListProps>(Component);
 
 export default SnackbarWithList;

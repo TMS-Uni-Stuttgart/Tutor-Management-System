@@ -25,9 +25,7 @@ const validationSchema = Yup.object().shape({
   scheinExamNo: Yup.string().required('Benötigt'),
   percentageNeeded: Yup.number().required('Benötigt'),
   date: Yup.string().required('Benötigt'),
-  exercises: Yup.array<ExerciseFormExercise>()
-    .of(exerciseValidationSchema)
-    .required('Mind. 1 Aufgabe benötigt.'),
+  exercises: Yup.array().of(exerciseValidationSchema).required('Mind. 1 Aufgabe benötigt.'),
 });
 
 interface Props extends Omit<FormikBaseFormProps<ScheinExamFormState>, CommonlyUsedFormProps> {

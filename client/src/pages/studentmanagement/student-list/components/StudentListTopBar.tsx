@@ -1,4 +1,4 @@
-import { Box, BoxProps, TextField } from '@mui/material';
+import { Box, BoxProps, SelectChangeEvent, TextField } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
@@ -39,7 +39,7 @@ function StudentListTopBar({
   const classes = useStyles();
 
   const handleSortOptionChanged = useCallback(
-    (e: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    (e: SelectChangeEvent<unknown>) => {
       if (typeof e.target.value !== 'string') {
         return;
       }

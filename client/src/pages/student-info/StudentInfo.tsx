@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) =>
 interface RouteParams {
   studentId: string;
   tutorialId?: string;
+  [key: string]: string | undefined;
 }
 
 function StudentInfo(): JSX.Element {
@@ -71,6 +72,10 @@ function StudentInfo(): JSX.Element {
   });
 
   useEffect(() => {
+    if (!studentId) {
+      setStudent(undefined);
+      return;
+    }
     getStudent(studentId)
       .then((response) => setStudent(response))
       .catch(() => setError('Studierende/r konnte nicht abgerufen werden.'));

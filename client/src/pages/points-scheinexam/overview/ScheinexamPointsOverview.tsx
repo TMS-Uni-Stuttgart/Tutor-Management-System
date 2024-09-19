@@ -1,7 +1,8 @@
+import { SelectChangeEvent } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
@@ -64,7 +65,9 @@ function ScheinexamPointsOverview(): JSX.Element {
       setSelectedExam(undefined);
       return;
     }
-
+    if (!tutorialId) {
+      return;
+    }
     const newSelected = exams.find((e) => e.id === examId);
     setSelectedExam(newSelected);
 
@@ -77,6 +80,9 @@ function ScheinexamPointsOverview(): JSX.Element {
   }, [tutorialId, examId, exams, setError]);
 
   useEffect(() => {
+    if (!tutorialId) {
+      return;
+    }
     getStudentsOfTutorial(tutorialId)
       .then((response) => {
         setStudents(response);
@@ -84,8 +90,8 @@ function ScheinexamPointsOverview(): JSX.Element {
       .catch(() => setError('Scheinklausuren konnten nicht abgerufen werden.'));
   }, [tutorialId, setError]);
 
-  const handleScheinexamSelection = (e: ChangeEvent<{ name?: string; value: unknown }>) => {
-    if (typeof e.target.value !== 'string') {
+  const handleScheinexamSelection = (e: SelectChangeEvent<unknown>) => {
+    if (typeof e.target.value !== 'string' || !tutorialId) {
       return;
     }
 
@@ -120,7 +126,7 @@ function ScheinexamPointsOverview(): JSX.Element {
             gradings={gradings}
             getPathTo={(student) =>
               ROUTES.SCHEIN_EXAMS_STUDENT.create({
-                tutorialId,
+                tutorialId: tutorialId ?? '',
                 examId: selectedExam.id,
                 studentId: student.id,
               })
