@@ -2,7 +2,7 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) =>
       height: '100%',
     },
     cardGrid: {
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(2),
     },
   })
 );
@@ -178,7 +178,7 @@ function StudentInfo(): JSX.Element {
           </Grid>
 
           {student && tutorialOfStudent && (
-            <Paper variant='outlined'>
+            <Paper>
               <GradingTabs
                 student={student}
                 tutorialOfStudent={tutorialOfStudent}

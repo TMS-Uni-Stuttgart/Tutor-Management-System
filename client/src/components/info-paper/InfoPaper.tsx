@@ -8,7 +8,6 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     summaryPaper: {
       flex: 1,
-      background: theme.palette.background.default,
       padding: theme.spacing(1.5),
       position: 'relative',
     },
@@ -28,7 +27,7 @@ function InfoPaper({ children, title, className, ...props }: InfoPaperProps): JS
   const classes = useStyles();
 
   return (
-    <Paper variant='outlined' {...props} className={clsx(className, classes.summaryPaper)}>
+    <Paper {...props} className={clsx(className, classes.summaryPaper)}>
       <Typography className={classes.title}>{title}</Typography>
 
       {children}
