@@ -1,6 +1,5 @@
 import { FormikHelpers } from 'formik';
 import { Restore as RestoreOutlinedIcon, Shuffle as ShuffleIcon } from 'mdi-material-ui';
-import React from 'react';
 import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
@@ -88,7 +87,7 @@ function getInitialFormState(user?: IUser): UserFormState {
 function getValidationSchema(
   availableRoles: Role[],
   isEditMode: boolean
-): Yup.ObjectSchema<Yup.Shape<Partial<UserFormState>, Partial<UserFormState>>> {
+): Yup.ObjectSchema<Partial<UserFormState>, Partial<UserFormState>> {
   let validationShape: {
     [K in keyof UserFormState]?: Yup.Schema<any>;
   } = {

@@ -1,4 +1,3 @@
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -202,7 +201,7 @@ function TutorialForm({
               label='Startdatum'
               required
               className={classes.startDateField}
-              onAccept={(date: MaterialUiPickersDate) => {
+              onAccept={(date: DateTime | null) => {
                 if (date) {
                   let endDate = DateTime.fromISO(values.endDate);
 
@@ -226,7 +225,7 @@ function TutorialForm({
               label='Enddatum'
               required
               className={classes.endDateField}
-              onAccept={(date: MaterialUiPickersDate) => {
+              onAccept={(date: DateTime | null) => {
                 if (date) {
                   const dates: DateTime[] = getAllWeeklyDatesBetween(
                     DateTime.fromISO(values.startDate),
@@ -248,7 +247,7 @@ function TutorialForm({
               label='Startuhrzeit'
               required
               className={classes.startDateField}
-              onChange={(time: MaterialUiPickersDate) => {
+              onChange={(time: DateTime | null) => {
                 if (time) {
                   setFieldValue('endTime', time.plus({ hours: 1, minutes: 30 }).toISO());
                 }

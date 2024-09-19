@@ -4,10 +4,11 @@ import { DateTime } from 'luxon';
 
 interface Props extends Omit<TimePickerProps<DateTime>, keyof FieldProps['field']> {
   name: string;
+  required?: boolean;
   onChange?: TimePickerProps<DateTime>['onChange'];
 }
 
-function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
+function FormikTimePicker({ name, required, onChange, ...other }: Props): JSX.Element {
   return (
     <Field name={name}>
       {({ field, form, meta: { touched, error } }: FieldProps) => {
@@ -23,6 +24,7 @@ function FormikTimePicker({ name, onChange, ...other }: Props): JSX.Element {
                 fullWidth: true,
                 helperText: !!touched && error ? error : '',
                 error: !!touched && !!error,
+                required,
               },
             }}
             {...field}

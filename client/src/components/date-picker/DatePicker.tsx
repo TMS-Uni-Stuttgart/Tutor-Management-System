@@ -9,9 +9,10 @@ const DATE_FORMAT: DateTimeFormatOptions = {
   year: 'numeric',
 };
 
-export type CustomDatePickerProps = DatePickerProps<DateTime>;
-
-function CustomDatePicker(props: CustomDatePickerProps): JSX.Element {
+export type CustomDatePickerProps = DatePickerProps<DateTime> & {
+  required?: boolean;
+};
+function CustomDatePicker({ required, ...props }: CustomDatePickerProps): JSX.Element {
   return (
     <DatePicker
       format='dd.MM.yyyy'
@@ -22,6 +23,7 @@ function CustomDatePicker(props: CustomDatePickerProps): JSX.Element {
         textField: {
           variant: 'outlined',
           fullWidth: true,
+          required: required,
         } as TextFieldProps, // Pass any specific props you want to TextField
       }}
       {...props}

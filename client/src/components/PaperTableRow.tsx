@@ -100,39 +100,40 @@ function PaperTableRow({
   return (
     <Paper
       {...rest}
-      component={TableRow}
       className={clsx(classes.content, className, colorOfBottomBar && classes.coloredBar)}
     >
-      {AvatarComp && (
-        <TableCell padding='checkbox' className={classes.avatarCell}>
-          {avatarTooltip ? <Tooltip title={avatarTooltip}>{AvatarComp}</Tooltip> : AvatarComp}
-        </TableCell>
-      )}
-
-      <TableCell {...LabelCellProps}>
-        <Typography {...LabelProps} className={clsx(LabelProps && LabelProps.className)}>
-          {label}
-        </Typography>
-
-        {subText && (
-          <Typography
-            variant='body2'
-            color='textSecondary'
-            {...SubTextProps}
-            className={clsx(SubTextProps && SubTextProps.className, classes.labelCell)}
-          >
-            {subText}
-          </Typography>
+      <TableRow>
+        {AvatarComp && (
+          <TableCell padding='checkbox' className={classes.avatarCell}>
+            {avatarTooltip ? <Tooltip title={avatarTooltip}>{AvatarComp}</Tooltip> : AvatarComp}
+          </TableCell>
         )}
-      </TableCell>
 
-      {children}
+        <TableCell {...LabelCellProps}>
+          <Typography {...LabelProps} className={clsx(LabelProps && LabelProps.className)}>
+            {label}
+          </Typography>
 
-      {ButtonCellContent && (
-        <TableCell align='right' className={classes.buttonCell}>
-          {ButtonCellContent}
+          {subText && (
+            <Typography
+              variant='body2'
+              color='textSecondary'
+              {...SubTextProps}
+              className={clsx(SubTextProps && SubTextProps.className, classes.labelCell)}
+            >
+              {subText}
+            </Typography>
+          )}
         </TableCell>
-      )}
+
+        {children}
+
+        {ButtonCellContent && (
+          <TableCell align='right' className={classes.buttonCell}>
+            {ButtonCellContent}
+          </TableCell>
+        )}
+      </TableRow>
     </Paper>
   );
 }

@@ -3,8 +3,7 @@ import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DatePicker, DatePickerProps } from '@mui/x-date-pickers';
-import { MaterialUiPickersDate } from '@mui/x-date-pickers/typings/date';
-import { OutterCalendarProps } from '@mui/x-date-pickers/views/Calendar/Calendar';
+import { ExportedCalendarProps } from '@mui/x-date-pickers/views/Calendar/Calendar';
 import clsx from 'clsx';
 import { ArrayHelpers, FieldArray, FieldProps, useField } from 'formik';
 import { DateTime } from 'luxon';
@@ -91,7 +90,7 @@ interface Props {
   highlightDate?: string;
 }
 
-type PropType = Props & Omit<DatePickerProps, keyof FieldProps['field']>;
+type PropType = Props & Omit<DatePickerProps<DateTime>, keyof FieldProps['field']>;
 
 function isStringArray(array: unknown): array is string[] {
   return Array.isArray(array);
@@ -113,7 +112,7 @@ function FormikMultipleDatesPicker({
 
   // Initialize the value to be the first date in the list of selected days (instead of 'today').
   // It'll be still 'today' if the list is empty.
-  const [value, setValue] = useState<MaterialUiPickersDate>(
+  const [value, setValue] = useState<DateTime | null>(
     valueOfField && Array.isArray(valueOfField) && valueOfField.length > 0
       ? DateTime.fromISO(valueOfField[0])
       : null
@@ -122,7 +121,7 @@ function FormikMultipleDatesPicker({
   const renderDay: (
     selectedDays: unknown,
     arrayHelpers: ArrayHelpers
-  ) => OutterCalendarProps['renderDay'] = (selectedDays, arrayHelpers) => {
+  ) => ExportedCalendarProps['renderDay'] = (selectedDays, arrayHelpers) => {
     return (date, _selectedDate, dayInCurrentMonth) => {
       if (!date) {
         return <></>;
