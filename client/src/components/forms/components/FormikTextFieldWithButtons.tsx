@@ -1,4 +1,4 @@
-import { Button, PropTypes, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import { ButtonBaseProps } from '@mui/material/ButtonBase';
 import { Theme } from '@mui/material/styles';
 import { TextFieldProps } from '@mui/material/TextField';
@@ -33,7 +33,7 @@ interface ButtonItem {
   key: string;
   Icon: SvgIconComponent;
   onClick: ButtonBaseProps['onClick'];
-  color?: PropTypes.Color;
+  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
   tooltip?: TooltipProps['title'];
 }
 

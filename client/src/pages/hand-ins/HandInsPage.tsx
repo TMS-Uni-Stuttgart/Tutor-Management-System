@@ -49,7 +49,7 @@ function HandInsPage(): JSX.Element {
   }, [location]);
 
   const handleChange = useCallback(
-    (_, newValue: number) => {
+    (_: any, newValue: number) => {
       navigate(ROUTES.MANAGE_HAND_INS.create({ location: newValue.toString(10) }));
     },
     [navigate]

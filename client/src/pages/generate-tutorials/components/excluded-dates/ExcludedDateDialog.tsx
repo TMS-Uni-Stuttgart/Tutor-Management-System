@@ -49,7 +49,10 @@ function getDefaultValue(excluded?: FormExcludedDate): ValueState {
   if (excluded instanceof Interval) {
     return {
       single: defaultSingle,
-      interval: Interval.fromDateTimes(excluded.start, excluded.end),
+      interval: Interval.fromDateTimes(
+        excluded.start ?? DateTime.local(),
+        excluded.end ?? DateTime.local()
+      ),
     };
   }
 
@@ -91,7 +94,6 @@ function ExcludedDateDialog({ excluded, onClose, onAccept, ...props }: Props): J
           <CustomDatePicker
             label='Tag'
             value={value.single}
-            fullWidth
             onChange={(date) => {
               if (!!date) {
                 setValue({ ...value, single: date });
