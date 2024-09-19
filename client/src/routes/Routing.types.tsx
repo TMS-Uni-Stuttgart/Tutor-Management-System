@@ -1,12 +1,11 @@
 import { SvgIconProps } from '@mui/material';
 import React from 'react';
-import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Role } from 'shared/model/Role';
 import { PathParam, Route, RouteParams } from './typesafe-react-router';
 import { RouteParamBaseArray } from './typesafe-react-router/types';
 
-type RouteComponent = React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
+type RouteComponent = React.ComponentType<any>;
 
 interface RouteOptions<Parts extends RouteParamBaseArray> {
   /**

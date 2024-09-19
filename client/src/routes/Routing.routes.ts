@@ -1,4 +1,4 @@
-import {
+ximport {
     AccountMultipleCheck as AttendancesIcon,
     ViewDashboard as DashboardIcon,
     Book as EnterPointsIcon,

@@ -2,8 +2,7 @@ import { IconButton } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { DatePicker, DatePickerProps } from '@mui/x-date-pickers';
-import { ExportedCalendarProps } from '@mui/x-date-pickers/views/Calendar/Calendar';
+import { DatePickerProps, StaticDatePicker } from '@mui/x-date-pickers';
 import clsx from 'clsx';
 import { ArrayHelpers, FieldArray, FieldProps, useField } from 'formik';
 import { DateTime } from 'luxon';
@@ -118,56 +117,57 @@ function FormikMultipleDatesPicker({
       : null
   );
 
-  const renderDay: (
-    selectedDays: unknown,
-    arrayHelpers: ArrayHelpers
-  ) => ExportedCalendarProps['renderDay'] = (selectedDays, arrayHelpers) => {
-    return (date, _selectedDate, dayInCurrentMonth) => {
-      if (!date) {
-        return <></>;
-      }
+  function CustomDayComponent({
+    date,
+    selectedDays,
+    arrayHelpers,
+    highlightDate,
+    dayInCurrentMonth,
+    onDateClicked,
+  }: any) {
+    const classes = useStyles();
+    if (!date) {
+      return <></>;
+    }
 
-      if (!isStringArray(selectedDays)) {
-        return <></>;
-      }
+    if (!isStringArray(selectedDays)) {
+      return <></>;
+    }
+    const dayIsSelected = selectedDays.includes(getDateString(date));
 
-      const dayIsSelected = selectedDays.includes(getDateString(date));
+    const dayClassName = clsx(classes.day, {
+      [classes.highlight]: dayIsSelected,
+      [classes.nonCurrentMonthDay]: !dayInCurrentMonth,
+      [classes.highlightNonCurrentMonthDay]: !dayInCurrentMonth && dayIsSelected,
+      [classes.highlightSpecial]: highlightDate === getDateString(date),
+    });
 
-      const dayClassName = clsx(classes.day, {
-        [classes.highlight]: dayIsSelected,
-        [classes.nonCurrentMonthDay]: !dayInCurrentMonth,
-        [classes.highlightNonCurrentMonthDay]: !dayInCurrentMonth && dayIsSelected,
-        [classes.highlightSpecial]: highlightDate === getDateString(date),
-      });
+    const labelClassName = clsx(classes.label, {
+      [classes.label]: dayIsSelected,
+    });
 
-      const labelClassName = clsx(classes.label, {
-        [classes.label]: dayIsSelected,
-      });
+    return (
+      <IconButton
+        className={dayClassName}
+        onClick={() => {
+          if (onDateClicked) {
+            onDateClicked(getDateString(date), selectedDays, arrayHelpers);
+            return;
+          }
 
-      return (
-        <IconButton
-          className={dayClassName}
-          onClick={() => {
-            if (onDateClicked) {
-              onDateClicked(getDateString(date), selectedDays, arrayHelpers);
-              return;
-            }
-
-            const idx = selectedDays.indexOf(getDateString(date));
-
-            if (idx !== -1) {
-              arrayHelpers.remove(idx);
-            } else {
-              arrayHelpers.insert(0, getDateString(date));
-            }
-          }}
-          size='large'
-        >
-          <p className={labelClassName}> {date.toFormat('dd')} </p>
-        </IconButton>
-      );
-    };
-  };
+          const idx = selectedDays.indexOf(getDateString(date));
+          if (idx !== -1) {
+            arrayHelpers.remove(idx);
+          } else {
+            arrayHelpers.insert(0, getDateString(date));
+          }
+        }}
+        size='large'
+      >
+        <p className={labelClassName}> {date.toFormat('dd')} </p>
+      </IconButton>
+    );
+  }
 
   const onDateInListClicked: (
     selectedDays: unknown,
@@ -212,18 +212,24 @@ function FormikMultipleDatesPicker({
             />
           </div>
 
-          <DatePicker
-            variant='static'
+          <StaticDatePicker
+            displayStaticWrapperAs='desktop'
             orientation='landscape'
-            format='EE, dd MMMM yyyy'
-            autoOk
-            fullWidth
-            {...other}
-            name={name}
             value={value}
-            disableToolbar
-            onChange={(date) => setValue(date)}
-            renderDay={renderDay(form.values[name], arrayHelpers)}
+            onChange={(date: DateTime | null) => setValue(date)}
+            slots={{
+              day: (props) => (
+                <CustomDayComponent
+                  {...props}
+                  selectedDays={form.values[name]}
+                  arrayHelpers={arrayHelpers}
+                  highlightDate={highlightDate}
+                  onDateClicked={onDateClicked}
+                />
+              ),
+            }}
+            views={['day', 'month', 'year']}
+            {...other}
           />
         </div>
       )}
