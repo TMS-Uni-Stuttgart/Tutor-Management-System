@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { SelectChangeEvent, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
@@ -74,7 +74,7 @@ function EnterStudentPoints(): JSX.Element {
     );
   }
 
-  const handleStudentChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleStudentChange = (event: SelectChangeEvent<unknown>) => {
     if (!tutorialId || !sheetId || !teamId) {
       return;
     }

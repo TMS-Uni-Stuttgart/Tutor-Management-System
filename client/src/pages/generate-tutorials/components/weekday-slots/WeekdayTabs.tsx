@@ -46,7 +46,7 @@ function getTabsForAllWeekdays({ errors, errorClass, selectedTab }: GetTabsForAl
     tabs.push(
       <Tab
         key={lowerKeyWeekday}
-        classes={{ wrapper: clsx(showError && errorClass) }}
+        classes={{ wrapped: clsx(showError && errorClass) }}
         label={weekday}
         icon={<IconForTab weekday={lowerKeyWeekday} showError={showError} />}
       />

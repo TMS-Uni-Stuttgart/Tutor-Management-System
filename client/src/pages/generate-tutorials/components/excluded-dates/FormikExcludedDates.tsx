@@ -3,7 +3,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useField } from 'formik';
 import { DateTime, Interval } from 'luxon';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import OutlinedBox from '../../../../components/OutlinedBox';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import ExcludedDateBox from './ExcludedDateBox';
@@ -50,6 +50,10 @@ function FormikExcludedDates({ name, ...props }: Props): JSX.Element {
     newValue.sort((a, b) => {
       const dateA = a instanceof Interval ? a.start : a;
       const dateB = b instanceof Interval ? b.start : b;
+
+      if (dateA === null || dateB === null) {
+        return 0;
+      }
 
       return dateA.toMillis() - dateB.toMillis();
     });

@@ -74,8 +74,8 @@ function generateDTOFromValues(values: FormState): ITutorialGenerationDTO {
       if (ex instanceof DateTime) {
         return { date: ex.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
       } else if (ex instanceof Interval) {
-        if (ex.start.day === ex.end.day) {
-          return { date: ex.start.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
+        if (ex.start?.day === ex.end?.day) {
+          return { date: ex.start?.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
         } else {
           return { interval: ex.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
         }

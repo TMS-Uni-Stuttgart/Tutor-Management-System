@@ -21,6 +21,7 @@ type ColumnGroups = 'studentInformation';
 
 interface Params {
   tutorialId: string;
+  [key: string]: string;
 }
 
 function ImportStudents(): JSX.Element {
@@ -92,15 +93,18 @@ function ImportStudents(): JSX.Element {
           { label: 'Spalten zuordnen', component: <MapCSVColumns /> },
           {
             label: 'Studierende importieren',
-            component: <AdjustImportedStudentDataForm tutorialId={tutorialId} />,
+            component: <AdjustImportedStudentDataForm tutorialId={tutorialId ?? ''} />,
           },
         ]}
         alternativeLabel={false}
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'
         nextButtonDoneLabel='Fertigstellen'
-        backButtonRoute={ROUTES.STUDENTOVERVIEW.create({ tutorialId })}
-        routeAfterLastStep={{ route: ROUTES.STUDENTOVERVIEW, params: { tutorialId } }}
+        backButtonRoute={ROUTES.STUDENTOVERVIEW.create({ tutorialId: tutorialId ?? '' })}
+        routeAfterLastStep={{
+          route: ROUTES.STUDENTOVERVIEW,
+          params: { tutorialId: tutorialId ?? '' },
+        }}
       />
     </CSVImportProvider>
   );
