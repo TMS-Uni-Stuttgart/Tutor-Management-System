@@ -19,6 +19,7 @@ export function loadDatabaseModule(
 ): DynamicModule {
     return MikroOrmModule.forRoot({
         metadataProvider: TsMorphMetadataProvider,
+        forceUndefined: true,
         baseDir: process.cwd(),
         entities: [getEntityDirectory()],
         entitiesTs: ['./src/database/entities'],
