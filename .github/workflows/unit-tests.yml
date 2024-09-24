@@ -37,7 +37,7 @@ jobs:
         run: corepack enable
 
       - name: Prepare pnpm using Corepack
-        run: corepack prepare pnpm@latest --activate
+        run: corepack prepare pnpm
         
       - name: Install node packages
         run: |
