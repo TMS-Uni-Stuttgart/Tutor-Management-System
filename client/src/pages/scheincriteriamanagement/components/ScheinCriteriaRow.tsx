@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme: Theme) =>
       gridRowGap: theme.spacing(1),
       gridColumnGap: theme.spacing(1.5),
     },
+    labelCell: {
+      width: '1%',
+      whiteSpace: 'nowrap',
+    },
   })
 );
 
@@ -58,6 +62,7 @@ function ScheinCriteriaRow({
           ]}
         />
       }
+      LabelCellProps={{ className: classes.labelCell }}
       {...rest}
     >
       <TableCell className={classes.infoCell}>

@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) =>
       textAlign: 'right',
     },
     labelCell: {
-      // Style cell of name to not take up more space than neccessary
       width: '1%',
       whiteSpace: 'nowrap',
     },

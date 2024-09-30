@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(0.5),
     },
     labelCell: {
-      // Style cell of name to not take up more space than neccessary
       width: '1%',
       whiteSpace: 'nowrap',
     },
