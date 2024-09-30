@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme: Theme) =>
     cakeIcon: {
       marginLeft: theme.spacing(0.5),
     },
+    labelCell: {
+      width: '1%',
+      whiteSpace: 'nowrap',
+    },
   })
 );
 
@@ -57,9 +61,10 @@ function StudentAttendanceRow({
       {...rest}
       className={clsx(classes.row)}
       colorOfBottomBar={attendanceState ? getAttendanceColor(attendanceState, theme) : undefined}
+      LabelCellProps={{ className: classes.labelCell }}
     >
       {onCakeCountChanged && (
-        <TableCell>
+        <TableCell align='center'>
           <CakeCount cakeCount={student.cakeCount} onCakeCountChanged={onCakeCountChanged} />
         </TableCell>
       )}
