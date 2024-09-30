@@ -3,7 +3,6 @@ import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import React from 'react';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
@@ -13,6 +12,11 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     tutorChip: {
       margin: theme.spacing(0.5),
+    },
+    labelCell: {
+      // Style cell of name to not take up more space than neccessary
+      width: '1%',
+      whiteSpace: 'nowrap',
     },
     substituteButton: {
       marginRight: theme.spacing(1),
@@ -82,6 +86,7 @@ function TutorialTableRow({
           />
         </>
       }
+      LabelCellProps={{ className: classes.labelCell }}
       {...rest}
     >
       <TableCell>

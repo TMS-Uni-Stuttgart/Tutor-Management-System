@@ -4,7 +4,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { FormikErrors, FormikHelpers, isPromise } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
-import { unstable_usePrompt } from 'react-router-dom';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import FormikBaseForm from '../../../components/forms/FormikBaseForm';
 import PaperTableRow from '../../../components/PaperTableRow';
@@ -29,12 +28,16 @@ const useStyles = makeStyles((theme) =>
       marginBottom: 0,
     },
     textField: {
-      width: '100%',
+      width: '60%',
     },
     input: {
-      width: 'unset',
       flex: 1,
       textAlign: 'right',
+    },
+    labelCell: {
+      // Style cell of name to not take up more space than neccessary
+      width: '1%',
+      whiteSpace: 'nowrap',
     },
   })
 );
@@ -146,8 +149,9 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
                   key={student.id}
                   label={student.name}
                   Avatar={<StudentAvatar student={student} />}
+                  LabelCellProps={{ className: classes.labelCell }}
                 >
-                  <TableCell align='left'>
+                  <TableCell align='right'>
                     <Typography>Insgesamt: {student.getPresentationPointsSum()}</Typography>
                   </TableCell>
 
