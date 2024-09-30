@@ -1,8 +1,17 @@
-import { TableCell, Typography } from '@mui/material';
-import React from 'react';
+import { TableCell, Theme, Typography } from '@mui/material';
+import { createStyles, makeStyles } from '@mui/styles';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
 import { Sheet } from '../../../../model/Sheet';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    labelCell: {
+      width: '1%',
+      whiteSpace: 'nowrap',
+    },
+  })
+);
 
 interface Props extends PaperTableRowProps {
   sheet: Sheet;
@@ -16,6 +25,7 @@ function SheetRow({
   onDeleteSheetClicked,
   ...other
 }: Props): JSX.Element {
+  const classes = useStyles();
   return (
     <PaperTableRow
       label={`Blattnummer: #${sheet.sheetNo.toString().padStart(2, '0')}`}
@@ -26,6 +36,7 @@ function SheetRow({
           onDeleteClicked={() => onDeleteSheetClicked(sheet)}
         />
       }
+      LabelCellProps={{ className: classes.labelCell }}
       {...other}
     >
       <TableCell>
