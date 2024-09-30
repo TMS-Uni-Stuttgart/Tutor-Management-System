@@ -118,7 +118,7 @@ function FormikMultipleDatesPicker({
   );
 
   function CustomDayComponent({
-    date,
+    day: date,
     selectedDays,
     arrayHelpers,
     highlightDate,

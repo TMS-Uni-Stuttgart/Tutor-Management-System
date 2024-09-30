@@ -145,13 +145,6 @@ const prefixesSchema = Yup.object<FormState['prefixes']>()
             path: `${this.path}.${key}`,
           })
         );
-      } else {
-        inner.push(
-          this.createError({
-            message: `Präfix ist kein String.`,
-            path: `${this.path}.${key}`,
-          })
-        );
       }
     }
 
