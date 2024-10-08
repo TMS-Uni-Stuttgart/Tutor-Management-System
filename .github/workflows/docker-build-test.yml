@@ -39,6 +39,6 @@ jobs:
 
       - name: Test docker image
         working-directory: scripts/
-        run: pnpx ts-node -- ./build-test-docker/buildAndTestDocker.ts
+        run: pnpx tsx -- ./build-test-docker/buildAndTestDocker.ts
         env:
           CI: true

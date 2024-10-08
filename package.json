@@ -16,14 +16,14 @@
     "start:client": "cd ./client/ && pnpm start",
     "start:server": "cd ./server/ && pnpm start",
     "format": "pnpm run --recursive format",
-    "build": "cd ./scripts/ && ts-node ./build.ts",
+    "build": "cd ./scripts/ && tsx ./build.ts",
     "ts:check": "pnpm run --recursive ts:check",
     "ts:check:client": "echo Type checking client && cd ./client && pnpm run ts:check",
     "ts:check:server": "echo Type checking server && cd ./server && pnpm run ts:check",
-    "docker:build": "pnpx ts-node ./build-docker-image.ts",
-    "docker:build:pre": "pnpx ts-node ./build-docker-image.ts --pre",
-    "docker:build:tar": "pnpx ts-node ./build-docker-image.ts --bundle",
-    "docker:test": "cd ./scripts/ && pnpx ts-node ./build-test-docker/buildAndTestDocker.ts",
+    "docker:build": "pnpx tsx ./build-docker-image.ts",
+    "docker:build:pre": "pnpx tsx ./build-docker-image.ts --pre",
+    "docker:build:tar": "pnpx tsx ./build-docker-image.ts --bundle",
+    "docker:test": "cd ./scripts/ && pnpx tsx ./build-test-docker/buildAndTestDocker.ts",
     "upgrade-pkg": "npm-upgrade && pnpm run --recursive npm-upgrade",
     "upgrade-pkg:client": "cd ./client && npm-upgrade",
     "upgrade-pkg:server": "cd ./server && npm-upgrade"
@@ -59,7 +59,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "jest-circus": "^29.7.0",
     "prettier": "^3.3.3",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
     "typescript": "^5.5.4"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"

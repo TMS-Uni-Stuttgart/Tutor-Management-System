@@ -4,18 +4,19 @@
   "description": "",
   "author": "",
   "license": "ISC",
+  "type": "module",
   "scripts": {
     "eslint:check": "eslint \"./**/*.ts?(x)\"",
     "format": "eslint --fix \"./**/*.ts?(x)\"",
     "prettier:check": "prettier --check \"./**/*.ts?(x)\"",
-    "generateData": "ts-node -r tsconfig-paths/register ./generate-data/generateData.ts",
+    "generateData": "tsx -r tsconfig-paths/register ./generate-data/generateData.ts",
     "ts:check": "tsc --project . --noEmit",
     "ts:check:watch": "tsc --project . --noEmit -w"
   },
   "devDependencies": {
     "@types/color-convert": "^2.0.3",
     "axios": "^1.7.3",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
     "tsconfig-paths": "^4.2.0"
   },
   "dependencies": {

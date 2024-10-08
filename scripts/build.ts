@@ -5,7 +5,7 @@ import {
     getCommand,
     MessageOptions,
     writeColoredMessage,
-} from './util/cmdHelpers';
+} from './util/cmdHelpers.js';
 
 const pnpm = getCommand('pnpm');
 
