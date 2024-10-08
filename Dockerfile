@@ -3,7 +3,7 @@
 # Build frontend & backend
 #
 # =============================================
-FROM node:16-alpine as build
+FROM node:20-alpine as build
 
 COPY client/ tms/client/
 COPY server/ tms/server/
@@ -21,7 +21,8 @@ WORKDIR /tms/
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV MONGOMS_DISABLE_POSTINSTALL 1
 
-RUN npm install -g pnpm@latest-7
+RUN corepack enable
+RUN corepack prepare pnpm
 RUN pnpm install && pnpm build
 
 # =============================================
@@ -29,7 +30,7 @@ RUN pnpm install && pnpm build
 # Create the image which runs the server
 #
 # =============================================
-FROM alpine:3 as production
+FROM node:20-alpine as production
 
 # Installs latest Chromium package, NodeJS and pnpm.
 RUN apk add --no-cache \
@@ -40,11 +41,10 @@ RUN apk add --no-cache \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    terminus-font \
-    nodejs \
-    npm
+    terminus-font
 
-RUN npm install -g pnpm@latest-7
+RUN corepack enable
+RUN corepack prepare pnpm
 
 COPY --from=build tms/server/dist tms/server
 
