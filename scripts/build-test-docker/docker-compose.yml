@@ -11,7 +11,7 @@ services:
       - tms_db
 
   tms-server:
-    image: dudrie/tms-test:0.0.0-pre
+    image: TMS-Uni-Stuttgart/tms-test:0.0.0-pre
     container_name: tms-test
     depends_on:
       - sql-db
