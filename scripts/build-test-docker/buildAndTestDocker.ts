@@ -80,7 +80,7 @@ async function testImage() {
     } finally {
         console.log(chalk.blueBright('Shutting down containers...'));
 
-        const result = spawnSync('docker compose', ['down', '-v'], {
+        const result = spawnSync('docker', ['compose', 'down', '-v'], {
             ...spawnOptions,
             stdio: 'inherit',
         });
@@ -99,7 +99,7 @@ async function testImage() {
 async function spawnContainer() {
     console.log(chalk.blueBright('Starting image in container...'));
 
-    const containerProcess = spawn('docker compose', ['up'], spawnOptions);
+    const containerProcess = spawn('docker', ['compose', 'up'], spawnOptions);
     addConsoleToProcess(containerProcess);
 
     containerProcess.on('exit', (code) => {
