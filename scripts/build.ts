@@ -67,8 +67,7 @@ function copyClientIntoServer(): Promise<void> {
         copyfiles(
             [
                 '../client/build/*',
-                '../client/build/js/**/*',
-                '../client/build/css/**/*',
+                '../client/build/assets/**/*',
                 '../client/build/static/**/*',
                 '../server/dist/app',
             ],
