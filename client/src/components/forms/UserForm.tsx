@@ -84,13 +84,8 @@ function getInitialFormState(user?: IUser): UserFormState {
   };
 }
 
-function getValidationSchema(
-  availableRoles: Role[],
-  isEditMode: boolean
-): Yup.ObjectSchema<Partial<UserFormState>, Partial<UserFormState>> {
-  let validationShape: {
-    [K in keyof UserFormState]?: Yup.Schema<any>;
-  } = {
+function getValidationSchema(availableRoles: Role[], isEditMode: boolean) {
+  const validationShape = {
     firstname: Yup.string().required('Benötigt'),
     lastname: Yup.string().required('Benötigt'),
     email: Yup.string().email('Keine gültige E-Mailadresse').required('Benötigt'),
@@ -98,15 +93,8 @@ function getValidationSchema(
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
     username: Yup.string().required('Benötigt'),
-    password: passwordValidationSchema,
+    password: isEditMode ? passwordValidationSchema.notRequired() : passwordValidationSchema,
   };
-
-  if (isEditMode) {
-    validationShape = {
-      ...validationShape,
-      password: passwordValidationSchema.notRequired(),
-    };
-  }
 
   return Yup.object().shape(validationShape).defined();
 }
