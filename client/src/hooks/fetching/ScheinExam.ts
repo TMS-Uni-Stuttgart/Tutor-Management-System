@@ -1,7 +1,7 @@
-import { IScheinExam, IScheinexamDTO } from 'shared/model/Scheinexam';
-import axios from './Axios';
-import { Scheinexam } from '../../model/Scheinexam';
 import { plainToClass } from 'class-transformer';
+import { IScheinExam, IScheinexamDTO } from 'shared/model/Scheinexam';
+import { Scheinexam } from '../../model/Scheinexam';
+import axios from './Axios';
 
 export async function getAllScheinExams(): Promise<Scheinexam[]> {
     const response = await axios.get<IScheinExam[]>(`scheinexam`);

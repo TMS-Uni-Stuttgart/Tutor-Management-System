@@ -38,7 +38,7 @@ export class Scheinexam extends RatedEntity {
         return {
             id: this.id,
             scheinExamNo: this.scheinExamNo,
-            date: this.date.toISODate(),
+            date: this.date.toISODate() ?? '',
             percentageNeeded: this.percentageNeeded,
             exercises: this.exercises.map((ex) => ex.toDTO()),
         };

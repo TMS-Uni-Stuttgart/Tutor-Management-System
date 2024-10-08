@@ -62,7 +62,7 @@ export function useStudentsForStudentList({
 }: UseStudentsForStudentListParams): UseStudentsForStudentList {
     const { enqueueSnackbar } = useSnackbar();
 
-    const [students, , , fetchStudents] = useFetchState({
+    const [students, isLoadingStudents, , fetchStudents] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
             return tutorialId ? getStudentsOfTutorial(tutorialId) : getAllStudents();
         },
@@ -70,7 +70,7 @@ export function useStudentsForStudentList({
         params: [tutorialId ?? ''],
     });
 
-    const [summaries = {}, isLoadingSummaries, , fetchSummaries] = useFetchState({
+    const [summaries, , , fetchSummaries] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
             return tutorialId
                 ? getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
@@ -172,8 +172,8 @@ export function useStudentsForStudentList({
     return {
         students: students ?? [],
         teams,
-        summaries,
-        isLoading: isLoadingSummaries,
+        summaries: summaries ?? {},
+        isLoading: isLoadingStudents,
         createStudent,
         editStudent,
         deleteStudent,

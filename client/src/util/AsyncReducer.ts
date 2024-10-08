@@ -11,12 +11,8 @@ export function useAsyncReducer<S, A>(
     const [state, setState] = useState<S>(initialState);
 
     const dispatch = async (action: A) => {
-        try {
-            const newState = await reducer(state, action);
-            setState(newState);
-        } catch (err) {
-            throw err;
-        }
+        const newState = await reducer(state, action);
+        setState(newState);
     };
 
     return [state, dispatch];

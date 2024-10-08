@@ -9,7 +9,7 @@ import {
   TableHead,
   TableProps,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 import { convertExercisePointInfoToString } from 'shared/model/Gradings';

@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import { AttendanceDTO } from '../../module/student/student.dto';
@@ -14,7 +14,7 @@ export class Attendance {
     @Property({ type: EncryptedStringType })
     note?: string;
 
-    @Enum({ type: EncryptedEnumType })
+    @Property({ type: EncryptedEnumType })
     state?: AttendanceState;
 
     /**
@@ -55,12 +55,12 @@ export class Attendance {
      * @returns The date of this attendance as a key for a map.
      */
     getDateAsKey(): string {
-        return this.date.toISODate();
+        return this.date.toISODate() ?? '';
     }
 
     toDTO(): IAttendance {
         return {
-            date: this.date.toISODate(),
+            date: this.date.toISODate() ?? '',
             note: this.note,
             state: this.state,
         };

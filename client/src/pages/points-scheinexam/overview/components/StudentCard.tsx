@@ -1,5 +1,6 @@
-import { Button, Card, CardActions, CardContent, CardHeader } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Button, Card, CardActions, CardContent, CardHeader } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Account as StudentIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Link } from 'react-router-dom';

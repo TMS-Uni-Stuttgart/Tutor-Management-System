@@ -1,4 +1,4 @@
-import { Box, BoxProps } from '@material-ui/core';
+import { Box, BoxProps } from '@mui/material';
 import React from 'react';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import AttendanceButton from '../../pages/attendance/components/AttendanceButton';

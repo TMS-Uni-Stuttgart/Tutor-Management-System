@@ -18,6 +18,7 @@ export function getSubItems(
   userData.tutorials.forEach((tutorial) => {
     subItems.push({
       subPath: route.create({ tutorialId: tutorial.id }),
+      subPathTemplate: route.template,
       icon: TutorialIcon,
       text: Tutorial.getDisplayString(tutorial),
     });
@@ -27,6 +28,7 @@ export function getSubItems(
     userData.tutorialsToCorrect.forEach((tutorial) => {
       subItems.push({
         subPath: route.create({ tutorialId: tutorial.id }),
+        subPathTemplate: route.template,
         icon: TutorialToCorrectIcon,
         text: Tutorial.getDisplayString(tutorial),
       });
@@ -37,6 +39,7 @@ export function getSubItems(
     userData.substituteTutorials.forEach((tutorial) => {
       subItems.push({
         subPath: route.create({ tutorialId: tutorial.id }),
+        subPathTemplate: route.template,
         icon: SubstituteTutorialIcon,
         text: Tutorial.getDisplayString(tutorial),
       });

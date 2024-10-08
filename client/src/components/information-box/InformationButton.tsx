@@ -1,4 +1,4 @@
-import { Button, ButtonProps, DialogProps } from '@material-ui/core';
+import { Button, ButtonProps, DialogProps } from '@mui/material';
 import { InformationOutline as InfoIcon } from 'mdi-material-ui';
 import React, { useCallback } from 'react';
 import { DialogOptions, useDialog } from '../../hooks/dialog-service/DialogService';

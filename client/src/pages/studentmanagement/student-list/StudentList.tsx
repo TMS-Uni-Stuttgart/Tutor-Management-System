@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { FormikHelpers } from 'formik';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';

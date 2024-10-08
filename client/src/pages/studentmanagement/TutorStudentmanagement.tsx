@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { TableArrowDown as ImportIcon } from 'mdi-material-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -15,10 +15,11 @@ import { useStudentsForStudentList } from './student-list/StudentList.helpers';
 
 interface Params {
   tutorialId: string;
+  [key: string]: string | undefined;
 }
 
 function TutorStudentmanagement(): JSX.Element {
-  const { tutorialId } = useParams<Params>();
+  const { tutorialId = '' } = useParams<Params>();
   const [editorState, setEditorState] = useState<EditorOpenState>({
     isAnimating: false,
     isEditorOpen: false,
@@ -28,7 +29,9 @@ function TutorStudentmanagement(): JSX.Element {
     useStudentsForStudentList({ tutorialId });
 
   useEffect(() => {
-    setEditorState({ isAnimating: false, isEditorOpen: false });
+    if (editorState.isAnimating || editorState.isEditorOpen) {
+      setEditorState({ isAnimating: false, isEditorOpen: false });
+    }
   }, [students]);
 
   const handleCreateSubmit: StudentFormSubmitCallback = useCallback(

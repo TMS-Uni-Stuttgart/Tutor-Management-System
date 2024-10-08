@@ -40,11 +40,10 @@ i18n
         },
         react: {
             useSuspense: false,
-            wait: true,
         },
     });
 
-export function useTranslation(namespace: string): UseTranslationResponse<string> {
+export function useTranslation(namespace: string): UseTranslationResponse<string, undefined> {
     return usei18nTranslation(namespace);
 }
 

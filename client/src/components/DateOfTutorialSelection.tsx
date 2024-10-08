@@ -1,6 +1,7 @@
-import { FormControlProps } from '@material-ui/core/FormControl';
+import { SelectChangeEvent } from '@mui/material';
+import { FormControlProps } from '@mui/material/FormControl';
 import { DateTime } from 'luxon';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CustomSelect from './CustomSelect';
 
 interface Props extends FormControlProps {
@@ -22,7 +23,7 @@ function DateOfTutorialSelection({
     setValue(valueFromProps ?? '');
   }, [valueFromProps]);
 
-  function onDateSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
+  function onDateSelection(e: SelectChangeEvent<unknown>) {
     if (typeof e.target.value !== 'string') {
       return;
     }

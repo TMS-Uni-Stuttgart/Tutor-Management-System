@@ -1,5 +1,7 @@
-import { CircularProgress, PaperProps } from '@material-ui/core';
-import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { CircularProgress, PaperProps } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import Chart from 'react-google-charts';
 import InfoPaper from './InfoPaper';

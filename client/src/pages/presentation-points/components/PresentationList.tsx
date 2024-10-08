@@ -1,8 +1,9 @@
-import { createStyles, makeStyles, TableCell, Typography } from '@material-ui/core';
+import { TableCell, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormikErrors, FormikHelpers, isPromise } from 'formik';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useState } from 'react';
-import { Prompt } from 'react-router';
+import { useEffect, useState } from 'react';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
 import FormikBaseForm from '../../../components/forms/FormikBaseForm';
 import PaperTableRow from '../../../components/PaperTableRow';
@@ -27,12 +28,15 @@ const useStyles = makeStyles((theme) =>
       marginBottom: 0,
     },
     textField: {
-      width: '100%',
+      width: '60%',
     },
     input: {
-      width: 'unset',
       flex: 1,
       textAlign: 'right',
+    },
+    labelCell: {
+      width: '1%',
+      whiteSpace: 'nowrap',
     },
   })
 );
@@ -127,8 +131,13 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
       disableSubmitButtonIfClean
       enableDebug
     >
-      {({ dirty }) => (
-        <>
+      {({ dirty }) => {
+        // unstable_usePrompt({
+        //   message: 'Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?',
+        //   when: dirty,
+        // });
+
+        return (
           <div className={classes.tableWrapper}>
             <TableWithPadding
               items={students}
@@ -139,8 +148,9 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
                   key={student.id}
                   label={student.name}
                   Avatar={<StudentAvatar student={student} />}
+                  LabelCellProps={{ className: classes.labelCell }}
                 >
-                  <TableCell align='left'>
+                  <TableCell align='right'>
                     <Typography>Insgesamt: {student.getPresentationPointsSum()}</Typography>
                   </TableCell>
 
@@ -157,13 +167,8 @@ function PresentationList({ students, sheet, onSubmit }: Props): JSX.Element {
               )}
             />
           </div>
-
-          <Prompt
-            message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
-            when={dirty}
-          />
-        </>
-      )}
+        );
+      }}
     </FormikBaseForm>
   );
 }

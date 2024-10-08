@@ -1,5 +1,6 @@
-import { InputAdornment, StyledComponentProps, TextField } from '@material-ui/core';
-import { TextFieldProps } from '@material-ui/core/TextField';
+import { InputAdornment, TextField } from '@mui/material';
+import { StyledComponentProps } from '@mui/styles';
+import { TextFieldProps } from '@mui/material/TextField';
 import { Field, FieldAttributes, FieldProps } from 'formik';
 import React from 'react';
 

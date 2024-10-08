@@ -1,22 +1,22 @@
 import {
-  createStyles,
   ListItem,
   ListItemIcon,
   ListItemProps,
   ListItemText,
-  makeStyles,
   Paper,
   Popper,
   SvgIconProps,
   Theme,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { ChevronRight } from 'mdi-material-ui';
 import React, { MouseEventHandler, useState } from 'react';
-import { renderLink } from './renderLink';
 import { getTargetLink, useIsCurrentPath } from './RailItem.helpers';
 import RailSubItem, { RailSubItemProps } from './RailSubItem';
+import { renderLink } from './renderLink';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,6 +45,7 @@ export type ButtonListItemProps = ListItemProps<'div', { button?: true }>;
 
 interface RailItemProps extends ButtonListItemProps {
   path: string;
+  pathTemplate: string;
   icon: React.ComponentType<SvgIconProps> | null;
   text: string;
   subItems?: RailSubItemProps[];
@@ -82,6 +83,7 @@ function RootItem({
 
 function RailItem({
   path,
+  pathTemplate,
   icon: Icon,
   text,
   subItems,
@@ -89,7 +91,7 @@ function RailItem({
   ...other
 }: RailItemProps): JSX.Element {
   const classes = useStyles();
-  const isCurrentPath = useIsCurrentPath(path, subItems);
+  const isCurrentPath = useIsCurrentPath(pathTemplate, subItems);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement>();
 
   const hasSubItems = subItems && subItems.length > 0;
@@ -103,7 +105,7 @@ function RailItem({
   }
 
   function handleMouseLeave() {
-    if (!!menuAnchor) {
+    if (menuAnchor) {
       setMenuAnchor(undefined);
     }
   }
@@ -152,9 +154,7 @@ function RailItem({
         className={classes.popper}
       >
         <Paper className={classes.popperPaper}>
-          {subItems?.map((props) => (
-            <RailSubItem key={props.subPath} {...props} />
-          ))}
+          {subItems?.map((props) => <RailSubItem key={props.subPath} {...props} />)}
         </Paper>
       </Popper>
     </RootItem>

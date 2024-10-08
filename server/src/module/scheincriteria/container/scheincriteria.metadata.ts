@@ -1,5 +1,8 @@
 export class ScheincriteriaMetadataKey {
-    constructor(readonly className: string, readonly propertyName: string) {}
+    constructor(
+        readonly className: string,
+        readonly propertyName: string
+    ) {}
 
     toString(): string {
         return `${this.className}::${this.propertyName}`;

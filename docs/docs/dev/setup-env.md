@@ -47,12 +47,12 @@ After pulling your fork and creating a new branch for your issue you have to set
    1. Just set up a mongo database:
 
       ```sh
-      docker-compose up -d mysql
+      docker compose up -d mysql
       ```
 
    1. If you want to also get an administrative board for your local database:
       ```sh
-      docker-compose up -d phpmyadmin
+      docker compose up -d phpmyadmin
       ```
       This starts the MySQL container aswell as a webinterface which connects to it. To access this interface visit [localhost:4242](localhost:4242).
 

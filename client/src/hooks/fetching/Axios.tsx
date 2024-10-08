@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import React from 'react';
 import LoginForm, { LoginFormState } from '../../components/forms/LoginForm';
 import { FormikSubmitCallback } from '../../types';
 import { getDialogOutsideContext } from '../dialog-service/DialogService';
@@ -35,7 +34,6 @@ function createBaseURL(): string {
     return `${host}`;
   }
 }
-
 function validateStatus(status: number): boolean {
   const dialog = getDialogOutsideContext();
 
@@ -44,8 +42,12 @@ function validateStatus(status: number): boolean {
       title: 'Erneut anmelden',
       content: <RelogForm />,
       DialogProps: {
-        disableBackdropClick: true,
         disableEscapeKeyDown: true,
+        onClose: (reason) => {
+          if (reason === 'backdropClick') {
+            return;
+          }
+        },
       },
     });
 
