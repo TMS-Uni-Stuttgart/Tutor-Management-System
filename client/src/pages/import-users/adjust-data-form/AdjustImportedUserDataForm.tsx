@@ -72,7 +72,7 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
 
       const isSuccess: any = await submitForm();
 
-      if (!!isSuccess) {
+      if (isSuccess) {
         return { goToNext: true };
       } else {
         return { goToNext: false, error: true };

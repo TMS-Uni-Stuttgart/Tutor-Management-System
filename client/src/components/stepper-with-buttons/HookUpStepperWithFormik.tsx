@@ -13,7 +13,7 @@ function HookUpStepperWithFormik(): null {
     setNextCallback(async () => {
       const isSuccess: any = await submitForm();
 
-      if (!!isSuccess) {
+      if (isSuccess) {
         return { goToNext: true };
       } else {
         return { goToNext: false, error: true };

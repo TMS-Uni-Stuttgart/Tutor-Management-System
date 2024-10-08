@@ -149,7 +149,7 @@ function CustomSelect<T>({
 
   const NONE_ITEM = useMemo(() => new EmptyItem('NONE', 'NONE_NAME'), []);
   const items: (T | EmptyItem)[] = useMemo(
-    () => (!!nameOfNoneItem ? [NONE_ITEM, ...itemsFromProps] : itemsFromProps),
+    () => (nameOfNoneItem ? [NONE_ITEM, ...itemsFromProps] : itemsFromProps),
     [NONE_ITEM, itemsFromProps, nameOfNoneItem]
   );
 

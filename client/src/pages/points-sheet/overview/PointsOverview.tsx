@@ -98,7 +98,7 @@ function PointsOverview(): JSX.Element {
       })
       .catch(() => setError('Daten konnten nicht abgerufen werden.'));
 
-    if (!!currentSheet) {
+    if (currentSheet) {
       getGradingsOfTutorial(currentSheet.id, tutorialId)
         .then((response) => setGradings(response))
         .catch(() => {

@@ -96,7 +96,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     if (!isLoading && students) {
       setWorking(true);
 
-      if (!!shortTestId) {
+      if (shortTestId) {
         getGradingsOfHandIn(shortTestId)
           .then((response) => setGradings(response))
           .catch(() => {

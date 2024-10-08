@@ -60,8 +60,7 @@ function ShortTestForm({
   ...other
 }: Props): JSX.Element {
   const initalFormState = useMemo(
-    () =>
-      !!initialValues ? initialValues : getInitialShortTestFormState(shortTest, allShortTests),
+    () => (initialValues ? initialValues : getInitialShortTestFormState(shortTest, allShortTests)),
     [shortTest, allShortTests, initialValues]
   );
 

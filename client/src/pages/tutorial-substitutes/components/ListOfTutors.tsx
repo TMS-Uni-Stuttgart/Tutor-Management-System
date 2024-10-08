@@ -64,7 +64,7 @@ function ListOfTutors({ tutorsToShow, onSelect, selectedSubstitute }: Props): JS
             onClick={() => onSelect(tutor)}
           >
             <Typography>{getNameOfEntity(tutor)}</Typography>
-            <Typography variant='button' className={clsx(false && classes.selectedTutor)}>
+            <Typography variant='button' className={clsx(classes.selectedTutor)}>
               {isSelected ? 'Ausgewählt' : 'Auswählen'}
             </Typography>
           </OutlinedBox>

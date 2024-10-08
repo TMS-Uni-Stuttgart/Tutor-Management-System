@@ -189,7 +189,7 @@ function FormikExerciseEditor({
 
   function handleAddSubexercise(idx: number, arrayHelpers: FieldArrayRenderProps) {
     return () => {
-      if (!!disableSubExercises) {
+      if (disableSubExercises) {
         return;
       }
 

@@ -140,7 +140,7 @@ function AdjustGeneratedShortTest(): JSX.Element {
 
       try {
         setImporting(true);
-        const generatedShortTest = !!shortTest
+        const generatedShortTest = shortTest
           ? await editShortTest(shortTest.id, convertFormStateToDTO(values))
           : await createShortTest(convertFormStateToDTO(values));
         const gradings: Map<string, IGradingDTO> = new Map();

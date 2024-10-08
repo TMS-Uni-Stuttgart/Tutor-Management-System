@@ -52,7 +52,7 @@ export function convertFormExercisesToDTOs(exercises: ExerciseFormExercise[]): I
 }
 
 export function getInitialSheetFormState(sheet?: ISheet, sheets?: ISheet[]): SheetFormState {
-  if (!!sheet) {
+  if (sheet) {
     const exercises: ExerciseFormExercise[] = sheet.exercises.map(mapExerciseToFormExercise);
 
     return { sheetNo: sheet.sheetNo.toString(), bonusSheet: sheet.bonusSheet, exercises };

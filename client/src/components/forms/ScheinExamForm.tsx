@@ -38,7 +38,7 @@ export function getInitialExamFormState(
   exam?: Scheinexam,
   exams?: Scheinexam[]
 ): ScheinExamFormState {
-  if (!!exam) {
+  if (exam) {
     const exercises = exam.exercises.map(mapExerciseToFormExercise);
 
     return {

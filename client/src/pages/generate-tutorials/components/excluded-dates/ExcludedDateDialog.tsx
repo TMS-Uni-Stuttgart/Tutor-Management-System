@@ -95,7 +95,7 @@ function ExcludedDateDialog({ excluded, onClose, onAccept, ...props }: Props): J
             label='Tag'
             value={value.single}
             onChange={(date) => {
-              if (!!date) {
+              if (date) {
                 setValue({ ...value, single: date });
               }
             }}

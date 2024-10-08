@@ -102,9 +102,9 @@ function AttendanceNotePopper({ note, onNoteSave }: AttendanceNotePopperProps): 
   return (
     <ClickAwayListener onClickAway={handlePopperClose}>
       <div>
-        <Tooltip title={!!note ? 'Bemerkung ansehen & bearbeiten' : 'Bemerkung hinzufügen'}>
+        <Tooltip title={note ? 'Bemerkung ansehen & bearbeiten' : 'Bemerkung hinzufügen'}>
           <IconButton ref={iconButtonRef} onClick={handlePopperOpen} size='large'>
-            {!!note ? <NoteTextIcon /> : <AddIcon />}
+            {note ? <NoteTextIcon /> : <AddIcon />}
           </IconButton>
         </Tooltip>
 

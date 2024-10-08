@@ -97,7 +97,7 @@ function StepperHeader({
           onClick={() => nextStep()}
           disabled={isNextDisabled || activeStep === steps.length}
         >
-          {!!nextButtonDoneLabel
+          {nextButtonDoneLabel
             ? activeStep < steps.length - 1
               ? nextButtonLabel
               : nextButtonDoneLabel

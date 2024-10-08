@@ -156,7 +156,7 @@ function StudentInfo(): JSX.Element {
       <Box display='flex' marginBottom={3}>
         <BackButton
           to={
-            !!tutorialId
+            tutorialId
               ? ROUTES.STUDENTOVERVIEW.create({ tutorialId })
               : ROUTES.MANAGE_ALL_STUDENTS.create({})
           }

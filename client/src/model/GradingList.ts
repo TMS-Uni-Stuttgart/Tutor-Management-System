@@ -9,7 +9,7 @@ export class GradingList {
     constructor(gradings: readonly GradingResponseData[]) {
         this.gradings = new Map();
         gradings.forEach(({ studentId, gradingData }) => {
-            if (!!gradingData) {
+            if (gradingData) {
                 this.gradings.set(studentId, plainToClass(Grading, gradingData));
             }
         });

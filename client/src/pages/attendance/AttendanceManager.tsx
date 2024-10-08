@@ -147,7 +147,7 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
   );
 
   useEffect(() => {
-    if (!!tutorialFromProps) {
+    if (tutorialFromProps) {
       if (tutorialFromProps !== tutorial?.id) {
         setIsLoading(true);
         Promise.all([

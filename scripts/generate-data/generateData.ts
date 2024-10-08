@@ -291,7 +291,6 @@ async function createStudents({
                 await Promise.all(promises);
 
                 await wait(WAIT_TIME_AFTER_LARGE_REQUESTS);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (err) {
                 console.log('[ERROR] Could not get response from some requests.');
             } finally {

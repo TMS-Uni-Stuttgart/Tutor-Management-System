@@ -56,7 +56,7 @@ function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams
   const isRootPath = pathname === '/';
   let placeholderText = '';
 
-  if (!!error) {
+  if (error) {
     placeholderText = error;
   } else if (!tutorial) {
     placeholderText = 'Kein Tutorium gefunden.';
@@ -112,7 +112,7 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
         </Button>
 
         <Typography className={classes.header} variant='h5'>
-          {!!tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
+          {tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
         </Typography>
 
         <CustomSelect

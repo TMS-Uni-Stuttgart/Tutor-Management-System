@@ -53,7 +53,7 @@ export default [
       '@typescript-eslint/no-inferrable-types': 'off',
 
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'off',
         {
           ignoreRestSiblings: true,
           argsIgnorePattern: '^_',

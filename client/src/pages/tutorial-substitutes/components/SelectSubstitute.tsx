@@ -130,7 +130,7 @@ function SelectSubstitute(): JSX.Element {
       showPlaceholder={!!tutorial.error || !!tutors.error}
       placeholderText={'Daten konnten nicht abgerufen werden.'}
     >
-      {!!selectedDate ? (
+      {selectedDate ? (
         !!tutorial && (
           <>
             <DateOrIntervalText date={selectedDate} prefix='Vertretung für' variant='h6' />

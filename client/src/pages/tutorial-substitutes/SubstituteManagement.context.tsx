@@ -145,7 +145,7 @@ function SubstituteManagementContextProvider({
 
       const substituteId = tutorial.value.getSubstitute(date);
       const substitute = tutors.value.find((t) => t.id === substituteId);
-      if (!!substitute) {
+      if (substitute) {
         setSelectedSubstitute(substitute, date);
       } else {
         removeSelectedSubstitute(date);

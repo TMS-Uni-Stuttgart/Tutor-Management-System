@@ -78,7 +78,7 @@ function DateButton({
         <DateOrIntervalText date={date} suffix={isChanged ? '*' : undefined} />
         {
           <Typography variant='caption' className={clsx(isChanged && classes.changed)}>
-            {!!substitute ? `Vertretung: ${getNameOfEntity(substitute)}` : 'Keine Vertretung'}
+            {substitute ? `Vertretung: ${getNameOfEntity(substitute)}` : 'Keine Vertretung'}
           </Typography>
         }
       </Box>

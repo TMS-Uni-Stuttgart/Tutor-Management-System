@@ -168,7 +168,7 @@ function UserManagement(): JSX.Element {
 
           const updatedUser = await editUser(user.id, userInformation);
 
-          if (!!password) {
+          if (password) {
             await setTemporaryPassword(user.id, { password });
           }
 

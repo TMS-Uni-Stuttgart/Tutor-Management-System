@@ -106,7 +106,7 @@ function TutorialTableRow({
                   key={cor}
                   label={`Korrektor: ${cor}`}
                   className={classes.tutorChip}
-                  size={!!tutorial.tutor ? 'small' : 'medium'}
+                  size={tutorial.tutor ? 'small' : 'medium'}
                 />
               ))}
             </div>

@@ -87,7 +87,7 @@ function PaperTableRow({
   ...rest
 }: PropType): JSX.Element {
   const classes = useStyles({ colorOfBottomBar: colorOfBottomBar });
-  const AvatarComp: React.ReactElement | undefined = !!AvatarFromProps ? (
+  const AvatarComp: React.ReactElement | undefined = AvatarFromProps ? (
     <>{AvatarFromProps}</>
   ) : (
     Icon && (

@@ -74,7 +74,7 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions): UseShe
       return;
     }
 
-    if (!!sheetId) {
+    if (sheetId) {
       setCurrentSheet(sheets.find((s) => s.id === sheetId));
     } else {
       setCurrentSheet(undefined);

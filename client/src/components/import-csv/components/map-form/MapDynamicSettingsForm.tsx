@@ -83,7 +83,7 @@ function MapDynamicSettingsForm({ onSubmit, headerCount }: MapDynamicFormProps):
         exclusive
         value={mode}
         onChange={(_, newMode) => {
-          if (!!newMode) {
+          if (newMode) {
             setMode(newMode);
           }
         }}

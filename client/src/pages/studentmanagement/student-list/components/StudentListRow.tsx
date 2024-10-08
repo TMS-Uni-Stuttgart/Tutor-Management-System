@@ -78,7 +78,7 @@ function StudentListRow({
       },
     ];
 
-    if (!!onChangeTutorial) {
+    if (onChangeTutorial) {
       items.push({
         primary: 'Tutorium wechseln',
         onClick: () => onChangeTutorial(student),

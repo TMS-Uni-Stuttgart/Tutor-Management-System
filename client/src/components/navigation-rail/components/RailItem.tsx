@@ -105,7 +105,7 @@ function RailItem({
   }
 
   function handleMouseLeave() {
-    if (!!menuAnchor) {
+    if (menuAnchor) {
       setMenuAnchor(undefined);
     }
   }

@@ -49,7 +49,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
 
   const fetchFunction = useMemo(
     () => async (markdownString?: string) => {
-      if (!!htmlFromProps) {
+      if (htmlFromProps) {
         return htmlFromProps;
       }
 
@@ -87,7 +87,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
 
   return (
     <div className={clsx(classes.background, className, 'markdown-body')} {...props}>
-      {!!html ? reactEl : <Typography>Keine Vorschau verfügbar.</Typography>}
+      {html ? reactEl : <Typography>Keine Vorschau verfügbar.</Typography>}
     </div>
   );
 }

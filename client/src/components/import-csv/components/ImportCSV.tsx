@@ -57,7 +57,7 @@ function ImportCSV({ infoLabel, infoContent }: Props): JSX.Element {
   ]);
 
   const handleModeChange = useCallback((_: MouseEvent<HTMLElement>, newMode: string | null) => {
-    if (!!newMode) {
+    if (newMode) {
       setMode(newMode);
     }
   }, []);

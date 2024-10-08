@@ -43,7 +43,7 @@ function EnterTeamPoints(): JSX.Element {
       })
       .catch(() => setError('Teams konnten nicht abgerufen werden.'));
 
-    if (!!sheetId) {
+    if (sheetId) {
       getGradingsOfTutorial(sheetId, tutorialId)
         .then((response) => setGradings(response))
         .catch(() => {

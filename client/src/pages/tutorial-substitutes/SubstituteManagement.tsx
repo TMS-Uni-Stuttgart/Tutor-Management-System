@@ -55,7 +55,7 @@ function SubstituteManagementContent(): JSX.Element {
       tutorial.value.dates.forEach((date) => {
         const substitute = getSelectedSubstitute(date);
 
-        if (!!substitute) {
+        if (substitute) {
           const datesOfSubstitute = datesWithSubst.get(substitute.id) ?? [];
           datesOfSubstitute.push(date.toISODate() ?? '');
           datesWithSubst.set(substitute.id, datesOfSubstitute.filter(Boolean));
