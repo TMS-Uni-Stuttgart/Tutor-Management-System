@@ -1,4 +1,4 @@
-import { Embedded, Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Embedded, Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { DateTime } from 'luxon';
 import { IAttendance } from 'shared/model/Attendance';
 import { IStudent, StudentStatus } from 'shared/model/Student';
@@ -27,7 +27,7 @@ export class Student {
     @Property({ type: EncryptedStringType })
     matriculationNo?: string;
 
-    @Enum({ type: EncryptedEnumType })
+    @Property({ type: EncryptedEnumType })
     status: StudentStatus;
 
     @Property({ type: EncryptedStringType })

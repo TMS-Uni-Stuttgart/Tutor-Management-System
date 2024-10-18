@@ -1,7 +1,8 @@
-import { CssBaseline, Theme } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React, { useMemo, useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { CssBaseline, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useMemo, useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import NavigationRail from '../components/navigation-rail/NavigationRail';
 import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
@@ -53,10 +54,10 @@ function getRouteElementForRoute(route: CustomRoute<PathPart<any, any>[]>): JSX.
 
   if (route.isPrivate) {
     return (
-      <PrivateRoute key={path} path={path} component={route.component} exact={route.isExact} />
+      <Route key={path} path={path} element={<PrivateRoute element={<route.component />} />} />
     );
   } else {
-    return <Route key={path} path={path} component={route.component} exact={route.isExact} />;
+    return <Route key={path} path={path} element={<route.component />} />;
   }
 }
 
@@ -83,15 +84,11 @@ function App(): JSX.Element {
           )}
 
           <div className={classes.content}>
-            <Switch>
+            <Routes>
               {routes}
 
-              <Route
-                exact
-                path={'/'}
-                render={() => <Redirect to={ROOT_REDIRECT_PATH.create({})} />}
-              />
-            </Switch>
+              <Route path='/' element={<Navigate to={ROOT_REDIRECT_PATH.create({})} replace />} />
+            </Routes>
           </div>
         </div>
       </div>

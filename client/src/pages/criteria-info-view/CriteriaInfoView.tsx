@@ -1,5 +1,6 @@
-import { Box } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import BackButton from '../../components/back-button/BackButton';
 import { ROUTES } from '../../routes/Routing.routes';

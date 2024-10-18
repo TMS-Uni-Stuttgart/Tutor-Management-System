@@ -1,5 +1,7 @@
-import { Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import 'github-markdown-css/github-markdown.css';
 import 'highlight.js/styles/googlecode.css';
@@ -14,17 +16,18 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     background: {
       padding: theme.spacing(1),
+      backgroundColor: 'transparent',
       color: theme.palette.text.primary,
       '& table tr': {
         backgroundColor: 'transparent',
       },
       '& code': {
         backgroundColor:
-          theme.palette.type === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(174, 183, 191, .2)',
+          theme.palette.mode === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(174, 183, 191, .2)',
       },
       '& pre': {
         backgroundColor:
-          theme.palette.type === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(220, 220, 220, 1)',
+          theme.palette.mode === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(220, 220, 220, 1)',
         color: '#000',
       },
     },
@@ -46,7 +49,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
 
   const fetchFunction = useMemo(
     () => async (markdownString?: string) => {
-      if (!!htmlFromProps) {
+      if (htmlFromProps) {
         return htmlFromProps;
       }
 
@@ -84,7 +87,7 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
 
   return (
     <div className={clsx(classes.background, className, 'markdown-body')} {...props}>
-      {!!html ? reactEl : <Typography>Keine Vorschau verfügbar.</Typography>}
+      {html ? reactEl : <Typography>Keine Vorschau verfügbar.</Typography>}
     </div>
   );
 }

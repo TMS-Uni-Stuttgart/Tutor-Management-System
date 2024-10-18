@@ -1,5 +1,5 @@
 import Axios, { AxiosInstance } from 'axios';
-import { ILoggedInUser } from 'shared/model/User';
+import { ILoggedInUser } from 'shared/model/User.js';
 
 function createBaseURL(): string {
     return 'http://localhost:8080/api';

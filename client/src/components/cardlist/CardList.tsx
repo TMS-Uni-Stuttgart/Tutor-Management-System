@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -6,7 +8,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'grid',
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down('lg')]: {
         gridTemplateColumns: '100%',
       },
       [theme.breakpoints.up('md')]: {

@@ -1,6 +1,7 @@
 import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IScheinExam } from 'shared/model/Scheinexam';
 import { Scheinexam } from '../../database/entities/scheinexam.entity';
 import { CRUDService } from '../../helpers/CRUDService';
@@ -10,7 +11,9 @@ import { ScheinexamDTO } from './scheinexam.dto';
 export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO, Scheinexam> {
     constructor(
         @InjectRepository(Scheinexam)
-        private readonly repository: EntityRepository<Scheinexam>
+        private readonly repository: EntityRepository<Scheinexam>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -48,7 +51,7 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
      */
     async create(dto: ScheinexamDTO): Promise<IScheinExam> {
         const scheinexam = Scheinexam.fromDTO(dto);
-        await this.repository.persistAndFlush(scheinexam);
+        await this.em.persistAndFlush(scheinexam);
         return scheinexam.toDTO();
     }
 
@@ -67,7 +70,7 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
     async update(id: string, dto: ScheinexamDTO): Promise<IScheinExam> {
         const scheinexam = await this.findById(id);
         scheinexam.updateFromDTO(dto);
-        await this.repository.persistAndFlush(scheinexam);
+        await this.em.persistAndFlush(scheinexam);
         return scheinexam.toDTO();
     }
 
@@ -82,6 +85,6 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
      */
     async delete(id: string): Promise<void> {
         const scheinexam = await this.findById(id);
-        await this.repository.removeAndFlush(scheinexam);
+        await this.em.removeAndFlush(scheinexam);
     }
 }

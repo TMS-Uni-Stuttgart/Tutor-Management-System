@@ -1,5 +1,5 @@
 import { Eye as RemoveRedEyeOutlinedIcon } from 'mdi-material-ui';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   FormikTextFieldWithButtons,
   FormikTextFieldWithButtonsProps,
@@ -20,7 +20,7 @@ function FormikPasswordField({ buttons, ...props }: PropTypes): JSX.Element {
         {
           key: 'hidePassword',
           Icon: RemoveRedEyeOutlinedIcon,
-          color: hidePassword ? 'default' : 'secondary',
+          color: hidePassword ? 'inherit' : 'secondary',
           onClick: () => setHidePassword(!hidePassword),
         },
         ...(buttons ?? []),

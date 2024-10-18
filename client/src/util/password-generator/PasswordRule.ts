@@ -6,7 +6,10 @@ export class PasswordRule {
      * @param name Name of this rule.
      * @param rule RegExp which a password has to conform to.
      */
-    constructor(readonly name: string, private readonly rule: RegExp) {}
+    constructor(
+        readonly name: string,
+        private readonly rule: RegExp
+    ) {}
 
     /**
      * @param password Password to test

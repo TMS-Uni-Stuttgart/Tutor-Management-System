@@ -6,6 +6,7 @@ sidebar_label: Team Management
 
 import Roles from '../../src/components/roles/Roles';
 import MenuIcon from './assets/icons/dots-vertical.svg';
+import IconInText from '../../src/components/icon-in-text/IconInText';
 
 <Roles roles={['tutor']} />
 

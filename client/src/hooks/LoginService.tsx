@@ -68,7 +68,6 @@ async function changePassword(password: string): Promise<LoggedInUser | undefine
 async function logout() {
   try {
     await axios.get(`auth/logout`, { validateStatus: () => true });
-  } catch {
   } finally {
     removeUser();
   }

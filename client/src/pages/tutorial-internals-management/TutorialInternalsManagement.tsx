@@ -1,15 +1,15 @@
-import { Box, Button, Divider, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Divider, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ChevronLeft as BackIcon } from 'mdi-material-ui';
-import React, { useCallback, useMemo, useState } from 'react';
-import { MemoryRouter, useHistory, useLocation } from 'react-router-dom';
+import { useCallback, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
 import Placeholder from '../../components/Placeholder';
 import { useTutorialFromPath } from '../../hooks/useTutorialFromPath';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES, TUTORIAL_ROUTES } from '../../routes/Routing.routes';
 import { TutorialRelatedDrawerRoute } from '../../routes/Routing.types';
-import Routes from './components/Routes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -55,7 +55,7 @@ function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams
   const isRootPath = pathname === '/';
   let placeholderText = '';
 
-  if (!!error) {
+  if (error) {
     placeholderText = error;
   } else if (!tutorial) {
     placeholderText = 'Kein Tutorium gefunden.';
@@ -72,9 +72,9 @@ function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams
 function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JSX.Element {
   const classes = useStyles();
 
-  const history = useHistory();
   const { pathname } = useLocation();
-  const [value, setValue] = useState('');
+  const [dropdownValue, setDropdownValue] = useState<string>('');
+  const [selectedComponent, setSelectedComponent] = useState<JSX.Element | null>(null);
 
   const items = useMemo(() => routes.filter((r) => r.isInDrawer && r.isTutorialRelated), [routes]);
   const { placeholderText, showPlaceholder } = useMemo(
@@ -82,7 +82,7 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
     [error, tutorial, pathname]
   );
 
-  const onPathSelect: OnChangeHandler = (e) => {
+  const onChange: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
       return;
     }
@@ -91,14 +91,15 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
       return;
     }
 
-    const subRoutePath = e.target.value;
-    const subRoute = routes.find((r) => r.template === subRoutePath);
+    const dropdownValue = e.target.value;
+    const selectedRoute = routes.find((r) => r.template === dropdownValue);
 
-    if (!subRoute) {
-      setValue('');
+    if (selectedRoute) {
+      setDropdownValue(dropdownValue);
+      setSelectedComponent(<selectedRoute.component />);
     } else {
-      setValue(subRoutePath);
-      history.push(subRoute.create({ tutorialId: tutorial.id }));
+      setDropdownValue('');
+      setSelectedComponent(null);
     }
   };
 
@@ -111,17 +112,17 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
         </Button>
 
         <Typography className={classes.header} variant='h5'>
-          {!!tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
+          {tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
         </Typography>
 
         <CustomSelect
           label='Bereich auswählen'
           disabled={!tutorial}
           items={items}
-          value={value}
+          value={dropdownValue}
           itemToString={(item) => item.title}
           itemToValue={(item) => item.template}
-          onChange={onPathSelect}
+          onChange={onChange}
           className={classes.dropdown}
         />
       </Box>
@@ -140,7 +141,7 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
           showPlaceholder={showPlaceholder}
           loading={isLoading}
         >
-          <Routes routes={routes} />
+          {selectedComponent}
         </Placeholder>
       </Box>
     </Box>
@@ -148,24 +149,22 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
 }
 
 function TutorialInternalsManagement(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { tutorial, isLoading, error } = useTutorialFromPath();
 
   const routes: TutorialRelatedDrawerRoute[] = useMemo(() => getAllRelatedRoutes(), []);
   const handleBackClick = useCallback(() => {
-    history.push({ pathname: ROUTES.MANAGE_TUTORIALS.create({}) });
-  }, [history]);
+    navigate({ pathname: ROUTES.MANAGE_TUTORIALS.create({}) });
+  }, [navigate]);
 
   return (
-    <MemoryRouter>
-      <Content
-        routes={routes}
-        onBackClick={handleBackClick}
-        tutorial={tutorial}
-        isLoading={isLoading}
-        error={error}
-      />
-    </MemoryRouter>
+    <Content
+      routes={routes}
+      onBackClick={handleBackClick}
+      tutorial={tutorial}
+      isLoading={isLoading}
+      error={error}
+    />
   );
 }
 

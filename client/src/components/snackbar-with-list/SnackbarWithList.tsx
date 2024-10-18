@@ -9,11 +9,12 @@ import {
   ListItemText,
   Paper,
   Typography,
-} from '@material-ui/core';
-import { SnackbarContentProps } from '@material-ui/core/SnackbarContent';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+} from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import { ChevronDown as ExpandMoreIcon, Close as CloseIcon } from 'mdi-material-ui';
+import { Close as CloseIcon, ChevronDown as ExpandMoreIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
@@ -98,7 +99,7 @@ export interface SnackbarWithListProps {
 
 function Component(
   { title, textBeforeList, items, id, isOpen, variant }: SnackbarWithListProps,
-  ref: React.Ref<SnackbarContentProps>
+  ref: React.Ref<HTMLDivElement> // Change this to HTMLDivElement
 ): JSX.Element {
   const [isExpanded, setExpanded] = useState(!!isOpen);
   const { closeSnackbar } = useSnackbar();
@@ -128,13 +129,14 @@ function Component(
         <Box display='flex'>
           <IconButton
             aria-label='Show more'
-            className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
             onClick={handleExpandClick}
+            className={clsx(classes.expand, { [classes.expandOpen]: isExpanded })}
+            size='large'
           >
             <ExpandMoreIcon />
           </IconButton>
 
-          <IconButton className={classes.expand} onClick={handleDismiss}>
+          <IconButton className={classes.expand} onClick={handleDismiss} size='large'>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -156,6 +158,6 @@ function Component(
   );
 }
 
-const SnackbarWithList = React.forwardRef<SnackbarContentProps, SnackbarWithListProps>(Component);
+const SnackbarWithList = React.forwardRef<HTMLDivElement, SnackbarWithListProps>(Component);
 
 export default SnackbarWithList;

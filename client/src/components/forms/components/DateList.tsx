@@ -1,15 +1,17 @@
-import { ListItemIcon, Typography } from '@material-ui/core';
-import List, { ListProps } from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { ListItemIcon, Typography } from '@mui/material';
+import List, { ListProps } from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import {
   CalendarAlert as PlaceholderIcon,
   CalendarRemoveOutline as RemoveIcon,
 } from 'mdi-material-ui';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { compareDateTimes } from '../../../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -12,7 +12,11 @@ import { TemplateService } from '../template/template.service';
 import { UserService } from '../user/user.service';
 
 class MailingError {
-    constructor(readonly userId: string, readonly message: string, readonly err: unknown) {}
+    constructor(
+        readonly userId: string,
+        readonly message: string,
+        readonly err: unknown
+    ) {}
 }
 
 interface SendMailParams {

@@ -2,7 +2,6 @@ import { IsNumber, IsObject, IsOptional, IsString, Min } from 'class-validator';
 
 export enum DatabaseConfigurationValidationGroup {
     ALL = 'all',
-    FILE = 'file',
 }
 
 export class DatabaseConfiguration {
@@ -28,7 +27,7 @@ export class DatabaseConfiguration {
     @IsString({ groups: [DatabaseConfigurationValidationGroup.ALL] })
     readonly secret!: string;
 
-    @IsObject({ always: true })
+    @IsObject({ groups: [DatabaseConfigurationValidationGroup.ALL] })
     readonly auth!: { user: string; pass: string };
 }
 

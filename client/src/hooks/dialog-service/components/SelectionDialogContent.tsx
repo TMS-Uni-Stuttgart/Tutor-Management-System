@@ -1,4 +1,4 @@
-import { Box, Button, Portal } from '@material-ui/core';
+import { Box, Button, Portal } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 export interface SelectionDialogChildrenProps<T> {

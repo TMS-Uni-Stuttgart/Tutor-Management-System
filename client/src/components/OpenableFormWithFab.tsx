@@ -1,7 +1,9 @@
-import { Fab, Grow, Paper, Typography } from '@material-ui/core';
-import { GrowProps } from '@material-ui/core/Grow';
-import { PaperProps } from '@material-ui/core/Paper';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Fab, Grow, Paper, Typography } from '@mui/material';
+import { GrowProps } from '@mui/material/Grow';
+import { PaperProps } from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { Plus as AddIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';

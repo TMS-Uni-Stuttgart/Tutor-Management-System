@@ -1,12 +1,12 @@
-import { IconButton } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { DatePicker, DatePickerProps } from '@material-ui/pickers';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-import { OutterCalendarProps } from '@material-ui/pickers/views/Calendar/Calendar';
+import { IconButton } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { DatePickerProps, StaticDatePicker } from '@mui/x-date-pickers';
 import clsx from 'clsx';
 import { ArrayHelpers, FieldArray, FieldProps, useField } from 'formik';
 import { DateTime } from 'luxon';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DateList, { DateInList } from './DateList';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -89,7 +89,7 @@ interface Props {
   highlightDate?: string;
 }
 
-type PropType = Props & Omit<DatePickerProps, keyof FieldProps['field']>;
+type PropType = Props & Omit<DatePickerProps<DateTime>, keyof FieldProps['field']>;
 
 function isStringArray(array: unknown): array is string[] {
   return Array.isArray(array);
@@ -111,61 +111,63 @@ function FormikMultipleDatesPicker({
 
   // Initialize the value to be the first date in the list of selected days (instead of 'today').
   // It'll be still 'today' if the list is empty.
-  const [value, setValue] = useState<MaterialUiPickersDate>(
+  const [value, setValue] = useState<DateTime | null>(
     valueOfField && Array.isArray(valueOfField) && valueOfField.length > 0
       ? DateTime.fromISO(valueOfField[0])
       : null
   );
 
-  const renderDay: (
-    selectedDays: unknown,
-    arrayHelpers: ArrayHelpers
-  ) => OutterCalendarProps['renderDay'] = (selectedDays, arrayHelpers) => {
-    return (date, _selectedDate, dayInCurrentMonth) => {
-      if (!date) {
-        return <></>;
-      }
+  function CustomDayComponent({
+    day: date,
+    selectedDays,
+    arrayHelpers,
+    highlightDate,
+    dayInCurrentMonth,
+    onDateClicked,
+  }: any) {
+    const classes = useStyles();
+    if (!date) {
+      return <></>;
+    }
 
-      if (!isStringArray(selectedDays)) {
-        return <></>;
-      }
+    if (!isStringArray(selectedDays)) {
+      return <></>;
+    }
+    const dayIsSelected = selectedDays.includes(getDateString(date));
 
-      const dayIsSelected = selectedDays.includes(getDateString(date));
+    const dayClassName = clsx(classes.day, {
+      [classes.highlight]: dayIsSelected,
+      [classes.nonCurrentMonthDay]: !dayInCurrentMonth,
+      [classes.highlightNonCurrentMonthDay]: !dayInCurrentMonth && dayIsSelected,
+      [classes.highlightSpecial]: highlightDate === getDateString(date),
+    });
 
-      const dayClassName = clsx(classes.day, {
-        [classes.highlight]: dayIsSelected,
-        [classes.nonCurrentMonthDay]: !dayInCurrentMonth,
-        [classes.highlightNonCurrentMonthDay]: !dayInCurrentMonth && dayIsSelected,
-        [classes.highlightSpecial]: highlightDate === getDateString(date),
-      });
+    const labelClassName = clsx(classes.label, {
+      [classes.label]: dayIsSelected,
+    });
 
-      const labelClassName = clsx(classes.label, {
-        [classes.label]: dayIsSelected,
-      });
+    return (
+      <IconButton
+        className={dayClassName}
+        onClick={() => {
+          if (onDateClicked) {
+            onDateClicked(getDateString(date), selectedDays, arrayHelpers);
+            return;
+          }
 
-      return (
-        <IconButton
-          className={dayClassName}
-          onClick={() => {
-            if (onDateClicked) {
-              onDateClicked(getDateString(date), selectedDays, arrayHelpers);
-              return;
-            }
-
-            const idx = selectedDays.indexOf(getDateString(date));
-
-            if (idx !== -1) {
-              arrayHelpers.remove(idx);
-            } else {
-              arrayHelpers.insert(0, getDateString(date));
-            }
-          }}
-        >
-          <p className={labelClassName}> {date.toFormat('dd')} </p>
-        </IconButton>
-      );
-    };
-  };
+          const idx = selectedDays.indexOf(getDateString(date));
+          if (idx !== -1) {
+            arrayHelpers.remove(idx);
+          } else {
+            arrayHelpers.insert(0, getDateString(date));
+          }
+        }}
+        size='large'
+      >
+        <p className={labelClassName}> {date.toFormat('dd')} </p>
+      </IconButton>
+    );
+  }
 
   const onDateInListClicked: (
     selectedDays: unknown,
@@ -210,18 +212,24 @@ function FormikMultipleDatesPicker({
             />
           </div>
 
-          <DatePicker
-            variant='static'
+          <StaticDatePicker
+            displayStaticWrapperAs='desktop'
             orientation='landscape'
-            format='EE, dd MMMM yyyy'
-            autoOk
-            fullWidth
-            {...other}
-            name={name}
             value={value}
-            disableToolbar
-            onChange={(date) => setValue(date)}
-            renderDay={renderDay(form.values[name], arrayHelpers)}
+            onChange={(date: DateTime | null) => setValue(date)}
+            slots={{
+              day: (props) => (
+                <CustomDayComponent
+                  {...props}
+                  selectedDays={form.values[name]}
+                  arrayHelpers={arrayHelpers}
+                  highlightDate={highlightDate}
+                  onDateClicked={onDateClicked}
+                />
+              ),
+            }}
+            views={['day', 'month', 'year']}
+            {...other}
           />
         </div>
       )}

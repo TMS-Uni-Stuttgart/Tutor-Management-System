@@ -98,13 +98,13 @@ export class Grading {
     @Embedded(() => ExerciseGrading, { array: true })
     exerciseGradings: ExerciseGrading[] = [];
 
-    @ManyToOne(() => Sheet, { onDelete: 'cascade' })
+    @ManyToOne(() => Sheet, { deleteRule: 'cascade' })
     private sheet?: Sheet;
 
-    @ManyToOne(() => Scheinexam, { onDelete: 'cascade' })
+    @ManyToOne(() => Scheinexam, { deleteRule: 'cascade' })
     private exam?: Scheinexam;
 
-    @ManyToOne(() => ShortTest, { onDelete: 'cascade' })
+    @ManyToOne(() => ShortTest, { deleteRule: 'cascade' })
     private shortTest?: ShortTest;
 
     @Property({ nullable: false })

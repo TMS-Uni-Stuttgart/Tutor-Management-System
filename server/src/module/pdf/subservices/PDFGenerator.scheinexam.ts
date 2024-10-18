@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { StudentStatus } from 'shared/model/Student';
 import { Scheinexam } from '../../../database/entities/scheinexam.entity';
 import { ScheinexamService } from '../../scheinexam/scheinexam.service';
+import { GradingService, StudentAndGradings } from '../../student/grading.service';
 import { StudentService } from '../../student/student.service';
 import { TemplateService } from '../../template/template.service';
 import { PassedState, ScheinexamStatus } from '../../template/template.types';
 import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
-import { GradingService, StudentAndGradings } from '../../student/grading.service';
 
 interface PDFGeneratorOptions {
     id: string;
@@ -51,9 +51,8 @@ export class ScheinexamResultPDFGenerator extends PDFWithStudentsGenerator<PDFGe
         const students = allStudents
             .filter((student) => !!student.matriculationNo)
             .filter((student) => student.status !== StudentStatus.INACTIVE);
-        const studentsAndGradings = await this.gradingService.findAllGradingsOfMultipleStudents(
-            students
-        );
+        const studentsAndGradings =
+            await this.gradingService.findAllGradingsOfMultipleStudents(students);
         const shortenedMatriculationNumbers = this.getShortenedMatriculationNumbers(students);
         const results = this.getResultsOfAllStudents({ exam, studentsAndGradings });
 
