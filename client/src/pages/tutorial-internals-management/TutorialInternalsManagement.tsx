@@ -10,7 +10,6 @@ import { useTutorialFromPath } from '../../hooks/useTutorialFromPath';
 import { Tutorial } from '../../model/Tutorial';
 import { ROUTES, TUTORIAL_ROUTES } from '../../routes/Routing.routes';
 import { TutorialRelatedDrawerRoute } from '../../routes/Routing.types';
-import TutorialRoutes from './components/TutorialRoutes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -73,9 +72,9 @@ function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams
 function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JSX.Element {
   const classes = useStyles();
 
-  const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [value, setValue] = useState('');
+  const [dropdownValue, setDropdownValue] = useState<string>('');
+  const [selectedComponent, setSelectedComponent] = useState<JSX.Element | null>(null);
 
   const items = useMemo(() => routes.filter((r) => r.isInDrawer && r.isTutorialRelated), [routes]);
   const { placeholderText, showPlaceholder } = useMemo(
@@ -83,7 +82,7 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
     [error, tutorial, pathname]
   );
 
-  const onPathSelect: OnChangeHandler = (e) => {
+  const onChange: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
       return;
     }
@@ -92,14 +91,15 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
       return;
     }
 
-    const subRoutePath = e.target.value;
-    const subRoute = routes.find((r) => r.template === subRoutePath);
+    const dropdownValue = e.target.value;
+    const selectedRoute = routes.find((r) => r.template === dropdownValue);
 
-    if (!subRoute) {
-      setValue('');
+    if (selectedRoute) {
+      setDropdownValue(dropdownValue);
+      setSelectedComponent(<selectedRoute.component />);
     } else {
-      setValue(subRoutePath);
-      navigate(subRoute.create({ tutorialId: tutorial.id }));
+      setDropdownValue('');
+      setSelectedComponent(null);
     }
   };
 
@@ -119,10 +119,10 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
           label='Bereich auswählen'
           disabled={!tutorial}
           items={items}
-          value={value}
+          value={dropdownValue}
           itemToString={(item) => item.title}
           itemToValue={(item) => item.template}
-          onChange={onPathSelect}
+          onChange={onChange}
           className={classes.dropdown}
         />
       </Box>
@@ -141,7 +141,7 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
           showPlaceholder={showPlaceholder}
           loading={isLoading}
         >
-          <TutorialRoutes routes={routes} />
+          {selectedComponent}
         </Placeholder>
       </Box>
     </Box>
