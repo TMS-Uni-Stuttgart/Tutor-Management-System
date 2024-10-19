@@ -9,6 +9,9 @@ jobs:
   build_and_push:
     name: Build and push the docker image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout 🛎️
