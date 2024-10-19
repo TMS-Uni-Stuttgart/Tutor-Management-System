@@ -19,7 +19,9 @@ defaultSettings:
   canTutorExcuseStudents: true
   defaultTeamSize: 3
 
-# Settings used for the puppeteer instance
-puppeteer:
+# Settings used for the gotenberg instance
+gotenberg:
+  host: 'http://localhost'
+  port: 2000
   # Timeout in ms
   timeout: 30000
