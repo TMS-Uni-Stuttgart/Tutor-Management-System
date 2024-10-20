@@ -1,7 +1,7 @@
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import { TableArrowDown as ImportIcon } from 'mdi-material-ui';
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useMatches, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import StudentForm, {
   convertFormStateToDTO,
@@ -9,26 +9,30 @@ import StudentForm, {
 } from '../../components/forms/StudentForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import OpenableFormWithFab, { EditorOpenState } from '../../components/OpenableFormWithFab';
-import { ROUTES } from '../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../routes/Routing.routes';
 import StudentList from './student-list/StudentList';
 import { useStudentsForStudentList } from './student-list/StudentList.helpers';
 
 interface Params {
   tutorialId: string;
+  [key: string]: string | undefined;
 }
 
 function TutorStudentmanagement(): JSX.Element {
-  const { tutorialId } = useParams<Params>();
+  const { tutorialId = '' } = useParams<Params>();
   const [editorState, setEditorState] = useState<EditorOpenState>({
     isAnimating: false,
     isEditorOpen: false,
   });
+  const matches = useMatches();
 
   const { students, teams, summaries, isLoading, createStudent, editStudent, deleteStudent } =
     useStudentsForStudentList({ tutorialId });
 
   useEffect(() => {
-    setEditorState({ isAnimating: false, isEditorOpen: false });
+    if (editorState.isAnimating || editorState.isEditorOpen) {
+      setEditorState({ isAnimating: false, isEditorOpen: false });
+    }
   }, [students]);
 
   const handleCreateSubmit: StudentFormSubmitCallback = useCallback(
@@ -59,7 +63,7 @@ function TutorStudentmanagement(): JSX.Element {
             <Button
               variant='outlined'
               component={Link}
-              to={ROUTES.IMPORT_STUDENTS.create({ tutorialId })}
+              to={useTutorialRoutes(matches).IMPORT_STUDENTS.buildPath({ tutorialId })}
               startIcon={<ImportIcon />}
               style={{ marginLeft: 8 }}
             >

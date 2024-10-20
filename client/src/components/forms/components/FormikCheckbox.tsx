@@ -1,7 +1,7 @@
-import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
+import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import { Field, FieldProps } from 'formik';
 import React from 'react';
-import { FormControlLabel } from '@material-ui/core';
+import { FormControlLabel } from '@mui/material';
 
 interface Props extends CheckboxProps {
   name: string;

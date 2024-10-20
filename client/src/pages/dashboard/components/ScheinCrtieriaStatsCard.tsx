@@ -1,12 +1,6 @@
-import {
-  CircularProgress,
-  createStyles,
-  makeStyles,
-  Paper,
-  Theme,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { CircularProgress, Paper, Theme, Typography, useTheme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import Chart from 'react-google-charts';
 import { ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';

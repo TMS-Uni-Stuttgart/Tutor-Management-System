@@ -9,7 +9,7 @@ import { Tutorial } from '../../model/Tutorial';
 import { throwContextNotInitialized } from '../../util/throwFunctions';
 
 interface Props {
-  tutorialId: string;
+  tutorialId: string | undefined;
 }
 
 interface ResponseState<T, P extends BaseArrayType> {
@@ -58,11 +58,11 @@ export function useSubstituteManagementContext(): SubstituteManagementContextTyp
   return { ...value };
 }
 
-function useTutorial(tutorialId: string): ResponseState<Tutorial, [string]> {
+function useTutorial(tutorialId: string | undefined): ResponseState<Tutorial, [string]> {
   const [value, isLoading, error, execute] = useFetchState({
     fetchFunction: getTutorial,
     immediate: true,
-    params: [tutorialId],
+    params: [tutorialId ?? ''],
   });
   return { value, isLoading, error, execute };
 }
@@ -145,7 +145,7 @@ function SubstituteManagementContextProvider({
 
       const substituteId = tutorial.value.getSubstitute(date);
       const substitute = tutors.value.find((t) => t.id === substituteId);
-      if (!!substitute) {
+      if (substitute) {
         setSelectedSubstitute(substitute, date);
       } else {
         removeSelectedSubstitute(date);

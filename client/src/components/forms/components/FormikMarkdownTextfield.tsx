@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { useField, useFormikContext } from 'formik';
 import 'github-markdown-css/github-markdown.css';
@@ -89,7 +91,7 @@ function FormikMarkdownTextfield({
         icon={<PreviewIcon />}
         className={classes.button}
         onClick={() => setPreview(!isPreview)}
-        color={isPreview ? 'secondary' : 'default'}
+        color={isPreview ? 'secondary' : 'primary'}
         disabled={!value && !isPreview}
       />
 

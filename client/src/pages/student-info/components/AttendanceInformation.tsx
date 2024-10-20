@@ -6,7 +6,7 @@ import {
   TableProps,
   TableRow,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import React, { useMemo } from 'react';
 import _ from 'lodash';

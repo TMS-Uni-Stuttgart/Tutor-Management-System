@@ -27,7 +27,7 @@ function EntityListItemMenu({
 }: EntityListItemMenuProps): JSX.Element {
   const items: ListItem[] = [];
 
-  if (!!onEditClicked) {
+  if (onEditClicked) {
     items.push({
       primary: 'Bearbeiten',
       onClick: onEditClicked,
@@ -36,7 +36,7 @@ function EntityListItemMenu({
     });
   }
 
-  if (!!onMoreInfosClicked) {
+  if (onMoreInfosClicked) {
     items.push({
       primary: 'Mehr Infos',
       onClick: onMoreInfosClicked,
@@ -45,11 +45,11 @@ function EntityListItemMenu({
     });
   }
 
-  if (!!additionalItems) {
+  if (additionalItems) {
     items.push(...additionalItems);
   }
 
-  if (!!onDeleteClicked) {
+  if (onDeleteClicked) {
     items.push({
       primary: 'Entfernen',
       onClick: onDeleteClicked,

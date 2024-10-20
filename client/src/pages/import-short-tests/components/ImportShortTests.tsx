@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useParams } from 'react-router';
 import ImportCSV from '../../../components/import-csv/components/ImportCSV';
 import MapCSVColumns from '../../../components/import-csv/components/map-form/MapCSVColumns';
@@ -20,6 +20,7 @@ type ColumnGroups = 'general';
 
 interface Params {
   shortTestId?: string;
+  [key: string]: string | undefined;
 }
 
 function getCSVGroupMetadata(): CSVMapColumsMetadata<ShortTestColumns, ColumnGroups> {
@@ -80,11 +81,8 @@ function ImportShortTests(): JSX.Element {
           backButtonLabel='Zurück'
           nextButtonLabel='Weiter'
           nextButtonDoneLabel='Fertigstellen'
-          backButtonRoute={ROUTES.MANAGE_HAND_INS.create({ location: '1' })}
-          routeAfterLastStep={{
-            route: ROUTES.MANAGE_HAND_INS,
-            params: { location: '1' },
-          }}
+          backButtonRoute={ROUTES.MANAGE_HAND_INS.buildPath({ location: '1' })}
+          routeAfterLastStep={ROUTES.MANAGE_HAND_INS.buildPath({ location: '1' })}
         />
       </IliasMappingProvider>
     </CSVImportProvider>

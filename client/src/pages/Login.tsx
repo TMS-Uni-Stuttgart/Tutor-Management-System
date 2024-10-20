@@ -1,9 +1,10 @@
-import { List, ListItem, ListItemText, Paper, Theme, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { List, ListItem, ListItemText, Paper, Theme, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Information as InfoIcon } from 'mdi-material-ui';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
-import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import ChangePasswordForm, {
   ChangePasswordFormState,
 } from '../components/forms/ChangePasswordForm';
@@ -59,13 +60,14 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function Login({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
+function Login(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const [error, setError] = useState('');
   const { isLoggedIn, login, logout, userData, changePassword } = useLogin();
 
   if (isLoggedIn()) {
-    return <Redirect to={PATH_REDIRECT_AFTER_LOGIN.create({})} />;
+    return <Navigate to={PATH_REDIRECT_AFTER_LOGIN.buildPath({})} replace />;
   }
 
   const onTemporaryPasswordChangeSubmit: FormikSubmitCallback<ChangePasswordFormState> = async (
@@ -151,4 +153,4 @@ function Login({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   );
 }
 
-export default withSnackbar(Login);
+export default Login;

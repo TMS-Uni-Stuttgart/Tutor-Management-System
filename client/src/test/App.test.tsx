@@ -1,17 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router';
+import { createRoot } from 'react-dom/client';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import ContextWrapper from '../components/ContextWrapper';
 import App from '../pages/App';
+import { ROUTER_ROUTES } from '../routes/RouterRoutes.routes';
 
 test('renders without crashing', () => {
   const rootDiv = document.createElement('div');
 
-  ReactDOM.render(
-    <ContextWrapper Router={MemoryRouter}>
-      <App />
-    </ContextWrapper>,
-    rootDiv
-  );
-  ReactDOM.unmountComponentAtNode(rootDiv);
+  const root = createRoot(rootDiv);
+
+  const router = createMemoryRouter([
+    {
+      path: '/',
+      element: (
+        <ContextWrapper>
+          <App />
+        </ContextWrapper>
+      ),
+      children: ROUTER_ROUTES,
+    },
+  ]);
+
+  root.render(<RouterProvider router={router} />);
 });

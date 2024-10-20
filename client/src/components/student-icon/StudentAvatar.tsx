@@ -1,7 +1,9 @@
-import { Tooltip } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
+import { Tooltip } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 import clsx from 'clsx';
 import {
   Account as PersonIcon,

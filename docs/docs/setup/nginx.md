@@ -6,14 +6,14 @@ sidebar_label: Nginx
 
 ## Introduction
 
-This section covers how to set up [nginx][nginx] for the Tutor-Management-System (or your server in general). As for the installation itself docker is required because this setup steps through setting up a docker container running nginx. Furthermore, the steps assume you use docker-compose to set up the nginx container, but you can find the corresponding commands [below](#commands).
+This section covers how to set up [nginx][nginx] for the Tutor-Management-System (or your server in general). As for the installation itself docker is required because this setup steps through setting up a docker container running nginx. Furthermore, the steps assume you use docker compose to set up the nginx container, but you can find the corresponding commands [below](#commands).
 
 ## Step-by-Step
 
 ### Using one docker-compose file
 
 These sections should be considered a part of the [installation guide][installation-doc].
-It assumes that you use docker-compose to manage the setup of all required containers.
+It assumes that you use docker compose to manage the setup of all required containers.
 However, if you want to use `docker` commands instead you can find a list of those [below](#commands) aswell.
 
 :::tip
@@ -66,13 +66,13 @@ If you do _not_ want to put the nginx and the tms in the same docker-compose fil
 
       :::
 
-   1. **Replace** `<PUBLIC_KEY>` with the _absolute_ path the public key will be _in the container_. For the example docker-compose service and folders this would be
+   1. **Replace** `<PUBLIC_KEY>` with the _absolute_ path the public key will be _in the container_. For the example dockercompose service and folders this would be
 
       ```
       ssl_certificate /etc/nginx/certs/fullchain.pem;
       ```
 
-   1. **Replace** `<PRIVATE>` with the _absolute_ path the private key will be _in the container_. For the example docker-compose service and folders this would be
+   1. **Replace** `<PRIVATE>` with the _absolute_ path the private key will be _in the container_. For the example docker compose service and folders this would be
 
       ```
       ssl_certificate_key /etc/nginx/certs/privkey.pem;

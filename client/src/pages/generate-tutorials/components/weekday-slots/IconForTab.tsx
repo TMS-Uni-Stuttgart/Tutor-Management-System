@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { FormState } from '../../GenerateTutorials';

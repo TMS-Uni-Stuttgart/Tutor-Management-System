@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { FieldArray, useField } from 'formik';
 import React from 'react';
 import MapSelect, { MapSelectProps } from './MapSelect';
@@ -21,8 +21,8 @@ function MapDynamicColumnsForm({ name, sortedHeaders, isColumnDisabled }: Props)
       {(arrayHelpers) => (
         <Box
           display='grid'
-          gridRowGap={24}
-          gridColumnGap={16}
+          rowGap={24}
+          columnGap={16}
           gridTemplateColumns='repeat(auto-fill, minmax(30%, 1fr))'
         >
           {value.map((val, idx) => (

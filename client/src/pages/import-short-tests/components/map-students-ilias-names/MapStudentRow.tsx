@@ -1,4 +1,4 @@
-import { Box, Button, Chip, Typography } from '@material-ui/core';
+import { Box, Button, Chip, Typography } from '@mui/material';
 import React from 'react';
 import { Student } from '../../../../model/Student';
 
@@ -21,7 +21,7 @@ function MapStudentRow({
       height='inherit'
       display='grid'
       gridTemplateColumns='auto 1fr auto'
-      gridColumnGap={16}
+      columnGap={16}
       alignItems='center'
     >
       <Typography>{iliasName}</Typography>

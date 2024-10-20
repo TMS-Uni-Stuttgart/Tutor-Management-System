@@ -1,4 +1,4 @@
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
 import {
@@ -15,7 +15,7 @@ export async function getAllStudents(): Promise<Student[]> {
     const response = await axios.get<IStudent[]>('student');
 
     if (response.status === 200) {
-        const data = plainToClass(Student, response.data);
+        const data = plainToInstance(Student, response.data);
         return data.sort(sortByName);
     }
 
@@ -26,7 +26,7 @@ export async function getStudent(studentId: string): Promise<Student> {
     const response = await axios.get<IStudent>(`student/${studentId}`);
 
     if (response.status === 200) {
-        return plainToClass(Student, response.data);
+        return plainToInstance(Student, response.data);
     }
 
     return Promise.reject(`Wrong response code (${response.status}).`);
@@ -36,7 +36,7 @@ export async function createStudent(studentInfo: ICreateStudentDTO): Promise<Stu
     const response = await axios.post<IStudent>('student', studentInfo);
 
     if (response.status === 201) {
-        return plainToClass(Student, response.data);
+        return plainToInstance(Student, response.data);
     }
 
     return Promise.reject(`Wrong response code (${response.status}).`);
@@ -56,7 +56,7 @@ export async function editStudent(id: string, studentInfo: ICreateStudentDTO): P
     const response = await axios.patch<IStudent>(`student/${id}`, studentInfo);
 
     if (response.status === 200) {
-        return plainToClass(Student, response.data);
+        return plainToInstance(Student, response.data);
     }
 
     return Promise.reject(`Wrong response code (${response.status}).`);

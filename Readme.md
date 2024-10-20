@@ -36,7 +36,7 @@ The following tools are used in the maintaining & deploying processes.
 -   [Prettier](https://prettier.io/) - Used to ensure a unified code style.
 -   [GitHub Actions](https://github.com/features/actions) - Used for CI.
 -   [Node](https://nodejs.org/) - Runs the production server aswell as the development servers.
--   [ts-node](https://github.com/TypeStrong/ts-node) - Used to run `.ts` scripts directly on NodeJS without compiling them.
+-   [tsx](https://tsx.is/) - Used to run `.ts` scripts directly on NodeJS without compiling them.
 -   [Docker](https://www.docker.com/) - Used to build the docker images.
 
 ## Contributing

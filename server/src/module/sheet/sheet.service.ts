@@ -1,6 +1,7 @@
 import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ISheet } from 'shared/model/Sheet';
 import { Exercise } from '../../database/entities/ratedEntity.entity';
 import { Sheet } from '../../database/entities/sheet.entity';
@@ -11,7 +12,9 @@ import { SheetDTO } from './sheet.dto';
 export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
     constructor(
         @InjectRepository(Sheet)
-        private readonly repository: EntityRepository<Sheet>
+        private readonly repository: EntityRepository<Sheet>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -60,7 +63,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
      */
     async create(dto: SheetDTO): Promise<ISheet> {
         const sheet = Sheet.fromDTO(dto);
-        await this.repository.persistAndFlush(sheet);
+        await this.em.persistAndFlush(sheet);
         return sheet.toDTO();
     }
 
@@ -83,7 +86,7 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
         sheet.bonusSheet = dto.bonusSheet;
         sheet.exercises = dto.exercises.map((ex) => Exercise.fromDTO(ex));
 
-        await this.repository.persistAndFlush(sheet);
+        await this.em.persistAndFlush(sheet);
         return sheet.toDTO();
     }
 
@@ -98,6 +101,6 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
      */
     async delete(id: string): Promise<void> {
         const sheet = await this.findById(id);
-        await this.repository.removeAndFlush(sheet);
+        await this.em.removeAndFlush(sheet);
     }
 }

@@ -1,8 +1,8 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { Formik, useFormikContext } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { ICreateStudentsDTO, IStudent, StudentStatus } from 'shared/model/Student';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import { useImportCSVContext } from '../../../components/import-csv/ImportCSV.context';
@@ -48,7 +48,7 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
   const { setNextCallback, removeNextCallback } = useStepper();
   const { values, isValid, validateForm, submitForm } = useFormikContext<StudentFormState>();
   const { enqueueSnackbar } = useSnackbar();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setNextCallback(async (): Promise<NextStepInformation> => {
@@ -61,7 +61,7 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
 
       const isSuccess: any = await submitForm();
 
-      if (!!isSuccess) {
+      if (isSuccess) {
         return { goToNext: true };
       } else {
         return { goToNext: false, error: true };
@@ -75,7 +75,7 @@ function AdjustImportedUserDataFormContent(): JSX.Element {
     isValid,
     values,
     enqueueSnackbar,
-    history,
+    navigate,
     submitForm,
     validateForm,
   ]);

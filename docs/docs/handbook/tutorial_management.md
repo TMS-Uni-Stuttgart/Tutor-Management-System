@@ -18,7 +18,7 @@ To create a tutorial click on the "+ New" button in the upper right of the page.
 
 ![Form to add a tutorial](./assets/tutorial_form.png)
 
-1. **Slot**: The slot part of the name of the tutorial. The name of the tutorial will be displayed in the format "Tutorial #{slot}" at certain locations in the applications (if a short form is required only the slot will be displayed).
+1. **Slot**: The slot part of the name of the tutorial. The name of the tutorial will be displayed in the format "Tutorial #slot" at certain locations in the applications (if a short form is required only the slot will be displayed).
 
 1. **Tutor** _(optional)_: Assign a tutor to the tutorial.
 

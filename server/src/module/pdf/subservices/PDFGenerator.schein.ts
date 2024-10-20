@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { StudentStatus } from 'shared/model/Student';
 import { ScheincriteriaService } from '../../scheincriteria/scheincriteria.service';
 import { StudentService } from '../../student/student.service';
 import { TemplateService } from '../../template/template.service';
 import { PassedState, Scheinstatus } from '../../template/template.types';
 import { PDFWithStudentsGenerator } from './PDFGenerator.withStudents';
-import { StudentStatus } from 'shared/model/Student';
 
 interface GeneratorOptions {
     enableShortMatriculationNo: boolean;

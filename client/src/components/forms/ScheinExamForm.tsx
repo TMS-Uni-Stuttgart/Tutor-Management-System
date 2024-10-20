@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import * as Yup from 'yup';
 import { Scheinexam } from '../../model/Scheinexam';
 import { FormikSubmitCallback } from '../../types';
@@ -21,13 +21,11 @@ export interface ScheinExamFormState {
 
 export type ScheinExamFormSubmitCallback = FormikSubmitCallback<ScheinExamFormState>;
 
-const validationSchema = Yup.object().shape<ScheinExamFormState>({
+const validationSchema = Yup.object().shape({
   scheinExamNo: Yup.string().required('Benötigt'),
   percentageNeeded: Yup.number().required('Benötigt'),
   date: Yup.string().required('Benötigt'),
-  exercises: Yup.array<ExerciseFormExercise>()
-    .of(exerciseValidationSchema)
-    .required('Mind. 1 Aufgabe benötigt.'),
+  exercises: Yup.array().of(exerciseValidationSchema).required('Mind. 1 Aufgabe benötigt.'),
 });
 
 interface Props extends Omit<FormikBaseFormProps<ScheinExamFormState>, CommonlyUsedFormProps> {
@@ -40,7 +38,7 @@ export function getInitialExamFormState(
   exam?: Scheinexam,
   exams?: Scheinexam[]
 ): ScheinExamFormState {
-  if (!!exam) {
+  if (exam) {
     const exercises = exam.exercises.map(mapExerciseToFormExercise);
 
     return {

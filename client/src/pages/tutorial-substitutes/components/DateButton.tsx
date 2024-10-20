@@ -1,13 +1,13 @@
-import { Box, Button, ButtonProps, Tooltip, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, ButtonProps, Tooltip, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import {
   AccountEditOutline as EditIcon,
-  AccountOutline as SubstituteIcon,
   ChevronRight as RightArrowIcon,
+  AccountOutline as SubstituteIcon,
 } from 'mdi-material-ui';
-import React from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
 import DateOrIntervalText from '../../../components/DateOrIntervalText';
@@ -48,7 +48,7 @@ function DateButton({
   return (
     <Button
       variant='outlined'
-      color={isSelected ? 'primary' : 'default'}
+      color={isSelected ? 'primary' : 'inherit'}
       className={classes.dateButton}
       classes={{ endIcon: classes.dateButtonIcon }}
       endIcon={
@@ -78,7 +78,7 @@ function DateButton({
         <DateOrIntervalText date={date} suffix={isChanged ? '*' : undefined} />
         {
           <Typography variant='caption' className={clsx(isChanged && classes.changed)}>
-            {!!substitute ? `Vertretung: ${getNameOfEntity(substitute)}` : 'Keine Vertretung'}
+            {substitute ? `Vertretung: ${getNameOfEntity(substitute)}` : 'Keine Vertretung'}
           </Typography>
         }
       </Box>

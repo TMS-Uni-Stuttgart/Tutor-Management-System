@@ -1,12 +1,6 @@
-import {
-  Box,
-  Chip,
-  createStyles,
-  IconButton,
-  makeStyles,
-  TableCell,
-  Typography,
-} from '@material-ui/core';
+import { Box, Chip, IconButton, TableCell, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useField, useFormikContext } from 'formik';
 import { SquareEditOutline as EditIcon, Undo as ResetIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';

@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { FileImportOutline as ImportIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -193,7 +193,7 @@ function ShortTestManagement(): JSX.Element {
               <>
                 <Button
                   component={Link}
-                  to={ROUTES.IMPORT_SHORT_TEST_RESULTS.create({})}
+                  to={ROUTES.IMPORT_SHORT_TEST_RESULTS.buildPath({})}
                   startIcon={<ImportIcon />}
                 >
                   Importiere neue Ergebnisse

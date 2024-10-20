@@ -1,11 +1,7 @@
+import { SelectChangeEvent } from '@mui/material/Select'; // Import SelectChangeEvent
 import { Field, FieldProps, FormikHandlers } from 'formik';
 import React from 'react';
 import CustomSelect, { CustomSelectProps } from '../../CustomSelect';
-
-type ChangeEventType = React.ChangeEvent<{
-  name?: string | undefined;
-  value: unknown;
-}>;
 
 export interface FormikSelectProps<T> extends CustomSelectProps<T> {
   name: string;
@@ -18,7 +14,7 @@ function FormikSelect<T>({
   ...other
 }: FormikSelectProps<T>): JSX.Element {
   function handleChange(formikOnChange: FormikHandlers['handleChange']) {
-    return (e: ChangeEventType, child: React.ReactNode) => {
+    return (e: SelectChangeEvent<unknown>, child: React.ReactNode) => {
       if (onChange) {
         onChange(e, child);
       }

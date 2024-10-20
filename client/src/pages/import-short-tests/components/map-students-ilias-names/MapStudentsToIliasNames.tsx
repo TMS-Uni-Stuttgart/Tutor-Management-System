@@ -1,5 +1,6 @@
-import { Box, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { CheckCircleOutline as CheckIcon } from 'mdi-material-ui';
 import React, { useCallback } from 'react';
 import OutlinedBox from '../../../../components/OutlinedBox';
@@ -75,7 +76,7 @@ function MapStudentsToIliasNames(): JSX.Element {
     <Box
       display='grid'
       width='100%'
-      gridRowGap={32}
+      rowGap={32}
       gridTemplateColumns='1fr'
       gridTemplateRows='auto minmax(350px, 1fr)'
     >

@@ -1,4 +1,4 @@
-import { Divider, List, ListItem, ListItemText, ListProps } from '@material-ui/core';
+import { Divider, List, ListItem, ListItemText, ListProps } from '@mui/material';
 import React from 'react';
 
 interface Props extends ListProps {

@@ -2,10 +2,10 @@
 import axios from 'axios';
 import chalk from 'chalk';
 import { spawn, SpawnOptionsWithoutStdio, spawnSync } from 'child_process';
-import { addConsoleToProcess, getCommand, stopOnError } from '../util/cmdHelpers';
-import { login } from '../util/login';
+import { addConsoleToProcess, getCommand, stopOnError } from '../util/cmdHelpers.js';
+import { login } from '../util/login.js';
 
-const IMAGE_NAME = 'dudrie/tms-test';
+const IMAGE_NAME = 'TMS-Uni-Stuttgart/tms-test';
 const spawnOptions: SpawnOptionsWithoutStdio = { cwd: './build-test-docker' };
 
 async function wait(ms: number): Promise<void> {
@@ -80,7 +80,7 @@ async function testImage() {
     } finally {
         console.log(chalk.blueBright('Shutting down containers...'));
 
-        const result = spawnSync('docker-compose', ['down', '-v'], {
+        const result = spawnSync('docker', ['compose', 'down', '-v'], {
             ...spawnOptions,
             stdio: 'inherit',
         });
@@ -99,7 +99,7 @@ async function testImage() {
 async function spawnContainer() {
     console.log(chalk.blueBright('Starting image in container...'));
 
-    const containerProcess = spawn('docker-compose', ['up'], spawnOptions);
+    const containerProcess = spawn('docker', ['compose', 'up'], spawnOptions);
     addConsoleToProcess(containerProcess);
 
     containerProcess.on('exit', (code) => {
@@ -126,7 +126,7 @@ async function run(): Promise<void> {
 
     console.log(chalk.blueBright(`Start building a docker image '${IMAGE_NAME}' ...`));
     const buildProcess = spawn(getCommand('pnpx'), [
-        'ts-node',
+        'tsx',
         '../build-docker-image.ts',
         `--name=${IMAGE_NAME}`,
         '--version=0.0.0',

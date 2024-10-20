@@ -1,5 +1,6 @@
-import { Paper, PaperProps, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Paper, PaperProps, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -7,7 +8,6 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     summaryPaper: {
       flex: 1,
-      background: theme.palette.background.default,
       padding: theme.spacing(1.5),
       position: 'relative',
     },
@@ -27,7 +27,7 @@ function InfoPaper({ children, title, className, ...props }: InfoPaperProps): JS
   const classes = useStyles();
 
   return (
-    <Paper variant='outlined' {...props} className={clsx(className, classes.summaryPaper)}>
+    <Paper {...props} className={clsx(className, classes.summaryPaper)}>
       <Typography className={classes.title}>{title}</Typography>
 
       {children}

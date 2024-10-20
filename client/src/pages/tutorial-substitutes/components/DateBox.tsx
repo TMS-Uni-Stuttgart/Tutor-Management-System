@@ -1,8 +1,10 @@
-import { Box, Typography } from '@material-ui/core';
-import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import { SelectInputProps } from '@mui/material/Select/SelectInput';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import CustomSelect from '../../../components/CustomSelect';
 import OutlinedBox from '../../../components/OutlinedBox';
 import Placeholder from '../../../components/Placeholder';
@@ -15,7 +17,7 @@ import {
 import { FilterOption } from '../SubstituteManagement.types';
 import DateButton from './DateButton';
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     scrollableBox: {
       overflowY: 'auto',
@@ -40,7 +42,7 @@ function filterDates(
     .filter((date) => {
       switch (option) {
         case FilterOption.ONLY_FUTURE_DATES:
-          const diff = date.startOf('days').diffNow('days').days;
+          const diff = date.startOf('day').diffNow('days').days;
           return Math.ceil(diff) >= 0;
         case FilterOption.ALL_DATES:
           return true;

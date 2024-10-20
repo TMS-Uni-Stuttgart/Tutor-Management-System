@@ -1,5 +1,6 @@
-import { Collapse, IconButton, Paper, Tooltip, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Collapse, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Close as RemoveIcon } from 'mdi-material-ui';
 import React from 'react';
 import { NamedElement } from 'shared/model/Common';
@@ -35,7 +36,11 @@ function SelectedSubstituteBar({ substitute, onRemoveClicked }: Props): JSX.Elem
         <Typography variant='subtitle1'>{!!substitute && getNameOfEntity(substitute)}</Typography>
 
         <Tooltip title='Vertretung entfernen'>
-          <IconButton onClick={onRemoveClicked} className={classes.removeSubstituteButton}>
+          <IconButton
+            onClick={onRemoveClicked}
+            className={classes.removeSubstituteButton}
+            size='large'
+          >
             <RemoveIcon />
           </IconButton>
         </Tooltip>

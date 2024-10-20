@@ -1,18 +1,21 @@
-import { CircularProgress, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { CircularProgress, SelectChangeEvent, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
+import { HasId } from 'shared/model/Common';
 import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
 import { getSheet } from '../../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
+import { Grading } from '../../../model/Grading';
 import { Sheet } from '../../../model/Sheet';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
-import { HasId } from 'shared/model/Common';
-import { Grading } from '../../../model/Grading';
+import { useMatches } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -77,6 +80,7 @@ function EnterPoints<T extends HasId>({
 
   const [sheet, setSheet] = useState<Sheet>();
   const [selectedExercise, setSelectedExercise] = useState<Exercise>();
+  const matches = useMatches();
 
   useEffect(() => {
     if (!sheetId) {
@@ -91,7 +95,7 @@ function EnterPoints<T extends HasId>({
       .catch(() => setError('Übungsblatt konnte nicht abgerufen werden.'));
   }, [sheetId, setError]);
 
-  const handleExerciseChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleExerciseChange = (event: SelectChangeEvent<unknown>, child: React.ReactNode) => {
     if (!sheet) {
       return;
     }
@@ -108,7 +112,7 @@ function EnterPoints<T extends HasId>({
     <div className={classes.root}>
       <div className={classes.topBar}>
         <BackButton
-          to={ROUTES.ENTER_POINTS_OVERVIEW.create({ tutorialId, sheetId })}
+          to={useTutorialRoutes(matches).ENTER_POINTS_OVERVIEW.buildPath({ tutorialId, sheetId })}
           className={classes.backButton}
         />
 

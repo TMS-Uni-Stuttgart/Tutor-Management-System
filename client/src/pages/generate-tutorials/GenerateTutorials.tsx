@@ -1,10 +1,10 @@
-import { Box, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Formik, useFormikContext } from 'formik';
 import { DateTime, Interval } from 'luxon';
 import { useSnackbar } from 'notistack';
-import React from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { ITutorialGenerationData, ITutorialGenerationDTO, Weekday } from 'shared/model/Tutorial';
 import BackButton from '../../components/back-button/BackButton';
 import FormikDatePicker from '../../components/forms/components/FormikDatePicker';
@@ -74,8 +74,8 @@ function generateDTOFromValues(values: FormState): ITutorialGenerationDTO {
       if (ex instanceof DateTime) {
         return { date: ex.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
       } else if (ex instanceof Interval) {
-        if (ex.start.day === ex.end.day) {
-          return { date: ex.start.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
+        if (ex.start?.day === ex.end?.day) {
+          return { date: ex.start?.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
         } else {
           return { interval: ex.toISODate() ?? 'DATE_NOTE_PARSEABLE' };
         }
@@ -110,12 +110,12 @@ function GenerateTutorialsContent(): JSX.Element {
         display='grid'
         gridTemplateColumns='minmax(255px, 340px) minmax(0, 1fr)'
         gridTemplateRows='32px repeat(2, 60px) 1fr'
-        gridRowGap={16}
-        gridColumnGap={16}
+        rowGap={16}
+        columnGap={16}
         height='100%'
       >
         <Box display='flex'>
-          <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
+          <BackButton to={ROUTES.MANAGE_TUTORIALS.buildPath({})} className={classes.backButton} />
           <Typography variant='h6'>Terminbereich</Typography>
         </Box>
 
@@ -166,7 +166,7 @@ const initialPrefixes = {
 
 function GenerateTutorials(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const initialValues: FormState = {
     startDate: DateTime.local().toISODate() ?? '',
@@ -194,7 +194,7 @@ function GenerateTutorials(): JSX.Element {
         variant: 'success',
       });
 
-      history.push(ROUTES.MANAGE_TUTORIALS.create({}));
+      navigate(ROUTES.MANAGE_TUTORIALS.buildPath({}));
     } catch (err) {
       enqueueSnackbar('Tutorien konnten nicht generiert werden.', { variant: 'error' });
     }

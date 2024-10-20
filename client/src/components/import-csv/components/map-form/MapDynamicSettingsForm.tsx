@@ -1,6 +1,7 @@
-import { Box, Button, TextField, Tooltip } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { Box, Button, TextField, Tooltip } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import {
   ArrowExpandLeft as FromLastIcon,
   ArrowExpandRight as FromFirstIcon,
@@ -82,7 +83,7 @@ function MapDynamicSettingsForm({ onSubmit, headerCount }: MapDynamicFormProps):
         exclusive
         value={mode}
         onChange={(_, newMode) => {
-          if (!!newMode) {
+          if (newMode) {
             setMode(newMode);
           }
         }}
