@@ -7,6 +7,7 @@ import EntityListItemMenu from '../../../components/list-item-menu/EntityListIte
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
 import { ROUTES } from '../../../routes/Routing.routes';
+import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,9 +60,9 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={ROUTES.MANAGE_TUTORIAL_INTERNALS.renderLink({
+            component={renderLink(ROUTES.MANAGE_TUTORIAL_INTERNALS.buildPath({
               tutorialId: tutorial.id,
-            })}
+            }))}
             disabled={disableManageTutorialButton}
           >
             Verwalten
@@ -70,9 +71,9 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.renderLink({
+            component={renderLink(ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.buildPath({
               tutorialId: tutorial.id,
-            })}
+            }))}
           >
             Vertretungen
           </Button>

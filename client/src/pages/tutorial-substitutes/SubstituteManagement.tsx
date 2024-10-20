@@ -107,7 +107,7 @@ function SubstituteManagementContent(): JSX.Element {
       onSubmit={handleSubmit}
     >
       <Box display='flex' alignItems='center'>
-        <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
+        <BackButton to={ROUTES.MANAGE_TUTORIALS.buildPath({})} className={classes.backButton} />
       </Box>
 
       <DateBox />
@@ -140,9 +140,9 @@ function SubstituteManagementContent(): JSX.Element {
 
 function SubstituteManagement(): JSX.Element {
   const { tutorialId } = useParams<Params>();
-  const match = useMatch(ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template);
+  const match = useMatch(ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.path);
   const isAdminVersion = match
-    ? ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template === match.pattern.path
+    ? ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.path === match.pattern.path
     : false;
 
   return (

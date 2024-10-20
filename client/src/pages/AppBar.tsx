@@ -23,7 +23,7 @@ import {
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
-import { matchPath, useLocation } from 'react-router';
+import { useLocation, useMatches } from 'react-router';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
@@ -32,7 +32,6 @@ import { useLogin } from '../hooks/LoginService';
 import { useFetchState } from '../hooks/useFetchState';
 import { TutorialInEntity } from '../model/LoggedInUser';
 import { Tutorial } from '../model/Tutorial';
-import { ROUTES } from '../routes/Routing.routes';
 import { saveBlob } from '../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -69,10 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const TITLE_TEXTS: Map<string, string> = new Map(
-  Object.values(ROUTES).map((route) => [route.template, route.title])
-);
-
 interface Props {
   onMenuButtonClicked: (ev: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -81,25 +76,12 @@ interface CreatingState {
   [tutorialSlot: string]: boolean | undefined;
 }
 
-function getTitleFromPath(path: string | undefined): string {
-  if (!path) {
-    return 'TITLE_NOT_FOUND';
-  }
-
-  const title = TITLE_TEXTS.get(path);
-
-  return title ?? 'TITLE_NOT_FOUND';
-}
-
 function useTitleFromRoute(): string {
   const location = useLocation();
   const path = location.pathname;
+  const matches = useMatches();
 
-  const match = useMemo(() => {
-    return [...TITLE_TEXTS.keys()].find((key) => matchPath(key, path) != null);
-  }, [path]);
-
-  return useMemo(() => getTitleFromPath(match), [match]);
+  return useMemo(() => (matches.at(-1)?.handle as any)?.title as string, [path]);
 }
 
 function AppBar({ onMenuButtonClicked }: Props): JSX.Element {

@@ -3,13 +3,12 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { ChevronLeft as BackIcon } from 'mdi-material-ui';
 import { useCallback, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import CustomSelect, { OnChangeHandler } from '../../components/CustomSelect';
 import Placeholder from '../../components/Placeholder';
 import { useTutorialFromPath } from '../../hooks/useTutorialFromPath';
 import { Tutorial } from '../../model/Tutorial';
-import { ROUTES, TUTORIAL_ROUTES } from '../../routes/Routing.routes';
-import { TutorialRelatedDrawerRoute } from '../../routes/Routing.types';
+import { ROUTES, TUTORIAL_ROUTE_HANDLES } from '../../routes/Routing.routes';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -31,7 +30,6 @@ const useStyles = makeStyles((theme) =>
 );
 
 interface Props {
-  routes: TutorialRelatedDrawerRoute[];
   tutorial: Tutorial | undefined;
   isLoading: boolean;
   error?: string;
@@ -44,9 +42,36 @@ interface PlaceholderDataParams {
   pathname: string;
 }
 
-function getAllRelatedRoutes(): TutorialRelatedDrawerRoute[] {
-  return [...Object.values(TUTORIAL_ROUTES)] as any;
-}
+const tutorialRoutes = [
+  {
+    route: ROUTES.MANAGE_TUTORIAL_INTERNALS.ATTENDANCE,
+    handle: TUTORIAL_ROUTE_HANDLES.ATTENDANCE,
+  } as const,
+  {
+    route: ROUTES.MANAGE_TUTORIAL_INTERNALS.ENTER_POINTS_OVERVIEW,
+    handle: TUTORIAL_ROUTE_HANDLES.ENTER_POINTS_OVERVIEW,
+  } as const,
+  {
+    route: ROUTES.MANAGE_TUTORIAL_INTERNALS.PRESENTATION_POINTS,
+    handle: TUTORIAL_ROUTE_HANDLES.PRESENTATION_POINTS,
+  } as const,
+  {
+    route: ROUTES.MANAGE_TUTORIAL_INTERNALS.SCHEIN_EXAMS_OVERVIEW,
+    handle: TUTORIAL_ROUTE_HANDLES.SCHEIN_EXAMS_OVERVIEW,
+  } as const,
+  {
+    route: ROUTES.MANAGE_TUTORIAL_INTERNALS.STUDENT_OVERVIEW,
+    handle: TUTORIAL_ROUTE_HANDLES.STUDENT_OVERVIEW,
+  } as const,
+  {
+    route: ROUTES.MANAGE_TUTORIAL_INTERNALS.TEAM_OVERVIEW,
+    handle: TUTORIAL_ROUTE_HANDLES.TEAM_OVERVIEW,
+  } as const,
+  {
+    route: ROUTES.MANAGE_TUTORIAL_INTERNALS.TUTORIAL_SUBSTITUTES,
+    handle: TUTORIAL_ROUTE_HANDLES.TUTORIAL_SUBSTITUTES,
+  } as const,
+];
 
 function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams): {
   placeholderText: string;
@@ -69,20 +94,21 @@ function getPlaceholderData({ error, tutorial, pathname }: PlaceholderDataParams
   };
 }
 
-function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JSX.Element {
+function Content({ tutorial, isLoading, error, onBackClick }: Props): JSX.Element {
   const classes = useStyles();
+  const routes = tutorialRoutes;
 
+  const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [dropdownValue, setDropdownValue] = useState<string>('');
-  const [selectedComponent, setSelectedComponent] = useState<JSX.Element | null>(null);
+  const [value, setValue] = useState('');
 
-  const items = useMemo(() => routes.filter((r) => r.isInDrawer && r.isTutorialRelated), [routes]);
+  const items = routes;
   const { placeholderText, showPlaceholder } = useMemo(
     () => getPlaceholderData({ error, tutorial, pathname }),
     [error, tutorial, pathname]
   );
 
-  const onChange: OnChangeHandler = (e) => {
+  const onPathSelect: OnChangeHandler = (e) => {
     if (typeof e.target.value !== 'string') {
       return;
     }
@@ -91,15 +117,14 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
       return;
     }
 
-    const dropdownValue = e.target.value;
-    const selectedRoute = routes.find((r) => r.template === dropdownValue);
+    const subRoutePath = e.target.value;
+    const subRoute = routes.find((r) => r.route.path === subRoutePath);
 
-    if (selectedRoute) {
-      setDropdownValue(dropdownValue);
-      setSelectedComponent(<selectedRoute.component />);
+    if (!subRoute) {
+      setValue('');
     } else {
-      setDropdownValue('');
-      setSelectedComponent(null);
+      setValue(subRoutePath);
+      navigate(subRoute.route.buildPath({ tutorialId: tutorial.id }));
     }
   };
 
@@ -112,17 +137,17 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
         </Button>
 
         <Typography className={classes.header} variant='h5'>
-          {tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
+          {!!tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
         </Typography>
 
         <CustomSelect
           label='Bereich auswählen'
           disabled={!tutorial}
           items={items}
-          value={dropdownValue}
-          itemToString={(item) => item.title}
-          itemToValue={(item) => item.template}
-          onChange={onChange}
+          value={value}
+          itemToString={(item) => item.handle.title}
+          itemToValue={(item) => item.route.path}
+          onChange={onPathSelect}
           className={classes.dropdown}
         />
       </Box>
@@ -141,25 +166,24 @@ function Content({ routes, tutorial, isLoading, error, onBackClick }: Props): JS
           showPlaceholder={showPlaceholder}
           loading={isLoading}
         >
-          {selectedComponent}
+          <Outlet />
         </Placeholder>
       </Box>
     </Box>
   );
 }
 
+
 function TutorialInternalsManagement(): JSX.Element {
   const navigate = useNavigate();
   const { tutorial, isLoading, error } = useTutorialFromPath();
 
-  const routes: TutorialRelatedDrawerRoute[] = useMemo(() => getAllRelatedRoutes(), []);
   const handleBackClick = useCallback(() => {
-    navigate({ pathname: ROUTES.MANAGE_TUTORIALS.create({}) });
+    navigate({ pathname: ROUTES.MANAGE_TUTORIALS.buildPath({}) });
   }, [navigate]);
 
   return (
     <Content
-      routes={routes}
       onBackClick={handleBackClick}
       tutorial={tutorial}
       isLoading={isLoading}

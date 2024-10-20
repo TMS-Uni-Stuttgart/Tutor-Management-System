@@ -87,7 +87,7 @@ function ImportUsers(): JSX.Element {
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'
         nextButtonDoneLabel='Fertigstellen'
-        backButtonRoute={ROUTES.MANAGE_USERS.create({})}
+        backButtonRoute={ROUTES.MANAGE_USERS.buildPath({})}
         routeAfterLastStep={{ route: ROUTES.MANAGE_USERS, params: {} }}
       />
     </CSVImportProvider>

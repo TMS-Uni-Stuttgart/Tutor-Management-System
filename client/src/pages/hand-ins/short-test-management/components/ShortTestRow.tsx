@@ -39,7 +39,7 @@ function ShortTestRow({ shortTest, onEditClicked, onDeleteClicked, ...other }: P
               Icon: ImportIcon,
               onClick: () =>
                 navigate(
-                  ROUTES.IMPORT_SHORT_TEST_RESULTS.create({
+                  ROUTES.IMPORT_SHORT_TEST_RESULTS.buildPath({
                     shortTestId: shortTest.id,
                   })
                 ),

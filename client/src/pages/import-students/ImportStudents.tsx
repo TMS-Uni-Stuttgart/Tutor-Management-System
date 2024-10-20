@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router';
+import { useMatches, useParams } from 'react-router';
 import ImportCSV from '../../components/import-csv/components/ImportCSV';
 import MapCSVColumns from '../../components/import-csv/components/map-form/MapCSVColumns';
 import { CSVImportProvider } from '../../components/import-csv/ImportCSV.context';
 import { CSVMapColumsMetadata } from '../../components/import-csv/ImportCSV.types';
 import StepperWithButtons from '../../components/stepper-with-buttons/StepperWithButtons';
-import { ROUTES } from '../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../routes/Routing.routes';
 import AdjustImportedStudentDataForm from './adjust-data-form/AdjustImportedStudentDataForm';
 
 export type StudentColumns =
@@ -26,6 +26,7 @@ interface Params {
 
 function ImportStudents(): JSX.Element {
   const { tutorialId } = useParams<Params>();
+  const matches = useMatches();
   const groupMetadata: CSVMapColumsMetadata<StudentColumns, ColumnGroups> = useMemo(
     () => ({
       information: {
@@ -100,9 +101,9 @@ function ImportStudents(): JSX.Element {
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'
         nextButtonDoneLabel='Fertigstellen'
-        backButtonRoute={ROUTES.STUDENTOVERVIEW.create({ tutorialId: tutorialId ?? '' })}
+        backButtonRoute={useTutorialRoutes(matches).STUDENT_OVERVIEW.buildPath({ tutorialId: tutorialId ?? '' })}
         routeAfterLastStep={{
-          route: ROUTES.STUDENTOVERVIEW,
+          route: useTutorialRoutes(matches).STUDENT_OVERVIEW,
           params: { tutorialId: tutorialId ?? '' },
         }}
       />

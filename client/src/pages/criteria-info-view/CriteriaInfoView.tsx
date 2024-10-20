@@ -79,7 +79,7 @@ function CriteriaInfoView(): JSX.Element {
   return (
     <Box display='flex' flexDirection='column'>
       <Box display='flex' marginBottom={3}>
-        <BackButton to={ROUTES.MANAGE_SCHEIN_CRITERIAS.create({})} className={classes.backButton} />
+        <BackButton to={ROUTES.MANAGE_SCHEIN_CRITERIAS.buildPath({})} className={classes.backButton} />
 
         {/* {criteriaInfo && <Typography variant='h4'>{criteriaInfo.name}</Typography>} */}
       </Box>

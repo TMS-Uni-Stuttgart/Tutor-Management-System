@@ -56,7 +56,7 @@ function ScheinCriteriaRow({
               primary: 'Informationen',
               Icon: InfoIcon,
               onClick: () => {
-                navigate(ROUTES.SCHEIN_CRITERIAS_INFO.create({ id: criteria.id }));
+                navigate(ROUTES.SCHEIN_CRITERIAS_INFO.buildPath({ id: criteria.id }));
               },
             },
           ]}

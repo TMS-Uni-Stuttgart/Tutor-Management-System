@@ -1,6 +1,6 @@
 import { SelectChangeEvent, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useMatches, useNavigate, useParams, useRoutes } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
@@ -9,7 +9,7 @@ import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { GradingList } from '../../../model/GradingList';
 import { Student, StudentInTeam } from '../../../model/Student';
 import { Team } from '../../../model/Team';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
@@ -31,6 +31,7 @@ function EnterStudentPoints(): JSX.Element {
   const [student, setStudent] = useState<Student>();
   const [team, setTeam] = useState<Team>();
   const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
+  const matches = useMatches()
 
   useEffect(() => {
     if (!studentId) {
@@ -81,7 +82,7 @@ function EnterStudentPoints(): JSX.Element {
 
     const studentId: string = event.target.value as string;
 
-    navigate(ROUTES.ENTER_POINTS_STUDENT.create({ tutorialId, sheetId, teamId, studentId }));
+    navigate(useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({ tutorialId, sheetId, teamId, studentId }));
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {

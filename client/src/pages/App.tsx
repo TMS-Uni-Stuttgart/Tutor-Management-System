@@ -1,14 +1,10 @@
 import { CssBaseline, Theme } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import { useMemo, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import NavigationRail from '../components/navigation-rail/NavigationRail';
-import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
-import { ROOT_REDIRECT_PATH, ROUTES } from '../routes/Routing.routes';
-import { CustomRoute } from '../routes/Routing.types';
-import { PathPart } from '../routes/typesafe-react-router';
 import AppBar from './AppBar';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -49,27 +45,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function getRouteElementForRoute(route: CustomRoute<PathPart<any, any>[]>): JSX.Element {
-  const path = route.template;
-
-  if (route.isPrivate) {
-    return (
-      <Route key={path} path={path} element={<PrivateRoute element={<route.component />} />} />
-    );
-  } else {
-    return <Route key={path} path={path} element={<route.component />} />;
-  }
-}
-
 function App(): JSX.Element {
   const classes = useStyles();
   const { isLoggedIn } = useLogin();
   const [isDrawerOpen, setDrawerOpen] = useState(true);
-
-  const routes = useMemo(
-    () => Object.values(ROUTES).map((route) => getRouteElementForRoute(route)),
-    []
-  );
 
   return (
     <>
@@ -84,11 +63,7 @@ function App(): JSX.Element {
           )}
 
           <div className={classes.content}>
-            <Routes>
-              {routes}
-
-              <Route path='/' element={<Navigate to={ROOT_REDIRECT_PATH.create({})} replace />} />
-            </Routes>
+            <Outlet />
           </div>
         </div>
       </div>

@@ -115,7 +115,7 @@ function GenerateTutorialsContent(): JSX.Element {
         height='100%'
       >
         <Box display='flex'>
-          <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
+          <BackButton to={ROUTES.MANAGE_TUTORIALS.buildPath({})} className={classes.backButton} />
           <Typography variant='h6'>Terminbereich</Typography>
         </Box>
 
@@ -194,7 +194,7 @@ function GenerateTutorials(): JSX.Element {
         variant: 'success',
       });
 
-      navigate(ROUTES.MANAGE_TUTORIALS.create({}));
+      navigate(ROUTES.MANAGE_TUTORIALS.buildPath({}));
     } catch (err) {
       enqueueSnackbar('Tutorien konnten nicht generiert werden.', { variant: 'error' });
     }

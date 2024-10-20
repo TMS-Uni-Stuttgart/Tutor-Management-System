@@ -1,11 +1,11 @@
 import React from 'react';
 import { LoggedInUser } from '../../../model/LoggedInUser';
-import { TutorialRelatedDrawerRoute } from '../../../routes/Routing.types';
 import RailItem from './RailItem';
 import { getSubItems } from './TutorialRailItem.helpers';
+import { FilteredRoutes } from '../NavigationRail.helper';
 
 interface Props {
-  route: TutorialRelatedDrawerRoute;
+  route: FilteredRoutes['tutorialRoutes'][number];
   userData: LoggedInUser;
 }
 
@@ -19,11 +19,11 @@ function TutorialRailItem({ route, userData }: Props): JSX.Element | null {
   if (subItems.length === 1) {
     return (
       <RailItem
-        key={route.template}
+        key={route.route.path}
         path={subItems[0].subPath}
         pathTemplate={subItems[0].subPathTemplate}
-        text={route.title}
-        icon={route.icon}
+        text={route.handle.title}
+        icon={route.handle.icon}
       />
     );
   }
@@ -32,11 +32,11 @@ function TutorialRailItem({ route, userData }: Props): JSX.Element | null {
     userData.tutorials[0] || userData.tutorialsToCorrect[0] || userData.substituteTutorials[0];
   return (
     <RailItem
-      key={route.template}
-      path={route.create({ tutorialId: tutorial.id })}
-      pathTemplate={route.template}
-      text={route.title}
-      icon={route.icon}
+      key={route.route.path}
+      path={route.route.buildPath({ tutorialId: tutorial.id })}
+      pathTemplate={route.route.path}
+      text={route.handle.title}
+      icon={route.handle.icon}
       subItems={getSubItems(route, userData)}
     />
   );

@@ -106,7 +106,7 @@ function StudentListRow({
       <Button
         variant='outlined'
         component={Link}
-        to={ROUTES.STUDENT_INFO.create({
+        to={ROUTES.STUDENT_INFO.buildPath({
           tutorialId,
           studentId: student.id,
         })}

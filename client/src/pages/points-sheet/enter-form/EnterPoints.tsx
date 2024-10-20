@@ -12,9 +12,10 @@ import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Grading } from '../../../model/Grading';
 import { Sheet } from '../../../model/Sheet';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
+import { useMatches } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -79,6 +80,7 @@ function EnterPoints<T extends HasId>({
 
   const [sheet, setSheet] = useState<Sheet>();
   const [selectedExercise, setSelectedExercise] = useState<Exercise>();
+  const matches = useMatches();
 
   useEffect(() => {
     if (!sheetId) {
@@ -110,7 +112,7 @@ function EnterPoints<T extends HasId>({
     <div className={classes.root}>
       <div className={classes.topBar}>
         <BackButton
-          to={ROUTES.ENTER_POINTS_OVERVIEW.create({ tutorialId, sheetId })}
+          to={useTutorialRoutes(matches).ENTER_POINTS_OVERVIEW.buildPath({ tutorialId, sheetId })}
           className={classes.backButton}
         />
 

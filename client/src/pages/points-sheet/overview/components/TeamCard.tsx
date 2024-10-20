@@ -19,7 +19,7 @@ import {
   AccountMultiple as TeamIcon,
 } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useMatches } from 'react-router-dom';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import SplitButton from '../../../../components/SplitButton';
@@ -27,7 +27,8 @@ import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { GradingList } from '../../../../model/GradingList';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
-import { ROUTES } from '../../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../../routes/Routing.routes';
+import { renderLink } from '../../../../components/navigation-rail/components/renderLink';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -64,6 +65,7 @@ function TeamCard({
 }: Props): JSX.Element {
   const classes = useStyles();
   const dialog = useDialog();
+  const matches = useMatches();
 
   const { teamGrading, onlyIndividualEntriesAllowed } = useMemo(() => {
     const teamGradings = gradings.getAllOfTeam(team);
@@ -104,12 +106,12 @@ function TeamCard({
               <ListItem
                 button
                 onClick={() => dialog.hide()}
-                component={ROUTES.ENTER_POINTS_STUDENT.renderLink({
+                component={renderLink(useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
                   tutorialId,
                   sheetId: sheet.id,
                   teamId: team.id,
                   studentId: student.id,
-                })}
+                }))}
               >
                 <ListItemIcon>
                   <StudentIcon />
@@ -178,7 +180,7 @@ function TeamCard({
               disabled: onlyIndividualEntriesAllowed,
               ButtonProps: {
                 component: Link,
-                to: ROUTES.ENTER_POINTS_TEAM.create({
+                to: useTutorialRoutes(matches).ENTER_POINTS_TEAM.buildPath({
                   tutorialId,
                   sheetId: sheet.id,
                   teamId: team.id,

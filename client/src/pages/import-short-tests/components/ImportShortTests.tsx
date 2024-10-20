@@ -81,7 +81,7 @@ function ImportShortTests(): JSX.Element {
           backButtonLabel='Zurück'
           nextButtonLabel='Weiter'
           nextButtonDoneLabel='Fertigstellen'
-          backButtonRoute={ROUTES.MANAGE_HAND_INS.create({ location: '1' })}
+          backButtonRoute={ROUTES.MANAGE_HAND_INS.buildPath({ location: '1' })}
           routeAfterLastStep={{
             route: ROUTES.MANAGE_HAND_INS,
             params: { location: '1' },

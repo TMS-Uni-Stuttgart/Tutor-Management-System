@@ -67,7 +67,7 @@ function Login(): JSX.Element {
   const { isLoggedIn, login, logout, userData, changePassword } = useLogin();
 
   if (isLoggedIn()) {
-    return <Navigate to={PATH_REDIRECT_AFTER_LOGIN.create({})} replace />;
+    return <Navigate to={PATH_REDIRECT_AFTER_LOGIN.buildPath({})} replace />;
   }
 
   const onTemporaryPasswordChangeSubmit: FormikSubmitCallback<ChangePasswordFormState> = async (

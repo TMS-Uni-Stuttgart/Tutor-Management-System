@@ -2,7 +2,7 @@ import { Box, CircularProgress, SelectChangeEvent, Typography } from '@mui/mater
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useMatches, useNavigate, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../../components/back-button/BackButton';
@@ -16,7 +16,7 @@ import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { GradingList } from '../../../model/GradingList';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import { convertFormStateToGradingDTO } from '../../points-sheet/enter-form/EnterPoints.helpers';
 import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,
@@ -52,6 +52,7 @@ function EnterScheinexamPoints(): JSX.Element {
 
   const navigate = useNavigate();
   const { tutorialId, examId, studentId } = useParams<RouteParams>();
+  const matches = useMatches();
 
   const { enqueueSnackbar, setError, isError } = useCustomSnackbar();
 
@@ -119,7 +120,7 @@ function EnterScheinexamPoints(): JSX.Element {
 
     const studentId = event.target.value as string;
 
-    navigate(ROUTES.SCHEIN_EXAMS_STUDENT.create({ tutorialId, examId, studentId }));
+    navigate(useTutorialRoutes(matches).SCHEIN_EXAMS_STUDENT.buildPath({ tutorialId, examId, studentId }));
   };
 
   const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {
@@ -165,7 +166,7 @@ function EnterScheinexamPoints(): JSX.Element {
     <Box display='flex' flexDirection='column' flex={1}>
       <Box display='flex' marginBottom={3}>
         <BackButton
-          to={ROUTES.SCHEIN_EXAMS_OVERVIEW.create({
+          to={useTutorialRoutes(matches).SCHEIN_EXAMS_OVERVIEW.buildPath({
             tutorialId: tutorialId ?? '',
             examId: examId ?? '',
           })}

@@ -1,6 +1,6 @@
 import { SelectChangeEvent, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useMatches, useNavigate, useParams } from 'react-router';
 import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import {
   getTeamOfTutorial,
@@ -10,7 +10,7 @@ import {
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { GradingList } from '../../../model/GradingList';
 import { Team } from '../../../model/Team';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
@@ -27,6 +27,7 @@ function EnterTeamPoints(): JSX.Element {
 
   const { tutorialId, sheetId, teamId } = useParams<RouteParams>();
   const { enqueueSnackbar, setError } = useCustomSnackbar();
+  const matches = useMatches();
 
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team>();
@@ -72,7 +73,7 @@ function EnterTeamPoints(): JSX.Element {
 
     const teamId: string = event.target.value as string;
 
-    navigate(ROUTES.ENTER_POINTS_TEAM.create({ tutorialId, sheetId, teamId }));
+    navigate(useTutorialRoutes(matches).ENTER_POINTS_TEAM.buildPath({ tutorialId, sheetId, teamId }));
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {

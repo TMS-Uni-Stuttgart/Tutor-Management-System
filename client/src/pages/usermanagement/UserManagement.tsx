@@ -402,7 +402,7 @@ function UserManagement(): JSX.Element {
               <Button
                 variant='outlined'
                 component={Link}
-                to={ROUTES.IMPORT_USERS.create({})}
+                to={ROUTES.IMPORT_USERS.buildPath({})}
                 startIcon={<ImportIcon />}
                 style={{ marginLeft: 8 }}
               >

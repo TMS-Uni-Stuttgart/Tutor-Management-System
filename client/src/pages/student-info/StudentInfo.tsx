@@ -3,7 +3,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useMatches, useParams } from 'react-router';
 import { AttendanceState, IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import BackButton from '../../components/back-button/BackButton';
@@ -18,7 +18,7 @@ import { useCustomSnackbar } from '../../hooks/snackbar/useCustomSnackbar';
 import { useFetchState } from '../../hooks/useFetchState';
 import { Student } from '../../model/Student';
 import { Tutorial } from '../../model/Tutorial';
-import { ROUTES } from '../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../routes/Routing.routes';
 import CriteriaCharts from './components/CriteriaCharts';
 import GradingTabs from './components/GradingTabs';
 import ScheinStatusBox from './components/ScheinStatusBox';
@@ -50,6 +50,7 @@ function StudentInfo(): JSX.Element {
 
   const { studentId, tutorialId } = useParams<RouteParams>();
   const { enqueueSnackbar, setError } = useCustomSnackbar();
+  const matches = useMatches();
 
   const [student, setStudent] = useState<Student>();
   const [tutorialOfStudent, setTutorialOfStudent] = useState<Tutorial>();
@@ -157,8 +158,8 @@ function StudentInfo(): JSX.Element {
         <BackButton
           to={
             tutorialId
-              ? ROUTES.STUDENTOVERVIEW.create({ tutorialId })
-              : ROUTES.MANAGE_ALL_STUDENTS.create({})
+              ? useTutorialRoutes(matches).STUDENT_OVERVIEW.buildPath({ tutorialId })
+              : ROUTES.MANAGE_ALL_STUDENTS.buildPath({})
           }
           className={classes.backButton}
         />

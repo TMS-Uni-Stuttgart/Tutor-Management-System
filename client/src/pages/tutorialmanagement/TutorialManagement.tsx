@@ -179,7 +179,7 @@ function TutorialManagementContent(): JSX.Element {
             <Button
               variant='outlined'
               component={Link}
-              to={ROUTES.GENERATE_TUTORIALS.create({})}
+              to={ROUTES.GENERATE_TUTORIALS.buildPath({})}
               startIcon={<GenerateIcon />}
             >
               Generieren
