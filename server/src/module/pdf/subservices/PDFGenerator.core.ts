@@ -39,7 +39,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
             this.logger.debug('Sending request to Gotenberg for PDF generation...');
 
             const response = await axios.post(
-                `${gotenbergConfig?.host}:${gotenbergConfig?.port}/forms/chromium/convert/html`,
+                `http://${gotenbergConfig?.host}:${gotenbergConfig?.port}/forms/chromium/convert/html`,
                 form,
                 {
                     headers: {

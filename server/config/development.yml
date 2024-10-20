@@ -9,19 +9,19 @@ handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:
-  host: localhost
-  port: 3306
-  databaseName: tms-big-db
-  maxRetries: 2
-  reconnectTimeout: 10000
+    host: localhost
+    port: 3306
+    databaseName: tms-big-db
+    maxRetries: 2
+    reconnectTimeout: 10000
 
 defaultSettings:
-  canTutorExcuseStudents: true
-  defaultTeamSize: 3
+    canTutorExcuseStudents: true
+    defaultTeamSize: 3
 
 # Settings used for the gotenberg instance
 gotenberg:
-  host: 'http://localhost'
-  port: 2000
-  # Timeout in ms
-  timeout: 30000
+    host: localhost
+    port: 2000
+    # Timeout in ms
+    timeout: 30000
