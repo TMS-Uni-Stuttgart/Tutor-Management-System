@@ -12,7 +12,7 @@ import {
     DatabaseConnectionOptions,
 } from './model/DatabaseConfiguration';
 import { ENV_VARIABLE_NAMES, EnvironmentConfig } from './model/EnvironmentConfig';
-import { PuppeteerConfiguration } from './model/PuppeteerConfiguration';
+import { GotenbergConfiguration } from './model/GotenbergConfiguration';
 
 export class StaticSettings {
     private static service: StaticSettings = new StaticSettings();
@@ -74,10 +74,10 @@ export class StaticSettings {
     }
 
     /**
-     *  @returns Configuration for the puppeteer instance. Can be `undefined`.
+     *  @returns Configuration for the gotenberg instance. Can be `undefined`.
      */
-    getPuppeteerConfiguration(): PuppeteerConfiguration | undefined {
-        return this.config.puppeteer;
+    getGotenbergConfiguration(): GotenbergConfiguration | undefined {
+        return this.config.gotenberg;
     }
 
     /**

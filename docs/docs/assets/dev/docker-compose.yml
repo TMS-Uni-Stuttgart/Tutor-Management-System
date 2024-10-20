@@ -22,5 +22,13 @@ services:
     networks:
       - tms_dev_db
 
+  gotenberg:
+    container_name: gotenberg
+    image: gotenberg/gotenberg:8
+    ports:
+      - '2000:3000'
+    networks:
+      - tms_dev_db
+
 networks:
   tms_dev_db:
