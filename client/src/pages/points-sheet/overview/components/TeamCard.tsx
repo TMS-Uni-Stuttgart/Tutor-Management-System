@@ -106,12 +106,14 @@ function TeamCard({
               <ListItem
                 button
                 onClick={() => dialog.hide()}
-                component={renderLink(useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
-                  tutorialId,
-                  sheetId: sheet.id,
-                  teamId: team.id,
-                  studentId: student.id,
-                }))}
+                component={renderLink(
+                  useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
+                    tutorialId,
+                    sheetId: sheet.id,
+                    teamId: team.id,
+                    studentId: student.id,
+                  })
+                )}
               >
                 <ListItemIcon>
                   <StudentIcon />

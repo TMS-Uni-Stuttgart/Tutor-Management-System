@@ -60,9 +60,11 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={renderLink(ROUTES.MANAGE_TUTORIAL_INTERNALS.buildPath({
-              tutorialId: tutorial.id,
-            }))}
+            component={renderLink(
+              ROUTES.MANAGE_TUTORIAL_INTERNALS.buildPath({
+                tutorialId: tutorial.id,
+              })
+            )}
             disabled={disableManageTutorialButton}
           >
             Verwalten
@@ -71,9 +73,11 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={renderLink(ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.buildPath({
-              tutorialId: tutorial.id,
-            }))}
+            component={renderLink(
+              ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.buildPath({
+                tutorialId: tutorial.id,
+              })
+            )}
           >
             Vertretungen
           </Button>

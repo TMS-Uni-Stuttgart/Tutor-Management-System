@@ -1,9 +1,6 @@
 import { Box } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { CustomRoute } from '../../routes/Routing.types';
-import { RouteParams } from '../../routes/typesafe-react-router';
-import { RouteParamBaseArray } from '../../routes/typesafe-react-router/types';
 import StepperContent from './components/StepperContent';
 import StepperHeader, { StepperHeaderProps } from './components/StepperHeader';
 import { NextStepCallback, StepData, StepperContext } from './context/StepperContext';
@@ -14,26 +11,20 @@ export interface StepInformation {
   skippable?: boolean;
 }
 
-interface Route<Parts extends RouteParamBaseArray> {
-  route: CustomRoute<Parts>;
-  params: RouteParams<Parts>;
-}
-
-export interface StepperWithButtonsProps<Parts extends RouteParamBaseArray>
-  extends StepperHeaderProps {
+export interface StepperWithButtonsProps extends StepperHeaderProps {
   steps: StepInformation[];
-  routeAfterLastStep: Route<Parts>;
+  routeAfterLastStep: string;
 }
 
 interface State {
   callback: NextStepCallback | undefined;
 }
 
-function StepperWithButtons<Parts extends RouteParamBaseArray>({
+function StepperWithButtons({
   steps: stepsFromProps,
   routeAfterLastStep,
   ...props
-}: StepperWithButtonsProps<Parts>): JSX.Element {
+}: StepperWithButtonsProps): JSX.Element {
   const navigate = useNavigate();
   const [activeStep, setInternalActiveStep] = useState(0);
   const [state, setState] = useState<State>({ callback: undefined });
@@ -50,8 +41,7 @@ function StepperWithButtons<Parts extends RouteParamBaseArray>({
       if (nextStep < 0) {
         return;
       } else if (nextStep >= steps.length) {
-        const { route, params } = routeAfterLastStep;
-        navigate(route.create(params));
+        navigate(routeAfterLastStep);
         return;
       }
 

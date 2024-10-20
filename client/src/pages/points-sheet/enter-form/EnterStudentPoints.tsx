@@ -31,7 +31,7 @@ function EnterStudentPoints(): JSX.Element {
   const [student, setStudent] = useState<Student>();
   const [team, setTeam] = useState<Team>();
   const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
-  const matches = useMatches()
+  const matches = useMatches();
 
   useEffect(() => {
     if (!studentId) {
@@ -82,7 +82,14 @@ function EnterStudentPoints(): JSX.Element {
 
     const studentId: string = event.target.value as string;
 
-    navigate(useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({ tutorialId, sheetId, teamId, studentId }));
+    navigate(
+      useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
+        tutorialId,
+        sheetId,
+        teamId,
+        studentId,
+      })
+    );
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {

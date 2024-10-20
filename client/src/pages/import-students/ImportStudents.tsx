@@ -101,11 +101,12 @@ function ImportStudents(): JSX.Element {
         backButtonLabel='Zurück'
         nextButtonLabel='Weiter'
         nextButtonDoneLabel='Fertigstellen'
-        backButtonRoute={useTutorialRoutes(matches).STUDENT_OVERVIEW.buildPath({ tutorialId: tutorialId ?? '' })}
-        routeAfterLastStep={{
-          route: useTutorialRoutes(matches).STUDENT_OVERVIEW,
-          params: { tutorialId: tutorialId ?? '' },
-        }}
+        backButtonRoute={useTutorialRoutes(matches).STUDENT_OVERVIEW.buildPath({
+          tutorialId: tutorialId ?? '',
+        })}
+        routeAfterLastStep={useTutorialRoutes(matches).STUDENT_OVERVIEW.buildPath({
+          tutorialId: tutorialId ?? '',
+        })}
       />
     </CSVImportProvider>
   );

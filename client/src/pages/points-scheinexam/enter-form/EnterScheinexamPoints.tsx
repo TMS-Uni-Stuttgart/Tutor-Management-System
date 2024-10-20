@@ -120,7 +120,9 @@ function EnterScheinexamPoints(): JSX.Element {
 
     const studentId = event.target.value as string;
 
-    navigate(useTutorialRoutes(matches).SCHEIN_EXAMS_STUDENT.buildPath({ tutorialId, examId, studentId }));
+    navigate(
+      useTutorialRoutes(matches).SCHEIN_EXAMS_STUDENT.buildPath({ tutorialId, examId, studentId })
+    );
   };
 
   const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {

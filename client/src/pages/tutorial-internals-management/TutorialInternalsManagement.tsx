@@ -137,7 +137,7 @@ function Content({ tutorial, isLoading, error, onBackClick }: Props): JSX.Elemen
         </Button>
 
         <Typography className={classes.header} variant='h5'>
-          {!!tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
+          {tutorial ? `Verwalte ${tutorial.toDisplayString()}` : 'Kein Tutorium.'}
         </Typography>
 
         <CustomSelect
@@ -172,7 +172,6 @@ function Content({ tutorial, isLoading, error, onBackClick }: Props): JSX.Elemen
     </Box>
   );
 }
-
 
 function TutorialInternalsManagement(): JSX.Element {
   const navigate = useNavigate();

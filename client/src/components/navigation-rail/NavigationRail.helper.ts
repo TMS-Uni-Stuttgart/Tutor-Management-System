@@ -1,5 +1,10 @@
 import { Role } from 'shared/model/Role';
-import { BASE_ROUTE_HANDLES, MANAGEMENT_ROUTE_HANDLES, ROUTES, TUTORIAL_ROUTE_HANDLES } from '../../routes/Routing.routes';
+import {
+    BASE_ROUTE_HANDLES,
+    MANAGEMENT_ROUTE_HANDLES,
+    ROUTES,
+    TUTORIAL_ROUTE_HANDLES,
+} from '../../routes/Routing.routes';
 
 export interface FilteredRoutes {
     baseRoutes: typeof baseRoutes;
@@ -18,9 +23,9 @@ function isRoleMatching(userRoles: Role[], routeRoles: Role[] | 'all'): boolean 
 const baseRoutes = [
     {
         route: ROUTES.DASHBOARD,
-        handle: BASE_ROUTE_HANDLES.DASHBOARD
-    } as const
-]
+        handle: BASE_ROUTE_HANDLES.DASHBOARD,
+    } as const,
+];
 
 const managementRoutes = [
     {
@@ -29,59 +34,59 @@ const managementRoutes = [
     } as const,
     {
         route: ROUTES.MANAGE_ATTENDANCES,
-        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_ATTENDANCES
+        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_ATTENDANCES,
     } as const,
     {
         route: ROUTES.MANAGE_HAND_INS,
-        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_HAND_INS
+        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_HAND_INS,
     } as const,
     {
         route: ROUTES.MANAGE_USERS,
-        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_USERS
+        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_USERS,
     } as const,
     {
         route: ROUTES.MANAGE_TUTORIALS,
-        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_TUTORIALS
+        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_TUTORIALS,
     } as const,
     {
         route: ROUTES.MANAGE_SCHEIN_CRITERIAS,
-        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_SCHEIN_CRITERIAS
+        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_SCHEIN_CRITERIAS,
     } as const,
     {
         route: ROUTES.MANAGE_SETTINGS,
-        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_SETTINGS
-    } as const
+        handle: MANAGEMENT_ROUTE_HANDLES.MANAGE_SETTINGS,
+    } as const,
 ];
 
 const tutorialRoutes = [
     {
         route: ROUTES.TUTORIAL.ATTENDANCE,
-        handle: TUTORIAL_ROUTE_HANDLES.ATTENDANCE
+        handle: TUTORIAL_ROUTE_HANDLES.ATTENDANCE,
     } as const,
     {
         route: ROUTES.TUTORIAL.ENTER_POINTS_OVERVIEW,
-        handle: TUTORIAL_ROUTE_HANDLES.ENTER_POINTS_OVERVIEW
+        handle: TUTORIAL_ROUTE_HANDLES.ENTER_POINTS_OVERVIEW,
     } as const,
     {
         route: ROUTES.TUTORIAL.PRESENTATION_POINTS,
-        handle: TUTORIAL_ROUTE_HANDLES.PRESENTATION_POINTS
+        handle: TUTORIAL_ROUTE_HANDLES.PRESENTATION_POINTS,
     } as const,
     {
         route: ROUTES.TUTORIAL.SCHEIN_EXAMS_OVERVIEW,
-        handle: TUTORIAL_ROUTE_HANDLES.SCHEIN_EXAMS_OVERVIEW
+        handle: TUTORIAL_ROUTE_HANDLES.SCHEIN_EXAMS_OVERVIEW,
     } as const,
     {
         route: ROUTES.TUTORIAL.STUDENT_OVERVIEW,
-        handle: TUTORIAL_ROUTE_HANDLES.STUDENT_OVERVIEW
+        handle: TUTORIAL_ROUTE_HANDLES.STUDENT_OVERVIEW,
     } as const,
     {
         route: ROUTES.TUTORIAL.TEAM_OVERVIEW,
-        handle: TUTORIAL_ROUTE_HANDLES.TEAM_OVERVIEW
+        handle: TUTORIAL_ROUTE_HANDLES.TEAM_OVERVIEW,
     } as const,
     {
         route: ROUTES.TUTORIAL.TUTORIAL_SUBSTITUTES,
-        handle: TUTORIAL_ROUTE_HANDLES.TUTORIAL_SUBSTITUTES
-    } as const
+        handle: TUTORIAL_ROUTE_HANDLES.TUTORIAL_SUBSTITUTES,
+    } as const,
 ];
 
 export function filterRoutes(userRoles: Role[]): FilteredRoutes {
@@ -120,7 +125,11 @@ export function filterRoutes(userRoles: Role[]): FilteredRoutes {
 
     return {
         baseRoutes: baseRoutes.filter((route) => isRoleMatching(userRoles, route.handle.roles)),
-        tutorialRoutes: tutorialRoutes.filter((route) => isRoleMatching(userRoles, route.handle.roles)),
-        managementRoutes: managementRoutes.filter((route) => isRoleMatching(userRoles, route.handle.roles))
+        tutorialRoutes: tutorialRoutes.filter((route) =>
+            isRoleMatching(userRoles, route.handle.roles)
+        ),
+        managementRoutes: managementRoutes.filter((route) =>
+            isRoleMatching(userRoles, route.handle.roles)
+        ),
     };
 }

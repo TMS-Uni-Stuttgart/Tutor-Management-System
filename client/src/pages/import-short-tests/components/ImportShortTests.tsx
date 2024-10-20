@@ -82,10 +82,7 @@ function ImportShortTests(): JSX.Element {
           nextButtonLabel='Weiter'
           nextButtonDoneLabel='Fertigstellen'
           backButtonRoute={ROUTES.MANAGE_HAND_INS.buildPath({ location: '1' })}
-          routeAfterLastStep={{
-            route: ROUTES.MANAGE_HAND_INS,
-            params: { location: '1' },
-          }}
+          routeAfterLastStep={ROUTES.MANAGE_HAND_INS.buildPath({ location: '1' })}
         />
       </IliasMappingProvider>
     </CSVImportProvider>

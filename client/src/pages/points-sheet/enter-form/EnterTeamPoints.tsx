@@ -73,7 +73,9 @@ function EnterTeamPoints(): JSX.Element {
 
     const teamId: string = event.target.value as string;
 
-    navigate(useTutorialRoutes(matches).ENTER_POINTS_TEAM.buildPath({ tutorialId, sheetId, teamId }));
+    navigate(
+      useTutorialRoutes(matches).ENTER_POINTS_TEAM.buildPath({ tutorialId, sheetId, teamId })
+    );
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {
