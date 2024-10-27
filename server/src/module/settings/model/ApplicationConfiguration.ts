@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString, IsUrl, Min, ValidateNested } from 'class-validator';
 import { ClientSettingsDTO } from '../settings.dto';
 import { DatabaseConfiguration } from './DatabaseConfiguration';
-import { PuppeteerConfiguration } from './PuppeteerConfiguration';
+import { GotenbergConfiguration } from './GotenbergConfiguration';
 
 export class ApplicationConfiguration {
     @IsOptional()
@@ -28,7 +28,7 @@ export class ApplicationConfiguration {
     readonly defaultSettings: ClientSettingsDTO | undefined;
 
     @IsOptional()
-    @Type(() => PuppeteerConfiguration)
+    @Type(() => GotenbergConfiguration)
     @ValidateNested()
-    readonly puppeteer: PuppeteerConfiguration | undefined;
+    readonly gotenberg: GotenbergConfiguration | undefined;
 }

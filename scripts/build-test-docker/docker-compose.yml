@@ -32,6 +32,14 @@ services:
     volumes:
       - ./config:/tms/server/config
 
+gotenberg:
+    container_name: gotenberg
+    image: gotenberg/gotenberg:8
+    ports:
+      - '2000:3000'
+    networks:
+      - tms_db
+
 volumes:
   db_data:
 
