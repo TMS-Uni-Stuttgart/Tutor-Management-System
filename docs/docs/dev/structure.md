@@ -187,20 +187,6 @@ The following scripts are included:
   Builds both the client and the server.
   Afterwards the client build is copied into the corresponding folder inside the server build so the server can serve the client-side application.
 
-- `build-test-docker/buildAndTestDocker.ts`:
-  This script is used by the GitHub actions set up in this repository.
-  Builds a docker image for testing purposes.
-  After building the docker image a docker container with the image is created.
-  Afterwards the script requests a PDF file from the docker container.
-  If successful the script exits with a code 0, if not a non-zero code is used.
-  More information can be found inside the [Build & Release section][build-release-doc].
-
-  :::note Why does this script exist?
-  The reason for this explicit test is that the server uses puppeteer to generate PDFs.
-  However, puppeteer's PDF generation might break inside the container (especially if an alpine image is used).
-  To detect those changes in the CI pipeline this script was created.
-  :::
-
 - `generate-data/generateData.ts`:
   This script can be used to create a large set of dummy data on the server.
   You can use a different server than your locally running development server by changing the returned value of the `createBaseURL()` function inside `util/login.ts`.
