@@ -17,7 +17,7 @@ export interface ITutorialDTO {
 
 export interface ITutorial extends HasId {
     slot: string;
-    tutor?: UserInEntity;
+    tutors: UserInEntity[];
     dates: string[];
     startTime: string;
     endTime: string;

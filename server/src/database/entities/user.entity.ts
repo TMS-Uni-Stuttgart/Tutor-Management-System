@@ -47,7 +47,9 @@ export class User {
     @Property({ type: EncryptedStringType })
     temporaryPassword?: string;
 
-    @OneToMany(() => Tutorial, (tutorial: { tutor: any }) => tutorial.tutor)
+    @ManyToMany(() => Tutorial, (tutorial: { tutors: any }) => tutorial.tutors, {
+        owner: true,
+    })
     tutorials = new Collection<Tutorial>(this);
 
     @ManyToMany(() => Tutorial, (tutorial: { correctors: any }) => tutorial.correctors, {
