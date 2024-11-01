@@ -2,7 +2,6 @@ import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
 import { Tutorial } from '../../model/Tutorial';
@@ -54,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface TutorialFormState {
   slot: string;
-  tutor: string;
+  tutors: string[];
   startDate: string;
   endDate: string;
   startTime: string;
@@ -132,7 +131,7 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
   if (!tutorial) {
     return {
       slot: '',
-      tutor: '',
+      tutors: [],
       startDate,
       endDate,
       startTime: DateTime.local().toISO() ?? '',
@@ -146,7 +145,7 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
 
   return {
     slot: tutorial.slot,
-    tutor: tutorial.tutor ? tutorial.tutor.id : '',
+    tutors: tutorial.tutors.map((t) => t.id),
     startDate: sortedDates[0] ? (sortedDates[0].toISODate() ?? '') : startDate,
     endDate: sortedDates[sortedDates.length - 1]
       ? (sortedDates[sortedDates.length - 1].toISODate() ?? '')
@@ -188,11 +187,14 @@ function TutorialForm({
           <FormikTextField name='slot' label='Slot' required />
 
           <FormikSelect
-            name='tutor'
-            label='Tutor'
+            name='tutors'
+            label='Tutoren'
             emptyPlaceholder='Keine Tutoren vorhanden.'
-            items={tutors.filter((tutor) => tutor.roles.indexOf(Role.TUTOR) > -1)}
+            items={tutors}
             {...userConverterFunctions}
+            multiple
+            isItemSelected={(tutor) => values['tutors'].indexOf(tutor.id) > -1}
+            fullWidth
           />
 
           <div className={classes.twoPickerContainer}>
