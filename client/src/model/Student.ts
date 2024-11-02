@@ -68,7 +68,7 @@ export class StudentInTeam implements Modify<IStudentInTeam, Modified> {
     getDatesOfAttendances(): DateTime[] {
         const dates: DateTime[] = [];
 
-        for (const date in this.attendances.keys()) {
+        for (const date of this.attendances.keys()) {
             dates.push(DateTime.fromISO(date));
         }
 
