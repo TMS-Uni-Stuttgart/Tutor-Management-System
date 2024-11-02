@@ -22,6 +22,9 @@ const useStyles = makeStyles((theme) =>
     deleteButton: {
       color: theme.palette.red.main,
     },
+    noOverflow: {
+      overflowY: 'unset',
+    },
   })
 );
 
@@ -113,7 +116,7 @@ function DialogService({ children }: RequireChildrenProp): JSX.Element {
         <Dialog open onClose={handleCloseDialog} fullWidth {...dialog.DialogProps}>
           {dialog.title && <DialogTitle>{dialog.title}</DialogTitle>}
 
-          <DialogContent>
+          <DialogContent className={classes.noOverflow}>
             {typeof dialog.content === 'string' ? (
               <DialogContentText>{dialog.content}</DialogContentText>
             ) : typeof dialog.content === 'function' ? (
@@ -266,4 +269,4 @@ function getDialogOutsideContext(): Pick<DialogHelpers, 'show' | 'hide'> {
 }
 
 export default DialogService;
-export { useDialog, getDialogOutsideContext };
+export { getDialogOutsideContext, useDialog };
