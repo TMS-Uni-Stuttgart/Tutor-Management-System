@@ -8,13 +8,13 @@ The Tutor Management System (short _TMS_) aims to be a tool used at universities
 
 ## Getting Started
 
-You can find more information about how to set up your development environment in the [development environment guide](https://dudrie.github.io/Tutor-Management-System/docs/dev/setup-env).
+You can find more information about how to set up your development environment in the [development environment guide](https://tms-uni-stuttgart.github.io/Tutor-Management-System/docs/dev/setup-env).
 
 ## Deployment
 
-For more information on how to deploy this tool please read the [installation guide](https://dudrie.github.io/Tutor-Management-System/docs/setup/installation) in the project documentation.
+For more information on how to deploy this tool please read the [installation guide](https://tms-uni-stuttgart.github.io/Tutor-Management-System/docs/setup/installation) in the project documentation.
 
-If you want to update your existing deployment to a new version please refer to the [update guide](https://dudrie.github.io/Tutor-Management-System/docs/setup/update).
+If you want to update your existing deployment to a new version please refer to the [update guide](https://tms-uni-stuttgart.github.io/Tutor-Management-System/docs/setup/update).
 
 ## Built With
 
