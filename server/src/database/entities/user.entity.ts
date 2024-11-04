@@ -3,7 +3,6 @@ import {
     BeforeUpdate,
     Collection,
     Entity,
-    Enum,
     EventArgs,
     ManyToMany,
     OneToMany,
@@ -33,7 +32,7 @@ export class User {
     @Property({ type: EncryptedStringType })
     lastname: string;
 
-    @Enum({ type: EncryptedEnumArrayType })
+    @Property({ type: EncryptedEnumArrayType })
     roles: Role[];
 
     @Property({ type: EncryptedStringType })
@@ -48,15 +47,18 @@ export class User {
     @Property({ type: EncryptedStringType })
     temporaryPassword?: string;
 
-    @OneToMany(() => Tutorial, (tutorial) => tutorial.tutor)
+    @OneToMany(() => Tutorial, (tutorial: { tutor: any }) => tutorial.tutor)
     tutorials = new Collection<Tutorial>(this);
 
-    @ManyToMany(() => Tutorial, (tutorial) => tutorial.correctors, {
+    @ManyToMany(() => Tutorial, (tutorial: { correctors: any }) => tutorial.correctors, {
         owner: true,
     })
     tutorialsToCorrect = new Collection<Tutorial>(this);
 
-    @OneToMany(() => Substitute, (substitute) => substitute.substituteTutor)
+    @OneToMany(
+        () => Substitute,
+        (substitute: { substituteTutor: any }) => substitute.substituteTutor
+    )
     tutorialsToSubstitute = new Collection<Substitute>(this);
 
     constructor({
@@ -78,10 +80,12 @@ export class User {
     }
 
     toDTO(): IUser {
-        const tutorials = this.tutorials.getItems().map((tutorial) => tutorial.toInEntity());
+        const tutorials = this.tutorials
+            .getItems()
+            .map((tutorial: { toInEntity: () => any }) => tutorial.toInEntity());
         const tutorialsToCorrect = this.tutorialsToCorrect
             .getItems()
-            .map((tutorial) => tutorial.toInEntity());
+            .map((tutorial: { toInEntity: () => any }) => tutorial.toInEntity());
 
         return {
             id: this.id,
@@ -114,7 +118,7 @@ export class User {
 
             substituteTutorials.push({
                 ...tutorial.toInEntity(),
-                dates: dates.map((date) => date.toISODate()),
+                dates: dates.map((date) => date.toISODate() ?? ''),
             });
         }
         return substituteTutorials;
@@ -122,7 +126,7 @@ export class User {
 
     private getSubstitutesGroupedByTutorial(): Map<string, Substitute[]> {
         const groupedSubstituteInformation: Map<string, Substitute[]> = new Map();
-        this.tutorialsToSubstitute.getItems().forEach((substitute) => {
+        this.tutorialsToSubstitute.getItems().forEach((substitute: Substitute) => {
             const tutorialId = substitute.tutorialToSubstitute.id;
             const information: Substitute[] = groupedSubstituteInformation.get(tutorialId) ?? [];
             information.push(substitute);

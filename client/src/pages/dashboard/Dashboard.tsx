@@ -1,4 +1,4 @@
-import { Box, Button, Divider } from '@material-ui/core';
+import { Box, Button, Divider } from '@mui/material';
 import React from 'react';
 import { Role } from 'shared/model/Role';
 import { ScheincriteriaSummaryByStudents } from 'shared/model/ScheinCriteria';

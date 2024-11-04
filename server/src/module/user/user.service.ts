@@ -1,4 +1,4 @@
-import { Collection, EntityRepository, MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { Collection, CreateRequestContext, EntityRepository, MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
@@ -30,13 +30,15 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         private readonly entityManager: EntityManager,
         private readonly orm: MikroORM,
         @InjectRepository(User)
-        private readonly repository: EntityRepository<User>
+        private readonly repository: EntityRepository<User>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
      * Creates a new administrator on application start if there are no users present in the DB.
      */
-    @UseRequestContext()
+    @CreateRequestContext()
     async onApplicationBootstrap(): Promise<void> {
         const areUsersPresent = (await this.repository.findAll()).length > 0;
 
@@ -54,7 +56,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
                 })
             );
 
-            await this.repository.persistAndFlush(user);
+            await this.em.persistAndFlush(user);
             this.logger.log('Admin user successfully created.');
         }
     }
@@ -63,7 +65,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @returns All users saved in the database.
      */
     async findAll(): Promise<User[]> {
-        return this.repository.findAll({ populate: true });
+        return this.repository.findAll({ populate: ['*'] });
     }
 
     /**
@@ -76,7 +78,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      * @throws `NotFoundException` - If there is no user with the given ID.
      */
     async findById(id: string): Promise<User> {
-        const user = await this.repository.findOne({ id }, { populate: true });
+        const user = await this.repository.findOne({ id }, { populate: ['*'] });
 
         if (!user) {
             throw new NotFoundException(`User with the ID '${id}' could not be found.`);
@@ -111,7 +113,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
      */
     async create(user: CreateUserDTO): Promise<IUser> {
         const createdUser = await this.createUser(user);
-        await this.repository.persistAndFlush(createdUser);
+        await this.em.persistAndFlush(createdUser);
         return createdUser.toDTO();
     }
 
@@ -137,7 +139,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         }
 
         if (errors.length === 0) {
-            await this.repository.persistAndFlush(toCreate);
+            await this.em.persistAndFlush(toCreate);
         } else {
             throw new BadRequestException(errors);
         }
@@ -181,7 +183,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         user.tutorials.set(tutorials);
         user.tutorialsToCorrect.set(tutorialsToCorrect);
 
-        await this.repository.persistAndFlush(user);
+        await this.em.persistAndFlush(user);
         return user.toDTO();
     }
 
@@ -203,7 +205,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         user.tutorialsToCorrect.removeAll();
         user.tutorialsToSubstitute.removeAll();
 
-        await this.repository.removeAndFlush(user);
+        await this.em.removeAndFlush(user);
     }
 
     /**
@@ -223,7 +225,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
 
         user.password = password;
         user.temporaryPassword = undefined;
-        await this.repository.persistAndFlush(user);
+        await this.em.persistAndFlush(user);
 
         return user;
     }
@@ -245,7 +247,7 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
 
         user.password = password;
         user.temporaryPassword = password;
-        await this.repository.persistAndFlush(user);
+        await this.em.persistAndFlush(user);
 
         return user;
     }
@@ -324,11 +326,8 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         ]);
         const userEntity: User = new User({ ...dto, username, password });
         userEntity.temporaryPassword = password;
-        userEntity.tutorials.add(...tutorials);
-        userEntity.tutorialsToCorrect = new Collection<Tutorial, unknown>(
-            userEntity,
-            tutorialsToCorrect
-        );
+        userEntity.tutorials.add(tutorials);
+        userEntity.tutorialsToCorrect = new Collection<Tutorial>(userEntity, tutorialsToCorrect);
 
         return userEntity;
     }
@@ -375,7 +374,6 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
             throw new NotFoundException(`User with username "${username}" was not found`);
         }
 
-        await this.repository.populate(user, true);
         return user;
     }
 

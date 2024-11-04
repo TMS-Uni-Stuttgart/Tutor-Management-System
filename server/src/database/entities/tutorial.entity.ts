@@ -93,7 +93,7 @@ export class Tutorial {
     private getSubstitutesForDTO(): [string, string][] {
         return this.substitutes
             .getItems()
-            .map(({ date, substituteTutor }) => [date.toISODate(), substituteTutor.id]);
+            .map(({ date, substituteTutor }) => [date.toISODate() ?? '', substituteTutor.id]);
     }
 }
 

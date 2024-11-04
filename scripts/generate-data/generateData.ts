@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
 import { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
-import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance';
-import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings';
-import { IExerciseDTO, ISubexercise } from 'shared/model/HasExercises';
-import { Role } from 'shared/model/Role';
-import { IScheinCriteriaDTO, ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria';
-import { ISheet, ISheetDTO } from 'shared/model/Sheet';
-import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest';
-import { IStudent, ICreateStudentDTO, StudentStatus } from 'shared/model/Student';
-import { ITutorial, ITutorialDTO } from 'shared/model/Tutorial';
-import { ICreateUserDTO, IUser } from 'shared/model/User';
-import { login } from '../util/login';
+import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance.js';
+import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings.js';
+import { IExerciseDTO, ISubexercise } from 'shared/model/HasExercises.js';
+import { Role } from 'shared/model/Role.js';
+import { IScheinCriteriaDTO, ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria.js';
+import { ISheet, ISheetDTO } from 'shared/model/Sheet.js';
+import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest.js';
+import { ICreateStudentDTO, IStudent, StudentStatus } from 'shared/model/Student.js';
+import { ITutorial, ITutorialDTO } from 'shared/model/Tutorial.js';
+import { ICreateUserDTO, IUser } from 'shared/model/User.js';
+import { login } from '../util/login.js';
 import {
     createScheinCriteria,
     createSheet,
@@ -19,7 +19,7 @@ import {
     createUser,
     setAttendanceOfStudent,
     setPointsOfStudent,
-} from './fetch/helpers';
+} from './fetch/helpers.js';
 
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'adminPass';
@@ -457,7 +457,7 @@ async function run() {
 
         await createStudents({ tutorials, sheets, shortTests });
     } catch (err) {
-        console.log(`[ERROR] -- ${err.message}`);
+        console.log(`[ERROR] -- ${(err as Error).message}`);
         process.exit(1);
     }
 }

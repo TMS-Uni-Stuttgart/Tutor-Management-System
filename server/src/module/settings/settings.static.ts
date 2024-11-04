@@ -325,7 +325,7 @@ export class StaticSettings {
 
             this.assertConfigNoErrors(
                 validateSync(config, {
-                    groups: [DatabaseConfigurationValidationGroup.FILE],
+                    strictGroups: true,
                 })
             );
 

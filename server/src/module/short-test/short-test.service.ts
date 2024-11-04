@@ -1,6 +1,7 @@
 import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IShortTest } from 'shared/model/ShortTest';
 import { ShortTest } from '../../database/entities/shorttest.entity';
 import { CRUDService } from '../../helpers/CRUDService';
@@ -10,7 +11,9 @@ import { ShortTestDTO } from '../scheinexam/scheinexam.dto';
 export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, ShortTest> {
     constructor(
         @InjectRepository(ShortTest)
-        private readonly repository: EntityRepository<ShortTest>
+        private readonly repository: EntityRepository<ShortTest>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     async findAll(): Promise<ShortTest[]> {
@@ -31,19 +34,19 @@ export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, S
 
     async create(dto: ShortTestDTO): Promise<IShortTest> {
         const shortTest = ShortTest.fromDTO(dto);
-        await this.repository.persistAndFlush(shortTest);
+        await this.em.persistAndFlush(shortTest);
         return shortTest.toDTO();
     }
 
     async update(id: string, dto: ShortTestDTO): Promise<IShortTest> {
         const shortTest = await this.findById(id);
         shortTest.updateFromDTO(dto);
-        await this.repository.persistAndFlush(shortTest);
+        await this.em.persistAndFlush(shortTest);
         return shortTest.toDTO();
     }
 
     async delete(id: string): Promise<void> {
         const shortTest = await this.findById(id);
-        await this.repository.removeAndFlush(shortTest);
+        await this.em.removeAndFlush(shortTest);
     }
 }

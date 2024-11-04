@@ -22,7 +22,10 @@ interface HasAccessParams {
  */
 @Injectable()
 export class TutorialGuard extends UseMetadata {
-    constructor(protected readonly tutorialService: TutorialService, reflector: Reflector) {
+    constructor(
+        protected readonly tutorialService: TutorialService,
+        reflector: Reflector
+    ) {
         super(reflector);
     }
 

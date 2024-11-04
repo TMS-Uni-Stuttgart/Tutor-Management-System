@@ -34,14 +34,16 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         private readonly studentService: StudentService,
         private readonly entityManager: EntityManager,
         @InjectRepository(Tutorial)
-        private readonly repository: EntityRepository<Tutorial>
+        private readonly repository: EntityRepository<Tutorial>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
      * @returns All tutorials saved in the database.
      */
     async findAll(): Promise<Tutorial[]> {
-        return this.repository.findAll({ populate: true });
+        return this.repository.findAll({ populate: ['*'] });
     }
 
     /**
@@ -52,7 +54,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws {@link NotFoundException} - If at least one of the tutorials could not be found.
      */
     async findMultiple(ids: string[]): Promise<Tutorial[]> {
-        const tutorials = await this.repository.find({ id: { $in: ids } }, { populate: true });
+        const tutorials = await this.repository.find({ id: { $in: ids } }, { populate: ['*'] });
 
         if (tutorials.length !== ids.length) {
             const tutorialIds = tutorials.map((tutorial) => tutorial.id);
@@ -75,7 +77,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
     async findById(id: string): Promise<Tutorial> {
-        const tutorial = await this.repository.findOne({ id }, { populate: true });
+        const tutorial = await this.repository.findOne({ id }, { populate: ['*'] });
 
         if (!tutorial) {
             throw new NotFoundException(`Tutorial with the ID ${id} could not be found.`);
@@ -144,7 +146,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         tutorial.tutor = tutor;
         tutorial.correctors.set(correctors);
 
-        await this.repository.persistAndFlush(tutorial);
+        await this.em.persistAndFlush(tutorial);
         return tutorial.toDTO();
     }
 
@@ -170,7 +172,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         this.entityManager.remove(tutorial.teams.getItems());
         this.entityManager.remove(tutorial.substitutes.getItems());
 
-        await this.repository.removeAndFlush(tutorial);
+        await this.em.removeAndFlush(tutorial);
     }
 
     /**
@@ -345,8 +347,8 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
                     const created = await this.createTutorial({
                         slot: `${prefix}${nr.toString().padStart(2, '0')}`,
                         dates,
-                        startTime: timeInterval.start,
-                        endTime: timeInterval.end,
+                        startTime: timeInterval.start as DateTime,
+                        endTime: timeInterval.end as DateTime,
                         tutor: undefined,
                         correctors: [],
                     });
@@ -386,7 +388,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         const tutorial = new Tutorial({ slot, dates, startTime, endTime });
         tutorial.tutor = tutor;
         tutorial.correctors.set(correctors);
-        await this.repository.persistAndFlush(tutorial);
+        await this.em.persistAndFlush(tutorial);
 
         return tutorial;
     }
@@ -402,6 +404,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     private datesInIntervalGroupedByWeekday(interval: Interval): Map<number, DateTime[]> {
         const datesInInterval: Map<number, DateTime[]> = new Map();
+        if (interval.start === null || interval.end === null) {
+            return datesInInterval;
+        }
         let cursor = interval.start.startOf('day');
 
         while (cursor <= interval.end) {

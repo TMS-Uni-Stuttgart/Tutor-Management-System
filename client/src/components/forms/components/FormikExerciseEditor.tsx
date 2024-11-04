@@ -1,5 +1,7 @@
-import { Box, Button, IconButton, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { FieldArray, FieldArrayRenderProps, useField } from 'formik';
 import {
@@ -7,7 +9,6 @@ import {
   PlusBox as PlusIcon,
   TimelinePlusOutline as PlusSubIcon,
 } from 'mdi-material-ui';
-import React from 'react';
 import { IExercise, ISubexercise } from 'shared/model/HasExercises';
 import FormikCheckbox from './FormikCheckbox';
 import FormikTextField from './FormikTextField';
@@ -188,7 +189,7 @@ function FormikExerciseEditor({
 
   function handleAddSubexercise(idx: number, arrayHelpers: FieldArrayRenderProps) {
     return () => {
-      if (!!disableSubExercises) {
+      if (disableSubExercises) {
         return;
       }
 
@@ -252,6 +253,7 @@ function FormikExerciseEditor({
               <IconButton
                 className={classes.deleteButton}
                 onClick={handleExerciseDelete(idx, arrayHelpers)}
+                size='large'
               >
                 <MinusIcon />
               </IconButton>
@@ -271,6 +273,7 @@ function FormikExerciseEditor({
                       <IconButton
                         className={classes.deleteButton}
                         onClick={handleDeleteSubexercise(idx, subIdx, arrayHelpers)}
+                        size='large'
                       >
                         <MinusIcon />
                       </IconButton>

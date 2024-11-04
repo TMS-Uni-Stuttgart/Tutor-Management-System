@@ -1,5 +1,6 @@
-import { Box, Button, PaperProps, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, PaperProps, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   AccountSwitch as ChangeTutorialIcon,
   InformationOutline as InfoIcon,
@@ -77,7 +78,7 @@ function StudentListRow({
       },
     ];
 
-    if (!!onChangeTutorial) {
+    if (onChangeTutorial) {
       items.push({
         primary: 'Tutorium wechseln',
         onClick: () => onChangeTutorial(student),
@@ -105,7 +106,7 @@ function StudentListRow({
       <Button
         variant='outlined'
         component={Link}
-        to={ROUTES.STUDENT_INFO.create({
+        to={ROUTES.STUDENT_INFO.buildPath({
           tutorialId,
           studentId: student.id,
         })}

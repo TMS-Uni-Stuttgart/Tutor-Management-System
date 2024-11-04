@@ -1,8 +1,9 @@
-import { Box, BoxProps, Button, IconButton, Paper, Tooltip } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, BoxProps, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useField } from 'formik';
 import { Plus as AddIcon, SortAscending as SortIcon } from 'mdi-material-ui';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FormikTextField from '../../../../components/forms/components/FormikTextField';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import AddSlotForm, { AddSlotFormData } from './AddSlotForm';
@@ -44,7 +45,7 @@ interface Props extends BoxProps {
 
 function sortSlots(intervals: WeekdayTimeSlot[]): WeekdayTimeSlot[] {
   return [...intervals].sort((a, b) => {
-    if (!a.interval.isValid || !b.interval.isValid) {
+    if (!a.interval.isValid || !b.interval.isValid || !a.interval.start || !b.interval.start) {
       return -1;
     }
 
@@ -121,8 +122,9 @@ function WeekdayBox({ name, prefixName, ...props }: Props): JSX.Element {
         <Tooltip title='Nach Startzeit sortieren (aufsteigend)'>
           <IconButton
             onClick={handleSortClicked}
-            className={classes.sortButton}
             // disabled={value.length === 0}
+            className={classes.sortButton}
+            size='large'
           >
             <SortIcon />
           </IconButton>

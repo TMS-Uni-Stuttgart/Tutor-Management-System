@@ -1,5 +1,5 @@
-import { Grid, GridProps } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
+import { Grid, GridProps } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import { ScheinCriteriaSummary } from 'shared/model/ScheinCriteria';
 import ChartPaper from '../../../components/info-paper/ChartPaper';

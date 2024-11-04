@@ -1,5 +1,7 @@
-import { Button } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Button } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import { AutoFix as GenerateIcon } from 'mdi-material-ui';
 import React, { useCallback } from 'react';
@@ -177,7 +179,7 @@ function TutorialManagementContent(): JSX.Element {
             <Button
               variant='outlined'
               component={Link}
-              to={ROUTES.GENERATE_TUTORIALS.create({})}
+              to={ROUTES.GENERATE_TUTORIALS.buildPath({})}
               startIcon={<GenerateIcon />}
             >
               Generieren

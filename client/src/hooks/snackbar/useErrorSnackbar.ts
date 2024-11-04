@@ -23,7 +23,7 @@ export function useErrorSnackbar(): UseErrorSnackbar {
         }
 
         return () => {
-            if (!!snackbar) {
+            if (snackbar) {
                 closeSnackbar(snackbar);
             }
         };

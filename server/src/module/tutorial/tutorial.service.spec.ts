@@ -13,8 +13,8 @@ import { MOCKED_TUTORIALS } from '../../../test/mocks/entities.mock';
 import { createDatesForTutorialAsStrings } from '../../../test/mocks/mock.helpers';
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { ExcludedTutorialDate, TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
-import { TutorialService } from './tutorial.service';
 import { TutorialModule } from './tutorial.module';
+import { TutorialService } from './tutorial.service';
 
 interface AssertTutorialParams {
     expected: Tutorial;
@@ -150,6 +150,9 @@ function getDatesInInterval(
     excludedDates: ExcludedTutorialDate[]
 ): Map<number, string[]> {
     const dates: Map<number, string[]> = new Map();
+    if (interval.start === null || interval.end === null) {
+        throw new Error('Interval start or end is null');
+    }
     let current = interval.start.startOf('day');
 
     while (current <= interval.end) {
@@ -204,8 +207,8 @@ function assertGeneratedTutorials({ expected, actual }: AssertGenerateTutorialsP
 
             return (
                 tutorialWeekDay === weekday &&
-                time.start.toUTC().toFormat(format) === startTime.toUTC().toFormat(format) &&
-                time.end.toUTC().toFormat(format) === endTime.toUTC().toFormat(format)
+                time.start?.toUTC().toFormat(format) === startTime.toUTC().toFormat(format) &&
+                time.end?.toUTC().toFormat(format) === endTime.toUTC().toFormat(format)
             );
         });
 

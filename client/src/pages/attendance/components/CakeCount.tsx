@@ -1,7 +1,9 @@
 import React from 'react';
 import { CakeVariant as CakeIcon } from 'mdi-material-ui';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { Button, ButtonGroup, Popover } from '@material-ui/core';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Button, ButtonGroup, Popover } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
