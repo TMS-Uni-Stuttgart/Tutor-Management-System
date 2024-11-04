@@ -163,7 +163,9 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
     } else if (tutorials.length === 0) {
       Promise.all([getAllTutorials(), getAllStudents()]).then(([tutorials, students]) => {
         setTutorial(undefined);
-        setTutorials(tutorials);
+        if (tutorials.length !== 0) {
+          setTutorials(tutorials)
+        }
         setFetchedStudents(students);
         setIsLoading(false);
       });
