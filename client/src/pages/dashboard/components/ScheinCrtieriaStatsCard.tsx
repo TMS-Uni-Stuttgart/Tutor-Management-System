@@ -121,7 +121,6 @@ function ScheinCriteriaStatsCard({
       threshold = criteria?.data['valueNeeded'];
       isSheetTotal = true;
     }
-
     filterSummaries(critId).forEach((item) => {
       Object.values(item.infos).forEach((info) => {
         const element = info.no;
