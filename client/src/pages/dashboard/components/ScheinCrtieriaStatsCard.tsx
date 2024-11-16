@@ -1,9 +1,10 @@
 import { CircularProgress, Paper, Theme, Typography, useTheme } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import Chart from 'react-google-charts';
-import { ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';
+import { IScheinCriteria, ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';
+import { getAllScheinCriterias } from '../../../hooks/fetching/Scheincriteria';
 import { useTranslation } from '../../../util/lang/configI18N';
 import { TutorialSummaryInfo } from '../Dashboard';
 
@@ -41,11 +42,16 @@ function ScheinCriteriaStatsCard({
   criteriaIds,
   placeholder,
 }: ScheinCriteriaStatsCardProps): JSX.Element {
+  const [criterias, setCriterias] = useState<IScheinCriteria[]>([]);
   const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation('scheincriteria');
 
   const { backgroundColor, colors, fontStyle } = theme.mixins.chart(theme);
+
+  useEffect(() => {
+    getAllScheinCriterias().then((res) => setCriterias(res));
+  }, []);
 
   function filterSummaries(critId: string): ScheinCriteriaStatus[] {
     return Object.values(value.studentInfos)
@@ -102,16 +108,37 @@ function ScheinCriteriaStatsCard({
   }
 
   function getAdditionalStatusStats(critId: string) {
-    const counts: [number, number][] = [];
+    const counts: [number, number, number][] = [];
+
+    const criteria = criterias.find((criteria) => criteria.id === critId);
+    let threshold: any = 0;
+    let isSheetTotal = false;
+    if (criteria?.data['valuePerSheetNeeded']) {
+      threshold = criteria.data['valuePerSheetNeeded'];
+    } else if (criteria?.data['valuePerTestNeeded']) {
+      threshold = criteria?.data['valuePerTestNeeded'];
+    } else {
+      threshold = criteria?.data['valueNeeded'];
+      isSheetTotal = true;
+    }
+
     filterSummaries(critId).forEach((item) => {
       Object.values(item.infos).forEach((info) => {
         const element = info.no;
         const achieved = info.achieved;
+        let required: number = 0;
 
-        counts.push([element, achieved]);
+        if (isSheetTotal)
+          required =
+            threshold > 1
+              ? info.total * (threshold / Object.keys(item.infos).length)
+              : info.total * threshold;
+        else required = threshold <= 1 ? info.total * threshold : Number(threshold);
+
+        counts.push([element, achieved, required]);
       });
     });
-    return [['Element', 'Punkte'], ...counts];
+    return [['Element', 'Punkte', 'Threshold'], ...counts];
   }
 
   return (
