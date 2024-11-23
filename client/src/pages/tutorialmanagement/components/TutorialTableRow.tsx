@@ -4,10 +4,10 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
+import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
 import { ROUTES } from '../../../routes/Routing.routes';
-import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,6 +31,7 @@ interface Substitute {
 
 interface Props extends PaperTableRowProps {
   tutorial: Tutorial;
+  tutors: string[];
   substitutes: Substitute[];
   correctors: string[];
   onEditTutorialClicked: (tutorial: Tutorial) => void;
@@ -40,6 +41,7 @@ interface Props extends PaperTableRowProps {
 
 function TutorialTableRow({
   tutorial,
+  tutors,
   substitutes,
   correctors,
   onEditTutorialClicked,
@@ -95,13 +97,17 @@ function TutorialTableRow({
     >
       <TableCell>
         <div>
-          {tutorial.tutor && (
-            <Chip
-              key={tutorial.id}
-              label={`Tutor: ${tutorial.tutor.lastname}, ${tutorial.tutor.firstname}`}
-              className={classes.tutorChip}
-              color='primary'
-            />
+          {tutors.length > 0 && (
+            <div>
+              {tutors.map((tut) => (
+                <Chip
+                  key={tut}
+                  label={`Tutor: ${tut}`}
+                  className={classes.tutorChip}
+                  color='primary'
+                />
+              ))}
+            </div>
           )}
 
           {correctors.length > 0 && (
@@ -111,7 +117,7 @@ function TutorialTableRow({
                   key={cor}
                   label={`Korrektor: ${cor}`}
                   className={classes.tutorChip}
-                  size={tutorial.tutor ? 'small' : 'medium'}
+                  size={tutorial.tutors ? 'small' : 'medium'}
                 />
               ))}
             </div>

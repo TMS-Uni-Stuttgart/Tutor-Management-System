@@ -56,7 +56,7 @@ export class TutorialGuard extends UseMetadata {
         const allowSubstitutes = this.isAllowedForSubstitutes(context);
         const allowCorrectors = this.isAllowedForCorrectors(context);
 
-        if (tutorial.tutor?.id === userId) {
+        if (tutorial.tutors.getItems().some((tutor) => tutor.id === userId)) {
             return true;
         }
 

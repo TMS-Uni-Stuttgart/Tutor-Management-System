@@ -1,12 +1,4 @@
-import {
-    Collection,
-    Entity,
-    ManyToMany,
-    ManyToOne,
-    OneToMany,
-    PrimaryKey,
-    Property,
-} from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { DateTime, Interval, ToISOTimeOptions } from 'luxon';
 import { ITutorialInEntity } from 'shared/model/Common';
 import { ITutorial } from 'shared/model/Tutorial';
@@ -35,8 +27,8 @@ export class Tutorial {
     @Property({ type: LuxonTimeType })
     endTime: DateTime;
 
-    @ManyToOne()
-    tutor?: User;
+    @ManyToMany({ entity: () => User, mappedBy: 'tutorials' })
+    tutors = new Collection<User>(this);
 
     @OneToMany(() => Student, (student) => student.tutorial)
     students = new Collection<Student>(this);
@@ -70,7 +62,7 @@ export class Tutorial {
         return {
             id: this.id,
             slot: this.slot,
-            tutor: this.tutor?.toInEntity(),
+            tutors: this.tutors.getItems().map((tutor) => tutor.toInEntity()),
             dates: this.dates.map((date) => date.toISODate() ?? 'DATE_NOT_PARSEABLE'),
             startTime: this.startTime.toISOTime(dateOptions) ?? 'DATE_NOT_PARSEABLE',
             endTime: this.endTime.toISOTime(dateOptions) ?? 'DATE_NOT_PARSEABLE',

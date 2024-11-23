@@ -37,7 +37,10 @@ function FormikTutorialSelect({
       name={name}
       itemToString={(tutorial) => ({
         primary: tutorial.toDisplayStringWithTime(),
-        secondary: tutorial.tutor ? `Tutor/in: ${getNameOfEntity(tutorial.tutor)}` : undefined,
+        secondary:
+          tutorial.tutors.length > 0
+            ? `Tutoren: ${tutorial.tutors.map((tutor) => getNameOfEntity(tutor)).join(', ')}`
+            : undefined,
       })}
       itemToValue={(tutorial) => tutorial.id}
       {...props}
