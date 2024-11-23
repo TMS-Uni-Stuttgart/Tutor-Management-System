@@ -227,18 +227,18 @@ function UserForm({
             name='tutorials'
             label='Tutorien'
             helperText='Tutorien, die gehalten werden.'
-            items={tutorials}
+            items={tutorials.filter((tutorial) => !values.tutorialsToCorrect.includes(tutorial.id))}
             showLoadingIndicator={loadingTutorials}
-            disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
+            disabled={!values.roles || !values.roles.includes(Role.TUTOR)}
           />
 
           <FormikTutorialSelect
             name='tutorialsToCorrect'
             label='Korrigierte Tutorien'
             helperText='Tutorien, die korrigiert werden.'
-            items={tutorials}
+            items={tutorials.filter((tutorial) => !values.tutorials.includes(tutorial.id))}
             showLoadingIndicator={loadingTutorials}
-            disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
+            disabled={!values.roles || !values.roles.includes(Role.CORRECTOR)}
           />
         </>
       )}
