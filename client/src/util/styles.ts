@@ -74,7 +74,7 @@ function generateChartStyle(theme: Theme): ChartStyle {
 
     return {
         backgroundColor: theme.palette.background.paper,
-        colors: [dataColor],
+        colors: [dataColor, theme.palette.red.main],
         fontStyle: {
             fontName: theme.typography.fontFamily,
             fontSize: theme.typography.fontSize,

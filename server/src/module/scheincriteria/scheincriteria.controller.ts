@@ -12,10 +12,6 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { Roles } from '../../guards/decorators/roles.decorator';
-import { HasRoleGuard } from '../../guards/has-role.guard';
-import { StudentGuard } from '../../guards/student.guard';
-import { TutorialGuard } from '../../guards/tutorial.guard';
 import { FormDataResponse } from 'shared/model/FormTypes';
 import { Role } from 'shared/model/Role';
 import {
@@ -24,6 +20,10 @@ import {
     ScheinCriteriaSummary,
     ScheincriteriaSummaryByStudents,
 } from 'shared/model/ScheinCriteria';
+import { Roles } from '../../guards/decorators/roles.decorator';
+import { HasRoleGuard } from '../../guards/has-role.guard';
+import { StudentGuard } from '../../guards/student.guard';
+import { TutorialGuard } from '../../guards/tutorial.guard';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
 import { ScheincriteriaService } from './scheincriteria.service';
 
@@ -33,7 +33,7 @@ export class ScheincriteriaController {
 
     @Get()
     @UseGuards(HasRoleGuard)
-    @Roles(Role.ADMIN, Role.EMPLOYEE)
+    @Roles(Role.ADMIN, Role.EMPLOYEE, Role.TUTOR)
     async getAllCriterias(): Promise<IScheinCriteria[]> {
         const scheincriterias = await this.scheincriteriaService.findAll();
 
