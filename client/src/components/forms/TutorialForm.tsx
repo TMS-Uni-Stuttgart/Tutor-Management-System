@@ -190,7 +190,7 @@ function TutorialForm({
             name='tutors'
             label='Tutoren'
             emptyPlaceholder='Keine Tutoren vorhanden.'
-            items={tutors}
+            items={tutors.filter((tutor) => !values.correctors.includes(tutor.id))}
             {...userConverterFunctions}
             multiple
             isItemSelected={(tutor) => values['tutors'].indexOf(tutor.id) > -1}
@@ -268,7 +268,7 @@ function TutorialForm({
             name='correctors'
             label='Korrektoren'
             emptyPlaceholder='Keine Korrektoren vorhanden.'
-            items={correctors}
+            items={correctors.filter((corrector) => !values.tutors.includes(corrector.id))}
             {...userConverterFunctions}
             multiple
             isItemSelected={(corrector) => values['correctors'].indexOf(corrector.id) > -1}
