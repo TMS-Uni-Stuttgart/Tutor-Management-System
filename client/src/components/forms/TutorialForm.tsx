@@ -7,9 +7,9 @@ import * as Yup from 'yup';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
 import { compareDateTimes } from '../../util/helperFunctions';
+import FormikAutocompleteSelect from './components/FormikAutocompleteSelect';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikMultipleDatesPicker from './components/FormikMultipleDatesPicker';
-import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
@@ -186,14 +186,13 @@ function TutorialForm({
         <>
           <FormikTextField name='slot' label='Slot' required />
 
-          <FormikSelect
+          <FormikAutocompleteSelect
             name='tutors'
             label='Tutoren'
             emptyPlaceholder='Keine Tutoren vorhanden.'
             items={tutors.filter((tutor) => !values.correctors.includes(tutor.id))}
             {...userConverterFunctions}
             multiple
-            isItemSelected={(tutor) => values['tutors'].indexOf(tutor.id) > -1}
             fullWidth
           />
 
@@ -264,14 +263,13 @@ function TutorialForm({
             />
           </div>
 
-          <FormikSelect
+          <FormikAutocompleteSelect
             name='correctors'
             label='Korrektoren'
             emptyPlaceholder='Keine Korrektoren vorhanden.'
             items={correctors.filter((corrector) => !values.tutors.includes(corrector.id))}
             {...userConverterFunctions}
             multiple
-            isItemSelected={(corrector) => values['correctors'].indexOf(corrector.id) > -1}
             fullWidth
           />
 
