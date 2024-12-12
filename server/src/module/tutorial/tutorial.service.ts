@@ -99,15 +99,15 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     async create(dto: TutorialDTO): Promise<ITutorial> {
         await this.assertTutorialSlot(dto.slot);
 
-        const { slot, tutorId, correctorIds, startTime, endTime, dates } = dto;
-        const [tutor, correctors] = await Promise.all([
-            tutorId ? this.userService.findById(tutorId) : undefined,
+        const { slot, tutorIds, correctorIds, startTime, endTime, dates } = dto;
+        const [tutors, correctors] = await Promise.all([
+            Promise.all(tutorIds.map((id) => this.userService.findById(id))),
             Promise.all(correctorIds.map((id) => this.userService.findById(id))),
         ]);
 
         const created = await this.createTutorial({
             slot,
-            tutor,
+            tutors,
             correctors,
             startTime: DateTime.fromISO(startTime),
             endTime: DateTime.fromISO(endTime),
@@ -130,12 +130,14 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     async update(id: string, dto: TutorialDTO): Promise<ITutorial> {
         const tutorial = await this.findById(id);
-        const tutor = !!dto.tutorId ? await this.userService.findById(dto.tutorId) : undefined;
+        const tutors = await Promise.all(
+            dto.tutorIds.map((tutorId) => this.userService.findById(tutorId))
+        );
         const correctors = await Promise.all(
             dto.correctorIds.map((corrId) => this.userService.findById(corrId))
         );
 
-        this.assertTutorHasTutorRole(tutor);
+        this.assertTutorsHaveTutorRole(tutors);
         this.assertCorrectorsHaveCorrectorRole(correctors);
 
         tutorial.slot = dto.slot;
@@ -143,7 +145,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         tutorial.startTime = DateTime.fromISO(dto.startTime);
         tutorial.endTime = DateTime.fromISO(dto.endTime);
 
-        tutorial.tutor = tutor;
+        tutorial.tutors.set(tutors);
         tutorial.correctors.set(correctors);
 
         await this.em.persistAndFlush(tutorial);
@@ -349,7 +351,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
                         dates,
                         startTime: timeInterval.start as DateTime,
                         endTime: timeInterval.end as DateTime,
-                        tutor: undefined,
+                        tutors: [],
                         correctors: [],
                     });
 
@@ -375,18 +377,18 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     private async createTutorial({
         slot,
-        tutor,
+        tutors,
         startTime,
         endTime,
         dates,
         correctors,
     }: CreateParameters): Promise<Tutorial> {
-        this.assertTutorHasTutorRole(tutor);
+        this.assertTutorsHaveTutorRole(tutors);
         this.assertCorrectorsHaveCorrectorRole(correctors);
         this.assertAtLeastOneDate(dates);
 
         const tutorial = new Tutorial({ slot, dates, startTime, endTime });
-        tutorial.tutor = tutor;
+        tutorial.tutors.set(tutors);
         tutorial.correctors.set(correctors);
         await this.em.persistAndFlush(tutorial);
 
@@ -456,6 +458,16 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         }
     }
 
+    private assertTutorsHaveTutorRole(tutors: User[]) {
+        for (const tutor of tutors) {
+            if (!tutor.roles.includes(Role.TUTOR)) {
+                throw new BadRequestException(
+                    'The tutor of a tutorial needs to have the TUTOR role.'
+                );
+            }
+        }
+    }
+
     private assertCorrectorsHaveCorrectorRole(correctors: User[]) {
         for (const doc of correctors) {
             if (!doc.roles.includes(Role.CORRECTOR)) {
@@ -485,7 +497,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
 interface CreateParameters {
     slot: string;
-    tutor: User | undefined;
+    tutors: User[];
     startTime: DateTime;
     endTime: DateTime;
     dates: DateTime[];

@@ -25,9 +25,9 @@ export class TutorialDTO implements ITutorialDTO {
     @IsString()
     slot!: string;
 
-    @IsOptional()
-    @IsString()
-    tutorId?: string;
+    @IsArray()
+    @IsString({ each: true })
+    tutorIds!: string[];
 
     @IsLuxonDateTime()
     startTime!: string;

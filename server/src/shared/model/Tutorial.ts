@@ -12,12 +12,12 @@ export interface ITutorialDTO {
     endTime: string;
     slot: string;
     startTime: string;
-    tutorId?: string | null;
+    tutorIds: string[];
 }
 
 export interface ITutorial extends HasId {
     slot: string;
-    tutor?: UserInEntity;
+    tutors: UserInEntity[];
     dates: string[];
     startTime: string;
     endTime: string;

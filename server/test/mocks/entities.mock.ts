@@ -327,7 +327,7 @@ export async function populateMockLists(): Promise<void> {
 async function adjustMocksWithAdditionalInformation(): Promise<void> {
     MOCKED_USERS[3].tutorialsToCorrect.add(MOCKED_TUTORIALS[0], MOCKED_TUTORIALS[2]);
 
-    MOCKED_TUTORIALS[1].tutor = MOCKED_USERS[2];
+    MOCKED_TUTORIALS[1].tutors.add(MOCKED_USERS[2]);
 
     MOCKED_STUDENTS[0].team = MOCKED_TEAMS[0];
     MOCKED_STUDENTS[0].iliasName = 'HermineGranger';

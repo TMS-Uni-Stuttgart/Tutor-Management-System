@@ -3,7 +3,7 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import _ from 'lodash';
 import { AccountSearch as SearchIcon } from 'mdi-material-ui';
-import React, { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 import { NamedElement } from 'shared/model/Common';
 import { getNameOfEntity } from 'shared/util/helpers';
 import DateOrIntervalText from '../../../components/DateOrIntervalText';
@@ -31,7 +31,7 @@ function filterTutors(
   tutors: NamedElement[] = []
 ): NamedElement[] {
   return tutors.filter((tutor) => {
-    if (tutorial?.tutor?.id === tutor.id) {
+    if (tutorial?.tutors.some((t) => t.id === tutor.id)) {
       return false;
     }
 
