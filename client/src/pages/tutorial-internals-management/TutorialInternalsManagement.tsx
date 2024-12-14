@@ -154,13 +154,7 @@ function Content({ tutorial, isLoading, error, onBackClick }: Props): JSX.Elemen
 
       <Divider />
 
-      <Box
-        flex={1}
-        marginTop={3}
-        display='flex'
-        flexDirection='column'
-        style={{ overflowY: 'auto' }}
-      >
+      <Box flex={1} marginTop={3} display='flex' flexDirection='column'>
         <Placeholder
           placeholderText={placeholderText}
           showPlaceholder={showPlaceholder}
