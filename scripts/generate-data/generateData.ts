@@ -92,6 +92,7 @@ async function createTutorial(nr: number): Promise<ITutorial> {
         endTime: '11:15:00',
         dates: dates.filter(Boolean),
         correctorIds: [],
+        tutorIds: [],
     };
 
     console.log(`Creating tutorial ${slot}...`);
