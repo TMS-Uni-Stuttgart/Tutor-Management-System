@@ -28,12 +28,19 @@ const ThemeTypeContext = React.createContext<ChangeThemeTypeFunction>(() => {
 
 function CustomThemeProvider({ children }: RequireChildrenProp): JSX.Element {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [themeType, setThemeType] = useState<PaletteMode>(prefersDarkMode ? 'dark' : 'light');
+  const [themeType, setThemeType] = useState<PaletteMode>(() => {
+    const savedTheme = localStorage.getItem('themeType');
+    return savedTheme === 'light' || savedTheme === 'dark'
+      ? (savedTheme as PaletteMode)
+      : prefersDarkMode
+        ? 'dark'
+        : 'light';
+  });
   const theme = createTheme(themeType);
 
   useEffect(() => {
-    setThemeType(prefersDarkMode ? 'dark' : 'light');
-  }, [prefersDarkMode]);
+    localStorage.setItem('themeType', themeType);
+  }, [themeType]);
 
   return (
     <ThemeTypeContext.Provider value={setThemeType}>
