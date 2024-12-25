@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { ConsoleLogger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import fs from 'fs';
@@ -9,8 +9,10 @@ import { ApplicationConfiguration } from './model/ApplicationConfiguration';
 import {
     DatabaseConfiguration,
     DatabaseConfigurationValidationGroup,
+    DatabaseConnectionOptions,
 } from './model/DatabaseConfiguration';
-import { EnvironmentConfig, ENV_VARIABLE_NAMES } from './model/EnvironmentConfig';
+import { ENV_VARIABLE_NAMES, EnvironmentConfig } from './model/EnvironmentConfig';
+import { GotenbergConfiguration } from './model/GotenbergConfiguration';
 
 export class StaticSettings {
     private static service: StaticSettings = new StaticSettings();
@@ -22,12 +24,12 @@ export class StaticSettings {
     private readonly databaseConfig: DatabaseConfiguration;
     private readonly envConfig: EnvironmentConfig;
 
-    protected readonly logger = new Logger(StaticSettings.name);
+    protected readonly logger = new ConsoleLogger(StaticSettings.name);
 
     constructor() {
         this.config = this.loadConfigFile();
 
-        this.envConfig = this.loadEnvironmentVariables();
+        this.envConfig = StaticSettings.loadEnvironmentVariables();
         this.databaseConfig = this.loadDatabaseConfig();
     }
 
@@ -45,7 +47,7 @@ export class StaticSettings {
     /**
      * Returns the encryption secret for the database.
      *
-     * @returns Encrytion secret.
+     * @returns Encryption secret.
      */
     getDatabaseSecret(): string {
         return this.databaseConfig.secret;
@@ -56,6 +58,26 @@ export class StaticSettings {
      */
     getDatabaseConfiguration(): DatabaseConfiguration {
         return this.databaseConfig;
+    }
+
+    /**
+     * @returns Object containing the necessary information to connect to the database.
+     */
+    getDatabaseConnectionInformation(): DatabaseConnectionOptions {
+        return {
+            host: this.databaseConfig.host,
+            port: this.databaseConfig.port,
+            dbName: this.databaseConfig.databaseName,
+            user: this.databaseConfig.auth.user,
+            password: this.databaseConfig.auth.pass,
+        };
+    }
+
+    /**
+     *  @returns Configuration for the gotenberg instance. Can be `undefined`.
+     */
+    getGotenbergConfiguration(): GotenbergConfiguration | undefined {
+        return this.config.gotenberg;
     }
 
     /**
@@ -141,19 +163,19 @@ export class StaticSettings {
     private loadDatabaseConfig(): DatabaseConfiguration {
         const configFromFile: DatabaseConfiguration = this.config.database;
         const config: DatabaseConfiguration = plainToClass(DatabaseConfiguration, {
-            databaseURL: configFromFile.databaseURL,
-            maxRetries: configFromFile.maxRetries,
+            ...configFromFile,
             secret: this.envConfig.secret,
-            config: {
-                ...configFromFile.config,
-                user: this.envConfig.mongoDbUser,
-                pass: this.envConfig.mongoDbPassword,
+            auth: {
+                user: this.envConfig.dbUser,
+                pass: this.envConfig.dbPassword,
             },
         });
 
         this.assertConfigNoErrors(
             validateSync(config, {
                 groups: [DatabaseConfigurationValidationGroup.ALL],
+                whitelist: true,
+                forbidNonWhitelisted: true,
             })
         );
 
@@ -166,23 +188,23 @@ export class StaticSettings {
      * @returns Valid configuration extracted from the environment variables.
      * @throws `StartUpException` - If not all required environment variables were provided.
      */
-    private loadEnvironmentVariables(): EnvironmentConfig {
+    private static loadEnvironmentVariables(): EnvironmentConfig {
         const envConfig = plainToClass(EnvironmentConfig, process.env, {
             excludeExtraneousValues: true,
         });
 
-        this.assertEnvNoErrors(validateSync(envConfig));
+        StaticSettings.assertEnvNoErrors(validateSync(envConfig));
 
         return envConfig;
     }
 
     /**
-     * Checks if the `errors` array is empty. If it is not a StartUpExpcetion with a proper message is thrown.
+     * Checks if the `errors` array is empty. If it is not a StartUpException with a proper message is thrown.
      *
      * @param errors Array containing validation errors from class-validator (or empty).
      * @throws `StartUpException` - If `errors` is not empty.
      */
-    private assertEnvNoErrors(errors: ValidationError[]) {
+    private static assertEnvNoErrors(errors: ValidationError[]) {
         if (errors.length === 0) {
             return;
         }
@@ -237,9 +259,9 @@ export class StaticSettings {
             tabs += '\t';
         }
 
-        let message = `The following validation error(s) occured for the "${property}" property:`;
+        let message = `The following validation error(s) occurred for the "${property}" property:`;
 
-        if (children.length > 0) {
+        if (!!children && children.length > 0) {
             for (const childError of children) {
                 message += '\n' + tabs + this.getStringForError(childError, depth + 1);
             }
@@ -303,7 +325,7 @@ export class StaticSettings {
 
             this.assertConfigNoErrors(
                 validateSync(config, {
-                    groups: [DatabaseConfigurationValidationGroup.FILE],
+                    strictGroups: true,
                 })
             );
 

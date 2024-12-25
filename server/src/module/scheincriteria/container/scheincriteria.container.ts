@@ -1,5 +1,4 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { DecoratorKeys } from '@typegoose/typegoose/lib/internal/constants';
 import {
     FormBooleanFieldData,
     FormDataResponse,
@@ -10,7 +9,8 @@ import {
     FormIntegerFieldData,
     FormSelectValue,
     FormStringFieldData,
-} from '../../../shared/model/FormTypes';
+} from 'shared/model/FormTypes';
+import { DecoratorKeys } from '../../../helpers/DecoratorKeys';
 import { Scheincriteria } from './Scheincriteria';
 import { ScheincriteriaClass, ScheincriteriaForm } from './scheincriteria.form';
 import { ScheincriteriaMetadata, ScheincriteriaMetadataKey } from './scheincriteria.metadata';
@@ -69,7 +69,7 @@ class SCContainer {
     /**
      * Registers a blueprint for the given criteria. This allows the instantiation of those later.
      *
-     * @param criteria Criteria to register a blue print for.
+     * @param criteriaClass Criteria to register a blue print for.
      */
     registerBluePrint(criteriaClass: ScheincriteriaClass) {
         const criteriaForm = new ScheincriteriaForm(criteriaClass);
@@ -95,7 +95,7 @@ class SCContainer {
      *
      * @param identifier Identifier to get blue print of.
      *
-     * @returns Blue print of the given identifiert.
+     * @returns Blue print of the given identifier.
      *
      * @throws `NotFoundException` - If no blue print of the given identifier could be found.
      */
@@ -114,7 +114,7 @@ class SCContainer {
     /**
      * Parses the loaded blueprints into a map that contains the form data for each criteria by their identifier as key.
      *
-     * Those form datas are parsed from the decorators insinde the loaded criteria and initially set at registering the blueprint.
+     * Those form datas are parsed from the decorators inside the loaded criteria and initially set at registering the blueprint.
      *
      * @returns Parsed form data.
      */

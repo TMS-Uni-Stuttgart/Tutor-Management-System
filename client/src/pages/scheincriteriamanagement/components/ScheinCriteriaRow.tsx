@@ -1,9 +1,11 @@
-import { TableCell, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { TableCell, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { InformationOutline as InfoIcon } from 'mdi-material-ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { IScheinCriteria } from 'shared/model/ScheinCriteria';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
@@ -17,6 +19,10 @@ const useStyles = makeStyles((theme: Theme) =>
       gridTemplateColumns: 'max-content 1fr',
       gridRowGap: theme.spacing(1),
       gridColumnGap: theme.spacing(1.5),
+    },
+    labelCell: {
+      width: '1%',
+      whiteSpace: 'nowrap',
     },
   })
 );
@@ -34,7 +40,7 @@ function ScheinCriteriaRow({
   ...rest
 }: Props): JSX.Element {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation(i18nNamespace.SCHEINCRITERIA);
 
   return (
@@ -50,12 +56,13 @@ function ScheinCriteriaRow({
               primary: 'Informationen',
               Icon: InfoIcon,
               onClick: () => {
-                history.push(ROUTES.SCHEIN_CRITERIAS_INFO.create({ id: criteria.id }));
+                navigate(ROUTES.SCHEIN_CRITERIAS_INFO.buildPath({ id: criteria.id }));
               },
             },
           ]}
         />
       }
+      LabelCellProps={{ className: classes.labelCell }}
       {...rest}
     >
       <TableCell className={classes.infoCell}>

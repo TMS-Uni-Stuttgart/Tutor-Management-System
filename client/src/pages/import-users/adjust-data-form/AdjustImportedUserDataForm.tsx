@@ -1,8 +1,8 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { Formik, useFormikContext } from 'formik';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router';
+import { useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { Role } from 'shared/model/Role';
 import { ICreateUserDTO, IUser } from 'shared/model/User';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
@@ -59,27 +59,25 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
   const { setNextCallback, removeNextCallback } = useStepper();
   const { values, isValid, validateForm, submitForm } = useFormikContext<UserFormState>();
   const { enqueueSnackbar } = useSnackbar();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setNextCallback(
-      async (): Promise<NextStepInformation> => {
-        const errors = await validateForm();
+    setNextCallback(async (): Promise<NextStepInformation> => {
+      const errors = await validateForm();
 
-        if (Object.entries(errors).length > 0) {
-          enqueueSnackbar('Nutzerdaten sind ungültig.', { variant: 'error' });
-          return { goToNext: false, error: true };
-        }
-
-        const isSuccess: any = await submitForm();
-
-        if (!!isSuccess) {
-          return { goToNext: true };
-        } else {
-          return { goToNext: false, error: true };
-        }
+      if (Object.entries(errors).length > 0) {
+        enqueueSnackbar('Nutzerdaten sind ungültig.', { variant: 'error' });
+        return { goToNext: false, error: true };
       }
-    );
+
+      const isSuccess: any = await submitForm();
+
+      if (isSuccess) {
+        return { goToNext: true };
+      } else {
+        return { goToNext: false, error: true };
+      }
+    });
 
     return () => removeNextCallback();
   }, [
@@ -88,7 +86,7 @@ function AdjustImportedUserDataFormContent({ tutorials }: Props): JSX.Element {
     isValid,
     values,
     enqueueSnackbar,
-    history,
+    navigate,
     submitForm,
     validateForm,
   ]);

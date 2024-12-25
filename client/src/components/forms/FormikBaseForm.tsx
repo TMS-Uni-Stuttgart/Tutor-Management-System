@@ -1,7 +1,10 @@
-import { Button, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Button, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { Formik, FormikConfig, FormikHelpers } from 'formik';
+import { FormikValues } from 'formik/dist/types';
 import React from 'react';
 import SubmitButton from '../loading/SubmitButton';
 import FormikDebugDisplay from './components/FormikDebugDisplay';
@@ -48,7 +51,7 @@ export interface FormikBaseFormProps<VALUES> extends FormikConfig<VALUES> {
   enableUnsavedChangesWarning?: boolean;
 }
 
-function FormikBaseForm<VALUES>({
+function FormikBaseForm<VALUES extends FormikValues>({
   onCancelClicked,
   enableDebug,
   hideSaveButton,

@@ -1,9 +1,17 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "declaration": false,
-        "sourceMap": false,
-        "incremental": false
-    },
-    "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "**/jest.setup.ts"]
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "sourceMap": false,
+    "incremental": false
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "temp",
+    "test",
+    "**/*spec.ts",
+    "**/jest.setup.ts",
+    "./jest.config.ts"
+  ]
 }

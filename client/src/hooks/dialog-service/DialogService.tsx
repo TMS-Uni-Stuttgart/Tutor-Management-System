@@ -4,10 +4,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@material-ui/core';
-import Button, { ButtonProps } from '@material-ui/core/Button';
-import { DialogProps } from '@material-ui/core/Dialog';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import Button, { ButtonProps } from '@mui/material/Button';
+import { DialogProps } from '@mui/material/Dialog';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import { RequireChildrenProp } from '../../typings/RequireChildrenProp';
@@ -20,6 +21,9 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     deleteButton: {
       color: theme.palette.red.main,
+    },
+    noOverflow: {
+      overflowY: 'unset',
     },
   })
 );
@@ -112,7 +116,7 @@ function DialogService({ children }: RequireChildrenProp): JSX.Element {
         <Dialog open onClose={handleCloseDialog} fullWidth {...dialog.DialogProps}>
           {dialog.title && <DialogTitle>{dialog.title}</DialogTitle>}
 
-          <DialogContent>
+          <DialogContent className={classes.noOverflow}>
             {typeof dialog.content === 'string' ? (
               <DialogContentText>{dialog.content}</DialogContentText>
             ) : typeof dialog.content === 'function' ? (
@@ -170,9 +174,10 @@ function hideDialogOutsideContext() {
 function useDialog(): DialogHelpers {
   const createDialogFunction = useContext(DialogContext);
 
-  const hide: DialogHelpers['hide'] = useCallback(() => createDialogFunction(undefined), [
-    createDialogFunction,
-  ]);
+  const hide: DialogHelpers['hide'] = useCallback(
+    () => createDialogFunction(undefined),
+    [createDialogFunction]
+  );
 
   const show: DialogHelpers['show'] = useCallback(
     (dialogOptions: Partial<DialogOptions>) => {
@@ -264,4 +269,4 @@ function getDialogOutsideContext(): Pick<DialogHelpers, 'show' | 'hide'> {
 }
 
 export default DialogService;
-export { useDialog, getDialogOutsideContext };
+export { getDialogOutsideContext, useDialog };

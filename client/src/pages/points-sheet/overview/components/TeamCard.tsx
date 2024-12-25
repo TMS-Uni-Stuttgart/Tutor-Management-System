@@ -9,23 +9,26 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-} from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
+  FilePdfBox as PdfIcon,
+  FileFind as PdfPreviewIcon,
   Account as StudentIcon,
   AccountMultiple as TeamIcon,
-  FileFind as PdfPreviewIcon,
-  PdfBox as PdfIcon,
 } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useMatches } from 'react-router-dom';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import SplitButton from '../../../../components/SplitButton';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
+import { GradingList } from '../../../../model/GradingList';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
-import { ROUTES } from '../../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../../routes/Routing.routes';
+import { renderLink } from '../../../../components/navigation-rail/components/renderLink';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -47,6 +50,7 @@ interface Props {
   tutorialId: string;
   team: Team;
   sheet: Sheet;
+  gradings: GradingList;
   onPdfPreviewClicked: (team: Team) => void;
   onGeneratePdfClicked: (team: Team) => void;
 }
@@ -55,20 +59,22 @@ function TeamCard({
   tutorialId,
   team,
   sheet,
+  gradings,
   onPdfPreviewClicked,
   onGeneratePdfClicked,
 }: Props): JSX.Element {
   const classes = useStyles();
   const dialog = useDialog();
+  const matches = useMatches();
 
   const { teamGrading, onlyIndividualEntriesAllowed } = useMemo(() => {
-    const teamGradings = team.getAllGradings(sheet);
-    const teamGrading = team.getGrading(sheet);
+    const teamGradings = gradings.getAllOfTeam(team);
+    const teamGrading = gradings.getOfTeam(team);
 
     const onlyIndividualEntriesAllowed: boolean = !teamGrading && teamGradings.length !== 0;
 
     return { teamGrading, onlyIndividualEntriesAllowed };
-  }, [team, sheet]);
+  }, [team, gradings]);
 
   const studentsInTeam: string =
     team.students.length > 0
@@ -76,7 +82,7 @@ function TeamCard({
       : 'Keine Studierende in diesem Team.';
 
   const { placeholderText, pdfDisabled } = useMemo(() => {
-    const gradingCount = team.getAllGradings(sheet).length;
+    const gradingCount = gradings.getAllOfTeam(team).length;
     const placeholderText =
       gradingCount === 0
         ? 'Keine Bewertung für das Team vorhanden.'
@@ -84,7 +90,7 @@ function TeamCard({
     const pdfDisabled = gradingCount === 0;
 
     return { placeholderText, pdfDisabled };
-  }, [team, sheet]);
+  }, [team, gradings]);
 
   const handleEnterStudents = () => {
     dialog.show({
@@ -100,12 +106,14 @@ function TeamCard({
               <ListItem
                 button
                 onClick={() => dialog.hide()}
-                component={ROUTES.ENTER_POINTS_STUDENT.renderLink({
-                  tutorialId,
-                  sheetId: sheet.id,
-                  teamId: team.id,
-                  studentId: student.id,
-                })}
+                component={renderLink(
+                  useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
+                    tutorialId,
+                    sheetId: sheet.id,
+                    teamId: team.id,
+                    studentId: student.id,
+                  })
+                )}
               >
                 <ListItemIcon>
                   <StudentIcon />
@@ -167,14 +175,14 @@ function TeamCard({
         <SplitButton
           variant='outlined'
           initiallySelected={onlyIndividualEntriesAllowed ? 1 : 0}
-          color='default'
+          color='inherit'
           options={[
             {
               label: 'Punkte eintragen',
               disabled: onlyIndividualEntriesAllowed,
               ButtonProps: {
                 component: Link,
-                to: ROUTES.ENTER_POINTS_TEAM.create({
+                to: useTutorialRoutes(matches).ENTER_POINTS_TEAM.buildPath({
                   tutorialId,
                   sheetId: sheet.id,
                   teamId: team.id,

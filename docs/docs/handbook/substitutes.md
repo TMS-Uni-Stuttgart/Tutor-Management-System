@@ -33,10 +33,10 @@ You can assign substitute for multiple dates and only save once in the end.
 
 1. **Date Filter**: You can filter the dates shown:
 
-    - "Only future dates" _(default)_: Only show dates that are in the future (the current day is also shown).
-    - "All dates": Show all available dates.
-    - "Without substitute": Show all dates which do _not_ have a substitute assigned.
-    - "With substitute": Show all dates which have a substitute assigned.
+   - "Only future dates" _(default)_: Only show dates that are in the future (the current day is also shown).
+   - "All dates": Show all available dates.
+   - "Without substitute": Show all dates which do _not_ have a substitute assigned.
+   - "With substitute": Show all dates which have a substitute assigned.
 
 1. **List of Tutors**: A list of all other tutors is shown. Choose the one you want to assign by clicking on the entry.
    :::caution

@@ -1,128 +1,82 @@
-import { DynamicModule, Inject, Logger, Module, OnApplicationShutdown } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Connection, Model } from 'mongoose';
-import { getConnectionToken, getModelToken, TypegooseModule } from 'nestjs-typegoose';
-import { TypegooseClass } from 'nestjs-typegoose/dist/typegoose-class.interface';
-import { ScheincriteriaModel } from '../../src/database/models/scheincriteria.model';
-import { ScheinexamModel } from '../../src/database/models/scheinexam.model';
-import { SettingsModel } from '../../src/database/models/settings.model';
-import { SheetModel } from '../../src/database/models/sheet.model';
-import { ShortTestModel } from '../../src/database/models/shortTest.model';
-import { StudentModel } from '../../src/database/models/student.model';
-import { TeamModel } from '../../src/database/models/team.model';
-import { TutorialModel } from '../../src/database/models/tutorial.model';
-import { UserModel } from '../../src/database/models/user.model';
-import {
-    SCHEINCRITERIA_DOCUMENTS,
-    SCHEINEXAM_DOCUMENTS,
-    SETTINGS_DOCUMENTS,
-    SHEET_DOCUMENTS,
-    STUDENT_DOCUMENTS,
-    TEAM_DOCUMENTS,
-    TUTORIAL_DOCUMENTS,
-    USER_DOCUMENTS,
-} from '../mocks/documents.mock';
+import { CreateRequestContext, EntityManager, MikroORM } from '@mikro-orm/core';
+import { Module } from '@nestjs/common';
+import { loadDatabaseModule } from '../../src/database/sql-database.module';
+import { AttendanceCriteria } from '../../src/module/scheincriteria/container/criterias/AttendanceCriteria';
+import { PresentationCriteria } from '../../src/module/scheincriteria/container/criterias/PresentationCriteria';
+import { ScheinexamCriteria } from '../../src/module/scheincriteria/container/criterias/ScheinexamCriteria';
+import { SheetIndividualCriteria } from '../../src/module/scheincriteria/container/criterias/SheetIndividualCriteria';
+import { SheetTotalCriteria } from '../../src/module/scheincriteria/container/criterias/SheetTotalCriteria';
+import { ShortTestCriteria } from '../../src/module/scheincriteria/container/criterias/ShortTestCriteria';
+import { ScheincriteriaContainer } from '../../src/module/scheincriteria/container/scheincriteria.container';
+import { ScheincriteriaConstructor } from '../../src/module/scheincriteria/scheincriteria.module';
+import { StaticSettings } from '../../src/module/settings/settings.static';
+import { ENTITY_LISTS, populateMockLists } from '../mocks/entities.mock';
 
-interface ModelMockOptions {
-    model: TypegooseClass;
-    initialDocuments: any[];
-}
-
-const MODEL_OPTIONS: ModelMockOptions[] = [
-    { model: UserModel, initialDocuments: [...USER_DOCUMENTS] },
-    { model: TutorialModel, initialDocuments: [...TUTORIAL_DOCUMENTS] },
-    { model: StudentModel, initialDocuments: [...STUDENT_DOCUMENTS] },
-    { model: TeamModel, initialDocuments: [...TEAM_DOCUMENTS] },
-    { model: SheetModel, initialDocuments: [...SHEET_DOCUMENTS] },
-    { model: ScheinexamModel, initialDocuments: [...SCHEINEXAM_DOCUMENTS] },
-    {
-        model: ScheincriteriaModel,
-        initialDocuments: [...SCHEINCRITERIA_DOCUMENTS],
-    },
-    { model: SettingsModel, initialDocuments: [...SETTINGS_DOCUMENTS] },
-    { model: ShortTestModel, initialDocuments: [] },
-];
-
-@Module({})
-export class TestModule implements OnApplicationShutdown {
-    /**
-     * Generates a module which contains a connection to the in-memory mongo database aswell as the corresponding providers for the given models.
-     *
-     * __Important__: If this module is used in a testing module you have to call `close()` in the correspoding `afterAll` or `afterEach` test function. If you forget to do this the connection will prevent Jest from exiting.
-     *
-     * @param models Models to register in the module
-     * @return Promise which resolves to the generated DynamicModule.
-     */
-    static async forRootAsync(): Promise<DynamicModule> {
-        try {
-            const models = MODEL_OPTIONS.map((opt) => opt.model);
-            const mongodb = await MongoMemoryServer.create({
-                instance: {
-                    dbName: 'tms',
-                },
-                autoStart: true,
-            });
-
-            const connectionUri = await mongodb.getUri();
-            const featureModule = TypegooseModule.forFeature(models);
-
-            return {
-                module: TestModule,
-                imports: [
-                    TypegooseModule.forRoot(connectionUri, {
-                        useNewUrlParser: true,
-                        useUnifiedTopology: true,
-                    }),
-                    featureModule,
-                ],
-                providers: [
-                    {
-                        provide: MongoMemoryServer,
-                        useValue: mongodb,
-                    },
-                ],
-                exports: [featureModule],
-            };
-        } catch (err) {
-            Logger.error('Error during test initialization', err);
-            throw err;
-        }
+@Module({
+    imports: [loadDatabaseModule({ allowGlobalContext: true })],
+})
+export class TestDatabaseModule {
+    constructor(
+        private readonly orm: MikroORM,
+        private readonly entityManager: EntityManager
+    ) {
+        this.initCriteriaContainer();
     }
 
-    constructor(
-        private readonly mongodb: MongoMemoryServer,
-        private readonly moduleRef: ModuleRef,
-        @Inject(getConnectionToken()) private readonly connection: Connection
-    ) {}
+    @CreateRequestContext()
+    async init(): Promise<void> {
+        const generator = this.orm.getSchemaGenerator();
+        await generator.ensureDatabase();
+        await generator.dropSchema();
+        await generator.createSchema();
+
+        await this.populateDatabase();
+    }
 
     async reset(): Promise<void> {
-        if (!this.connection) {
-            return;
-        }
-
-        await Promise.all(
-            Object.values(this.connection.collections).map((collection) =>
-                collection.deleteMany({})
-            )
-        );
-
-        await this.fillCollections();
+        this.entityManager.clear();
+        return this.resetInContext();
     }
 
-    async onApplicationShutdown(): Promise<void> {
-        if (this.mongodb) {
-            await this.mongodb.stop();
+    @CreateRequestContext()
+    private async resetInContext(): Promise<void> {
+        const dbName = StaticSettings.getService().getDatabaseConnectionInformation().dbName;
+        const connection = this.orm.em.getConnection();
+        const allTables = await connection.execute(`SHOW TABLES FROM \`${dbName}\``);
+        const tableNames = allTables.map((row: Record<string, string>) => Object.values(row)[0]);
+
+        for (const table of tableNames) {
+            await connection.execute(`DELETE FROM ${table}`);
         }
+
+        await this.populateDatabase();
     }
 
-    private async fillCollections() {
-        for (const option of MODEL_OPTIONS) {
-            const model = this.moduleRef.get<string, Model<any>>(getModelToken(option.model.name), {
-                strict: false,
-            });
+    private async populateDatabase() {
+        await this.generateMocks();
 
-            await model.insertMany(option.initialDocuments);
+        for (const entities of ENTITY_LISTS) {
+            this.entityManager.persist(entities);
         }
+
+        await this.entityManager.flush();
+    }
+
+    private initCriteriaContainer() {
+        const container = ScheincriteriaContainer.getContainer();
+        const criterias: ScheincriteriaConstructor[] = [
+            AttendanceCriteria,
+            PresentationCriteria,
+            SheetIndividualCriteria,
+            SheetTotalCriteria,
+            ScheinexamCriteria,
+            ShortTestCriteria,
+        ];
+
+        criterias.forEach((criteria) => container.registerBluePrint(criteria));
+    }
+
+    private async generateMocks() {
+        await populateMockLists();
     }
 }

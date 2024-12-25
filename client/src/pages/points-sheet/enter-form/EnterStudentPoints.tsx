@@ -1,13 +1,15 @@
-import { Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { SelectChangeEvent, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useMatches, useNavigate, useParams, useRoutes } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getTeamOfTutorial } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { GradingList } from '../../../model/GradingList';
 import { Student, StudentInTeam } from '../../../model/Student';
 import { Team } from '../../../model/Team';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
@@ -17,16 +19,19 @@ interface RouteParams {
   sheetId?: string;
   teamId?: string;
   studentId?: string;
+  [key: string]: string | undefined;
 }
 
 function EnterStudentPoints(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { tutorialId, sheetId, teamId, studentId } = useParams<RouteParams>();
 
   const { enqueueSnackbar, setError } = useCustomSnackbar();
 
   const [student, setStudent] = useState<Student>();
   const [team, setTeam] = useState<Team>();
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
+  const matches = useMatches();
 
   useEffect(() => {
     if (!studentId) {
@@ -50,7 +55,16 @@ function EnterStudentPoints(): JSX.Element {
         setTeam(response);
       })
       .catch(() => setError('Team konnte nicht abgerufen werden.'));
-  }, [tutorialId, teamId, setError]);
+
+    if (sheetId) {
+      getGradingsOfTutorial(sheetId, tutorialId)
+        .then((response) => setGradings(response))
+        .catch(() => {
+          setError('Bewertungen konnten nicht abgerufen werden.');
+          setGradings(new GradingList([]));
+        });
+    }
+  }, [sheetId, tutorialId, teamId, setError]);
 
   if (!tutorialId || !sheetId || !studentId || !teamId) {
     return (
@@ -61,14 +75,21 @@ function EnterStudentPoints(): JSX.Element {
     );
   }
 
-  const handleStudentChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleStudentChange = (event: SelectChangeEvent<unknown>) => {
     if (!tutorialId || !sheetId || !teamId) {
       return;
     }
 
     const studentId: string = event.target.value as string;
 
-    history.push(ROUTES.ENTER_POINTS_STUDENT.create({ tutorialId, sheetId, teamId, studentId }));
+    navigate(
+      useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
+        tutorialId,
+        sheetId,
+        teamId,
+        studentId,
+      })
+    );
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {
@@ -76,8 +97,8 @@ function EnterStudentPoints(): JSX.Element {
       return;
     }
 
-    const prevGrading = student.getGrading(sheetId);
-    const teamGrading = team?.getGrading(sheetId);
+    const prevGrading = gradings.getOfStudent(student.id);
+    const teamGrading = team === undefined ? undefined : gradings.getOfTeam(team);
 
     const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
@@ -112,6 +133,7 @@ function EnterStudentPoints(): JSX.Element {
       tutorialId={tutorialId}
       sheetId={sheetId}
       entity={student}
+      grading={student === undefined ? undefined : gradings.getOfStudent(student.id)}
       onSubmit={handleSubmit}
       allEntities={allStudents}
       entitySelectProps={{

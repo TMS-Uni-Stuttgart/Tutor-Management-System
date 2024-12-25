@@ -1,3 +1,6 @@
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import {
     BadRequestException,
     forwardRef,
@@ -5,14 +8,11 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-import { StudentDocument } from '../../database/models/student.model';
-import { TeamDocument, TeamModel } from '../../database/models/team.model';
-import { TutorialDocument } from '../../database/models/tutorial.model';
-import { ITeam, ITeamId } from '../../shared/model/Team';
+import { ITeam, ITeamId } from 'shared/model/Team';
+import { Student } from '../../database/entities/student.entity';
+import { Team } from '../../database/entities/team.entity';
+import { Tutorial } from '../../database/entities/tutorial.entity';
 import { GradingService } from '../student/grading.service';
-import { GradingDTO } from '../student/student.dto';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { TeamDTO } from './team.dto';
@@ -20,14 +20,16 @@ import { TeamDTO } from './team.dto';
 @Injectable()
 export class TeamService {
     constructor(
-        @InjectModel(TeamModel)
-        private readonly teamModel: ReturnModelType<typeof TeamModel>,
         @Inject(forwardRef(() => TutorialService))
         private readonly tutorialService: TutorialService,
         @Inject(forwardRef(() => StudentService))
         private readonly studentService: StudentService,
         @Inject(forwardRef(() => GradingService))
-        private readonly gradingService: GradingService
+        private readonly gradingService: GradingService,
+        @InjectRepository(Team)
+        private readonly repository: EntityRepository<Team>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -35,25 +37,25 @@ export class TeamService {
      *
      * @returns All teams in the given tutorial.
      */
-    async findAllTeamsInTutorial(tutorialId: string): Promise<TeamDocument[]> {
-        const teams = await this.teamModel.find({ tutorial: tutorialId as any }).exec();
-
-        return teams;
+    async findAllTeamsInTutorial(tutorialId: string): Promise<Team[]> {
+        return this.repository.find({ tutorial: tutorialId }, { populate: ['*'] });
     }
 
     /**
      * Searches the team with the given ID which is in the given tutorial and returns it.
      *
-     * @param teamId ID consisting of tutorialId and teamId to find the corresponding team.
+     * @param tutorialId Id of the tutorial the team is in.
+     * @param teamId Id of the team to search.
      *
      * @returns Team in the given tutorial with the given teamId.
      *
      * @throws `NotFoundException` - If no team inside the given tutorial with the given ID could be found.
      */
-    async findById({ tutorialId, teamId }: ITeamId): Promise<TeamDocument> {
-        const team = await this.teamModel
-            .findOne({ _id: teamId, tutorial: tutorialId as any })
-            .exec();
+    async findById({ tutorialId, teamId }: ITeamId): Promise<Team> {
+        const team = await this.repository.findOne(
+            { id: teamId, tutorial: tutorialId },
+            { populate: ['*'] }
+        );
 
         if (!team) {
             throw new NotFoundException(
@@ -76,28 +78,38 @@ export class TeamService {
      *
      * @throws `NotFoundException` - If no tutorial with the given ID could be found or if any student provided by the DTO could not be found.
      */
-    async createTeamInTutorial(tutorialId: string, { students }: TeamDTO): Promise<ITeam> {
+    async createTeamInTutorial(tutorialId: string, dto: TeamDTO): Promise<ITeam> {
         const tutorial = await this.tutorialService.findById(tutorialId);
-        const studentDocs = await Promise.all(
-            students.map((id) => this.studentService.findById(id))
-        );
+        const students: Student[] = await this.studentService.findMany(dto.students);
 
-        this.assertAllStudentsInSameTutorial(tutorialId, studentDocs);
+        this.assertAllStudentsInSameTutorial(tutorialId, students);
 
-        const team = new TeamModel({
-            tutorial,
+        const team = new Team({
             teamNo: this.getFirstAvailableTeamNo(tutorial),
+            tutorial,
+        });
+        team.students.set(students);
+
+        await this.em.persistAndFlush(team);
+        return team.toDTO();
+    }
+
+    /**
+     * Creates a team in the given tutorial without any students.
+     * Does not flush the entityManager.
+     *
+     * @param tutorial Tutorial to create team in.
+     *
+     * @returns Created team.
+     */
+    createTeamWithoutStudents(tutorial: Tutorial): Team {
+        const team = new Team({
+            teamNo: this.getFirstAvailableTeamNo(tutorial),
+            tutorial,
         });
 
-        const created = await this.teamModel.create(team);
-
-        await this.addAllStudentToTeam(created, studentDocs);
-
-        const teamWithStudents = await this.findById({
-            tutorialId,
-            teamId: created.id,
-        });
-        return teamWithStudents.toDTO();
+        this.em.persist(team);
+        return team;
     }
 
     /**
@@ -116,18 +128,14 @@ export class TeamService {
      */
     async updateTeamInTutorial(teamId: ITeamId, { students }: TeamDTO): Promise<ITeam> {
         const team = await this.findById(teamId);
-        const newStudentsOfTeam = await Promise.all(
-            students.map((id) => this.studentService.findById(id))
-        );
+        const newStudentsOfTeam = await this.studentService.findMany(students);
 
         this.assertAllStudentsInSameTutorial(teamId.tutorialId, newStudentsOfTeam);
 
-        await this.removeAllStudentsFromTeam(team);
-        await this.addAllStudentToTeam(team, newStudentsOfTeam);
+        team.students.set(newStudentsOfTeam);
+        await this.em.persistAndFlush(team);
 
-        const updated = await this.findById(teamId);
-
-        return updated.toDTO();
+        return team.toDTO();
     }
 
     /**
@@ -139,72 +147,10 @@ export class TeamService {
      *
      * @throws `NotFoundException` - If no team with the given ID could be found in the given tutorial.
      */
-    async deleteTeamFromTutorial(teamId: ITeamId): Promise<TeamDocument> {
+    async deleteTeamFromTutorial(teamId: ITeamId): Promise<void> {
         const team = await this.findById(teamId);
 
-        await this.removeAllStudentsFromTeam(team);
-
-        return team.remove();
-    }
-
-    /**
-     * Creates or updates a new grading and adds this grading to all student which don't already have a grading for the sheet in question.
-     *
-     * If the student already has a grading, don't change anything because:
-     *   - A: The student has this _exact_ grading anyways so it will get updated by updating the grading OR
-     *   - B: The student has a _different_ grading which should not be changed by this operation.
-     *
-     * If the grading is not applied to any students in the end it will __NOT__ get saved to the datebase (to prevent unused documents).
-     *
-     * @param teamId TeamID of the team to which students the grading should be added.
-     * @param dto DTO of the grading.
-     *
-     * @throws `NotFoundException` - If either no team with the given `teamId` or no sheet with the given `dto.sheetId` or no grading with the given `dto.gradingId` (if provided) could be found.
-     */
-    async setGrading(teamId: ITeamId, dto: GradingDTO): Promise<void> {
-        const team = await this.findById(teamId);
-
-        await this.gradingService.setGradingOfMultipleStudents(team.students, dto);
-    }
-
-    /**
-     * Adds all the given students to the team by setting their `team` property to the given team. The students are saved to the DB, afterwards.
-     *
-     * @param team Team to add students to.
-     * @param students Students to add the team to.
-     *
-     * @returns All updated StudentDocuments.
-     */
-    private async addAllStudentToTeam(
-        team: TeamDocument,
-        students: StudentDocument[]
-    ): Promise<StudentDocument[]> {
-        return Promise.all(
-            students.map((student) => {
-                student.team = team;
-                student.markModified('team');
-
-                return student.save();
-            })
-        );
-    }
-
-    /**
-     * Removes all students from the given team by removing their `team` property. They are saved to the DB, afterwards.
-     *
-     * @param team Team to remove all students from.
-     *
-     * @returns All updated StudentDocuments.
-     */
-    private async removeAllStudentsFromTeam(team: TeamDocument): Promise<StudentDocument[]> {
-        return Promise.all(
-            team.students.map((student) => {
-                student.team = undefined;
-                student.markModified('team');
-
-                return student.save();
-            })
-        );
+        await this.em.removeAndFlush(team);
     }
 
     /**
@@ -216,7 +162,7 @@ export class TeamService {
      *
      * @returns First available team number in the tutorial.
      */
-    private getFirstAvailableTeamNo(tutorial: TutorialDocument): number {
+    private getFirstAvailableTeamNo(tutorial: Tutorial): number {
         for (let i = 1; i <= tutorial.teams.length; i++) {
             let isTeamNoInUse = false;
 
@@ -243,7 +189,7 @@ export class TeamService {
      *
      * @throws `BadRequestException` - If NOT all students are in the same tutorial.
      */
-    private assertAllStudentsInSameTutorial(tutorialId: string, students: StudentDocument[]) {
+    private assertAllStudentsInSameTutorial(tutorialId: string, students: Student[]) {
         if (students.length === 0) {
             return;
         }

@@ -7,6 +7,10 @@ import { TutorialModule } from '../tutorial/tutorial.module';
 import { GradingService } from './grading.service';
 import { StudentController } from './student.controller';
 import { StudentService } from './student.service';
+import { GradingController } from './grading.controller';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { Grading } from '../../database/entities/grading.entity';
+import { Student } from '../../database/entities/student.entity';
 
 @Module({
     imports: [
@@ -15,8 +19,9 @@ import { StudentService } from './student.service';
         SheetModule,
         ScheinexamModule,
         ShortTestModule,
+        MikroOrmModule.forFeature([Grading, Student]),
     ],
-    controllers: [StudentController],
+    controllers: [StudentController, GradingController],
     providers: [StudentService, GradingService],
     exports: [StudentService, GradingService],
 })

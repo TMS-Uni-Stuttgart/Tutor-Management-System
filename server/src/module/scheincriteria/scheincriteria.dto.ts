@@ -1,5 +1,5 @@
-import { IScheinCriteriaDTO } from '../../shared/model/ScheinCriteria';
 import { IsDefined, IsString } from 'class-validator';
+import { IScheinCriteriaDTO } from 'shared/model/ScheinCriteria';
 
 export class ScheinCriteriaDTO implements IScheinCriteriaDTO {
     @IsString()

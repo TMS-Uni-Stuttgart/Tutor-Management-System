@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="true" type="JavaScriptTestRunnerJest">
+    <node-interpreter value="project" />
+    <node-options value="" />
+    <working-dir value="" />
+    <envs>
+      <env name="TMS_SQL_DB_USER" value="root" />
+      <env name="TMS_SQL_DB_PW" value="some-password" />
+      <env name="TMS_SECRET" value="dev secret" />
+    </envs>
+    <scope-kind value="ALL" />
+    <method v="2" />
+  </configuration>
+</component>

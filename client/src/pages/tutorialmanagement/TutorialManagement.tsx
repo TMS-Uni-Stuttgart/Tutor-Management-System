@@ -1,8 +1,10 @@
-import { Button } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Button } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import { AutoFix as GenerateIcon } from 'mdi-material-ui';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { HasId } from 'shared/model/Common';
 import { ITutorialDTO } from 'shared/model/Tutorial';
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function generateCreateTutorialDTO({
   slot,
-  tutor,
+  tutors,
   startTime: startTimeString,
   endTime: endTimeString,
   correctors,
@@ -55,10 +57,10 @@ function generateCreateTutorialDTO({
 
   return {
     slot,
-    tutorId: tutor,
     dates,
     startTime: startTime.toISOTime() ?? 'DATE_NOT_PARSABLE',
     endTime: endTime.toISOTime() ?? 'DATE_NOT_PARSABLE',
+    tutorIds: tutors,
     correctorIds: correctors,
   };
 }
@@ -70,13 +72,8 @@ function TutorialManagementContent(): JSX.Element {
   const { enqueueSnackbar } = useCustomSnackbar();
   const logger = useLogger('TutorialManagement');
 
-  const {
-    tutorials,
-    tutors,
-    correctors,
-    isLoading,
-    fetchTutorials,
-  } = useTutorialManagementContext();
+  const { tutorials, tutors, correctors, isLoading, fetchTutorials } =
+    useTutorialManagementContext();
 
   const handleCreateTutorial: TutorialFormSubmitCallback = useCallback(
     async (values, { setSubmitting, resetForm, setFieldError }) => {
@@ -94,7 +91,7 @@ function TutorialManagementContent(): JSX.Element {
         enqueueSnackbar('Tutorium wurde erstellt.', { variant: 'success' });
         resetForm({ values: getInitialTutorialFormValues() });
       } catch (reason) {
-        logger.log(reason);
+        logger.log(`${reason}`);
       } finally {
         setSubmitting(false);
       }
@@ -103,17 +100,18 @@ function TutorialManagementContent(): JSX.Element {
   );
 
   const handleEditTutorialSubmit: (tutorial: HasId) => TutorialFormSubmitCallback = useCallback(
-    (tutorial) => async (values, { setSubmitting }) => {
-      try {
-        await editTutorial(tutorial.id, generateCreateTutorialDTO(values));
-        await fetchTutorials();
-        enqueueSnackbar('Tutorium erfolgreich geändert.', { variant: 'success' });
-        dialog.hide();
-      } catch {
-        enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
-        setSubmitting(false);
-      }
-    },
+    (tutorial) =>
+      async (values, { setSubmitting }) => {
+        try {
+          await editTutorial(tutorial.id, generateCreateTutorialDTO(values));
+          await fetchTutorials();
+          enqueueSnackbar('Tutorium erfolgreich geändert.', { variant: 'success' });
+          dialog.hide();
+        } catch {
+          enqueueSnackbar('Tutorium konnte nicht geändert werden.', { variant: 'error' });
+          setSubmitting(false);
+        }
+      },
     [enqueueSnackbar, fetchTutorials, dialog]
   );
 
@@ -181,7 +179,7 @@ function TutorialManagementContent(): JSX.Element {
             <Button
               variant='outlined'
               component={Link}
-              to={ROUTES.GENERATE_TUTORIALS.create({})}
+              to={ROUTES.GENERATE_TUTORIALS.buildPath({})}
               startIcon={<GenerateIcon />}
             >
               Generieren
@@ -192,6 +190,7 @@ function TutorialManagementContent(): JSX.Element {
             <TutorialTableRow
               tutorial={tutorial}
               disableManageTutorialButton={!user.isAdmin()}
+              tutors={tutorial.tutors.map((t) => getNameOfEntity(t))}
               correctors={tutorial.correctors.map((corr) => getNameOfEntity(corr))}
               substitutes={[...tutorial.substitutes]
                 .map(([date, substituteId]) => {

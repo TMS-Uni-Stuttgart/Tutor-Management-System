@@ -2,7 +2,6 @@ import { DateTime, Interval } from 'luxon';
 import * as Yup from 'yup';
 import { TestContext, TestFunction, ValidationError } from 'yup';
 import { FormExcludedDate } from './components/excluded-dates/FormikExcludedDates';
-import { WeekdayTimeSlot } from './components/weekday-slots/FormikWeekdaySlot';
 import { FormState } from './GenerateTutorials';
 
 function isDateTime(this: TestContext, value: unknown): boolean | ValidationError {
@@ -34,29 +33,31 @@ function isAfterStartDay(field: string): TestFunction {
 
 const excludedDateSchema = Yup.object<FormExcludedDate>()
   .test('excludedDate', `Not a valid excluded date`, (obj) => {
-    if (obj instanceof DateTime) {
-      return obj.isValid;
-    } else if (obj instanceof Interval) {
-      return obj.isValid;
+    if (obj instanceof DateTime && obj.isValid) {
+      return true;
     }
 
     return false;
   })
   .required();
 
-const singleWeekdaySlotSchema = Yup.object().shape<WeekdayTimeSlot>({
+const singleWeekdaySlotSchema = Yup.object().shape({
   _id: Yup.number().required('Benötigt'),
   count: Yup.string()
     .matches(/^\d+(\.\d+)?$/, 'Count muss eine Zahl sein')
     .required('Benötigt'),
-  interval: Yup.object<Interval>()
+  interval: Yup.mixed<Interval>()
     .test('is-interval', 'Is not a valid luxon Interval', function (this, obj) {
-      if (!(obj instanceof Interval)) {
+      if (!obj) {
         return this.createError({ message: 'Not a luxon Interval object.' });
       }
 
       if (!obj.isValid) {
         return this.createError({ message: 'Not a valid luxon Interval.' });
+      }
+
+      if (obj.start === null || obj.end === null) {
+        throw new Error('Interval does not have start or end');
       }
 
       if (obj.start >= obj.end) {
@@ -107,7 +108,9 @@ const weekdaysSchema = Yup.object<FormState['weekdays']>()
       try {
         areWeekdaysValid.bind(this)(value, `${this.path}.${key}`);
       } catch (validationError) {
-        inner.push(validationError);
+        if (validationError instanceof ValidationError) {
+          inner.push(validationError);
+        }
       }
     }
 
@@ -142,13 +145,6 @@ const prefixesSchema = Yup.object<FormState['prefixes']>()
             path: `${this.path}.${key}`,
           })
         );
-      } else if (typeof value !== 'string') {
-        inner.push(
-          this.createError({
-            message: `Präfix ist kein String.`,
-            path: `${this.path}.${key}`,
-          })
-        );
       }
     }
 
@@ -162,7 +158,7 @@ const prefixesSchema = Yup.object<FormState['prefixes']>()
   })
   .required('Benötigt');
 
-export const validationSchema = Yup.object().shape<FormState>({
+export const validationSchema = Yup.object().shape({
   startDate: Yup.string()
     .required('Benötigt')
     .test({ test: isDateTime, message: 'Ungültiges Datum' }),

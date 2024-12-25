@@ -1,13 +1,6 @@
-import {
-  createStyles,
-  makeStyles,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Theme,
-} from '@material-ui/core';
+import { Paper, Table, TableBody, TableCell, TableRow, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { TutorialSummaryInfo } from '../Dashboard';
@@ -28,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     tableTitle: {
-      fontWeight: theme.typography.fontWeightMedium,
+      fontWeight: 'bolder',
     },
   })
 );

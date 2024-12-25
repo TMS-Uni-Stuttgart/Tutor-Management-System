@@ -1,4 +1,4 @@
-import { Tab, Tabs } from '@material-ui/core';
+import { Tab, Tabs } from '@mui/material';
 import React, { useState } from 'react';
 import TabPanel from '../../../components/TabPanel';
 import { Scheinexam } from '../../../model/Scheinexam';

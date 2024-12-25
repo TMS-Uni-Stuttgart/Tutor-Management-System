@@ -19,6 +19,7 @@ const validationSchema = Yup.object().shape({
 interface ScheinCriteriaFormState {
   name: string;
   identifier: string;
+
   [fieldKey: string]: any;
 }
 
@@ -78,7 +79,7 @@ function ScheinCriteriaForm({ onSubmit, formData, criteria, ...other }: Props): 
             onChange={(e) => {
               const newIdentifier: string = e.target.value as string;
 
-              if (!!newIdentifier) {
+              if (newIdentifier) {
                 setValues({
                   name: values.name,
                   identifier: values.identifier,

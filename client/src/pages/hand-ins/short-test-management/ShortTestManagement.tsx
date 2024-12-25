@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import { FileImportOutline as ImportIcon } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -79,7 +79,7 @@ function ShortTestManagement(): JSX.Element {
           variant: 'success',
         });
       } catch (error) {
-        logger.error(error);
+        logger.error(`${error}`);
         enqueueSnackbar('Erstellen des Kurztests fehlgeschlagen.', { variant: 'error' });
       } finally {
         setSubmitting(false);
@@ -105,7 +105,7 @@ function ShortTestManagement(): JSX.Element {
           });
           dialog.hide();
         } catch (error) {
-          logger.error(error);
+          logger.error(`${error}`);
           enqueueSnackbar('Speichern des Kurztests fehlgeschlagen.', {
             variant: 'error',
           });
@@ -139,7 +139,7 @@ function ShortTestManagement(): JSX.Element {
             variant: 'success',
           });
         } catch (error) {
-          logger.error(error);
+          logger.error(`${error}`);
           enqueueSnackbar(`${shortTest.toDisplayString()} konnte nicht gelöscht werden.`, {
             variant: 'error',
           });
@@ -193,7 +193,7 @@ function ShortTestManagement(): JSX.Element {
               <>
                 <Button
                   component={Link}
-                  to={ROUTES.IMPORT_SHORT_TEST_RESULTS.create({})}
+                  to={ROUTES.IMPORT_SHORT_TEST_RESULTS.buildPath({})}
                   startIcon={<ImportIcon />}
                 >
                   Importiere neue Ergebnisse

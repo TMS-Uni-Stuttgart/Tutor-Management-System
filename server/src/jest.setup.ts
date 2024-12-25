@@ -1,2 +1,2 @@
-// Timeout gets increased so the mongodb-memory-server has enough time to download the mongod binaries if required.
-jest.setTimeout(120 * 1000);
+// Some tests take a few seconds longer than 5s especially the first one loading the TestModule.
+jest.setTimeout(20 * 1000);

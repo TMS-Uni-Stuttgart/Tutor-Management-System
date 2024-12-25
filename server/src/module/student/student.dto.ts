@@ -1,27 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
     IsArray,
     IsBoolean,
     IsEmail,
     IsEnum,
-    IsMongoId,
     IsNotEmpty,
     IsNumber,
     IsOptional,
     IsString,
+    IsUUID,
     Min,
+    ValidateNested,
 } from 'class-validator';
+import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance';
+import { IExerciseGradingDTO, IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
+import {
+    ICakeCountDTO,
+    ICreateStudentDTO,
+    ICreateStudentsDTO,
+    IStudentDTO,
+    StudentStatus,
+} from 'shared/model/Student';
 import { IsLuxonDateTime } from '../../helpers/validators/luxon.validator';
 import { IsMapEntry, IsNumberMapEntry } from '../../helpers/validators/mapArray.validator';
-import { AttendanceState, IAttendanceDTO } from '../../shared/model/Attendance';
-import {
-    IExerciseGradingDTO,
-    IGradingDTO,
-    IPresentationPointsDTO,
-} from '../../shared/model/Gradings';
-import { ICakeCountDTO, IStudentDTO, StudentStatus } from '../../shared/model/Student';
 
-export class StudentDTO implements IStudentDTO {
+export abstract class StudentDTO implements IStudentDTO {
     @IsNotEmpty()
     firstname!: string;
 
@@ -35,9 +39,6 @@ export class StudentDTO implements IStudentDTO {
     @IsNotEmpty()
     @IsEnum(StudentStatus)
     status!: StudentStatus;
-
-    @IsNotEmpty()
-    tutorial!: string;
 
     @ApiProperty({ type: String })
     @IsOptional()
@@ -53,15 +54,33 @@ export class StudentDTO implements IStudentDTO {
     @IsOptional()
     @IsString()
     matriculationNo?: string;
+}
+
+export class CreateStudentDTO extends StudentDTO implements ICreateStudentDTO {
+    @IsNotEmpty()
+    tutorial!: string;
 
     @ApiProperty({ type: String })
     @IsOptional()
-    @IsMongoId()
+    @IsUUID()
     team?: string;
+}
 
-    constructor(fields: IStudentDTO) {
-        Object.assign(this, fields);
-    }
+export class CreateStudentsEntryDTO extends StudentDTO {
+    @ApiProperty({ type: String })
+    @IsOptional()
+    team?: string;
+}
+
+export class CreateStudentsDTO implements ICreateStudentsDTO {
+    @IsNotEmpty()
+    tutorial!: string;
+
+    @IsNotEmpty()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CreateStudentsEntryDTO)
+    students!: CreateStudentsEntryDTO[];
 }
 
 export class AttendanceDTO implements IAttendanceDTO {

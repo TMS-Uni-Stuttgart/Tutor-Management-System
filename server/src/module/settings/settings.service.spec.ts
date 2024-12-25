@@ -1,21 +1,37 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { sanitizeObject } from '../../../test/helpers/test.helpers';
-import { TestModule } from '../../../test/helpers/test.module';
-import { MockedModel } from '../../../test/helpers/testdocument';
-import { SETTINGS_DOCUMENTS } from '../../../test/mocks/documents.mock';
-import { IClientSettings } from '../../shared/model/Settings';
+import { IClientSettings } from 'shared/model/Settings';
+import { TestSuite } from '../../../test/helpers/TestSuite';
+import { MOCKED_SETTINGS_DOCUMENT } from '../../../test/mocks/entities.mock';
+import { Setting } from '../../database/entities/settings.entity';
 import { ClientSettingsDTO } from './settings.dto';
 import { SettingsService } from './settings.service';
+import { SettingsModule } from './settings.module';
 
 interface AssertSettingsParams {
-    expected: MockedModel<IClientSettings>;
+    expected: Setting;
     actual: IClientSettings;
 }
 
 function assertSettings({ expected, actual }: AssertSettingsParams) {
-    const { _id, ...expectedWithoutId } = sanitizeObject(expected);
-    const sanitizedActual = sanitizeObject(actual);
-    expect(sanitizedActual).toEqual(expectedWithoutId);
+    const { id, mailSettings: expectedMail, ...restExpected } = expected;
+    const { mailingConfig: actualMail, ...restActual } = actual;
+
+    expect(restActual).toEqual(restExpected);
+
+    if (!!expectedMail && !!actualMail) {
+        const expectedAuth = expectedMail.auth;
+        const actualAuth = actualMail.auth;
+
+        expect(actualMail.from).toEqual(expectedMail.from);
+        expect(actualMail.host).toEqual(expectedMail.host);
+        expect(actualMail.port).toEqual(expectedMail.port);
+        expect(actualMail.subject).toEqual(expectedMail.subject);
+
+        expect(actualAuth.user).toEqual(expectedAuth.user);
+        expect(actualAuth.pass).toEqual(expectedAuth.password);
+    } else {
+        // Check if both are undefined.
+        expect(actualMail).toEqual(expectedMail);
+    }
 }
 
 const DEFAULT_SETTINGS: ClientSettingsDTO = {
@@ -34,33 +50,14 @@ const SOME_MAILING_SETTINGS: ClientSettingsDTO['mailingConfig'] = {
 };
 
 describe('SettingsService', () => {
-    let testModule: TestingModule;
-    let service: SettingsService;
-
-    beforeAll(async () => {
-        testModule = await Test.createTestingModule({
-            imports: [TestModule.forRootAsync()],
-            providers: [SettingsService],
-        }).compile();
-    });
-
-    afterAll(async () => {
-        await testModule.close();
-    });
-
-    beforeEach(async () => {
-        await testModule.get<TestModule>(TestModule).reset();
-
-        service = testModule.get<SettingsService>(SettingsService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    const suite = new TestSuite(SettingsService, SettingsModule);
 
     it('get all settings', async () => {
-        const settings = await service.getClientSettings();
-        assertSettings({ actual: settings, expected: SETTINGS_DOCUMENTS[0] });
+        const settings = await suite.service.getClientSettings();
+        assertSettings({
+            actual: settings,
+            expected: MOCKED_SETTINGS_DOCUMENT[0],
+        });
     });
 
     it.each<ClientSettingsDTO>([
@@ -84,12 +81,17 @@ describe('SettingsService', () => {
             mailingConfig: SOME_MAILING_SETTINGS,
         },
     ])('change setting with DTO "%s"', async (newSetting: ClientSettingsDTO) => {
-        await service.setClientSettings(newSetting);
+        await suite.service.setClientSettings(newSetting);
+        const settings = await suite.service.getClientSettings();
 
-        const settings = await service.getClientSettings();
+        const expected = Setting.fromDTO({
+            ...DEFAULT_SETTINGS,
+            ...newSetting,
+        });
+
         assertSettings({
             actual: settings,
-            expected: { ...SETTINGS_DOCUMENTS[0], ...newSetting },
+            expected,
         });
     });
 
@@ -98,15 +100,15 @@ describe('SettingsService', () => {
             ...DEFAULT_SETTINGS,
             mailingConfig: SOME_MAILING_SETTINGS,
         };
-        await service.setClientSettings(oldDto);
+        await suite.service.setClientSettings(oldDto);
 
-        const oldSettings = await service.getClientSettings();
+        const oldSettings = await suite.service.getClientSettings();
         expect(oldSettings.mailingConfig).toBeDefined();
 
         const newDto: ClientSettingsDTO = { ...DEFAULT_SETTINGS };
-        await service.setClientSettings(newDto);
+        await suite.service.setClientSettings(newDto);
 
-        const newSettings = await service.getClientSettings();
+        const newSettings = await suite.service.getClientSettings();
         expect(newSettings.mailingConfig).not.toBeDefined();
     });
 });

@@ -1,8 +1,9 @@
-import { Box, BoxProps, Grow, IconButton, TextField } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, BoxProps, Grow, IconButton, TextField } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useFormik } from 'formik';
 import { DateTime, Interval } from 'luxon';
-import { Check as AcceptIcon, Close as AbortIcon } from 'mdi-material-ui';
+import { Close as AbortIcon, Check as AcceptIcon } from 'mdi-material-ui';
 import React, { useMemo } from 'react';
 import * as Yup from 'yup';
 import SelectInterval, {
@@ -30,10 +31,10 @@ export interface AddSlotFormData {
   count: number;
 }
 
-const validationSchema = Yup.object().shape<AddSlotFormData>({
+const validationSchema = Yup.object().shape({
   count: Yup.number().min(1, 'Anzahl muss größer als 0 sein.').required('Benötigt'),
-  interval: Yup.object<Interval>()
-    .test('is-interval', 'Ist kein Luxon Interval', (obj) => obj instanceof Interval && obj.isValid)
+  interval: Yup.mixed<Interval>()
+    .test('is-interval', 'Ist kein Luxon Interval', (obj) => !!obj && obj.isValid)
     .required('Benötigt'),
 });
 
@@ -48,21 +49,14 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
     () => ({ interval: getDefaultInterval(), count: 1 }),
     []
   );
-  const {
-    values,
-    errors,
-    touched,
-    setFieldValue,
-    getFieldProps,
-    isValid,
-    submitForm,
-  } = useFormik<AddSlotFormData>({
-    initialValues,
-    onSubmit: ({ count, interval }) => {
-      onAccept({ count, interval });
-    },
-    validationSchema,
-  });
+  const { values, errors, touched, setFieldValue, getFieldProps, isValid, submitForm } =
+    useFormik<AddSlotFormData>({
+      initialValues,
+      onSubmit: ({ count, interval }) => {
+        onAccept({ count, interval });
+      },
+      validationSchema,
+    });
 
   const handleAccept = () => {
     submitForm();
@@ -104,11 +98,11 @@ function AddSlotForm({ onAbort, onAccept, ...props }: Props): JSX.Element {
           helperText={!!touched.count && errors.count}
         />
 
-        <IconButton onClick={handleAccept} disabled={!isValid}>
+        <IconButton onClick={handleAccept} disabled={!isValid} size='large'>
           <AcceptIcon />
         </IconButton>
 
-        <IconButton onClick={onAbort}>
+        <IconButton onClick={onAbort} size='large'>
           <AbortIcon />
         </IconButton>
       </Box>
