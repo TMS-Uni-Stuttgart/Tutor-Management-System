@@ -1,10 +1,10 @@
 import { AxiosInstance } from 'axios';
-import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance';
-import { IGradingDTO } from 'shared/model/Gradings';
-import { ISheet, ISheetDTO } from 'shared/model/Sheet';
-import { IScheinCriteria, IScheinCriteriaDTO } from 'shared/model/ScheinCriteria';
-import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest';
-import { ICreateUserDTO, IUser } from 'shared/model/User';
+import { IAttendance, IAttendanceDTO } from 'shared/model/Attendance.js';
+import { IGradingDTO } from 'shared/model/Gradings.js';
+import { ISheet, ISheetDTO } from 'shared/model/Sheet.js';
+import { IScheinCriteria, IScheinCriteriaDTO } from 'shared/model/ScheinCriteria.js';
+import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest.js';
+import { ICreateUserDTO, IUser } from 'shared/model/User.js';
 
 export async function createSheet(sheetInfo: ISheetDTO, axios: AxiosInstance): Promise<ISheet> {
     const response = await axios.post<ISheet>('sheet', sheetInfo);

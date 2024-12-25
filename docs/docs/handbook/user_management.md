@@ -74,7 +74,7 @@ To import users from a CSV file click on the "<IconInText icon={GenerateIcon} />
 
    - _Lastname (**required**)_: The lastname of the user.
 
-   - _E-Mail Address (**required**)_: A valid e-mail address of the user. Used to send the credentials to if mailing is configured (see [_Provide Credentials_](#provide-credentials) on this page).
+   - _E-Mail address (**required**)_: A valid e-mail address of the user. Used to send the credentials to if mailing is configured (see [_Provide Credentials_](#provide-credentials) on this page).
 
    - _Roles_: All roles of the user. If provided must be a comma-separated list of [_Roles_](./roles) supported by the TMS. If not provided the user only gets assigned the `TUTOR` role.
 

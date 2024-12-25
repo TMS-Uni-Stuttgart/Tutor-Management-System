@@ -1,14 +1,8 @@
-import {
-  CircularProgress,
-  createStyles,
-  makeStyles,
-  Paper,
-  Theme,
-  useTheme,
-} from '@material-ui/core';
-import GREEN from '@material-ui/core/colors/green';
-import RED from '@material-ui/core/colors/red';
-import React from 'react';
+import { CircularProgress, Paper, Theme, useTheme } from '@mui/material';
+import GREEN from '@mui/material/colors/green';
+import RED from '@mui/material/colors/red';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import Chart from 'react-google-charts';
 import { StudentByTutorialSlotSummaryMap } from '../../../typings/types';
 

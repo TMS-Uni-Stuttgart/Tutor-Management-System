@@ -1,8 +1,10 @@
-import { Button } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Button } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
 import { AutoFix as GenerateIcon } from 'mdi-material-ui';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { HasId } from 'shared/model/Common';
 import { ITutorialDTO } from 'shared/model/Tutorial';
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function generateCreateTutorialDTO({
   slot,
-  tutor,
+  tutors,
   startTime: startTimeString,
   endTime: endTimeString,
   correctors,
@@ -55,10 +57,10 @@ function generateCreateTutorialDTO({
 
   return {
     slot,
-    tutorId: tutor,
     dates,
     startTime: startTime.toISOTime() ?? 'DATE_NOT_PARSABLE',
     endTime: endTime.toISOTime() ?? 'DATE_NOT_PARSABLE',
+    tutorIds: tutors,
     correctorIds: correctors,
   };
 }
@@ -177,7 +179,7 @@ function TutorialManagementContent(): JSX.Element {
             <Button
               variant='outlined'
               component={Link}
-              to={ROUTES.GENERATE_TUTORIALS.create({})}
+              to={ROUTES.GENERATE_TUTORIALS.buildPath({})}
               startIcon={<GenerateIcon />}
             >
               Generieren
@@ -188,6 +190,7 @@ function TutorialManagementContent(): JSX.Element {
             <TutorialTableRow
               tutorial={tutorial}
               disableManageTutorialButton={!user.isAdmin()}
+              tutors={tutorial.tutors.map((t) => getNameOfEntity(t))}
               correctors={tutorial.correctors.map((corr) => getNameOfEntity(corr))}
               substitutes={[...tutorial.substitutes]
                 .map(([date, substituteId]) => {

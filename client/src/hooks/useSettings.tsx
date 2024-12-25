@@ -34,7 +34,7 @@ export function SettingsProvider({ children }: RequireChildrenProp): JSX.Element
   const { userData } = useLogin();
   const [value, isLoading, , execute] = useFetchState({ fetchFunction: getSettings });
   const updateSettings = useCallback(async () => {
-    if (!!userData) {
+    if (userData) {
       await execute();
     }
   }, [userData, execute]);

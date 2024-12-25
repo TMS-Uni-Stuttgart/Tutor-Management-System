@@ -1,8 +1,10 @@
-import { Box, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
-import { Prompt, useParams, useRouteMatch } from 'react-router';
+import { useMatch, useParams } from 'react-router';
+import { unstable_usePrompt } from 'react-router-dom';
 import { ISubstituteDTO } from 'shared/model/Tutorial';
 import BackButton from '../../components/back-button/BackButton';
 import DisableBackButton from '../../components/back-button/DisableBackButton.context';
@@ -26,6 +28,7 @@ const useStyles = makeStyles((theme) =>
 
 interface Params {
   tutorialId: string;
+  [key: string]: string | undefined;
 }
 
 function SubstituteManagementContent(): JSX.Element {
@@ -52,7 +55,7 @@ function SubstituteManagementContent(): JSX.Element {
       tutorial.value.dates.forEach((date) => {
         const substitute = getSelectedSubstitute(date);
 
-        if (!!substitute) {
+        if (substitute) {
           const datesOfSubstitute = datesWithSubst.get(substitute.id) ?? [];
           datesOfSubstitute.push(date.toISODate() ?? '');
           datesWithSubst.set(substitute.id, datesOfSubstitute.filter(Boolean));
@@ -86,30 +89,30 @@ function SubstituteManagementContent(): JSX.Element {
     [getSelectedSubstitute, tutorial, enqueueSnackbar, resetDirty]
   );
 
+  // unstable_usePrompt({
+  //   message: 'Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?',
+  //   when: dirty,
+  // });
+
   return (
     <Box
       flex={1}
       display='grid'
       gridTemplateColumns='minmax(300px, 340px) minmax(0, 1fr)'
       gridTemplateRows='fit-content(80px) 1fr fit-content(80px)'
-      gridRowGap={16}
-      gridColumnGap={16}
+      rowGap={16}
+      columnGap={16}
       height='100%'
       component='form'
       onSubmit={handleSubmit}
     >
       <Box display='flex' alignItems='center'>
-        <BackButton to={ROUTES.MANAGE_TUTORIALS.create({})} className={classes.backButton} />
-
-        <Prompt
-          when={dirty}
-          message='Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?'
-        />
+        <BackButton to={ROUTES.MANAGE_TUTORIALS.buildPath({})} className={classes.backButton} />
       </Box>
 
       <DateBox />
 
-      <Box display='grid' gridRowGap={8}>
+      <Box display='grid' rowGap={8}>
         <Typography color='error' style={{ display: dirty ? undefined : 'none' }}>
           Es gibt ungespeicherte Änderungen.
         </Typography>
@@ -137,8 +140,10 @@ function SubstituteManagementContent(): JSX.Element {
 
 function SubstituteManagement(): JSX.Element {
   const { tutorialId } = useParams<Params>();
-  const { path } = useRouteMatch();
-  const isAdminVersion = ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.template === path;
+  const match = useMatch(ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.path);
+  const isAdminVersion = match
+    ? ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.path === match.pattern.path
+    : false;
 
   return (
     <DisableBackButton isBackDisabled={!isAdminVersion}>

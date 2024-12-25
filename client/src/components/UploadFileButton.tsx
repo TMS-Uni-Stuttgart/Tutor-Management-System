@@ -1,5 +1,6 @@
-import { Box, Button, CircularProgress } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, CircularProgress } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Upload as UploadIcon } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
 import DragAndDrop from './drag-and-drop/DragAndDrop';
@@ -39,10 +40,6 @@ function UploadFileButton({
     async (file: File) => {
       setLoading(true);
 
-      if (!supportedFileTypes.includes(file.type)) {
-        return;
-      }
-
       const content: string = await file.text();
       const cb = onFileSelect(content, file);
 
@@ -50,7 +47,7 @@ function UploadFileButton({
 
       setLoading(false);
     },
-    [supportedFileTypes, onFileSelect]
+    [onFileSelect]
   );
 
   const handleFileUpload = useCallback(
@@ -77,7 +74,7 @@ function UploadFileButton({
     >
       <Box display='flex'>
         <input
-          accept='.csv'
+          accept={supportedFileTypes.join(',')}
           style={{ display: 'none' }}
           id='icon-button-file'
           type='file'

@@ -1,4 +1,5 @@
 import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
     BadRequestException,
@@ -26,7 +27,9 @@ export class TeamService {
         @Inject(forwardRef(() => GradingService))
         private readonly gradingService: GradingService,
         @InjectRepository(Team)
-        private readonly repository: EntityRepository<Team>
+        private readonly repository: EntityRepository<Team>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -35,7 +38,7 @@ export class TeamService {
      * @returns All teams in the given tutorial.
      */
     async findAllTeamsInTutorial(tutorialId: string): Promise<Team[]> {
-        return this.repository.find({ tutorial: tutorialId }, { populate: true });
+        return this.repository.find({ tutorial: tutorialId }, { populate: ['*'] });
     }
 
     /**
@@ -51,7 +54,7 @@ export class TeamService {
     async findById({ tutorialId, teamId }: ITeamId): Promise<Team> {
         const team = await this.repository.findOne(
             { id: teamId, tutorial: tutorialId },
-            { populate: true }
+            { populate: ['*'] }
         );
 
         if (!team) {
@@ -87,8 +90,26 @@ export class TeamService {
         });
         team.students.set(students);
 
-        await this.repository.persistAndFlush(team);
+        await this.em.persistAndFlush(team);
         return team.toDTO();
+    }
+
+    /**
+     * Creates a team in the given tutorial without any students.
+     * Does not flush the entityManager.
+     *
+     * @param tutorial Tutorial to create team in.
+     *
+     * @returns Created team.
+     */
+    createTeamWithoutStudents(tutorial: Tutorial): Team {
+        const team = new Team({
+            teamNo: this.getFirstAvailableTeamNo(tutorial),
+            tutorial,
+        });
+
+        this.em.persist(team);
+        return team;
     }
 
     /**
@@ -112,7 +133,7 @@ export class TeamService {
         this.assertAllStudentsInSameTutorial(teamId.tutorialId, newStudentsOfTeam);
 
         team.students.set(newStudentsOfTeam);
-        await this.repository.persistAndFlush(team);
+        await this.em.persistAndFlush(team);
 
         return team.toDTO();
     }
@@ -128,11 +149,8 @@ export class TeamService {
      */
     async deleteTeamFromTutorial(teamId: ITeamId): Promise<void> {
         const team = await this.findById(teamId);
-        const repo = this.repository;
-        team.tutorial.teams.remove(team);
-        team.students.removeAll();
 
-        await repo.removeAndFlush(team);
+        await this.em.removeAndFlush(team);
     }
 
     /**

@@ -1,8 +1,10 @@
-import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { SelectChangeEvent } from '@mui/material/Select';
+import { SelectInputProps } from '@mui/material/Select/SelectInput';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { getAllSheets } from '../../hooks/fetching/Sheet';
 import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
 import { Sheet } from '../../model/Sheet';
@@ -18,6 +20,7 @@ const useStyles = makeStyles(() =>
 
 interface RouteParams {
   sheetId?: string;
+  [key: string]: string | undefined;
 }
 
 interface GenerateOptions {
@@ -46,7 +49,7 @@ interface UseSheetSelector {
 }
 
 export function useSheetSelector({ generatePath }: SheetSelectorOptions): UseSheetSelector {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { setError } = useErrorSnackbar();
   const { sheetId } = useParams<RouteParams>();
 
@@ -71,20 +74,20 @@ export function useSheetSelector({ generatePath }: SheetSelectorOptions): UseShe
       return;
     }
 
-    if (!!sheetId) {
+    if (sheetId) {
       setCurrentSheet(sheets.find((s) => s.id === sheetId));
     } else {
       setCurrentSheet(undefined);
     }
   }, [sheets, sheetId, currentSheet]);
 
-  function onSheetSelection(e: ChangeEvent<{ name?: string; value: unknown }>) {
-    if (typeof e.target.value !== 'string') {
+  function onSheetSelection(event: SelectChangeEvent<unknown>, child: React.ReactNode) {
+    if (typeof event.target.value !== 'string') {
       return;
     }
 
-    const sheetId: string = e.target.value;
-    history.push(generatePath({ sheetId }));
+    const sheetId: string = event.target.value;
+    navigate(generatePath({ sheetId }));
   }
 
   return {

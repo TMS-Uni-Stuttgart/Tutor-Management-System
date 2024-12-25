@@ -32,20 +32,23 @@ export class AttendancePDFGenerator extends PDFGenerator<GeneratorOptions> {
     public async generatePDF({ tutorialId, date }: GeneratorOptions): Promise<Buffer> {
         const tutorial = await this.tutorialService.findById(tutorialId);
 
-        if (!tutorial.tutor) {
+        if (tutorial.tutors.getItems().length === 0) {
             throw new BadRequestException(
                 'Tutorial which attendance list should be generated does NOT have a tutor assigned.'
             );
         }
 
-        const { tutor, slot: tutorialSlot } = tutorial;
-        const tutorName = getNameOfEntity(tutor);
+        const { tutors, slot: tutorialSlot } = tutorial;
+        const tutorNames = tutors
+            .getItems()
+            .map((tutor) => getNameOfEntity(tutor))
+            .join('; ');
         const template = this.templateService.getAttendanceTemplate();
         const students = tutorial.getStudents();
         const content = template({
             date,
             students: students.sort(sortByName).map((s) => ({ name: getNameOfEntity(s) })),
-            tutorName,
+            tutorNames,
             tutorialSlot,
         });
 

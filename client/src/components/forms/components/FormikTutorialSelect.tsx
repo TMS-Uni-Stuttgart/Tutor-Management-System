@@ -1,5 +1,5 @@
 import { useField } from 'formik';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { Tutorial } from '../../../model/Tutorial';
 import FormikSelect, { FormikSelectProps } from './FormikSelect';
@@ -22,7 +22,7 @@ function FormikTutorialSelect({
   const isNotMultiple = disableMultiple ?? false;
 
   const isItemSelected = useCallback(
-    (tutorial) => {
+    (tutorial: Tutorial) => {
       if (!Array.isArray(value)) {
         return false;
       }
@@ -37,7 +37,10 @@ function FormikTutorialSelect({
       name={name}
       itemToString={(tutorial) => ({
         primary: tutorial.toDisplayStringWithTime(),
-        secondary: tutorial.tutor ? `Tutor/in: ${getNameOfEntity(tutorial.tutor)}` : undefined,
+        secondary:
+          tutorial.tutors.length > 0
+            ? `Tutoren: ${tutorial.tutors.map((tutor) => getNameOfEntity(tutor)).join(', ')}`
+            : undefined,
       })}
       itemToValue={(tutorial) => tutorial.id}
       {...props}

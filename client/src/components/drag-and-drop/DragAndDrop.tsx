@@ -1,10 +1,12 @@
-import { Box, BoxProps, Typography } from '@material-ui/core';
-import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
+import { Box, BoxProps, Typography } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ClipboardArrowDown as DropIcon, CloseCircle as NotAllowedIcon } from 'mdi-material-ui';
 import React, { useCallback, useRef, useState } from 'react';
 
 const useStyles = makeStyles((theme) => {
-  const background = fade(theme.palette.background.paper, 0.85);
+  const background = alpha(theme.palette.background.paper, 0.85);
   return createStyles({
     overlay: {
       background,

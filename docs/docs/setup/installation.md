@@ -7,24 +7,24 @@ sidebar_label: Installation
 ## Requirements
 
 - [Docker](https://docs.docker.com/install/): The provided container image is a docker image for Linux containers therefore you need Docker to be able to run it.
-- [Docker-Compose](https://docs.docker.com/compose/install/): While technically not required it helps you to get up the container(s) more easily.
+- [Docker Compose](https://docs.docker.com/compose/install/): While technically not required it helps you to get up the container(s) more easily.
 
 ## Installation
 
 ### Information about `sudo`
 
-If you need to run docker (and docker-compose) with sudo right you have to prefix all following `docker-compose` and `docker` commands with `sudo`.
-Furthermore, keep in mind adding the `-E` flag to the `sudo` command if the docker or docker-compose rely on environment variables so those get passed down, for example:
+If you need to run docker with sudo right you have to prefix all following `docker` commands with `sudo`.
+Furthermore, keep in mind adding the `-E` flag to the `sudo` command if the docker or docker compose rely on environment variables so those get passed down, for example:
 
 ```shell
-sudo -E docker-compose up
+sudo -E docker compose up
 ```
 
 ### Step-by-Step
 
-This Step-by-Step guide uses docker-compose to set up the containers. You can find a sample [docker-compose.yml file here](../assets/docker-compose.yml). All steps marked with _(optional)_ can safely be skipped.
+This Step-by-Step guide uses docker compose to set up the containers. You can find a sample [docker-compose.yml file here](../assets/docker-compose.yml). All steps marked with _(optional)_ can safely be skipped.
 
-If you want to use `docker` commands instead of docker-compose you can find a list of those [below](#commands) aswell.
+If you want to use `docker` commands instead of docker compose you can find a list of those [below](#commands) aswell.
 
 :::caution
 If you are on a machine that requires manually starting the docker engine do so now.
@@ -83,17 +83,17 @@ If you are on a machine that requires manually starting the docker engine do so 
       | `TMS_SECRET`      | Secret to use to encrypt and decrypt sensitive database entries. **Keep it safe!** |
 
       :::caution
-      They must be **exported** or else the docker-compose child process will not have access to them.
+      They must be **exported** or else the docker compose child process will not have access to them.
       :::
 
    1. **Run** the following command to create and start all the containers:
 
       ```shell
-      sudo -E docker-compose up
+      sudo -E docker compose up
       ```
 
       :::note
-      Remember to put in the `-E` parameter so your environment variables get passed down to the process running docker-compose.
+      Remember to put in the `-E` parameter so your environment variables get passed down to the process running docker compose.
       :::
 
    1. **Check** that the presented logs do **NOT** contain any errors and that all services start successfully.
@@ -103,7 +103,7 @@ If you are on a machine that requires manually starting the docker engine do so 
    1. _(optional)_ **Restart** all containers with the following command (please note the additional `-d`). This time the terminal will not hook into the container logs.
 
       ```shell
-      sudo -E docker-compose up -d
+      sudo -E docker compose up -d
       ```
 
 8. **Login** as administrator. The TMS creates the credentials for the administrator on the first start. The credentials are `admin` for the username and `adminPass` for the password (pay attention to the casing). You are prompted to change your password on the first login (see [First Login](../handbook/login#first-login)).

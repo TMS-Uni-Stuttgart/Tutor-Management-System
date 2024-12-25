@@ -42,6 +42,21 @@ export class ExerciseGrading {
         this.points = points;
     }
 
+    /**
+     * @returns Sum of all points of all subExercises, points of this exercise grading
+     * and the `additionalPoints` of this exercise grading.
+     */
+    get totalPoints(): number {
+        if (this.subExercisePoints.size > 0) {
+            return (
+                (this.additionalPoints ?? 0) +
+                [...this.subExercisePoints.values()].reduce((sum, points) => sum + points, 0)
+            );
+        } else {
+            return this.points + (this.additionalPoints ?? 0);
+        }
+    }
+
     getGradingForSubExercise(subEx: SubExercise): number | undefined {
         return this.subExercisePoints.get(subEx.id);
     }
@@ -83,13 +98,13 @@ export class Grading {
     @Embedded(() => ExerciseGrading, { array: true })
     exerciseGradings: ExerciseGrading[] = [];
 
-    @ManyToOne(() => Sheet)
+    @ManyToOne(() => Sheet, { deleteRule: 'cascade' })
     private sheet?: Sheet;
 
-    @ManyToOne(() => Scheinexam)
+    @ManyToOne(() => Scheinexam, { deleteRule: 'cascade' })
     private exam?: Scheinexam;
 
-    @ManyToOne(() => ShortTest)
+    @ManyToOne(() => ShortTest, { deleteRule: 'cascade' })
     private shortTest?: ShortTest;
 
     @Property({ nullable: false })
@@ -112,7 +127,10 @@ export class Grading {
     get points(): number {
         const additional = this.additionalPoints ?? 0;
 
-        return additional + this.exerciseGradings.reduce((sum, grading) => sum + grading.points, 0);
+        return (
+            additional +
+            this.exerciseGradings.reduce((sum, grading) => sum + grading.totalPoints, 0)
+        );
     }
 
     get handIn(): HandIn {

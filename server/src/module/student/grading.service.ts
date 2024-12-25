@@ -1,18 +1,18 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { GradingResponseData } from 'shared/model/Gradings';
 import { Grading } from '../../database/entities/grading.entity';
 import { HandIn } from '../../database/entities/ratedEntity.entity';
 import { Student } from '../../database/entities/student.entity';
+import { Team } from '../../database/entities/team.entity';
+import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
 import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
-import { GradingList, GradingListsForStudents } from '../../helpers/GradingList';
-import { Team } from '../../database/entities/team.entity';
-import { GradingResponseData } from 'shared/model/Gradings';
-import { InjectRepository } from '@mikro-orm/nestjs';
 
 @Injectable()
 export class GradingService {
@@ -24,7 +24,9 @@ export class GradingService {
         private readonly shortTestService: ShortTestService,
         private readonly entityManager: EntityManager,
         @InjectRepository(Grading)
-        private readonly repository: EntityRepository<Grading>
+        private readonly repository: EntityRepository<Grading>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -33,7 +35,7 @@ export class GradingService {
      * @returns All gradings which belong to the hand-in with the given handInId.
      */
     async findOfHandIn(handInId: string): Promise<GradingResponseData[]> {
-        const gradings = await this.repository.find({ handInId: handInId }, { populate: true });
+        const gradings = await this.repository.find({ handInId: handInId }, { populate: ['*'] });
         const data: GradingResponseData[] = [];
 
         gradings.forEach((grading) => {
@@ -51,7 +53,7 @@ export class GradingService {
      * @returns All gradings that this student has.
      */
     async findOfStudent(studentId: string): Promise<GradingList> {
-        const gradings = await this.repository.find({ students: studentId }, { populate: true });
+        const gradings = await this.repository.find({ students: studentId }, { populate: ['*'] });
         return new GradingList(gradings);
     }
 
@@ -67,7 +69,7 @@ export class GradingService {
     ): Promise<Grading | undefined> {
         const grading = await this.repository.findOne(
             { students: studentId, handInId: handInId },
-            { populate: true }
+            { populate: ['*'] }
         );
 
         return grading ?? undefined;
@@ -166,19 +168,19 @@ export class GradingService {
                 !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
 
             newGrading.updateFromDTO({ dto, handIn });
-            oldGrading?.students.remove(...students);
-            newGrading.students.add(...students);
+            oldGrading?.students.remove(students);
+            newGrading.students.add(students);
 
             if (!!oldGrading && oldGrading.students.length === 0) {
-                this.repository.remove(oldGrading);
+                this.em.remove(oldGrading);
             }
 
-            await this.repository.persistAndFlush(newGrading);
+            await this.em.persistAndFlush(newGrading);
         }
     }
 
     async findAllGradingsOfStudent(student: Student): Promise<Grading[]> {
-        return this.repository.find({ students: student.id }, { populate: true });
+        return this.repository.find({ students: student.id }, { populate: ['*'] });
     }
 
     async findAllGradingsOfMultipleStudents(students: Student[]): Promise<StudentAndGradings[]> {
@@ -194,11 +196,18 @@ export class GradingService {
     }
 
     async findAllHandInGradingsOfTeam(team: Team, handIn: HandIn): Promise<Grading[]> {
-        const studentIds = team.getStudents().map((s) => s.id);
-        return this.repository.find({
-            handInId: handIn.id,
-            students: { $contains: studentIds },
-        });
+        const gradings = await Promise.all(
+            team.getStudents().map((s) =>
+                this.repository.find(
+                    {
+                        handInId: handIn.id,
+                        students: s,
+                    },
+                    { populate: ['*'] }
+                )
+            )
+        );
+        return [...new Set(gradings.flat())];
     }
 
     private async updateGradingOfStudent({
@@ -219,10 +228,10 @@ export class GradingService {
         newGrading.students.add(student);
 
         if (!!oldGrading && oldGrading.students.length === 0) {
-            this.repository.remove(oldGrading);
+            this.em.remove(oldGrading);
         }
 
-        this.repository.persist(newGrading);
+        this.em.persist(newGrading);
     }
 
     /**

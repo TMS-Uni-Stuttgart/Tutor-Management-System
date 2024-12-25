@@ -21,7 +21,7 @@ To get started you need a few development tools. The following are required to r
 2. Package manager [pnpm](https://pnpm.js.org/en/)
    If you have not already you can install `pnpm` with
    ```cmd
-   npm install -g pnpm
+   npm install -g pnpm@latest-7
    ```
 
 While [Docker](https://docs.docker.com/install/) is not needed it helps you to set up your environment more easily. It's mostly used to spin up a Mongo database on your system in closely to no time. If you don't use Docker you need to provide an alternative MySQL database and to change the configuration in `server/config/development.yml` accordingly.
@@ -47,12 +47,12 @@ After pulling your fork and creating a new branch for your issue you have to set
    1. Just set up a mongo database:
 
       ```sh
-      docker-compose up -d mysql
+      docker compose up -d mysql
       ```
 
    1. If you want to also get an administrative board for your local database:
       ```sh
-      docker-compose up -d phpmyadmin
+      docker compose up -d phpmyadmin
       ```
       This starts the MySQL container aswell as a webinterface which connects to it. To access this interface visit [localhost:4242](localhost:4242).
 

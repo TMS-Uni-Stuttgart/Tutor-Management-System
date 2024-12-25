@@ -1,5 +1,7 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FormDataResponse } from 'shared/model/FormTypes';
 import {
     CriteriaInformation,
@@ -8,6 +10,7 @@ import {
     ScheincriteriaSummaryByStudents,
     SingleScheincriteriaSummaryByStudents,
 } from 'shared/model/ScheinCriteria';
+import { StudentStatus } from 'shared/model/Student';
 import { ScheincriteriaEntity } from '../../database/entities/scheincriteria.entity';
 import { Scheinexam } from '../../database/entities/scheinexam.entity';
 import { Sheet } from '../../database/entities/sheet.entity';
@@ -17,13 +20,12 @@ import { CRUDService } from '../../helpers/CRUDService';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
+import { GradingService, StudentAndGradings } from '../student/grading.service';
 import { StudentService } from '../student/student.service';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { Scheincriteria } from './container/Scheincriteria';
 import { ScheincriteriaContainer } from './container/scheincriteria.container';
 import { ScheinCriteriaDTO } from './scheincriteria.dto';
-import { GradingService, StudentAndGradings } from '../student/grading.service';
-import { InjectRepository } from '@mikro-orm/nestjs';
 
 interface CalculationParams {
     criterias: ScheincriteriaEntity[];
@@ -58,7 +60,9 @@ export class ScheincriteriaService
         private readonly shortTestService: ShortTestService,
         private readonly gradingService: GradingService,
         @InjectRepository(ScheincriteriaEntity)
-        private readonly repository: EntityRepository<ScheincriteriaEntity>
+        private readonly repository: EntityRepository<ScheincriteriaEntity>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -105,7 +109,7 @@ export class ScheincriteriaService
             name: dto.name,
             criteria: scheincriteria,
         });
-        await this.repository.persistAndFlush(entity);
+        await this.em.persistAndFlush(entity);
         return entity.toDTO();
     }
 
@@ -125,7 +129,7 @@ export class ScheincriteriaService
 
         scheincriteria.criteria = Scheincriteria.fromDTO(dto);
         scheincriteria.name = dto.name;
-        await this.repository.persistAndFlush(scheincriteria);
+        await this.em.persistAndFlush(scheincriteria);
         return scheincriteria.toDTO();
     }
 
@@ -140,7 +144,7 @@ export class ScheincriteriaService
      */
     async delete(id: string): Promise<void> {
         const criteria = await this.findById(id);
-        await this.repository.removeAndFlush(criteria);
+        await this.em.removeAndFlush(criteria);
     }
 
     /**
@@ -260,7 +264,8 @@ export class ScheincriteriaService
 
         return {
             student: params.studentInfo.student.toDTO(),
-            passed,
+            passed:
+                passed || params.studentInfo.student.status === StudentStatus.NO_SCHEIN_REQUIRED,
             scheinCriteriaSummary: summaries,
         };
     }
