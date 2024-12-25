@@ -1,6 +1,6 @@
 module.exports = {
   title: 'Tutor-Management-System',
-  url: 'https://dudrie.github.io/',
+  url: 'https://tms-uni-stuttgart.github.io/',
   baseUrl: '/Tutor-Management-System/',
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',

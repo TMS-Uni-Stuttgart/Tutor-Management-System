@@ -1,6 +1,6 @@
-import { Box } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { Box } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useMatches, useParams } from 'react-router';
 import { IPresentationPointsDTO } from 'shared/model/Gradings';
 import Placeholder from '../../components/Placeholder';
 import { useSheetSelector } from '../../components/sheet-selector/SheetSelector';
@@ -8,16 +8,18 @@ import { getStudent, setPresentationPointsOfStudent } from '../../hooks/fetching
 import { getStudentsOfTutorial } from '../../hooks/fetching/Tutorial';
 import { useErrorSnackbar } from '../../hooks/snackbar/useErrorSnackbar';
 import { Student } from '../../model/Student';
-import { ROUTES } from '../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../routes/Routing.routes';
 import PresentationList from './components/PresentationList';
 
 interface RouteParams {
   sheetId?: string;
   tutorialId?: string;
+  [key: string]: string | undefined;
 }
 
 function PresentationPoints(): JSX.Element {
   const { tutorialId } = useParams<RouteParams>();
+  const matches = useMatches();
 
   const { setError } = useErrorSnackbar();
   const { SheetSelector, currentSheet, isLoadingSheets } = useSheetSelector({
@@ -26,7 +28,7 @@ function PresentationPoints(): JSX.Element {
         throw new Error('The path needs to contain a tutorialId parameter.');
       }
 
-      return ROUTES.PRESENTATION_POINTS.create({ tutorialId, sheetId });
+      return useTutorialRoutes(matches).PRESENTATION_POINTS.buildPath({ tutorialId, sheetId });
     },
   });
   const [students, setStudents] = useState<Student[]>([]);

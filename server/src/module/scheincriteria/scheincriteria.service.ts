@@ -1,6 +1,7 @@
 import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FormDataResponse } from 'shared/model/FormTypes';
 import {
     CriteriaInformation,
@@ -59,7 +60,9 @@ export class ScheincriteriaService
         private readonly shortTestService: ShortTestService,
         private readonly gradingService: GradingService,
         @InjectRepository(ScheincriteriaEntity)
-        private readonly repository: EntityRepository<ScheincriteriaEntity>
+        private readonly repository: EntityRepository<ScheincriteriaEntity>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -106,7 +109,7 @@ export class ScheincriteriaService
             name: dto.name,
             criteria: scheincriteria,
         });
-        await this.repository.persistAndFlush(entity);
+        await this.em.persistAndFlush(entity);
         return entity.toDTO();
     }
 
@@ -126,7 +129,7 @@ export class ScheincriteriaService
 
         scheincriteria.criteria = Scheincriteria.fromDTO(dto);
         scheincriteria.name = dto.name;
-        await this.repository.persistAndFlush(scheincriteria);
+        await this.em.persistAndFlush(scheincriteria);
         return scheincriteria.toDTO();
     }
 
@@ -141,7 +144,7 @@ export class ScheincriteriaService
      */
     async delete(id: string): Promise<void> {
         const criteria = await this.findById(id);
-        await this.repository.removeAndFlush(criteria);
+        await this.em.removeAndFlush(criteria);
     }
 
     /**

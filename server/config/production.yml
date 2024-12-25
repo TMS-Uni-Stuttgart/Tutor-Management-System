@@ -5,21 +5,23 @@ sessionTimeout: 120
 # prefix: subpath
 
 # Path to the handbook documentation. You only need to change this if you want to provide your own TMS documentation.
-handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
+handbookUrl: 'https://tms-uni-stuttgart.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:
-  host: tms_sql
-  port: 3306
-  databaseName: tms-db
-  maxRetries: 2
-  reconnectTimeout: 10000
+    host: tms_sql
+    port: 3306
+    databaseName: tms-db
+    maxRetries: 2
+    reconnectTimeout: 10000
 
 defaultSettings:
-  canTutorExcuseStudents: true
-  defaultTeamSize: 3
+    canTutorExcuseStudents: true
+    defaultTeamSize: 3
 
-# Settings used for the puppeteer instance
-puppeteer:
-  # Timeout in ms
-  timeout: 30000
+# Settings used for the gotenberg instance
+gotenberg:
+    host: gotenberg
+    port: 3000
+    # Timeout in ms
+    timeout: 30000

@@ -1,9 +1,9 @@
-import { Tooltip } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Tooltip } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { useField } from 'formik';
 import { AlertOutline as AlertIcon } from 'mdi-material-ui';
-import React from 'react';
 import FormikTextField, { FormikTextFieldProps } from './FormikTextField';
 
 const useStyles = makeStyles((theme) =>
@@ -29,6 +29,7 @@ function FormikWarningTextField({
   InputLabelProps,
   FormHelperTextProps,
   helperText,
+  FormikFieldProps,
   ...props
 }: FormikWarningTextFieldProps): JSX.Element {
   const classes = useStyles();
@@ -39,6 +40,14 @@ function FormikWarningTextField({
   return (
     <FormikTextField
       {...props}
+      FormikFieldProps={{
+        validate: (value: any) => {
+          if (FormikFieldProps?.validate) {
+            return FormikFieldProps.validate(value);
+          }
+          return undefined;
+        },
+      }}
       variant='outlined'
       helperText={showWarning ? warningLabel : helperText}
       InputProps={{
