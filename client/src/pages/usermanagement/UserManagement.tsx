@@ -1,11 +1,13 @@
-import { Button } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Button } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
-  EmailSendOutline as SendIcon,
-  Printer as PrintIcon,
   TableArrowDown as ImportIcon,
+  Printer as PrintIcon,
+  EmailArrowRightOutline as SendIcon,
 } from 'mdi-material-ui';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FailedMail, MailingStatus } from 'shared/model/Mail';
 import { Role } from 'shared/model/Role';
@@ -166,7 +168,7 @@ function UserManagement(): JSX.Element {
 
           const updatedUser = await editUser(user.id, userInformation);
 
-          if (!!password) {
+          if (password) {
             await setTemporaryPassword(user.id, { password });
           }
 
@@ -400,7 +402,7 @@ function UserManagement(): JSX.Element {
               <Button
                 variant='outlined'
                 component={Link}
-                to={ROUTES.IMPORT_USERS.create({})}
+                to={ROUTES.IMPORT_USERS.buildPath({})}
                 startIcon={<ImportIcon />}
                 style={{ marginLeft: 8 }}
               >

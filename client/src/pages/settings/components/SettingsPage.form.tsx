@@ -1,5 +1,6 @@
-import { Box, Button, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React, { useCallback } from 'react';
 import FormikCheckbox from '../../../components/forms/components/FormikCheckbox';
@@ -73,8 +74,8 @@ function SettingsPageForm(): JSX.Element {
         gridTemplateColumns='fit-content(50%) 1fr'
         gridAutoRows='min-content'
         alignItems='baseline'
-        gridColumnGap={24}
-        gridRowGap={12}
+        columnGap={24}
+        rowGap={12}
         height='auto'
         maxHeight='100%'
         style={{ overflowY: 'auto' }}

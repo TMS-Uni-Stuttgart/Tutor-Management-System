@@ -4,18 +4,18 @@ title: Update
 sidebar_label: Update
 ---
 
-To update an existing version of the TMS on your docker just follow the steps bellow. _Please note: Some commands rely on `docker-compose`._
+To update an existing version of the TMS on your docker just follow the steps bellow. _Please note: Some commands rely on `docker compose`._
 
 1. **Navigate** to the folder which contains the `docker-compose.yml` file you used to create the server.
 
 2. **Stop** the container running the TMS server by executing
 
    ```sh
-   docker-compose stop tms-server
+   docker compose stop tms-server
    ```
 
    :::note
-   Remember to put in the `-E` parameter if you are using `sudo` so your environment variables get passed down to the process running docker-compose.
+   Remember to put in the `-E` parameter if you are using `sudo` so your environment variables get passed down to the process running docker compose.
    :::
 
 3. **Update** the version of your image. This step depends on weather a version tag is used or not:
@@ -39,7 +39,7 @@ To update an existing version of the TMS on your docker just follow the steps be
 6. **Start** the container with the new image by running the following command. This will automatically recreate the container.
 
    ```sh
-   docker-compose up -d tms-server
+   docker compose up -d tms-server
    ```
 
 7. _(optional)_ If you want to clean your docker images you can run

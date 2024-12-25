@@ -1,6 +1,7 @@
-import { EntityRepository, MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { CreateRequestContext, EntityRepository, MikroORM } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { IClientSettings, IMailingSettings } from 'shared/model/Settings';
 import { Setting } from '../../database/entities/settings.entity';
 import { StartUpException } from '../../exceptions/StartUpException';
@@ -12,7 +13,9 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
     constructor(
         private readonly orm: MikroORM,
         @InjectRepository(Setting)
-        private readonly repository: EntityRepository<Setting>
+        private readonly repository: EntityRepository<Setting>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {
         super();
     }
@@ -39,7 +42,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
 
         settings.updateFromDTO(dto);
 
-        await this.repository.persistAndFlush(settings);
+        await this.em.persistAndFlush(settings);
     }
 
     /**
@@ -57,7 +60,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
      *
      * If there is ONE nothing is done.
      */
-    @UseRequestContext()
+    @CreateRequestContext()
     async onApplicationBootstrap(): Promise<void> {
         const settings = await this.repository.findOne({
             id: Setting.SETTING_ID,
@@ -76,7 +79,7 @@ export class SettingsService extends StaticSettings implements OnApplicationBoot
                     SettingsService.name
                 );
 
-                await this.repository.persistAndFlush(defaults);
+                await this.em.persistAndFlush(defaults);
                 this.logger.log('Default settings successfully created.', SettingsService.name);
             } catch (err) {
                 throw new StartUpException('Could not create the default settings.');

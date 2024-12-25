@@ -1,5 +1,7 @@
-import { Chip, TableCell } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Chip, TableCell } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Account as PersonIcon, Email as MailIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Role } from 'shared/model/Role';

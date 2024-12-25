@@ -34,14 +34,16 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         private readonly studentService: StudentService,
         private readonly entityManager: EntityManager,
         @InjectRepository(Tutorial)
-        private readonly repository: EntityRepository<Tutorial>
+        private readonly repository: EntityRepository<Tutorial>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
      * @returns All tutorials saved in the database.
      */
     async findAll(): Promise<Tutorial[]> {
-        return this.repository.findAll({ populate: true });
+        return this.repository.findAll({ populate: ['*'] });
     }
 
     /**
@@ -52,7 +54,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws {@link NotFoundException} - If at least one of the tutorials could not be found.
      */
     async findMultiple(ids: string[]): Promise<Tutorial[]> {
-        const tutorials = await this.repository.find({ id: { $in: ids } }, { populate: true });
+        const tutorials = await this.repository.find({ id: { $in: ids } }, { populate: ['*'] });
 
         if (tutorials.length !== ids.length) {
             const tutorialIds = tutorials.map((tutorial) => tutorial.id);
@@ -75,7 +77,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      * @throws `NotFoundException` - If no tutorial with the given ID could be found.
      */
     async findById(id: string): Promise<Tutorial> {
-        const tutorial = await this.repository.findOne({ id }, { populate: true });
+        const tutorial = await this.repository.findOne({ id }, { populate: ['*'] });
 
         if (!tutorial) {
             throw new NotFoundException(`Tutorial with the ID ${id} could not be found.`);
@@ -97,15 +99,15 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
     async create(dto: TutorialDTO): Promise<ITutorial> {
         await this.assertTutorialSlot(dto.slot);
 
-        const { slot, tutorId, correctorIds, startTime, endTime, dates } = dto;
-        const [tutor, correctors] = await Promise.all([
-            tutorId ? this.userService.findById(tutorId) : undefined,
+        const { slot, tutorIds, correctorIds, startTime, endTime, dates } = dto;
+        const [tutors, correctors] = await Promise.all([
+            Promise.all(tutorIds.map((id) => this.userService.findById(id))),
             Promise.all(correctorIds.map((id) => this.userService.findById(id))),
         ]);
 
         const created = await this.createTutorial({
             slot,
-            tutor,
+            tutors,
             correctors,
             startTime: DateTime.fromISO(startTime),
             endTime: DateTime.fromISO(endTime),
@@ -128,12 +130,14 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     async update(id: string, dto: TutorialDTO): Promise<ITutorial> {
         const tutorial = await this.findById(id);
-        const tutor = !!dto.tutorId ? await this.userService.findById(dto.tutorId) : undefined;
+        const tutors = await Promise.all(
+            dto.tutorIds.map((tutorId) => this.userService.findById(tutorId))
+        );
         const correctors = await Promise.all(
             dto.correctorIds.map((corrId) => this.userService.findById(corrId))
         );
 
-        this.assertTutorHasTutorRole(tutor);
+        this.assertTutorsHaveTutorRole(tutors);
         this.assertCorrectorsHaveCorrectorRole(correctors);
 
         tutorial.slot = dto.slot;
@@ -141,10 +145,10 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         tutorial.startTime = DateTime.fromISO(dto.startTime);
         tutorial.endTime = DateTime.fromISO(dto.endTime);
 
-        tutorial.tutor = tutor;
+        tutorial.tutors.set(tutors);
         tutorial.correctors.set(correctors);
 
-        await this.repository.persistAndFlush(tutorial);
+        await this.em.persistAndFlush(tutorial);
         return tutorial.toDTO();
     }
 
@@ -170,7 +174,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         this.entityManager.remove(tutorial.teams.getItems());
         this.entityManager.remove(tutorial.substitutes.getItems());
 
-        await this.repository.removeAndFlush(tutorial);
+        await this.em.removeAndFlush(tutorial);
     }
 
     /**
@@ -345,9 +349,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
                     const created = await this.createTutorial({
                         slot: `${prefix}${nr.toString().padStart(2, '0')}`,
                         dates,
-                        startTime: timeInterval.start,
-                        endTime: timeInterval.end,
-                        tutor: undefined,
+                        startTime: timeInterval.start as DateTime,
+                        endTime: timeInterval.end as DateTime,
+                        tutors: [],
                         correctors: [],
                     });
 
@@ -373,20 +377,20 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     private async createTutorial({
         slot,
-        tutor,
+        tutors,
         startTime,
         endTime,
         dates,
         correctors,
     }: CreateParameters): Promise<Tutorial> {
-        this.assertTutorHasTutorRole(tutor);
+        this.assertTutorsHaveTutorRole(tutors);
         this.assertCorrectorsHaveCorrectorRole(correctors);
         this.assertAtLeastOneDate(dates);
 
         const tutorial = new Tutorial({ slot, dates, startTime, endTime });
-        tutorial.tutor = tutor;
+        tutorial.tutors.set(tutors);
         tutorial.correctors.set(correctors);
-        await this.repository.persistAndFlush(tutorial);
+        await this.em.persistAndFlush(tutorial);
 
         return tutorial;
     }
@@ -402,6 +406,9 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
      */
     private datesInIntervalGroupedByWeekday(interval: Interval): Map<number, DateTime[]> {
         const datesInInterval: Map<number, DateTime[]> = new Map();
+        if (interval.start === null || interval.end === null) {
+            return datesInInterval;
+        }
         let cursor = interval.start.startOf('day');
 
         while (cursor <= interval.end) {
@@ -451,6 +458,16 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         }
     }
 
+    private assertTutorsHaveTutorRole(tutors: User[]) {
+        for (const tutor of tutors) {
+            if (!tutor.roles.includes(Role.TUTOR)) {
+                throw new BadRequestException(
+                    'The tutor of a tutorial needs to have the TUTOR role.'
+                );
+            }
+        }
+    }
+
     private assertCorrectorsHaveCorrectorRole(correctors: User[]) {
         for (const doc of correctors) {
             if (!doc.roles.includes(Role.CORRECTOR)) {
@@ -480,7 +497,7 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
 
 interface CreateParameters {
     slot: string;
-    tutor: User | undefined;
+    tutors: User[];
     startTime: DateTime;
     endTime: DateTime;
     dates: DateTime[];

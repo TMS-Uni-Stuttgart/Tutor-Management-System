@@ -5,7 +5,7 @@ sessionTimeout: 120
 # prefix: subpath
 
 # Path to the handbook documentation. You only need to change this if you want to provide your own TMS documentation.
-handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
+handbookUrl: 'https://tms-uni-stuttgart.github.io/Tutor-Management-System/'
 
 # Configuration for the database access. More information can be found in the documentation.
 database:

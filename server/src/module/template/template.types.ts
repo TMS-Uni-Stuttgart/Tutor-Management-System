@@ -20,7 +20,7 @@ export interface ScheinexamStatus {
 
 export interface AttendanceAttributes {
     tutorialSlot: string;
-    tutorName: string;
+    tutorNames: string;
     date: DateTime;
     students: { name: string }[];
 }

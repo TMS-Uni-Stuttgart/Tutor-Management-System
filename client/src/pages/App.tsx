@@ -1,13 +1,10 @@
-import { CssBaseline, Theme } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React, { useMemo, useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { CssBaseline, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import NavigationRail from '../components/navigation-rail/NavigationRail';
-import PrivateRoute from '../components/PrivateRoute';
 import { useLogin } from '../hooks/LoginService';
-import { ROOT_REDIRECT_PATH, ROUTES } from '../routes/Routing.routes';
-import { CustomRoute } from '../routes/Routing.types';
-import { PathPart } from '../routes/typesafe-react-router';
 import AppBar from './AppBar';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -48,27 +45,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function getRouteElementForRoute(route: CustomRoute<PathPart<any, any>[]>): JSX.Element {
-  const path = route.template;
-
-  if (route.isPrivate) {
-    return (
-      <PrivateRoute key={path} path={path} component={route.component} exact={route.isExact} />
-    );
-  } else {
-    return <Route key={path} path={path} component={route.component} exact={route.isExact} />;
-  }
-}
-
 function App(): JSX.Element {
   const classes = useStyles();
   const { isLoggedIn } = useLogin();
   const [isDrawerOpen, setDrawerOpen] = useState(true);
-
-  const routes = useMemo(
-    () => Object.values(ROUTES).map((route) => getRouteElementForRoute(route)),
-    []
-  );
 
   return (
     <>
@@ -83,15 +63,7 @@ function App(): JSX.Element {
           )}
 
           <div className={classes.content}>
-            <Switch>
-              {routes}
-
-              <Route
-                exact
-                path={'/'}
-                render={() => <Redirect to={ROOT_REDIRECT_PATH.create({})} />}
-              />
-            </Switch>
+            <Outlet />
           </div>
         </div>
       </div>

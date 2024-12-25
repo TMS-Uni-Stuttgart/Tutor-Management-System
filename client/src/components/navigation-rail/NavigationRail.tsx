@@ -1,16 +1,9 @@
-import {
-  Divider,
-  Drawer,
-  DrawerProps,
-  Link,
-  List,
-  ListSubheader,
-  Typography,
-} from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Divider, Drawer, DrawerProps, Link, List, ListSubheader, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OpenInNew as ExternalLinkIcon } from 'mdi-material-ui';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getVersionOfApp } from '../../hooks/fetching/Information';
 import { useLogin } from '../../hooks/LoginService';
 import RailItem from './components/RailItem';
@@ -76,7 +69,7 @@ function NavigationRail({
     throw new Error('Drawer without a user should be rendered. This is forbidden.');
   }
 
-  const { withoutTutorialRoutes, tutorialRoutes, managementRoutes } = useMemo(
+  const { baseRoutes, tutorialRoutes, managementRoutes } = useMemo(
     () => filterRoutes(userData.roles),
     [userData.roles]
   );
@@ -108,12 +101,13 @@ function NavigationRail({
       <div className={classes.toolbar} />
 
       <List className={classes.list}>
-        {withoutTutorialRoutes.map((route) => (
+        {baseRoutes.map((route) => (
           <RailItem
-            key={route.template}
-            path={route.create({})}
-            text={route.title}
-            icon={route.icon}
+            key={route.route.path}
+            path={route.route.buildPath({})}
+            pathTemplate={route.route.path}
+            text={route.handle.title}
+            icon={route.handle.icon}
           />
         ))}
 
@@ -124,7 +118,7 @@ function NavigationRail({
             <ListSubheader className={clsx(!open && classes.displayNone)}>Tutorium</ListSubheader>
 
             {tutorialRoutes.map((route) => (
-              <TutorialRailItem key={route.template} route={route} userData={userData} />
+              <TutorialRailItem key={route.route.path} route={route} userData={userData} />
             ))}
           </>
         )}
@@ -137,10 +131,11 @@ function NavigationRail({
 
             {managementRoutes.map((route) => (
               <RailItem
-                key={route.template}
-                path={route.create({})}
-                text={route.title}
-                icon={route.icon}
+                key={route.route.path}
+                path={route.route.buildPath({})}
+                pathTemplate={route.route.path}
+                text={route.handle.title}
+                icon={route.handle.icon}
               />
             ))}
           </>

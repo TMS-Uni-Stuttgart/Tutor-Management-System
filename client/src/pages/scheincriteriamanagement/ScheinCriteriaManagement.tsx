@@ -1,7 +1,9 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
-import React, { useEffect, useState } from 'react';
-import { IScheinCriteria as ScheinCriteria, IScheinCriteriaDTO } from 'shared/model/ScheinCriteria';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
+import { IScheinCriteriaDTO, IScheinCriteria as ScheinCriteria } from 'shared/model/ScheinCriteria';
 import ScheinCriteriaForm, {
   ScheinCriteriaFormCallback,
 } from '../../components/forms/ScheinCriteriaForm';
@@ -27,7 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
+function ScheinCriteriaManagement(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const dialog = useDialog();
   const logger = useLogger('ScheinCriteriaManagement');
@@ -185,4 +188,4 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   );
 }
 
-export default withSnackbar(ScheinCriteriaManagement);
+export default ScheinCriteriaManagement;

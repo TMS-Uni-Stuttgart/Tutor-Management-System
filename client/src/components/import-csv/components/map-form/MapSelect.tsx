@@ -1,5 +1,6 @@
-import { Box, Button, IconButton } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, IconButton } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { MinusBox as RemoveIcon } from 'mdi-material-ui';
 import React, { useState } from 'react';
 import { ItemDisabledInformation } from '../../../CustomSelect';
@@ -33,7 +34,7 @@ function MapSelect({
   const [showRemoveOverlay, setShowRemoveOverlay] = useState(false);
 
   return showRemoveOverlay ? (
-    <Box display='grid' gridTemplateColumns='1fr 1fr' gridColumnGap={8}>
+    <Box display='grid' gridTemplateColumns='1fr 1fr' columnGap={8}>
       <Button
         endIcon={<RemoveIcon color='error' />}
         onClick={() => onRemove()}
