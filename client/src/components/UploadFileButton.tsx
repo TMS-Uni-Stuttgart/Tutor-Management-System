@@ -1,5 +1,6 @@
-import { Box, Button, CircularProgress } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Box, Button, CircularProgress } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Upload as UploadIcon } from 'mdi-material-ui';
 import React, { useCallback, useState } from 'react';
 import DragAndDrop from './drag-and-drop/DragAndDrop';

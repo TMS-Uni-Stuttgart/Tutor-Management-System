@@ -1,6 +1,7 @@
-import { Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { TextFieldProps } from '@material-ui/core/TextField';
+import { Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { TextFieldProps } from '@mui/material/TextField';
 import { convertExercisePointInfoToString, ExercisePointsInfo } from 'shared/model/Gradings';
 import FormikTextField from './forms/components/FormikTextField';
 

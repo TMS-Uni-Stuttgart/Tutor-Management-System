@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogProps,
   DialogTitle,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Formik } from 'formik';
 import React from 'react';
 import { Role } from 'shared/model/Role';

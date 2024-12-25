@@ -1,17 +1,17 @@
 import _ from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useImportCSVContext } from '../../../../components/import-csv/ImportCSV.context';
+import { getGradingsOfHandIn } from '../../../../hooks/fetching/Grading';
 import { getShortTest } from '../../../../hooks/fetching/ShortTests';
 import { getAllStudents } from '../../../../hooks/fetching/Student';
 import { FetchFunction, useFetchState } from '../../../../hooks/useFetchState';
+import { GradingList } from '../../../../model/GradingList';
 import { ShortTest } from '../../../../model/ShortTest';
 import { Student } from '../../../../model/Student';
 import { RequireChildrenProp } from '../../../../typings/RequireChildrenProp';
+import { Logger } from '../../../../util/Logger';
 import { throwContextNotInitialized } from '../../../../util/throwFunctions';
 import { ShortTestColumns } from '../ImportShortTests';
-import { GradingList } from '../../../../model/GradingList';
-import { getGradingsOfHandIn } from '../../../../hooks/fetching/Grading';
-import { Logger } from '../../../../util/Logger';
 
 interface ContextValue {
   iliasNameMapping: Map<string, Student>;
@@ -96,7 +96,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
     if (!isLoading && students) {
       setWorking(true);
 
-      if (!!shortTestId) {
+      if (shortTestId) {
         getGradingsOfHandIn(shortTestId)
           .then((response) => setGradings(response))
           .catch(() => {
@@ -142,7 +142,7 @@ function IliasMappingProvider({ children, shortTestId }: Props): JSX.Element {
   }, [csvData.rows, isLoading, students, mappedColumns.iliasName, shortTestId]);
 
   const addMapping = useCallback(
-    (iliasName, student) => {
+    (iliasName: string, student: Student) => {
       let nameOfStudent: string | undefined = undefined;
 
       for (const [name, s] of iliasNameMapping.entries()) {

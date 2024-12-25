@@ -41,7 +41,7 @@ function convertColumnToTutorials(tutorials: Tutorial[], tutorialData?: string):
 
     for (const slot of slots) {
         const tutorial = tutorials.find((t) => t.slot === slot);
-        if (!!tutorial) {
+        if (tutorial) {
             tutorialIds.push(tutorial.id);
         }
     }

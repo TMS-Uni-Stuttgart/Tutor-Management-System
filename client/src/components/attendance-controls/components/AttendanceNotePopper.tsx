@@ -7,16 +7,17 @@ import {
   Popper,
   Tooltip,
   Typography,
-} from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { Formik } from 'formik';
 import {
-  NoteText as NoteTextIcon,
-  Pencil as EditIcon,
   PlusCircle as AddIcon,
+  Pencil as EditIcon,
+  NoteText as NoteTextIcon,
 } from 'mdi-material-ui';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { FormikSubmitCallback } from '../../../types';
 import FormikTextField from '../../forms/components/FormikTextField';
 import SubmitButton from '../../loading/SubmitButton';
@@ -101,9 +102,9 @@ function AttendanceNotePopper({ note, onNoteSave }: AttendanceNotePopperProps): 
   return (
     <ClickAwayListener onClickAway={handlePopperClose}>
       <div>
-        <Tooltip title={!!note ? 'Bemerkung ansehen & bearbeiten' : 'Bemerkung hinzufügen'}>
-          <IconButton ref={iconButtonRef} onClick={handlePopperOpen}>
-            {!!note ? <NoteTextIcon /> : <AddIcon />}
+        <Tooltip title={note ? 'Bemerkung ansehen & bearbeiten' : 'Bemerkung hinzufügen'}>
+          <IconButton ref={iconButtonRef} onClick={handlePopperOpen} size='large'>
+            {note ? <NoteTextIcon /> : <AddIcon />}
           </IconButton>
         </Tooltip>
 

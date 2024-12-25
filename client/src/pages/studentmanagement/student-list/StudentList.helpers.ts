@@ -62,15 +62,15 @@ export function useStudentsForStudentList({
 }: UseStudentsForStudentListParams): UseStudentsForStudentList {
     const { enqueueSnackbar } = useSnackbar();
 
-    const [students, , , fetchStudents] = useFetchState({
+    const [students, isLoadingStudents, , fetchStudents] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
-            return tutorialId === undefined ? getAllStudents() : getStudentsOfTutorial(tutorialId);
+            return tutorialId ? getStudentsOfTutorial(tutorialId) : getAllStudents();
         },
         immediate: true,
         params: [tutorialId ?? ''],
     });
 
-    const [summaries = {}, isLoadingSummaries] = useFetchState({
+    const [summaries, , , fetchSummaries] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
             return tutorialId
                 ? getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
@@ -93,6 +93,7 @@ export function useStudentsForStudentList({
                 const student = await fetchCreateStudent(dto);
                 await fetchTeams(tutorialId ?? '');
                 await fetchStudents(tutorialId ?? '');
+                await fetchSummaries(tutorialId ?? '');
 
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich erstellt.`, {
                     variant: 'success',
@@ -171,8 +172,8 @@ export function useStudentsForStudentList({
     return {
         students: students ?? [],
         teams,
-        summaries,
-        isLoading: isLoadingSummaries,
+        summaries: summaries ?? {},
+        isLoading: isLoadingStudents,
         createStudent,
         editStudent,
         deleteStudent,

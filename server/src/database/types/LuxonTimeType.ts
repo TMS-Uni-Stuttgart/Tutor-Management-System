@@ -8,7 +8,7 @@ export class LuxonTimeType extends LuxonType {
     }
 
     protected convertDateTimeToString(value: DateTime): string {
-        return value.toISO({ suppressMilliseconds: true, includeOffset: true });
+        return value.toISO({ suppressMilliseconds: true, includeOffset: true }) ?? '';
     }
 
     getSingleColumnType(_prop: EntityProperty, _platform: Platform): string {

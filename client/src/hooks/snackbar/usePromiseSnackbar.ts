@@ -46,17 +46,17 @@ export function usePromiseSnackbar(): UsePromiseSnackbar {
                 try {
                     const result = await promiseFunction(...args);
 
-                    if (!!successContent) {
+                    if (successContent) {
                         enqueueSnackbar(successContent, { variant: 'success' });
                     }
 
                     return result;
                 } catch (err) {
-                    if (!!errorContent) {
+                    if (errorContent) {
                         enqueueSnackbar(errorContent, { variant: 'error' });
                     }
 
-                    if (!!errorHandler) {
+                    if (errorHandler) {
                         errorHandler(err);
                     }
                 }

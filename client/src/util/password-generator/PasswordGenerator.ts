@@ -22,7 +22,10 @@ export class PasswordGenerator {
      * @param options Options for the generation of the password.
      * @param batchSize Size of the random cache.
      */
-    constructor(options: Partial<PasswordOptions> = {}, private readonly batchSize: number = 32) {
+    constructor(
+        options: Partial<PasswordOptions> = {},
+        private readonly batchSize: number = 32
+    ) {
         this.options = this.generateOptions(options);
         this.assertStrictMatchesLength();
 

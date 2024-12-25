@@ -8,7 +8,7 @@
  *
  * @returns Has the given object the given property?
  */
-export function hasOwnProperty<X extends unknown, Y extends string>(
+export function hasOwnProperty<X, Y extends string>(
     obj: X,
     prop: Y
 ): obj is X & Record<Y, unknown> {
@@ -20,5 +20,5 @@ export function hasOwnProperty<X extends unknown, Y extends string>(
         return false;
     }
 
-    return obj.hasOwnProperty(prop);
+    return Object.prototype.hasOwnProperty.call(obj, prop);
 }

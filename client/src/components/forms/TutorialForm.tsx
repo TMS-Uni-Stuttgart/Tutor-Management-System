@@ -1,16 +1,15 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import React from 'react';
-import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
 import { Tutorial } from '../../model/Tutorial';
 import { FormikSubmitCallback } from '../../types';
 import { compareDateTimes } from '../../util/helperFunctions';
+import FormikAutocompleteSelect from './components/FormikAutocompleteSelect';
 import FormikDatePicker from './components/FormikDatePicker';
 import FormikMultipleDatesPicker from './components/FormikMultipleDatesPicker';
-import FormikSelect from './components/FormikSelect';
 import FormikTextField from './components/FormikTextField';
 import FormikTimePicker from './components/FormikTimePicker';
 import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './FormikBaseForm';
@@ -54,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface TutorialFormState {
   slot: string;
-  tutor: string;
+  tutors: string[];
   startDate: string;
   endDate: string;
   startTime: string;
@@ -132,7 +131,7 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
   if (!tutorial) {
     return {
       slot: '',
-      tutor: '',
+      tutors: [],
       startDate,
       endDate,
       startTime: DateTime.local().toISO() ?? '',
@@ -146,10 +145,10 @@ export function getInitialTutorialFormValues(tutorial?: Tutorial): TutorialFormS
 
   return {
     slot: tutorial.slot,
-    tutor: tutorial.tutor ? tutorial.tutor.id : '',
-    startDate: sortedDates[0] ? sortedDates[0].toISODate() ?? '' : startDate,
+    tutors: tutorial.tutors.map((t) => t.id),
+    startDate: sortedDates[0] ? (sortedDates[0].toISODate() ?? '') : startDate,
     endDate: sortedDates[sortedDates.length - 1]
-      ? sortedDates[sortedDates.length - 1].toISODate() ?? ''
+      ? (sortedDates[sortedDates.length - 1].toISODate() ?? '')
       : endDate,
     startTime: tutorial.startTime.toISO() ?? '',
     endTime: tutorial.endTime.toISO() ?? '',
@@ -187,12 +186,14 @@ function TutorialForm({
         <>
           <FormikTextField name='slot' label='Slot' required />
 
-          <FormikSelect
-            name='tutor'
-            label='Tutor'
+          <FormikAutocompleteSelect
+            name='tutors'
+            label='Tutoren'
             emptyPlaceholder='Keine Tutoren vorhanden.'
-            items={tutors.filter((tutor) => tutor.roles.indexOf(Role.TUTOR) > -1)}
+            items={tutors.filter((tutor) => !values.correctors.includes(tutor.id))}
             {...userConverterFunctions}
+            multiple
+            fullWidth
           />
 
           <div className={classes.twoPickerContainer}>
@@ -201,7 +202,7 @@ function TutorialForm({
               label='Startdatum'
               required
               className={classes.startDateField}
-              onAccept={(date: MaterialUiPickersDate) => {
+              onAccept={(date: DateTime | null) => {
                 if (date) {
                   let endDate = DateTime.fromISO(values.endDate);
 
@@ -225,7 +226,7 @@ function TutorialForm({
               label='Enddatum'
               required
               className={classes.endDateField}
-              onAccept={(date: MaterialUiPickersDate) => {
+              onAccept={(date: DateTime | null) => {
                 if (date) {
                   const dates: DateTime[] = getAllWeeklyDatesBetween(
                     DateTime.fromISO(values.startDate),
@@ -247,7 +248,7 @@ function TutorialForm({
               label='Startuhrzeit'
               required
               className={classes.startDateField}
-              onChange={(time: MaterialUiPickersDate) => {
+              onChange={(time: DateTime | null) => {
                 if (time) {
                   setFieldValue('endTime', time.plus({ hours: 1, minutes: 30 }).toISO());
                 }
@@ -262,14 +263,13 @@ function TutorialForm({
             />
           </div>
 
-          <FormikSelect
+          <FormikAutocompleteSelect
             name='correctors'
             label='Korrektoren'
             emptyPlaceholder='Keine Korrektoren vorhanden.'
-            items={correctors}
+            items={correctors.filter((corrector) => !values.tutors.includes(corrector.id))}
             {...userConverterFunctions}
             multiple
-            isItemSelected={(corrector) => values['correctors'].indexOf(corrector.id) > -1}
             fullWidth
           />
 

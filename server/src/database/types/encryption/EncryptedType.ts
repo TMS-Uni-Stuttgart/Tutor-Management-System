@@ -1,11 +1,12 @@
 import { EntityProperty, Platform, Type } from '@mikro-orm/core';
+import { TransformContext } from '@mikro-orm/mysql';
 import { EncryptionEngine } from '../../../helpers/EncryptionEngine';
 
 export abstract class EncryptedType<T> extends Type<T | undefined, string | undefined> {
     convertToDatabaseValue(
         value: T | undefined,
         platform: Platform,
-        fromQuery?: boolean
+        context: TransformContext | undefined
     ): string | undefined {
         if (value == undefined) {
             return undefined;

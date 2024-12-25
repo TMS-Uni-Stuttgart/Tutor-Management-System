@@ -9,8 +9,8 @@ import { MOCKED_TUTORIALS, MOCKED_USERS } from '../../../test/mocks/entities.moc
 import { User } from '../../database/entities/user.entity';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
-import { UserService } from './user.service';
 import { UserModule } from './user.module';
+import { UserService } from './user.service';
 
 interface AssertUserParam {
     expected: User;
@@ -766,15 +766,18 @@ describe('UserService', () => {
         };
 
         const user = await suite.service.create(dto);
-        await suite.service.delete(user.id);
 
         const tutorialService = suite.getService(TutorialService);
+        const oldTutorial = await tutorialService.findById(tutorial.id);
+        const numberOfTutorsBefore = oldTutorial.tutors.length;
+
+        await suite.service.delete(user.id);
+
         const updatedTutorial = await tutorialService.findById(tutorial.id);
 
         await expect(suite.service.findById(user.id)).rejects.toThrow(NotFoundException);
 
-        // Use toBeFalsy() here to check if the tutor undefined OR null.
-        expect(updatedTutorial.tutor).toBeFalsy();
+        expect(updatedTutorial.tutors.length).toBe(numberOfTutorsBefore - 1);
     });
 
     it('fail on deleting last admin', async () => {

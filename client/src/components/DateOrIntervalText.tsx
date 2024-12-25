@@ -1,6 +1,5 @@
-import { Typography, TypographyProps } from '@material-ui/core';
+import { Typography, TypographyProps } from '@mui/material';
 import { DateTime, DateTimeFormatOptions, Interval } from 'luxon';
-import React from 'react';
 
 interface Props extends TypographyProps {
   date: DateTime | Interval;
@@ -23,8 +22,8 @@ function DateOrIntervalText({ prefix, date, suffix, ...props }: Props): JSX.Elem
         date.toLocaleString(format)
       ) : (
         <>
-          <span>{date.start.toLocaleString(format)} - </span>
-          <span style={{ whiteSpace: 'pre' }}>{date.end.toLocaleString(format)}</span>
+          <span>{date.start?.toLocaleString(format)} - </span>
+          <span style={{ whiteSpace: 'pre' }}>{date.end?.toLocaleString(format)}</span>
         </>
       )}
       {suffix && `${suffix} `}
