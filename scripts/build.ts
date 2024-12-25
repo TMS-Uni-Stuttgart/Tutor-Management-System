@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { spawn } from 'child_process';
 import copyfiles from 'copyfiles';
 import {
@@ -6,7 +5,7 @@ import {
     getCommand,
     MessageOptions,
     writeColoredMessage,
-} from './util/cmdHelpers';
+} from './util/cmdHelpers.js';
 
 const pnpm = getCommand('pnpm');
 
@@ -68,8 +67,7 @@ function copyClientIntoServer(): Promise<void> {
         copyfiles(
             [
                 '../client/build/*',
-                '../client/build/js/**/*',
-                '../client/build/css/**/*',
+                '../client/build/assets/**/*',
                 '../client/build/static/**/*',
                 '../server/dist/app',
             ],

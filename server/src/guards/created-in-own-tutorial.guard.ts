@@ -28,6 +28,6 @@ export class CreatedInOwnTutorialGuard extends UseUserFromRequest {
             .getRequest<Request>().body;
         const tutorial = await this.tutorialService.findById(body.tutorial);
 
-        return tutorial.tutor?.id === user.id;
+        return tutorial.tutors.getItems().some((tutor) => tutor.id === user.id);
     }
 }

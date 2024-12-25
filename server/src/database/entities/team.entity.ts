@@ -26,7 +26,7 @@ export class Team {
     @OneToMany(() => Student, (student) => student.team)
     students = new Collection<Student>(this);
 
-    @ManyToOne()
+    @ManyToOne(() => Tutorial)
     tutorial: Tutorial;
 
     get studentCount(): number {

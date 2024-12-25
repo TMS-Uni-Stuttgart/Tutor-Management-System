@@ -19,15 +19,13 @@ export interface ShortTestFormState {
   exercises: ExerciseFormExercise[];
 }
 
-const validationSchema = Yup.object().shape<ShortTestFormState>({
+const validationSchema = Yup.object().shape({
   shortTestNo: Yup.string().required('Benötigt'),
   percentageNeeded: Yup.number()
     .required('Benötigt')
     .min(0, 'Muss mind. 0% betragen.')
     .max(1, 'Darf höchstens 100% betragen.'),
-  exercises: Yup.array<ExerciseFormExercise>()
-    .of(exerciseValidationSchema)
-    .required('Mind. 1 Aufgabe benötigt.'),
+  exercises: Yup.array().of(exerciseValidationSchema).required('Mind. 1 Aufgabe benötigt.'),
 });
 
 interface Props extends Omit<FormikBaseFormProps<ShortTestFormState>, CommonlyUsedFormProps> {
@@ -62,8 +60,7 @@ function ShortTestForm({
   ...other
 }: Props): JSX.Element {
   const initalFormState = useMemo(
-    () =>
-      !!initialValues ? initialValues : getInitialShortTestFormState(shortTest, allShortTests),
+    () => (initialValues ? initialValues : getInitialShortTestFormState(shortTest, allShortTests)),
     [shortTest, allShortTests, initialValues]
   );
 

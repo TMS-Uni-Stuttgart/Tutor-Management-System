@@ -108,10 +108,10 @@ export function getInitialStudentFormState({
   defaultTeamSize,
 }: InitialStateParams): StudentFormState {
   const team: string = student
-    ? student.team?.id ?? ''
+    ? (student.team?.id ?? '')
     : teams
-    ? getNextTeamWithSlot(teams, defaultTeamSize)
-    : '';
+      ? getNextTeamWithSlot(teams, defaultTeamSize)
+      : '';
 
   return {
     lastname: student?.lastname ?? '',
@@ -260,6 +260,21 @@ function StudentForm({
           name='iliasName'
           label='Ilias-Name'
           warningLabel='Kein Iliasname eingegeben.'
+          FormikFieldProps={{
+            validate: (value: any) => {
+              if (!value) {
+                return undefined;
+              }
+
+              for (const s of otherStudents) {
+                if (s.iliasName && value === s.iliasName) {
+                  return `Iliasname wird bereits von ${s.nameFirstnameFirst} verwendet.`;
+                }
+              }
+
+              return undefined;
+            },
+          }}
         />
 
         <FormikTextField name='email' label='E-Mailadresse' />

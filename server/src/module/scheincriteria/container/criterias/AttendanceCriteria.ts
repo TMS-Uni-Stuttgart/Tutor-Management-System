@@ -14,7 +14,7 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
     }
 
     checkCriteriaStatus({ student }: CriteriaPayload): StatusCheckResponse {
-        const total = student.getAllAttendances().length;
+        const total = student.getAllAttendances().filter(({ state }) => state !== undefined).length;
         let visitedOrExcused = 0;
 
         student.getAllAttendances().forEach(({ state }) => {

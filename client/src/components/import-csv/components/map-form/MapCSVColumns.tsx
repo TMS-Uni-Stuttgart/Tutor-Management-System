@@ -1,4 +1,4 @@
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography } from '@mui/material';
 import { FormikProps } from 'formik';
 import React, { RefObject, useCallback, useRef } from 'react';
 import { useCustomSnackbar } from '../../../../hooks/snackbar/useCustomSnackbar';

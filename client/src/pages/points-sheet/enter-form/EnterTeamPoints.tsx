@@ -1,31 +1,33 @@
-import { Typography } from '@material-ui/core';
+import { SelectChangeEvent, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useMatches, useNavigate, useParams } from 'react-router';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import {
   getTeamOfTutorial,
   getTeamsOfTutorial,
   setPointsOfTeam,
 } from '../../../hooks/fetching/Team';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { GradingList } from '../../../model/GradingList';
 import { Team } from '../../../model/Team';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
-import { GradingList } from '../../../model/GradingList';
-import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 
 interface RouteParams {
   tutorialId?: string;
   sheetId?: string;
   teamId?: string;
+  [key: string]: string | undefined;
 }
 
 function EnterTeamPoints(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { tutorialId, sheetId, teamId } = useParams<RouteParams>();
   const { enqueueSnackbar, setError } = useCustomSnackbar();
+  const matches = useMatches();
 
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team>();
@@ -42,7 +44,7 @@ function EnterTeamPoints(): JSX.Element {
       })
       .catch(() => setError('Teams konnten nicht abgerufen werden.'));
 
-    if (!!sheetId) {
+    if (sheetId) {
       getGradingsOfTutorial(sheetId, tutorialId)
         .then((response) => setGradings(response))
         .catch(() => {
@@ -64,14 +66,16 @@ function EnterTeamPoints(): JSX.Element {
     }
   }, [teams, teamId]);
 
-  const handleTeamChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleTeamChange = (event: SelectChangeEvent<unknown>, child: React.ReactNode) => {
     if (!tutorialId || !sheetId) {
       return;
     }
 
     const teamId: string = event.target.value as string;
 
-    history.push(ROUTES.ENTER_POINTS_TEAM.create({ tutorialId, sheetId, teamId }));
+    navigate(
+      useTutorialRoutes(matches).ENTER_POINTS_TEAM.buildPath({ tutorialId, sheetId, teamId })
+    );
   };
 
   const handleSubmit: PointsFormSubmitCallback = async (values, { resetForm }) => {
