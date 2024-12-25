@@ -18,6 +18,8 @@ import { TutorialGuard } from '../../guards/tutorial.guard';
 import { ParseCsvResult } from 'shared/model/CSV';
 import { ParseCsvDTO } from './excel.dto';
 import { ExcelService } from './excel.service';
+import { Roles } from '../../guards/decorators/roles.decorator';
+import { Role } from 'shared/model/Role';
 
 @Controller('excel')
 export class ExcelController {
@@ -36,6 +38,7 @@ export class ExcelController {
     @Post('/parseCSV')
     @HttpCode(HttpStatus.OK)
     @UseGuards(HasRoleGuard)
+    @Roles(Role.ADMIN, Role.EMPLOYEE, Role.TUTOR)
     @UsePipes(ValidationPipe)
     async parseCSV(@Body() body: ParseCsvDTO): Promise<ParseCsvResult<unknown>> {
         return await this.excelService.parseCSV(body);

@@ -1,25 +1,23 @@
-import { mongoose } from '@typegoose/typegoose';
+import { Role } from 'shared/model/Role';
+import { User } from '../../src/database/entities/user.entity';
+import { MOCKED_USERS } from '../mocks/entities.mock';
 
-/**
- * Removes unneccessary elements & type information from the object.
- *
- * The given object is first stringified into JSON and then re-parsed to a POJO. This removes type information like a mongoose array being used instead of a JS array.
- *
- * However, this means only 'enumbarable' properties will stay in the adjusted object (ie class functions will be removed aswell).
- *
- * @param obj Object to sanitize.
- *
- * @returns The adjusted object.
- */
-export function sanitizeObject<T>(obj: T): T {
-    return JSON.parse(JSON.stringify(obj)) as T;
+type HasId = { id: string };
+
+export function sortListById<T extends HasId>(list: T[]): T[] {
+    return list.sort((a, b) => a.id.localeCompare(b.id));
 }
 
-/**
- * Generates a new mongoose ObjectId.
- *
- * @returns The generated ID
- */
-export function generateObjectId(): string {
-    return new mongoose.Types.ObjectId().toHexString();
+export function getUserWithRole(role: Role): User {
+    const user = MOCKED_USERS.find((user) => user.roles.includes(role));
+
+    if (!user) {
+        throw new Error(`There is no mocked user with the ${role} role.`);
+    }
+
+    return user;
+}
+
+export function getAllUsersWithRole(role: Role): User[] {
+    return MOCKED_USERS.filter((user) => user.roles.includes(role));
 }

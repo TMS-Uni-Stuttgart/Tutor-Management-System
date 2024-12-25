@@ -14,7 +14,7 @@ export function getNameOfEntity(
     if (firstNameFirst) {
         return `${entity.firstname} ${entity.lastname}`;
     } else {
-        return `${entity.lastname}, ${entity.firstname} `;
+        return `${entity.lastname}, ${entity.firstname}`;
     }
 }
 

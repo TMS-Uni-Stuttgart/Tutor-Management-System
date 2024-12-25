@@ -9,8 +9,10 @@ import {
   MenuList,
   Paper,
   Popper,
-} from '@material-ui/core';
-import { createStyles, fade, makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { MenuDown as ArrowDropDownIcon } from 'mdi-material-ui';
 import React from 'react';
 import { useLogger } from '../util/Logger';
@@ -19,7 +21,7 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     button: {
       '&:hover': {
-        background: fade(theme.palette.primary.main, theme.palette.action.hoverOpacity),
+        background: alpha(theme.palette.primary.main, theme.palette.action.hoverOpacity),
       },
       '&:not(:last-child)': {
         borderRightColor: theme.palette.getContrastText(theme.palette.primary.main),
@@ -73,7 +75,7 @@ function SplitButton({ options, initiallySelected, variant, color, ...props }: P
     setOpen((prevOpen) => !prevOpen);
   };
 
-  const handleClose = (event: React.MouseEvent<Document, MouseEvent>) => {
+  const handleClose = (event: MouseEvent | TouchEvent) => {
     if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return;
     }

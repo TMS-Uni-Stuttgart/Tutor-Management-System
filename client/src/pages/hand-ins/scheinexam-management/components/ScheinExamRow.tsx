@@ -1,9 +1,18 @@
-import { TableCell, Typography } from '@material-ui/core';
-import { PdfBox as PDFGenerationIcon } from 'mdi-material-ui';
-import React from 'react';
+import { TableCell, Theme, Typography } from '@mui/material';
+import { createStyles, makeStyles } from '@mui/styles';
+import { FilePdfBox as PDFGenerationIcon } from 'mdi-material-ui';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
 import PaperTableRow, { PaperTableRowProps } from '../../../../components/PaperTableRow';
 import { Scheinexam } from '../../../../model/Scheinexam';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    labelCell: {
+      width: '1%',
+      whiteSpace: 'nowrap',
+    },
+  })
+);
 
 interface Props extends PaperTableRowProps {
   exam: Scheinexam;
@@ -19,6 +28,7 @@ function ScheinExamRow({
   onDeleteExamClicked,
   ...other
 }: Props): JSX.Element {
+  const classes = useStyles();
   return (
     <PaperTableRow
       label={exam.toDisplayString()}
@@ -35,6 +45,7 @@ function ScheinExamRow({
           ]}
         />
       }
+      LabelCellProps={{ className: classes.labelCell }}
       {...other}
     >
       <TableCell>

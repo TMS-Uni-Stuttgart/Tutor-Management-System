@@ -54,6 +54,8 @@ export interface ScheinCriteriaStatus {
     total: number;
     unit: ScheinCriteriaUnit;
     infos: { [index: string]: ScheinCriteriaAdditionalStatus };
+
+    chartType: 'PieChart' | 'ColumnChart';
 }
 
 export interface ScheinCriteriaAdditionalStatus {
@@ -66,7 +68,7 @@ export interface ScheinCriteriaAdditionalStatus {
 
 export enum PassedState {
     PASSED = 'PASSED',
-    NOT_PASSED = 'NOTPASSED',
+    NOT_PASSED = 'NOT_PASSED',
     IGNORE = 'IGNORE',
 }
 
@@ -82,13 +84,14 @@ export enum ScheinCriteriaUnit {
 export interface CriteriaAchievedInformation {
     achieved: number;
     notAchieved: number;
+
     [other: string]: number;
 }
 
 export interface CriteriaDistributionInformation {
     [key: string]: {
         value: number;
-        aboveThreshhold: boolean;
+        aboveThreshold: boolean;
     };
 }
 

@@ -25,16 +25,16 @@ The same is true for admin users which also act as correctors for a tutorial (th
 
 He/she has access to the following pages:
 
--   [_User Management_](./user_management)
--   [_Tutorial Management_](./tutorial_management)
-    :::note
-    An admin can access pages inside a tutorial (like the [_Sheet Gradings_](./sheet_gradings)) by clicking on "Manage" on a tutorial in the [_Tutorial Management_](./tutorial_management).
-    :::
--   [_Hand-Ins Management_](./hand_ins)
--   [_Student Overview_](./student_overview)
--   _Attendances_
--   [_Scheincriteria Management_](./criterias)
--   [_Settings_](./settings)
+- [_User Management_](./user_management)
+- [_Tutorial Management_](./tutorial_management)
+  :::note
+  An admin can access pages inside a tutorial (like the [_Sheet Gradings_](./sheet_gradings)) by clicking on "Manage" on a tutorial in the [_Tutorial Management_](./tutorial_management).
+  :::
+- [_Hand-Ins Management_](./hand_ins)
+- [_Student Overview_](./student_overview)
+- _Attendances_
+- [_Scheincriteria Management_](./criterias)
+- [_Settings_](./settings)
 
 ## `TUTOR`
 
@@ -44,13 +44,13 @@ Only `TUTOR` users can be assigned to tutorials as tutors. Furthermore, only thi
 
 Tutors have access to the following pages. Pages marked with <IconInText icon={SubstituteIcon} /> are also accessible by a substiute tutor.
 
--   [_Attendances_](./attendances) <IconInText icon={SubstituteIcon} small />
--   [_Presentations_](./presentations) <IconInText icon={SubstituteIcon} small />
--   [_Sheet Gradings_](./sheet_gradings)
--   [_Scheinexams_](./scheinexam_gradings)
--   [_Student Management_](./student_management)
--   [_Team Management_](./team_management)
--   [_Substitutes_](./substitutes)
+- [_Attendances_](./attendances) <IconInText icon={SubstituteIcon} small />
+- [_Presentations_](./presentations) <IconInText icon={SubstituteIcon} small />
+- [_Sheet Gradings_](./sheet_gradings)
+- [_Scheinexams_](./scheinexam_gradings)
+- [_Student Management_](./student_management)
+- [_Team Management_](./team_management)
+- [_Substitutes_](./substitutes)
 
 ## `CORRECTOR`
 
@@ -58,8 +58,8 @@ A `CORRECTOR` user can be assinged as a corrector of a tutorial (or multiple). T
 
 ### Page Access
 
--   [_Sheet Gradings_](./sheet_gradings)
--   [_Scheinexams_](./scheinexam_gradings)
+- [_Sheet Gradings_](./sheet_gradings)
+- [_Scheinexams_](./scheinexam_gradings)
 
 ## `EMPLOYEE`
 
@@ -67,10 +67,10 @@ An `EMPLOYEE` user can manage a few internal things. It is used if there are emp
 
 ### Page Access
 
--   [_Tutorial Management_](./tutorial_management)
-    :::note
-    An employee user can **not** access the internals of a tutorial (except managing the substitutes).
-    :::
--   [_Hand-Ins Management_](./hand_ins)
--   _Attendances_
--   [_Scheincriteria Management_](./criterias)
+- [_Tutorial Management_](./tutorial_management)
+  :::note
+  An employee user can **not** access the internals of a tutorial (except managing the substitutes).
+  :::
+- [_Hand-Ins Management_](./hand_ins)
+- _Attendances_
+- [_Scheincriteria Management_](./criterias)

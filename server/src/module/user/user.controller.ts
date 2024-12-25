@@ -12,14 +12,14 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { IUser } from 'src/shared/model/User';
+import { NamedElement } from 'shared/model/Common';
+import { Role } from 'shared/model/Role';
+import { IUser } from 'shared/model/User';
 import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { SameUserGuard } from '../../guards/same-user.guard';
-import { Role } from '../../shared/model/Role';
 import { CreateUserDTO, PasswordDTO, UserDTO } from './user.dto';
 import { UserService } from './user.service';
-import { NamedElement } from '../../shared/model/Common';
 
 @Controller('user')
 export class UserController {
@@ -38,27 +38,21 @@ export class UserController {
     @UseGuards(SameUserGuard)
     @UsePipes(ValidationPipe)
     async createUser(@Body() user: CreateUserDTO): Promise<IUser> {
-        const createdUser = await this.userService.create(user);
-
-        return createdUser;
+        return await this.userService.create(user);
     }
 
     @Post('/generate')
     @UseGuards(HasRoleGuard)
     @UsePipes(ValidationPipe)
     async createManyUsers(@Body() users: CreateUserDTO[]): Promise<IUser[]> {
-        const createdUsers = await this.userService.createMany(users);
-
-        return createdUsers;
+        return await this.userService.createMany(users);
     }
 
     @Get('/name/tutor')
     @UseGuards(HasRoleGuard)
     @Roles(Role.ADMIN, Role.EMPLOYEE, Role.TUTOR)
     async getNamesOfAllTutors(): Promise<NamedElement[]> {
-        const nameOfTutors = await this.userService.getNamesOfAllTutors();
-
-        return nameOfTutors;
+        return await this.userService.getNamesOfAllTutors();
     }
 
     @Get('/:id')
@@ -74,9 +68,7 @@ export class UserController {
     @UseGuards(SameUserGuard)
     @UsePipes(ValidationPipe)
     async updateUser(@Param('id') id: string, @Body() dto: UserDTO): Promise<IUser> {
-        const updatedUser = await this.userService.update(id, dto);
-
-        return updatedUser;
+        return await this.userService.update(id, dto);
     }
 
     @Delete('/:id')

@@ -1,12 +1,11 @@
 import { IsBoolean } from 'class-validator';
-import { SheetDocument } from '../../../../database/models/sheet.model';
-import { StudentDocument } from '../../../../database/models/student.model';
-import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
+import { Sheet } from '../../../../database/entities/sheet.entity';
+import { IsNonNegativeNumberValue } from '../../../../helpers/validators/nonNegativeNumberValue.validator';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -15,6 +14,7 @@ import {
 } from '../Scheincriteria';
 import { ScheincriteriaPossiblePercentage } from '../scheincriteria.decorators';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { GradingList } from '../../../../helpers/GradingList';
 
 export class SheetIndividualCriteria extends PossiblePercentageCriteria {
     @IsNonNegativeNumberValue({ isFloat: true })
@@ -36,15 +36,19 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         this.percentagePerSheet = percentagePerSheet;
     }
 
-    checkCriteriaStatus({ student, sheets }: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({
+        student,
+        sheets,
+        gradingsOfStudent,
+    }: CriteriaPayload): StatusCheckResponse {
         const infos: StatusCheckResponse['infos'] = {};
         const totalSheetCount = sheets.reduce(
             (count, sheet) => count + (sheet.bonusSheet ? 0 : 1),
             0
         );
-        const sheetsPassed = this.checkAllSheets(sheets, student, infos);
+        const sheetsPassed = this.checkAllSheets({ sheets, infos, gradings: gradingsOfStudent });
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.percentage) {
             passed = sheetsPassed / totalSheetCount >= this.valueNeeded;
@@ -59,6 +63,7 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
             passed,
             infos,
             unit: ScheinCriteriaUnit.SHEET,
+            chartType: 'PieChart',
         };
     }
 
@@ -66,14 +71,10 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkAllSheets(
-        sheets: SheetDocument[],
-        student: StudentDocument,
-        infos: StatusCheckResponse['infos']
-    ): number {
+    private checkAllSheets({ sheets, gradings, infos }: CheckAllSheetsParams): number {
         let sheetsPassed = 0;
         for (const sheet of sheets) {
-            const achieved = student.getGrading(sheet)?.points ?? 0;
+            const achieved = gradings.getGradingOfHandIn(sheet)?.points ?? 0;
             const total = sheet.totalPoints.must;
 
             let state = PassedState.NOT_PASSED;
@@ -103,4 +104,10 @@ export class SheetIndividualCriteria extends PossiblePercentageCriteria {
 
         return sheetsPassed;
     }
+}
+
+interface CheckAllSheetsParams {
+    sheets: Sheet[];
+    gradings: GradingList;
+    infos: StatusCheckResponse['infos'];
 }

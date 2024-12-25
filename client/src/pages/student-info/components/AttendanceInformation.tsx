@@ -1,6 +1,15 @@
-import { Table, TableBody, TableCell, TableHead, TableProps, TableRow } from '@material-ui/core';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableProps,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import _ from 'lodash';
 import { DateTime } from 'luxon';
-import React from 'react';
+import { useMemo } from 'react';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import AttendanceControls from '../../../components/attendance-controls/AttendanceControls';
 import { useSettings } from '../../../hooks/useSettings';
@@ -15,6 +24,21 @@ export interface AttendanceInformationProps extends TableProps {
   onNoteChange: (date: DateTime, note: string) => void;
 }
 
+enum AttendanceDateSource {
+  TUTORIAL,
+  STUDENT,
+}
+
+class AttendanceDate {
+  date: DateTime;
+  from: AttendanceDateSource;
+
+  constructor(date: DateTime, from: AttendanceDateSource) {
+    this.date = date;
+    this.from = from;
+  }
+}
+
 function AttendanceInformation({
   student,
   tutorialOfStudent,
@@ -23,6 +47,22 @@ function AttendanceInformation({
   ...props
 }: AttendanceInformationProps): JSX.Element {
   const { canStudentBeExcused } = useSettings();
+  const dates = useMemo(() => {
+    const tutorialDates = tutorialOfStudent.dates.map(
+      (date) => new AttendanceDate(date, AttendanceDateSource.TUTORIAL)
+    );
+    const studentDates = student
+      .getDatesOfAttendances()
+      .map((date) => new AttendanceDate(date, AttendanceDateSource.STUDENT));
+
+    const uniqueStudentDates = _.differenceWith(studentDates, tutorialDates, (a, b) =>
+      a.date.equals(b.date)
+    );
+
+    return [...tutorialDates, ...uniqueStudentDates].sort(
+      (a, b) => a.date.toMillis() - b.date.toMillis()
+    );
+  }, [student, tutorialOfStudent]);
 
   return (
     <Table {...props}>
@@ -34,13 +74,17 @@ function AttendanceInformation({
       </TableHead>
 
       <TableBody>
-        {tutorialOfStudent.dates.map((date) => {
+        {dates.map(({ date, from }) => {
           const formattedDate = date.toLocaleString(DateTime.DATE_FULL);
           const attendance: IAttendance | undefined = student.getAttendance(date);
+          const source = from === AttendanceDateSource.TUTORIAL ? 'Tutorium' : 'Studierende/r';
 
           return (
             <TableRow key={parseDateToMapKey(date)}>
-              <TableCell>{formattedDate}</TableCell>
+              <TableCell>
+                <Typography>{formattedDate}</Typography>
+                <Typography variant='body2' color='textSecondary'>{`(von: ${source})`}</Typography>
+              </TableCell>
               <TableCell align='right'>
                 <AttendanceControls
                   attendance={attendance}

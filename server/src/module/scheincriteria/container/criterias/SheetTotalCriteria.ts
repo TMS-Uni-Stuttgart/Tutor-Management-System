@@ -1,10 +1,9 @@
-import { SheetDocument } from '../../../../database/models/sheet.model';
-import { StudentDocument } from '../../../../database/models/student.model';
 import {
     PassedState,
     ScheincriteriaIdentifier,
     ScheinCriteriaUnit,
-} from '../../../../shared/model/ScheinCriteria';
+} from 'shared/model/ScheinCriteria';
+import { Sheet } from '../../../../database/entities/sheet.entity';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -12,17 +11,26 @@ import {
     StatusCheckResponse,
 } from '../Scheincriteria';
 import { PossiblePercentageCriteria } from './PossiblePercentageCriteria';
+import { GradingList } from '../../../../helpers/GradingList';
 
 export class SheetTotalCriteria extends PossiblePercentageCriteria {
     constructor(percentage: boolean, valueNeeded: number) {
         super(ScheincriteriaIdentifier.SHEET_TOTAL, percentage, valueNeeded);
     }
 
-    checkCriteriaStatus({ student, sheets }: CriteriaPayload): StatusCheckResponse {
+    checkCriteriaStatus({
+        student,
+        sheets,
+        gradingsOfStudent,
+    }: CriteriaPayload): StatusCheckResponse {
         const infos: StatusCheckResponse['infos'] = {};
-        const { pointsAchieved, pointsTotal } = this.checkAllSheets(sheets, student, infos);
+        const { pointsAchieved, pointsTotal } = this.checkAllSheets({
+            sheets,
+            infos,
+            gradings: gradingsOfStudent,
+        });
 
-        let passed: boolean = false;
+        let passed: boolean;
 
         if (this.percentage) {
             passed = pointsAchieved / pointsTotal >= this.valueNeeded;
@@ -35,8 +43,9 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
             achieved: pointsAchieved,
             total: pointsTotal,
             passed,
-            unit: ScheinCriteriaUnit.POINT,
             infos,
+            unit: ScheinCriteriaUnit.POINT,
+            chartType: 'PieChart',
         };
     }
 
@@ -44,16 +53,12 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
         throw new Error('Method not implemented.');
     }
 
-    private checkAllSheets(
-        sheets: SheetDocument[],
-        student: StudentDocument,
-        infos: StatusCheckResponse['infos']
-    ) {
+    private checkAllSheets({ sheets, infos, gradings }: CheckAllSheetsParams) {
         let pointsAchieved = 0;
         let pointsTotal = 0;
 
         for (const sheet of sheets) {
-            const achieved = student.getGrading(sheet)?.points ?? 0;
+            const achieved = gradings.getGradingOfHandIn(sheet)?.points ?? 0;
             const total = sheet.totalPoints.must;
             pointsAchieved += achieved;
 
@@ -72,4 +77,10 @@ export class SheetTotalCriteria extends PossiblePercentageCriteria {
 
         return { pointsAchieved, pointsTotal };
     }
+}
+
+interface CheckAllSheetsParams {
+    sheets: Sheet[];
+    infos: StatusCheckResponse['infos'];
+    gradings: GradingList;
 }

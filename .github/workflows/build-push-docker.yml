@@ -9,10 +9,13 @@ jobs:
   build_and_push:
     name: Build and push the docker image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        uses: actions/checkout@v4 # If you're using actions/checkout@v4 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
           persist-credentials: false
 
@@ -22,7 +25,7 @@ jobs:
           node-version: 14.x
 
       - name: Install pnpm
-        run: npm i -g pnpm
+        run: npm i -g pnpm@latest-7
 
       # Change the version to be the correct one so the version in the image is always the correct one.
       - name: Set new version
@@ -30,24 +33,20 @@ jobs:
 
       # Setting up Buildx because it's needed by build-push-action
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        with:
-          # Using this driver fixes the timeout issue with buildx that made it impossible to push more than one image to the GHCR.
-          driver-opts: image=moby/buildkit:master
-          install: true
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GH_REGISTRY_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push the image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           push: true
           no-cache: true
           tags: |
-            ghcr.io/dudrie/tutor-management-system:${{ github.event.release.tag_name }}
-            ghcr.io/dudrie/tutor-management-system:latest
+            ghcr.io/tms-uni-stuttgart/tutor-management-system:${{ github.event.release.tag_name }}
+            ghcr.io/tms-uni-stuttgart/tutor-management-system:latest

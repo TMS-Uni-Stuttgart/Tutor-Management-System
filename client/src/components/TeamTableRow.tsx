@@ -1,5 +1,6 @@
-import { TableCell, Theme, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { TableCell, Theme, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { AccountMultiple as GroupIcon } from 'mdi-material-ui';
 import React from 'react';
 import { Team } from '../model/Team';

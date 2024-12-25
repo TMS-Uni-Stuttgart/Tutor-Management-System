@@ -1,8 +1,10 @@
-import { Button, Chip, TableCell } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Button, Chip, TableCell } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import React from 'react';
 import EntityListItemMenu from '../../../components/list-item-menu/EntityListItemMenu';
+import { renderLink } from '../../../components/navigation-rail/components/renderLink';
 import PaperTableRow, { PaperTableRowProps } from '../../../components/PaperTableRow';
 import { Tutorial } from '../../../model/Tutorial';
 import { ROUTES } from '../../../routes/Routing.routes';
@@ -11,6 +13,10 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     tutorChip: {
       margin: theme.spacing(0.5),
+    },
+    labelCell: {
+      width: '1%',
+      whiteSpace: 'nowrap',
     },
     substituteButton: {
       marginRight: theme.spacing(1),
@@ -25,6 +31,7 @@ interface Substitute {
 
 interface Props extends PaperTableRowProps {
   tutorial: Tutorial;
+  tutors: string[];
   substitutes: Substitute[];
   correctors: string[];
   onEditTutorialClicked: (tutorial: Tutorial) => void;
@@ -34,6 +41,7 @@ interface Props extends PaperTableRowProps {
 
 function TutorialTableRow({
   tutorial,
+  tutors,
   substitutes,
   correctors,
   onEditTutorialClicked,
@@ -54,9 +62,11 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={ROUTES.MANAGE_TUTORIAL_INTERNALS.renderLink({
-              tutorialId: tutorial.id,
-            })}
+            component={renderLink(
+              ROUTES.MANAGE_TUTORIAL_INTERNALS.buildPath({
+                tutorialId: tutorial.id,
+              })
+            )}
             disabled={disableManageTutorialButton}
           >
             Verwalten
@@ -65,9 +75,11 @@ function TutorialTableRow({
           <Button
             variant='outlined'
             className={classes.substituteButton}
-            component={ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.renderLink({
-              tutorialId: tutorial.id,
-            })}
+            component={renderLink(
+              ROUTES.MANAGE_TUTORIAL_SUBSTITUTES.buildPath({
+                tutorialId: tutorial.id,
+              })
+            )}
           >
             Vertretungen
           </Button>
@@ -80,17 +92,22 @@ function TutorialTableRow({
           />
         </>
       }
+      LabelCellProps={{ className: classes.labelCell }}
       {...rest}
     >
       <TableCell>
         <div>
-          {tutorial.tutor && (
-            <Chip
-              key={tutorial.id}
-              label={`Tutor: ${tutorial.tutor.lastname}, ${tutorial.tutor.firstname}`}
-              className={classes.tutorChip}
-              color='primary'
-            />
+          {tutors.length > 0 && (
+            <div>
+              {tutors.map((tut) => (
+                <Chip
+                  key={tut}
+                  label={`Tutor: ${tut}`}
+                  className={classes.tutorChip}
+                  color='primary'
+                />
+              ))}
+            </div>
           )}
 
           {correctors.length > 0 && (
@@ -100,7 +117,7 @@ function TutorialTableRow({
                   key={cor}
                   label={`Korrektor: ${cor}`}
                   className={classes.tutorChip}
-                  size={!!tutorial.tutor ? 'small' : 'medium'}
+                  size={tutorial.tutors ? 'small' : 'medium'}
                 />
               ))}
             </div>

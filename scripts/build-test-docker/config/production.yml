@@ -1,18 +1,20 @@
 # Session timeout after inactivity in minutes.
 sessionTimeout: 120
 
-database:
-    databaseURL: 'mongodb://mongo_test:27017/tms-nestjs'
-    maxRetries: 2
-    config:
-        # This is needed bc of the docker-compose file
-        authSource: 'admin'
-        authMechanism: 'SCRAM-SHA-1'
+# (Optional) If the app is hosted on a prefixed path (ie https://example.com/foo) set this property to the prefix (ie "foo"). If the app is hosted on the root path this property can be omitted.
+# prefix: subpath
 
-mailing:
-    testingMode: true
-    host: HOST
-    port: 587
-    auth:
-        user: USER
-        pass: PASS
+# Path to the handbook documentation. You only need to change this if you want to provide your own TMS documentation.
+handbookUrl: 'https://tms-uni-stuttgart.github.io/Tutor-Management-System/'
+
+# Configuration for the database access. More information can be found in the documentation.
+database:
+  host: tms_sql_db
+  port: 3306
+  databaseName: tms-docker-test
+  maxRetries: 10
+  reconnectTimeout: 10000
+
+defaultSettings:
+  canTutorExcuseStudents: true
+  defaultTeamSize: 3

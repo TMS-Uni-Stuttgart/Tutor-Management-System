@@ -1,12 +1,12 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { TutorialDocument } from '../database/models/tutorial.model';
+import { Tutorial } from '../database/entities/tutorial.entity';
 import { TutorialService } from '../module/tutorial/tutorial.service';
 import { HasRoleGuard } from './has-role.guard';
 import { UseMetadata } from './helpers/UseMetadata';
 
 interface HasAccessParams {
-    tutorial: TutorialDocument;
+    tutorial: Tutorial;
     user: Express.User;
     context: ExecutionContext;
 }
@@ -14,15 +14,18 @@ interface HasAccessParams {
 /**
  * Checks if the request is made on a tutorial ID which the logged in user is allowed to access.
  *
- * By default the `id` param is assumend to be the one belonging to the tutorial. If the tutorial ID is in a different param field one can set that field with the `@IDField()` decorator.
+ * By default the `id` param is assumed to be the one belonging to the tutorial. If the tutorial ID is in a different param field one can set that field with the `@IDField()` decorator.
  *
- * By default, any user with the ADMIN role will get access to the endpoint. The roles getting access immediatly can be configured with the `@Roles()` decorator.
+ * By default, any user with the ADMIN role will get access to the endpoint. The roles getting access immediately can be configured with the `@Roles()` decorator.
  *
  * By default, only the tutor of the tutorial gains access to the endpoint. However, one can configure this with the `@AllowSubstitutes()` and `@AllowCorrectors()` decorators.
  */
 @Injectable()
 export class TutorialGuard extends UseMetadata {
-    constructor(protected readonly tutorialService: TutorialService, reflector: Reflector) {
+    constructor(
+        protected readonly tutorialService: TutorialService,
+        reflector: Reflector
+    ) {
         super(reflector);
     }
 
@@ -46,20 +49,20 @@ export class TutorialGuard extends UseMetadata {
      *
      * @param params Must contain the user and tutorial to check and the current execution context.
      *
-     * @returs Is the given user allowed to access the annotated endpoint?
+     * @returns Is the given user allowed to access the annotated endpoint?
      */
     protected hasUserAccessToTutorial({ tutorial, user, context }: HasAccessParams): boolean {
-        const userId = user._id;
+        const userId = user.id;
         const allowSubstitutes = this.isAllowedForSubstitutes(context);
         const allowCorrectors = this.isAllowedForCorrectors(context);
 
-        if (tutorial.tutor?.id === userId) {
+        if (tutorial.tutors.getItems().some((tutor) => tutor.id === userId)) {
             return true;
         }
 
         if (allowSubstitutes) {
-            for (const [, substId] of tutorial.getAllSubstitutes()) {
-                if (userId === substId) {
+            for (const substitute of tutorial.substitutes) {
+                if (userId === substitute.substituteTutor.id) {
                     return true;
                 }
             }
@@ -76,7 +79,7 @@ export class TutorialGuard extends UseMetadata {
         return false;
     }
 
-    protected async getTutorialFromRequest(context: ExecutionContext): Promise<TutorialDocument> {
+    protected async getTutorialFromRequest(context: ExecutionContext): Promise<Tutorial> {
         const tutorialId = this.getIdFieldContentFromContext(context);
 
         return this.tutorialService.findById(tutorialId);

@@ -3,7 +3,8 @@
  * =========================================================== */
 
 import { setupProcess } from './setupProcess';
+import { bootstrap } from './setupApp';
+
 setupProcess();
 
-import { bootstrap } from './setupApp';
 bootstrap();

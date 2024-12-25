@@ -1,14 +1,8 @@
-import { Box, BoxProps, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import {
-  DatePicker,
-  DatePickerProps,
-  KeyboardDatePicker,
-  KeyboardTimePicker,
-  TimePicker,
-  TimePickerProps,
-} from '@material-ui/pickers';
-import { DateTime, DateTimeFormatOptions, DurationObject, Interval } from 'luxon';
+import { Box, BoxProps, TextField, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { DatePicker, DatePickerProps, TimePicker, TimePickerProps } from '@mui/x-date-pickers';
+import { DateTime, DateTimeFormatOptions, DurationLikeObject, Interval } from 'luxon';
 import React, { useCallback, useEffect, useState } from 'react';
 
 const useStyles = makeStyles(() =>
@@ -68,9 +62,10 @@ function getDefaultInterval(): Interval {
   return Interval.fromDateTimes(DateTime.local(), DateTime.local().plus({ days: 1 }));
 }
 
-function getFormatForMode(
-  mode: SelectIntervalMode
-): { display: DateTimeFormatOptions; mask: string } {
+function getFormatForMode(mode: SelectIntervalMode): {
+  display: DateTimeFormatOptions;
+  mask: string;
+} {
   switch (mode) {
     case SelectIntervalMode.DATE:
       return {
@@ -95,18 +90,18 @@ function getFormatForMode(
 function getComponentForMode(
   mode: SelectIntervalMode,
   isKeyboardDisabled: boolean
-): React.FC<DatePickerProps> | React.FC<TimePickerProps> {
+): React.FC<DatePickerProps<DateTime>> | React.FC<TimePickerProps<DateTime>> {
   switch (mode) {
     case SelectIntervalMode.DATE:
-      return isKeyboardDisabled ? DatePicker : KeyboardDatePicker;
+      return DatePicker;
     case SelectIntervalMode.TIME:
-      return isKeyboardDisabled ? TimePicker : KeyboardTimePicker;
+      return TimePicker;
     default:
       throw new Error(`No component available for mode ${mode}`);
   }
 }
 
-function getDurationToAdd(mode: SelectIntervalMode, steps: number = 1): DurationObject {
+function getDurationToAdd(mode: SelectIntervalMode, steps: number = 1): DurationLikeObject {
   switch (mode) {
     case SelectIntervalMode.DATE:
       return { days: steps };
@@ -180,29 +175,31 @@ function SelectInterval({
     return label ?? invalidLabel;
   };
 
-  const handleStartChanged = (date: DateTime | null) => {
-    if (!date) {
+  const handleStartChanged = (date: unknown) => {
+    const typedDate = date as DateTime | null;
+    if (!typedDate) {
       setValue(Interval.invalid('Start date not defined.'));
       return;
     }
 
     const durationToAdd = getDurationToAdd(mode, autoIncreaseStep);
-    let endDate: DateTime = lastValid.end;
+    let endDate: DateTime | null = lastValid.end;
 
-    if (date.isValid) {
-      if (date <= lastValid.end) {
-        endDate = touched.end ? lastValid.end : date.plus(durationToAdd);
+    if (typedDate.isValid) {
+      if (lastValid.end && typedDate <= lastValid.end) {
+        endDate = touched.end ? lastValid.end : typedDate.plus(durationToAdd);
       } else {
-        endDate = date.plus(durationToAdd);
+        endDate = typedDate.plus(durationToAdd);
       }
     }
 
-    setValue(Interval.fromDateTimes(date, endDate));
+    setValue(Interval.fromDateTimes(typedDate, endDate ?? DateTime.local()));
   };
 
-  const handleEndChanged = (date: DateTime | null) => {
-    if (!!date) {
-      setValue(Interval.fromDateTimes(lastValid.start, date));
+  const handleEndChanged = (date: unknown) => {
+    const typedDate = date as DateTime | null;
+    if (typedDate) {
+      setValue(Interval.fromDateTimes(lastValid.start ?? DateTime.local(), typedDate));
     } else {
       setValue(Interval.invalid('End date not defined.'));
     }
@@ -214,31 +211,38 @@ function SelectInterval({
         <Component
           label='Von'
           value={lastValid.start}
-          variant='inline'
           format={format.mask}
-          labelFunc={labelFunc}
           ampm={false}
-          fullWidth
-          inputVariant='outlined'
-          InputProps={{ className: classes.startPicker }}
-          onBlur={() => setTouched({ ...touched, start: true })}
           onChange={handleStartChanged}
-          error={displayError}
+          slots={{
+            textField: TextField,
+          }}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              variant: 'outlined',
+              InputProps: { className: classes.startPicker },
+              onBlur: () => setTouched({ ...touched, start: true }),
+              error: displayError,
+            },
+          }}
         />
         <Component
           label='Bis'
           value={lastValid.end}
-          InputProps={{ className: classes.endPicker }}
-          variant='inline'
           format={format.mask}
-          labelFunc={labelFunc}
           ampm={false}
-          fullWidth
-          inputVariant='outlined'
           minDate={lastValid.start?.plus({ days: 1 })}
-          onBlur={() => setTouched({ ...touched, end: true })}
           onChange={handleEndChanged}
-          error={displayError}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              variant: 'outlined',
+              InputProps: { className: classes.startPicker },
+              onBlur: () => setTouched({ ...touched, start: true }),
+              error: displayError,
+            },
+          }}
         />
       </Box>
 

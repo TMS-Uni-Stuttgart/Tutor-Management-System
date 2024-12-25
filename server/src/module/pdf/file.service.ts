@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import pug from 'pug';
-import { SheetDocument } from '../../database/models/sheet.model';
-import { ITeamId } from '../../shared/model/Team';
+import pug, { LocalsObject } from 'pug';
+import { ITeamId } from 'shared/model/Team';
+import { Sheet } from '../../database/entities/sheet.entity';
 import { SettingsService } from '../settings/settings.service';
 import { SheetService } from '../sheet/sheet.service';
 import { TeamService } from '../team/team.service';
@@ -21,13 +21,13 @@ export interface GenerateTutorialFilenameParams {
 type Extension = 'pdf' | 'zip';
 
 interface FileNameParams {
-    sheet: SheetDocument;
+    sheet: Sheet;
     teamName: string;
     extension?: Extension;
 }
 
 interface TutorialGradingFilenameParams {
-    sheet: SheetDocument;
+    sheet: Sheet;
     tutorialSlot: string;
     extension?: Extension;
 }
@@ -37,7 +37,7 @@ interface FilenameAttributes {
     teamName: string;
 }
 
-interface TutorialFilenameAttriutes {
+interface TutorialFilenameAttributes {
     sheetNo: string;
     tutorialSlot: string;
 }
@@ -45,7 +45,7 @@ interface TutorialFilenameAttriutes {
 @Injectable()
 export class FileService {
     private gradingFilename: Template<FilenameAttributes> | undefined;
-    private tutorialGradingFilename: Template<TutorialFilenameAttriutes> | undefined;
+    private tutorialGradingFilename: Template<TutorialFilenameAttributes> | undefined;
 
     constructor(
         private readonly sheetService: SheetService,
@@ -86,7 +86,7 @@ export class FileService {
     }
 
     /**
-     * Creates a filename from the given sheet number and teamname.
+     * Creates a filename from the given sheet number and teamName.
      *
      * This function behaves like a sync function except the `this.filenameTemplate` property is not set yet. If it is set no internal async calls are made.
      *
@@ -139,15 +139,12 @@ export class FileService {
      * Afterwards the `this.filenameTemplate` property is set to the compiled template.
      */
     private async loadFilenameTemplates(): Promise<void> {
-        const {
-            gradingFilename,
-            tutorialGradingFilename,
-        } = await this.settingsService.getClientSettings();
+        const { gradingFilename, tutorialGradingFilename } =
+            await this.settingsService.getClientSettings();
 
         this.gradingFilename = this.parseAndCompileFilenameTemplate(gradingFilename);
-        this.tutorialGradingFilename = this.parseAndCompileFilenameTemplate(
-            tutorialGradingFilename
-        );
+        this.tutorialGradingFilename =
+            this.parseAndCompileFilenameTemplate(tutorialGradingFilename);
     }
 
     /**
@@ -157,7 +154,7 @@ export class FileService {
      *
      * @returns Compiled pug-template.
      */
-    private parseAndCompileFilenameTemplate<T>(template: string): Template<T> {
+    private parseAndCompileFilenameTemplate<T extends LocalsObject>(template: string): Template<T> {
         let parsedTemplate: string;
         if (template.startsWith('|')) {
             parsedTemplate = template;

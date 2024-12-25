@@ -3,15 +3,14 @@ import { Type } from 'class-transformer';
 import {
     IsArray,
     IsEnum,
-    IsMongoId,
     IsNumber,
     IsOptional,
     IsString,
+    IsUUID,
     Min,
     ValidateNested,
 } from 'class-validator';
 import { DateTime, Interval } from 'luxon';
-import { IsLuxonDateTime, IsLuxonInterval } from '../../helpers/validators/luxon.validator';
 import {
     IExcludedDate,
     ISubstituteDTO,
@@ -19,15 +18,16 @@ import {
     ITutorialGenerationData,
     ITutorialGenerationDTO,
     Weekday,
-} from '../../shared/model/Tutorial';
+} from 'shared/model/Tutorial';
+import { IsLuxonDateTime, IsLuxonInterval } from '../../helpers/validators/luxon.validator';
 
 export class TutorialDTO implements ITutorialDTO {
     @IsString()
     slot!: string;
 
-    @IsOptional()
-    @IsString()
-    tutorId?: string;
+    @IsArray()
+    @IsString({ each: true })
+    tutorIds!: string[];
 
     @IsLuxonDateTime()
     startTime!: string;
@@ -46,7 +46,7 @@ export class TutorialDTO implements ITutorialDTO {
 
 export class SubstituteDTO implements ISubstituteDTO {
     @IsOptional()
-    @IsMongoId()
+    @IsUUID()
     tutorId?: string;
 
     @IsArray()
@@ -71,7 +71,7 @@ export class ExcludedTutorialDate implements IExcludedDate {
         if (!!this.interval) {
             return Interval.fromISO(this.interval)
                 .splitBy({ days: 1 })
-                .map((i) => i.start.startOf('day'));
+                .map((i) => i.start?.startOf('day') as DateTime);
         }
 
         throw new BadRequestException(

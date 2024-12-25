@@ -61,9 +61,9 @@ To make commits useful and easy to read they follow a simple naming principle: T
 
 Those fit in the sentence like this:
 
--   _This commit will_ fix the bug in tutorial creation.
--   _This commit will_ fix issue #10
--   _This commit will_ add a timeout before retry to connect to MongoDB.
+- _This commit will_ fix the bug in tutorial creation.
+- _This commit will_ fix issue #10
+- _This commit will_ add a timeout before retry to connect to MongoDB.
 
 If you want (or need) to provide more information you can simple add a description to your commit by adding a new paragraph to the commit message:
 

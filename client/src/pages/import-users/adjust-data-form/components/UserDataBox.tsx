@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import React, { useMemo } from 'react';
 import { getNameOfEntity } from 'shared/util/helpers';

@@ -16,27 +16,24 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
-import { validateSync, ValidationError } from 'class-validator';
 import { Request as ExpressRequest } from 'express';
 import { DateTime } from 'luxon';
+import { AttendanceState, IAttendance } from 'shared/model/Attendance';
+import { Role } from 'shared/model/Role';
+import { IStudent } from 'shared/model/Student';
 import { CreatedInOwnTutorialGuard } from '../../guards/created-in-own-tutorial.guard';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
 import { AllowSubstitutes } from '../../guards/decorators/allowSubstitutes.decorator';
 import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { StudentGuard } from '../../guards/student.guard';
-import { AttendanceState, IAttendance } from '../../shared/model/Attendance';
-import { IGradingDTO } from '../../shared/model/Gradings';
-import { Role } from '../../shared/model/Role';
-import { IStudent } from '../../shared/model/Student';
 import { SettingsService } from '../settings/settings.service';
 import {
     AttendanceDTO,
     CakeCountDTO,
-    GradingDTO,
+    CreateStudentDTO,
+    CreateStudentsDTO,
     PresentationPointsDTO,
-    StudentDTO,
 } from './student.dto';
 import { StudentService } from './student.service';
 
@@ -66,10 +63,16 @@ export class StudentController {
     @UseGuards(HasRoleGuard, CreatedInOwnTutorialGuard)
     @Roles(Role.ADMIN, Role.TUTOR)
     @UsePipes(ValidationPipe)
-    async createStudent(@Body() dto: StudentDTO): Promise<IStudent> {
-        const student = await this.studentService.create(dto);
+    async createStudent(@Body() dto: CreateStudentDTO): Promise<IStudent> {
+        return await this.studentService.create(dto);
+    }
 
-        return student;
+    @Post('/generate')
+    @UseGuards(HasRoleGuard, CreatedInOwnTutorialGuard)
+    @Roles(Role.ADMIN, Role.TUTOR)
+    @UsePipes(ValidationPipe)
+    async createManyStudents(@Body() dto: CreateStudentsDTO): Promise<IStudent[]> {
+        return await this.studentService.createMany(dto);
     }
 
     @Get('/:id')
@@ -85,10 +88,8 @@ export class StudentController {
     @Patch('/:id')
     @UseGuards(StudentGuard)
     @UsePipes(ValidationPipe)
-    async updateStudent(@Param('id') id: string, @Body() dto: StudentDTO): Promise<IStudent> {
-        const student = await this.studentService.update(id, dto);
-
-        return student;
+    async updateStudent(@Param('id') id: string, @Body() dto: CreateStudentDTO): Promise<IStudent> {
+        return await this.studentService.update(id, dto);
     }
 
     @Delete('/:id')
@@ -96,33 +97,6 @@ export class StudentController {
     @UseGuards(StudentGuard)
     async deleteStudent(@Param('id') id: string): Promise<void> {
         await this.studentService.delete(id);
-    }
-
-    @Put('grading')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(StudentGuard)
-    @AllowCorrectors()
-    @UsePipes(ValidationPipe)
-    async updatePointsOfMultipleStudents(@Body() dtos: [string, IGradingDTO][]): Promise<void> {
-        const dtoMap = new Map<string, IGradingDTO>();
-        const notValidDTO: { id: string; errors: ValidationError[] }[] = [];
-
-        for (const [id, dtoData] of dtos) {
-            const dto = plainToClass(GradingDTO, dtoData);
-            const errors = validateSync(dto);
-
-            if (errors.length === 0) {
-                dtoMap.set(id, dto);
-            } else {
-                notValidDTO.push({ id, errors });
-            }
-        }
-
-        if (notValidDTO.length > 0) {
-            throw new BadRequestException(notValidDTO, 'Some DTOs are not valid.');
-        }
-
-        await this.studentService.setGradingOfMultipleStudents(dtoMap);
     }
 
     @Put('/:id/attendance')
@@ -141,9 +115,7 @@ export class StudentController {
             user: request.user,
         });
 
-        const attendance = await this.studentService.setAttendance(id, dto);
-
-        return attendance;
+        return await this.studentService.setAttendance(id, dto);
     }
 
     @Put('/:id/presentation')
@@ -158,15 +130,6 @@ export class StudentController {
         await this.studentService.setPresentationPoints(id, dto);
     }
 
-    @Put('/:id/grading')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(StudentGuard)
-    @AllowCorrectors()
-    @UsePipes(ValidationPipe)
-    async updatePoints(@Param('id') id: string, @Body() dto: GradingDTO): Promise<void> {
-        await this.studentService.setGrading(id, dto);
-    }
-
     @Put('/:id/cakecount')
     @HttpCode(HttpStatus.NO_CONTENT)
     @UseGuards(StudentGuard)
@@ -177,11 +140,11 @@ export class StudentController {
     }
 
     /**
-     * Checks if the given user is allowed to proceed with the request to change the attendance state in regards to the application settings.
+     * Checks if the given user is allowed to proceed with the request to change the attendance state with regard to the application settings.
      *
      * __Important__: This does __NOT__ check if the user is allowed in general (ie correct role, is tutor, ...). Those checks must still be performed by the corresponding route guard!
      *
-     * This checks if all of the following conditions are met. If so an exception is thrown:
+     * This checks if all the following conditions are met. If so an exception is thrown:
      * - The application settings disallow non-admins to excuse a student.
      * - The user making the request is __not__ an admin.
      * - The DTO would change the attendance state of a student to `excused`.

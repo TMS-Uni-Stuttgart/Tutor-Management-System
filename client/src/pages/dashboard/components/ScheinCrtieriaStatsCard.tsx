@@ -1,15 +1,11 @@
-import {
-  CircularProgress,
-  createStyles,
-  makeStyles,
-  Paper,
-  Theme,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import React from 'react';
+import { CircularProgress, Paper, Theme, Typography, useTheme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import convert from 'color-convert';
+import { useEffect, useState } from 'react';
 import Chart from 'react-google-charts';
-import { ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';
+import { IScheinCriteria, ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';
+import { getAllScheinCriterias } from '../../../hooks/fetching/Scheincriteria';
 import { useTranslation } from '../../../util/lang/configI18N';
 import { TutorialSummaryInfo } from '../Dashboard';
 
@@ -47,11 +43,17 @@ function ScheinCriteriaStatsCard({
   criteriaIds,
   placeholder,
 }: ScheinCriteriaStatsCardProps): JSX.Element {
+  const [criterias, setCriterias] = useState<IScheinCriteria[]>([]);
   const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation('scheincriteria');
+  const numberOfStudents = Object.keys(value.studentInfos).length;
 
   const { backgroundColor, colors, fontStyle } = theme.mixins.chart(theme);
+
+  useEffect(() => {
+    getAllScheinCriterias().then((res) => setCriterias(res));
+  }, []);
 
   function filterSummaries(critId: string): ScheinCriteriaStatus[] {
     return Object.values(value.studentInfos)
@@ -63,11 +65,7 @@ function ScheinCriteriaStatsCard({
     let hasInfo: boolean = false;
 
     filterSummaries(critId).forEach((status) => {
-      if (Object.values(status.infos).length > 0) {
-        hasInfo = true;
-      } else {
-        hasInfo = false;
-      }
+      hasInfo = Object.values(status.infos).length > 0;
     });
 
     return hasInfo;
@@ -85,7 +83,7 @@ function ScheinCriteriaStatsCard({
     return filterSummaries(critId)[0].name;
   }
 
-  function getAdditionlaStatusTicks(critId: string) {
+  function getAdditionalStatusTicks(critId: string) {
     const elements: number[] = [];
     filterSummaries(critId).forEach((item) => {
       Object.values(item.infos).forEach((info) => {
@@ -108,24 +106,77 @@ function ScheinCriteriaStatsCard({
     });
 
     const data: [string, number][] = Object.entries(counts);
-    const headedData = [['Total', 'Studierende'], ...data];
-    return headedData;
+    return [['Total', 'Studierende'], ...data];
+  }
+
+  function generateColors(count: number): string[] {
+    const colors: string[] = [];
+    const hueStep = Math.floor(360 / count);
+
+    for (let i = 0; i < count; i++) {
+      const hue = (i * hueStep) % 360;
+      const rgb = convert.hsl.rgb([hue, 70, 50]);
+      colors.push(`rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`);
+    }
+
+    return colors;
+  }
+
+  function filterAndSortSummaries(critId: string): ScheinCriteriaStatus[] {
+    return Object.values(value.studentInfos)
+      .filter((studentInfo) => Object.keys(studentInfo.scheinCriteriaSummary).includes(critId))
+      .sort((a, b) => {
+        const teamIdA = a.student.team?.id || '';
+        const teamIdB = b.student.team?.id || '';
+
+        if (teamIdA === teamIdB) return 0;
+        return teamIdA < teamIdB ? -1 : 1;
+      })
+      .map((studentInfo) => studentInfo.scheinCriteriaSummary[critId]);
   }
 
   function getAdditionalStatusStats(critId: string) {
-    const counts: [number, number][] = [];
-    filterSummaries(critId).forEach((item) => {
+    const counts: (string | number)[][] = [];
+
+    const criteria = criterias.find((criteria) => criteria.id === critId);
+    let threshold: any = 0;
+    let isSheetTotal = false;
+    if (criteria?.data['valuePerSheetNeeded']) {
+      threshold = criteria.data['valuePerSheetNeeded'];
+    } else if (criteria?.data['valuePerTestNeeded']) {
+      threshold = criteria?.data['valuePerTestNeeded'];
+    } else {
+      threshold = criteria?.data['valueNeeded'];
+      isSheetTotal = true;
+    }
+
+    const colorPalette = generateColors(numberOfStudents);
+    let colorIndex = 0;
+
+    filterAndSortSummaries(critId).forEach((item) => {
       Object.values(item.infos).forEach((info) => {
         const element = info.no;
         const achieved = info.achieved;
+        let required: number = 0;
 
-        counts.push([element, achieved]);
+        if (isSheetTotal) {
+          required =
+            threshold > 1
+              ? info.total * (threshold / Object.keys(item.infos).length)
+              : info.total * threshold;
+        } else {
+          required = threshold <= 1 ? info.total * threshold : Number(threshold);
+        }
+
+        const color = colorPalette[colorIndex % colorPalette.length];
+
+        counts.push([element, achieved, color, required]);
       });
+      colorIndex++;
     });
-    const headedData = [['Element', 'Punkte'], ...counts];
-    return headedData;
-  }
 
+    return [['Element', 'Punkte', { role: 'style' }, 'Threshold'], ...counts];
+  }
   return (
     <>
       {criteriaIds.length === 0 ? (
@@ -154,13 +205,17 @@ function ScheinCriteriaStatsCard({
                       hAxis: {
                         ...fontStyle,
                         title: `${t('UNIT_LABEL_' + getUnit(critId) + '_plural')}`,
-                        ticks: getAdditionlaStatusTicks(critId),
+                        ticks: getAdditionalStatusTicks(critId),
                       },
                       vAxis: {
                         ...fontStyle,
                         title: `${t('UNIT_LABEL_' + getAdditionalStatusUnit(critId) + '_plural')}`,
                       },
                       legend: 'none',
+                      series: {
+                        0: { pointShape: 'circle', pointSize: 3 },
+                        1: { pointShape: 'diamond', pointSize: 10 },
+                      },
                       dataOpacity: 0.6,
                     }}
                   />

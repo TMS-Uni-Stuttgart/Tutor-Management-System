@@ -1,19 +1,22 @@
-import { Box, CircularProgress, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { Box, CircularProgress, SelectChangeEvent, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useEffect, useState } from 'react';
+import { useMatches, useNavigate, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { getNameOfEntity } from 'shared/util/helpers';
 import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect from '../../../components/CustomSelect';
 import Placeholder from '../../../components/Placeholder';
+import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getScheinexam } from '../../../hooks/fetching/ScheinExam';
 import { getStudent, setExamPointsOfStudent } from '../../../hooks/fetching/Student';
 import { getStudentsOfTutorial } from '../../../hooks/fetching/Tutorial';
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
+import { GradingList } from '../../../model/GradingList';
 import { Scheinexam } from '../../../model/Scheinexam';
 import { Student } from '../../../model/Student';
-import { ROUTES } from '../../../routes/Routing.routes';
+import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
 import { convertFormStateToGradingDTO } from '../../points-sheet/enter-form/EnterPoints.helpers';
 import ScheinexamPointsForm, {
   ScheinexamPointsFormSubmitCallback,
@@ -41,21 +44,32 @@ interface RouteParams {
   tutorialId: string;
   examId: string;
   studentId: string;
+  [key: string]: string;
 }
 
 function EnterScheinexamPoints(): JSX.Element {
   const classes = useStyles();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { tutorialId, examId, studentId } = useParams<RouteParams>();
+  const matches = useMatches();
 
   const { enqueueSnackbar, setError, isError } = useCustomSnackbar();
 
   const [exam, setExam] = useState<Scheinexam>();
   const [student, setStudent] = useState<Student>();
   const [allStudents, setAllStudents] = useState<Student[]>([]);
+  const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
 
   useEffect(() => {
+    if (!examId) {
+      setExam(undefined);
+      return;
+    }
+    if (!tutorialId) {
+      setStudent(undefined);
+      return;
+    }
     getScheinexam(examId)
       .then((response) => {
         setExam(response);
@@ -63,9 +77,20 @@ function EnterScheinexamPoints(): JSX.Element {
       .catch(() => {
         setError('Scheinklausur konnte nicht abgerufen werden.');
       });
-  }, [examId, setError]);
+
+    getGradingsOfTutorial(examId, tutorialId)
+      .then((response) => setGradings(response))
+      .catch(() => {
+        setError('Bewertungen konnten nicht abgerufen werden.');
+        setGradings(new GradingList([]));
+      });
+  }, [examId, tutorialId, setError]);
 
   useEffect(() => {
+    if (!studentId) {
+      setStudent(undefined);
+      return;
+    }
     getStudent(studentId)
       .then((response) => {
         setStudent(response);
@@ -76,6 +101,9 @@ function EnterScheinexamPoints(): JSX.Element {
   }, [studentId, setError]);
 
   useEffect(() => {
+    if (!tutorialId) {
+      return;
+    }
     getStudentsOfTutorial(tutorialId)
       .then((response) => {
         setAllStudents(response);
@@ -85,22 +113,24 @@ function EnterScheinexamPoints(): JSX.Element {
       });
   }, [tutorialId]);
 
-  const handleStudentChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    if (!(typeof event.target.value === 'string')) {
+  const handleStudentChange = (event: SelectChangeEvent<unknown>) => {
+    if (!(typeof event.target.value === 'string') || !examId || !tutorialId) {
       return;
     }
 
     const studentId = event.target.value as string;
 
-    history.push(ROUTES.SCHEIN_EXAMS_STUDENT.create({ tutorialId, examId, studentId }));
+    navigate(
+      useTutorialRoutes(matches).SCHEIN_EXAMS_STUDENT.buildPath({ tutorialId, examId, studentId })
+    );
   };
 
   const handleSubmit: ScheinexamPointsFormSubmitCallback = async (values, { resetForm }) => {
-    if (!student) {
+    if (!student || !studentId) {
       return;
     }
 
-    const prevGrading = student.getGrading(examId);
+    const prevGrading = gradings.getOfStudent(student.id);
     const updateDTO: IGradingDTO = convertFormStateToGradingDTO({
       values,
       examId,
@@ -138,7 +168,10 @@ function EnterScheinexamPoints(): JSX.Element {
     <Box display='flex' flexDirection='column' flex={1}>
       <Box display='flex' marginBottom={3}>
         <BackButton
-          to={ROUTES.SCHEIN_EXAMS_OVERVIEW.create({ tutorialId, examId })}
+          to={useTutorialRoutes(matches).SCHEIN_EXAMS_OVERVIEW.buildPath({
+            tutorialId: tutorialId ?? '',
+            examId: examId ?? '',
+          })}
           className={classes.backButton}
         />
 
@@ -177,6 +210,7 @@ function EnterScheinexamPoints(): JSX.Element {
             className={classes.form}
             exam={exam}
             student={student}
+            grading={gradings.getOfStudent(student.id)}
             onSubmit={handleSubmit}
           />
         )}

@@ -12,18 +12,19 @@ export interface ITutorialDTO {
     endTime: string;
     slot: string;
     startTime: string;
-    tutorId?: string | null;
+    tutorIds: string[];
 }
 
 export interface ITutorial extends HasId {
     slot: string;
-    tutor?: UserInEntity;
+    tutors: UserInEntity[];
     dates: string[];
     startTime: string;
     endTime: string;
     students: string[];
     teams: string[];
     correctors: UserInEntity[];
+    // TODO: Change to {substTutorId: string, date: string}.
     substitutes: [string, string][];
 }
 

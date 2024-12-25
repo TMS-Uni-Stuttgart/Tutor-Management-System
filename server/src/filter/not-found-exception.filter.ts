@@ -35,9 +35,9 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     }
 
     /**
-     * Handles the catched exception according to the class documentation.
+     * Handles the caught exception according to the class documentation.
      *
-     * @param exception Catched NotFoundException
+     * @param exception Caught NotFoundException
      * @param host Application host
      */
     catch(exception: NotFoundException, host: ArgumentsHost): Response<any> | undefined {
