@@ -36,19 +36,6 @@ This workflow has three jobs:
 
 Runs the unit tests in the server.
 
-## Docker image test
-
-| Trigger      | Branches     |
-| ------------ | ------------ |
-| Pull Request | main         |
-| Push         | main, stable |
-
-**Required to merge pull request:** Yes
-
-Creates a docker image and test if the server would start using this image.
-If the image starts successfully the job checks if a PDF could be generated.
-This is done because using puppeteer inside an alpine image might fail after package updates.
-
 ## Build and push Docker image
 
 | Trigger | State     |

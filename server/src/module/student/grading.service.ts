@@ -24,7 +24,9 @@ export class GradingService {
         private readonly shortTestService: ShortTestService,
         private readonly entityManager: EntityManager,
         @InjectRepository(Grading)
-        private readonly repository: EntityRepository<Grading>
+        private readonly repository: EntityRepository<Grading>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
     /**
@@ -33,7 +35,7 @@ export class GradingService {
      * @returns All gradings which belong to the hand-in with the given handInId.
      */
     async findOfHandIn(handInId: string): Promise<GradingResponseData[]> {
-        const gradings = await this.repository.find({ handInId: handInId }, { populate: true });
+        const gradings = await this.repository.find({ handInId: handInId }, { populate: ['*'] });
         const data: GradingResponseData[] = [];
 
         gradings.forEach((grading) => {
@@ -51,7 +53,7 @@ export class GradingService {
      * @returns All gradings that this student has.
      */
     async findOfStudent(studentId: string): Promise<GradingList> {
-        const gradings = await this.repository.find({ students: studentId }, { populate: true });
+        const gradings = await this.repository.find({ students: studentId }, { populate: ['*'] });
         return new GradingList(gradings);
     }
 
@@ -67,7 +69,7 @@ export class GradingService {
     ): Promise<Grading | undefined> {
         const grading = await this.repository.findOne(
             { students: studentId, handInId: handInId },
-            { populate: true }
+            { populate: ['*'] }
         );
 
         return grading ?? undefined;
@@ -166,19 +168,19 @@ export class GradingService {
                 !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
 
             newGrading.updateFromDTO({ dto, handIn });
-            oldGrading?.students.remove(...students);
-            newGrading.students.add(...students);
+            oldGrading?.students.remove(students);
+            newGrading.students.add(students);
 
             if (!!oldGrading && oldGrading.students.length === 0) {
-                this.repository.remove(oldGrading);
+                this.em.remove(oldGrading);
             }
 
-            await this.repository.persistAndFlush(newGrading);
+            await this.em.persistAndFlush(newGrading);
         }
     }
 
     async findAllGradingsOfStudent(student: Student): Promise<Grading[]> {
-        return this.repository.find({ students: student.id }, { populate: true });
+        return this.repository.find({ students: student.id }, { populate: ['*'] });
     }
 
     async findAllGradingsOfMultipleStudents(students: Student[]): Promise<StudentAndGradings[]> {
@@ -201,7 +203,7 @@ export class GradingService {
                         handInId: handIn.id,
                         students: s,
                     },
-                    { populate: true }
+                    { populate: ['*'] }
                 )
             )
         );
@@ -226,10 +228,10 @@ export class GradingService {
         newGrading.students.add(student);
 
         if (!!oldGrading && oldGrading.students.length === 0) {
-            this.repository.remove(oldGrading);
+            this.em.remove(oldGrading);
         }
 
-        this.repository.persist(newGrading);
+        this.em.persist(newGrading);
     }
 
     /**

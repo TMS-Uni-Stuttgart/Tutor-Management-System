@@ -30,7 +30,7 @@ export function IsValidMailSender(validationOptions?: ValidationOptions) {
                     }
 
                     const mail = VALID_EMAIL_REGEX.source;
-                    const name = /([\p{L}\p{N}",*-]|[^\S\r\n])+/.source;
+                    const name = /([\p{L}\p{N}",*-]|[^\S\r\n])+/u.source;
                     const regex = new RegExp(`${mail}|(${name} <${mail}>)`, 'u');
                     const subStrings = value.split(',');
 

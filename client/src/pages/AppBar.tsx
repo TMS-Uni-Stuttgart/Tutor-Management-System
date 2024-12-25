@@ -1,28 +1,29 @@
 import {
-  AppBar as MuiAppBar,
   Button,
   ButtonGroup,
   IconButton,
-  PaletteType,
+  AppBar as MuiAppBar,
+  PaletteMode,
   Popover,
   Theme,
   Toolbar,
   Tooltip,
   Typography,
   useTheme,
-} from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
-  BookOpenPageVariant as HandbookIcon,
-  Brightness5 as LightIcon,
   Brightness7 as DarkIcon,
   Download as DownloadIcon,
   Github as GitHubIcon,
+  BookOpenPageVariant as HandbookIcon,
+  Brightness5 as LightIcon,
   Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
-import { useRouteMatch } from 'react-router';
+import { useLocation, useMatches } from 'react-router';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
@@ -31,7 +32,6 @@ import { useLogin } from '../hooks/LoginService';
 import { useFetchState } from '../hooks/useFetchState';
 import { TutorialInEntity } from '../model/LoggedInUser';
 import { Tutorial } from '../model/Tutorial';
-import { ROUTES } from '../routes/Routing.routes';
 import { saveBlob } from '../util/helperFunctions';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -68,10 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const TITLE_TEXTS: Map<string, string> = new Map(
-  Object.values(ROUTES).map((route) => [route.template, route.title])
-);
-
 interface Props {
   onMenuButtonClicked: (ev: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -80,19 +76,12 @@ interface CreatingState {
   [tutorialSlot: string]: boolean | undefined;
 }
 
-function getTitleFromPath(path: string | undefined): string {
-  if (!path) {
-    return 'TITLE_NOT_FOUND';
-  }
-
-  const title = TITLE_TEXTS.get(path);
-
-  return title ?? 'TITLE_NOT_FOUND';
-}
-
 function useTitleFromRoute(): string {
-  const match = useRouteMatch([...TITLE_TEXTS.keys()]);
-  return useMemo(() => getTitleFromPath(match?.path), [match]);
+  const location = useLocation();
+  const path = location.pathname;
+  const matches = useMatches();
+
+  return useMemo(() => (matches.at(-1)?.handle as any)?.title as string, [path]);
 }
 
 function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
@@ -116,7 +105,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
   });
 
   function handleThemeChangeClicked() {
-    const newType: PaletteType = theme.palette.type === 'light' ? 'dark' : 'light';
+    const newType: PaletteMode = theme.palette.mode === 'light' ? 'dark' : 'light';
     changeTheme(newType);
   }
 
@@ -149,6 +138,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           onClick={onMenuButtonClicked}
           aria-label='Menu'
           style={{ visibility: userIsLoggedIn ? 'visible' : 'hidden' }}
+          size='large'
         >
           <MenuIcon />
         </IconButton>
@@ -185,7 +175,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
                 <ButtonGroup
                   className={classes.popoverRoot}
                   orientation='vertical'
-                  color='default'
+                  color='inherit'
                   variant='text'
                 >
                   {[...userData.tutorials, ...userData.tutorialsToCorrect].map((tutorial) => (
@@ -223,8 +213,12 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
         )}
 
         <Tooltip title='Zwischen hellem & dunklem Design wechseln.'>
-          <IconButton onClick={handleThemeChangeClicked} className={classes.iconButton}>
-            {theme.palette.type === 'light' ? <LightIcon /> : <DarkIcon />}
+          <IconButton
+            onClick={handleThemeChangeClicked}
+            className={classes.iconButton}
+            size='large'
+          >
+            {theme.palette.mode === 'light' ? <LightIcon /> : <DarkIcon />}
           </IconButton>
         </Tooltip>
 
@@ -235,6 +229,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
               href={handbookUrl ?? ''}
               target='_blank'
               rel='noopener noreferrer'
+              size='large'
             >
               <HandbookIcon />
             </IconButton>
@@ -247,8 +242,9 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
             href='https://github.com/Dudrie/Tutor-Management-System/issues'
             target='_blank'
             rel='noopener noreferrer'
+            size='large'
           >
-            <GitHubIcon fontSize='default' />
+            <GitHubIcon fontSize='inherit' />
           </IconButton>
         </Tooltip>
       </Toolbar>

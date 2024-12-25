@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useFormikContext } from 'formik';
 import React, { useCallback, useMemo } from 'react';
 import { Role } from 'shared/model/Role';
@@ -63,7 +63,7 @@ function EditUserDialogContent({ parentFormValue, tutorials }: EditUserDialogPro
   );
 
   return (
-    <Box display='grid' gridTemplateRows='repeat(3, 1fr)' gridRowGap={16}>
+    <Box display='grid' gridTemplateRows='repeat(3, 1fr)' rowGap={16}>
       <FormikSelect
         name='roles'
         label='Rolle'

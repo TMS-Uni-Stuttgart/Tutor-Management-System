@@ -6,10 +6,10 @@ import {
   TableProps,
   TableRow,
   Typography,
-} from '@material-ui/core';
-import { DateTime } from 'luxon';
-import React, { useMemo } from 'react';
+} from '@mui/material';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
+import { useMemo } from 'react';
 import { AttendanceState, IAttendance } from 'shared/model/Attendance';
 import AttendanceControls from '../../../components/attendance-controls/AttendanceControls';
 import { useSettings } from '../../../hooks/useSettings';
@@ -55,7 +55,11 @@ function AttendanceInformation({
       .getDatesOfAttendances()
       .map((date) => new AttendanceDate(date, AttendanceDateSource.STUDENT));
 
-    return _.unionWith(tutorialDates, studentDates, (a, b) => a.date === b.date).sort(
+    const uniqueStudentDates = _.differenceWith(studentDates, tutorialDates, (a, b) =>
+      a.date.equals(b.date)
+    );
+
+    return [...tutorialDates, ...uniqueStudentDates].sort(
       (a, b) => a.date.toMillis() - b.date.toMillis()
     );
   }, [student, tutorialOfStudent]);

@@ -1,8 +1,8 @@
-import { Button, ButtonProps } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
+import { Button, ButtonProps } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React from 'react';
 import { AttendanceState } from 'shared/model/Attendance';
 
 export function getAttendanceColor(state: AttendanceState, theme: Theme): string {
@@ -22,26 +22,39 @@ interface StyleProps {
 
 const useStyles = makeStyles<Theme, StyleProps>((theme) =>
   createStyles({
-    button: (props) => {
-      const css: CreateCSSProperties = { marginLeft: theme.spacing(2) };
+    button: (props: StyleProps) => {
+      const mainColor = props.attendanceState
+        ? getAttendanceColor(props.attendanceState, theme)
+        : undefined;
 
-      if (props.attendanceState) {
+      const style: any = {
+        marginLeft: theme.spacing(2),
+      };
+
+      if (mainColor) {
         if (props.isContained) {
-          css.background = getAttendanceColor(props.attendanceState, theme);
-          css.color = theme.palette.getContrastText(css.background);
-
-          css['&:hover'] = {
-            background: theme.palette.augmentColor({
-              main: getAttendanceColor(props.attendanceState, theme),
-            }).dark,
+          style.backgroundColor = mainColor;
+          style.color = theme.palette.getContrastText(mainColor);
+          style['&:hover'] = {
+            backgroundColor: theme.palette.augmentColor({
+              color: {
+                main: mainColor,
+                light: theme.palette.grey[300],
+                dark: theme.palette.grey[700],
+              },
+            }).light,
           };
         } else {
-          css.color = getAttendanceColor(props.attendanceState, theme);
-          css.borderColor = css.color;
+          style.color = mainColor;
+          style.borderColor = mainColor;
+          style['&:hover'] = {
+            backgroundColor: theme.palette.action.hover,
+            borderColor: mainColor,
+          };
         }
       }
 
-      return css;
+      return style;
     },
   })
 );

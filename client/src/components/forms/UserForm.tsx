@@ -1,6 +1,5 @@
 import { FormikHelpers } from 'formik';
 import { Restore as RestoreOutlinedIcon, Shuffle as ShuffleIcon } from 'mdi-material-ui';
-import React from 'react';
 import { Role } from 'shared/model/Role';
 import { IUser } from 'shared/model/User';
 import * as Yup from 'yup';
@@ -85,13 +84,8 @@ function getInitialFormState(user?: IUser): UserFormState {
   };
 }
 
-function getValidationSchema(
-  availableRoles: Role[],
-  isEditMode: boolean
-): Yup.ObjectSchema<Yup.Shape<Partial<UserFormState>, Partial<UserFormState>>> {
-  let validationShape: {
-    [K in keyof UserFormState]?: Yup.Schema<any>;
-  } = {
+function getValidationSchema(availableRoles: Role[], isEditMode: boolean) {
+  const validationShape = {
     firstname: Yup.string().required('Benötigt'),
     lastname: Yup.string().required('Benötigt'),
     email: Yup.string().email('Keine gültige E-Mailadresse').required('Benötigt'),
@@ -99,15 +93,8 @@ function getValidationSchema(
       .of(Yup.string().oneOf(availableRoles))
       .min(1, 'Mind. eine Rolle muss zugewiesen sein.'),
     username: Yup.string().required('Benötigt'),
-    password: passwordValidationSchema,
+    password: isEditMode ? passwordValidationSchema.notRequired() : passwordValidationSchema,
   };
-
-  if (isEditMode) {
-    validationShape = {
-      ...validationShape,
-      password: passwordValidationSchema.notRequired(),
-    };
-  }
 
   return Yup.object().shape(validationShape).defined();
 }
@@ -240,18 +227,18 @@ function UserForm({
             name='tutorials'
             label='Tutorien'
             helperText='Tutorien, die gehalten werden.'
-            items={tutorials}
+            items={tutorials.filter((tutorial) => !values.tutorialsToCorrect.includes(tutorial.id))}
             showLoadingIndicator={loadingTutorials}
-            disabled={!values['roles'] || values['roles'].indexOf(Role.TUTOR) === -1}
+            disabled={!values.roles || !values.roles.includes(Role.TUTOR)}
           />
 
           <FormikTutorialSelect
             name='tutorialsToCorrect'
             label='Korrigierte Tutorien'
             helperText='Tutorien, die korrigiert werden.'
-            items={tutorials}
+            items={tutorials.filter((tutorial) => !values.tutorials.includes(tutorial.id))}
             showLoadingIndicator={loadingTutorials}
-            disabled={!values['roles'] || values['roles'].indexOf(Role.CORRECTOR) === -1}
+            disabled={!values.roles || !values.roles.includes(Role.CORRECTOR)}
           />
         </>
       )}

@@ -27,9 +27,6 @@ services:
     image: ghcr.io/dudrie/tutor-management-system:<version>
     container_name: tms-server
     restart: on-failure:1
-    cap_add:
-      # This one is needed so puppeteer properly works inside the container (see: https://developers.google.com/web/tools/puppeteer/troubleshooting#tips)
-      - SYS_ADMIN
     depends_on:
       - mysql
     networks:
@@ -42,6 +39,14 @@ services:
     volumes:
       # Replace with the path to the folder containing the configuration and template files of the TMS.
       - <path-to-CONFIG>:/tms/server/config
+
+  gotenberg:
+    container_name: gotenberg
+    image: gotenberg/gotenberg:8
+    ports:
+      - '2000:3000'
+    networks:
+      - tms_db
 
 volumes:
   db_data:

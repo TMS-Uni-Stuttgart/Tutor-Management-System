@@ -22,7 +22,10 @@ interface HasAccessParams {
  */
 @Injectable()
 export class TutorialGuard extends UseMetadata {
-    constructor(protected readonly tutorialService: TutorialService, reflector: Reflector) {
+    constructor(
+        protected readonly tutorialService: TutorialService,
+        reflector: Reflector
+    ) {
         super(reflector);
     }
 
@@ -53,7 +56,7 @@ export class TutorialGuard extends UseMetadata {
         const allowSubstitutes = this.isAllowedForSubstitutes(context);
         const allowCorrectors = this.isAllowedForCorrectors(context);
 
-        if (tutorial.tutor?.id === userId) {
+        if (tutorial.tutors.getItems().some((tutor) => tutor.id === userId)) {
             return true;
         }
 

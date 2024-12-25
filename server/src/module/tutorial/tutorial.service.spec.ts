@@ -13,8 +13,8 @@ import { MOCKED_TUTORIALS } from '../../../test/mocks/entities.mock';
 import { createDatesForTutorialAsStrings } from '../../../test/mocks/mock.helpers';
 import { Tutorial } from '../../database/entities/tutorial.entity';
 import { ExcludedTutorialDate, TutorialDTO, TutorialGenerationDTO } from './tutorial.dto';
-import { TutorialService } from './tutorial.service';
 import { TutorialModule } from './tutorial.module';
+import { TutorialService } from './tutorial.service';
 
 interface AssertTutorialParams {
     expected: Tutorial;
@@ -45,16 +45,21 @@ interface AssertGenerateTutorialsParams {
  * @param options Must contain the expected tutorial and the actual one.
  */
 function assertTutorial({ expected, actual }: AssertTutorialParams) {
-    const { id, dates, startTime, endTime, slot, tutor, students, correctors } = expected;
+    const { id, dates, startTime, endTime, slot, tutors, students, correctors } = expected;
 
     const substitutes: Map<string, UserInEntity> = new Map();
 
     expect(actual.id).toEqual(id);
     expect(actual.slot).toEqual(slot);
-    expect(actual.tutor?.id).toEqual(tutor?.id);
-    expect(actual.tutor?.firstname).toEqual(tutor?.firstname);
-    expect(actual.tutor?.lastname).toEqual(tutor?.lastname);
-
+    expect(actual.tutors.sort()).toEqual(
+        sortListById(
+            tutors.getItems().map((t) => ({
+                id: t.id,
+                firstname: t.firstname,
+                lastname: t.lastname,
+            }))
+        )
+    );
     expect(actual.students.sort()).toEqual(
         students
             .getItems()
@@ -108,11 +113,11 @@ function assertTutorialList({ expected, actual }: AssertTutorialListParams) {
  * @param params Must contain an expected TutorialDTO and an actual Tutorial. Can include an old version of the tutorial to compare `teams`, `students` and `substitutes`.
  */
 function assertTutorialDTO({ expected, actual, oldTutorial }: AssertTutorialDTOParams) {
-    const { id, tutor, correctors, dates, slot, students, teams, substitutes } = actual;
-    const { tutorId, startTime: expectedStart, endTime: expectedEnd, correctorIds } = expected;
+    const { id, tutors, correctors, dates, slot, students, teams, substitutes } = actual;
+    const { tutorIds, startTime: expectedStart, endTime: expectedEnd, correctorIds } = expected;
 
     expect(id).toBeDefined();
-    expect(tutor?.id).toEqual(tutorId);
+    expect(tutors.map((t) => t.id)).toEqual(tutorIds);
     expect(slot).toEqual(expected.slot);
 
     expect(dates).toEqual(expected.dates.map((date) => DateTime.fromISO(date).toISODate()));
@@ -150,6 +155,9 @@ function getDatesInInterval(
     excludedDates: ExcludedTutorialDate[]
 ): Map<number, string[]> {
     const dates: Map<number, string[]> = new Map();
+    if (interval.start === null || interval.end === null) {
+        throw new Error('Interval start or end is null');
+    }
     let current = interval.start.startOf('day');
 
     while (current <= interval.end) {
@@ -204,8 +212,8 @@ function assertGeneratedTutorials({ expected, actual }: AssertGenerateTutorialsP
 
             return (
                 tutorialWeekDay === weekday &&
-                time.start.toUTC().toFormat(format) === startTime.toUTC().toFormat(format) &&
-                time.end.toUTC().toFormat(format) === endTime.toUTC().toFormat(format)
+                time.start?.toUTC().toFormat(format) === startTime.toUTC().toFormat(format) &&
+                time.end?.toUTC().toFormat(format) === endTime.toUTC().toFormat(format)
             );
         });
 
@@ -215,7 +223,7 @@ function assertGeneratedTutorials({ expected, actual }: AssertGenerateTutorialsP
         for (const tutorial of tutorials) {
             expect(tutorial.slot.startsWith(prefix)).toBeTruthy();
             expect(tutorial.dates).toEqual(dates.get(weekday) ?? []);
-            expect(tutorial.tutor).toBeUndefined();
+            expect(tutorial.tutors.length).toBe(0);
             expect(tutorial.correctors.length).toBe(0);
         }
     }
@@ -266,7 +274,7 @@ describe('TutorialService', () => {
         const expectedTutorial = MOCKED_TUTORIALS[1];
         const tutorial = await suite.service.findById(expectedTutorial.id);
 
-        expect(tutorial.tutor).toBeDefined();
+        expect(tutorial.tutors.length).toBe(1);
 
         assertTutorial({
             expected: expectedTutorial,
@@ -285,7 +293,7 @@ describe('TutorialService', () => {
     it('create a tutorial without a tutor', async () => {
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -304,7 +312,7 @@ describe('TutorialService', () => {
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutor.id,
+            tutorIds: [tutor.id],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -322,7 +330,7 @@ describe('TutorialService', () => {
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -341,7 +349,7 @@ describe('TutorialService', () => {
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutor.id,
+            tutorIds: [tutor.id],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -359,7 +367,7 @@ describe('TutorialService', () => {
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutorDoc.id,
+            tutorIds: [tutorDoc.id],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -376,7 +384,7 @@ describe('TutorialService', () => {
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -391,7 +399,7 @@ describe('TutorialService', () => {
         const tutorial = MOCKED_TUTORIALS[0];
         const dto: TutorialDTO = {
             slot: tutorial.slot,
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
@@ -405,7 +413,7 @@ describe('TutorialService', () => {
     it('update a tutorial without updating the tutor of the correctors', async () => {
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -437,7 +445,7 @@ describe('TutorialService', () => {
         const tutors = getAllUsersWithRole(Role.TUTOR);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutors[0].id,
+            tutorIds: [tutors[0].id],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -447,7 +455,7 @@ describe('TutorialService', () => {
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
-            tutorId: tutors[1].id,
+            tutorIds: [tutors[1].id],
         };
 
         const oldTutorial = await suite.service.create(createDTO);
@@ -464,7 +472,7 @@ describe('TutorialService', () => {
         const tutor = getUserWithRole(Role.TUTOR);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -474,7 +482,7 @@ describe('TutorialService', () => {
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
-            tutorId: tutor.id,
+            tutorIds: [tutor.id],
         };
 
         const oldTutorial = await suite.service.create(createDTO);
@@ -492,7 +500,7 @@ describe('TutorialService', () => {
 
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -519,7 +527,7 @@ describe('TutorialService', () => {
         const nonExistingId = 'non-existing-id';
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: nonExistingId,
+            tutorIds: [nonExistingId],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -529,7 +537,7 @@ describe('TutorialService', () => {
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
-            tutorId: undefined,
+            tutorIds: [],
         };
 
         const oldTutorial = await suite.service.create(createDTO);
@@ -543,7 +551,7 @@ describe('TutorialService', () => {
         const nonExistingId = 'non-existing-id';
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -567,7 +575,7 @@ describe('TutorialService', () => {
         const nonTutor = getUserWithRole(Role.ADMIN);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: nonTutor.id,
+            tutorIds: [nonTutor.id],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -577,7 +585,7 @@ describe('TutorialService', () => {
         };
         const createDTO: TutorialDTO = {
             ...updatedDTO,
-            tutorId: undefined,
+            tutorIds: [],
         };
 
         const oldTutorial = await suite.service.create(createDTO);
@@ -591,7 +599,7 @@ describe('TutorialService', () => {
         const nonCorrector = getUserWithRole(Role.ADMIN);
         const updatedDTO: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: undefined,
+            tutorIds: [],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toISOTime() ?? 'DATE_NOTE_PARSABLE',
             endTime:
@@ -616,7 +624,7 @@ describe('TutorialService', () => {
 
         const dto: TutorialDTO = {
             slot: 'Tutorial 3',
-            tutorId: tutor.id,
+            tutorIds: [tutor.id],
             startTime:
                 DateTime.fromISO('09:45:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
             endTime: DateTime.fromISO('11:15:00', { zone: 'utc' }).toJSON() ?? 'DATE_NOTE_PARSABLE',
