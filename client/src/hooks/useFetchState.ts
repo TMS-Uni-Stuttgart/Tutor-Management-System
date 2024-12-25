@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type BaseArrayType = readonly unknown[];
 
@@ -25,7 +25,7 @@ export type UseFetchState<T, P extends BaseArrayType> = [
     T | undefined,
     boolean,
     string | undefined,
-    FetchFunction<P>
+    FetchFunction<P>,
 ];
 
 export function useFetchState<T, P extends BaseArrayType>({
@@ -36,7 +36,7 @@ export function useFetchState<T, P extends BaseArrayType>({
     const [value, setValue] = useState<T>();
     const [isLoading, setIsLoading] = useState<boolean>(immediate ?? false);
     const [error, setError] = useState<string>();
-    const [prevParams, setPrevParams] = useState<P>();
+    const prevParams = useRef<P>();
 
     const execute = useCallback(
         (...params: P) => {
@@ -55,8 +55,8 @@ export function useFetchState<T, P extends BaseArrayType>({
         if (immediate) {
             if (params) {
                 // Make a deep equal check to prevent re-executing the callback an 'infinite' times.
-                if (!_.isEqual(params, prevParams)) {
-                    setPrevParams(params);
+                if (!_.isEqual(params, prevParams.current)) {
+                    prevParams.current = params;
                     execute(...params);
                 }
             } else {
@@ -69,7 +69,7 @@ export function useFetchState<T, P extends BaseArrayType>({
                 }
             }
         }
-    }, [execute, immediate, params, prevParams]);
+    }, [execute, immediate, params]);
 
     return [value, isLoading, error, execute];
 }

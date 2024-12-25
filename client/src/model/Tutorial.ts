@@ -14,7 +14,7 @@ interface Modified {
 export class Tutorial implements Modify<ITutorial, Modified> {
     readonly id!: string;
     readonly slot!: string;
-    readonly tutor?: UserInEntity;
+    readonly tutors!: UserInEntity[];
     readonly students!: string[];
     readonly teams!: string[];
     readonly correctors!: UserInEntity[];

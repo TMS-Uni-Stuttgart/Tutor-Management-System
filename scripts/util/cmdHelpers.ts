@@ -1,11 +1,12 @@
 /* eslint-disable no-console */
 import chalk from 'chalk';
 import { ChildProcessWithoutNullStreams } from 'child_process';
+import convert from 'color-convert';
 import os from 'os';
 
 export interface MessageOptions {
     prefix: string;
-    color: string;
+    color: any;
 }
 
 export interface AddColoredProcessParams extends MessageOptions {
@@ -22,7 +23,8 @@ export function writeColoredMessage({ message, color, prefix }: WriteColoredMess
         ? message.substring(0, message.length - 1)
         : message;
 
-    console.log(chalk.keyword(color)(`[${prefix}]: ${parsedMessage}`));
+    const [r, g, b] = convert.keyword.rgb(color);
+    console.log(chalk.rgb(r, g, b)(`[${prefix}]: ${parsedMessage}`));
 }
 
 export function addColoredConsoleToProcess({

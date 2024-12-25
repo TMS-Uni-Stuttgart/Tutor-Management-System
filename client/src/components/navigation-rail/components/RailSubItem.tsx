@@ -1,18 +1,12 @@
-import {
-  createStyles,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  SvgIconProps,
-  Theme,
-} from '@material-ui/core';
+import { ListItem, ListItemIcon, ListItemText, SvgIconProps, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
-import { useRouteMatch } from 'react-router';
-import { renderLink } from './renderLink';
+import { useMatch } from 'react-router';
 import { ButtonListItemProps } from './RailItem';
 import { getTargetLink } from './RailItem.helpers';
+import { renderLink } from './renderLink';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,13 +18,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface RailSubItemProps extends ButtonListItemProps {
   subPath: string;
+  subPathTemplate: string;
   icon: React.ComponentType<SvgIconProps>;
   text: string;
 }
 
 function RailSubItem({ text, subPath, icon: Icon, ...other }: RailSubItemProps): JSX.Element {
   const classes = useStyles();
-  const isSubPath = useRouteMatch(subPath);
+  const isSubPath = useMatch(subPath);
 
   return (
     <ListItem key={subPath + text} {...other} button component={renderLink(getTargetLink(subPath))}>

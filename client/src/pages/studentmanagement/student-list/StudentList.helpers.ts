@@ -62,15 +62,15 @@ export function useStudentsForStudentList({
 }: UseStudentsForStudentListParams): UseStudentsForStudentList {
     const { enqueueSnackbar } = useSnackbar();
 
-    const [students, , , fetchStudents] = useFetchState({
-        fetchFunction: async () => {
-            return tutorialId === undefined ? getAllStudents() : getStudentsOfTutorial(tutorialId);
+    const [students, isLoadingStudents, , fetchStudents] = useFetchState({
+        fetchFunction: async (tutorialId: string) => {
+            return tutorialId ? getStudentsOfTutorial(tutorialId) : getAllStudents();
         },
         immediate: true,
-        params: [],
+        params: [tutorialId ?? ''],
     });
 
-    const [summaries = {}, isLoadingSummaries] = useFetchState({
+    const [summaries, , , fetchSummaries] = useFetchState({
         fetchFunction: async (tutorialId: string) => {
             return tutorialId
                 ? getScheinCriteriaSummariesOfAllStudentsOfTutorial(tutorialId)
@@ -92,7 +92,8 @@ export function useStudentsForStudentList({
                 dto.team = teamId !== '' ? teamId : undefined;
                 const student = await fetchCreateStudent(dto);
                 await fetchTeams(tutorialId ?? '');
-                await fetchStudents();
+                await fetchStudents(tutorialId ?? '');
+                await fetchSummaries(tutorialId ?? '');
 
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich erstellt.`, {
                     variant: 'success',
@@ -119,7 +120,7 @@ export function useStudentsForStudentList({
 
                 await fetchEditStudent(studentId, studentDTO);
                 await fetchTeams(tutorialId ?? '');
-                await fetchStudents();
+                await fetchStudents(tutorialId ?? '');
 
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gespeichert.`, {
                     variant: 'success',
@@ -137,7 +138,7 @@ export function useStudentsForStudentList({
         async (student: Student) => {
             try {
                 await fetchDeleteStudent(student.id);
-                await fetchStudents();
+                await fetchStudents(tutorialId ?? '');
 
                 enqueueSnackbar(`${student.nameFirstnameFirst} wurde erfolgreich gelöscht.`, {
                     variant: 'success',
@@ -171,8 +172,8 @@ export function useStudentsForStudentList({
     return {
         students: students ?? [],
         teams,
-        summaries,
-        isLoading: isLoadingSummaries,
+        summaries: summaries ?? {},
+        isLoading: isLoadingStudents,
         createStudent,
         editStudent,
         deleteStudent,

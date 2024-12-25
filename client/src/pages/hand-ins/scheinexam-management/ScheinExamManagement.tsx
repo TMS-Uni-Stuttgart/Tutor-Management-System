@@ -1,8 +1,10 @@
-import { Box } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Box } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
-import React, { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
 import { IScheinexamDTO } from 'shared/model/Scheinexam';
 import ScheinExamForm, {
   getInitialExamFormState,
@@ -38,8 +40,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type Props = WithSnackbarProps;
-
 function generateScheinExamDTO(values: ScheinExamFormState): IScheinexamDTO {
   const date = DateTime.fromISO(values.date);
 
@@ -51,7 +51,8 @@ function generateScheinExamDTO(values: ScheinExamFormState): IScheinexamDTO {
   };
 }
 
-function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
+function ScheinExamManagement(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const dialog = useDialog();
   const logger = useLogger('ScheinExamManagement');
@@ -198,4 +199,4 @@ function ScheinExamManagement({ enqueueSnackbar }: Props): JSX.Element {
   );
 }
 
-export default withSnackbar(ScheinExamManagement);
+export default ScheinExamManagement;
