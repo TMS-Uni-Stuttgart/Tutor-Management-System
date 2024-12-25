@@ -1,15 +1,10 @@
-import {
-  Avatar,
-  TableCell,
-  TableCellProps,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import { AvatarProps } from '@material-ui/core/Avatar';
-import Paper, { PaperProps } from '@material-ui/core/Paper';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { TypographyProps } from '@material-ui/core/Typography';
+import { Avatar, TableCell, TableCellProps, TableRow, Tooltip, Typography } from '@mui/material';
+import { AvatarProps } from '@mui/material/Avatar';
+import Paper, { PaperProps } from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
+import { TypographyProps } from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 import { SvgIconComponent } from '../typings/SvgIconComponent';
@@ -72,7 +67,7 @@ interface Props {
   AvatarProps?: AvatarProps;
 }
 
-export type PaperTableRowProps = Omit<PaperProps, 'component'>;
+export type PaperTableRowProps = PaperProps;
 type PropType = Props & PaperTableRowProps;
 
 function PaperTableRow({
@@ -92,7 +87,7 @@ function PaperTableRow({
   ...rest
 }: PropType): JSX.Element {
   const classes = useStyles({ colorOfBottomBar: colorOfBottomBar });
-  const AvatarComp: React.ReactElement | undefined = !!AvatarFromProps ? (
+  const AvatarComp: React.ReactElement | undefined = AvatarFromProps ? (
     <>{AvatarFromProps}</>
   ) : (
     Icon && (
@@ -104,9 +99,9 @@ function PaperTableRow({
 
   return (
     <Paper
-      {...rest}
-      component={TableRow}
       className={clsx(classes.content, className, colorOfBottomBar && classes.coloredBar)}
+      component='tr'
+      {...rest}
     >
       {AvatarComp && (
         <TableCell padding='checkbox' className={classes.avatarCell}>

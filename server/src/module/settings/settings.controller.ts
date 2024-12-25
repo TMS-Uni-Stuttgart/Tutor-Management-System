@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
 import { HasRoleGuard } from '../../guards/has-role.guard';
-import { IClientSettings } from '../../shared/model/Settings';
+import { IClientSettings } from 'shared/model/Settings';
 import { ClientSettingsDTO } from './settings.dto';
 import { SettingsService } from './settings.service';
 

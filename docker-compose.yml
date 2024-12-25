@@ -1,31 +1,37 @@
-version: "3.1"
-services:
-  mongo:
-    image: mongo
-    container_name: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    networks:
-      - tms_db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+version: '3.1'
 
-  mongo-express:
-    container_name: mongo_express
-    image: mongo-express
-    depends_on:
-      - mongo
-    restart: always
-    networks:
-      - tms_db
+services:
+  db:
+    container_name: tms_db
+    image: mysql:8.0.26
     ports:
-      - 8081:8081
+      - '3306:3306'
     environment:
-      # Make sure they match the ones above
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      MYSQL_ROOT_PASSWORD: some-password
+    networks:
+      - tms_dev_db
+
+  admin-tool:
+    container_name: phpmyadmin
+    image: phpmyadmin:5.1.1
+    ports:
+      - '4242:80'
+    depends_on:
+      - db
+    environment:
+      #      PMA_HOST: tms_db
+      PMA_ARBITRARY: 1
+      UPLOAD_LIMIT: 10000K
+    networks:
+      - tms_dev_db
+
+  gotenberg:
+    container_name: gotenberg
+    image: gotenberg/gotenberg:8
+    ports:
+      - '2000:3000'
+    networks:
+      - tms_dev_db
 
 networks:
-  tms_db:
+  tms_dev_db:

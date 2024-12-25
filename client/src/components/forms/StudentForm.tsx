@@ -1,6 +1,6 @@
 import { FormikHelpers } from 'formik';
-import React, { useMemo, useRef } from 'react';
-import { IStudentDTO, StudentStatus } from 'shared/model/Student';
+import { useMemo, useRef } from 'react';
+import { ICreateStudentDTO, StudentStatus } from 'shared/model/Student';
 import * as Yup from 'yup';
 import { useSettings } from '../../hooks/useSettings';
 import { Student } from '../../model/Student';
@@ -72,17 +72,12 @@ interface InitialStateParams {
 export const CREATE_NEW_TEAM_VALUE = 'CREATE_NEW_TEAM_ACTION';
 type ItemType = Team | { type: typeof CREATE_NEW_TEAM_VALUE };
 
-export function convertFormStateToDTO(values: StudentFormState, tutorialId: string): IStudentDTO {
-  const {
-    firstname,
-    lastname,
-    iliasName,
-    matriculationNo,
-    email,
-    courseOfStudies,
-    team,
-    status,
-  } = values;
+export function convertFormStateToDTO(
+  values: StudentFormState,
+  tutorialId: string
+): ICreateStudentDTO {
+  const { firstname, lastname, iliasName, matriculationNo, email, courseOfStudies, team, status } =
+    values;
 
   return {
     firstname,
@@ -113,10 +108,10 @@ export function getInitialStudentFormState({
   defaultTeamSize,
 }: InitialStateParams): StudentFormState {
   const team: string = student
-    ? student.team?.id ?? ''
+    ? (student.team?.id ?? '')
     : teams
-    ? getNextTeamWithSlot(teams, defaultTeamSize)
-    : '';
+      ? getNextTeamWithSlot(teams, defaultTeamSize)
+      : '';
 
   return {
     lastname: student?.lastname ?? '',
@@ -265,6 +260,21 @@ function StudentForm({
           name='iliasName'
           label='Ilias-Name'
           warningLabel='Kein Iliasname eingegeben.'
+          FormikFieldProps={{
+            validate: (value: any) => {
+              if (!value) {
+                return undefined;
+              }
+
+              for (const s of otherStudents) {
+                if (s.iliasName && value === s.iliasName) {
+                  return `Iliasname wird bereits von ${s.nameFirstnameFirst} verwendet.`;
+                }
+              }
+
+              return undefined;
+            },
+          }}
         />
 
         <FormikTextField name='email' label='E-Mailadresse' />

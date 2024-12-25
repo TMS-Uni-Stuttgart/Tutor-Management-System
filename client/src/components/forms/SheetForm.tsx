@@ -1,4 +1,3 @@
-import React from 'react';
 import { IExerciseDTO } from 'shared/model/HasExercises';
 import { ISheet } from 'shared/model/Sheet';
 import * as Yup from 'yup';
@@ -13,8 +12,8 @@ import FormikBaseForm, { CommonlyUsedFormProps, FormikBaseFormProps } from './Fo
 
 export type SheetFormSubmitCallback = FormikSubmitCallback<SheetFormState>;
 
-export const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
-  Yup.object().shape<ExerciseFormExercise>({
+export const exerciseValidationSchema: Yup.Lazy<ExerciseFormExercise> = Yup.lazy(() =>
+  Yup.object().shape({
     exName: Yup.string().required('Benötigt'),
     bonus: Yup.boolean().required('Benötigt'),
     maxPoints: Yup.string()
@@ -24,12 +23,10 @@ export const exerciseValidationSchema: Yup.Lazy = Yup.lazy(() =>
   })
 );
 
-const validationSchema = Yup.object().shape<SheetFormState>({
+const validationSchema = Yup.object().shape({
   sheetNo: Yup.string().required('Benötigt'),
   bonusSheet: Yup.boolean().required('Benötigt'),
-  exercises: Yup.array<ExerciseFormExercise>()
-    .of(exerciseValidationSchema)
-    .required('Mind. 1 Aufgabe benötigt.'),
+  exercises: Yup.array().of(exerciseValidationSchema).required('Mind. 1 Aufgabe benötigt.'),
 });
 
 interface SheetFormState {
@@ -55,7 +52,7 @@ export function convertFormExercisesToDTOs(exercises: ExerciseFormExercise[]): I
 }
 
 export function getInitialSheetFormState(sheet?: ISheet, sheets?: ISheet[]): SheetFormState {
-  if (!!sheet) {
+  if (sheet) {
     const exercises: ExerciseFormExercise[] = sheet.exercises.map(mapExerciseToFormExercise);
 
     return { sheetNo: sheet.sheetNo.toString(), bonusSheet: sheet.bonusSheet, exercises };

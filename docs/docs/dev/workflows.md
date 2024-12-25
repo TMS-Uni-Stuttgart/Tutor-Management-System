@@ -21,9 +21,9 @@ If you want to fork the repository please refer to the [fork page](./fork).
 
 This workflow has three jobs:
 
--   _Type Check Client_: Checks if the client compiles and does not contain any type errors.
--   _Type Check Server_: Checks if the server compiles and does not contain any type errors.
--   _Code Quality_: Checks all projects inside this repository if their code complies to the code styles configured in this repository.
+- _Type Check Client_: Checks if the client compiles and does not contain any type errors.
+- _Type Check Server_: Checks if the server compiles and does not contain any type errors.
+- _Code Quality_: Checks all projects inside this repository if their code complies to the code styles configured in this repository.
 
 ## Unit Tests
 
@@ -35,19 +35,6 @@ This workflow has three jobs:
 **Required to merge pull request:** Yes
 
 Runs the unit tests in the server.
-
-## Docker image test
-
-| Trigger      | Branches     |
-| ------------ | ------------ |
-| Pull Request | main         |
-| Push         | main, stable |
-
-**Required to merge pull request:** Yes
-
-Creates a docker image and test if the server would start using this image.
-If the image starts successfully the job checks if a PDF could be generated.
-This is done because using puppeteer inside an alpine image might fail after package updates.
 
 ## Build and push Docker image
 

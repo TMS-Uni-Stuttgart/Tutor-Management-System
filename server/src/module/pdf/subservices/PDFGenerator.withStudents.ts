@@ -1,8 +1,8 @@
 import { PDFGenerator } from './PDFGenerator.core';
 import { IStudent } from 'shared/model/Student';
-import { StudentDocument } from '../../../database/models/student.model';
+import { Student } from '../../../database/entities/student.entity';
 
-interface ShortendMatriculationInfo {
+interface ShortenedMatriculationInfo {
     studentId: string;
     shortenedNo: string;
 }
@@ -18,9 +18,9 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      * @returns The shortened but still identifying matriculation numbers of all given students.
      */
     protected getShortenedMatriculationNumbers(
-        students: (StudentDocument | IStudent)[]
-    ): ShortendMatriculationInfo[] {
-        const result: ShortendMatriculationInfo[] = [];
+        students: (Student | IStudent)[]
+    ): ShortenedMatriculationInfo[] {
+        const result: ShortenedMatriculationInfo[] = [];
         const matriculationNos: { id: string; reversedNumber: string }[] = [];
 
         for (const student of students) {
@@ -73,7 +73,7 @@ export abstract class PDFWithStudentsGenerator<T> extends PDFGenerator<T> {
      *
      * @param first First string
      * @param second Second string
-     * @returns The first position in which both string differ. If they are completly equal the length of the first string is returned.
+     * @returns The first position in which both string differ. If they are completely equal the length of the first string is returned.
      */
     private static getFirstDifferentPosition(first: string, second: string): number {
         for (let i = 0; i < first.length; i++) {

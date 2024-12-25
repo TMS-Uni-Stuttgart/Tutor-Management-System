@@ -2,18 +2,26 @@
 sessionTimeout: 120
 
 # (Optional) If the app is hosted on a prefixed path (ie https://example.com/foo) set this property to the prefix (ie "foo"). If the app is hosted on the root path this property can be omitted.
-# prefix: derpy
+# prefix: subpath
 
 # Path to the handbook documentation. You only need to change this if you want to provide your own TMS documentation.
-handbookUrl: 'https://dudrie.github.io/Tutor-Management-System/'
+handbookUrl: 'https://tms-uni-stuttgart.github.io/Tutor-Management-System/'
 
+# Configuration for the database access. More information can be found in the documentation.
 database:
-    databaseURL: 'mongodb://localhost:27017/tms-new-grading'
+    host: localhost
+    port: 3306
+    databaseName: tms-big-db
     maxRetries: 2
-    config:
-        authSource: 'admin'
-        authMechanism: 'SCRAM-SHA-1'
+    reconnectTimeout: 10000
 
 defaultSettings:
     canTutorExcuseStudents: true
     defaultTeamSize: 3
+
+# Settings used for the gotenberg instance
+gotenberg:
+    host: localhost
+    port: 2000
+    # Timeout in ms
+    timeout: 30000

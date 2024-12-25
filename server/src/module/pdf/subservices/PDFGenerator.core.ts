@@ -1,12 +1,17 @@
+// noinspection HtmlRequiredLangAttribute,HtmlRequiredTitleElement
+
 import { Logger } from '@nestjs/common';
+import axios from 'axios';
+import FormData from 'form-data';
 import fs from 'fs';
-import puppeteer from 'puppeteer';
+import { StaticSettings } from 'module/settings/settings.static';
 
 /**
  * @param T Type of the options passed to `generatePDF`.
  */
 export abstract class PDFGenerator<T = Record<string, unknown>> {
     private readonly logger = new Logger(PDFGenerator.name);
+
     /**
      * Generates a PDF from the given options.
      *
@@ -17,7 +22,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     public abstract generatePDF(options: T): Promise<Buffer>;
 
     /**
-     * Generates a PDF from the given body. The body gets put in a HTML wrapper first.
+     * Generates a PDF from the given body. The body gets put in an HTML wrapper first.
      *
      * @param body Body content to be put in the PDF as HTML body.
      *
@@ -25,51 +30,31 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
      */
     protected async generatePDFFromBodyContent(body: string): Promise<Buffer> {
         const html = await this.putBodyInHTML(body);
-        let browser: puppeteer.Browser | undefined;
-
-        this.logger.debug('Starting browser...');
-        this.logger.debug(`\tExec path: ${process.env.TMS_PUPPETEER_EXEC_PATH}`);
+        const gotenbergConfig = StaticSettings.getService().getGotenbergConfiguration();
 
         try {
-            browser = await puppeteer.launch({
-                args: ['--disable-dev-shm-usage'],
-                executablePath: process.env.TMS_PUPPETEER_EXEC_PATH,
-            });
+            const form = new FormData();
+            form.append('files', html, { filename: 'index.html', contentType: 'text/html' });
 
-            this.logger.debug('Browser started.');
+            this.logger.debug('Sending request to Gotenberg for PDF generation...');
 
-            const page = await browser.newPage();
-            this.logger.debug('Page created.');
+            const response = await axios.post(
+                `http://${gotenbergConfig?.host}:${gotenbergConfig?.port}/forms/chromium/convert/html`,
+                form,
+                {
+                    headers: {
+                        ...form.getHeaders(),
+                    },
+                    timeout: gotenbergConfig?.timeout,
+                    responseType: 'arraybuffer',
+                }
+            );
 
-            await page.setContent(html, { waitUntil: 'domcontentloaded' });
-            this.logger.debug('Page content loaded');
+            this.logger.debug('PDF generated successfully from Gotenberg.');
 
-            const buffer = await page.pdf({
-                format: 'A4',
-                margin: {
-                    top: '1cm',
-                    right: '1cm',
-                    bottom: '1cm',
-                    left: '1cm',
-                },
-                // Fixes CSS 'background' not being respected in printed PDFs.
-                printBackground: true,
-            });
-
-            this.logger.debug('PDF created.');
-
-            await browser.close();
-
-            this.logger.debug('Browser closed');
-
-            return buffer;
+            return Buffer.from(response.data);
         } catch (err) {
-            if (browser) {
-                browser.close();
-            }
-
-            Logger.error(JSON.stringify(err, null, 2));
-
+            this.logger.error('Failed to generate PDF:', err);
             throw err;
         }
     }
@@ -90,9 +75,9 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     <head>
     <style>${githubCSS}</style>
     <style>${highlightCSS}</style>
-    <style>${this.getCustomCSS()}</style>
+    <style>${PDFGenerator.getCustomCSS()}</style>
     </head>
-    <body class="markdown-body">${body}</body>
+    <body class='markdown-body'>${body}</body>
     </html>
     `;
     }
@@ -126,7 +111,7 @@ export abstract class PDFGenerator<T = Record<string, unknown>> {
     /**
      * @returns Some small customizations to the GitHub markdown CSS.
      */
-    private getCustomCSS(): string {
+    private static getCustomCSS(): string {
         return '.markdown-body table { display: table; width: 100%; }';
     }
 }

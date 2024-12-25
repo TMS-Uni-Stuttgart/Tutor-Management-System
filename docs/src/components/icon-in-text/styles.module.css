@@ -1,20 +1,21 @@
 .wrapper {
-  fill: var(--ifm-font-color-base);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: var(--ifm-alert-border-width) solid #7e7e7e;
-  vertical-align: middle;
-  padding: 4px;
+    /*noinspection CssUnresolvedCustomProperty*/
+    fill: var(--ifm-font-color-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #7e7e7e;
+    vertical-align: middle;
+    padding: 4px;
 }
 
 .wrapper > svg {
-  --svg-size: 1rem;
-  width: var(--svg-size);
-  height: var(--svg-size);
+    --svg-size: 1rem;
+    width: var(--svg-size);
+    height: var(--svg-size);
 }
 
 .wrapper-small > svg {
-  --svg-size: 0.75rem;
+    --svg-size: 0.75rem;
 }

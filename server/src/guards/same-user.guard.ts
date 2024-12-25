@@ -23,6 +23,6 @@ export class SameUserGuard extends HasRoleGuard {
         const user = this.getUserFromRequest(context);
         const paramId = this.getIdFieldContentFromContext(context);
 
-        return user._id.toString() === paramId;
+        return user.id.toString() === paramId;
     }
 }

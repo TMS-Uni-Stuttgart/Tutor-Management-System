@@ -1,24 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-import { ShortTestDocument, ShortTestModel } from '../../database/models/shortTest.model';
+import { EntityRepository } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mysql';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { IShortTest } from 'shared/model/ShortTest';
+import { ShortTest } from '../../database/entities/shorttest.entity';
 import { CRUDService } from '../../helpers/CRUDService';
-import { IShortTest } from '../../shared/model/ShortTest';
 import { ShortTestDTO } from '../scheinexam/scheinexam.dto';
 
 @Injectable()
-export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, ShortTestDocument> {
+export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, ShortTest> {
     constructor(
-        @InjectModel(ShortTestModel)
-        private readonly shortTestModel: ReturnModelType<typeof ShortTestModel>
+        @InjectRepository(ShortTest)
+        private readonly repository: EntityRepository<ShortTest>,
+        @Inject(EntityManager)
+        private readonly em: EntityManager
     ) {}
 
-    async findAll(): Promise<ShortTestDocument[]> {
-        return await this.shortTestModel.find().exec();
+    async findAll(): Promise<ShortTest[]> {
+        return this.repository.findAll();
     }
 
-    async findById(id: string): Promise<ShortTestDocument> {
-        const shortTest = await this.shortTestModel.findById(id).exec();
+    async findById(id: string): Promise<ShortTest> {
+        const shortTest = await this.repository.findOne({ id });
 
         if (!shortTest) {
             throw new NotFoundException(
@@ -30,22 +33,20 @@ export class ShortTestService implements CRUDService<IShortTest, ShortTestDTO, S
     }
 
     async create(dto: ShortTestDTO): Promise<IShortTest> {
-        const shortTest = ShortTestModel.fromDTO(dto);
-        const created = await this.shortTestModel.create(shortTest);
-
-        return created.toDTO();
+        const shortTest = ShortTest.fromDTO(dto);
+        await this.em.persistAndFlush(shortTest);
+        return shortTest.toDTO();
     }
 
     async update(id: string, dto: ShortTestDTO): Promise<IShortTest> {
         const shortTest = await this.findById(id);
-        const updated = await shortTest.updateFromDTO(dto).save();
-
-        return updated.toDTO();
+        shortTest.updateFromDTO(dto);
+        await this.em.persistAndFlush(shortTest);
+        return shortTest.toDTO();
     }
 
-    async delete(id: string): Promise<ShortTestDocument> {
+    async delete(id: string): Promise<void> {
         const shortTest = await this.findById(id);
-
-        return shortTest.remove();
+        await this.em.removeAndFlush(shortTest);
     }
 }

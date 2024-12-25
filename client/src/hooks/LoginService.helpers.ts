@@ -14,13 +14,16 @@ import { TutorialInEntity } from '../model/LoggedInUser';
  * @returns Number that can be used for comparison.
  */
 export function compareTutorials(a: TutorialInEntity, b: TutorialInEntity): number {
-  if (a.weekday !== b.weekday) {
-    return a.weekday - b.weekday;
-  }
+    if (a.weekday !== b.weekday) {
+        return a.weekday - b.weekday;
+    }
 
-  if (!a.time.equals(b.time)) {
-    return a.time.start > b.time.start ? 1 : -1;
-  }
+    if (!a.time.equals(b.time)) {
+        if (a.time.start === null || b.time.start === null) {
+            throw new Error('Start time cannot be null');
+        }
+        return a.time.start > b.time.start ? 1 : -1;
+    }
 
-  return a.slot.localeCompare(b.slot);
+    return a.slot.localeCompare(b.slot);
 }

@@ -1,7 +1,9 @@
-import { Box } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
-import React, { useEffect, useState } from 'react';
+import { Box } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
 import { ISheetDTO } from 'shared/model/Sheet';
 import SheetForm, {
   convertFormExercisesToDTOs,
@@ -30,7 +32,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
+function SheetManagement(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const dialog = useDialog();
   const logger = useLogger('SheetManagement');
@@ -80,44 +83,43 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
         variant: 'success',
       });
     } catch (reason) {
-      logger.error(reason);
+      logger.error(`${reason}`);
       enqueueSnackbar('Blatt konnte nicht erstellt werden.', { variant: 'error' });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback = (sheet) => async (
-    { sheetNo, exercises, bonusSheet },
-    { setSubmitting }
-  ) => {
-    const sheetDTO: ISheetDTO = {
-      sheetNo: Number.parseInt(sheetNo),
-      exercises: convertFormExercisesToDTOs(exercises),
-      bonusSheet,
+  const editSheet: (sheet: Sheet) => SheetFormSubmitCallback =
+    (sheet) =>
+    async ({ sheetNo, exercises, bonusSheet }, { setSubmitting }) => {
+      const sheetDTO: ISheetDTO = {
+        sheetNo: Number.parseInt(sheetNo),
+        exercises: convertFormExercisesToDTOs(exercises),
+        bonusSheet,
+      };
+
+      try {
+        const response = await editSheetRequest(sheet.id, sheetDTO);
+
+        setSheets(
+          sheets.map((s) => {
+            if (s.id === sheet.id) {
+              return response;
+            }
+
+            return s;
+          })
+        );
+
+        enqueueSnackbar('Blatt wurde erfolgreich gespeichert.', { variant: 'success' });
+        dialog.hide();
+      } catch (reason) {
+        logger.error(`${reason}`);
+        enqueueSnackbar('Blatt konnte nicht gespeichert werden.', { variant: 'error' });
+        setSubmitting(false);
+      }
     };
-
-    try {
-      const response = await editSheetRequest(sheet.id, sheetDTO);
-
-      setSheets(
-        sheets.map((s) => {
-          if (s.id === sheet.id) {
-            return response;
-          }
-
-          return s;
-        })
-      );
-
-      enqueueSnackbar('Blatt wurde erfolgreich gespeichert.', { variant: 'success' });
-      dialog.hide();
-    } catch (reason) {
-      logger.error(reason);
-      enqueueSnackbar('Blatt konnt nicht gespeichert werden.', { variant: 'error' });
-      setSubmitting(false);
-    }
-  };
 
   function handleEditSheet(sheet: Sheet) {
     dialog.show({
@@ -189,4 +191,4 @@ function SheetManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
   );
 }
 
-export default withSnackbar(SheetManagement);
+export default SheetManagement;

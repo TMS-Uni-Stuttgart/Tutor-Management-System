@@ -1,8 +1,5 @@
-import { AttendanceState } from '../../../../shared/model/Attendance';
-import {
-    ScheinCriteriaUnit,
-    ScheincriteriaIdentifier,
-} from '../../../../shared/model/ScheinCriteria';
+import { AttendanceState } from 'shared/model/Attendance';
+import { ScheincriteriaIdentifier, ScheinCriteriaUnit } from 'shared/model/ScheinCriteria';
 import {
     CriteriaInformationWithoutName,
     CriteriaPayload,
@@ -17,12 +14,10 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
     }
 
     checkCriteriaStatus({ student }: CriteriaPayload): StatusCheckResponse {
-        let total = 0;
+        const total = student.getAllAttendances().filter(({ state }) => state !== undefined).length;
         let visitedOrExcused = 0;
 
-        student.attendances.forEach(({ state }) => {
-            total += 1;
-
+        student.getAllAttendances().forEach(({ state }) => {
             if (state === AttendanceState.PRESENT || state === AttendanceState.EXCUSED) {
                 visitedOrExcused += 1;
             }
@@ -39,6 +34,7 @@ export class AttendanceCriteria extends PossiblePercentageCriteria {
             passed,
             unit: ScheinCriteriaUnit.DATE,
             infos: {},
+            chartType: 'PieChart',
         };
     }
 

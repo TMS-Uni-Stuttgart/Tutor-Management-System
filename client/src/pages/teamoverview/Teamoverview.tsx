@@ -1,8 +1,9 @@
-import { Theme } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
+import { Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ITeamDTO } from 'shared/model/Team';
 import TeamForm, { TeamFormSubmitCallback } from '../../components/forms/TeamForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
@@ -35,9 +36,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Params {
   tutorialId: string;
+  [key: string]: string | undefined;
 }
-
-type Props = WithSnackbarProps & RouteComponentProps<Params>;
 
 function updateStudentsArray(
   studentsToUpdate: StudentInTeam[],
@@ -57,8 +57,9 @@ function updateStudentsArray(
   setStudents(updatedStudents);
 }
 
-function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
-  const { params } = match;
+function Teamoverview(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
+  const params = useParams<Params>();
   const classes = useStyles();
   const dialog = useDialog();
   const logger = useLogger('Teamoverview');
@@ -71,13 +72,15 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     setIsLoading(true);
 
     (async function () {
-      const [studentsResponse, teams] = await Promise.all([
-        getStudentsOfTutorial(params.tutorialId),
-        getTeamsOfTutorial(params.tutorialId),
-      ]);
+      if (params.tutorialId) {
+        const [studentsResponse, teams] = await Promise.all([
+          getStudentsOfTutorial(params.tutorialId),
+          getTeamsOfTutorial(params.tutorialId),
+        ]);
 
-      setStudents(studentsResponse);
-      setTeams(teams);
+        setStudents(studentsResponse);
+        setTeams(teams);
+      }
       setIsLoading(false);
     })();
   }, [params.tutorialId]);
@@ -87,7 +90,9 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
     { setSubmitting, resetForm }
   ) => {
     const teamDTO: ITeamDTO = { students: studentsFromForm };
-
+    if (!params.tutorialId) {
+      return;
+    }
     try {
       const response = await createTeam(params.tutorialId, teamDTO);
 
@@ -96,7 +101,7 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       resetForm();
       enqueueSnackbar('Team wurde erfolgreich erstellt.', { variant: 'success' });
     } catch (reason) {
-      logger.error(reason);
+      logger.error(`${reason}`);
     } finally {
       setSubmitting(false);
     }
@@ -123,6 +128,9 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   }
 
   function handleDeleteTeamSubmit(team: Team) {
+    if (!params.tutorialId) {
+      return;
+    }
     deleteTeam(params.tutorialId, team.id)
       .then(async () => {
         setTeams(teams.filter((u) => u.id !== team.id));
@@ -139,33 +147,35 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
       });
   }
 
-  const handleEditTeamSubmit: (team: Team) => TeamFormSubmitCallback = (team) => async (
-    { students },
-    { setSubmitting }
-  ) => {
-    const teamDTO: ITeamDTO = { students };
+  const handleEditTeamSubmit: (team: Team) => TeamFormSubmitCallback =
+    (team) =>
+    async ({ students }, { setSubmitting }) => {
+      const teamDTO: ITeamDTO = { students };
+      if (!params.tutorialId) {
+        return;
+      }
 
-    try {
-      const response = await editTeam(params.tutorialId, team.id, teamDTO);
+      try {
+        const response = await editTeam(params.tutorialId, team.id, teamDTO);
 
-      setTeams(
-        teams.map((group) => {
-          if (group.id === team.id) {
-            return response;
-          }
+        setTeams(
+          teams.map((group) => {
+            if (group.id === team.id) {
+              return response;
+            }
 
-          return group;
-        })
-      );
+            return group;
+          })
+        );
 
-      enqueueSnackbar('Team wurde erfolgreich gespeichert.', { variant: 'success' });
-      dialog.hide();
-    } catch (reason) {
-      logger.error(reason);
-      enqueueSnackbar('Team konnte nicht gespeichert werden.', { variant: 'error' });
-      setSubmitting(false);
-    }
-  };
+        enqueueSnackbar('Team wurde erfolgreich gespeichert.', { variant: 'success' });
+        dialog.hide();
+      } catch (reason) {
+        logger.error(`${reason}`);
+        enqueueSnackbar('Team konnte nicht gespeichert werden.', { variant: 'error' });
+        setSubmitting(false);
+      }
+    };
 
   function handleEditTeam(team: Team) {
     dialog.show({
@@ -210,4 +220,4 @@ function Teamoverview({ enqueueSnackbar, match }: Props): JSX.Element {
   );
 }
 
-export default withRouter(withSnackbar(Teamoverview));
+export default Teamoverview;

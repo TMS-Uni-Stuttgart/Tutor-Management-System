@@ -1,26 +1,28 @@
 import { BadRequestException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { IsString, validateSync } from 'class-validator';
-import { ScheinexamDocument } from '../../../database/models/scheinexam.model';
-import { SheetDocument } from '../../../database/models/sheet.model';
-import { ShortTestDocument } from '../../../database/models/shortTest.model';
-import { StudentDocument } from '../../../database/models/student.model';
-import { CriteriaInformation, ScheinCriteriaStatus } from '../../../shared/model/ScheinCriteria';
+import { CriteriaInformation, ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';
+import { Scheinexam } from '../../../database/entities/scheinexam.entity';
+import { Sheet } from '../../../database/entities/sheet.entity';
+import { ShortTest } from '../../../database/entities/shorttest.entity';
+import { Student } from '../../../database/entities/student.entity';
 import { ScheinCriteriaDTO } from '../scheincriteria.dto';
 import { ScheincriteriaContainer } from './scheincriteria.container';
+import { GradingList } from '../../../helpers/GradingList';
 
 export interface CriteriaPayload {
-    student: StudentDocument;
-    sheets: SheetDocument[];
-    exams: ScheinexamDocument[];
-    shortTests: ShortTestDocument[];
+    student: Student;
+    gradingsOfStudent: GradingList;
+    sheets: Sheet[];
+    exams: Scheinexam[];
+    shortTests: ShortTest[];
 }
 
 export interface InformationPayload {
-    students: StudentDocument[];
-    sheets: SheetDocument[];
-    exams: ScheinexamDocument[];
-    shortTests: ShortTestDocument[];
+    students: Student[];
+    sheets: Sheet[];
+    exams: Scheinexam[];
+    shortTests: ShortTest[];
 }
 
 export type StatusCheckResponse = Omit<ScheinCriteriaStatus, 'id' | 'name'>;
@@ -30,14 +32,14 @@ export abstract class Scheincriteria {
     @IsString()
     readonly identifier: string;
 
-    constructor(identifier: string) {
+    protected constructor(identifier: string) {
         this.identifier = identifier;
     }
 
     /**
      * Generates a Scheincriteria from the given dto.
      *
-     * The returned criteria will be an instance of the class which was saved as blueprint with the given `identifier`. The given `data` will be validated against said class before creating an instancen of it.
+     * The returned criteria will be an instance of the class which was saved as blueprint with the given `identifier`. The given `data` will be validated against said class before creating an instance of it.
      *
      * @param dto DTO containing the information for the criteria.
      *

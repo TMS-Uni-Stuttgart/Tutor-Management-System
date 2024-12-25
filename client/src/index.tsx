@@ -1,24 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import 'reflect-metadata';
 import ContextWrapper from './components/ContextWrapper';
 import App from './pages/App';
+import { ROUTER_ROUTES } from './routes/RouterRoutes.routes';
+import { getRouteWithPrefix } from './util/routePrefix';
 
-ReactDOM.render(
-  <ContextWrapper Router={BrowserRouter}>
-    <App />
-  </ContextWrapper>,
-  document.getElementById('root')
-);
+const root = createRoot(document.getElementById('root')!);
 
-// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
-// Learn more: https://www.snowpack.dev/#hot-module-replacement
-if (import.meta.hot) {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  import.meta.hot!.accept();
-}
+const router = createBrowserRouter([
+  {
+    path: getRouteWithPrefix('/'),
+    element: (
+      <ContextWrapper>
+        <App />
+      </ContextWrapper>
+    ),
+    children: ROUTER_ROUTES,
+  },
+]);
 
-export function isDevelopment(): boolean {
-  return import.meta.env.NODE_ENV === 'development';
-}
+root.render(<RouterProvider router={router} />);

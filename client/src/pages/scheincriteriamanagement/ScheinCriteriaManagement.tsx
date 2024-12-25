@@ -1,7 +1,9 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { withSnackbar, WithSnackbarProps } from 'notistack';
-import React, { useEffect, useState } from 'react';
-import { IScheinCriteria as ScheinCriteria, IScheinCriteriaDTO } from 'shared/model/ScheinCriteria';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
+import { IScheinCriteriaDTO, IScheinCriteria as ScheinCriteria } from 'shared/model/ScheinCriteria';
 import ScheinCriteriaForm, {
   ScheinCriteriaFormCallback,
 } from '../../components/forms/ScheinCriteriaForm';
@@ -27,7 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.Element {
+function ScheinCriteriaManagement(): JSX.Element {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const dialog = useDialog();
   const logger = useLogger('ScheinCriteriaManagement');
@@ -70,7 +73,7 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
         variant: 'success',
       });
     } catch (reason) {
-      logger.error(reason);
+      logger.error(`${reason}`);
       enqueueSnackbar(`Kriterium konnte nicht erstellt werden.`, {
         variant: 'error',
       });
@@ -79,34 +82,34 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
     }
   };
 
-  const editCriteria: (criteria: ScheinCriteria) => ScheinCriteriaFormCallback = (
-    criteria
-  ) => async ({ name, identifier, ...values }, { setSubmitting }) => {
-    const dto: IScheinCriteriaDTO = {
-      identifier,
-      name,
-      data: {
-        ...values,
-      },
+  const editCriteria: (criteria: ScheinCriteria) => ScheinCriteriaFormCallback =
+    (criteria) =>
+    async ({ name, identifier, ...values }, { setSubmitting }) => {
+      const dto: IScheinCriteriaDTO = {
+        identifier,
+        name,
+        data: {
+          ...values,
+        },
+      };
+
+      try {
+        const response = await editScheinCriteria(criteria.id, dto);
+
+        setCriterias(criterias.map((crit) => (crit.id === criteria.id ? response : crit)));
+
+        dialog.hide();
+        enqueueSnackbar(`Kriterium "${dto.name}" erfolgreich bearbeitet.`, {
+          variant: 'success',
+        });
+      } catch (reason) {
+        logger.error(`${reason}`);
+        enqueueSnackbar(`Kriterium konnte nicht bearbeitet werden.`, {
+          variant: 'error',
+        });
+        setSubmitting(false);
+      }
     };
-
-    try {
-      const response = await editScheinCriteria(criteria.id, dto);
-
-      setCriterias(criterias.map((crit) => (crit.id === criteria.id ? response : crit)));
-
-      dialog.hide();
-      enqueueSnackbar(`Kriterium "${dto.name}" erfolgreich bearbeitet.`, {
-        variant: 'success',
-      });
-    } catch (reason) {
-      logger.error(reason);
-      enqueueSnackbar(`Kriterium konnte nicht bearbeitet werden.`, {
-        variant: 'error',
-      });
-      setSubmitting(false);
-    }
-  };
 
   function handleEditCriteria(criteria: ScheinCriteria) {
     dialog.show({
@@ -185,4 +188,4 @@ function ScheinCriteriaManagement({ enqueueSnackbar }: WithSnackbarProps): JSX.E
   );
 }
 
-export default withSnackbar(ScheinCriteriaManagement);
+export default ScheinCriteriaManagement;

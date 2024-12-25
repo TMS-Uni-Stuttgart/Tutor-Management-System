@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
+import { Paper, Theme, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { TutorialSummaryInfo } from '../Dashboard';
 import ScheinCriteriaStatsCard from './ScheinCrtieriaStatsCard';
@@ -61,4 +63,5 @@ function TutorialStatistics({ value }: TutorialStatisticsProps): JSX.Element {
     </>
   );
 }
+
 export default TutorialStatistics;

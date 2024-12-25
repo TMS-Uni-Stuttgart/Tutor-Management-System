@@ -1,7 +1,9 @@
 import React from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Typography, Table, TableBody, TableRow, Box, BoxProps } from '@material-ui/core';
-import { TableProps } from '@material-ui/core/Table';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box, BoxProps, Table, TableBody, TableRow, Typography } from '@mui/material';
+import { TableProps } from '@mui/material/Table';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) =>

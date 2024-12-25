@@ -19,5 +19,5 @@ export interface CRUDService<RES, DTO, DOC> {
 
     update(id: string, dto: DTO): Promise<RES>;
 
-    delete(id: string): Promise<DOC>;
+    delete(id: string): Promise<void>;
 }
