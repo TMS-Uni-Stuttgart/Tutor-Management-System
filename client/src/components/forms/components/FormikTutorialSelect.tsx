@@ -38,9 +38,13 @@ function FormikTutorialSelect({
       itemToString={(tutorial) => ({
         primary: tutorial.toDisplayStringWithTime(),
         secondary:
-          tutorial.tutors.length > 0
-            ? `Tutoren: ${tutorial.tutors.map((tutor) => getNameOfEntity(tutor)).join(', ')}`
-            : undefined,
+          name === 'tutorials'
+            ? tutorial.tutors.length > 0
+              ? `Tutoren: ${tutorial.tutors.map((tutor) => getNameOfEntity(tutor)).join('; ')}`
+              : undefined
+            : tutorial.correctors.length > 0
+              ? `Korrektoren: ${tutorial.correctors.map((corrector) => getNameOfEntity(corrector)).join('; ')}`
+              : undefined,
       })}
       itemToValue={(tutorial) => tutorial.id}
       {...props}

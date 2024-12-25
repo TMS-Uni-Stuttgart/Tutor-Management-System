@@ -135,6 +135,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      color-convert:
+        specifier: ^2.0.1
+        version: 2.0.1
       file-saver:
         specifier: ^2.0.5
         version: 2.0.5
@@ -211,6 +214,9 @@ importers:
       '@types/chai':
         specifier: ^4.3.17
         version: 4.3.17
+      '@types/color-convert':
+        specifier: ^2.0.3
+        version: 2.0.3
       '@types/file-saver':
         specifier: ^2.0.7
         version: 2.0.7
