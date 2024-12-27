@@ -7,13 +7,14 @@ import { StudentStatus } from 'shared/model/Student';
 import { Sheet } from '../../database/entities/sheet.entity';
 import { Student } from '../../database/entities/student.entity';
 import { Tutorial } from '../../database/entities/tutorial.entity';
+import { ScheincriteriaService } from '../scheincriteria/scheincriteria.service';
 import { SheetService } from '../sheet/sheet.service';
-import { TutorialService } from '../tutorial/tutorial.service';
-import { ParseCsvDTO } from './excel.dto';
 import { GradingService, StudentAndGradings } from '../student/grading.service';
 import { StudentService } from '../student/student.service';
-import { ScheincriteriaService } from '../scheincriteria/scheincriteria.service';
 import { PassedState } from '../template/template.types';
+import { TutorialService } from '../tutorial/tutorial.service';
+import { UserService } from '../user/user.service';
+import { ParseCsvDTO } from './excel.dto';
 
 interface HeaderData {
     name: string;
@@ -70,6 +71,7 @@ export class ExcelService {
         private readonly tutorialService: TutorialService,
         private readonly sheetService: SheetService,
         private readonly studentService: StudentService,
+        private readonly userService: UserService,
         private readonly scheincriteriaService: ScheincriteriaService,
         private readonly gradingService: GradingService
     ) {}
@@ -164,6 +166,45 @@ export class ExcelService {
             cells['tutorial'].push({ content: tutorial.slot, row });
             cells['status'].push({ content: state.toString(), row });
             cells['email'].push({ content: email ?? 'N/A', row });
+
+            row++;
+        }
+
+        this.fillSheet(sheet, headers, cells);
+        return workbook.writeToBuffer();
+    }
+
+    async generateCredentialsXLSX(): Promise<Buffer> {
+        const users = await this.userService.findAll();
+        const workbook = new xl.Workbook();
+        const sheet = workbook.addWorksheet('User Credentials');
+
+        const headers: HeaderDataCollection<
+            'firstname' | 'lastname' | 'username' | 'email' | 'password'
+        > = {
+            firstname: { name: 'Firstname', column: 1 },
+            lastname: { name: 'Lastname', column: 2 },
+            username: { name: 'Username', column: 3 },
+            email: { name: 'Email', column: 4 },
+            password: { name: 'Temporary Password', column: 5 },
+        };
+        const cells: CellDataCollection<
+            'firstname' | 'lastname' | 'username' | 'email' | 'password'
+        > = {
+            firstname: [],
+            lastname: [],
+            username: [],
+            email: [],
+            password: [],
+        };
+
+        let row = 2;
+        for (const user of users.sort((a, b) => a.lastname.localeCompare(b.lastname))) {
+            cells['firstname'].push({ content: user.firstname, row });
+            cells['lastname'].push({ content: user.lastname, row });
+            cells['username'].push({ content: user.username, row });
+            cells['email'].push({ content: user.email || 'N/A', row });
+            cells['password'].push({ content: user.temporaryPassword || 'N/A', row });
 
             row++;
         }

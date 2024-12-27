@@ -75,6 +75,23 @@ export async function getCredentialsPDF(): Promise<Blob> {
     return Promise.reject(`Wrong response code (${response.status})`);
 }
 
+export async function getCredentialsXLSX(): Promise<Blob> {
+    const response = await axios.get(`/excel/credentials`, {
+        responseType: 'arraybuffer',
+        headers: {
+            Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        },
+    });
+
+    if (response.status === 200) {
+        return new Blob([response.data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+    }
+
+    return Promise.reject(`Wrong response code (${response.status})`);
+}
+
 export async function getTeamGradingFile(
     tutorialId: string,
     sheetId: string,

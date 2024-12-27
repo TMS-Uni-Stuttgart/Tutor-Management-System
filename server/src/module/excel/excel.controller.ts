@@ -12,14 +12,14 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { ParseCsvResult } from 'shared/model/CSV';
+import { Role } from 'shared/model/Role';
 import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { Roles } from '../../guards/decorators/roles.decorator';
 import { HasRoleGuard } from '../../guards/has-role.guard';
 import { TutorialGuard } from '../../guards/tutorial.guard';
-import { ParseCsvResult } from 'shared/model/CSV';
 import { ParseCsvDTO } from './excel.dto';
 import { ExcelService } from './excel.service';
-import { Roles } from '../../guards/decorators/roles.decorator';
-import { Role } from 'shared/model/Role';
 
 @Controller('excel')
 export class ExcelController {
@@ -49,6 +49,16 @@ export class ExcelController {
     @UseGuards(HasRoleGuard)
     async getScheinStatusCSV(@Res() res: Response): Promise<void> {
         const buffer = await this.excelService.generateScheinstatusTable();
+
+        res.contentType('xlsx');
+        res.send(buffer);
+    }
+
+    @Get('/credentials')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(HasRoleGuard)
+    async getCredentialsXLSX(@Res() res: Response): Promise<void> {
+        const buffer = await this.excelService.generateCredentialsXLSX();
 
         res.contentType('xlsx');
         res.send(buffer);
