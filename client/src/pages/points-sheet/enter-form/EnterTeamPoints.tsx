@@ -10,7 +10,7 @@ import {
 import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { GradingList } from '../../../model/GradingList';
 import { Team } from '../../../model/Team';
-import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
+import { useTutorialRoutes } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
@@ -43,6 +43,18 @@ function EnterTeamPoints(): JSX.Element {
         setTeams(response);
       })
       .catch(() => setError('Teams konnten nicht abgerufen werden.'));
+  }, [tutorialId, sheetId, setError]);
+
+  useEffect(() => {
+    if (!teamId || !tutorialId) {
+      return;
+    }
+
+    const newSelectedTeam = teams.find((t) => t.id === teamId);
+
+    if (newSelectedTeam) {
+      setSelectedTeam(newSelectedTeam);
+    }
 
     if (sheetId) {
       getGradingsOfTutorial(sheetId, tutorialId)
@@ -51,18 +63,6 @@ function EnterTeamPoints(): JSX.Element {
           setError('Bewertungen konnten nicht abgerufen werden.');
           setGradings(new GradingList([]));
         });
-    }
-  }, [tutorialId, sheetId, setError]);
-
-  useEffect(() => {
-    if (!teamId) {
-      return;
-    }
-
-    const newSelectedTeam = teams.find((t) => t.id === teamId);
-
-    if (newSelectedTeam) {
-      setSelectedTeam(newSelectedTeam);
     }
   }, [teams, teamId]);
 
