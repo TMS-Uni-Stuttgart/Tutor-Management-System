@@ -2,11 +2,7 @@ import { Button } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-  TableArrowDown as ImportIcon,
-  Printer as PrintIcon,
-  EmailArrowRightOutline as SendIcon,
-} from 'mdi-material-ui';
+import { TableArrowDown as ImportIcon, EmailArrowRightOutline as SendIcon } from 'mdi-material-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FailedMail, MailingStatus } from 'shared/model/Mail';
@@ -16,9 +12,10 @@ import { getNameOfEntity } from 'shared/util/helpers';
 import UserForm, { UserFormState, UserFormSubmitCallback } from '../../components/forms/UserForm';
 import LoadingSpinner from '../../components/loading/LoadingSpinner';
 import SubmitButton from '../../components/loading/SubmitButton';
+import SplitButton from '../../components/SplitButton';
 import TableWithForm from '../../components/TableWithForm';
 import { useDialog } from '../../hooks/dialog-service/DialogService';
-import { getCredentialsPDF } from '../../hooks/fetching/Files';
+import { getCredentialsPDF, getCredentialsXLSX } from '../../hooks/fetching/Files';
 import { getAllTutorials } from '../../hooks/fetching/Tutorial';
 import {
   createUser,
@@ -113,6 +110,7 @@ function UserManagement(): JSX.Element {
 
   const [isLoadingInitially, setLoadingInitially] = useState(true);
   const [isSendingCredentials, setSendingCredentials] = useState(false);
+  const [isPrintingCredentials, setPrintingCredentials] = useState(false);
 
   useEffect(() => {
     if (isLoadingInitially && !isLoadingTutorials && !isLoadingUsers) {
@@ -319,8 +317,8 @@ function UserManagement(): JSX.Element {
     });
   }, [dialog, sendCredentials]);
 
-  const handlePrintCredentials = useCallback(async () => {
-    setSendingCredentials(true);
+  const handlePrintCredentialsPDF = useCallback(async () => {
+    setPrintingCredentials(true);
 
     try {
       const blob = await getCredentialsPDF();
@@ -330,7 +328,21 @@ function UserManagement(): JSX.Element {
       enqueueSnackbar('Zugangsdaten PDF konnte nicht erzeugt werden.', { variant: 'error' });
     }
 
-    setSendingCredentials(false);
+    setPrintingCredentials(false);
+  }, [enqueueSnackbar]);
+
+  const handlePrintCredentialsXLSX = useCallback(async () => {
+    setPrintingCredentials(true);
+
+    try {
+      const blob = await getCredentialsXLSX();
+
+      saveBlob(blob, 'Zugangsdaten.xlsx');
+    } catch {
+      enqueueSnackbar('Zugangsdaten XLSX konnte nicht erzeugt werden.', { variant: 'error' });
+    }
+
+    setPrintingCredentials(false);
   }, [enqueueSnackbar]);
 
   const sendCredentialsToSingleUser = useCallback(
@@ -389,15 +401,26 @@ function UserManagement(): JSX.Element {
                 Zugangsdaten verschicken
               </SubmitButton>
 
-              <SubmitButton
-                variant='outlined'
-                isSubmitting={isSendingCredentials}
-                startIcon={<PrintIcon />}
-                onClick={handlePrintCredentials}
+              <SplitButton
+                variant='contained'
+                color='primary'
                 style={{ marginLeft: 8 }}
-              >
-                Zugangsdaten ausdrucken
-              </SubmitButton>
+                disabled={!users || users.length === 0 || isPrintingCredentials}
+                options={[
+                  {
+                    label: 'Zugangsdaten als PDF ausdrucken',
+                    ButtonProps: {
+                      onClick: handlePrintCredentialsPDF,
+                    },
+                  },
+                  {
+                    label: 'Zugangsdaten als XLSX ausdrucken',
+                    ButtonProps: {
+                      onClick: handlePrintCredentialsXLSX,
+                    },
+                  },
+                ]}
+              />
 
               <Button
                 variant='outlined'
