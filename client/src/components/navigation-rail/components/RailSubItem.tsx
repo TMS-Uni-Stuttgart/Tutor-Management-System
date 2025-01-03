@@ -30,7 +30,7 @@ export interface RailSubItemProps extends ListItemProps<'li', {}> {
   text: string;
 }
 
-function RailSubItem({ text, subPath, icon: Icon, ...other }: RailSubItemProps): JSX.Element {
+function RailSubItem({ text, subPath, subPathTemplate, icon: Icon, ...other }: RailSubItemProps): JSX.Element {
   const classes = useStyles();
   const isSubPath = useMatch(subPath);
 
@@ -45,5 +45,6 @@ function RailSubItem({ text, subPath, icon: Icon, ...other }: RailSubItemProps):
     </ListItem>
   );
 }
+
 
 export default RailSubItem;
