@@ -1,10 +1,17 @@
-import { ListItem, ListItemIcon, ListItemText, SvgIconProps, Theme } from '@mui/material';
+import {
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemProps,
+  ListItemText,
+  SvgIconProps,
+  Theme,
+} from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 import { useMatch } from 'react-router';
-import { ButtonListItemProps } from './RailItem';
 import { getTargetLink } from './RailItem.helpers';
 import { renderLink } from './renderLink';
 
@@ -16,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export interface RailSubItemProps extends ButtonListItemProps {
+export interface RailSubItemProps extends ListItemProps<'li', {}> {
   subPath: string;
   subPathTemplate: string;
   icon: React.ComponentType<SvgIconProps>;
@@ -28,12 +35,13 @@ function RailSubItem({ text, subPath, icon: Icon, ...other }: RailSubItemProps):
   const isSubPath = useMatch(subPath);
 
   return (
-    <ListItem key={subPath + text} {...other} button component={renderLink(getTargetLink(subPath))}>
-      <ListItemIcon className={clsx(isSubPath && classes.currentPath)}>
-        <Icon />
-      </ListItemIcon>
-
-      <ListItemText className={clsx(isSubPath && classes.currentPath)}>{text}</ListItemText>
+    <ListItem key={subPath + text} {...other} disablePadding>
+      <ListItemButton component={renderLink(getTargetLink(subPath))}>
+        <ListItemIcon className={clsx(isSubPath && classes.currentPath)}>
+          <Icon />
+        </ListItemIcon>
+        <ListItemText className={clsx(isSubPath && classes.currentPath)}>{text}</ListItemText>
+      </ListItemButton>
     </ListItem>
   );
 }
