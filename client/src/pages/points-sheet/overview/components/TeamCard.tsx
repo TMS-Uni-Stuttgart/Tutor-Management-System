@@ -6,6 +6,7 @@ import {
   Divider,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Typography,
@@ -21,14 +22,14 @@ import {
 import React, { useMemo } from 'react';
 import { Link, useMatches } from 'react-router-dom';
 import EntityListItemMenu from '../../../../components/list-item-menu/EntityListItemMenu';
+import { renderLink } from '../../../../components/navigation-rail/components/renderLink';
 import PointsTable from '../../../../components/points-table/PointsTable';
 import SplitButton from '../../../../components/SplitButton';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { GradingList } from '../../../../model/GradingList';
 import { Sheet } from '../../../../model/Sheet';
 import { Team } from '../../../../model/Team';
-import { ROUTES, useTutorialRoutes } from '../../../../routes/Routing.routes';
-import { renderLink } from '../../../../components/navigation-rail/components/renderLink';
+import { useTutorialRoutes } from '../../../../routes/Routing.routes';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -103,23 +104,23 @@ function TeamCard({
         <List>
           {team.students.map((student, idx) => (
             <React.Fragment key={student.id}>
-              <ListItem
-                button
-                onClick={() => dialog.hide()}
-                component={renderLink(
-                  useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
-                    tutorialId,
-                    sheetId: sheet.id,
-                    teamId: team.id,
-                    studentId: student.id,
-                  })
-                )}
-              >
-                <ListItemIcon>
-                  <StudentIcon />
-                </ListItemIcon>
+              <ListItem onClick={() => dialog.hide()}>
+                <ListItemButton
+                  component={renderLink(
+                    useTutorialRoutes(matches).ENTER_POINTS_STUDENT.buildPath({
+                      tutorialId,
+                      sheetId: sheet.id,
+                      teamId: team.id,
+                      studentId: student.id,
+                    })
+                  )}
+                >
+                  <ListItemIcon>
+                    <StudentIcon />
+                  </ListItemIcon>
 
-                <ListItemText primary={student.name} secondary='Zum Auswählen klicken' />
+                  <ListItemText primary={student.name} secondary='Zum Auswählen klicken' />
+                </ListItemButton>
               </ListItem>
               {idx !== team.students.length - 1 && <Divider />}
             </React.Fragment>
