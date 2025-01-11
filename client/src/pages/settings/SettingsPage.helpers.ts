@@ -53,7 +53,7 @@ export const validationSchema = Yup.object().shape({
 export interface FormState {
     defaultTeamSize: string;
     canTutorExcuseStudents: boolean;
-    excludeStudentsByStatus: boolean
+    excludeStudentsByStatus: boolean;
     gradingFilename: string;
     tutorialGradingFilename: string;
     mailingConfig: {

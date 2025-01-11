@@ -42,13 +42,15 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
       let passed = 0;
       let notPassed = 0;
       summaries.forEach((summary) => {
-        const shouldIncludeStudent = 
-        !settings.excludeStudentsByStatus || 
-        ![StudentStatus.NO_SCHEIN_REQUIRED, StudentStatus.INACTIVE].includes(summary.student.status);
-    
-      if (shouldIncludeStudent) {
-        summary.passed ? passed++ : notPassed++;
-      }
+        const shouldIncludeStudent =
+          !settings.excludeStudentsByStatus ||
+          ![StudentStatus.NO_SCHEIN_REQUIRED, StudentStatus.INACTIVE].includes(
+            summary.student.status
+          );
+
+        if (shouldIncludeStudent) {
+          summary.passed ? passed++ : notPassed++;
+        }
       });
 
       const percentage = (passed / (passed + notPassed)) * 100;

@@ -34,7 +34,7 @@ interface ScheinPassedStatsCardProps {
 function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
-  const {settings} = useSettings();
+  const { settings } = useSettings();
 
   const { backgroundColor, fontStyle } = theme.mixins.chart(theme);
 
@@ -45,10 +45,10 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
     const data: (string | number)[][] = [];
 
     Object.values(value.studentInfos).forEach(({ student, passed }) => {
-      const shouldIncludeStudent = 
-        !settings.excludeStudentsByStatus || 
+      const shouldIncludeStudent =
+        !settings.excludeStudentsByStatus ||
         ![StudentStatus.NO_SCHEIN_REQUIRED, StudentStatus.INACTIVE].includes(student.status);
-    
+
       if (shouldIncludeStudent) {
         passed ? passedValue++ : notPassedValue++;
       }

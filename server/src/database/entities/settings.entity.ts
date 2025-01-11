@@ -76,7 +76,7 @@ export class Setting {
     canTutorExcuseStudents!: boolean;
 
     @Property()
-    excludeStudentsByStatus!: boolean
+    excludeStudentsByStatus!: boolean;
 
     @Property()
     gradingFilename!: string;

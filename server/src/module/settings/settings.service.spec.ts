@@ -64,7 +64,7 @@ describe('SettingsService', () => {
     it.each<ClientSettingsDTO>([
         { ...DEFAULT_SETTINGS, defaultTeamSize: 5 },
         { ...DEFAULT_SETTINGS, canTutorExcuseStudents: true },
-        {...DEFAULT_SETTINGS, excludeStudentsByStatus: true},
+        { ...DEFAULT_SETTINGS, excludeStudentsByStatus: true },
         {
             ...DEFAULT_SETTINGS,
             defaultTeamSize: 3,
