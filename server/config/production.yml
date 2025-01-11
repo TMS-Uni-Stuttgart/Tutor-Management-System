@@ -17,6 +17,7 @@ database:
 
 defaultSettings:
     canTutorExcuseStudents: true
+    excludeStudentsByStatus: true
     defaultTeamSize: 3
 
 # Settings used for the gotenberg instance

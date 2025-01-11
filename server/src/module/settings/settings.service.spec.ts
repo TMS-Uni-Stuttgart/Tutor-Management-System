@@ -3,8 +3,8 @@ import { TestSuite } from '../../../test/helpers/TestSuite';
 import { MOCKED_SETTINGS_DOCUMENT } from '../../../test/mocks/entities.mock';
 import { Setting } from '../../database/entities/settings.entity';
 import { ClientSettingsDTO } from './settings.dto';
-import { SettingsService } from './settings.service';
 import { SettingsModule } from './settings.module';
+import { SettingsService } from './settings.service';
 
 interface AssertSettingsParams {
     expected: Setting;
@@ -37,6 +37,7 @@ function assertSettings({ expected, actual }: AssertSettingsParams) {
 const DEFAULT_SETTINGS: ClientSettingsDTO = {
     defaultTeamSize: 2,
     canTutorExcuseStudents: false,
+    excludeStudentsByStatus: false,
     gradingFilename: 'default_filename',
     tutorialGradingFilename: 'default_tutorial_grading_filename',
 };
@@ -63,6 +64,7 @@ describe('SettingsService', () => {
     it.each<ClientSettingsDTO>([
         { ...DEFAULT_SETTINGS, defaultTeamSize: 5 },
         { ...DEFAULT_SETTINGS, canTutorExcuseStudents: true },
+        {...DEFAULT_SETTINGS, excludeStudentsByStatus: true},
         {
             ...DEFAULT_SETTINGS,
             defaultTeamSize: 3,

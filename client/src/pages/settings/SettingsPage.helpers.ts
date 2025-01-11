@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 
 export const validationSchema = Yup.object().shape({
     canTutorExcuseStudents: Yup.boolean().required('Benötigt'),
+    excludeStudentsByStatus: Yup.boolean().required('Benötigt'),
     defaultTeamSize: Yup.number()
         .integer('Muss eine ganze Zahl sein.')
         .min(1, 'Muss mindestens 1 sein.')
@@ -52,6 +53,7 @@ export const validationSchema = Yup.object().shape({
 export interface FormState {
     defaultTeamSize: string;
     canTutorExcuseStudents: boolean;
+    excludeStudentsByStatus: boolean
     gradingFilename: string;
     tutorialGradingFilename: string;
     mailingConfig: {
@@ -68,12 +70,14 @@ export function getInitialValues(settings: IClientSettings): FormState {
     const {
         mailingConfig,
         canTutorExcuseStudents,
+        excludeStudentsByStatus,
         gradingFilename,
         tutorialGradingFilename,
         defaultTeamSize,
     } = settings;
     return {
         canTutorExcuseStudents: canTutorExcuseStudents,
+        excludeStudentsByStatus: excludeStudentsByStatus,
         defaultTeamSize: `${defaultTeamSize}`,
         gradingFilename,
         tutorialGradingFilename,
@@ -91,6 +95,7 @@ export function getInitialValues(settings: IClientSettings): FormState {
 export function convertFormStateToDTO(values: FormState): IClientSettings {
     const dto: IClientSettings = {
         canTutorExcuseStudents: values.canTutorExcuseStudents,
+        excludeStudentsByStatus: values.excludeStudentsByStatus,
         defaultTeamSize: Number.parseInt(values.defaultTeamSize),
         gradingFilename: values.gradingFilename,
         tutorialGradingFilename: values.tutorialGradingFilename,
