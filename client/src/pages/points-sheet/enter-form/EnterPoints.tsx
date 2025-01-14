@@ -90,7 +90,13 @@ function EnterPoints<T extends HasId>({
     getSheet(sheetId)
       .then((response) => {
         setSheet(response);
-        setSelectedExercise([...response.exercises]);
+
+        const savedSelection = localStorage.getItem('selectedExercise');
+        if (savedSelection === 'all') {
+          setSelectedExercise([...response.exercises]);
+        } else {
+          setSelectedExercise([response.exercises[0]]);
+        }
       })
       .catch(() => setError('Übungsblatt konnte nicht abgerufen werden.'));
   }, [sheetId, setError]);
@@ -106,8 +112,10 @@ function EnterPoints<T extends HasId>({
 
     if (foundExercise) {
       exercise = [foundExercise];
+      localStorage.setItem('selectedExercise', exerciseId);
     } else {
       exercise = [...sheet.exercises];
+      localStorage.setItem('selectedExercise', 'all');
     }
 
     if (exercise) {
@@ -139,7 +147,13 @@ function EnterPoints<T extends HasId>({
           className={classes.topBarSelect}
           label='Aufgabe'
           emptyPlaceholder='Keine Aufgaben verfügbar'
-          items={sheet ? [sheet.exercises, ...sheet.exercises.map((ex) => [ex])] : []}
+          items={
+            sheet
+              ? sheet.exercises.length > 1
+                ? [sheet.exercises, ...sheet.exercises.map((ex) => [ex])]
+                : [sheet.exercises]
+              : []
+          }
           itemToString={(ex) => (ex.length > 1 ? 'Alle Aufgaben' : `Aufgabe ${ex[0].exName}`)}
           itemToValue={(ex) => (ex.length > 1 ? ex.map((e) => e.id).join('') : ex[0].id)}
           value={
