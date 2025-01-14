@@ -3,6 +3,7 @@ import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
+import { useMatches } from 'react-router';
 import { HasId } from 'shared/model/Common';
 import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
@@ -12,10 +13,9 @@ import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Grading } from '../../../model/Grading';
 import { Sheet } from '../../../model/Sheet';
-import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
+import { useTutorialRoutes } from '../../../routes/Routing.routes';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
-import { useMatches } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -79,7 +79,7 @@ function EnterPoints<T extends HasId>({
   const { setError } = useErrorSnackbar();
 
   const [sheet, setSheet] = useState<Sheet>();
-  const [selectedExercise, setSelectedExercise] = useState<Exercise>();
+  const [selectedExercise, setSelectedExercise] = useState<Exercise[]>();
   const matches = useMatches();
 
   useEffect(() => {
@@ -90,7 +90,7 @@ function EnterPoints<T extends HasId>({
     getSheet(sheetId)
       .then((response) => {
         setSheet(response);
-        setSelectedExercise(response.exercises[0]);
+        setSelectedExercise([...response.exercises]);
       })
       .catch(() => setError('Übungsblatt konnte nicht abgerufen werden.'));
   }, [sheetId, setError]);
@@ -101,7 +101,14 @@ function EnterPoints<T extends HasId>({
     }
 
     const exerciseId: string = event.target.value as string;
-    const exercise = sheet.exercises.find((ex) => ex.id === exerciseId);
+    let exercise: Exercise[] = [];
+    const foundExercise = sheet.exercises.find((ex) => ex.id === exerciseId);
+
+    if (foundExercise) {
+      exercise = [foundExercise];
+    } else {
+      exercise = [...sheet.exercises];
+    }
 
     if (exercise) {
       setSelectedExercise(exercise);
@@ -132,10 +139,14 @@ function EnterPoints<T extends HasId>({
           className={classes.topBarSelect}
           label='Aufgabe'
           emptyPlaceholder='Keine Aufgaben verfügbar'
-          items={sheet ? sheet.exercises : []}
-          itemToString={(ex) => `Aufgabe ${ex.exName}`}
-          itemToValue={(ex) => ex.id}
-          value={selectedExercise?.id ?? ''}
+          items={sheet ? [sheet.exercises, ...sheet.exercises.map((ex) => [ex])] : []}
+          itemToString={(ex) => (ex.length > 1 ? 'Alle Aufgaben' : `Aufgabe ${ex[0].exName}`)}
+          itemToValue={(ex) => (ex.length > 1 ? ex.map((e) => e.id).join('') : ex[0].id)}
+          value={
+            selectedExercise && selectedExercise.length > 1
+              ? selectedExercise.map((ex) => ex.id).join('')
+              : (selectedExercise?.[0]?.id ?? '')
+          }
           onChange={handleExerciseChange}
         />
 
