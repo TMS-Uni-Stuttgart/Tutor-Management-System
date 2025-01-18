@@ -5,7 +5,9 @@ import convert from 'color-convert';
 import { useEffect, useState } from 'react';
 import Chart from 'react-google-charts';
 import { IScheinCriteria, ScheinCriteriaStatus } from 'shared/model/ScheinCriteria';
+import { StudentStatus } from 'shared/model/Student';
 import { getAllScheinCriterias } from '../../../hooks/fetching/Scheincriteria';
+import { useSettings } from '../../../hooks/useSettings';
 import { useTranslation } from '../../../util/lang/configI18N';
 import { TutorialSummaryInfo } from '../Dashboard';
 
@@ -47,6 +49,7 @@ function ScheinCriteriaStatsCard({
   const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation('scheincriteria');
+  const { settings } = useSettings();
   const numberOfStudents = Object.keys(value.studentInfos).length;
 
   const { backgroundColor, colors, fontStyle } = theme.mixins.chart(theme);
@@ -57,6 +60,13 @@ function ScheinCriteriaStatsCard({
 
   function filterSummaries(critId: string): ScheinCriteriaStatus[] {
     return Object.values(value.studentInfos)
+      .filter(
+        (studentInfo) =>
+          !settings.excludeStudentsByStatus ||
+          ![StudentStatus.NO_SCHEIN_REQUIRED, StudentStatus.INACTIVE].includes(
+            studentInfo.student.status
+          )
+      )
       .filter((studentInfo) => Object.keys(studentInfo.scheinCriteriaSummary).includes(critId))
       .map((summary) => summary.scheinCriteriaSummary[critId]);
   }
@@ -124,6 +134,13 @@ function ScheinCriteriaStatsCard({
 
   function filterAndSortSummaries(critId: string): ScheinCriteriaStatus[] {
     return Object.values(value.studentInfos)
+      .filter(
+        (studentInfo) =>
+          !settings.excludeStudentsByStatus ||
+          ![StudentStatus.NO_SCHEIN_REQUIRED, StudentStatus.INACTIVE].includes(
+            studentInfo.student.status
+          )
+      )
       .filter((studentInfo) => Object.keys(studentInfo.scheinCriteriaSummary).includes(critId))
       .sort((a, b) => {
         const teamIdA = a.student.team?.id || '';
