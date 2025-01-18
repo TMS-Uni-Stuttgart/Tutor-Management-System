@@ -2,7 +2,7 @@ import { Box, Button, Typography } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useFormikContext } from 'formik';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import FormikCheckbox from '../../../components/forms/components/FormikCheckbox';
 import FormikDebugDisplay from '../../../components/forms/components/FormikDebugDisplay';
 import FormikTextField from '../../../components/forms/components/FormikTextField';
@@ -96,6 +96,14 @@ function SettingsPageForm(): JSX.Element {
         <FormikCheckbox
           label='Tutoren/innen dürfen Studierende entschuldigen'
           name='canTutorExcuseStudents'
+        />
+
+        <GridDivider />
+
+        <Typography className={classes.sectionLabel}>Scheinstatus</Typography>
+        <FormikCheckbox
+          label='Studierende mit dem Status „Kein Schein benötigt“ oder „Inaktiv“ werden von der Kriterienberechnung ausgeschlossen'
+          name='excludeStudentsByStatus'
         />
 
         <GridDivider />

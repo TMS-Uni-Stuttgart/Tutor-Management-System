@@ -17,4 +17,5 @@ database:
 
 defaultSettings:
   canTutorExcuseStudents: true
+  excludeStudentsByStatus: true
   defaultTeamSize: 3

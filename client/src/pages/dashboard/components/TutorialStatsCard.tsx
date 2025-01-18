@@ -2,9 +2,9 @@ import { Paper, Table, TableBody, TableCell, TableRow, Theme } from '@mui/materi
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { DateTime } from 'luxon';
-import React from 'react';
+import { StudentStatus } from 'shared/model/Student';
+import { useSettings } from '../../../hooks/useSettings';
 import { TutorialSummaryInfo } from '../Dashboard';
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     statsPaper: {
@@ -32,7 +32,14 @@ interface TutorialStatsCardProps {
 
 function TutorialStatsCard({ value }: TutorialStatsCardProps): JSX.Element {
   const classes = useStyles();
+  const { settings } = useSettings();
   const { studentInfos, tutorial } = value;
+  let activeStudents = 0;
+  Object.values(studentInfos).forEach(({ student }) => {
+    if (student.status === StudentStatus.ACTIVE) {
+      activeStudents++;
+    }
+  });
 
   return (
     <Paper className={classes.statsPaper}>
@@ -40,7 +47,11 @@ function TutorialStatsCard({ value }: TutorialStatsCardProps): JSX.Element {
         <TableBody>
           <TableRow>
             <TableCell className={classes.tableTitle}>Teilnehmer: </TableCell>
-            <TableCell>{Object.values(studentInfos).length}</TableCell>
+            <TableCell>
+              {settings.excludeStudentsByStatus
+                ? `${activeStudents} aktive, ${Object.values(studentInfos).length} insgesamt`
+                : Object.values(studentInfos).length}
+            </TableCell>
           </TableRow>
           <>
             <TableRow>
