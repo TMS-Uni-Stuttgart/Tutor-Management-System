@@ -22,10 +22,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14.x
+          node-version: 22.x
 
-      - name: Install pnpm
-        run: npm i -g pnpm@latest-7
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Prepare pnpm using Corepack
+        run: corepack prepare pnpm
 
       # Change the version to be the correct one so the version in the image is always the correct one.
       - name: Set new version

@@ -4,6 +4,8 @@ import RED from '@mui/material/colors/red';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import Chart from 'react-google-charts';
+import { StudentStatus } from 'shared/model/Student';
+import { useSettings } from '../../../hooks/useSettings';
 import { StudentByTutorialSlotSummaryMap } from '../../../typings/types';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,6 +33,7 @@ interface Props {
 function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
+  const { settings } = useSettings();
 
   function getScheinPassedStatsOfAllStudents() {
     const data: [string, number, number][] = [];
@@ -39,10 +42,14 @@ function AdminStatsCard({ studentsByTutorialSummary: summaries }: Props): JSX.El
       let passed = 0;
       let notPassed = 0;
       summaries.forEach((summary) => {
-        if (summary.passed) {
-          passed += 1;
-        } else {
-          notPassed += 1;
+        const shouldIncludeStudent =
+          !settings.excludeStudentsByStatus ||
+          ![StudentStatus.NO_SCHEIN_REQUIRED, StudentStatus.INACTIVE].includes(
+            summary.student.status
+          );
+
+        if (shouldIncludeStudent) {
+          summary.passed ? passed++ : notPassed++;
         }
       });
 
