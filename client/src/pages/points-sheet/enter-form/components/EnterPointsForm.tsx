@@ -5,7 +5,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { unstable_usePrompt } from 'react-router-dom';
 import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Gradings';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
@@ -97,6 +96,24 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
   const total = getPointsOfAllExercises(sheet);
   const totalPoints = convertExercisePointInfoToString(total);
 
+  const [lastSubmittedTime, setLastSubmittedTime] = useState<Date | undefined>(undefined);
+  useEffect(() => {
+    if (dirty && isSubmitting) {
+      setLastSubmittedTime(new Date());
+    }
+
+    const interval = setInterval(() => {
+      if (dirty && !isSubmitting) {
+        submitForm();
+        setLastSubmittedTime(new Date());
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [dirty, isSubmitting, submitForm]);
+
   const handleReset = () => {
     dialog.show({
       title: 'Eingaben zurücksetzen?',
@@ -140,10 +157,17 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
     <>
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
         <div className={classes.textBox}>
-          <Typography className={classes.unsavedChangesText}>
-            {dirty && <>Es gibt ungespeicherte Änderungen.</>}
-          </Typography>
-
+          {dirty ? (
+            <Typography className={classes.unsavedChangesText}>
+              {<>Es gibt ungespeicherte Änderungen.</>}
+            </Typography>
+          ) : (
+            lastSubmittedTime && (
+              <Typography className={classes.unsavedChangesText}>
+                {<>Zuletzt gespeichert am {lastSubmittedTime.toLocaleString()}</>}
+              </Typography>
+            )
+          )}
           <Typography
             className={classes.pointsText}
           >{`Gesamt: ${achieved} / ${totalPoints} Punkte`}</Typography>
