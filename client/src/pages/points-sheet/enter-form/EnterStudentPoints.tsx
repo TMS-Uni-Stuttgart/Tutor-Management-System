@@ -1,6 +1,6 @@
 import { SelectChangeEvent, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useMatches, useNavigate, useParams, useRoutes } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { useMatches, useNavigate, useParams } from 'react-router';
 import { IGradingDTO } from 'shared/model/Gradings';
 import { getGradingsOfTutorial } from '../../../hooks/fetching/Grading';
 import { getStudent, setPointsOfStudent } from '../../../hooks/fetching/Student';
@@ -9,7 +9,7 @@ import { useCustomSnackbar } from '../../../hooks/snackbar/useCustomSnackbar';
 import { GradingList } from '../../../model/GradingList';
 import { Student, StudentInTeam } from '../../../model/Student';
 import { Team } from '../../../model/Team';
-import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
+import { useTutorialRoutes } from '../../../routes/Routing.routes';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
 import EnterPoints from './EnterPoints';
 import { convertFormStateToGradingDTO } from './EnterPoints.helpers';
@@ -31,6 +31,7 @@ function EnterStudentPoints(): JSX.Element {
   const [student, setStudent] = useState<Student>();
   const [team, setTeam] = useState<Team>();
   const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
+  const isAutoSubmittingRef = React.useRef<boolean>(false);
   const matches = useMatches();
 
   useEffect(() => {
@@ -113,9 +114,11 @@ function EnterStudentPoints(): JSX.Element {
       setStudent(updatedStudent);
 
       resetForm({ values: { ...values } });
-      enqueueSnackbar(`Punkte für ${student.nameFirstnameFirst} erfolgreich eingetragen.`, {
-        variant: 'success',
-      });
+      if (!isAutoSubmittingRef.current) {
+        enqueueSnackbar(`Punkte für ${student.nameFirstnameFirst} erfolgreich eingetragen.`, {
+          variant: 'success',
+        });
+      }
     } catch {
       enqueueSnackbar(
         `Punkte für ${student.nameFirstnameFirst} konnten nicht eingetragen werden.`,
@@ -123,8 +126,15 @@ function EnterStudentPoints(): JSX.Element {
           variant: 'error',
         }
       );
+    } finally {
+      setIsAutoSubmitting(false);
     }
   };
+
+  const setIsAutoSubmitting = (value: boolean) => {
+    isAutoSubmittingRef.current = value;
+  };
+  
 
   const allStudents: StudentInTeam[] = team ? team.students : student ? [student] : [];
 
@@ -135,6 +145,7 @@ function EnterStudentPoints(): JSX.Element {
       entity={student}
       grading={student === undefined ? undefined : gradings.getOfStudent(student.id)}
       onSubmit={handleSubmit}
+      setIsAutoSubmitting={setIsAutoSubmitting}
       allEntities={allStudents}
       entitySelectProps={{
         label: 'Student',

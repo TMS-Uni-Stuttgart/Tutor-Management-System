@@ -62,11 +62,12 @@ interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   sheet: Sheet;
   exercise: Exercise;
   onSubmit: PointsFormSubmitCallback;
+  setIsAutoSubmitting: (isAutoSubmitting: boolean) => void;
 }
 
 type FormProps = Omit<Props, 'entity' | 'grading' | 'onSubmit'>;
 
-function EnterPointsForm({ grading, ...props }: Props): JSX.Element {
+function EnterPointsForm({ grading, setIsAutoSubmitting, ...props }: Props): JSX.Element {
   const { sheet, onSubmit } = props;
 
   const [initialValues, setInitialValues] = useState<PointsFormState>(
@@ -80,12 +81,18 @@ function EnterPointsForm({ grading, ...props }: Props): JSX.Element {
 
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
-      <EnterPointsFormInner {...props} />
+      <EnterPointsFormInner setIsAutoSubmitting={setIsAutoSubmitting} {...props} />
     </Formik>
   );
 }
 
-function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProps): JSX.Element {
+function EnterPointsFormInner({
+  sheet,
+  exercise,
+  className,
+  setIsAutoSubmitting,
+  ...props
+}: FormProps): JSX.Element {
   const classes = useStyles();
   const dialog = useDialog();
 
@@ -96,23 +103,18 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
   const total = getPointsOfAllExercises(sheet);
   const totalPoints = convertExercisePointInfoToString(total);
 
-  const [lastSubmittedTime, setLastSubmittedTime] = useState<Date | undefined>(undefined);
   useEffect(() => {
-    if (dirty && isSubmitting) {
-      setLastSubmittedTime(new Date());
-    }
-
     const interval = setInterval(() => {
       if (dirty && !isSubmitting) {
-        submitForm();
-        setLastSubmittedTime(new Date());
+        setIsAutoSubmitting(true);
+        handleSubmit();
       }
-    }, 3000);
+    }, 60 * 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [dirty, isSubmitting, submitForm]);
+  }, [dirty, values ]);
 
   const handleReset = () => {
     dialog.show({
@@ -157,16 +159,10 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
     <>
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
         <div className={classes.textBox}>
-          {dirty ? (
+          {dirty && (
             <Typography className={classes.unsavedChangesText}>
               {<>Es gibt ungespeicherte Änderungen.</>}
             </Typography>
-          ) : (
-            lastSubmittedTime && (
-              <Typography className={classes.unsavedChangesText}>
-                {<>Zuletzt gespeichert am {lastSubmittedTime.toLocaleString()}</>}
-              </Typography>
-            )
           )}
           <Typography
             className={classes.pointsText}

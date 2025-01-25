@@ -3,6 +3,7 @@ import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
+import { useMatches } from 'react-router';
 import { HasId } from 'shared/model/Common';
 import BackButton from '../../../components/back-button/BackButton';
 import CustomSelect, { CustomSelectProps } from '../../../components/CustomSelect';
@@ -12,10 +13,9 @@ import { useErrorSnackbar } from '../../../hooks/snackbar/useErrorSnackbar';
 import { Exercise } from '../../../model/Exercise';
 import { Grading } from '../../../model/Grading';
 import { Sheet } from '../../../model/Sheet';
-import { ROUTES, useTutorialRoutes } from '../../../routes/Routing.routes';
+import { useTutorialRoutes } from '../../../routes/Routing.routes';
 import EnterPointsForm from './components/EnterPointsForm';
 import { PointsFormSubmitCallback } from './components/EnterPointsForm.helpers';
-import { useMatches } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,7 +60,7 @@ interface Props<T extends HasId> {
   entity?: T;
   grading: Grading | undefined;
   onSubmit: PointsFormSubmitCallback;
-
+  setIsAutoSubmitting: (isAutoSubmitting: boolean) => void;
   allEntities: T[];
   entitySelectProps: EntitySelectProps<T>;
 }
@@ -71,6 +71,7 @@ function EnterPoints<T extends HasId>({
   entity,
   grading,
   onSubmit,
+  setIsAutoSubmitting,
   allEntities,
   entitySelectProps,
 }: Props<T>): JSX.Element {
@@ -161,6 +162,7 @@ function EnterPoints<T extends HasId>({
             exercise={selectedExercise}
             className={classes.enterPointsForm}
             onSubmit={onSubmit}
+            setIsAutoSubmitting={setIsAutoSubmitting}
           />
         )}
       </Placeholder>
