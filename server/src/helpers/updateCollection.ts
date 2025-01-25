@@ -1,6 +1,9 @@
-import { Collection } from "@mikro-orm/core";
+import { Collection } from '@mikro-orm/core';
 
-export function updateCollection<T extends { id: string }>(collection: Collection<T>, updated: T[]) {
+export function updateCollection<T extends { id: string }>(
+    collection: Collection<T>,
+    updated: T[]
+) {
     const currentLookup = new Map(collection.getItems().map((item) => [item.id, item]));
     const updatedLookup = new Map(updated.map((item) => [item.id, item]));
     for (const [id, item] of currentLookup) {
