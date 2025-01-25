@@ -134,7 +134,6 @@ function EnterStudentPoints(): JSX.Element {
   const setIsAutoSubmitting = (value: boolean) => {
     isAutoSubmittingRef.current = value;
   };
-  
 
   const allStudents: StudentInTeam[] = team ? team.students : student ? [student] : [];
 

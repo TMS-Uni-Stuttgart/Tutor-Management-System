@@ -114,7 +114,7 @@ function EnterPointsFormInner({
     return () => {
       clearInterval(interval);
     };
-  }, [dirty, values ]);
+  }, [dirty, values]);
 
   const handleReset = () => {
     dialog.show({

@@ -122,7 +122,6 @@ function EnterTeamPoints(): JSX.Element {
   const setIsAutoSubmitting = (value: boolean) => {
     isAutoSubmittingRef.current = value;
   };
-  
 
   if (!tutorialId || !sheetId || !teamId) {
     return (
