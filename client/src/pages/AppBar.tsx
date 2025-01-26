@@ -230,11 +230,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
         )}
 
         <Tooltip title='Zwischen hellem & dunklem Design wechseln.'>
-          <IconButton
-            onClick={handleThemeChange}
-            className={classes.iconButton}
-            size='large'
-          >
+          <IconButton onClick={handleThemeChange} className={classes.iconButton} size='large'>
             {theme.palette.mode === 'light' ? <LightIcon /> : <DarkIcon />}
           </IconButton>
         </Tooltip>
