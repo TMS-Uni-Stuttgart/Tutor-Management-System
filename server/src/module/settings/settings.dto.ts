@@ -10,6 +10,9 @@ export class ClientSettingsDTO {
     @IsBoolean()
     canTutorExcuseStudents!: boolean;
 
+    @IsBoolean()
+    excludeStudentsByStatus!: boolean;
+
     @IsOptional()
     gradingFilename?: string;
 
