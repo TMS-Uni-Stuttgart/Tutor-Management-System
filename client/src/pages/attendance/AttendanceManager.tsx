@@ -285,11 +285,9 @@ function AttendanceManager({ tutorial: tutorialFromProps }: Props): JSX.Element 
       const attendance: IAttendance | undefined = student.getAttendance(date);
 
       if (!attendance || !attendance.state) {
-        promises.push(handleStudentAttendanceChange(student, AttendanceState.PRESENT));
+        await handleStudentAttendanceChange(student, AttendanceState.PRESENT);
       }
     }
-
-    await Promise.all(promises);
 
     setSettingsPresent(false);
   }
