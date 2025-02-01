@@ -19,6 +19,7 @@ import { User } from '../../database/entities/user.entity';
 import { CRUDService } from '../../helpers/CRUDService';
 import { TutorialService } from '../tutorial/tutorial.service';
 import { CreateUserDTO, UserDTO } from './user.dto';
+import { updateCollection } from '../../helpers/updateCollection';
 
 @Injectable()
 export class UserService implements OnApplicationBootstrap, CRUDService<IUser, UserDTO, User> {
@@ -180,8 +181,8 @@ export class UserService implements OnApplicationBootstrap, CRUDService<IUser, U
         user.username = dto.username;
         user.email = dto.email;
         user.roles = dto.roles;
-        user.tutorials.set(tutorials);
-        user.tutorialsToCorrect.set(tutorialsToCorrect);
+        updateCollection(user.tutorials, tutorials);
+        updateCollection(user.tutorialsToCorrect, tutorialsToCorrect);
 
         await this.em.persistAndFlush(user);
         return user.toDTO();

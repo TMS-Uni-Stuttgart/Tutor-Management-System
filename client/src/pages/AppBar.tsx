@@ -26,11 +26,13 @@ import React, { useMemo, useState } from 'react';
 import { useLocation, useMatches } from 'react-router';
 import { useChangeTheme } from '../components/ContextWrapper';
 import SubmitButton from '../components/loading/SubmitButton';
+import { getSubItems } from '../components/navigation-rail/components/TutorialRailItem.helpers';
+import { filterRoutes } from '../components/navigation-rail/NavigationRail.helper';
 import { getTutorialXLSX } from '../hooks/fetching/Files';
 import { getHandbookUrl } from '../hooks/fetching/Information';
 import { useLogin } from '../hooks/LoginService';
 import { useFetchState } from '../hooks/useFetchState';
-import { TutorialInEntity } from '../model/LoggedInUser';
+import { LoggedInUser, TutorialInEntity } from '../model/LoggedInUser';
 import { Tutorial } from '../model/Tutorial';
 import { saveBlob } from '../util/helperFunctions';
 
@@ -76,25 +78,40 @@ interface CreatingState {
   [tutorialSlot: string]: boolean | undefined;
 }
 
-function useTitleFromRoute(): string {
+function useAppBarTitle(userData: LoggedInUser | undefined): string {
   const location = useLocation();
-  const path = location.pathname;
   const matches = useMatches();
 
-  return useMemo(() => (matches.at(-1)?.handle as any)?.title as string, [path]);
+  const mainTitle = useMemo(() => {
+    return (matches.at(-1)?.handle as any)?.title || '';
+  }, [matches]);
+
+  if (!userData) {
+    return mainTitle;
+  }
+
+  const { tutorialRoutes } = filterRoutes(userData.roles);
+  if (!tutorialRoutes || tutorialRoutes.length === 0) {
+    return mainTitle;
+  }
+
+  const subItems = tutorialRoutes.flatMap((route) => getSubItems(route, userData));
+  const matchingSubItem = subItems.find((item) => location.pathname.startsWith(item.subPath));
+  const subrouteText = matchingSubItem ? ` - ${matchingSubItem.text}` : '';
+
+  return `${mainTitle}${subrouteText}`;
 }
 
 function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
   const classes = useStyles();
   const theme = useTheme();
   const changeTheme = useChangeTheme();
 
   const { logout, isLoggedIn, userData } = useLogin();
-  const userIsLoggedIn: boolean = isLoggedIn();
+  const userIsLoggedIn = isLoggedIn();
 
-  const title = useTitleFromRoute();
+  const title = useAppBarTitle(userData);
 
   const [backupAnchor, setBackupAnchor] = useState<HTMLElement | undefined>(undefined);
   const [creatingXLSX, setCreatingXLSX] = useState<CreatingState>({});
@@ -104,22 +121,22 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
     params: [],
   });
 
-  function handleThemeChangeClicked() {
-    const newType: PaletteMode = theme.palette.mode === 'light' ? 'dark' : 'light';
-    changeTheme(newType);
-  }
+  const handleThemeChange = () => {
+    const newMode: PaletteMode = theme.palette.mode === 'light' ? 'dark' : 'light';
+    changeTheme(newMode);
+  };
 
-  function handleLogBtnClicked() {
-    logout().then(() => enqueueSnackbar('Erfolgreich ausgeloggt', { variant: 'success' }));
-  }
+  const handleLogout = async () => {
+    await logout();
+    enqueueSnackbar('Erfolgreich ausgeloggt', { variant: 'success' });
+  };
 
-  async function handleDownloadXLSX(tutorial: TutorialInEntity) {
+  const handleDownloadXLSX = async (tutorial: TutorialInEntity) => {
     const snackId = enqueueSnackbar('Erstelle XLSX...', { variant: 'info', persist: true });
     setCreatingXLSX((state) => ({ ...state, [tutorial.slot]: true }));
 
     try {
       const blob = await getTutorialXLSX(tutorial.id);
-
       saveBlob(blob, `Tutorium_${tutorial.slot}.xlsx`);
     } catch {
       enqueueSnackbar('XLSX konnte nicht erstellt werden.', { variant: 'error' });
@@ -127,7 +144,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
       setCreatingXLSX((state) => ({ ...state, [tutorial.slot]: false }));
       closeSnackbar(snackId || undefined);
     }
-  }
+  };
 
   return (
     <MuiAppBar position='static' className={classes.appBar}>
@@ -204,7 +221,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
             <Button
               color='inherit'
               variant='text'
-              onClick={handleLogBtnClicked}
+              onClick={handleLogout}
               className={classes.logoutButton}
             >
               Abmelden
@@ -213,11 +230,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
         )}
 
         <Tooltip title='Zwischen hellem & dunklem Design wechseln.'>
-          <IconButton
-            onClick={handleThemeChangeClicked}
-            className={classes.iconButton}
-            size='large'
-          >
+          <IconButton onClick={handleThemeChange} className={classes.iconButton} size='large'>
             {theme.palette.mode === 'light' ? <LightIcon /> : <DarkIcon />}
           </IconButton>
         </Tooltip>
@@ -226,7 +239,7 @@ function AppBar({ onMenuButtonClicked }: Props): JSX.Element {
           <Tooltip title='Benutzerhandbuch'>
             <IconButton
               className={classes.iconButton}
-              href={handbookUrl ?? ''}
+              href={handbookUrl}
               target='_blank'
               rel='noopener noreferrer'
               size='large'

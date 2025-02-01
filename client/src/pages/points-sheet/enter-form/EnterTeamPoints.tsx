@@ -32,6 +32,7 @@ function EnterTeamPoints(): JSX.Element {
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team>();
   const [gradings, setGradings] = useState<GradingList>(new GradingList([]));
+  const isAutoSubmittingRef = React.useRef<boolean>(false);
 
   useEffect(() => {
     if (!tutorialId) {
@@ -97,12 +98,15 @@ function EnterTeamPoints(): JSX.Element {
       setTeams((teams) => teams.map((t) => (t.id === teamId ? updatedTeam : t)));
 
       resetForm({ values: { ...values } });
-      enqueueSnackbar(
-        `Punkte für Team #${selectedTeam.teamNo
-          .toString()
-          .padStart(2, '0')} erfolgreich eingetragen.`,
-        { variant: 'success' }
-      );
+
+      if (!isAutoSubmittingRef.current) {
+        enqueueSnackbar(
+          `Punkte für Team #${selectedTeam.teamNo
+            .toString()
+            .padStart(2, '0')} erfolgreich eingetragen.`,
+          { variant: 'success' }
+        );
+      }
     } catch {
       enqueueSnackbar(
         `Punkte für Team #${selectedTeam.teamNo
@@ -110,7 +114,13 @@ function EnterTeamPoints(): JSX.Element {
           .padStart(2, '0')} konnten nicht eingetragen werden.`,
         { variant: 'error' }
       );
+    } finally {
+      setIsAutoSubmitting(false);
     }
+  };
+
+  const setIsAutoSubmitting = (value: boolean) => {
+    isAutoSubmittingRef.current = value;
   };
 
   if (!tutorialId || !sheetId || !teamId) {
@@ -129,6 +139,7 @@ function EnterTeamPoints(): JSX.Element {
       entity={selectedTeam}
       grading={selectedTeam === undefined ? undefined : gradings.getOfTeam(selectedTeam)}
       onSubmit={handleSubmit}
+      setIsAutoSubmitting={setIsAutoSubmitting}
       allEntities={teams}
       entitySelectProps={{
         label: 'Teams',

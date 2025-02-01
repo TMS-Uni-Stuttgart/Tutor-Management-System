@@ -61,11 +61,12 @@ interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   sheet: Sheet;
   exercise: Exercise[];
   onSubmit: PointsFormSubmitCallback;
+  setIsAutoSubmitting: (isAutoSubmitting: boolean) => void;
 }
 
 type FormProps = Omit<Props, 'entity' | 'grading' | 'onSubmit'>;
 
-function EnterPointsForm({ grading, ...props }: Props): JSX.Element {
+function EnterPointsForm({ grading, setIsAutoSubmitting, ...props }: Props): JSX.Element {
   const { sheet, onSubmit } = props;
 
   const [initialValues, setInitialValues] = useState<PointsFormState>(
@@ -79,12 +80,18 @@ function EnterPointsForm({ grading, ...props }: Props): JSX.Element {
 
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
-      <EnterPointsFormInner {...props} />
+      <EnterPointsFormInner setIsAutoSubmitting={setIsAutoSubmitting} {...props} />
     </Formik>
   );
 }
 
-function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProps): JSX.Element {
+function EnterPointsFormInner({
+  sheet,
+  exercise,
+  className,
+  setIsAutoSubmitting,
+  ...props
+}: FormProps): JSX.Element {
   const classes = useStyles();
   const dialog = useDialog();
 
@@ -94,6 +101,20 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
   const achieved = getAchievedPointsFromState(values);
   const total = getPointsOfAllExercises(sheet);
   const totalPoints = convertExercisePointInfoToString(total);
+  const autosaveInterval = 60 * 1000;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (dirty && !isSubmitting) {
+        setIsAutoSubmitting(true);
+        handleSubmit();
+      }
+    }, autosaveInterval);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [dirty, values]);
 
   const handleReset = () => {
     dialog.show({
@@ -138,10 +159,11 @@ function EnterPointsFormInner({ sheet, exercise, className, ...props }: FormProp
     <>
       <form {...props} onSubmit={handleSubmit} className={clsx(classes.root, className)}>
         <div className={classes.textBox}>
-          <Typography className={classes.unsavedChangesText}>
-            {dirty && <>Es gibt ungespeicherte Änderungen.</>}
-          </Typography>
-
+          {dirty && (
+            <Typography className={classes.unsavedChangesText}>
+              {<>Es gibt ungespeicherte Änderungen.</>}
+            </Typography>
+          )}
           <Typography
             className={classes.pointsText}
           >{`Gesamt: ${achieved} / ${totalPoints} Punkte`}</Typography>

@@ -1,5 +1,6 @@
 import {
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemProps,
   ListItemText,
@@ -41,9 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export type ButtonListItemProps = ListItemProps<'div', { button?: true }>;
-
-interface RailItemProps extends ButtonListItemProps {
+interface RailItemProps extends ListItemProps<'li', {}> {
   path: string;
   pathTemplate: string;
   icon: React.ComponentType<SvgIconProps> | null;
@@ -51,7 +50,7 @@ interface RailItemProps extends ButtonListItemProps {
   subItems?: RailSubItemProps[];
 }
 
-interface RootItemProps extends ButtonListItemProps {
+interface RootItemProps extends ListItemProps<'li', {}> {
   hasSubItems: boolean;
   path: string;
   onMouseEnter: MouseEventHandler<HTMLElement>;
@@ -68,14 +67,14 @@ function RootItem({
 }: RootItemProps): JSX.Element {
   if (hasSubItems) {
     return (
-      <ListItem {...other} button onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        {children}
+      <ListItem {...other} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} disablePadding>
+        <ListItemButton>{children}</ListItemButton>
       </ListItem>
     );
   } else {
     return (
-      <ListItem {...other} button component={renderLink(getTargetLink(path))}>
-        {children}
+      <ListItem {...other} disablePadding>
+        <ListItemButton component={renderLink(getTargetLink(path))}>{children}</ListItemButton>
       </ListItem>
     );
   }
@@ -110,7 +109,7 @@ function RailItem({
     }
   }
 
-  function handleItemClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  function handleItemClick(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
     if (!hasSubItems) {
       return;
     }
