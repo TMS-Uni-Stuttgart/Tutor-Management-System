@@ -76,6 +76,9 @@ export class Setting {
     canTutorExcuseStudents!: boolean;
 
     @Property()
+    excludeStudentsByStatus!: boolean;
+
+    @Property()
     gradingFilename!: string;
 
     @Property()
@@ -92,6 +95,7 @@ export class Setting {
         return {
             defaultTeamSize: this.defaultTeamSize,
             canTutorExcuseStudents: this.canTutorExcuseStudents,
+            excludeStudentsByStatus: this.excludeStudentsByStatus,
             gradingFilename: this.gradingFilename,
             tutorialGradingFilename: this.tutorialGradingFilename,
             mailingConfig: this.mailSettings?.toDTO(),
@@ -101,6 +105,7 @@ export class Setting {
     updateFromDTO(dto?: ClientSettingsDTO): void {
         this.defaultTeamSize = dto?.defaultTeamSize ?? 2;
         this.canTutorExcuseStudents = dto?.canTutorExcuseStudents ?? false;
+        this.excludeStudentsByStatus = dto?.excludeStudentsByStatus ?? false;
         this.gradingFilename = dto?.gradingFilename ?? 'Ex#{sheetNo}_#{teamName}';
         this.tutorialGradingFilename =
             dto?.tutorialGradingFilename ?? 'Tutorial_#{tutorialSlot}_Ex#{sheetNo}';

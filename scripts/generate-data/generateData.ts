@@ -1,16 +1,15 @@
 /* eslint-disable no-console */
 import { AxiosInstance } from 'axios';
 import { DateTime } from 'luxon';
-import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance.js';
-import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings.js';
-import { IExerciseDTO, ISubexercise } from 'shared/model/HasExercises.js';
-import { Role } from 'shared/model/Role.js';
-import { IScheinCriteriaDTO, ScheincriteriaIdentifier } from 'shared/model/ScheinCriteria.js';
-import { ISheet, ISheetDTO } from 'shared/model/Sheet.js';
-import { IShortTest, IShortTestDTO } from 'shared/model/ShortTest.js';
-import { ICreateStudentDTO, IStudent, StudentStatus } from 'shared/model/Student.js';
-import { ITutorial, ITutorialDTO } from 'shared/model/Tutorial.js';
-import { ICreateUserDTO, IUser } from 'shared/model/User.js';
+import type { IAttendanceDTO } from 'shared/model/Attendance.js';
+import type { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings.js';
+import type { IExerciseDTO, ISubexercise } from 'shared/model/HasExercises.js';
+import type { IScheinCriteriaDTO } from 'shared/model/ScheinCriteria.js';
+import type { ISheet, ISheetDTO } from 'shared/model/Sheet.js';
+import type { IShortTest, IShortTestDTO } from 'shared/model/ShortTest.js';
+import type { ICreateStudentDTO, IStudent } from 'shared/model/Student.js';
+import type { ITutorial, ITutorialDTO } from 'shared/model/Tutorial.js';
+import type { ICreateUserDTO, IUser } from 'shared/model/User.js';
 import { login } from '../util/login.js';
 import {
     createScheinCriteria,
@@ -20,6 +19,12 @@ import {
     setAttendanceOfStudent,
     setPointsOfStudent,
 } from './fetch/helpers.js';
+
+// use dynamic imports for these due to tsx limitations
+const { AttendanceState } = await import('shared/model/Attendance.js');
+const { Role } = await import('shared/model/Role.js');
+const { ScheincriteriaIdentifier } = await import('shared/model/ScheinCriteria.js');
+const { StudentStatus } = await import('shared/model/Student.js');
 
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'adminPass';
@@ -391,7 +396,7 @@ async function createStudent({
     });
 
     tutorial.dates.forEach((date) => {
-        let state: AttendanceState;
+        let state;
         const stateNo: number = Math.random();
 
         if (stateNo < 0.1) {

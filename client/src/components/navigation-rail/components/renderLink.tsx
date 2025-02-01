@@ -1,4 +1,4 @@
-import React from 'react';
+import { forwardRef, Ref } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
 
 /**
@@ -8,4 +8,4 @@ import { Link, LinkProps } from 'react-router-dom';
  * @returns Functional component which is a Link with the given path.
  */
 export const renderLink = (to: LinkProps['to']) =>
-  React.forwardRef<typeof Link, any>((props, ref) => <Link ref={ref} to={to} {...props} />);
+  forwardRef((props, ref: Ref<HTMLAnchorElement>) => <Link ref={ref} to={to} {...props} />);

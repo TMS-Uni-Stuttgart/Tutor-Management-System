@@ -18,6 +18,7 @@ interface ContextType {
 const DEFAULT_SETTINGS: IClientSettings = {
   defaultTeamSize: 1,
   canTutorExcuseStudents: false,
+  excludeStudentsByStatus: false,
   gradingFilename: '',
   tutorialGradingFilename: '',
 };

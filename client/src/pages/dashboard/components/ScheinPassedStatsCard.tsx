@@ -1,8 +1,9 @@
 import { CircularProgress, Paper, Theme, Typography, useTheme } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import React from 'react';
 import Chart from 'react-google-charts';
+import { StudentStatus } from 'shared/model/Student';
+import { useSettings } from '../../../hooks/useSettings';
 import { TutorialSummaryInfo } from '../Dashboard';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -33,6 +34,7 @@ interface ScheinPassedStatsCardProps {
 function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Element {
   const classes = useStyles();
   const theme = useTheme();
+  const { settings } = useSettings();
 
   const { backgroundColor, fontStyle } = theme.mixins.chart(theme);
 
@@ -42,8 +44,14 @@ function ScheinPassedStatsCard({ value }: ScheinPassedStatsCardProps): JSX.Eleme
     let notPassedValue = 0;
     const data: (string | number)[][] = [];
 
-    Object.values(value.studentInfos).forEach((item) => {
-      item.passed ? (passedValue += 1) : (notPassedValue += 1);
+    Object.values(value.studentInfos).forEach(({ student, passed }) => {
+      const shouldIncludeStudent =
+        !settings.excludeStudentsByStatus ||
+        ![StudentStatus.NO_SCHEIN_REQUIRED, StudentStatus.INACTIVE].includes(student.status);
+
+      if (shouldIncludeStudent) {
+        passed ? passedValue++ : notPassedValue++;
+      }
     });
 
     const passed = ['Bestanden', passedValue];

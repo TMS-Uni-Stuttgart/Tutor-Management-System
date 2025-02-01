@@ -68,7 +68,8 @@ function Markdown({ markdown, html: htmlFromProps, className, ...props }: Props)
 
   const [html, isLoading, , execute] = useFetchState({
     fetchFunction,
-    immediate: false,
+    immediate: true,
+    params: [markdown],
   });
 
   useEffect(() => {
