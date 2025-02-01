@@ -102,6 +102,7 @@ function EnterPointsFormInner({
   const achieved = getAchievedPointsFromState(values);
   const total = getPointsOfAllExercises(sheet);
   const totalPoints = convertExercisePointInfoToString(total);
+  const autosaveInterval = 60 * 1000;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -109,7 +110,7 @@ function EnterPointsFormInner({
         setIsAutoSubmitting(true);
         handleSubmit();
       }
-    }, 60 * 1000);
+    }, autosaveInterval);
 
     return () => {
       clearInterval(interval);
