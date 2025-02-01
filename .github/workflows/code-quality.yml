@@ -22,12 +22,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
+      
+      - name: Install Corepack
+        run: npm install -g corepack@latest
           
-      - name: Reset Corepack Cache (Fix Signature Issues)
-        run: |
-          corepack disable
-          rm -rf ~/.cache/corepack
-          corepack enable
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Prepare pnpm using Corepack
         run: corepack prepare pnpm
