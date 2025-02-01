@@ -1,4 +1,4 @@
-import { Button, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: 'auto',
     },
     exerciseBox: {
-      overflowY: 'auto',
       flex: 1,
     },
     buttonRow: {
@@ -60,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   grading: Grading | undefined;
   sheet: Sheet;
-  exercise: Exercise;
+  exercise: Exercise[];
   onSubmit: PointsFormSubmitCallback;
   setIsAutoSubmitting: (isAutoSubmitting: boolean) => void;
 }
@@ -170,12 +169,16 @@ function EnterPointsFormInner({
           >{`Gesamt: ${achieved} / ${totalPoints} Punkte`}</Typography>
         </div>
 
-        <ExerciseBox
-          className={classes.exerciseBox}
-          name={`exercises.${exercise.id}`}
-          exercise={exercise}
-        />
-
+        <Box display='flex' flexDirection='column' flex={1}>
+          {exercise.map((ex) => (
+            <ExerciseBox
+              key={ex.id}
+              className={classes.exerciseBox}
+              name={`exercises.${ex.id}`}
+              exercise={ex}
+            />
+          ))}
+        </Box>
         <div className={classes.buttonRow}>
           <Button
             variant='outlined'

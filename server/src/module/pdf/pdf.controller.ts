@@ -98,12 +98,14 @@ export class PdfController {
             sheetId,
         });
 
-        if (pdfData instanceof Buffer) {
-            res.contentType('pdf');
+        if (Buffer.isBuffer(pdfData)) {
+            res.contentType('application/pdf');
             res.send(pdfData);
-        } else {
-            res.contentType('zip');
+        } else if (pdfData instanceof ReadableStream) {
+            res.contentType('application/zip');
             pdfData.pipe(res);
+        } else {
+            throw new Error('Unexpected data type for pdfData');
         }
     }
 

@@ -80,7 +80,7 @@ function EnterPoints<T extends HasId>({
   const { setError } = useErrorSnackbar();
 
   const [sheet, setSheet] = useState<Sheet>();
-  const [selectedExercise, setSelectedExercise] = useState<Exercise>();
+  const [selectedExercise, setSelectedExercise] = useState<Exercise[]>();
   const matches = useMatches();
 
   useEffect(() => {
@@ -91,7 +91,13 @@ function EnterPoints<T extends HasId>({
     getSheet(sheetId)
       .then((response) => {
         setSheet(response);
-        setSelectedExercise(response.exercises[0]);
+
+        const savedSelection = localStorage.getItem('selectedExercise');
+        if (savedSelection === 'all') {
+          setSelectedExercise([...response.exercises]);
+        } else {
+          setSelectedExercise([response.exercises[0]]);
+        }
       })
       .catch(() => setError('Übungsblatt konnte nicht abgerufen werden.'));
   }, [sheetId, setError]);
@@ -102,7 +108,16 @@ function EnterPoints<T extends HasId>({
     }
 
     const exerciseId: string = event.target.value as string;
-    const exercise = sheet.exercises.find((ex) => ex.id === exerciseId);
+    let exercise: Exercise[] = [];
+    const foundExercise = sheet.exercises.find((ex) => ex.id === exerciseId);
+
+    if (foundExercise) {
+      exercise = [foundExercise];
+      localStorage.setItem('selectedExercise', exerciseId);
+    } else {
+      exercise = [...sheet.exercises];
+      localStorage.setItem('selectedExercise', 'all');
+    }
 
     if (exercise) {
       setSelectedExercise(exercise);
@@ -133,10 +148,20 @@ function EnterPoints<T extends HasId>({
           className={classes.topBarSelect}
           label='Aufgabe'
           emptyPlaceholder='Keine Aufgaben verfügbar'
-          items={sheet ? sheet.exercises : []}
-          itemToString={(ex) => `Aufgabe ${ex.exName}`}
-          itemToValue={(ex) => ex.id}
-          value={selectedExercise?.id ?? ''}
+          items={
+            sheet
+              ? sheet.exercises.length > 1
+                ? [sheet.exercises, ...sheet.exercises.map((ex) => [ex])]
+                : [sheet.exercises]
+              : []
+          }
+          itemToString={(ex) => (ex.length > 1 ? 'Alle Aufgaben' : `Aufgabe ${ex[0].exName}`)}
+          itemToValue={(ex) => (ex.length > 1 ? ex.map((e) => e.id).join('') : ex[0].id)}
+          value={
+            selectedExercise && selectedExercise.length > 1
+              ? selectedExercise.map((ex) => ex.id).join('')
+              : (selectedExercise?.[0]?.id ?? '')
+          }
           onChange={handleExerciseChange}
         />
 
