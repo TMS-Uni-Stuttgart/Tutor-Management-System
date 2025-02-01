@@ -24,7 +24,7 @@ jobs:
           node-version: 22.x
           
       - name: Reset Corepack Cache (Fix Signature Issues)
-      - run: |
+        run: |
           corepack disable
           rm -rf ~/.cache/corepack
           corepack enable
