@@ -23,8 +23,11 @@ jobs:
         with:
           node-version: 22.x
           
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Reset Corepack Cache (Fix Signature Issues)
+      - run: |
+          corepack disable
+          rm -rf ~/.cache/corepack
+          corepack enable
 
       - name: Prepare pnpm using Corepack
         run: corepack prepare pnpm
