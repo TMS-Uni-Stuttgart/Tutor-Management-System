@@ -24,6 +24,7 @@ import {
     TutorialDTO,
     TutorialGenerationDTO,
 } from './tutorial.dto';
+import { updateCollection } from '../../helpers/updateCollection';
 
 @Injectable()
 export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tutorial> {
@@ -145,8 +146,8 @@ export class TutorialService implements CRUDService<ITutorial, TutorialDTO, Tuto
         tutorial.startTime = DateTime.fromISO(dto.startTime);
         tutorial.endTime = DateTime.fromISO(dto.endTime);
 
-        tutorial.tutors.set(tutors);
-        tutorial.correctors.set(correctors);
+        updateCollection(tutorial.tutors, tutors);
+        updateCollection(tutorial.correctors, correctors);
 
         await this.em.persistAndFlush(tutorial);
         return tutorial.toDTO();

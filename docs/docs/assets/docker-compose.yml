@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   mysql:
     # Adjust if you want to use a different mysql version. The TMS is tested only with MySQL 8+.
