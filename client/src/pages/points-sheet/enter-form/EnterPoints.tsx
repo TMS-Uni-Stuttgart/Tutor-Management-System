@@ -60,7 +60,7 @@ interface Props<T extends HasId> {
   entity?: T;
   grading: Grading | undefined;
   onSubmit: PointsFormSubmitCallback;
-
+  setIsAutoSubmitting: (isAutoSubmitting: boolean) => void;
   allEntities: T[];
   entitySelectProps: EntitySelectProps<T>;
 }
@@ -71,6 +71,7 @@ function EnterPoints<T extends HasId>({
   entity,
   grading,
   onSubmit,
+  setIsAutoSubmitting,
   allEntities,
   entitySelectProps,
 }: Props<T>): JSX.Element {
@@ -186,6 +187,7 @@ function EnterPoints<T extends HasId>({
             exercise={selectedExercise}
             className={classes.enterPointsForm}
             onSubmit={onSubmit}
+            setIsAutoSubmitting={setIsAutoSubmitting}
           />
         )}
       </Placeholder>
