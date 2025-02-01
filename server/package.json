@@ -40,7 +40,7 @@
         "body-parser": "^1.20.2",
         "class-validator": "^0.14.1",
         "excel4node": "^1.8.2",
-        "express-session": "^1.18.0",
+        "express-session": "^1.18.1",
         "form-data": "^4.0.1",
         "highlight.js": "^11.10.0",
         "jszip": "^3.10.1",

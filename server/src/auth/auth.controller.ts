@@ -3,16 +3,21 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    MessageEvent,
     Post,
     Req,
     Res,
+    Sse,
     UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Observable, interval, map } from 'rxjs';
 import { ILoggedInUser } from 'shared/model/User';
 import { LoginGuard } from '../guards/login.guard';
 import { UserService } from '../module/user/user.service';
+
+const SSE_CHECK_INTERVAL = 5 * 60 * 1000;
 
 @Controller('auth')
 export class AuthController {
@@ -35,5 +40,32 @@ export class AuthController {
             return;
         });
         res.clearCookie('connect.sid').send('Successfully logged out.');
+    }
+
+    /**
+     * Periodically sends session expiration status.
+     */
+    @Sse('/session-status')
+    @HttpCode(HttpStatus.OK)
+    streamSessionStatus(@Req() req: Request): Observable<MessageEvent> {
+        return interval(SSE_CHECK_INTERVAL).pipe(
+            map(() => {
+                req.session.reload((err) => {
+                    if (err) {
+                        return { data: { status: 'expired' } };
+                    }
+                });
+
+                if (!req.isAuthenticated() || !req.session.cookie.maxAge) {
+                    return { data: { status: 'expired' } };
+                }
+
+                const timeLeft = req.session.cookie.maxAge;
+
+                return timeLeft <= 0
+                    ? { data: { status: 'expired' } }
+                    : { data: { status: 'active', timeLeft } };
+            })
+        );
     }
 }
