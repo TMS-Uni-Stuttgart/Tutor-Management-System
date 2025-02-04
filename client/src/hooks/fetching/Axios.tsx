@@ -34,22 +34,63 @@ function createBaseURL(): string {
     return `${host}`;
   }
 }
-function validateStatus(status: number): boolean {
-  const dialog = getDialogOutsideContext();
 
-  if (status === 401) {
-    dialog.show({
-      title: 'Erneut anmelden',
-      content: <RelogForm />,
-      DialogProps: {
-        disableEscapeKeyDown: true,
-        onClose: (reason) => {
-          if (reason === 'backdropClick') {
-            return;
-          }
-        },
+const RECONNECT_DELAY_MS = 5000;
+let eventSource: EventSource | null = null;
+
+/**
+ * Starts listening for session expiration events from the backend.
+ */
+function startSessionListener() {
+  if (eventSource) {
+    eventSource.close();
+  }
+
+  eventSource = new EventSource('/api/auth/session-status');
+
+  eventSource.onmessage = (event) => {
+    if (!eventSource) return;
+
+    const data = JSON.parse(event.data);
+    if (data.status === 'expired') {
+      handleSessionExpired();
+    }
+  };
+
+  eventSource.onerror = () => {
+    console.error('Session event connection lost, attempting to reconnect...');
+    if (eventSource) {
+      eventSource.close();
+    }
+    eventSource = null;
+    setTimeout(startSessionListener, RECONNECT_DELAY_MS);
+  };
+}
+
+/**
+ * Handles session expiration by showing the relogin dialog.
+ */
+function handleSessionExpired() {
+  const dialog = getDialogOutsideContext();
+  dialog.show({
+    title: 'Erneut anmelden',
+    content: <RelogForm />,
+    DialogProps: {
+      disableEscapeKeyDown: true,
+      onClose: (reason) => {
+        if (reason === 'backdropClick') {
+          return;
+        }
       },
-    });
+    },
+  });
+}
+
+startSessionListener();
+
+function validateStatus(status: number): boolean {
+  if (status === 401) {
+    handleSessionExpired();
 
     return false;
   }
