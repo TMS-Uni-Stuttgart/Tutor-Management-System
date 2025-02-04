@@ -135,8 +135,13 @@ export class GradingService {
      * @throws `BadRequestException` - If an error occurs during the setting process of _any_ student this exception is thrown.
      */
     async setOfMultipleStudents(dtos: Map<Student, GradingDTO>): Promise<void> {
+        const handIns = await this.getMultipleHandInsFromDTO([...dtos.values()]);
+
         for (const [student, dto] of dtos) {
-            const handIn = await this.getHandInFromDTO(dto);
+            const handIn = handIns.get(dto.sheetId ?? dto.examId ?? dto.shortTestId as string);
+            if (!handIn) {
+                throw new BadRequestException('HandIn not found for the given DTO.');
+            }
             await this.updateGradingOfStudent({ student, dto, handIn });
         }
         await this.entityManager.flush();
@@ -237,7 +242,7 @@ export class GradingService {
     /**
      * Returns either a ScheinexamDocument or an ScheinexamDocument associated to the given DTO.
      *
-     * If all fields, `sheetId`, `examId` and `shortTestId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
+     * If at least two fields, `sheetId`, `examId` and `shortTestId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
      *
      * @param dto DTO to return the associated document with exercises for.
      *
@@ -248,9 +253,10 @@ export class GradingService {
     async getHandInFromDTO(dto: GradingDTO): Promise<HandIn> {
         const { sheetId, examId, shortTestId } = dto;
 
-        if (!!sheetId && !!examId && !!shortTestId) {
+        const fieldsSet = [!!sheetId, !!examId, !!shortTestId].filter(Boolean).length;
+        if (fieldsSet !== 1) {
             throw new BadRequestException(
-                'You have to set exactly one of the three fields sheetId, examId and shortTestId - not all three.'
+                'You must set exactly one of the three fields: sheetId, examId, or shortTestId.'
             );
         }
 
@@ -269,6 +275,64 @@ export class GradingService {
         throw new BadRequestException(
             'You have to either set the sheetId or the examId or the shortTestId field.'
         );
+    }
+
+    /**
+     * Returns a mapping of `HandIn` entities (either `Sheet`, `Scheinexam`, or `ShortTest`) associated with the provided DTOs.
+     *
+     * This method fetches all required `HandIn` records **in bulk**, avoiding multiple database queries.
+     *
+     * If at least two fields (`sheetId`, `examId`, and `shortTestId`) are set in any DTO, an exception is thrown.
+     * An exception is also thrown if none of these fields are set in a DTO.
+     *
+     * @param dtos - List of `GradingDTO`s containing references to `HandIn` entities.
+     *
+     * @returns A `Map` where the key is the `HandIn` ID, and the value is the corresponding `HandIn` entity.
+     *
+     * @throws `BadRequestException` - If a DTO contains at least two of the fields (`sheetId`, `examId`, `shortTestId`) or none of them.
+     */
+    async getMultipleHandInsFromDTO(dtos: GradingDTO[]): Promise<Map<string, HandIn>> {
+        const sheetIds = new Set<string>();
+        const examIds = new Set<string>();
+        const shortTestIds = new Set<string>();
+
+        for (const dto of dtos) {
+            const { sheetId, examId, shortTestId } = dto;
+
+            const fieldsSet = [!!sheetId, !!examId, !!shortTestId].filter(Boolean).length;
+
+            if (fieldsSet > 1) {
+                throw new BadRequestException(
+                    'You must set only one of the three fields: sheetId, examId, or shortTestId.'
+                );
+            }
+
+            if (fieldsSet === 0) {
+                throw new BadRequestException(
+                    'You must set at least one of the fields: sheetId, examId, or shortTestId.'
+                );
+            }
+
+            if (sheetId) sheetIds.add(sheetId);
+            if (examId) examIds.add(examId);
+            if (shortTestId) shortTestIds.add(shortTestId);
+        }
+
+        const [sheets, exams, shortTests] = await Promise.all([
+            sheetIds.size ? this.sheetService.findMany([...sheetIds]) : Promise.resolve([]),
+            examIds.size ? this.scheinexamService.findMany([...examIds]) : Promise.resolve([]),
+            shortTestIds.size
+                ? this.shortTestService.findMany([...shortTestIds])
+                : Promise.resolve([]),
+        ]);
+
+        const handInMap = new Map<string, HandIn>();
+
+        for (const sheet of sheets) handInMap.set(sheet.id, sheet);
+        for (const exam of exams) handInMap.set(exam.id, exam);
+        for (const shortTest of shortTests) handInMap.set(shortTest.id, shortTest);
+
+        return handInMap;
     }
 }
 
