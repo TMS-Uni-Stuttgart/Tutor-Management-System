@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { FormikErrors } from 'formik';
 import _ from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { IExerciseGradingDTO, IGradingDTO } from 'shared/model/Gradings';
 import ShortTestForm, { ShortTestFormState } from '../../../../components/forms/ShortTestForm';
 import { useImportCSVContext } from '../../../../components/import-csv/ImportCSV.context';
@@ -10,7 +10,12 @@ import InformationButton from '../../../../components/information-box/Informatio
 import LoadingModal from '../../../../components/loading/LoadingModal';
 import Placeholder from '../../../../components/Placeholder';
 import HookUpStepperWithFormik from '../../../../components/stepper-with-buttons/HookUpStepperWithFormik';
-import { createShortTest, editShortTest } from '../../../../hooks/fetching/ShortTests';
+import {
+  createShortTest,
+  deleteShortTest,
+  editShortTest,
+  getShortTest,
+} from '../../../../hooks/fetching/ShortTests';
 import { setPointsOfMultipleStudents } from '../../../../hooks/fetching/Student';
 import { useCustomSnackbar } from '../../../../hooks/snackbar/useCustomSnackbar';
 import { useFetchState } from '../../../../hooks/useFetchState';
@@ -137,10 +142,14 @@ function AdjustGeneratedShortTest(): JSX.Element {
   const handleSubmit: FormikSubmitCallback<ShortTestFormState> = useCallback(
     async (values) => {
       let success: boolean = false;
-
+      let oldShortTest: ShortTest | undefined;
+      let generatedShortTest: ShortTest | undefined;
       try {
         setImporting(true);
-        const generatedShortTest = shortTest
+        if (shortTest) {
+          oldShortTest = await getShortTest(shortTest.id);
+        }
+        generatedShortTest = shortTest
           ? await editShortTest(shortTest.id, convertFormStateToDTO(values))
           : await createShortTest(convertFormStateToDTO(values));
         const gradings: Map<string, IGradingDTO> = new Map();
@@ -172,6 +181,17 @@ function AdjustGeneratedShortTest(): JSX.Element {
           variant: 'error',
           persist: false,
         });
+        if (shortTest && oldShortTest) {
+          await editShortTest(shortTest.id, {
+            shortTestNo: oldShortTest.shortTestNo,
+            percentageNeeded: 0,
+            exercises: oldShortTest.exercises,
+          });
+        } else {
+          if (generatedShortTest) {
+            await deleteShortTest(generatedShortTest.id);
+          }
+        }
         success = false;
       } finally {
         setImporting(false);
