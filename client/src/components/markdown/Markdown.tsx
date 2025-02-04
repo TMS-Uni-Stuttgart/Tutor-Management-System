@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme: Theme) =>
           theme.palette.mode === 'light' ? 'rgba(27, 31, 35, .05)' : 'rgba(220, 220, 220, 1)',
         color: '#000',
       },
+      '& table td, table th, h1, & h2': {
+        borderColor: theme.palette.mode === 'light' ? 'rgb(0, 0, 0)' : 'rgba(220, 220, 220, 1)',
+      },
     },
   })
 );
