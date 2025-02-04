@@ -138,7 +138,7 @@ export class GradingService {
         const handIns = await this.getMultipleHandInsFromDTO([...dtos.values()]);
 
         for (const [student, dto] of dtos) {
-            const handIn = handIns.get(dto.sheetId ?? dto.examId ?? dto.shortTestId as string);
+            const handIn = handIns.get(dto.sheetId ?? dto.examId ?? dto.shortTestId ?? '');
             if (!handIn) {
                 throw new BadRequestException('HandIn not found for the given DTO.');
             }
