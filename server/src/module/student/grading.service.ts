@@ -86,9 +86,9 @@ export class GradingService {
         const gradings = await this.em.find(
             Grading,
             {
-                students: { $in: studentIds }, // ✅ Correct Query for ManyToMany relation
+                students: { $in: studentIds },
             },
-            { populate: ['students', 'handInId'] } // ✅ Preload related entities
+            { populate: ['students', 'handInId'] }
         );
 
         const gradingLists = new GradingListsForStudents();
