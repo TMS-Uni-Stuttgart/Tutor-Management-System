@@ -43,6 +43,27 @@ export class ScheinexamService implements CRUDService<IScheinExam, ScheinexamDTO
     }
 
     /**
+     * Retrieves multiple `Scheinexam` entities by their IDs.
+     *
+     * @param ids - Array of Scheinexam IDs to retrieve.
+     * @returns A list of `Scheinexam` entities.
+     * @throws `NotFoundException` - If any of the requested Scheinexams are not found.
+     */
+    async findMany(ids: string[]): Promise<Scheinexam[]> {
+        const scheinexams = await this.repository.find({ id: { $in: ids } });
+
+        if (scheinexams.length !== ids.length) {
+            const foundIds = new Set(scheinexams.map((scheinexam) => scheinexam.id));
+            const missingIds = ids.filter((id) => !foundIds.has(id));
+            throw new NotFoundException(
+                `The following Scheinexam IDs could not be found: [${missingIds.join(', ')}]`
+            );
+        }
+
+        return scheinexams;
+    }
+
+    /**
      * Creates a scheinexam with the given information. Returns the created scheinexam.
      *
      * @param dto Information to create the scheinexam with.
