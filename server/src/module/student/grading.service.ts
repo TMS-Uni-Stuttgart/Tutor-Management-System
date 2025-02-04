@@ -81,14 +81,32 @@ export class GradingService {
      * @returns The gradings of the students with the given IDs.
      */
     async findOfMultipleStudents(studentIds: string[]): Promise<GradingListsForStudents> {
-        // const gradings = await this.gradingRepository.find({
-        //     students: { $contains: studentIds },
-        // });
-        // TODO: Can one use the "groupBy" option here instead of the code below to improve performance?
+        if (studentIds.length === 0) return new GradingListsForStudents();
+
+        const gradings = await this.em.find(
+            Grading,
+            {
+                students: { $in: studentIds }, // ✅ Correct Query for ManyToMany relation
+            },
+            { populate: ['students', 'handInId'] } // ✅ Preload related entities
+        );
+
         const gradingLists = new GradingListsForStudents();
-        for (const studentId of studentIds) {
-            gradingLists.addGradingList(studentId, await this.findOfStudent(studentId));
+        const studentGradingMap = new Map<string, Grading[]>();
+
+        for (const grading of gradings) {
+            for (const student of grading.students) {
+                if (!studentGradingMap.has(student.id)) {
+                    studentGradingMap.set(student.id, []);
+                }
+                studentGradingMap.get(student.id)!.push(grading);
+            }
         }
+
+        for (const [studentId, studentGradings] of studentGradingMap.entries()) {
+            gradingLists.addGradingList(studentId, new GradingList(studentGradings));
+        }
+
         return gradingLists;
     }
 
@@ -136,15 +154,13 @@ export class GradingService {
      */
     async setOfMultipleStudents(dtos: Map<Student, GradingDTO>): Promise<void> {
         const handIns = await this.getMultipleHandInsFromDTO([...dtos.values()]);
-
-        for (const [student, dto] of dtos) {
-            const handIn = handIns.get(dto.sheetId ?? dto.examId ?? dto.shortTestId ?? '');
-            if (!handIn) {
-                throw new BadRequestException('HandIn not found for the given DTO.');
-            }
-            await this.updateGradingOfStudent({ student, dto, handIn });
+        for (const handIn of handIns.values()) {
+            await this.updateGradingsOfMultipleStudents({
+                dtos,
+                handIn,
+            });
         }
-        await this.entityManager.flush();
+        await this.em.flush();
     }
 
     /**
@@ -237,6 +253,34 @@ export class GradingService {
         }
 
         this.em.persist(newGrading);
+    }
+
+    private async updateGradingsOfMultipleStudents({
+        dtos,
+        handIn,
+    }: UpdateMultipleStudentsGradingsParams): Promise<void> {
+        if (dtos.size === 0) return;
+
+        const studentIds = [...dtos.keys()].map((student) => student.id);
+        const gradingLists = await this.findOfMultipleStudents(studentIds);
+
+        dtos.forEach((dto, student) => {
+            const oldGrading = gradingLists.getGradingForHandIn(student.id, handIn);
+
+            const newGrading: Grading =
+                !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
+
+            newGrading.updateFromDTO({ dto, handIn });
+
+            oldGrading?.students.remove(student);
+            newGrading.students.add(student);
+
+            if (!!oldGrading && oldGrading.students.length === 0) {
+                this.em.remove(oldGrading);
+            }
+
+            this.em.persist(newGrading);
+        });
     }
 
     /**
@@ -339,6 +383,11 @@ export class GradingService {
 interface UpdateGradingParams {
     student: Student;
     dto: GradingDTO;
+    handIn: HandIn;
+}
+
+interface UpdateMultipleStudentsGradingsParams {
+    dtos: Map<Student, GradingDTO>;
     handIn: HandIn;
 }
 
