@@ -9,6 +9,7 @@ import { Team } from '../../database/entities/team.entity';
 import { ScheinexamService } from '../scheinexam/scheinexam.service';
 import { SheetService } from '../sheet/sheet.service';
 import { ShortTestService } from '../short-test/short-test.service';
+import { GradingService } from '../student/grading.service';
 import { StudentService } from '../student/student.service';
 import { TeamService } from '../team/team.service';
 import {
@@ -23,7 +24,6 @@ import {
     TeamGradings,
     TeamMarkdownData,
 } from './markdown.types';
-import { GradingService } from '../student/grading.service';
 
 @Injectable()
 export class MarkdownService {
@@ -278,7 +278,7 @@ export class MarkdownService {
         });
 
         const totalPointInfo = convertExercisePointInfoToString(pointInfo.total);
-        const header = `# ${nameOfEntity}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**`;
+        const header = `# ${nameOfEntity}${grading.sheetState ? `: ${grading.sheetState}` : ''}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**`;
 
         return `${header}\n\n${exerciseMarkdown}`;
     }

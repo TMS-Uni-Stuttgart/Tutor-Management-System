@@ -1,9 +1,9 @@
 import { IExercise, IHasExercises } from './HasExercises';
 
 export enum SheetState {
-    PASSED = 'PASSED',
-    NOT_PASSED = 'NOT_PASSED',
-    NO_STATE = 'NO_STATE',
+    PASSED = 'Bestanden',
+    NOT_PASSED = 'Nicht bestanden',
+    NO_STATE = 'Nicht bewertet',
 }
 
 export interface GradingResponseData {
