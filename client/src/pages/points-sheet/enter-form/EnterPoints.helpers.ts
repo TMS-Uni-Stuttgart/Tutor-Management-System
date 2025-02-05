@@ -89,5 +89,6 @@ export function convertFormStateToGradingDTO({
         createNewGrading: !prevGrading,
         comment: values.comment,
         additionalPoints,
+        sheetState: values.sheetState,
     };
 }

@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IExerciseGrading, IGrading } from 'shared/model/Gradings';
+import { IExerciseGrading, IGrading, SheetState } from 'shared/model/Gradings';
 import { Modify } from '../typings/Modify';
 import { Exercise, Subexercise } from './Exercise';
 
@@ -60,6 +60,7 @@ export class Grading implements Modify<IGrading, Modified> {
     readonly belongsToTeam!: boolean;
     readonly comment?: string;
     readonly additionalPoints?: number;
+    readonly sheetState?: SheetState;
 
     @Type(() => ExerciseGrading)
     @Transform(({ value }) => new Map(value))

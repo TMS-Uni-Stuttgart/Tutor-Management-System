@@ -1,5 +1,11 @@
 import { IExercise, IHasExercises } from './HasExercises';
 
+export enum SheetState {
+    PASSED = 'PASSED',
+    NOT_PASSED = 'NOT_PASSED',
+    NO_STATE = 'NO_STATE',
+}
+
 export interface GradingResponseData {
     studentId: string;
     gradingData: IGrading | undefined;
@@ -19,6 +25,7 @@ export interface IGrading {
     points: number;
     comment?: string;
     additionalPoints?: number;
+    sheetState?: SheetState;
 }
 
 export interface IExerciseGradingDTO {
@@ -36,6 +43,7 @@ export interface IGradingDTO {
     shortTestId?: string;
     comment?: string;
     additionalPoints?: number;
+    sheetState?: SheetState;
 }
 
 export interface IPresentationPointsDTO {

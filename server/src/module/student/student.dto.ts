@@ -14,7 +14,12 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { AttendanceState, IAttendanceDTO } from 'shared/model/Attendance';
-import { IExerciseGradingDTO, IGradingDTO, IPresentationPointsDTO } from 'shared/model/Gradings';
+import {
+    IExerciseGradingDTO,
+    IGradingDTO,
+    IPresentationPointsDTO,
+    SheetState,
+} from 'shared/model/Gradings';
 import {
     ICakeCountDTO,
     ICreateStudentDTO,
@@ -148,6 +153,10 @@ export class GradingDTO implements IGradingDTO {
     @IsOptional()
     @IsNumber()
     additionalPoints?: number;
+
+    @IsOptional()
+    @IsEnum(SheetState)
+    sheetState?: SheetState;
 }
 
 export class PresentationPointsDTO implements IPresentationPointsDTO {

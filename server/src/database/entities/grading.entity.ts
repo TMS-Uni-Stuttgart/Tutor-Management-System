@@ -8,7 +8,8 @@ import {
     PrimaryKey,
     Property,
 } from '@mikro-orm/core';
-import { IExerciseGrading, IGrading } from 'shared/model/Gradings';
+import { EncryptedEnumType } from 'database/types/encryption/EncryptedEnumType';
+import { IExerciseGrading, IGrading, SheetState } from 'shared/model/Gradings';
 import { v4 } from 'uuid';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
 import { EncryptedMapType } from '../types/encryption/EncryptedMapType';
@@ -107,6 +108,9 @@ export class Grading {
     @ManyToOne(() => ShortTest, { deleteRule: 'cascade' })
     private shortTest?: ShortTest;
 
+    @Property({ type: EncryptedEnumType })
+    sheetState?: SheetState;
+
     @Property({ nullable: false })
     handInId?: string;
 
@@ -172,6 +176,10 @@ export class Grading {
         this.additionalPoints = dto.additionalPoints ?? 0;
         this.exerciseGradings = [];
 
+        if (dto.sheetState) {
+            this.sheetState = dto.sheetState;
+        }
+
         for (const [exerciseId, exerciseGradingDTO] of dto.exerciseGradings) {
             this.exerciseGradings.push(ExerciseGrading.fromDTO(exerciseId, exerciseGradingDTO));
         }
@@ -202,6 +210,7 @@ export class Grading {
             comment: this.comment,
             belongsToTeam: this.belongsToTeam,
             exerciseGradings: [...exerciseGradings],
+            sheetState: this.sheetState,
         };
     }
 
