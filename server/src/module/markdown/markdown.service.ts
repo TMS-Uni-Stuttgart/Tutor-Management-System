@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import hljs from 'highlight.js';
 import MarkdownIt from 'markdown-it';
-import { convertExercisePointInfoToString } from 'shared/model/Gradings';
+import { convertExercisePointInfoToString, SheetState } from 'shared/model/Gradings';
 import { IStudentMarkdownData, ITeamMarkdownData } from 'shared/model/Markdown';
 import { getNameOfEntity } from 'shared/util/helpers';
 import { HasExercises } from '../../database/entities/ratedEntity.entity';
@@ -278,7 +278,7 @@ export class MarkdownService {
         });
 
         const totalPointInfo = convertExercisePointInfoToString(pointInfo.total);
-        const header = `# ${nameOfEntity}${grading.sheetState ? `: ${grading.sheetState}` : ''}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**`;
+        const header = `# ${nameOfEntity}${grading.sheetState && grading.sheetState !== SheetState.NO_STATE ? `: ${grading.sheetState}` : ''}\n\n**Gesamt: ${pointInfo.achieved} / ${totalPointInfo}**`;
 
         return `${header}\n\n${exerciseMarkdown}`;
     }
