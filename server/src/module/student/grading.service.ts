@@ -81,14 +81,32 @@ export class GradingService {
      * @returns The gradings of the students with the given IDs.
      */
     async findOfMultipleStudents(studentIds: string[]): Promise<GradingListsForStudents> {
-        // const gradings = await this.gradingRepository.find({
-        //     students: { $contains: studentIds },
-        // });
-        // TODO: Can one use the "groupBy" option here instead of the code below to improve performance?
+        if (studentIds.length === 0) return new GradingListsForStudents();
+
+        const gradings = await this.em.find(
+            Grading,
+            {
+                students: { $in: studentIds },
+            },
+            { populate: ['students', 'handInId'] }
+        );
+
         const gradingLists = new GradingListsForStudents();
-        for (const studentId of studentIds) {
-            gradingLists.addGradingList(studentId, await this.findOfStudent(studentId));
+        const studentGradingMap = new Map<string, Grading[]>();
+
+        for (const grading of gradings) {
+            for (const student of grading.students) {
+                if (!studentGradingMap.has(student.id)) {
+                    studentGradingMap.set(student.id, []);
+                }
+                studentGradingMap.get(student.id)!.push(grading);
+            }
         }
+
+        for (const [studentId, studentGradings] of studentGradingMap.entries()) {
+            gradingLists.addGradingList(studentId, new GradingList(studentGradings));
+        }
+
         return gradingLists;
     }
 
@@ -135,11 +153,14 @@ export class GradingService {
      * @throws `BadRequestException` - If an error occurs during the setting process of _any_ student this exception is thrown.
      */
     async setOfMultipleStudents(dtos: Map<Student, GradingDTO>): Promise<void> {
-        for (const [student, dto] of dtos) {
-            const handIn = await this.getHandInFromDTO(dto);
-            await this.updateGradingOfStudent({ student, dto, handIn });
+        const handIns = await this.getMultipleHandInsFromDTO([...dtos.values()]);
+        for (const handIn of handIns.values()) {
+            await this.updateGradingsOfMultipleStudents({
+                dtos,
+                handIn,
+            });
         }
-        await this.entityManager.flush();
+        await this.em.flush();
     }
 
     /**
@@ -234,10 +255,38 @@ export class GradingService {
         this.em.persist(newGrading);
     }
 
+    private async updateGradingsOfMultipleStudents({
+        dtos,
+        handIn,
+    }: UpdateMultipleStudentsGradingsParams): Promise<void> {
+        if (dtos.size === 0) return;
+
+        const studentIds = [...dtos.keys()].map((student) => student.id);
+        const gradingLists = await this.findOfMultipleStudents(studentIds);
+
+        dtos.forEach((dto, student) => {
+            const oldGrading = gradingLists.getGradingForHandIn(student.id, handIn);
+
+            const newGrading: Grading =
+                !oldGrading || dto.createNewGrading ? new Grading({ handIn }) : oldGrading;
+
+            newGrading.updateFromDTO({ dto, handIn });
+
+            oldGrading?.students.remove(student);
+            newGrading.students.add(student);
+
+            if (!!oldGrading && oldGrading.students.length === 0) {
+                this.em.remove(oldGrading);
+            }
+
+            this.em.persist(newGrading);
+        });
+    }
+
     /**
      * Returns either a ScheinexamDocument or an ScheinexamDocument associated to the given DTO.
      *
-     * If all fields, `sheetId`, `examId` and `shortTestId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
+     * If at least two fields, `sheetId`, `examId` and `shortTestId`, are set, an exception is thrown. An exception is also thrown if none of the both fields is set.
      *
      * @param dto DTO to return the associated document with exercises for.
      *
@@ -248,9 +297,10 @@ export class GradingService {
     async getHandInFromDTO(dto: GradingDTO): Promise<HandIn> {
         const { sheetId, examId, shortTestId } = dto;
 
-        if (!!sheetId && !!examId && !!shortTestId) {
+        const fieldsSet = [!!sheetId, !!examId, !!shortTestId].filter(Boolean).length;
+        if (fieldsSet !== 1) {
             throw new BadRequestException(
-                'You have to set exactly one of the three fields sheetId, examId and shortTestId - not all three.'
+                'You must set exactly one of the three fields: sheetId, examId, or shortTestId.'
             );
         }
 
@@ -270,11 +320,74 @@ export class GradingService {
             'You have to either set the sheetId or the examId or the shortTestId field.'
         );
     }
+
+    /**
+     * Returns a mapping of `HandIn` entities (either `Sheet`, `Scheinexam`, or `ShortTest`) associated with the provided DTOs.
+     *
+     * This method fetches all required `HandIn` records **in bulk**, avoiding multiple database queries.
+     *
+     * If at least two fields (`sheetId`, `examId`, and `shortTestId`) are set in any DTO, an exception is thrown.
+     * An exception is also thrown if none of these fields are set in a DTO.
+     *
+     * @param dtos - List of `GradingDTO`s containing references to `HandIn` entities.
+     *
+     * @returns A `Map` where the key is the `HandIn` ID, and the value is the corresponding `HandIn` entity.
+     *
+     * @throws `BadRequestException` - If a DTO contains at least two of the fields (`sheetId`, `examId`, `shortTestId`) or none of them.
+     */
+    async getMultipleHandInsFromDTO(dtos: GradingDTO[]): Promise<Map<string, HandIn>> {
+        const sheetIds = new Set<string>();
+        const examIds = new Set<string>();
+        const shortTestIds = new Set<string>();
+
+        for (const dto of dtos) {
+            const { sheetId, examId, shortTestId } = dto;
+
+            const fieldsSet = [!!sheetId, !!examId, !!shortTestId].filter(Boolean).length;
+
+            if (fieldsSet > 1) {
+                throw new BadRequestException(
+                    'You must set only one of the three fields: sheetId, examId, or shortTestId.'
+                );
+            }
+
+            if (fieldsSet === 0) {
+                throw new BadRequestException(
+                    'You must set at least one of the fields: sheetId, examId, or shortTestId.'
+                );
+            }
+
+            if (sheetId) sheetIds.add(sheetId);
+            if (examId) examIds.add(examId);
+            if (shortTestId) shortTestIds.add(shortTestId);
+        }
+
+        const [sheets, exams, shortTests] = await Promise.all([
+            sheetIds.size ? this.sheetService.findMany([...sheetIds]) : Promise.resolve([]),
+            examIds.size ? this.scheinexamService.findMany([...examIds]) : Promise.resolve([]),
+            shortTestIds.size
+                ? this.shortTestService.findMany([...shortTestIds])
+                : Promise.resolve([]),
+        ]);
+
+        const handInMap = new Map<string, HandIn>();
+
+        for (const sheet of sheets) handInMap.set(sheet.id, sheet);
+        for (const exam of exams) handInMap.set(exam.id, exam);
+        for (const shortTest of shortTests) handInMap.set(shortTest.id, shortTest);
+
+        return handInMap;
+    }
 }
 
 interface UpdateGradingParams {
     student: Student;
     dto: GradingDTO;
+    handIn: HandIn;
+}
+
+interface UpdateMultipleStudentsGradingsParams {
+    dtos: Map<Student, GradingDTO>;
     handIn: HandIn;
 }
 

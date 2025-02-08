@@ -44,6 +44,27 @@ export class SheetService implements CRUDService<ISheet, SheetDTO, Sheet> {
     }
 
     /**
+     * Retrieves multiple `Sheet` entities by their IDs.
+     *
+     * @param ids - Array of Sheet IDs to retrieve.
+     * @returns A list of `Sheet` entities.
+     * @throws `NotFoundException` - If any of the requested Sheets are not found.
+     */
+    async findMany(ids: string[]): Promise<Sheet[]> {
+        const sheets = await this.repository.find({ id: { $in: ids } });
+
+        if (sheets.length !== ids.length) {
+            const foundIds = new Set(sheets.map((sheet) => sheet.id));
+            const missingIds = ids.filter((id) => !foundIds.has(id));
+            throw new NotFoundException(
+                `The following Sheet IDs could not be found: [${missingIds.join(', ')}]`
+            );
+        }
+
+        return sheets;
+    }
+
+    /**
      * Checks if there is a sheet with the given ID. If not, an exception is thrown.
      *
      * @param id ID to search for.

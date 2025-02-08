@@ -60,7 +60,12 @@ function MapForm({ headers, metadata, formikRef, onSubmit }: Props): JSX.Element
   );
 
   return (
-    <Formik ref={formikRef} onSubmit={onSubmit} initialValues={initialValues} enableReinitialize>
+    <Formik
+      innerRef={formikRef}
+      onSubmit={onSubmit}
+      initialValues={initialValues}
+      enableReinitialize
+    >
       {({ values, setFieldValue }) => (
         <Box display='grid' gridTemplateColumns='1fr' rowGap={16} marginTop={2}>
           {staticDataByBoxes.map((data) => (

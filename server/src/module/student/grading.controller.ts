@@ -11,22 +11,22 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { validateSync, ValidationError } from 'class-validator';
+import { GradingResponseData, IGradingDTO } from 'shared/model/Gradings';
+import { Role } from 'shared/model/Role';
+import { Student } from '../../database/entities/student.entity';
+import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
+import { IDField } from '../../guards/decorators/idField.decorator';
+import { Roles } from '../../guards/decorators/roles.decorator';
+import { HasRoleGuard } from '../../guards/has-role.guard';
+import { StudentGuard } from '../../guards/student.guard';
+import { TeamGuard } from '../../guards/team.guard';
+import { TutorialGuard } from '../../guards/tutorial.guard';
+import { TeamService } from '../team/team.service';
 import { GradingService } from './grading.service';
 import { GradingDTO } from './student.dto';
 import { StudentService } from './student.service';
-import { AllowCorrectors } from '../../guards/decorators/allowCorrectors.decorator';
-import { StudentGuard } from '../../guards/student.guard';
-import { IDField } from '../../guards/decorators/idField.decorator';
-import { GradingResponseData, IGradingDTO } from 'shared/model/Gradings';
-import { validateSync, ValidationError } from 'class-validator';
-import { plainToClass } from 'class-transformer';
-import { Student } from '../../database/entities/student.entity';
-import { TeamGuard } from '../../guards/team.guard';
-import { TeamService } from '../team/team.service';
-import { TutorialGuard } from '../../guards/tutorial.guard';
-import { HasRoleGuard } from '../../guards/has-role.guard';
-import { Roles } from '../../guards/decorators/roles.decorator';
-import { Role } from 'shared/model/Role';
 
 @Controller('grading')
 export class GradingController {
@@ -91,15 +91,20 @@ export class GradingController {
         const dtoMap = new Map<Student, GradingDTO>();
         const notValidDTO: { studentId: string; errors: ValidationError[] | string }[] = [];
 
+        const studentIds = dtos.map(([studentId]) => studentId);
+        const students = await this.studentService.findMany(studentIds);
+
+        const studentMap = new Map(students.map((student) => [student.id, student]));
+
         for (const [studentId, dtoData] of dtos) {
             const dto = plainToClass(GradingDTO, dtoData);
             const errors = validateSync(dto);
 
             if (errors.length === 0) {
-                try {
-                    const student = await this.studentService.findById(studentId);
+                const student = studentMap.get(studentId);
+                if (student) {
                     dtoMap.set(student, dto);
-                } catch (e) {
+                } else {
                     notValidDTO.push({
                         studentId,
                         errors: `Could not find the student with the ID '${studentId}'.`,
