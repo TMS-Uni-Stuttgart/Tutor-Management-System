@@ -41,9 +41,17 @@ interface Props extends ButtonGroupProps {
   initiallySelected?: number;
   variant?: ButtonProps['variant'];
   color?: ButtonProps['color'];
+  onMenuItemClick?: (index: number) => void;
 }
 
-function SplitButton({ options, initiallySelected, variant, color, ...props }: Props): JSX.Element {
+function SplitButton({
+  options,
+  initiallySelected,
+  variant,
+  color,
+  onMenuItemClick,
+  ...props
+}: Props): JSX.Element {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const logger = useLogger('SplitButton');
@@ -69,6 +77,10 @@ function SplitButton({ options, initiallySelected, variant, color, ...props }: P
   ) => {
     setSelectedIndex(index);
     setOpen(false);
+
+    if (onMenuItemClick) {
+      onMenuItemClick(index);
+    }
   };
 
   const handleToggle = () => {

@@ -5,9 +5,14 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { Formik, useFormikContext } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { convertExercisePointInfoToString, getPointsOfAllExercises } from 'shared/model/Gradings';
+import {
+  convertExercisePointInfoToString,
+  getPointsOfAllExercises,
+  SheetState,
+} from 'shared/model/Gradings';
 import FormikDebugDisplay from '../../../../components/forms/components/FormikDebugDisplay';
 import SubmitButton from '../../../../components/loading/SubmitButton';
+import SplitButton from '../../../../components/SplitButton';
 import { useDialog } from '../../../../hooks/dialog-service/DialogService';
 import { useKeyboardShortcut } from '../../../../hooks/useKeyboardShortcut';
 import { Exercise } from '../../../../model/Exercise';
@@ -30,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     textBox: {
       display: 'flex',
+      alignItems: 'center',
       marginBottom: theme.spacing(1),
     },
     unsavedChangesText: {
@@ -37,6 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     pointsText: {
       marginLeft: 'auto',
+      marginRight: theme.spacing(2),
     },
     exerciseBox: {
       flex: 1,
@@ -44,7 +51,6 @@ const useStyles = makeStyles((theme: Theme) =>
     buttonRow: {
       display: 'flex',
       justifyContent: 'flex-end',
-      // This prevents a flashing scrollbar if the form spinner is shown.
       marginBottom: theme.spacing(0.5),
     },
     cancelButton: {
@@ -74,8 +80,7 @@ function EnterPointsForm({ grading, setIsAutoSubmitting, ...props }: Props): JSX
   );
 
   useEffect(() => {
-    const values = generateInitialValues({ grading, sheet });
-    setInitialValues(values);
+    setInitialValues(generateInitialValues({ grading, sheet }));
   }, [grading, sheet]);
 
   return (
@@ -94,9 +99,10 @@ function EnterPointsFormInner({
 }: FormProps): JSX.Element {
   const classes = useStyles();
   const dialog = useDialog();
-
   const formikContext = useFormikContext<PointsFormState>();
-  const { values, handleSubmit, resetForm, isSubmitting, dirty, submitForm } = formikContext;
+
+  const { values, handleSubmit, resetForm, isSubmitting, dirty, submitForm, setFieldValue } =
+    formikContext;
 
   const achieved = getAchievedPointsFromState(values);
   const total = getPointsOfAllExercises(sheet);
@@ -142,18 +148,35 @@ function EnterPointsFormInner({
 
   useKeyboardShortcut([{ key: 's', modifiers: { ctrlKey: true } }], (e) => {
     e.preventDefault();
-
-    if (!dirty) {
-      return;
-    }
-
-    submitForm();
+    if (dirty) submitForm();
   });
 
-  // unstable_usePrompt({
-  //   message: 'Es gibt ungespeicherte Änderungen. Soll die Seite wirklich verlassen werden?',
-  //   when: dirty,
-  // });
+  const handleOnMenuItemClick = (index: number) => {
+    if (index === 0) {
+      setFieldValue('sheetState', SheetState.PASSED);
+    } else {
+      setFieldValue('sheetState', SheetState.NOT_PASSED);
+    }
+  };
+
+  const toggleSheetState = (newState: SheetState) => {
+    const newSheetState = values.sheetState === newState ? SheetState.NO_STATE : newState;
+    setFieldValue('sheetState', newSheetState);
+  };
+
+  const buttonColor =
+    values.sheetState === SheetState.PASSED
+      ? 'success'
+      : values.sheetState === SheetState.NOT_PASSED
+        ? 'error'
+        : 'inherit';
+
+  const initiallySelected =
+    values.sheetState === SheetState.PASSED
+      ? 0
+      : values.sheetState === SheetState.NOT_PASSED
+        ? 1
+        : 0;
 
   return (
     <>
@@ -161,12 +184,37 @@ function EnterPointsFormInner({
         <div className={classes.textBox}>
           {dirty && (
             <Typography className={classes.unsavedChangesText}>
-              {<>Es gibt ungespeicherte Änderungen.</>}
+              Es gibt ungespeicherte Änderungen.
             </Typography>
           )}
-          <Typography
-            className={classes.pointsText}
-          >{`Gesamt: ${achieved} / ${totalPoints} Punkte`}</Typography>
+          <Typography className={classes.pointsText}>
+            {`Gesamt: ${achieved} / ${totalPoints} Punkte`}
+          </Typography>
+
+          <SplitButton
+            variant='outlined'
+            color={buttonColor}
+            initiallySelected={initiallySelected}
+            onMenuItemClick={handleOnMenuItemClick}
+            options={[
+              {
+                label: 'Als bestanden markieren',
+                ButtonProps: {
+                  onClick: () => {
+                    toggleSheetState(SheetState.PASSED);
+                  },
+                },
+              },
+              {
+                label: 'Als nicht bestanden markieren',
+                ButtonProps: {
+                  onClick: () => {
+                    toggleSheetState(SheetState.NOT_PASSED);
+                  },
+                },
+              },
+            ]}
+          />
         </div>
 
         <Box display='flex' flexDirection='column' flex={1}>

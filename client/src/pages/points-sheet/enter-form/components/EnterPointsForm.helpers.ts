@@ -1,3 +1,4 @@
+import { SheetState } from 'shared/model/Gradings';
 import { Exercise, HasExercises } from '../../../../model/Exercise';
 import { ExerciseGrading, Grading } from '../../../../model/Grading';
 import { FormikSubmitCallback } from '../../../../types';
@@ -17,6 +18,7 @@ export interface PointsFormState {
     exercises: {
         [exerciseId: string]: PointsFormExerciseState;
     };
+    sheetState?: SheetState;
 }
 
 export type PointsFormSubmitCallback = FormikSubmitCallback<PointsFormState>;
@@ -76,5 +78,6 @@ export function generateInitialValues({ sheet, grading }: InitialValuesOptions):
         comment: grading?.comment ?? '',
         additionalPoints: grading?.additionalPoints?.toString() ?? '0',
         exercises,
+        sheetState: grading?.sheetState ? (grading.sheetState ?? SheetState.NO_STATE) : undefined,
     };
 }
