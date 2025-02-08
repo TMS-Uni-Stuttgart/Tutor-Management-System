@@ -8,7 +8,7 @@ import {
     PrimaryKey,
     Property,
 } from '@mikro-orm/core';
-import { EncryptedEnumType } from 'database/types/encryption/EncryptedEnumType';
+import { EncryptedEnumType } from '../types/encryption/EncryptedEnumType';
 import { IExerciseGrading, IGrading, SheetState } from 'shared/model/Gradings';
 import { v4 } from 'uuid';
 import { ExerciseGradingDTO, GradingDTO } from '../../module/student/student.dto';
