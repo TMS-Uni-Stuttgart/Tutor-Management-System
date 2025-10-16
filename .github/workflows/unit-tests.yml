@@ -29,7 +29,7 @@ jobs:
           mysql root password: 'some-password' # Required if "mysql user" is empty, default is empty. The root superuser password
           
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22.x
 
