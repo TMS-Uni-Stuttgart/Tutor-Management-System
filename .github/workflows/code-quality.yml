@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v4 # If you're using actions/checkout@v4 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        uses: actions/checkout@v6 # If you're using actions/checkout@v6 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
           persist-credentials: false
           
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
